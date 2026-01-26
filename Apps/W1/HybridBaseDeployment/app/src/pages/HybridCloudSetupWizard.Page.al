@@ -1,10 +1,10 @@
 ﻿namespace Microsoft.DataMigration;
 
 using System.Environment;
-using System.Utilities;
 using System.Environment.Configuration;
-using System.Telemetry;
 using System.Security.User;
+using System.Telemetry;
+using System.Utilities;
 
 page 4000 "Hybrid Cloud Setup Wizard"
 {
@@ -357,235 +357,56 @@ page 4000 "Hybrid Cloud Setup Wizard"
                         group("Para5.1.3.1")
                         {
                             ShowCaption = false;
-                            InstructionalText = 'If you have selected a company that does not exist in Business Central, it will automatically be created for you. This may take a few minutes.';
 
-                            field(Instruction; SetupAdditionalCompaniesInstructionTxt)
+                            group(MoveCompaniesIntoLiveTenants)
                             {
                                 ShowCaption = false;
-                                MultiLine = true;
-                                Editable = false;
-                                Enabled = false;
-                                Style = Strong;
-                                ApplicationArea = All;
+                                field(Instruction; SetupAdditionalCompaniesInstructionTxt)
+                                {
+                                    ShowCaption = false;
+                                    MultiLine = true;
+                                    Editable = false;
+                                    Enabled = false;
+                                    Style = Strong;
+                                    ApplicationArea = All;
+                                }
+                                field(LearnMore; LearnMoreTxt)
+                                {
+                                    ShowCaption = false;
+                                    Editable = false;
+                                    ApplicationArea = All;
+
+                                    trigger OnDrillDown()
+                                    begin
+                                        Hyperlink(CloudMigrationLiveTenantsUrlTxt);
+                                    end;
+                                }
+                            }
+                            group("Select Companies Information")
+                            {
+                                ShowCaption = false;
+                                InstructionalText = 'If you have selected a company that does not exist in Business Central, it will automatically be created for you. This may take a few minutes.';
+                            }
+                            group("MigrationInformation")
+                            {
+                                ShowCaption = false;
+                                InstructionalText = 'The estimated size of the company data is the size of the companies in the on-premises database. The actual size of the migrated data may vary. Per-database tables are excluded from the estimation.';
+                                field(SizeInstructions; LearnMoreDatabaseSizeLinkTxt)
+                                {
+                                    ShowCaption = false;
+                                    Editable = false;
+                                    ApplicationArea = All;
+
+                                    trigger OnDrillDown()
+                                    begin
+                                        Hyperlink(LearnMoreDatabaseSizeUrlTxt);
+                                    end;
+                                }
                             }
                         }
                     }
                 }
             }
-
-#if not CLEAN23
-#pragma warning disable AA0218, AA0225
-            group(Step6)
-            {
-                Caption = '';
-                Visible = false;
-
-                ObsoleteReason = 'Scheduling is not supported and will be removed';
-                ObsoleteState = Pending;
-                ObsoleteTag = '19.0';
-
-                group("Para6.1")
-                {
-                    Caption = 'Schedule Data Migration';
-                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-
-                    group("Para6.1.1")
-                    {
-                        Caption = '';
-                        Visible = ScheduleVisible;
-                        InstructionalText = 'Specify when to migrate your data to Business Central. To skip this step, select Next. To setup or change your migration schedule in Business Central, search for ''Cloud Migration Management''.';
-                        ObsoleteReason = 'Scheduling is not supported and will be removed';
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '23.0';
-
-                        field("Replication Enabled"; Rec."Replication Enabled")
-                        {
-                            ApplicationArea = Basic, Suite;
-                            Caption = 'Activate Schedule';
-                            ToolTip = 'Activate Migration Schedule';
-                            ObsoleteReason = 'Scheduling is not supported and will be removed';
-                            ObsoleteState = Pending;
-                            ObsoleteTag = '23.0';
-
-                            trigger OnValidate()
-                            begin
-                                IsChanged := IsChanged or (Rec."Replication Enabled" <> xRec."Replication Enabled");
-                            end;
-                        }
-                        field(Recurrence; Rec.Recurrence)
-                        {
-                            ApplicationArea = Basic, Suite;
-                            Caption = 'Recurrence';
-                            ObsoleteReason = 'Scheduling is not supported and will be removed';
-                            ObsoleteState = Pending;
-                            ObsoleteTag = '23.0';
-                        }
-                        group("Para6.1.1.2")
-                        {
-                            ShowCaption = false;
-                            Visible = (Rec.Recurrence = Rec.Recurrence::Weekly);
-                            ObsoleteReason = 'Scheduling is not supported and will be removed';
-                            ObsoleteState = Pending;
-                            ObsoleteTag = '23.0';
-                            grid("Days1")
-                            {
-                                ShowCaption = false;
-                                ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                ObsoleteState = Pending;
-                                ObsoleteTag = '23.0';
-
-                                field(Sunday; Rec.Sunday)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Enabled = Rec.Recurrence = Rec.Recurrence::Weekly;
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-
-                                    trigger OnValidate()
-                                    begin
-                                        IsChanged := IsChanged or (rec.Sunday <> xRec.Sunday);
-                                    end;
-                                }
-                                field(Monday; Rec.Monday)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Enabled = Rec.Recurrence = Rec.Recurrence::Weekly;
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-
-                                    trigger OnValidate()
-                                    begin
-                                        IsChanged := IsChanged or (rec.Monday <> xRec.Monday);
-                                    end;
-                                }
-                                field(Tuesday; Rec.Tuesday)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Enabled = Rec.Recurrence = Rec.Recurrence::Weekly;
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-
-                                    trigger OnValidate()
-                                    begin
-                                        IsChanged := IsChanged or (rec.Tuesday <> xRec.Tuesday);
-                                    end;
-                                }
-                            }
-                            grid("Days2")
-                            {
-                                ShowCaption = false;
-                                ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                ObsoleteState = Pending;
-                                ObsoleteTag = '23.0';
-                                field(Wednesday; Rec.Wednesday)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Enabled = Rec.Recurrence = Rec.Recurrence::Weekly;
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-
-                                    trigger OnValidate()
-                                    begin
-                                        IsChanged := IsChanged or (rec.Wednesday <> xRec.Wednesday);
-                                    end;
-                                }
-                                field(Thursday; Rec.Thursday)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Enabled = Rec.Recurrence = Rec.Recurrence::Weekly;
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-
-                                    trigger OnValidate()
-                                    begin
-                                        IsChanged := IsChanged or (rec.Thursday <> xRec.Thursday);
-                                    end;
-                                }
-                                field(Friday; Rec.Friday)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Enabled = Rec.Recurrence = Rec.Recurrence::Weekly;
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-
-                                    trigger OnValidate()
-                                    begin
-                                        IsChanged := IsChanged or (rec.Friday <> xRec.Friday);
-                                    end;
-                                }
-                            }
-                            grid("Days4")
-                            {
-                                ShowCaption = false;
-                                ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                ObsoleteState = Pending;
-                                ObsoleteTag = '23.0';
-                                field(Saturday; Rec.Saturday)
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Enabled = Rec.Recurrence = Rec.Recurrence::Weekly;
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-
-                                    trigger OnValidate()
-                                    begin
-                                        IsChanged := IsChanged or (rec.Saturday <> xRec.Saturday);
-                                    end;
-                                }
-                                field(Empty1; '')
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = '';
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-                                }
-                                field(Empty2; '')
-                                {
-                                    ApplicationArea = Basic, Suite;
-                                    Caption = '';
-                                    ObsoleteReason = 'Scheduling is not supported and will be removed';
-                                    ObsoleteState = Pending;
-                                    ObsoleteTag = '23.0';
-                                }
-                            }
-                        }
-                    }
-                    group("Para6.2.1")
-                    {
-                        Caption = '';
-                        ObsoleteReason = 'Scheduling is not supported and will be removed';
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '23.0';
-                        field("Time to Run"; Rec."Time to Run")
-                        {
-                            ApplicationArea = Basic, Suite;
-                            Caption = 'Start time';
-                            ToolTip = 'Specifies the time at which to start the migration.';
-                            ObsoleteReason = 'Scheduling is not supported and will be removed';
-                            ObsoleteState = Pending;
-                            ObsoleteTag = '23.0';
-
-                            trigger OnValidate()
-                            begin
-                                IsChanged := IsChanged or (rec."Time to Run" <> xRec."Time to Run");
-                            end;
-                        }
-                    }
-                }
-            }
-#pragma warning restore
-#endif
-
             group(StepFinish)
             {
                 Caption = '';
@@ -703,6 +524,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        SkipShowLiveCompaniesWarning: Boolean;
     begin
         FeatureTelemetry.LogUptake('0000JMS', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         IsSaas := EnvironmentInformation.IsSaaS();
@@ -719,9 +541,11 @@ page 4000 "Hybrid Cloud Setup Wizard"
         end else
             ShowIntroStep();
 
-        if not HybridReplicationSummary.IsEmpty() then
-            if not Confirm(ConfirmCloudMigrationExistingSystemQst) then
-                Error('');
+        OnSkipShowLiveCompaniesWarning(SkipShowLiveCompaniesWarning);
+        if not SkipShowLiveCompaniesWarning then
+            if not HybridReplicationSummary.IsEmpty() then
+                if not Confirm(ConfirmCloudMigrationExistingSystemQst) then
+                    Error('');
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -821,7 +645,10 @@ page 4000 "Hybrid Cloud Setup Wizard"
         DelegatedAdminStepVisible: Boolean;
         ApprovalPageLinkTxt: Text;
         SetupAdditionalCompaniesInstructionTxt: Label 'Do not set up cloud migration to migrate additional companies for a production environment that is already in use for business. You risk overwriting or deleting data that is shared across companies.';
-
+        LearnMoreDatabaseSizeLinkTxt: Label 'Learn more about database size estimation';
+        LearnMoreDatabaseSizeUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2301442', Locked = true;
+        CloudMigrationLiveTenantsUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2262423', Locked = true;
+        LearnMoreTxt: Label 'Learn more';
 
     local procedure NextStep(Backwards: Boolean)
     var
@@ -1024,5 +851,9 @@ page 4000 "Hybrid Cloud Setup Wizard"
     procedure OnSelectedProduct(ProductId: Text)
     begin
     end;
-}
 
+    [IntegrationEvent(false, false)]
+    procedure OnSkipShowLiveCompaniesWarning(var SkipShowLiveCompaniesWarning: Boolean)
+    begin
+    end;
+}

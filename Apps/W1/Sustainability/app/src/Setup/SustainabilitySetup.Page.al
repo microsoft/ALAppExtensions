@@ -1,7 +1,12 @@
 namespace Microsoft.Sustainability.Setup;
 
+using Microsoft.Integration.D365Sales;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.CRM;
+using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
+using System.Telemetry;
+using System.Utilities;
 
 page 6221 "Sustainability Setup"
 {
@@ -24,6 +29,23 @@ page 6221 "Sustainability Setup"
                 field("Emission Unit of Measure Code"; Rec."Emission Unit of Measure Code")
                 {
                     ToolTip = 'Specifies the unit of measure code that is used to register emission.';
+                    Editable = CanEditEmissionUnitOfMeasure;
+                }
+                field("Waste Unit of Measure Code"; Rec."Waste Unit of Measure Code")
+                {
+                    ToolTip = 'Specifies the value of the Waste Unit of Measure Code field.';
+                }
+                field("Water Unit of Measure Code"; Rec."Water Unit of Measure Code")
+                {
+                    ToolTip = 'Specifies the value of the Water Unit of Measure Code field.';
+                }
+                field("Disch. Into Water Unit of Meas"; Rec."Disch. Into Water Unit of Meas")
+                {
+                    ToolTip = 'Specifies the value of the Discharged Into Water Unit of Measure Code field.';
+                }
+                field("Energy Unit of Measure Code"; Rec."Energy Unit of Measure Code")
+                {
+                    ToolTip = 'Specifies the value of the Energy Unit of Measure Code field.';
                 }
                 field("Emission Decimal Places"; Rec."Emission Decimal Places")
                 {
@@ -45,6 +67,62 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies if the background error check of sustainability journal lines is enabled.';
                 }
+                field("Is Dataverse Int. Enabled"; Rec."Is Dataverse Int. Enabled")
+                {
+                    ToolTip = 'Specifies if the connection to Dynamics 365 Dataverse is enabled.';
+                }
+            }
+            group(Procurement)
+            {
+                Caption = 'Procurement';
+                field("Use Emissions In Purch. Doc."; Rec."Use Emissions In Purch. Doc.")
+                {
+                    ToolTip = 'Specifies that you want to enable sustainability features in purchase documents. Until this field is selected, sustainability fields will not be displayed in the purchase lines. Select this field only if you intend to post your GHG emissions using purchase documents or to post purchasing carbon credits.';
+                }
+                field("G/L Account Emissions"; Rec."G/L Account Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account on the G/L Account card.';
+                }
+                field("Item Emissions"; Rec."Item Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Item card.';
+                }
+                field("Item Charge Emissions"; Rec."Item Charge Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Item Charge (currently not operating).';
+                }
+                field("Resource Emissions"; Rec."Resource Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Resource card.';
+                }
+                field("Work/Machine Center Emissions"; Rec."Work/Machine Center Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Work Center and Machine Center cards.';
+                }
+                field("Fixed Asset Emissions"; Rec."Fixed Asset Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Fixed Asset card.';
+                }
+                field("Enable Value Chain Tracking"; Rec."Enable Value Chain Tracking")
+                {
+                    ToolTip = 'Specifies the enablement of sustainability value entries postings through value chain operations and the visibility of these fields in operational documents and journals.';
+                }
+                field("Use All Gases As CO2e"; Rec."Use All Gases As CO2e")
+                {
+                }
+            }
+            group("Number Series")
+            {
+                Caption = 'Number Series';
+                field("ESG Standard Reporting Nos."; Rec."ESG Standard Reporting Nos.")
+                {
+                }
+                field("Posted ESG Reporting Nos."; Rec."Posted ESG Reporting Nos.")
+                {
+                }
+                field("Item Material Composition Nos."; Rec."Item Material Composition Nos.")
+                {
+                }
             }
             group(Calculations)
             {
@@ -60,6 +138,10 @@ page 6221 "Sustainability Setup"
                 field("Custom Amt. Decimal Places"; Rec."Custom Amt. Decimal Places")
                 {
                     ToolTip = 'Specifies the number of decimal places that are shown for custom amounts. The default setting, 2:5, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 5 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
+                }
+                field("Use Formulas In Purch. Docs"; Rec."Use Formulas In Purch. Docs")
+                {
+                    ToolTip = 'Specifies if the formula-based calculations are enabled for purchase documents.';
                 }
             }
             group(Reporting)
@@ -86,6 +168,14 @@ page 6221 "Sustainability Setup"
                     ToolTip = 'Specifies the Corporate Sustainability Reporting Directive link to report emission.';
                     Visible = false;
                 }
+                field("Energy Reporting UOM Code"; Rec."Energy Reporting UOM Code")
+                {
+                    ToolTip = 'Specifies the unit of measure code that is used to report Energy.';
+                }
+                field("Energy Reporting UOM Factor"; Rec."Energy Reporting UOM Factor")
+                {
+                    ToolTip = 'Specifies the unit of measure factor that is used to register Energy.';
+                }
             }
         }
 
@@ -106,6 +196,30 @@ page 6221 "Sustainability Setup"
 
     actions
     {
+        area(Processing)
+        {
+            action(ResetConfiguration)
+            {
+                ApplicationArea = Suite;
+                Caption = 'Use Default Synchronization Setup';
+                Enabled = Rec."Is Dataverse Int. Enabled";
+                Image = ResetStatus;
+                ToolTip = 'Reset the integration table mappings and synchronization jobs to the default values. All current mappings are deleted.';
+
+                trigger OnAction()
+                var
+                    CRMProductName: Codeunit "CRM Product Name";
+                    SustSetupDefaults: Codeunit "Sust. Setup Defaults";
+                    ConfirmManagement: Codeunit "Confirm Management";
+                begin
+                    if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(ResetIntegrationTableMappingConfirmQst, CRMProductName.CDSServiceName()), false) then
+                        exit;
+
+                    SustSetupDefaults.ResetConfiguration(Rec);
+                    Message(SetupSuccessfulMsg, CRMProductName.CDSServiceName());
+                end;
+            }
+        }
         area(navigation)
         {
             action(SustainAccountCategory)
@@ -122,15 +236,74 @@ page 6221 "Sustainability Setup"
                 RunObject = Page "Sustainability Jnl. Templates";
                 ToolTip = 'Set up templates for the journals that you use for sustainability reporting tasks. Templates allow you to work in a journal window that is designed for a specific purpose.';
             }
+            action(EmissionFees)
+            {
+                Caption = 'Emission Fees';
+                Image = CostBudget;
+                RunObject = Page "Emission Fees";
+                ToolTip = 'Set up internal carbon fees and CO2 equivalent.';
+            }
+            action(Disclaimer)
+            {
+                Caption = 'Disclaimer';
+                Image = Info;
+                RunObject = Page "Sustainability Disclaimer";
+                ToolTip = 'View or add disclaimer for sustainability reports.';
+            }
         }
         area(Promoted)
         {
             actionref(SustainAccountCategory_Promoted; SustainAccountCategory) { }
             actionref(SustainabilityJournalTemplate_Promoted; SustainabilityJournalTemplate) { }
+            actionref(EmissionFees_Promoted; EmissionFees) { }
+            actionref(Disclaimer_Promoted; Disclaimer) { }
         }
     }
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
     begin
+        FeatureTelemetry.LogUptake('0000PH2', SustainabilityLbl, Enum::"Feature Uptake Status"::Discovered);
         Rec.InitRecord();
+
+        xSustainabilitySetup := Rec;
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        SetControlAppearance();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        SetControlAppearance();
+    end;
+
+    trigger OnClosePage()
+    var
+        SessionSettings: SessionSettings;
+    begin
+        if IsUnitOfMeasureModified() then
+            SessionSettings.RequestSessionUpdate(false);
+    end;
+
+    var
+        xSustainabilitySetup: Record "Sustainability Setup";
+        CanEditEmissionUnitOfMeasure: Boolean;
+        ResetIntegrationTableMappingConfirmQst: Label 'This will restore the default integration table mappings and synchronization jobs for %1. All custom mappings and jobs will be deleted. The default mappings and jobs will be used the next time data is synchronized. Do you want to continue?', Comment = '%1 = CRM product name';
+        SetupSuccessfulMsg: Label 'The default setup for %1 synchronization has completed successfully.', Comment = '%1 = CRM product name';
+
+    local procedure IsUnitOfMeasureModified(): Boolean
+    begin
+        exit(
+          (Rec."Emission Unit of Measure Code" <> xSustainabilitySetup."Emission Unit of Measure Code") or
+          (Rec."Energy Unit of Measure Code" <> xSustainabilitySetup."Energy Unit of Measure Code") or
+          (Rec."Use All Gases As CO2e" <> xSustainabilitySetup."Use All Gases As CO2e"));
+    end;
+
+    local procedure SetControlAppearance()
+    begin
+        CanEditEmissionUnitOfMeasure := not Rec.ExistSustainabilityLedgerEntryWithUnitOfMeasure(Rec."Emission Unit of Measure Code");
     end;
 }

@@ -6,6 +6,7 @@ namespace Microsoft.Sales.History;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Transfer;
 
 codeunit 31444 "Undo Shipment Line Handler CZA"
 {
@@ -18,5 +19,11 @@ codeunit 31444 "Undo Shipment Line Handler CZA"
             exit;
         Item.Get(ItemJournalLine."Item No.");
         ItemJournalLine."Unit of Measure Code" := Item."Base Unit of Measure";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Undo Transfer Shipment", 'OnAfterCopyItemJnlLineFromTransShpt', '', false, false)]
+    local procedure OnAfterCopyItemJnlLineFromTransShpt(var ItemJournalLine: Record "Item Journal Line"; TransferShipmentLine: Record "Transfer Shipment Line")
+    begin
+        ItemJournalLine."Gen. Bus. Posting Group" := TransferShipmentLine."Gen.Bus.Post.Group Ship CZA";
     end;
 }

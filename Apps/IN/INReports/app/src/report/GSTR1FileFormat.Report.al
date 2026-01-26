@@ -1028,6 +1028,7 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNRPerQuery.SetRange(Posting_Date, StartDate, EndDate);
         GSTR1CDNRPerQuery.SetRange(Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRPerQuery.SetRange(Document_Type, GSTR1CDNRQuery.Document_Type);
+        GSTR1CDNRPerQuery.SetRange(Document_Line_No_, GSTR1CDNRQuery.Document_Line_No_);
         GSTR1CDNRPerQuery.Open();
         while GSTR1CDNRPerQuery.Read() do
             if GSTR1CDNRPerQuery.GST_Jurisdiction_Type = GSTR1CDNRPerQuery.GST_Jurisdiction_Type::Intrastate then
@@ -1042,9 +1043,9 @@ report 18049 "GSTR-1 File Format"
 
         GSTR1CDNRCess.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1CDNRCess.SetRange(Posting_Date, StartDate, EndDate);
-        GSTR1CDNRCess.SetRange(GSTR1CDNRCess.Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRCess.SetRange(Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRCess.SetRange(Document_Type, GSTR1CDNRQuery.Document_Type);
+        GSTR1CDNRCess.SetRange(GSTR1CDNRCess.Document_Line_No_, GSTR1CDNRQuery.Document_Line_No_);
         GSTR1CDNRCess.Open();
         if GSTR1CDNRCess.Read() then
             AddNumberColumn(Abs(GSTR1CDNRCess.GST_Amount))
@@ -1557,22 +1558,6 @@ report 18049 "GSTR-1 File Format"
             ExempCustInterUnRegAmt += Abs(GSTR1EXEMPQuery.GST_Base_Amount);
     end;
 
-    local procedure GetInvoiceTypeforTransferShip(GSTR1B2BSalesTranship: Query GSTR1B2BSalesTranship): Text[50]
-    begin
-        case GSTR1B2BSalesTranship.GST_Customer_Type of
-            GSTR1B2BSalesTranship.GST_Customer_Type::Registered:
-                exit(RegularTxt);
-            GSTR1B2BSalesTranship.GST_Customer_Type::"SEZ Development", GSTR1B2BSalesTranship.GST_Customer_Type::"SEZ Unit":
-                begin
-                    if GSTR1B2BSalesTranship.GST_Without_Payment_of_Duty then
-                        exit(SEZWOPayTxt);
-                    exit(SEZWPayTxt);
-                end;
-            GSTR1B2BSalesTranship.GST_Customer_Type::"Deemed Export":
-                exit(DeemedExportTxt);
-        end;
-    end;
-
     local procedure GetInvoiceType(GSTR1B2BQuery: Query GSTR1B2BQuery): Text[50]
     begin
         case GSTR1B2BQuery.GST_Customer_Type of
@@ -1671,4 +1656,3 @@ report 18049 "GSTR-1 File Format"
     end;
 
 }
-

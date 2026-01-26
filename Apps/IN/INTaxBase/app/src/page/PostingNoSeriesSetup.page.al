@@ -4,9 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TaxBase;
 
-using System.Automation;
 using System.Reflection;
-using System.Utilities;
 
 page 18559 "Posting No. Series Setup"
 {
@@ -90,17 +88,5 @@ page 18559 "Posting No. Series Setup"
         if RecordRef.GetFilters() <> '' then
             exit(RecordRef.GetFilters());
         RecordRef.Close();
-    end;
-
-    local procedure ConvertEventConditionsToFilters(var RecRef: RecordRef): Boolean
-    var
-        TempBlob: Codeunit "Temp Blob";
-        RequestPageParametersHelper: Codeunit "Request Page Parameters Helper";
-    begin
-        if Rec.Condition.HasValue() then begin
-            Rec.CalcFields(Condition);
-            TempBlob.FromRecord(Rec, Rec.FieldNo(Condition));
-            RequestPageParametersHelper.ConvertParametersToFilters(RecRef, TempBlob);
-        end;
     end;
 }

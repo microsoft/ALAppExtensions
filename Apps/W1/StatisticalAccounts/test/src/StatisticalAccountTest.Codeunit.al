@@ -1,7 +1,20 @@
+namespace Microsoft.Test.StatisticalAccounts;
+
+using Microsoft.Finance.AllocationAccount;
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.Analysis.StatisticalAccount;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Enums;
+using System.TestLibraries.Utilities;
+
 codeunit 139683 "Statistical Account Test"
 {
     // [FEATURE] [Statistical Accounts]
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -11,6 +24,7 @@ codeunit 139683 "Statistical Account Test"
         LibraryERM: Codeunit "Library - ERM";
         LibraryDimension: Codeunit "Library - Dimension";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryUtility: Codeunit "Library - Utility";
         Initialized: Boolean;
         EMPLOYEESLbl: Label 'EMPLOYEES';
         OFFICESPACELbl: Label 'OFFICESPACE';
@@ -26,6 +40,9 @@ codeunit 139683 "Statistical Account Test"
         TotalNumberOfOfficeSpaceLedgerEntries: Integer;
         TotalNumberOfEmployeeLedgerEntries: Integer;
         BalanceMustBeEqualErr: Label 'Balance must be equal to %1.', Comment = '%1 = Field Value';
+        WrongBalanceErr: Label 'Wrong balance on the statistical account %1', Comment = '%1 = Statistical Account No.';
+        WrongPageErr: Label 'Wrong page opened.';
+        WrongAmountErr: Label 'Wrong amount in the statistical ledger entry list.';
 
     local procedure Initialize()
     var
@@ -183,7 +200,7 @@ codeunit 139683 "Statistical Account Test"
         Assert.AreEqual(2, StatisticalAccount.Count(), 'The statistical accounts are not created correctly');
         Assert.IsTrue(StatisticalAccount.Get(EMPLOYEESLbl), 'Employees account was not created');
         StatisticalAccount.CalcFields(Balance);
-        Assert.AreEqual(EmployeesExpectedAmount, StatisticalAccount.Balance, StrSubstNo('Wrong balance on the statistical account %1', StatisticalAccount."No."));
+        Assert.AreEqual(EmployeesExpectedAmount, StatisticalAccount.Balance, StrSubstNo(WrongBalanceErr, StatisticalAccount."No."));
         StatisticalLedgerEntry.SetRange("Statistical Account No.", StatisticalAccount."No.");
         Assert.AreEqual(TotalNumberOfEmployeeLedgerEntries, StatisticalLedgerEntry.Count(), 'Wrong number of statistical account ledger entries');
         StatisticalLedgerEntry.SetRange("Global Dimension 1 Code", '');
@@ -193,7 +210,7 @@ codeunit 139683 "Statistical Account Test"
         // [THEN] Demodata is generated successfully for Office Space
         Assert.IsTrue(StatisticalAccount.Get(OFFICESPACELbl), 'Employees account was not created');
         StatisticalAccount.CalcFields(Balance);
-        Assert.AreEqual(OfficeSpaceExpectedAmount, StatisticalAccount.Balance, StrSubstNo('Wrong balance on the statistical account %1', StatisticalAccount."No."));
+        Assert.AreEqual(OfficeSpaceExpectedAmount, StatisticalAccount.Balance, StrSubstNo(WrongBalanceErr, StatisticalAccount."No."));
         StatisticalLedgerEntry.SetRange("Statistical Account No.", StatisticalAccount."No.");
         Assert.AreEqual(TotalNumberOfOfficeSpaceLedgerEntries, StatisticalLedgerEntry.Count(), 'Wrong number of statistical account ledger entries');
         StatisticalLedgerEntry.SetRange("Global Dimension 1 Code", '');
@@ -383,7 +400,7 @@ codeunit 139683 "Statistical Account Test"
         FinancialReports.Filter.SetFilter(Name, AccScheduleName.Name);
         AccScheduleOverview.Trap();
         FinancialReports.Overview.Invoke();
-        AccScheduleOverview.PeriodType.SetValue("Analysis Period Type"::Year);
+        AccScheduleOverview.PeriodTypeDefault.SetValue("Analysis Period Type"::Year);
 
         // [GIVEN] Save the Date Filter.
         DateFilter := Format(AccScheduleOverview.DateFilter);
@@ -458,6 +475,325 @@ codeunit 139683 "Statistical Account Test"
         StatisticalAccountsJournal.Close();
     end;
 
+    [Test]
+    [HandlerFunctions('StatAccJnlBatcheModalPageHandler')]
+    procedure SwitchBatchNameOnStatAccJnl()
+    var
+        StatisticalAccount: Record "Statistical Account";
+        StatAccJnlBatch: array[2] of Record "Statistical Acc. Journal Batch";
+        StatAccJnlLine: Record "Statistical Acc. Journal Line";
+        StatAccJnlPage: TestPage "Statistical Accounts Journal";
+        i: Integer;
+    begin
+        // [SCENARIO 544841] Switching the batch name on the Statistical Account Journal works correctly
+
+        Initialize();
+        CreateStatisticalAccount(StatisticalAccount);
+        // [GIVEN] Two statistical Account Journal Batches - "X" and "Y"
+        for i := 1 to ArrayLen(StatAccJnlBatch) do begin
+            StatAccJnlBatch[i].Validate(Name, LibraryUtility.GenerateGUID());
+            StatAccJnlBatch[i].Insert(true);
+        end;
+        // [GIVEN] Statistical Account Journal Line for batch "X"
+        StatAccJnlLine.Validate("Journal Batch Name", StatAccJnlBatch[1].Name);
+        StatAccJnlLine.Validate("Statistical Account No.", StatisticalAccount."No.");
+        StatAccJnlLine.Insert(true);
+
+        // [GIVEN] Statistical account opened for the batch "X"
+        StatAccJnlPage.OpenEdit();
+        StatAccJnlPage.CurrentJnlBatchName.SetValue(StatAccJnlBatch[1].Name);
+
+        LibraryVariableStorage.Enqueue(StatAccJnlBatch[2].Name); // for StatAccJnlBatcheModalPageHandler
+        // [WHEN] Stan switches the batch to "Y" via lookup
+        StatAccJnlPage.CurrentJnlBatchName.Lookup();
+
+        // [THEN] No statistical account journal lines shown for this batch
+        StatAccJnlPage.StatisticalAccountNo.AssertEquals('');
+        LibraryVariableStorage.AssertEmpty();
+
+        // Tear down
+        StatAccJnlPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure JnlLinesBindToNewBatchAfterPostingInOldBatch()
+    var
+        StatisticalAccount: Record "Statistical Account";
+        StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
+        TempStatisticalAccountLedgerEntries: Record "Statistical Ledger Entry" temporary;
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+    begin
+        // [SCENARIO 559516] Stan can create journal lines in the new batch after posting in the old one
+
+        Initialize();
+        // [GIVEN] A statistical journal line is registered in the default batch
+        CreateStatisticalAccount(StatisticalAccount);
+        CreateTransactions(StatisticalAccount, 1, TempStatisticalAccountLedgerEntries);
+        CreateJournal(StatisticalAccountsJournal, TempStatisticalAccountLedgerEntries);
+        RegisterJournal(StatisticalAccountsJournal);
+
+        // [GIVEN] New batch is created
+        StatisticalAccJournalBatch.Name := LibraryUtility.GenerateGUID();
+        StatisticalAccJournalBatch.Insert();
+
+        // [GIVEN] New batch is chosen in the journal
+        StatisticalAccountsJournal.CurrentJnlBatchName.SetValue(StatisticalAccJournalBatch.Name);
+
+        // [GIVEN] A new line is added to the journal for the new batch
+        CreateStatisticalAccount(StatisticalAccount);
+        CreateTransactions(StatisticalAccount, 1, TempStatisticalAccountLedgerEntries);
+        StatisticalAccountsJournal.New();
+        StatisticalAccountsJournal."Posting Date".SetValue(TempStatisticalAccountLedgerEntries."Posting Date");
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(TempStatisticalAccountLedgerEntries."Statistical Account No.");
+        StatisticalAccountsJournal.Amount.SetValue(TempStatisticalAccountLedgerEntries.Amount);
+
+        // [WHEN] Click register journal and choose "No"
+        CancelRegisterJournal(StatisticalAccountsJournal);
+
+        // [THEN] The line is still under the new batch
+        StatisticalAccountsJournal.StatisticalAccountNo.AssertEquals(StatisticalAccount."No.");
+
+        // Tear down
+        StatisticalAccountsJournal.Close();
+
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure AccountRangeShouldRecognizedForTotalingTypeStatisticalAccountInFinancialReport()
+    var
+        ColumnLayout: Record "Column Layout";
+        ColumnLayoutName: Record "Column Layout Name";
+        AccScheduleName: Record "Acc. Schedule Name";
+        AccScheduleLine: Record "Acc. Schedule Line";
+        FinancialReport: Record "Financial Report";
+        StatisticalAccount: array[3] of Record "Statistical Account";
+        FinancialReports: TestPage "Financial Reports";
+        AccScheduleOverview: TestPage "Acc. Schedule Overview";
+        ExpectedAmount: Decimal;
+        DateFilter: Text;
+    begin
+        // [SCENARIO 556238] Account ranges are not getting recognized when the Totaling Type is Statistical Account in Financial reports row definition
+        Initialize();
+
+        // [GIVEN] Setup Demo Data.
+        SetupFinancialReport();
+
+        // [GIVEN] Create Statistical Account and Post Journal
+        CreateStatisticalAccount(StatisticalAccount, 3);
+        CreateStatisticalAccountsJournalAndPost(StatisticalAccount, 3, ExpectedAmount);
+
+        // [GIVEN] Create a Column Name and Column Layout.
+        LibraryERM.CreateColumnLayoutName(ColumnLayoutName);
+        LibraryERM.CreateColumnLayout(ColumnLayout, ColumnLayoutName.Name);
+        ColumnLayout.Validate("Column Type", "Column Layout Type"::"Balance at Date");
+        ColumnLayout.Modify();
+
+        // [GIVEN] Create a Account Schedule Name and Line with "Statistical Account" and Range in Totaling
+        LibraryERM.CreateAccScheduleName(AccScheduleName);
+        LibraryERM.CreateAccScheduleLine(AccScheduleLine, AccScheduleName.Name);
+        AccScheduleLine.Validate("Totaling Type", "Acc. Schedule Line Totaling Type"::"Statistical Account");
+        AccScheduleLine.Validate(Totaling, StatisticalAccount[1]."No." + '..' + StatisticalAccount[3]."No.");
+        AccScheduleLine.Modify();
+
+        // [GIVEN] Update "Financial Report Column Group" in Financial report.
+        FinancialReport.Get(AccScheduleLine."Schedule Name");
+        FinancialReport.Validate("Financial Report Column Group", ColumnLayout."Column Layout Name");
+        FinancialReport.Modify();
+
+        // [WHEN] Run Account Schedule Overview with "Period Type" as year.
+        FinancialReports.OpenEdit();
+        FinancialReports.Filter.SetFilter(Name, AccScheduleName.Name);
+        AccScheduleOverview.Trap();
+        FinancialReports.Overview.Invoke();
+        AccScheduleOverview.PeriodTypeDefault.SetValue("Analysis Period Type"::Year);
+
+        // [GIVEN] Save the Date Filter.
+        DateFilter := Format(AccScheduleOverview.DateFilter);
+
+        // [VERIFY] Verify Balance should be shown correctly filtered by Range in the Financial Reports.
+        Assert.AreEqual(
+            ExpectedAmount,
+            AccScheduleOverview.ColumnValues1.AsDecimal(),
+            StrSubstNo(BalanceMustBeEqualErr, ExpectedAmount));
+    end;
+
+    [Test]
+    [HandlerFunctions('AllocationAccountPreview,MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure AmtInAllocAccPreviewCantHaveRoundingValueWhereBreakDownAccBalIsZero()
+    var
+        AllocationAccount: Record "Allocation Account";
+        AllocAccountDistribution: array[4] of Record "Alloc. Account Distribution";
+        DimensionValue: array[5] of Record "Dimension Value";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        StatisticalAccount: Record "Statistical Account";
+        AllocationAccountPage: TestPage "Allocation Account";
+        GLAccountNo: Code[20];
+    begin
+        // [SCENARIO 579311] Amount in Allocation Account Preview page cannot have rounding value and 
+        // it is equal to 0 if "Breakdown Account Balance" is 0.
+        Initialize();
+
+        // [GIVEN] Find General Ledger Setup.
+        GeneralLedgerSetup.Get();
+
+        // [GIVEN] Create three Dimension Values for "GLobal Dimension 1 Code".
+        LibraryDimension.CreateDimensionValue(DimensionValue[1], GeneralLedgerSetup."Global Dimension 1 Code");
+        LibraryDimension.CreateDimensionValue(DimensionValue[2], GeneralLedgerSetup."Global Dimension 1 Code");
+        LibraryDimension.CreateDimensionValue(DimensionValue[3], GeneralLedgerSetup."Global Dimension 1 Code");
+
+        // [GIVEN] Create two Dimension Values for "Shortcut Dimension 3 Code".
+        LibraryDimension.CreateDimensionValue(DimensionValue[4], GeneralLedgerSetup."Shortcut Dimension 3 Code");
+        LibraryDimension.CreateDimensionValue(DimensionValue[5], GeneralLedgerSetup."Shortcut Dimension 3 Code");
+
+        // [GIVEN] Create Statistical Account.
+        CreateStatisticalAccount(StatisticalAccount);
+
+        // [GIVEN] Create and Register Statistical Account Journal Lines.
+        CreateAndRegisterStatisticalAccountJournalLines(
+            StatisticalAccount,
+            DimensionValue[1],
+            DimensionValue[2],
+            DimensionValue[3],
+            DimensionValue[4]);
+
+        // [GIVEN] Generate and save GL Account No. in a Variable.
+        GLAccountNo := LibraryERM.CreateGLAccountNo();
+
+        // [GIVEN] Create Allocation Account.
+        CreateAllocationAccount(AllocationAccount);
+
+        // [GIVEN] Create Allocation Account Distribution 1.
+        CreateAllocationAccDistribution(
+            AllocAccountDistribution[1],
+            AllocationAccount,
+            GLAccountNo,
+            StatisticalAccount,
+            DimensionValue[1],
+            DimensionValue[4]);
+
+        // [GIVEN] Create Allocation Account Distribution 2.
+        CreateAllocationAccDistribution(
+            AllocAccountDistribution[2],
+            AllocationAccount,
+            GLAccountNo,
+            StatisticalAccount,
+            DimensionValue[2],
+            DimensionValue[4]);
+
+        // [GIVEN] Create Allocation Account Distribution 3.
+        CreateAllocationAccDistribution(
+            AllocAccountDistribution[3],
+            AllocationAccount,
+            GLAccountNo,
+            StatisticalAccount,
+            DimensionValue[3],
+            DimensionValue[4]);
+
+        // [GIVEN] Create Allocation Account Distribution 4.
+        CreateAllocationAccDistribution(
+            AllocAccountDistribution[4],
+            AllocationAccount,
+            GLAccountNo,
+            StatisticalAccount,
+            DimensionValue[1],
+            DimensionValue[5]);
+
+        // [WHEN] Open Allocation Account Page and run Preview Distribution.
+        AllocationAccountPage.OpenEdit();
+        AllocationAccountPage.GoToRecord(AllocationAccount);
+        AllocationAccountPage.VariableAccountDistribution.PreviewDistributions.Invoke();
+
+        // [THEN] Amount of Allocation Line having 0 Breakdown Account Balance is equal to 0 in AllocationAccountPreview.
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure VerifyStatisticalAccountBalanceWithExcludeAndBalanceAtDate()
+    var
+        StatisticalAccount: Record "Statistical Account";
+        TempStatisticalAccountLedgerEntries: Record "Statistical Ledger Entry" temporary;
+        StatAccountBalance: TestPage "Stat. Account Balance";
+        StatisticalAccountCard: TestPage "Statistical Account Card";
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+        AmountType: Enum "Analysis Amount Type";
+        ClosingEntryFilter: Option Include,Exclude;
+    begin
+        // [SCENARIO 573611] Verify statistical account balance generates with exclude closing entries and view as Balance at date.
+        Initialize();
+
+        // [GIVEN] Create Statistical Account with transactions .
+        CreateStatisticalAccountWithDimensions(StatisticalAccount);
+        CreateTransactions(StatisticalAccount, 4, TempStatisticalAccountLedgerEntries);
+        CreateJournal(StatisticalAccountsJournal, TempStatisticalAccountLedgerEntries);
+
+        RegisterJournal(StatisticalAccountsJournal);
+        StatisticalAccountsJournal.Close();
+
+        // [GIVEN] Open Statistical Account Card
+        StatisticalAccountCard.OpenEdit();
+        StatisticalAccountCard.GoToRecord(StatisticalAccount);
+
+        // [GIVEN] Open Statistical Account Balance
+        StatAccountBalance.Trap();
+        StatisticalAccountCard.StatisticalAccountBalance.Invoke();
+
+        // [WHEN] Set Closing Entries as Exclude and View as Balance at Date
+        StatAccountBalance.ClosingEntryFilter.SetValue(ClosingEntryFilter::Exclude);
+        StatAccountBalance.AmountType.SetValue(AmountType::"Balance at Date");
+
+        // [THEN] No error message should appear.
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler,AvailableStatisticalLedgerEntryListDrillDownHandler')]
+    procedure VerifyStatisticalAccountCreationAndAnalysisView()
+    var
+        AnalysisView: Record "Analysis View";
+        StatisticalAccount: Record "Statistical Account";
+        AnalysisViewCard: TestPage "Analysis View Card";
+        AnalysisViewEntries: TestPage "Analysis View Entries";
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+        StatisticalLedgerEntryList: TestPage "Statistical Ledger Entry List";
+    begin
+        // [SCENARIO] Create Statistical Account, post entries and verify Analysis View
+        Initialize();
+
+        // [GIVEN] Create a new Statistical Account
+        CreateStatisticalAccount(StatisticalAccount);
+
+        // [GIVEN] Create Statistical Account Journal entry
+        StatisticalAccountsJournal.OpenEdit();
+        StatisticalAccountsJournal.New();
+        StatisticalAccountsJournal."Posting Date".SetValue(DMY2Date(1, 1, 2023));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal.Amount.SetValue(1200);
+
+        // [WHEN] Register the journal
+        RegisterJournal(StatisticalAccountsJournal);
+        StatisticalAccountsJournal.Close();
+
+        // [WHEN] Create Analysis View
+        AnalysisViewCard.OpenNew();
+        AnalysisViewCard.Code.SetValue(LibraryRandom.RandText(10));
+        AnalysisViewCard."Account Source".SetValue(AnalysisView."Account Source"::"Statistical Account");
+        AnalysisViewCard."Account Filter".SetValue(StatisticalAccount."No.");
+        AnalysisViewCard."&Update".Invoke();
+        AnalysisViewCard.Close();
+
+        // [WHEN] Open Analysis View Entries page and click amount field
+        AnalysisViewEntries.OpenEdit();
+        AnalysisViewEntries.Filter.SetFilter("Account No.", StatisticalAccount."No.");
+        AnalysisViewEntries.First();
+
+        // [WHEN] Click Amount field to open Statistical Ledger Entry List
+        StatisticalLedgerEntryList.Trap();
+        AnalysisViewEntries.Amount.DrillDown();
+
+        // [THEN] Verify Statistical Ledger Entry List page opens with correct entry
+    end;
+
     local procedure SetupFinancialReport()
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -523,6 +859,13 @@ codeunit 139683 "Statistical Account Test"
         StatisticalAccountsJournal.Register.Invoke();
     end;
 
+    local procedure CancelRegisterJournal(var StatisticalAccountsJournal: TestPage "Statistical Accounts Journal")
+    begin
+        LibraryVariableStorage.Enqueue('register');
+        LibraryVariableStorage.Enqueue(false);
+        StatisticalAccountsJournal.Register.Invoke();
+    end;
+
     local procedure VerifyStatisticalAccountBalances(var StatAccountBalance: TestPage "Stat. Account Balance"; var TempStatisticalAccountLedgerEntries: Record "Statistical Ledger Entry" temporary)
     var
         AnalysisPeriodType: Enum "Analysis Period Type";
@@ -542,7 +885,9 @@ codeunit 139683 "Statistical Account Test"
         I: Integer;
         CurrentDate: Date;
     begin
+#pragma warning disable AA0217
         CurrentDate := CalcDate(StrSubstNo('<-%1D>', NumberOfTransactions + 5), DT2Date(CurrentDateTime()));
+#pragma warning restore AA0217
         for I := 1 to NumberOfTransactions do begin
             TempStatisticalAccountLedgerEntries."Entry No." := TempStatisticalAccountLedgerEntries."Entry No." + 1;
             TempStatisticalAccountLedgerEntries."Posting Date" := CurrentDate;
@@ -758,4 +1103,124 @@ codeunit 139683 "Statistical Account Test"
             until StatisticalAccountJournalLine.Next() = 0;
     end;
 
+    local procedure CreateStatisticalAccount(var StatisticalAccount: array[3] of Record "Statistical Account"; NoOfLines: Integer)
+    var
+        i: Integer;
+    begin
+        for i := 1 to NoOfLines do begin
+            StatisticalAccount[i]."No." := Format(LibraryRandom.RandIntInRange(1000, 1000) + i);
+            StatisticalAccount[i].Name := StatisticalAccount[i]."No.";
+            StatisticalAccount[i].Insert();
+        end;
+    end;
+
+    local procedure CreateStatisticalAccountsJournalAndPost(
+        var StatisticalAccount: array[3] of Record "Statistical Account";
+        NoOfLines: Integer; var Amount: Decimal)
+    var
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+        i: Integer;
+    begin
+        for i := 1 to NoOfLines do begin
+            StatisticalAccountsJournal.OpenEdit();
+            StatisticalAccountsJournal.New();
+            StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+            StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+            StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount[i]."No.");
+            StatisticalAccountsJournal.Amount.SetValue(LibraryRandom.RandIntInRange(1000, 1000));
+            Amount += StatisticalAccountsJournal.Amount.AsDecimal();
+            StatisticalAccountsJournal.Close();
+        end;
+        StatisticalAccountsJournal.OpenEdit();
+        RegisterJournal(StatisticalAccountsJournal);
+    end;
+
+    local procedure CreateAllocationAccount(var AllocationAccount: Record "Allocation Account")
+    begin
+        AllocationAccount.Init();
+        AllocationAccount."No." := LibraryUtility.GenerateRandomCode20(AllocationAccount.FieldNo("No."), Database::"Allocation Account");
+        AllocationAccount.Validate("Account Type", AllocationAccount."Account Type"::Variable);
+        AllocationAccount.Insert(true);
+    end;
+
+    local procedure CreateAndRegisterStatisticalAccountJournalLines(StatisticalAccount: Record "Statistical Account"; DimensionValue: Record "Dimension Value"; DimensionValue2: Record "Dimension Value"; DimensionValue3: Record "Dimension Value"; DimensionValue4: Record "Dimension Value")
+    var
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+    begin
+        StatisticalAccountsJournal.OpenEdit();
+        StatisticalAccountsJournal.New();
+        StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+        StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal."Shortcut Dimension 1 Code".SetValue(DimensionValue.Code);
+        StatisticalAccountsJournal.ShortcutDimCode3.SetValue(DimensionValue4.Code);
+        StatisticalAccountsJournal.Amount.SetValue(83.75);
+
+        StatisticalAccountsJournal.Next();
+        StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+        StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal."Shortcut Dimension 1 Code".SetValue(DimensionValue2.Code);
+        StatisticalAccountsJournal.ShortcutDimCode3.SetValue(DimensionValue4.Code);
+        StatisticalAccountsJournal.Amount.SetValue(25.50);
+
+        StatisticalAccountsJournal.Next();
+        StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+        StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal."Shortcut Dimension 1 Code".SetValue(DimensionValue3.Code);
+        StatisticalAccountsJournal.ShortcutDimCode3.SetValue(DimensionValue4.Code);
+        StatisticalAccountsJournal.Amount.SetValue(26.00);
+        StatisticalAccountsJournal.Close();
+
+        StatisticalAccountsJournal.OpenEdit();
+        RegisterJournal(StatisticalAccountsJournal);
+    end;
+
+    local procedure CreateAllocationAccDistribution(
+        var AllocAccountDistribution: Record "Alloc. Account Distribution";
+        AllocationAccount: Record "Allocation Account";
+        GLAccountNo: Code[20];
+        StatisticalAccount: Record "Statistical Account";
+        DimensionValue: Record "Dimension Value";
+        DimensionValue2: Record "Dimension Value")
+    begin
+        AllocAccountDistribution.Init();
+        AllocAccountDistribution."Allocation Account No." := AllocationAccount."No.";
+        AllocAccountDistribution."Line No." := LibraryUtility.GetNewRecNo(AllocAccountDistribution, AllocAccountDistribution.FieldNo("Line No."));
+        AllocAccountDistribution.Validate("Account Type", AllocAccountDistribution."Account Type"::Variable);
+        AllocAccountDistribution.Validate("Destination Account Type", AllocAccountDistribution."Destination Account Type"::"G/L Account");
+        AllocAccountDistribution.Validate("Destination Account Number", GLAccountNo);
+        AllocAccountDistribution.Validate("Breakdown Account Type", AllocAccountDistribution."Breakdown Account Type"::"Statistical Account");
+        AllocAccountDistribution.Validate("Breakdown Account Number", StatisticalAccount."No.");
+        AllocAccountDistribution.Validate("Calculation Period", AllocAccountDistribution."Calculation Period"::Month);
+        AllocAccountDistribution.Validate("Dimension 1 Filter", DimensionValue.Code);
+        AllocAccountDistribution.Validate("Dimension 3 Filter", DimensionValue2.Code);
+        AllocAccountDistribution.Insert(true);
+    end;
+
+    [ModalPageHandler]
+    procedure StatAccJnlBatcheModalPageHandler(var StatBatch: TestPage "Statistical Acc. Journal Batch")
+    begin
+        StatBatch.Filter.SetFilter(Name, LibraryVariableStorage.DequeueText());
+        StatBatch.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure AvailableStatisticalLedgerEntryListDrillDownHandler(var StatisticalLedgerEntryList: TestPage "Statistical Ledger Entry List")
+    begin
+        Assert.AreEqual('Statistical Account Ledger Entries', StatisticalLedgerEntryList.Caption(), WrongPageErr);
+        StatisticalLedgerEntryList.First();
+        Assert.AreEqual(1200, StatisticalLedgerEntryList.Amount.AsDecimal(), WrongAmountErr);
+    end;
+
+    [PageHandler]
+    procedure AllocationAccountPreview(var AllocationAccountPreviewPage: TestPage "Allocation Account Preview")
+    begin
+        AllocationAccountPreviewPage.AmountToAllocate.SetValue(205.14);
+        AllocationAccountPreviewPage.Next();
+        AllocationAccountPreviewPage.Next();
+        AllocationAccountPreviewPage.Next();
+        AllocationAccountPreviewPage.Amount.AssertEquals(0);
+    end;
 }

@@ -6,6 +6,7 @@
 codeunit 148055 "OIOUBL-Elec. Service Document"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();
@@ -44,19 +45,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
         VatNo := Format(LibraryRandom.RandIntInRange(1000, 99999999));
         Assert.AreEqual('UK' + VatNo, OIOUBLDocumentEncode.GetCustomerVATRegNoIncCustomerCountryCode(VatNo, 'UK'), 'UK addad to VatNo expected');
         Assert.AreEqual('SE' + VatNo, OIOUBLDocumentEncode.GetCustomerVATRegNoIncCustomerCountryCode('SE' + CopyStr(VatNo, 1, 18), 'SE'), 'No extra SE not addad');
-    end;
-
-    [Test]
-    procedure TestGetCompanyVATRegNoOldAndGetCompanyVATRegNoActTheSame();
-    var
-        OIOUBLDocumentEncode: Codeunit "OIOUBL-Document Encode";
-        vatno: Text[20];
-        OldError: Text;
-    begin
-        asserterror vatno := OIOUBLDocumentEncode.GetCompanyVATRegNoOld('12345678901234567890');
-        OldError := GetLastErrorText();
-        asserterror vatno := FORMAT(OIOUBLDocumentEncode.GetCompanyVATRegNo('12345678901234567890'));
-        Assert.AreEqual(OldError, GetLastErrorText(), 'Error should not change');
     end;
 
     [Test]
@@ -1978,9 +1966,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     local procedure MailSetupInitialize()
     var
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
     begin
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
     end;
 
     local procedure UpdateVATPostingSetupPct(var VATPostingSetup: Record "VAT Posting Setup"; NewVATPct: Decimal) OldVATPct: Decimal;

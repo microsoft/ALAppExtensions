@@ -3,49 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Journal;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 
 pageextension 31033 "Purchase Journal CZL" extends "Purchase Journal"
 {
     layout
     {
-#if not CLEAN22
-        modify("VAT Reporting Date")
-        {
-            Visible = ReplaceVATDateEnabled and VATDateEnabled;
-        }
-#endif
-#if not CLEAN22
-        addafter("<Vendor Name>")
-        {
-            field("Posting Group CZL"; Rec."Posting Group")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the posting group that will be used in posting the journal line.The field is used only if the account type is either customer or vendor.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by standard Posting Group field.';
-            }
-        }
-#endif
-#if not CLEAN22
-        addafter("Posting Date")
-        {
-            field("VAT Date CZL"; Rec."VAT Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'VAT Date (Obsolete)';
-                ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by VAT Reporting Date.';
-                Visible = not ReplaceVATDateEnabled;
-            }
-        }
-#endif
         addafter(Correction)
         {
             field("Specific Symbol CZL"; Rec."Specific Symbol CZL")
@@ -97,19 +59,4 @@ pageextension 31033 "Purchase Journal CZL" extends "Purchase Journal"
             }
         }
     }
-#if not CLEAN22
-    trigger OnOpenPage()
-    begin
-        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
-        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
-    end;
-
-    var
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        ReplaceVATDateEnabled: Boolean;
-        VATDateEnabled: Boolean;
-#endif
 }

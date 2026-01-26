@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Clause;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
+using Microsoft.Inventory.Item;
+
 codeunit 5136 "Contoso Posting Setup"
 {
     InherentEntitlements = X;
@@ -5,6 +17,7 @@ codeunit 5136 "Contoso Posting Setup"
     Permissions =
         tabledata "General Posting Setup" = rim,
         tabledata "VAT Posting Setup" = rim,
+        tabledata "VAT Clause" = rim,
         tabledata "Inventory Posting Setup" = rim;
 
     var
@@ -23,6 +36,12 @@ codeunit 5136 "Contoso Posting Setup"
 
     procedure InsertGeneralPostingSetup(GenBusPostingGroup: Code[20]; GenProdPostingGroup: Code[20]; SalesAccount: Code[20]; PurchaseAccount: Code[20]; InventoryAdjustmentAccount: Code[20]; DirectedCostAppliedAcc: Code[20]; OverheadAppliedAcc: Code[20]; PurchaseVarianceAccount: Code[20])
     var
+    begin
+        InsertGeneralPostingSetup(GenBusPostingGroup, GenProdPostingGroup, SalesAccount, PurchaseAccount, InventoryAdjustmentAccount, DirectedCostAppliedAcc, OverheadAppliedAcc, PurchaseVarianceAccount, '', '', '', '', '', '', '');
+    end;
+
+    procedure InsertGeneralPostingSetup(GenBusPostingGroup: Code[20]; GenProdPostingGroup: Code[20]; SalesAccount: Code[20]; PurchaseAccount: Code[20]; InventoryAdjustmentAccount: Code[20]; DirectedCostAppliedAcc: Code[20]; OverheadAppliedAcc: Code[20]; PurchaseVarianceAccount: Code[20]; SalesLineDiscAccount: Code[20]; SalesInvDiscAccount: Code[20]; PurchaselineDiscountAccount: Code[20]; PurchInvDiscAccount: Code[20]; COGSAccount: Code[20]; COGSAccountInterim: Code[20]; InvtAccrualAccInterim: Code[20])
+    var
         GeneralPostingSetup: Record "General Posting Setup";
         Exists: Boolean;
     begin
@@ -37,12 +56,21 @@ codeunit 5136 "Contoso Posting Setup"
         GeneralPostingSetup.Validate("Gen. Prod. Posting Group", GenProdPostingGroup);
 
         GeneralPostingSetup.Validate("Sales Account", SalesAccount);
+        GeneralPostingSetup.Validate("Sales Line Disc. Account", SalesLineDiscAccount);
+        GeneralPostingSetup.Validate("Sales Inv. Disc. Account", SalesInvDiscAccount);
         GeneralPostingSetup.Validate("Sales Credit Memo Account", SalesAccount);
 
         GeneralPostingSetup.Validate("Purch. Account", PurchaseAccount);
+        GeneralPostingSetup.Validate("Purch. Line Disc. Account", PurchaselineDiscountAccount);
+        GeneralPostingSetup.Validate("Purch. Inv. Disc. Account", PurchInvDiscAccount);
         GeneralPostingSetup.Validate("Purch. Credit Memo Account", PurchaseAccount);
 
+        GeneralPostingSetup.Validate("COGS Account", COGSAccount);
+        GeneralPostingSetup.Validate("COGS Account (Interim)", COGSAccountInterim);
+
         GeneralPostingSetup.Validate("Inventory Adjmt. Account", InventoryAdjustmentAccount);
+        GeneralPostingSetup.Validate("Invt. Accrual Acc. (Interim)", InvtAccrualAccInterim);
+
         GeneralPostingSetup.Validate("Direct Cost Applied Account", DirectedCostAppliedAcc);
         GeneralPostingSetup.Validate("Overhead Applied Account", OverheadAppliedAcc);
         GeneralPostingSetup.Validate("Purchase Variance Account", PurchaseVarianceAccount);
@@ -54,6 +82,11 @@ codeunit 5136 "Contoso Posting Setup"
     end;
 
     procedure InsertVATPostingSetup(VATBusinessGroupCode: Code[20]; VATProductGroupCode: Code[20]; SalesVATAccountNo: Code[20]; PurchaseVATAccountNo: Code[20]; VATIdentifier: Code[20]; VATPercentage: Decimal; VATCalculationType: Enum "Tax Calculation Type")
+    begin
+        InsertVATPostingSetup(VATBusinessGroupCode, VATProductGroupCode, SalesVATAccountNo, PurchaseVATAccountNo, VATIdentifier, VATPercentage, VATCalculationType, '', '', '', false);
+    end;
+
+    procedure InsertVATPostingSetup(VATBusinessGroupCode: Code[20]; VATProductGroupCode: Code[20]; SalesVATAccountNo: Code[20]; PurchaseVATAccountNo: Code[20]; VATIdentifier: Code[20]; VATPercentage: Decimal; VATCalculationType: Enum "Tax Calculation Type"; TaxCategory: Code[10]; ReverseChargeVATUnrealAcc: Code[20]; VATClauseCode: Code[20]; EUService: Boolean)
     var
         VATPostingSetup: Record "VAT Posting Setup";
         Exists: Boolean;
@@ -67,7 +100,8 @@ codeunit 5136 "Contoso Posting Setup"
 
         VATPostingSetup.Validate("VAT Bus. Posting Group", VATBusinessGroupCode);
         VATPostingSetup.Validate("VAT Prod. Posting Group", VATProductGroupCode);
-        VATPostingSetup.Validate(Description, StrSubstNo(VATSetupDescTok, VATBusinessGroupCode, VATProductGroupCode));
+        if (VATBusinessGroupCode <> '') or (VATProductGroupCode <> '') then
+            VATPostingSetup.Validate(Description, StrSubstNo(VATSetupDescTok, VATBusinessGroupCode, VATProductGroupCode));
 
         // Need to check if we are changing the VAT Calculation Type before we validate it
         // The validation tries to find VAT Entry no matter we are changing the VAT Calculation Type or not
@@ -83,6 +117,12 @@ codeunit 5136 "Contoso Posting Setup"
             VATPostingSetup.Validate("VAT Identifier", VATIdentifier);
             VATPostingSetup.Validate("VAT %", VATPercentage);
         end;
+        if VATPostingSetup."VAT Calculation Type" = VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT" then
+            VATPostingSetup.Validate("Reverse Chrg. VAT Acc.", ReverseChargeVATUnrealAcc);
+
+        VATPostingSetup.Validate("Tax Category", TaxCategory);
+        VATPostingSetup.Validate("VAT Clause Code", VATClauseCode);
+        VATPostingSetup.Validate("EU Service", EUService);
 
         if Exists then
             VATPostingSetup.Modify(true)
@@ -90,7 +130,28 @@ codeunit 5136 "Contoso Posting Setup"
             VATPostingSetup.Insert(true);
     end;
 
-    procedure InsertInventoryPostingSetup(LocationCode: Code[10]; InventoryPostingGroupCode: Code[20]; InventoryAccount: Code[20]; InventoryAccountInterim: Code[20]; WIPAccount: Code[20]; MaterialVarianceAccount: Code[20]; CapacityVarianceAccount: Code[20]; SubcontractedVarianceAccount: Code[20]; CapOverheadVarianceAccount: Code[20]; MfgOverheadVarianceAccount: Code[20])
+    procedure InsertVATClause(CodeValue: Code[20]; DescriptionValue: Text[250])
+    var
+        VATClause: Record "VAT Clause";
+        Exists: Boolean;
+    begin
+        if VATClause.Get(CodeValue) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        VATClause.Validate(Code, CodeValue);
+        VATClause.Validate(Description, DescriptionValue);
+
+        if Exists then
+            VATClause.Modify(true)
+        else
+            VATClause.Insert(true);
+    end;
+
+    procedure InsertInventoryPostingSetup(LocationCode: Code[10]; InventoryPostingGroupCode: Code[20]; InventoryAccount: Code[20]; InventoryAccountInterim: Code[20]; WIPAccount: Code[20]; MaterialVarianceAccount: Code[20]; CapacityVarianceAccount: Code[20]; SubcontractedVarianceAccount: Code[20]; CapOverheadVarianceAccount: Code[20]; MfgOverheadVarianceAccount: Code[20]; MaterialNonInvVarianceAccount: Code[20])
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";
         Exists: Boolean;
@@ -112,6 +173,7 @@ codeunit 5136 "Contoso Posting Setup"
         InventoryPostingSetup.Validate("Subcontracted Variance Account", SubcontractedVarianceAccount);
         InventoryPostingSetup.Validate("Cap. Overhead Variance Account", CapOverheadVarianceAccount);
         InventoryPostingSetup.Validate("Mfg. Overhead Variance Account", MfgOverheadVarianceAccount);
+        InventoryPostingSetup.Validate("Mat. Non-Inv. Variance Acc.", MaterialNonInvVarianceAccount);
 
         if Exists then
             InventoryPostingSetup.Modify(true)
@@ -119,8 +181,13 @@ codeunit 5136 "Contoso Posting Setup"
             InventoryPostingSetup.Insert(true);
     end;
 
+    procedure InsertInventoryPostingSetup(LocationCode: Code[10]; InventoryPostingGroupCode: Code[20]; InventoryAccount: Code[20]; InventoryAccountInterim: Code[20]; WIPAccount: Code[20]; MaterialVarianceAccount: Code[20]; CapacityVarianceAccount: Code[20]; SubcontractedVarianceAccount: Code[20]; CapOverheadVarianceAccount: Code[20]; MfgOverheadVarianceAccount: Code[20])
+    begin
+        InsertInventoryPostingSetup(LocationCode, InventoryPostingGroupCode, InventoryAccount, InventoryAccountInterim, WIPAccount, MaterialVarianceAccount, CapacityVarianceAccount, SubcontractedVarianceAccount, CapOverheadVarianceAccount, MfgOverheadVarianceAccount, '');
+    end;
+
     procedure InsertInventoryPostingSetup(LocationCode: Code[10]; InventoryPostingGroupCode: Code[20]; InventoryAccount: Code[20]; InventoryAccountInterim: Code[20])
     begin
-        InsertInventoryPostingSetup(LocationCode, InventoryPostingGroupCode, InventoryAccount, InventoryAccountInterim, '', '', '', '', '', '');
+        InsertInventoryPostingSetup(LocationCode, InventoryPostingGroupCode, InventoryAccount, InventoryAccountInterim, '', '', '', '', '', '', '');
     end;
 }

@@ -1,18 +1,18 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Sales.Receivables;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Finance.Dimension;
-using Microsoft.Purchases.Payables;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
 using Microsoft.Finance.Analysis;
-using System.Telemetry;
 using Microsoft.Finance.Currency;
-using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+using System.Telemetry;
 using System.Utilities;
 
 codeunit 1690 "Bank Deposit-Post"
@@ -42,6 +42,7 @@ codeunit 1690 "Bank Deposit-Post"
         PostingDate: Date;
         DocumentType: Enum "Gen. Journal Document Type";
         TotalAmountLCY: Decimal;
+        ShowDialog: Boolean;
     begin
         FeatureTelemetry.LogUptake('0000IG4', 'Bank Deposit', Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000IG5', 'Bank Deposit', 'Bank deposit posted');
@@ -101,8 +102,6 @@ codeunit 1690 "Bank Deposit-Post"
 
         if GenJournalLine.Count() = 0 then
             Error(EmptyDepositErr);
-        if Rec."Post as Lump Sum" and (GenJournalLine.Count() = 1) then
-            Rec."Post as Lump Sum" := false;
 
         TotalAmountLCY := ModifyGenJournalLinesForBankDepositPosting(Rec, GenJournalTemplate."Force Doc. Balance");
         if Rec."Post as Lump Sum" then
@@ -115,7 +114,11 @@ codeunit 1690 "Bank Deposit-Post"
         Commit();
         BankDepositPost.SetCurrentDeposit(Rec);
         BindSubscription(BankDepositPost);
-        GenJnlPostBatch.Run(GenJournalLine);
+        if not GenJnlPostBatch.Run(GenJournalLine) then begin
+            CleanPostedBankDepositHeaderAndLines(Rec."No.");
+            Commit();
+            Error(GetLastErrorText());
+        end;
         UnbindSubscription(BankDepositPost);
         if Rec."Post as Lump Sum" then begin
             BankDepositPost.GetLumpSumBalanceEntry(GLEntry);
@@ -135,9 +138,11 @@ codeunit 1690 "Bank Deposit-Post"
 
         UpdateAnalysisView.UpdateAll(0, true);
 
-        OnAfterBankDepositPost(Rec, PostedBankDepositHeader);
+        ShowDialog := true;
+        OnAfterBankDepositPost(Rec, PostedBankDepositHeader, ShowDialog);
 
-        Page.Run(Page::"Posted Bank Deposit", PostedBankDepositHeader);
+        if ShowDialog then
+            Page.Run(Page::"Posted Bank Deposit", PostedBankDepositHeader);
     end;
 
     local procedure InsertLumpSumGenJournalLine(BankDepositHeader: Record "Bank Deposit Header"; DocumentType: Enum "Gen. Journal Document Type"; DocumentDate: Date; TotalAmountLCY: Decimal)
@@ -184,6 +189,15 @@ codeunit 1690 "Bank Deposit-Post"
         exit(GenJournalLine."Line No.");
     end;
 
+    internal procedure GetAppliesToIDForLine(BankDepositHeaderNo: Code[20]; GenJournalLineNo: Integer): Code[50]
+    var
+        DummyGenJournalLine: Record "Gen. Journal Line";
+        AppliesToID: Text;
+    begin
+        AppliesToID := StrSubstNo(AppliesToIDTxt, BankDepositHeaderNo, GenJournalLineNo);
+        exit(CopyStr(AppliesToID, 1, MaxStrLen(DummyGenJournalLine."Applies-to ID")));
+    end;
+
     local procedure ModifyGenJournalLinesForBankDepositPosting(BankDepositHeader: Record "Bank Deposit Header"; ForceDocumentNo: Boolean) TotalAmountLCY: Decimal
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -202,6 +216,8 @@ codeunit 1690 "Bank Deposit-Post"
                 GenJournalLine."Bal. Account Type" := GenJournalLine."Bal. Account Type"::"Bank Account";
                 GenJournalLine."Bal. Account No." := BankDepositHeader."Bank Account No.";
             end;
+            if GenJournalLine."Credit Amount" < 0 then
+                GenJournalLine.Correction := false;
             GenJournalLine.Validate(Amount);
             AssignVATDateIfEmpty(GenJournalLine);
             TotalAmountLCY += GenJournalLine."Amount (LCY)";
@@ -215,7 +231,8 @@ codeunit 1690 "Bank Deposit-Post"
         GenJournalLine."Source Type" := GenJournalLine."Source Type"::"Bank Account";
         GenJournalLine."Source No." := BankDepositHeader."Bank Account No.";
         GenJournalLine."Source Currency Code" := BankDepositHeader."Currency Code";
-        GenJournalLine."Reason Code" := BankDepositHeader."Reason Code";
+        if BankDepositHeader."Reason Code" <> '' then
+            GenJournalLine."Reason Code" := BankDepositHeader."Reason Code";
         GenJournalLine."Source Currency Amount" := SourceCurrencyAmount;
     end;
 
@@ -301,17 +318,11 @@ codeunit 1690 "Bank Deposit-Post"
     local procedure SetBalancingEntryToPostedDepositLines(BankDepositHeader: Record "Bank Deposit Header"; GLEntry: Record "G/L Entry")
     var
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
-#if not CLEAN24
-        GenJournalLine: Record "Gen. Journal Line";
-#endif
     begin
         PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
         PostedBankDepositLine.FindSet();
         repeat
             PostedBankDepositLine."Bank Account Ledger Entry No." := GLEntry."Entry No.";
-#if not CLEAN24
-            OnBeforePostedBankDepositLineModify(PostedBankDepositLine, GenJournalLine);
-#endif
             PostedBankDepositLine.Modify();
         until PostedBankDepositLine.Next() = 0;
     end;
@@ -334,6 +345,7 @@ codeunit 1690 "Bank Deposit-Post"
         StatusTxt: Label 'Status        #4###################\', Comment = '#4 - a number (progress indicator)';
         MovingToHistoryTxt: Label 'Moving Bank Deposit to History';
         PostingLinesToLedgersTxt: Label 'Posting Lines to Ledgers';
+        AppliesToIDTxt: Label '%1-%2', Comment = '%1 - Bank Deposit No., %2 - Line No.';
 
     local procedure CopyBankComments(BankDepositHeader: Record "Bank Deposit Header")
     var
@@ -392,6 +404,29 @@ codeunit 1690 "Bank Deposit-Post"
         end;
     end;
 
+    local procedure CleanPostedBankDepositHeaderAndLines(BankDepositNo: Code[20])
+    var
+        BankAccCommentLine: Record "Bank Acc. Comment Line";
+        PostedBankDepositHeaderLocal: Record "Posted Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCleanPostedBankDepositHeaderAndLines(BankDepositNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositNo);
+        PostedBankDepositLine.DeleteAll();
+        if not PostedBankDepositHeaderLocal.Get(BankDepositNo) then
+            exit;
+        BankAccCommentLine.SetRange("Table Name", BankAccCommentLine."Table Name"::"Posted Bank Deposit Header");
+        BankAccCommentLine.SetRange("Bank Account No.", PostedBankDepositHeaderLocal."Bank Account No.");
+        BankAccCommentLine.SetRange("No.", PostedBankDepositHeaderLocal."No.");
+        BankAccCommentLine.DeleteAll();
+        PostedBankDepositHeaderLocal.Delete();
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnBeforePostGenJnlLine', '', false, false)]
     local procedure OnBeforePostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; CommitIsSuppressed: Boolean; var Posted: Boolean; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var PostingGenJournalLine: Record "Gen. Journal Line")
     begin
@@ -400,6 +435,14 @@ codeunit 1690 "Bank Deposit-Post"
             exit;
         end;
         OnBeforePostGenJournalLine(PostingGenJournalLine, CurrentBankDepositHeader, GenJnlPostLine);
+    end;
+
+    // For deposits (revenue, payments) and  not for registering expenses, which you're supposed to keep separate from deposits (according to GAAPs)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnBeforeCheckGenPostingType', '', false, false)]
+    local procedure OnBeforeCheckGenPostingType(GenJnlLine: Record "Gen. Journal Line"; AccountType: Enum "Gen. Journal Account Type"; var IsHandled: Boolean)
+    begin
+        if CurrentBankDepositHeader."Post as Lump Sum" then
+            IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnAfterPostGenJnlLine', '', false, false)]
@@ -411,7 +454,7 @@ codeunit 1690 "Bank Deposit-Post"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
     begin
-        if (CurrentBankDepositHeader."Post as Lump Sum") and (GenJournalLine.Amount = CurrentBankDepositHeader."Total Deposit Amount") then begin
+        if (CurrentBankDepositHeader."Post as Lump Sum") and (GenJournalLine."Account Type" = GenJournalLine."Account Type"::"Bank Account") and (GenJournalLine.Amount = CurrentBankDepositHeader."Total Deposit Amount") then begin
             OnAfterPostBalancingEntry(PostingGenJournalLine);
             OnRunOnAfterPostBalancingEntry(PostingGenJournalLine);
             SetLumpSumBalanceEntry(PostingGenJournalLine);
@@ -427,12 +470,14 @@ codeunit 1690 "Bank Deposit-Post"
         PostedBankDepositLine."Document No." := PostingGenJournalLine."Document No.";
         PostedBankDepositLine.Description := PostingGenJournalLine.Description;
         PostedBankDepositLine."Currency Code" := PostingGenJournalLine."Currency Code";
-        PostedBankDepositLine.Amount := PostingGenJournalLine."Credit Amount";
+        PostedBankDepositLine.Amount := -PostingGenJournalLine.Amount;
         PostedBankDepositLine."Posting Group" := PostingGenJournalLine."Posting Group";
         PostedBankDepositLine."Shortcut Dimension 1 Code" := PostingGenJournalLine."Shortcut Dimension 1 Code";
         PostedBankDepositLine."Shortcut Dimension 2 Code" := PostingGenJournalLine."Shortcut Dimension 2 Code";
         PostedBankDepositLine."Dimension Set ID" := PostingGenJournalLine."Dimension Set ID";
         PostedBankDepositLine."Posting Date" := CurrentBankDepositHeader."Posting Date";
+        PostedBankDepositLine."External Document No." := PostingGenJournalLine."External Document No.";
+        PostedBankDepositLine."Reason Code" := PostingGenJournalLine."Reason Code";
         case PostingGenJournalLine."Account Type" of
             PostingGenJournalLine."Account Type"::"G/L Account",
             PostingGenJournalLine."Account Type"::"Bank Account":
@@ -465,7 +510,7 @@ codeunit 1690 "Bank Deposit-Post"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterBankDepositPost(BankDepositHeader: Record "Bank Deposit Header"; var PostedBankDepositHeader: Record "Posted Bank Deposit Header")
+    local procedure OnAfterBankDepositPost(BankDepositHeader: Record "Bank Deposit Header"; var PostedBankDepositHeader: Record "Posted Bank Deposit Header"; var ShowDialog: Boolean)
     begin
     end;
 
@@ -499,13 +544,6 @@ codeunit 1690 "Bank Deposit-Post"
     begin
     end;
 
-#if not CLEAN24
-    [Obsolete('Posted Bank Deposit Lines are not modified after created anymore, they are created with the required information. Adapt the logic to use OnBeforePostedBankDepositLineInsert. This procedure is only called when setting the balancing entries to all the posted deposit lines and GenJournalLine is meaningless.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostedBankDepositLineModify(var PostedBankDepositLine: Record "Posted Bank Deposit Line"; GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnRunOnAfterPostBalancingEntry(var GenJournalLine: Record "Gen. Journal Line")
@@ -516,7 +554,11 @@ codeunit 1690 "Bank Deposit-Post"
     local procedure OnRunOnBeforeGenJournalLineDeleteAll(var BankDepositHeader: Record "Bank Deposit Header"; var PostedBankDepositLine: Record "Posted Bank Deposit Line"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
-}
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCleanPostedBankDepositHeaderAndLines(var BankDepositNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+}
 
 

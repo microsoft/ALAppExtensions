@@ -59,7 +59,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         TempBlob: Codeunit "Temp Blob";
         FileOutStream: OutStream;
-        FileName: Text[250];
+        FileName: Text;
     begin
         TempBlob.CreateOutStream(FileOutStream);
         CreateXML(SalesInvoiceHeader, FileOutStream);
@@ -70,6 +70,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         OIOUBLManagement.UpdateRecordExportBuffer(SalesInvoiceHeader.RecordId(), TempBlob, FileName);
 
         OIOUBLManagement.ExportXMLFile(SalesInvoiceHeader."No.", TempBlob, SalesSetup."OIOUBL-Invoice Path", FileName);
+        OnExportXMLOnAfterExportXMLFile(SalesInvoiceHeader, TempBlob, FileName);
 
         SalesInvHeader2.Get(SalesInvoiceHeader."No.");
         SalesInvHeader2."OIOUBL-Electronic Invoice Created" := true;
@@ -157,12 +158,20 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             if SalesSetup."Document No. as Ext. Doc. No." then
                 ExternalDocumentNo := SalesInvoiceHeader."No.";
         end;
-        if SalesInvoiceHeader."Order No." <> '' then
-            OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
-              ExternalDocumentNo, '', CalcDate('<0D>'))
-        else
-            OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
+
+        case true of
+            SalesInvoiceHeader."Order No." <> '':
+                OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
+                  ExternalDocumentNo, '', CalcDate('<0D>'));
+
+            SalesInvoiceHeader."Prepayment Order No." <> '':
+                OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
+                  ExternalDocumentNo, SalesInvoiceHeader."Prepayment Order No.", CalcDate('<0D>'))
+            else
+                OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
               ExternalDocumentNo, '', CalcDate('<0D>'));
+        end;
+
         InvoiceLineElement.Add(OrderLineReferenceElement);
     end;
 
@@ -224,6 +233,8 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             Round((SalesInvoiceLine.Amount + SalesInvoiceLine."Inv. Discount Amount") / SalesInvoiceLine.Quantity, Currency."Unit-Amount Rounding Precision"),
             SalesInvoiceLine."Unit of Measure Code", CurrencyCode);
 
+
+        OnExportXMLOnAfterInsertInvoiceLine(InvoiceLineElement, SalesInvoiceHeader, SalesInvoiceLine, CurrencyCode);
         InvoiceElement.Add(InvoiceLineElement);
     end;
 
@@ -267,6 +278,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         SalesInvLine.SETFILTER(Type, '>%1', 0);
         SalesInvLine.SETFILTER("No.", '<>%1', ' ');
         SalesInvLine.SETFILTER(Quantity, '<>0');
+        OnCreateXMLOnAfterSalesInvLineSetFilters(SalesInvLine, SalesInvoiceHeader);
         if NOT SalesInvLine.FINDSET() then
             EXIT;
 
@@ -485,4 +497,20 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
     local procedure OnCreateXMLOnAfterInsertInvoiceTypeCode(var XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnAfterSalesInvLineSetFilters(var SalesInvoiceLine: Record "Sales Invoice Line"; SalesInvoiceHeader: Record "Sales Invoice Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportXMLOnAfterExportXMLFile(var SalesInvoiceHeader: Record "Sales Invoice Header"; var TempBlob: Codeunit "Temp Blob"; FileName: Text)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportXMLOnAfterInsertInvoiceLine(var InvoiceLineElement: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceLine: Record "Sales Invoice Line"; CurrencyCode: Code[10])
+    begin
+    end;
+
 }

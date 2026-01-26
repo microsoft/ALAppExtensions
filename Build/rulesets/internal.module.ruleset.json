@@ -3,8 +3,8 @@
   "description": "This ruleset applies to internal modules. Internal modules are not shipped separately, they are part of larger apps that do ship.",
   "generalAction": "Error",
   "includedRuleSets": [
-    {    
-      "action": "Default", 
+    {
+      "action": "Default",
       "path": "./ruleset.json"
     }
   ],

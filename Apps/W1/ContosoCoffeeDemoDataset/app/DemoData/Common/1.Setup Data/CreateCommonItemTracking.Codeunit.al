@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Common;
+
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5144 "Create Common Item Tracking"
 {
     InherentEntitlements = X;
@@ -7,8 +16,8 @@ codeunit 5144 "Create Common Item Tracking"
     var
         ContosoItem: Codeunit "Contoso Item";
     begin
-        ContosoItem.InsertItemTrackingCode(LotSpecificTrackingCode(), LOTWMSpecifictrackingLbl, false, true, false, false);
-        ContosoItem.InsertItemTrackingCode(SNSpecificTrackingCode(), SNProdSpecificTrackingLbl, true, false, false, false);
+        ContosoItem.InsertItemTrackingCode(LotSpecificTrackingCode(), LOTWMSpecifictrackingLbl, false, true, false, false, false, false);
+        ContosoItem.InsertItemTrackingCode(SNSpecificTrackingCode(), SNProdSpecificTrackingLbl, true, false, false, false, false, false);
     end;
 
     var

@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.FADepreciation;
 
-using Microsoft.FixedAssets.Ledger;
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
 using Microsoft.FixedAssets.Maintenance;
 
 table 18633 "Fixed Asset Shift"
@@ -185,14 +185,22 @@ table 18633 "Fixed Asset Shift"
                 ModifyDeprFields();
             end;
         }
+#if not CLEANSCHEMA26
         field(13; "FA Posting Group"; Code[10])
         {
             Caption = 'FA Posting Group';
             DataClassification = CustomerContent;
-            ObsoleteState = Pending;
             ObsoleteReason = 'New field introduced as Fixed Asset Posting Group';
+#if CLEAN26
+            ObsoleteState = Removed;
+#pragma warning disable AS0072
+            ObsoleteTag = '26.0';
+#pragma warning restore AS0072
+#else
+            ObsoleteState = Pending;
             ObsoleteTag = '23.0';
-
+#endif
+#endif
             trigger OnValidate()
             begin
                 ModifyDeprFields();

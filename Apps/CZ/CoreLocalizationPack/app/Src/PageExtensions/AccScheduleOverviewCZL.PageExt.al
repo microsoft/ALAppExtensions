@@ -25,7 +25,7 @@ pageextension 11798 "Acc. Schedule Overview CZL" extends "Acc. Schedule Overview
                     var
                         AccSchedExtensionMgtCZL: Codeunit "Acc. Sched. Extension Mgt. CZL";
                     begin
-                        AccSchedExtensionMgtCZL.CreateResults(Rec, CurrentColumnName, false);
+                        AccSchedExtensionMgtCZL.CreateResults(Rec, TempFinancialReport."Financial Report Column Group", false);
                     end;
                 }
                 action("Results CZL")

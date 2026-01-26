@@ -10,10 +10,8 @@ codeunit 139590 TestRunner
     var
         ImgAnalyzerMgtTest: Codeunit "Img. Analyzer Mgt. Test";
         ItemAttrPopulateTest: Codeunit "Item Attr Populate Test";
-        ContactPicAnalyzerTest: Codeunit "Contact Pic Analyzer Test";
     begin
         ImgAnalyzerMgtTest.Run();
         ItemAttrPopulateTest.Run();
-        ContactPicAnalyzerTest.Run();
     end;
 }

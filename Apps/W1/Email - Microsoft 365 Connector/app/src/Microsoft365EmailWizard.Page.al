@@ -10,7 +10,7 @@ namespace System.Email;
 /// </summary>
 page 4504 "Microsoft 365 Email Wizard"
 {
-    Caption = 'Setup Microsoft 365 Email Account';
+    Caption = 'Set up Microsoft 365 email account';
     SourceTable = "Email - Outlook Account";
     Permissions = tabledata "Email - Outlook Account" = rimd;
     PageType = NavigatePage;
@@ -25,7 +25,7 @@ page 4504 "Microsoft 365 Email Wizard"
             group(Header)
             {
                 ShowCaption = false;
-                InstructionalText = 'Enter the email address of your shared mailbox in the Microsoft 365 admin center.';
+                InstructionalText = 'Enter the email address of your mailbox in the Microsoft 365 admin center.';
 
                 field(LearnMoreAboutSharedAccount; LearnMoreTok)
                 {
@@ -46,7 +46,7 @@ page 4504 "Microsoft 365 Email Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Account Name';
-                ToolTip = 'The name of the account.';
+                ToolTip = 'Specifies the name of the account.';
                 ShowMandatory = true;
                 NotBlank = true;
 
@@ -117,7 +117,10 @@ page 4504 "Microsoft 365 Email Wizard"
                 InFooterBar = true;
 
                 trigger OnAction()
+                var
+                    EmailAccount: Codeunit "Email Account";
                 begin
+                    EmailAccount.ValidateEmailAddress(Rec."Email Address", false);
                     CreateAccount := true;
                     CurrPage.Close();
                 end;
@@ -146,7 +149,7 @@ page 4504 "Microsoft 365 Email Wizard"
 
     local procedure EvaluateNext()
     begin
-        IsNextEnabled := (Rec.Name <> '') and (Rec."Email Address" <> '');
+        IsNextEnabled := (Rec.Name <> '');
     end;
 
     internal procedure IsAccountCreated(): Boolean

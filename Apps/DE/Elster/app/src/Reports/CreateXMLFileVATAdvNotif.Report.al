@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 report 11016 "Create XML-File VAT Adv.Notif."
 {
@@ -45,6 +46,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
                 if GuiAllowed() then
                     Window.Update(1, CalcTaxAmountMsg);
                 VATStmtName.SetRange("Sales VAT Adv. Notif.", true);
+                OnAfterGetRecordOnAfterVATStmtNameSetFilters("Sales VAT Advance Notif.", VATStmtName);
                 VATStmtName.FindFirst();
                 CheckDate("Starting Date");
                 CheckVATNo(PosTaxOffice, NumberTaxOffice, PosArea, NumberArea, PosDistinction, NumberDistinction);
@@ -328,6 +330,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         end;
         if not AddElement(XmlRootElem, XmlElemNew, 'Steuerfall', '', XmlNameSpace) then
             exit;
+        OnAddUseDataOnAfterAddSteuerfallElement(XMLRootElem, XMLElemNew, XMLNameSpace);
         XmlRootElem := XmlElemNew;
         if not AddElement(XmlRootElem, XmlElemNew, 'Umsatzsteuervoranmeldung', '', XmlNameSpace) then
             exit;
@@ -528,12 +531,15 @@ report 11016 "Create XML-File VAT Adv.Notif."
             end;
         end;
     end;
-#if not CLEAN23
-    [Obsolete('Removing with local function.', '23.0')]
+
     [IntegrationEvent(false, false)]
-    local procedure OnGetProductVersion(var ProductVersion: Text)
+    local procedure OnAfterGetRecordOnAfterVATStmtNameSetFilters(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif."; var VATStatementName: Record "VAT Statement Name")
     begin
     end;
-#endif
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAddUseDataOnAfterAddSteuerfallElement(var XMLRootElem: XMLElement; XMLElemNew: XmlElement; XMLNameSpace: Text)
+    begin
+    end;
 }
 

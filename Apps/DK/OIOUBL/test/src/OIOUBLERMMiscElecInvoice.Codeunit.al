@@ -5,6 +5,7 @@
 codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();
@@ -29,7 +30,6 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         ElecDocumentType: Option "Fin. Charge Memo","Reminder","Sales Invoice","Service Invoice";
         ContactEmptyErr: Label 'Contact must have a value';
         AccountCodeTxt: Label 'Account Code';
-        BlankLCYCodeErr: Label 'LCY Code must have a value in General Ledger Setup: Primary Key=. It cannot be zero or empty.';
         cbcNameCapTxt: Label 'cbc:Name';
         cbcPercentCapTxt: Label 'cbc:Percent';
         cbcAmountInclTaxCapTxt: Label 'cbc:TaxInclusiveAmount';
@@ -360,7 +360,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     begin
         // Verify error while creating Electronic Service Invoice with blank LCY Code on G/L Setup.
         Initialize();
-        PostServiceOrderAndCreateElecServiceInvoice('', BlankLCYCodeErr);
+        PostServiceOrderAndCreateElecServiceInvoice('', '');
     end;
 
     [Test]
@@ -373,6 +373,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 
     local procedure PostServiceOrderAndCreateElecServiceInvoice(LCYCode: Code[10]; ExpectedError: Text[1024]);
     var
+        GLSetup: Record "General Ledger Setup";
         DocumentNo: Code[20];
     begin
         // Setup: Update LCY Code on G/L Setup, create and post Serive Order.
@@ -383,7 +384,10 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         asserterror CreateElecServiceInvoicesDocument(DocumentNo);
 
         // Verify: Verify LCY Code error while creating Electronic Service Invoice.
-        Assert.ExpectedError(ExpectedError);
+        if ExpectedError = '' then
+            Assert.ExpectedTestFieldError(GLSetup.FieldCaption("LCY Code"), '')
+        else
+            Assert.ExpectedError(ExpectedError);
     end;
 
     [Test]
@@ -699,33 +703,6 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         Currency.InitRoundingPrecision();
         UnitPrice := Round(SalesInvLine.Amount / SalesInvLine.Quantity, Currency."Unit-Amount Rounding Precision");
         VerifyNodeDecimalValue('cbc:PriceAmount', UnitPrice);
-    end;
-
-    [Test]
-    [HandlerFunctions('MessageHandler')]
-    procedure ElectronicCrMemoWithUnitPriceMoreThanTwoDecimal();
-    var
-        SalesHeader: Record "Sales Header";
-        SalesCrMemoLine: Record "Sales Cr.Memo Line";
-        DocumentNo: Code[20];
-    begin
-        // Verify XML data after Create Electronic Credit Memos for Item with more than two decimal digits in Unit Price.
-
-        // Setup:  Create and Post Sales Credit Memo.
-        Initialize();
-        DocumentNo :=
-          CreateAndPostSalesDocument(SalesHeader, CreateCustomer(''), SalesHeader."Document Type"::"Credit Memo",
-            CreateItemWithUnitPrice(), LibraryRandom.RandDec(10, 2), false);  // Using Random value for VAT%.
-        SalesCrMemoLine.SetRange("Document No.", DocumentNo);
-        SalesCrMemoLine.FindFirst();
-
-        // Exercise: Run Create Electronic Credit Memo Report.
-        CreateElectronicCreditMemoDocument(DocumentNo);
-
-        // Verify: Verify ID and Issue Date for Create Electronic Credit Memos Report.
-        VerifyElectronicDocumentData(DocumentNo, SalesHeader."Document Date");
-        // Verify: Verify Unit Price on document matches Unit Price on Electronic Document
-        VerifyNodeDecimalValue('cbc:PriceAmount', SalesCrMemoLine."Unit Price");
     end;
 
     [Test]
@@ -1730,6 +1707,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         GeneralLedgerSetup.GET();
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.VALIDATE("LCY Code", LCYCode);
         GeneralLedgerSetup.MODIFY(true);
     end;

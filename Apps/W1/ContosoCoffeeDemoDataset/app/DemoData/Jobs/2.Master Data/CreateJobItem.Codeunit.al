@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Jobs;
+
+using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Item;
+
 codeunit 5192 "Create Job Item"
 {
     InherentEntitlements = X;
@@ -24,6 +35,8 @@ codeunit 5192 "Create Job Item"
     begin
         JobsDemoDataSetup.Get();
 
+        CreatePostingSetup();
+
         if JobsDemoDataSetup."Item Machine No." = '' then begin
             ContosoItem.InsertInventoryItem(ItemMachine(), MachineDescTok, ContosoUtilities.AdjustPrice(2400), ContosoUtilities.AdjustPrice(1800), CommonPostingGroup.Retail(), CommonPostingGroup.NonTaxable(), CommonPostingGroup.Resale(), Enum::"Costing Method"::FIFO, CommonUoM.Piece(), '', 0.75, '', JobsMedia.GetMachine1Picture());
             JobsDemoDataSetup.Validate("Item Machine No.", ItemMachine());
@@ -45,6 +58,17 @@ codeunit 5192 "Create Job Item"
         end;
 
         JobsDemoDataSetup.Modify(true);
+    end;
+
+    local procedure CreatePostingSetup()
+    var
+        JobsModuleSetup: Record "Jobs Module Setup";
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+        CommonGLAccount: Codeunit "Create Common GL Account";
+        CommonPostingGroup: Codeunit "Create Common Posting Group";
+    begin
+        JobsModuleSetup.Get();
+        ContosoPostingSetup.InsertInventoryPostingSetup(JobsModuleSetup."Job Location", CommonPostingGroup.Resale(), CommonGLAccount.Resale(), CommonGLAccount.ResaleInterim());
     end;
 
     procedure ItemMachine(): Code[20]

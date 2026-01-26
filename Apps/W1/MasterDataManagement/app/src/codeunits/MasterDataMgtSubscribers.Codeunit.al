@@ -1,21 +1,22 @@
 namespace Microsoft.Integration.MDM;
 
-using System.Threading;
-using System.Telemetry;
-using System.Environment;
-using System.Reflection;
-using System.IO;
-using System.Environment.Configuration;
-using Microsoft.Integration.Dataverse;
-using Microsoft.CRM.Contact;
-using Microsoft.Sales.Customer;
-using Microsoft.CRM.BusinessRelation;
-using Microsoft.Purchases.Vendor;
-using Microsoft.CRM.Setup;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Inventory.Item;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.SyncEngine;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Utilities;
+using System.Environment;
+using System.Environment.Configuration;
+using System.IO;
+using System.Reflection;
+using System.Telemetry;
+using System.Threading;
 
 codeunit 7237 "Master Data Mgt. Subscribers"
 {
@@ -23,13 +24,16 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     Permissions = tabledata "Master Data Mgt. Coupling" = rm,
                   tabledata "Integration Field Mapping" = r,
                   tabledata "Integration Table Mapping" = rm,
+                  tabledata "Tenant Media" = imd,
+                  tabledata "Tenant Media Set" = imd,
+                  tabledata "Tenant Media Thumbnails" = imd,
                   tabledata "Integration Synch. Job" = r,
                   tabledata "Job Queue Entry" = rmd,
                   tabledata "Master Data Management Setup" = r;
 
     var
         ValueWillBeOverwrittenErr: label 'Record %2 was modified locally since the last synchronization and a different value for field %1 (%3) is synchronizing from the source record.\\Before retrying, open Synchronization Tables, select %4, choose action Fields and either disable the synchronization of %1 or set it up to overwrite local changes. Alternatively, choose to overwrite local changes on synchronization table %4.', Comment = '%1 - a field caption, %2 - a record identifier, %3 - a field value (any value), %4 - table caption';
-        UnsupportedKeyLengthErr: label 'Table %1 has a primary key that consists of %2 fields. Synchronization engine doesn''t support renaming with primary key length of more than 5 fields.\\Before retrying, open Synchronization Tables, select %1, choose Synchronization Fields and disable the synchronization of its primary key fields.', Comment = '%1 - a table caption, %2 - an integer';
+        UnsupportedKeyLengthErr: label 'Table %1 has a primary key that consists of %2 fields. Off-the page, synchronization engine doesn''t support renaming with primary key length of more than 10 fields.\\Subscribe to event OnRenameDestination in codeunit "Master Data Management" to implement the rename.', Comment = '%1 - a table caption, %2 - an integer';
         MappingDoesNotAllowDirectionErr: label 'The only supported direction for the data synchronization is %1.', Comment = '%1 - a text: From Integration Table';
         RunningFullSynchTelemetryTxt: Label 'Running full synch job for table mapping %1', Locked = true;
         SetContactNoFromSourceCompanyTxt: Label 'For %1 %2, initialized company contact No. to be equal the No. of the company contact from the source company %3.', Locked = true;
@@ -78,7 +82,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                     JobQueueEntry.Status := JobQueueEntry.Status::"On Hold with Inactivity Timeout"
             end else
                 JobQueueEntry.Status := JobQueueEntry.Status::Ready;
-            FeatureTelemetry.LogUsage('0000JIR', MasterDataManagement.GetFeatureName(), '');
+            FeatureTelemetry.LogUptake('0000OUA', MasterDataManagement.GetFeatureName(), Enum::"Feature Uptake Status"::Used);
             if IntegrationTableMapping.IsFullSynch() then begin
                 Session.LogMessage('0000JIS', StrSubstNo(RunningFullSynchTelemetryTxt, IntegrationTableMapping.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
                 OriginalIntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
@@ -104,6 +108,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
     local procedure CleanupSetupAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
     var
+        MasterDataMgtSubscriber: Record "Master Data Mgt. Subscriber";
         MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
         MasterDataManagementSetup: Record "Master Data Management Setup";
     begin
@@ -111,6 +116,8 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         MasterDataMgtCoupling.DeleteAll();
         MasterDataManagementSetup.ChangeCompany(NewCompanyName);
         MasterDataManagementSetup.DeleteAll();
+        MasterDataMgtSubscriber.ChangeCompany(NewCompanyName);
+        MasterDataMgtSubscriber.DeleteAll();
     end;
 
     internal procedure HandleOnFindingIfJobNeedsToBeRun(var Sender: Record "Job Queue Entry"; var Result: Boolean)
@@ -120,6 +127,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         MasterDataManagement: Codeunit "Master Data Management";
         RecRef: RecordRef;
         IsHandled: Boolean;
+        SourceCompanyName: Text[30];
     begin
         if Result then
             exit;
@@ -130,7 +138,10 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                 MasterDataManagement.OnSetIntegrationTableFilter(IntegrationTableMapping, RecRef, IsHandled);
                 if not IsHandled then begin
                     RecRef.Open(IntegrationTableMapping."Integration Table ID", false);
-                    RecRef.ChangeCOmpany(MasterDataManagementSetup."Company Name");
+                    MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, IntegrationTableMapping."Integration Table ID");
+                    if SourceCompanyName = '' then
+                        SourceCompanyName := MasterDataManagementSetup."Company Name";
+                    RecRef.ChangeCompany(SourceCompanyName);
                     IntegrationTableMapping.SetIntRecordRefFilter(RecRef);
                 end;
                 if not RecRef.IsEmpty() then
@@ -187,6 +198,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         MasterDataManagement: Codeunit "Master Data Management";
         PageManagement: Codeunit "Page Management";
         RecRef: RecordRef;
+        SourceCompanyName: Text[30];
     begin
         if not MasterDataManagement.IsEnabled() then
             exit;
@@ -198,7 +210,10 @@ codeunit 7237 "Master Data Mgt. Subscribers"
             exit;
 
         RecRef.Open(RecordId.TableNo);
-        RecRef.ChangeCompany(MasterDataManagementSetup."Company Name");
+        MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, RecordId.TableNo);
+        if SourceCompanyName = '' then
+            SourceCompanyName := MasterDataManagementSetup."Company Name";
+        RecRef.ChangeCompany(SourceCompanyName);
         IsHandled := RecRef.Get(RecordId);
         PageManagement.PageRun(RecRef);
     end;
@@ -217,7 +232,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         MasterDataManagement: Codeunit "Master Data Management";
         TypeHelper: Codeunit "Type Helper";
         DestinationRecordRef: RecordRef;
-        OriginalDestinationFieldValue: Variant;
+        OriginalDestinationFieldValue, DestinationFieldValue : Variant;
         EmptyGuid: Guid;
         SourceValue: Text;
         DestinationRecCreatedAt: DateTime;
@@ -258,12 +273,24 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                     ValueWillBeOverwritten := TypeHelper.CompareDateTime(DestinationRecModifiedAt, MasterDataMgtCoupling."Last Synch. Modified On") > 0;
         end;
 
+        if SourceFieldRef.Type = SourceFieldRef.Type::Media then
+            if UpdateMedia(SourceFieldRef, DestinationFieldRef, DestinationFieldValue) then begin
+                NewValue := DestinationFieldValue;
+                IsValueFound := true;
+                NeedsConversion := false;
+            end else begin
+                NewValue := OriginalDestinationFieldValue;
+                IsValueFound := true;
+                NeedsConversion := false;
+            end;
+
         if ValueWillBeOverwritten then begin
             MasterDataManagement.OnLocalRecordChangeOverwrite(SourceFieldRef, DestinationFieldRef, ThrowError, IsHandled);
             if not IsHandled then begin
                 ThrowError := true;
                 IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
                 IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+                IntegrationTableMapping.SetRange("Delete After Synchronization", false);
                 IntegrationTableMapping.SetRange("Table ID", DestinationRecordRef.Number());
                 IntegrationTableMapping.SetRange("Integration Table ID", SourceFieldRef.Record().Number());
                 if IntegrationTableMapping.FindFirst() then begin
@@ -273,13 +300,58 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                         if IntegrationFieldMapping."Overwrite Local Change" or IntegrationTableMapping."Overwrite Local Change" or (IntegrationFieldMapping.Status = IntegrationFieldMapping.Status::Disabled) then
                             ThrowError := false;
                 end;
-
-                Session.LogMessage('0000JIT', DestinationRecordRef.Caption(), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
-                Session.LogMessage('0000JIU', DestinationRecordRef.Caption() + '.' + DestinationFieldRef.Caption(), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
             end;
             if ThrowError then
                 Error(ValueWillBeOverwrittenErr, DestinationFieldRef.Caption(), Format(DestinationFieldRef.Record().RecordId()), Format(SourceFieldRef.Value()), Format(DestinationFieldRef.Record().Caption()));
         end;
+    end;
+
+    local procedure UpdateMedia(var SourceFieldRef: FieldRef; var DestinationFieldRef: FieldRef; var NewValue: Variant): Boolean
+    var
+        SourceTenantMedia, DestinationTenantMedia : Record "Tenant Media";
+        MediaInStream: InStream;
+        MediaOutStream: OutStream;
+        SourceTenantMediaId, DestinationMediaId, EmptyGuid : Guid;
+        SourceMediaLength, DestinationMediaLength : Integer;
+        MediaUpdated: Boolean;
+        SourceMediaName, DestinationMediaName : Text;
+    begin
+        SourceTenantMedia.SetAutoCalcFields(Content);
+        DestinationTenantMedia.SetAutoCalcFields(Content);
+
+        SourceTenantMediaId := SourceFieldRef.Value();
+        DestinationMediaId := DestinationFieldRef.Value();
+        if SourceTenantMedia.Get(SourceTenantMediaId) then begin
+            SourceMediaLength := SourceTenantMedia.Content.Length();
+            SourceMediaName := SourceTenantMedia."File Name";
+            DestinationTenantMedia.SetRange(ID, DestinationMediaId);
+            DestinationTenantMedia.SetRange("Company Name", CompanyName());
+            if DestinationTenantMedia.FindFirst() then begin
+                DestinationMediaLength := DestinationTenantMedia.Content.Length();
+                DestinationMediaName := DestinationTenantMedia."File Name";
+            end;
+            if (SourceMediaLength <> DestinationMediaLength) or (SourceMediaName <> DestinationMediaName) then begin
+                if DestinationMediaId <> EmptyGuid then
+                    if DestinationTenantMedia.FindFirst() then
+                        DestinationTenantMedia.Delete();
+                SourceTenantMedia.Content.CreateInStream(MediaInStream);
+                DestinationTenantMedia.TransferFields(SourceTenantMedia, true);
+                DestinationTenantMedia.ID := CreateGuid();
+                DestinationTenantMedia."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(DestinationTenantMedia."Company Name"));
+                DestinationTenantMedia.Content.CreateOutStream(MediaOutStream);
+                CopyStream(MediaOutStream, MediaInStream);
+                DestinationTenantMedia.Insert();
+                NewValue := DestinationTenantMedia.ID;
+                MediaUpdated := true
+            end
+        end else
+            if DestinationTenantMedia.Get(DestinationMediaId) then begin
+                DestinationTenantMedia.Delete();
+                NewValue := EmptyGuid;
+                MediaUpdated := true
+            end;
+
+        exit(MediaUpdated);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Table Synch.", 'OnDetermineSynchDirection', '', false, false)]
@@ -358,6 +430,46 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                 UpdateChildContactsParentCompany(SourceRecordRef);
             'Contact-Contact':
                 FixPrimaryContactNo(SourceRecordRef, DestinationRecordRef);
+            'G/L Account-G/L Account':
+                ValidateGlobalDimensionCodes(SourceRecordRef, DestinationRecordRef);
+        end;
+        if (SourceRecordRef.Number() = Database::"Ship-to Address") and (DestinationRecordRef.Number() = Database::"Ship-to Address") then
+            SetShipToAddressNameFromSource(SourceRecordRef, DestinationRecordRef);
+    end;
+
+    local procedure SetShipToAddressNameFromSource(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    var
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        SourceShipToAddress: Record "Ship-to Address";
+    begin
+        if not MasterDataManagementSetup.Get() then
+            exit;
+
+        if not MasterDataManagementSetup."Is Enabled" then
+            exit;
+
+        // do nothing if the Name field synchronization is not enabled
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange("Table ID", Database::"Ship-to Address");
+        if not IntegrationTableMapping.FindFirst() then
+            exit;
+        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetRange("Field No.", SourceShipToAddress.FieldNo(Name));
+        IntegrationFieldMapping.SetRange(Status, IntegrationFieldMapping.Status::Enabled);
+        if IntegrationFieldMapping.IsEmpty() then
+            exit;
+
+        // Ship-to Address table has a OnInsert trigger such that it always sets its name to Customer's name OnInsert
+        // for Ship-to Address synchronized from source, this needs to be corrected to have the Name value identical to the one in source
+        DestinationRecordRef.Find();
+        SourceRecordRef.SetTable(SourceShipToAddress);
+        SourceShipToAddress.ChangeCompany(MasterDataManagementSetup."Company Name");
+        if Format(DestinationRecordRef.Field(SourceShipToAddress.FieldNo(Name)).Value()) <> SourceShipToAddress.Name then begin
+            DestinationRecordRef.Field(SourceShipToAddress.FieldNo(Name)).Value(SourceShipToAddress.Name);
+            DestinationRecordRef.Modify();
         end;
     end;
 
@@ -368,6 +480,19 @@ codeunit 7237 "Master Data Mgt. Subscribers"
             exit;
 
         RenameIfNeededOnBeforeModifyRecord(IntegrationTableMapping, SourceRecordRef, DestinationRecordRef);
+
+        if SourceRecordRef.Number() = Database::Item then
+            UpdateItemMediaSet(SourceRecordRef, DestinationRecordRef);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterModifyRecord', '', false, false)]
+    local procedure OnAfterModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    begin
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
+        if SourceRecordRef.Number() = Database::"G/L Account" then
+            ValidateGlobalDimensionCodes(SourceRecordRef, DestinationRecordRef);
     end;
 
     internal procedure RenameIfNeededOnBeforeModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
@@ -376,6 +501,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         MasterDataManagement: Codeunit "Master Data Management";
         BeforeRenameDestinationRecordRef: RecordRef;
         IsHandled: Boolean;
+        SourceCompanyName: Text[30];
     begin
         if not MasterDataManagement.IsEnabled() then
             exit;
@@ -386,7 +512,10 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         MasterDataManagementSetup.Get();
         MasterDataManagement.OnGetIntegrationRecordRef(IntegrationTableMapping, SourceRecordRef, IsHandled);
         if not IsHandled then begin
-            SourceRecordRef.ChangeCompany(MasterDataManagementSetup."Company Name");
+            MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, IntegrationTableMapping."Table ID");
+            if SourceCompanyName = '' then
+                SourceCompanyName := MasterDataManagementSetup."Company Name";
+            SourceRecordRef.ChangeCompany(SourceCompanyName);
             SourceRecordRef.GetBySystemId(SourceRecordRef.Field(SourceRecordRef.SystemIdNo()).Value());
         end;
         BeforeRenameDestinationRecordRef.Open(DestinationRecordRef.Number());
@@ -467,9 +596,11 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     var
         IntegrationFieldMapping: Record "Integration Field Mapping";
         IntegrationTableMapping: Record "Integration Table Mapping";
+        MasterDataManagement: Codeunit "Master Data Management";
         BackupDestinatioRecordRef: RecordRef;
         RenamedDestinatioRecordRef: RecordRef;
         SourcePrimaryKeyRef: KeyRef;
+        Handled: Boolean;
     begin
         if SourceRecordRef.Number <> DestinationRecordRef.Number then
             exit;
@@ -490,8 +621,21 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                 RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value());
             5:
                 RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value());
-            else
-                Error(UnsupportedKeyLengthErr, SourceRecordRef.Caption(), Format(SourcePrimaryKeyRef.FieldCount()));
+            6:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value());
+            7:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value(), SourcePrimaryKeyRef.FieldIndex(7).Value());
+            8:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value(), SourcePrimaryKeyRef.FieldIndex(7).Value(), SourcePrimaryKeyRef.FieldIndex(8).Value());
+            9:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value(), SourcePrimaryKeyRef.FieldIndex(7).Value(), SourcePrimaryKeyRef.FieldIndex(8).Value(), SourcePrimaryKeyRef.FieldIndex(9).Value());
+            10:
+                RenamedDestinatioRecordRef.Rename(SourcePrimaryKeyRef.FieldIndex(1).Value(), SourcePrimaryKeyRef.FieldIndex(2).Value(), SourcePrimaryKeyRef.FieldIndex(3).Value(), SourcePrimaryKeyRef.FieldIndex(4).Value(), SourcePrimaryKeyRef.FieldIndex(5).Value(), SourcePrimaryKeyRef.FieldIndex(6).Value(), SourcePrimaryKeyRef.FieldIndex(7).Value(), SourcePrimaryKeyRef.FieldIndex(8).Value(), SourcePrimaryKeyRef.FieldIndex(9).Value(), SourcePrimaryKeyRef.FieldIndex(10).Value());
+            else begin
+                MasterDataManagement.OnRenameDestination(RenamedDestinatioRecordRef, SourcePrimaryKeyRef, Handled);
+                if not Handled then
+                    Error(UnsupportedKeyLengthErr, SourceRecordRef.Caption(), Format(SourcePrimaryKeyRef.FieldCount()));
+            end;
         end;
         DestinationRecordRef.GetBySystemId(DestinationRecordRef.Field(DestinationRecordRef.SystemIdNo()).Value());
         IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
@@ -543,13 +687,17 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         ModifiedFieldRef: FieldRef;
         IsHandled: Boolean;
         IntRecSystemId: Guid;
+        SourceCompanyName: Text[30];
     begin
         MasterDataManagementSetup.Get();
         IntegrationRecordRef.Open(FromRecordRef.Number, false);
         IntRecSystemId := FromRecordRef.Field(FromRecordRef.SystemIdNo).Value();
         MasterDataManagement.OnGetIntegrationRecordRefBySystemId(IntegrationTableMapping, IntegrationRecordRef, IntRecSystemId, IsHandled);
         if not IsHandled then begin
-            IntegrationRecordRef.ChangeCompany(MasterDataManagementSetup."Company Name");
+            MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, IntegrationTableMapping."Table ID");
+            if SourceCompanyName = '' then
+                SourceCompanyName := MasterDataManagementSetup."Company Name";
+            IntegrationRecordRef.ChangeCompany(SourceCompanyName);
             IntegrationRecordRef.GetBySystemId(IntRecSystemId);
         end;
         if FromRecordRef.Number() = IntegrationTableMapping."Integration Table ID" then begin
@@ -566,10 +714,11 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     var
         MasterDataManagementSetup: Record "Master Data Management Setup";
         ContactBusinessRelation: Record "Contact Business Relation";
-        Company: Record COmpany;
+        Company: Record Company;
         LocalContact: Record Contact;
         IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
+        SourceCompanyName: Text[30];
     begin
         if not MasterDataManagement.IsEnabled() then
             exit;
@@ -577,7 +726,11 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not MasterDataManagementSetup.Get() then
             exit;
 
-        if not Company.Get(MasterDataManagementSetup."Company Name") then
+        MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, Database::Contact);
+        if SourceCompanyName = '' then
+            SourceCompanyName := MasterDataManagementSetup."Company Name";
+
+        if not Company.Get(SourceCompanyName) then
             exit;
 
         IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
@@ -588,7 +741,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if IntegrationTableMapping.IsEmpty() then
             exit;
 
-        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+        if not ContactBusinessRelation.ChangeCompany(SourceCompanyName) then
             exit;
 
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
@@ -610,6 +763,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         LocalContact: Record Contact;
         IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
+        SourceCompanyName: Text[30];
     begin
         if not MasterDataManagement.IsEnabled() then
             exit;
@@ -617,7 +771,11 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not MasterDataManagementSetup.Get() then
             exit;
 
-        if not Company.Get(MasterDataManagementSetup."Company Name") then
+        MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, Database::Contact);
+        if SourceCompanyName = '' then
+            SourceCompanyName := MasterDataManagementSetup."Company Name";
+
+        if not Company.Get(SourceCompanyName) then
             exit;
 
         IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
@@ -628,7 +786,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if IntegrationTableMapping.IsEmpty() then
             exit;
 
-        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+        if not ContactBusinessRelation.ChangeCompany(SourceCompanyName) then
             exit;
 
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Vendor);
@@ -650,6 +808,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         LocalContact: Record Contact;
         IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
+        SourceCompanyName: Text[30];
     begin
         if not MasterDataManagement.IsEnabled() then
             exit;
@@ -657,7 +816,11 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not MasterDataManagementSetup.Get() then
             exit;
 
-        if not Company.Get(MasterDataManagementSetup."Company Name") then
+        MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, Database::Contact);
+        if SourceCompanyName = '' then
+            SourceCompanyName := MasterDataManagementSetup."Company Name";
+
+        if not Company.Get(SourceCompanyName) then
             exit;
 
         IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
@@ -668,7 +831,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if IntegrationTableMapping.IsEmpty() then
             exit;
 
-        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+        if not ContactBusinessRelation.ChangeCompany(SourceCompanyName) then
             exit;
 
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::"Bank Account");
@@ -682,7 +845,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeInsertRecord', '', false, false)]
-    local procedure HandleOnBeforeInsertRecord(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    local procedure HandleOnBeforeInsertRecord(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
         ConfigTemplateHeader: Record "Config. Template Header";
         IntegrationTableMapping: Record "Integration Table Mapping";
@@ -716,9 +879,107 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                     if ConfigTemplateHeader.Get(ConfigTemplateCode) then
                         VendorTemplMgt.FillVendorKeyFromInitSeries(DestinationRecordRef, ConfigTemplateHeader);
             'Item-Item':
-                if ConfigTemplateCode <> '' then
-                    if ConfigTemplateHeader.Get(ConfigTemplateCode) then
-                        ItemTemplMgt.FillItemKeyFromInitSeries(DestinationRecordRef, ConfigTemplateHeader);
+                begin
+                    if ConfigTemplateCode <> '' then
+                        if ConfigTemplateHeader.Get(ConfigTemplateCode) then
+                            ItemTemplMgt.FillItemKeyFromInitSeries(DestinationRecordRef, ConfigTemplateHeader);
+
+                    UpdateItemMediaSet(SourceRecordRef, DestinationRecordRef);
+                end;
+        end;
+    end;
+
+    local procedure UpdateItemMediaSet(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    var
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        SourceTenantMedia: Record "Tenant Media";
+        DestinationTenantMedia: Record "Tenant Media";
+        SourceItem: Record Item;
+        DestinationItem: Record Item;
+        MasterDataManagement: Codeunit "Master Data Management";
+        MediaInStream: InStream;
+        MediaOutStream: OutStream;
+        DestinationItemMediaIds: List of [Guid];
+        MediaId: Guid;
+        i: Integer;
+        MediaItemInserted: Boolean;
+        SourceCompanyName: Text[30];
+    begin
+        if not MasterDataManagementSetup.Get() then
+            exit;
+
+        if not MasterDataManagementSetup."Is Enabled" then
+            exit;
+
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange("Table ID", Database::Item);
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::Item);
+        if not IntegrationTableMapping.FindFirst() then
+            exit;
+
+        // exit if Picture field mapping is not enabled
+        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetRange("Field No.", DestinationItem.FieldNo(Picture));
+        IntegrationFieldMapping.SetRange(Status, IntegrationFieldMapping.Status::Enabled);
+        if IntegrationFieldMapping.IsEmpty() then
+            exit;
+
+        // if source item picture has media that are not in destination item picture media, add their ids
+        SourceRecordRef.SetTable(SourceItem);
+        DestinationRecordRef.SetTable(DestinationItem);
+        MasterDataManagementSetup.Get();
+        MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, Database::Item);
+        if SourceCompanyName = '' then
+            SourceCompanyName := MasterDataManagementSetup."Company Name";
+        SourceItem.ChangeCompany(SourceCompanyName);
+
+        // remove all the media from Destination item
+        for i := 1 to DestinationItem.Picture.Count() do
+            DestinationItemMediaIds.Add(DestinationItem.Picture.Item(i));
+        foreach MediaId in DestinationItemMediaIds do
+            DestinationItem.Picture.Remove(MediaId);
+
+        // reinsert all media from source item to the destination item
+        for i := 1 to SourceItem.Picture.Count() do
+            if SourceTenantMedia.Get(SourceItem.Picture.Item(i)) then begin
+                SourceTenantMedia.CalcFields(Content);
+                SourceTenantMedia.Content.CreateInStream(MediaInStream);
+                DestinationTenantMedia.TransferFields(SourceTenantMedia, true);
+                DestinationTenantMedia.ID := CreateGuid();
+                DestinationTenantMedia."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(DestinationTenantMedia."Company Name"));
+                DestinationTenantMedia.Content.CreateOutStream(MediaOutStream);
+                CopyStream(MediaOutStream, MediaInStream);
+                DestinationTenantMedia.Insert();
+                DestinationItem.Picture.Insert(DestinationTenantMedia.ID);
+                MediaItemInserted := true;
+            end;
+        if MediaItemInserted then
+            DestinationRecordRef.GetTable(DestinationItem);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterUnchangedRecordHandled', '', false, false)]
+    local procedure HandleOnAfterUnchangedRecordHandled(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    var
+        MasterDataManagement: Codeunit "Master Data Management";
+        SourceDestCode: Text;
+    begin
+        if not MasterDataManagement.IsEnabled() then
+            exit;
+
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
+        SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
+        case SourceDestCode of
+            'Item-Item':
+                begin
+                    UpdateItemMediaSet(SourceRecordRef, DestinationRecordRef);
+                    DestinationRecordRef.Modify();
+                end;
         end;
     end;
 
@@ -753,6 +1014,59 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if (SourceRecordRef.Number() <> 0) and (DestinationRecordRef.Number() <> 0) then
             exit(SourceRecordRef.Name() + '-' + DestinationRecordRef.Name());
         exit('');
+    end;
+
+    local procedure ValidateGlobalDimensionCodes(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef): Boolean
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        SourceGLAccount: Record "G/L Account";
+        DestinationGLAccount: Record "G/L Account";
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        GlobalDimCode1SynchEnabled: Boolean;
+        GlobalDimCode2SynchEnabled: Boolean;
+    begin
+        if SourceRecordRef.Number <> Database::"G/L Account" then
+            exit;
+
+        if DestinationRecordRef.Number <> Database::"G/L Account" then
+            exit;
+
+        if not MasterDataManagementSetup.Get() then
+            exit;
+
+        if not MasterDataManagementSetup."Is Enabled" then
+            exit;
+
+        IntegrationTableMapping.SetRange("Table ID", Database::"G/L Account");
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::"G/L Account");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+
+        if not IntegrationTableMapping.FindFirst() then
+            exit;
+
+        // determine whether the synch is enabled for Global Dim. fields        
+        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetRange(Status, IntegrationFieldMapping.Status::Enabled);
+        IntegrationFieldMapping.SetRange("Field No.", SourceGLAccount.FieldNo("Global Dimension 1 Code"));
+        GlobalDimCode1SynchEnabled := (not IntegrationFieldMapping.IsEmpty());
+        IntegrationFieldMapping.SetRange("Field No.", SourceGLAccount.FieldNo("Global Dimension 2 Code"));
+        GlobalDimCode2SynchEnabled := (not IntegrationFieldMapping.IsEmpty());
+
+        if not (GlobalDimCode1SynchEnabled or GlobalDimCode2SynchEnabled) then
+            exit;
+
+        SourceGLAccount.ChangeCompany(MasterDataManagementSetup."Company Name");
+        SourceRecordRef.SetTable(SourceGLAccount);
+        DestinationRecordRef.SetTable(DestinationGLAccount);
+        if GlobalDimCode1SynchEnabled then
+            DestinationGLAccount.Validate("Global Dimension 1 Code", SourceGLAccount."Global Dimension 1 Code");
+        if GlobalDimCode2SynchEnabled then
+            DestinationGLAccount.Validate("Global Dimension 2 Code", SourceGLAccount."Global Dimension 2 Code");
+        DestinationGLAccount.Modify();
+        DestinationRecordRef.GetTable(DestinationGLAccount);
     end;
 
     local procedure FixPrimaryContactNo(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef): Boolean

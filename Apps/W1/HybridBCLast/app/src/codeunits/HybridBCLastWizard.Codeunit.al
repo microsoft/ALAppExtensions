@@ -1,6 +1,6 @@
 namespace Microsoft.DataMigration.BC;
-using Microsoft.DataMigration;
 
+using Microsoft.DataMigration;
 codeunit 4020 "Hybrid BC Last Wizard"
 {
     var
@@ -190,5 +190,4 @@ codeunit 4020 "Hybrid BC Last Wizard"
 
         W1Management.PopulateTableMapping();
     end;
-
 }

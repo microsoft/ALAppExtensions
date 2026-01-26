@@ -470,7 +470,11 @@ report 31198 "Service Credit Memo CZL"
 
                 trigger OnPreDataItem()
                 begin
+#if not CLEAN27
                     NoOfLoops := Abs(NoOfCopies) + Customer."Invoice Copies" + 1;
+#else
+                    NoOfLoops := Abs(NoOfCopies) + 1;
+#endif
                     if NoOfLoops <= 0 then
                         NoOfLoops := 1;
 
@@ -518,12 +522,6 @@ report 31198 "Service Credit Memo CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
             end;
         }
     }
@@ -556,11 +554,7 @@ report 31198 "Service Credit Memo CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
+        ServiceFormatAddress: Codeunit "Service Format Address";
         ExchRateLbl: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate, %2 = LCY Code, %3 = Exchange Rate, %4 = Currency Code';
         CorrectiveTaxDocumentLbl: Label 'Service - Corrective Tax Document';
         InternalCorrectionLbl: Label 'Service - Internal Correction';
@@ -621,8 +615,8 @@ report 31198 "Service Credit Memo CZL"
 
     local procedure FormatAddressFields(ServiceCrMemoHeader: Record "Service Cr.Memo Header")
     begin
-        FormatAddress.ServiceCrMemoBillTo(CustAddr, ServiceCrMemoHeader);
-        FormatAddress.ServiceCrMemoShipTo(ShipToAddr, CustAddr, ServiceCrMemoHeader);
+        ServiceFormatAddress.ServiceCrMemoBillTo(CustAddr, ServiceCrMemoHeader);
+        ServiceFormatAddress.ServiceCrMemoShipTo(ShipToAddr, CustAddr, ServiceCrMemoHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

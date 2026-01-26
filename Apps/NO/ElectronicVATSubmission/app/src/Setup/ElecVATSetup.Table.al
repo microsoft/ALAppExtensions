@@ -1,10 +1,13 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using System.Environment;
+using System.Integration;
 using System.Privacy;
+using System.Telemetry;
 
 table 10686 "Elec. VAT Setup"
 {
@@ -21,10 +24,14 @@ table 10686 "Elec. VAT Setup"
 
             trigger OnValidate()
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                ElectVATSetupConsentProvidedLbl: Label 'NO Elect. VAT Setup - consent provided by UserSecurityId %1.', Locked = true;
             begin
-                if Enabled THEN
+                if Enabled then
                     Enabled := CustomerConsentMgt.ConfirmUserConsent();
+                if Enabled then
+                    AuditLog.LogAuditMessage(StrSubstNo(ElectVATSetupConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
             end;
         }
         field(3; "OAuth Feature GUID"; GUID)
@@ -34,6 +41,11 @@ table 10686 "Elec. VAT Setup"
         field(5; "Validate VAT Return Url"; Text[250])
         {
             Caption = 'Validate VAT Return URL';
+
+            trigger OnValidate()
+            begin
+                CheckUrl(Rec."Validate VAT Return Url");
+            end;
         }
         field(4; "Authentication URL"; Text[250])
         {
@@ -43,20 +55,36 @@ table 10686 "Elec. VAT Setup"
             var
                 ElecVATOAuthMgt: Codeunit "Elec. VAT OAuth Mgt.";
             begin
-                ElecVATOAuthMgt.UpdateElecVATOAuthSetupRecordsWithAuthenticationURL("Authentication URL");
+                CheckUrl(Rec."Authentication URL");
+                ElecVATOAuthMgt.UpdateElecVATOAuthSetupRecordsWithAuthenticationURL(Rec."Authentication URL");
             end;
         }
         field(6; "Exchange ID-Porten Token Url"; Text[250])
         {
             Caption = 'Exchange ID-Porten Token URL';
+
+            trigger OnValidate()
+            begin
+                CheckUrl(Rec."Exchange ID-Porten Token Url");
+            end;
         }
         field(7; "Submission Environment URL"; Text[250])
         {
             Caption = 'Submission Environment URL';
+
+            trigger OnValidate()
+            begin
+                CheckUrl(Rec."Submission Environment URL");
+            end;
         }
         field(8; "Submission App URL"; Text[250])
         {
             Caption = 'Submission App URL';
+
+            trigger OnValidate()
+            begin
+                CheckUrl(Rec."Submission App URL");
+            end;
         }
         field(9; "Redirect URL"; Text[250])
         {
@@ -66,7 +94,7 @@ table 10686 "Elec. VAT Setup"
             var
                 ElecVATOAuthMgt: Codeunit "Elec. VAT OAuth Mgt.";
             begin
-                ElecVATOAuthMgt.UpdateElecVATOAuthSetupRecordsWithRedirectURL("Redirect URL");
+                ElecVATOAuthMgt.UpdateElecVATOAuthSetupRecordsWithRedirectURL(Rec."Redirect URL");
             end;
         }
         field(10; "Client ID"; Guid)
@@ -107,6 +135,20 @@ table 10686 "Elec. VAT Setup"
             exit(false);
         RecordHasBeenRead := true;
         exit(true);
+    end;
+
+    local procedure CheckUrl(Url: Text[250])
+    var
+        HttpWebRequestMgt: Codeunit "Http Web Request Mgt.";
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        if Url = '' then
+            exit;
+
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
+            exit;
+
+        HttpWebRequestMgt.CheckUrl(Url);
     end;
 
     [NonDebuggable]

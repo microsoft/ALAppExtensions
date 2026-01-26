@@ -1,0 +1,126 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration.SL;
+
+permissionset 47006 "SL Migration - Read"
+{
+    Assignable = true;
+    Access = Public;
+    Caption = 'SL Migration - Read';
+
+    Permissions = tabledata "SL AccountTransactions" = R,
+                  tabledata "SL Account" = R,
+                  tabledata "SL Account Staging" = R,
+                  tabledata "SL Account Staging Setup" = R,
+                  tabledata "SL AcctHist" = R,
+                  tabledata "SL APAdjust" = R,
+                  tabledata "SL APDoc Buffer" = R,
+                  tabledata "SL APSetup" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL APDoc" = R,
+                  tabledata "SL APTran" = R,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL APTran Buffer" = R,
+                  tabledata "SL AP_Balances" = R,
+                  tabledata "SL ARAdjust" = R,
+
+                  tabledata "SL ARDoc Buffer" = R,
+                  tabledata "SL ARSetup" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL ARDoc" = R,
+                  tabledata "SL ARTran" = R,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL ARTran Buffer" = R,
+                  tabledata "SL AR_Balances" = R,
+                  tabledata "SL Batch" = R,
+                  tabledata "SL Codes" = R,
+                  tabledata "SL Company Additional Settings" = R,
+                  tabledata "SL Company Migration Settings" = R,
+                  tabledata "SL CustClass" = R,
+                  tabledata "SL Customer" = R,
+                  tabledata "SL Fiscal Periods" = R,
+                  tabledata "SL FlexDef" = R,
+                  tabledata "SL GLSetup" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL GLTran" = R,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL GLTran Buffer" = R,
+                  tabledata "SL Hist. Source Error" = R,
+                  tabledata "SL Hist. Source Progress" = R,
+                  tabledata "SL INSetup" = R,
+                  tabledata "SL INTran Buffer" = R,
+                  tabledata "SL Inventory Buffer" = R,
+                  tabledata "SL InventoryADG" = R,
+                  tabledata "SL ItemCost Buffer" = R,
+                  tabledata "SL ItemSite Buffer" = R,
+                  tabledata "SL LotSerMst Buffer" = R,
+                  tabledata "SL LotSerT Buffer" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL INTran" = R,
+                  tabledata "SL Inventory" = R,
+                  tabledata "SL ItemCost" = R,
+                  tabledata "SL ItemSite" = R,
+                  tabledata "SL LotSerMst" = R,
+                  tabledata "SL LotSerT" = R,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL Migration Config" = R,
+                  tabledata "SL Migration Error Overview" = R,
+                  tabledata "SL Migration Errors" = R,
+                  tabledata "SL Migration Warnings" = R,
+                  tabledata "SL Payment Terms" = R,
+                  tabledata "SL Period List Work Table" = R,
+                  tabledata "SL PJAddr" = R,
+                  tabledata "SL PJCode" = R,
+                  tabledata "SL PJEmploy Buffer" = R,
+                  tabledata "SL PJEmpPjt Buffer" = R,
+                  tabledata "SL PJEQRate Buffer" = R,
+                  tabledata "SL PJEquip Buffer" = R,
+                  tabledata "SL PJPent Buffer" = R,
+                  tabledata "SL PJProj Buffer" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL PJEmploy" = R,
+                  tabledata "SL PJEmpPjt" = R,
+                  tabledata "SL PJEQRate" = R,
+                  tabledata "SL PJEquip" = R,
+                  tabledata "SL PJPent" = R,
+                  tabledata "SL PJProj" = R,
+#pragma warning restore AL0432
+#endif                  
+                  tabledata "SL POAddress" = R,
+                  tabledata "SL POReceipt" = R,
+                  tabledata "SL POSetup" = R,
+                  tabledata "SL POTran" = R,
+                  tabledata "SL ProductClass" = R,
+                  tabledata "SL PurchOrd" = R,
+                  tabledata "SL PurOrdDet" = R,
+                  tabledata "SL SalesTax" = R,
+                  tabledata "SL SegDef" = R,
+                  tabledata "SL Segments" = R,
+                  tabledata "SL Segment Name" = R,
+                  tabledata "SL Site" = R,
+                  tabledata "SL SOAddress" = R,
+                  tabledata "SL SOHeader" = R,
+                  tabledata "SL SOLine" = R,
+                  tabledata "SL SOSetup" = R,
+                  tabledata "SL SOShipHeader" = R,
+                  tabledata "SL SOShipLine" = R,
+                  tabledata "SL SOShipLot" = R,
+                  tabledata "SL SOType" = R,
+                  tabledata "SL Terms" = R,
+                  tabledata "SL Upgrade Settings" = R,
+                  tabledata "SL VendClass" = R,
+                  tabledata "SL Vendor" = R,
+                  tabledata SLGLAcctBalByPeriod = R;
+}

@@ -18,9 +18,6 @@ codeunit 13406 "Intrastat Report Management FI"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeInitSetup', '', true, true)]
     local procedure OnBeforeInitSetup(var IntrastatReportSetup: Record "Intrastat Report Setup"; var IsHandled: Boolean)
     var
-#if not CLEAN22
-        IntrastatFileSetup: Record "Intrastat - File Setup";
-#endif
     begin
         IsHandled := true;
 
@@ -28,14 +25,6 @@ codeunit 13406 "Intrastat Report Management FI"
         IntrastatReportSetup."Def. Private Person VAT No." := DefPrivatePersonVATNoLbl;
         IntrastatReportSetup."Def. 3-Party Trade VAT No." := Def3DPartyTradeVATNoLbl;
         IntrastatReportSetup."Def. VAT for Unknown State" := DefUnknowVATNoLbl;
-#if not CLEAN22
-        if IntrastatFileSetup.Get() then begin
-            IntrastatReportSetup."Custom Code" := IntrastatFileSetup."Custom Code";
-            IntrastatReportSetup."Company Serial No." := IntrastatFileSetup."Company Serial No.";
-            IntrastatReportSetup."Last Transfer Date" := IntrastatFileSetup."Last Transfer Date";
-            IntrastatReportSetup."File No." := IntrastatFileSetup."File No.";
-        end;
-#endif
         IntrastatReportSetup.Modify();
 
         CreateDefaultDataExchangeDef();

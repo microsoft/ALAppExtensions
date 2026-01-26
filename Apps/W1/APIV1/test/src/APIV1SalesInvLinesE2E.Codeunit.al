@@ -3,6 +3,7 @@ codeunit 139734 "APIV1 - Sales Inv. Lines E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -821,38 +822,6 @@ codeunit 139734 "APIV1 - Sales Inv. Lines E2E"
 
         // [THEN] Lower Invoice discount is applied
         VerifyTotals(SalesHeader, 0, SalesHeader."Invoice Discount Calculation"::"%");
-    end;
-
-    [Test]
-    procedure TestInsertingLineKeepsInvoiceDiscountAmt()
-    var
-        SalesHeader: Record "Sales Header";
-        Item: Record "Item";
-        TargetURL: Text;
-        ResponseText: Text;
-        InvoiceLineJSON: Text;
-        DiscountAmount: Decimal;
-    begin
-        // [FEATURE] [Discount]
-        // [SCENARIO] Adding an invoice through API will keep Discount Amount
-        // [GIVEN] An unposted invoice for customer with invoice discount amount
-        Initialize();
-        SetupAmountDiscountTest(SalesHeader, DiscountAmount);
-        InvoiceLineJSON := CreateInvoiceLineJSON(Item.SystemId, LibraryRandom.RandIntInRange(1, 100));
-
-        COMMIT();
-
-        // [WHEN] We create a line through API
-        TargetURL := LibraryGraphMgt
-          .CreateTargetURLWithSubpage(
-            SalesHeader.SystemId,
-            PAGE::"APIV1 - Sales Invoices",
-            InvoiceServiceNameTxt,
-            InvoiceServiceLinesNameTxt);
-        ASSERTERROR LibraryGraphMgt.PostToWebService(TargetURL, InvoiceLineJSON, ResponseText);
-
-        // [THEN] Discount Amount is Kept
-        VerifyTotals(SalesHeader, DiscountAmount, SalesHeader."Invoice Discount Calculation"::Amount);
     end;
 
     [Test]

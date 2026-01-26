@@ -38,6 +38,18 @@ page 6213 "Sustain. Account Categories"
                 {
                     ToolTip = 'Specifies if the category is used to register N2O emission.';
                 }
+                field("Water Intensity"; Rec."Water Intensity")
+                {
+                    ToolTip = 'Specifies if the category is used to register Water Intensity.';
+                }
+                field("Discharged Into Water"; Rec."Discharged Into Water")
+                {
+                    ToolTip = 'Specifies if the category is used to register Discharged Into Water.';
+                }
+                field("Waste Intensity"; Rec."Waste Intensity")
+                {
+                    ToolTip = 'Specifies if the category is used to register Waste Intensity.';
+                }
                 field("Calculation Foundation"; Rec."Calculation Foundation")
                 {
                     ToolTip = 'Specifies the calculation foundation for emission calculation.';

@@ -2185,7 +2185,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=IIf(Fields!CalculatedExchRate.Value &lt;&gt; 1, Fields!ExchRateText.Value, " ")</Value>
+                                                    <Value>=Fields!ExchRateText.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Normal</FontWeight>
@@ -2391,7 +2391,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATBaseLbl.Value &amp; " " &amp; First(Fields!LCYCode_GeneralLedgerSetup.Value, "DataSet_Result")</Value>
+                                                    <Value>=Fields!VATBaseLbl.Value &amp; " " &amp; First(Fields!VATCurrencyCode.Value, "DataSet_Result")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -2432,7 +2432,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VATAmtLbl.Value &amp; " " &amp; First(Fields!LCYCode_GeneralLedgerSetup.Value, "DataSet_Result")</Value>
+                                                    <Value>=Fields!VATAmtLbl.Value &amp; " " &amp; First(Fields!VATCurrencyCode.Value, "DataSet_Result")</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -2888,12 +2888,12 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   <TablixMember />
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=Fields!CalculatedExchRate.Value = 1</Hidden>
+                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=Fields!CalculatedExchRate.Value = 1</Hidden>
+                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                 </TablixMembers>
@@ -2902,7 +2902,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                                 <TablixMembers>
                                   <TablixMember>
                                     <Visibility>
-                                      <Hidden>=IIf(Fields!CalculatedExchRate.Value &lt;&gt; 1, False, True)</Hidden>
+                                      <Hidden>=Fields!ExchRateText.Value = ""</Hidden>
                                     </Visibility>
                                   </TablixMember>
                                   <TablixMember />
@@ -3405,6 +3405,9 @@ End Function</Code>
         <Field Name="LCYCode_GeneralLedgerSetup">
           <DataField>LCYCode_GeneralLedgerSetup</DataField>
         </Field>
+        <Field Name="VATCurrencyCode">
+          <DataField>VATCurrencyCode</DataField>
+        </Field>
         <Field Name="DocumentLbl">
           <DataField>DocumentLbl</DataField>
         </Field>
@@ -3561,6 +3564,9 @@ End Function</Code>
         <Field Name="AmountIncludingVATFormat">
           <DataField>AmountIncludingVATFormat</DataField>
         </Field>
+        <Field Name="Formatted_AmountIncludingVAT">
+          <DataField>Formatted_AmountIncludingVAT</DataField>
+        </Field>
         <Field Name="CopyNo">
           <DataField>CopyNo</DataField>
         </Field>
@@ -3588,11 +3594,17 @@ End Function</Code>
         <Field Name="VATAmtLineVATBaseFormat">
           <DataField>VATAmtLineVATBaseFormat</DataField>
         </Field>
+        <Field Name="Formatted_VATAmtLineVATBase">
+          <DataField>Formatted_VATAmtLineVATBase</DataField>
+        </Field>
         <Field Name="VATAmtLineVATAmt">
           <DataField>VATAmtLineVATAmt</DataField>
         </Field>
         <Field Name="VATAmtLineVATAmtFormat">
           <DataField>VATAmtLineVATAmtFormat</DataField>
+        </Field>
+        <Field Name="Formatted_VATAmtLineVATAmt">
+          <DataField>Formatted_VATAmtLineVATAmt</DataField>
         </Field>
         <Field Name="VATAmtLineVATBaseLCY">
           <DataField>VATAmtLineVATBaseLCY</DataField>
@@ -3600,11 +3612,17 @@ End Function</Code>
         <Field Name="VATAmtLineVATBaseLCYFormat">
           <DataField>VATAmtLineVATBaseLCYFormat</DataField>
         </Field>
+        <Field Name="Formatted_VATAmtLineVATBaseLCY">
+          <DataField>Formatted_VATAmtLineVATBaseLCY</DataField>
+        </Field>
         <Field Name="VATAmtLineVATAmtLCY">
           <DataField>VATAmtLineVATAmtLCY</DataField>
         </Field>
         <Field Name="VATAmtLineVATAmtLCYFormat">
           <DataField>VATAmtLineVATAmtLCYFormat</DataField>
+        </Field>
+        <Field Name="Formatted_VATAmtLineVATAmtLCY">
+          <DataField>Formatted_VATAmtLineVATAmtLCY</DataField>
         </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>

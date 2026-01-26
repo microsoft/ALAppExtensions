@@ -1,14 +1,15 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Intercompany.Partner;
-using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
 
 page 1693 "Bank Deposit Subform"
 {
@@ -94,6 +95,11 @@ page 1693 "Bank Deposit Subform"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the number of the bank deposit document.';
                     Editable = not DepositIsLumpSum;
+                }
+                field("External Document No."; Rec."External Document No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the external document number for this line, such as a check number.';
                 }
                 field("Credit Amount"; Rec."Credit Amount")
                 {
@@ -286,6 +292,7 @@ page 1693 "Bank Deposit Subform"
                     trigger OnAction()
                     begin
                         ShowApplyEntries();
+                        CurrPage.Update();
                     end;
                 }
             }
@@ -375,6 +382,7 @@ page 1693 "Bank Deposit Subform"
         BankDepositHeader.SetRange("Journal Batch Name", Rec."Journal Batch Name");
         BankDepositHeader.FindFirst();
         Rec."Dimension Set ID" := BankDepositPost.CombineDimensionSets(BankDepositHeader, Rec);
+        SetAppliesToID();
         exit(true);
     end;
 
@@ -426,7 +434,9 @@ page 1693 "Bank Deposit Subform"
         Rec."Currency Factor" := BankDepositHeader."Currency Factor";
         Rec."Document Date" := BankDepositHeader."Document Date";
         Rec."Posting Date" := BankDepositHeader."Posting Date";
-        Rec."External Document No." := BankDepositHeader."No.";
+        if BankDepositHeader."Post as Lump Sum" or (Rec."Document No." = '') then
+            Rec."Document No." := BankDepositHeader."No.";
+        Rec."External Document No." := '';
         Rec."Reason Code" := BankDepositHeader."Reason Code";
     end;
 
@@ -495,6 +505,33 @@ page 1693 "Bank Deposit Subform"
             Rec."Document Type" := Rec."Document Type"::Refund
         else
             Rec."Document Type" := Rec."Document Type"::Payment;
+    end;
+
+    local procedure SetAppliesToID()
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        BankDepositPost: codeunit "Bank Deposit-Post";
+    begin
+        if Rec."Applies-to Doc. No." <> '' then begin
+            CustLedgerEntry.SetRange("Document No.", Rec."Applies-to Doc. No.");
+            CustLedgerEntry.FindFirst();
+            if CustLedgerEntry."Applies-to ID" = '' then
+                exit;
+        end;
+        if CheckCustomerApplicationMethod() then
+            Rec."Applies-to ID" := BankDepositPost.GetAppliesToIDForLine(BankDepositHeader."No.", Rec."Line No.");
+    end;
+
+    local procedure CheckCustomerApplicationMethod(): Boolean
+    var
+        Customer: Record Customer;
+    begin
+        if Rec."Account Type" <> Rec."Account Type"::Customer then
+            exit(true);
+
+        if Customer.Get(Rec."Account No.") then
+            if Customer."Application Method" <> Customer."Application Method"::"Apply to Oldest" then
+                exit(true);
     end;
 
     [IntegrationEvent(true, false)]

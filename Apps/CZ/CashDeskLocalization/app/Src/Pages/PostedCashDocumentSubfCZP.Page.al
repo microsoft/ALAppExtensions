@@ -75,6 +75,11 @@ page 31166 "Posted Cash Document Subf. CZP"
                     ToolTip = 'Specifies a VAT product posting group code for the VAT Statement.';
                     Visible = false;
                 }
+                field("Allocation Account No."; Rec."Allocation Account No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the allocation account number.';
+                }
                 field(Amount; Rec.Amount)
                 {
                     ApplicationArea = Basic, Suite;
@@ -148,6 +153,42 @@ page 31166 "Posted Cash Document Subf. CZP"
                     ToolTip = 'Specifies the reason code on the entry.';
                     Visible = false;
                 }
+                field("Project No."; Rec."Project No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project.';
+                    Visible = false;
+                }
+                field("Project Task No."; Rec."Project Task No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project task.';
+                    Visible = false;
+                }
+                field("Project Planning Line No."; Rec."Project Planning Line No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the project planning line number that the usage should be linked to when the project journal is posted. You can only link to project planning lines that have the Apply Usage Link option enabled.';
+                    Visible = false;
+                }
+                field("Project Line Type"; Rec."Project Line Type")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the type of planning line to create when a project ledger entry is posted. If the field is empty, no planning lines are created.';
+                    Visible = false;
+                }
+                field("Project Quantity"; Rec."Project Quantity")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the quantity of the project line.';
+                    Visible = false;
+                }
+                field("Project Unit Price"; Rec."Project Unit Price")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the unit price of the project line.';
+                    Visible = false;
+                }
             }
             group(Control2)
             {
@@ -196,6 +237,7 @@ page 31166 "Posted Cash Document Subf. CZP"
             {
                 Caption = 'Line';
                 Image = Line;
+#if not CLEAN27
                 action(Statistics)
                 {
                     ApplicationArea = Basic, Suite;
@@ -203,12 +245,16 @@ page 31166 "Posted Cash Document Subf. CZP"
                     Image = Statistics;
                     ShortCutKey = 'F7';
                     ToolTip = 'View the statistics on the selected cash document.';
+                    ObsoleteReason = 'The statistics action will be replaced with the PostedCashDocumentStatistics action in Posted Cash Document CZP. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
 
                     trigger OnAction()
                     begin
                         Rec.ExtStatistics();
                     end;
                 }
+#endif
                 action(Dimensions)
                 {
                     ApplicationArea = Basic, Suite;

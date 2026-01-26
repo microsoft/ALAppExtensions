@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AuditFileExport;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
@@ -14,6 +15,7 @@ using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Setup;
 using System.Reflection;
 using System.Telemetry;
 using System.Utilities;
@@ -161,19 +163,11 @@ codeunit 10826 "Generate File FEC"
                 UpdateProgressDialog(1, Format(Round(Counter / CounterTotal * 100, 1)));
 
                 if GLEntry."Posting Date" <> ClosingDate(GLEntry."Posting Date") then
-#if not CLEAN23
-                    ProcessGLEntry(GLEntry, AuditFileExportHeader);
-#else
                     ProcessGLEntry(GLEntry);
-#endif
             until GLEntry.Next() = 0;
     end;
 
-#if not CLEAN23
-    local procedure ProcessGLEntry(var GLEntry: Record "G/L Entry"; AuditFileExportHeader: Record "Audit File Export Header")
-#else
     local procedure ProcessGLEntry(var GLEntry: Record "G/L Entry")
-#endif
     var
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         GLRegister: Record "G/L Register";
@@ -185,6 +179,7 @@ codeunit 10826 "Generate File FEC"
         CurrencyCode: Code[10];
         DocNoApplied: Text;
         DateApplied: Date;
+        DateCreated: Date;
     begin
         PartyNo := '';
         PartyName := '';
@@ -239,17 +234,18 @@ codeunit 10826 "Generate File FEC"
                     end;
 
             end;
+        AllowMultiplePosting(PartyNo, PartyName, GLEntry, Customer);
 
         FindGLRegister(GLRegister, GLEntry."Entry No.");
+        if GLRegister.SystemCreatedAt <> 0DT then
+            DateCreated := DT2Date(GLRegister.SystemCreatedAt)
+        else
+            DateCreated := GLRegister."Creation Date";
 
         WriteGLEntryToFile(
             GLEntry,
-#if CLEAN23
             GLEntry."Transaction No.",
-#else
-            GetProgressiveNo(GLRegister, GLEntry, AuditFileExportHeader),
-#endif
-            DT2Date(GLRegister.SystemCreatedAt), PartyNo, PartyName, FCYAmount, CurrencyCode, DocNoApplied, DateApplied);
+            DateCreated, PartyNo, PartyName, FCYAmount, CurrencyCode, DocNoApplied, DateApplied);
     end;
 
     local procedure CalcDetailedBalanceBySource(GLAccountNo: Code[20]; SourceType: Enum "Gen. Journal Source Type"; SourceNo: Code[20]) TotalAmt: Decimal
@@ -289,11 +285,7 @@ codeunit 10826 "Generate File FEC"
             exit;
         end;
 
-#if not CLEAN24
         GLRegister.SetLoadFields("From Entry No.", "To Entry No.", "Creation Date");
-#else
-        GLRegister.SetLoadFields("From Entry No.", "To Entry No.");
-#endif
         if EntryNo > GLRegisterGlobal."To Entry No." then
             GLRegister.SetFilter("No.", '>%1', GLRegisterGlobal."No.");
         GLRegister.SetFilter("From Entry No.", '<=%1', EntryNo);
@@ -307,9 +299,7 @@ codeunit 10826 "Generate File FEC"
         GLRegisterGlobal."No." := GLRegister."No.";
         GLRegisterGlobal."From Entry No." := GLRegister."From Entry No.";
         GLRegisterGlobal."To Entry No." := GLRegister."To Entry No.";
-#if not CLEAN24
         GLRegisterGlobal."Creation Date" := GLRegister."Creation Date";
-#endif
         GLRegisterGlobal.SystemCreatedAt := GLRegister.SystemCreatedAt;
     end;
 
@@ -492,15 +482,6 @@ codeunit 10826 "Generate File FEC"
         end;
     end;
 
-#if not CLEAN23
-    local procedure GetProgressiveNo(var GLRegister: Record "G/L Register"; var GLEntry: Record "G/L Entry"; AuditFileExportHeader: Record "Audit File Export Header"): Integer
-    begin
-        if AuditFileExportHeader."Use Transaction No." then
-            exit(GLEntry."Transaction No.");
-        exit(GLRegister."No.");
-    end;
-#endif
-
     local procedure GetTransPayRecEntriesCount(TransactionNo: Integer; PayRecAcc: Code[20]): Integer
     var
         GLEntry: Record "G/L Entry";
@@ -649,11 +630,10 @@ codeunit 10826 "Generate File FEC"
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
     begin
-        if GetDetailedVendorLedgEntry(DetailedVendorLedgEntry, VendorLedgEntryApplied."Entry No.") then begin
-            if DetailedVendorLedgEntry."Posting Date" > AppliedDate then
-                AppliedDate := DetailedVendorLedgEntry."Posting Date";
-        end else
-            AppliedDate := VendorLedgEntryApplied."Posting Date";
+        if GetDetailedVendorLedgEntry(DetailedVendorLedgEntry, VendorLedgEntryApplied."Entry No.") then
+            AppliedDate := DT2Date(DetailedVendorLedgEntry.SystemCreatedAt)
+        else
+            AppliedDate := DT2Date(VendorLedgEntryApplied.SystemCreatedAt);
     end;
 
     local procedure GetDetailedVendorLedgEntry(var DetailedVendorLedgEntryApplied: Record "Detailed Vendor Ledg. Entry"; AppliedVendorLedgerEntryNo: Integer): Boolean
@@ -850,5 +830,63 @@ codeunit 10826 "Generate File FEC"
         TempBlob.CreateOutStream(BlobOutStream);
         foreach TextLine in LinesList do
             BlobOutStream.WriteText(TextLine);
+    end;
+
+    local procedure GetCustomerReceivablesAccount(CustomerNo: Code[20]): Code[20]
+    var
+        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+        CustomerPostingGroup: Record "Customer Posting Group";
+    begin
+        DetailedCustLedgEntry.SetRange("Customer No.", CustomerNo);
+        DetailedCustLedgEntry.FindFirst();
+        CustomerPostingGroup.Get(DetailedCustLedgEntry."Posting Group");
+        exit(CustomerPostingGroup."Receivables Account");
+    end;
+
+    local procedure GetVendorPayablesAccount(VendorNo: Code[20]): Code[20]
+    var
+        Vendor: Record Vendor;
+        VendorPostingGroup: Record "Vendor Posting Group";
+    begin
+        Vendor.Get(VendorNo);
+        VendorPostingGroup.Get(Vendor."Vendor Posting Group");
+        exit(VendorPostingGroup."Payables Account");
+    end;
+
+    local procedure AllowMultiplePosting(var PartyNo: Code[20]; var PartyName: Text[100]; GLEntry: Record "G/L Entry"; Customer: Record Customer)
+    var
+        AltCustPostGroup: Record "Alt. Customer Posting Group";
+        CustPostGroup: Record "Customer Posting Group";
+        CustPostGroup2: Record "Customer Posting Group";
+        SalesSetup: Record "Sales & Receivables Setup";
+    begin
+        if not ((SalesSetup.Get()) and (SalesSetup."Allow Multiple Posting Groups")) then
+            exit;
+        if not ((GLEntry."Source Type" = GLEntry."Source Type"::Customer) and (Customer.Get(GLEntry."Source No."))) then
+            exit;
+        if not CustPostGroup.Get(Customer."Customer Posting Group") then
+            exit;
+
+        AltCustPostGroup.SetRange("Customer Posting Group", CustPostGroup.Code);
+        if AltCustPostGroup.FindSet() then
+            repeat
+                if CustPostGroup2.Get(AltCustPostGroup."Alt. Customer Posting Group") then
+                    if CustPostGroup2."Receivables Account" = GLEntry."G/L Account No." then begin
+                        PartyNo := Customer."No.";
+                        PartyName := Customer.Name;
+                    end;
+            until AltCustPostGroup.Next() = 0;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Exch. Rate Adjmt. Process", 'OnAfterInitDtldCustLedgerEntry', '', false, false)]
+    local procedure UpdateDtldCustLedgerEntryCurrAdjmtAccNo(var DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry")
+    begin
+        DetailedCustLedgEntry."Curr. Adjmt. G/L Account No." := GetCustomerReceivablesAccount(DetailedCustLedgEntry."Customer No.");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Exch. Rate Adjmt. Process", 'OnAfterInitDtldVendLedgerEntry', '', false, false)]
+    local procedure UpdateDtldVendLedgerEntryCurrAdjmtAccNo(var DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry")
+    begin
+        DetailedVendorLedgEntry."Curr. Adjmt. G/L Account No." := GetVendorPayablesAccount(DetailedVendorLedgEntry."Vendor No.");
     end;
 }

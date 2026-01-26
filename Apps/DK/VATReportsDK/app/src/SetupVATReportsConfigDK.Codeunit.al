@@ -6,9 +6,6 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Telemetry;
-#if not CLEAN22
-using Microsoft.Inventory.Intrastat;
-#endif
 codeunit 13691 "Setup VAT Reports Config DK"
 {
     var
@@ -38,16 +35,6 @@ codeunit 13691 "Setup VAT Reports Config DK"
         AddECSLConfiguration();
     end;
 
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Page, Page::"Intrastat Journal", 'OnOpenPageEvent', '', false, false)]
-    local procedure ConfigureIntrastat();
-    var
-        VATReportsConfiguration: Record "VAT Reports Configuration";
-    begin
-        IF NOT VATReportsConfiguration.Get(VATReportsConfiguration."VAT Report Type"::"Intrastat Report", 'CURRENT') then
-            AddIntrastatConfiguration();
-    end;
-#endif
     procedure OpenVATReportConfig(Notification: Notification)
     begin
         FeatureTelemetry.LogUptake('0000H8U', VATTok, Enum::"Feature Uptake Status"::"Set up");
@@ -67,20 +54,4 @@ codeunit 13691 "Setup VAT Reports Config DK"
             Insert();
         end;
     end;
-#if not CLEAN22
-
-    local procedure AddIntrastatConfiguration();
-    var
-        VATReportsConfiguration: Record "VAT Reports Configuration";
-    begin
-        with VATReportsConfiguration do begin
-            Validate("VAT Report Type", "VAT Report Type"::"Intrastat Report");
-            Validate("VAT Report Version", 'CURRENT');
-            Validate("Suggest Lines Codeunit ID", Codeunit::"Intrastat Suggest Lines");
-            Validate("Validate Codeunit ID", CODEUNIT::"Intrastat Validate Lines");
-            Validate("Content Codeunit ID", Codeunit::"Intrastat Export Lines");
-            Insert();
-        end;
-    end;
-#endif
 }

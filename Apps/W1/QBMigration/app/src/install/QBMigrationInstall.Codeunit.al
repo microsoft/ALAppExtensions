@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1921 "QB Migration Install"
 {
     Subtype = install;
@@ -51,7 +52,6 @@ codeunit 1921 "QB Migration Install"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"MigrationQB Config");
         DataClassificationMgt.SetFieldToPersonal(Database::"MigrationQB Config", MigrationQBConfig.FieldNo("Zip File"));
         DataClassificationMgt.SetFieldToPersonal(Database::"MigrationQB Config", MigrationQBConfig.FieldNo("Unziped Folder"));
-        DataClassificationMgt.SetFieldToPersonal(Database::"MigrationQB Config", MigrationQBConfig.FieldNo("Realm Id"));
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"MigrationQB Account Setup");
 

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -389,30 +389,18 @@ table 31252 "Bank Statement Header CZB"
     var
         BankStatementHeader: Record "Bank Statement Header CZB";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
     begin
         if "No." = '' then begin
             BankAccount.Get("Bank Account No.");
             BankAccount.Testfield("Bank Statement Nos. CZB");
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(BankAccount."Bank Statement Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
-                "No. Series" := BankAccount."Bank Statement Nos. CZB";
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
+            "No. Series" := BankAccount."Bank Statement Nos. CZB";
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series");
+            BankStatementHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
+            BankStatementHeader.SetLoadFields("No.");
+            while BankStatementHeader.Get("No.") do
                 "No." := NoSeries.GetNextNo("No. Series");
-                BankStatementHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
-                BankStatementHeader.SetLoadFields("No.");
-                while BankStatementHeader.Get("No.") do
-                    "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", BankAccount."Bank Statement Nos. CZB", 0D, "No.");
-            end;
-#endif
         end;
     end;
 
@@ -469,8 +457,13 @@ table 31252 "Bank Statement Header CZB"
     procedure UpdateBankStatementLine(ChangedFieldName: Text; AskQuestion: Boolean)
     var
         BankStatementLineCZB: Record "Bank Statement Line CZB";
+        IsHandled: Boolean;
         UpdateLinesQst: Label 'You have modified %1.\Do you want update lines?', Comment = '%1 = FieldCaption';
     begin
+        OnBeforeUpdateBankStatementLine(Rec, ChangedFieldName, AskQuestion, IsHandled);
+        if IsHandled then
+            exit;
+
         if not BankStmtLinesExist() then
             exit;
         if AskQuestion then
@@ -608,6 +601,8 @@ table 31252 "Bank Statement Header CZB"
         DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
         DocumentAttachmentMgmt.ShowNotification(RecordRef, 1, true);
     end;
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the BankStatementStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
 
     procedure ShowStatistics()
     var
@@ -619,7 +614,7 @@ table 31252 "Bank Statement Header CZB"
         BankingDocStatisticsCZB.SetValues("Bank Account No.", "Document Date", Amount);
         BankingDocStatisticsCZB.Run();
     end;
-
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeImportBankStatement(var BankStatementHeaderCZB: Record "Bank Statement Header CZB"; var IsHandled: Boolean)
@@ -628,6 +623,11 @@ table 31252 "Bank Statement Header CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterImportBankStatement(var BankStatementHeaderCZB: Record "Bank Statement Header CZB")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateBankStatementLine(BankStatementHeaderCZB: Record "Bank Statement Header CZB"; ChangedFieldName: Text; AskQuestion: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

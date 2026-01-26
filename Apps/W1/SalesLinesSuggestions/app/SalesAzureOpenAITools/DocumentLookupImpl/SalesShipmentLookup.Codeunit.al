@@ -5,7 +5,6 @@
 namespace Microsoft.Sales.Document;
 
 using Microsoft.Inventory.Item;
-using Microsoft.Foundation.UOM;
 using Microsoft.Sales.History;
 
 codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
@@ -21,13 +20,13 @@ codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
     var
         SourceSalesHeader: Record "Sales Header";
         SalesShipmentHeader: Record "Sales Shipment Header";
-        DocumentLookup: Codeunit "Document Lookup Function";
+        SearchItemsWithFiltersFunc: Codeunit "Search Items With Filters Func";
         DocumentNo: Text;
         StartDateStr: Text;
         EndDateStr: Text;
         FoundDocNo: Code[20];
     begin
-        DocumentLookup.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
+        SearchItemsWithFiltersFunc.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
         SalesShipmentHeader.SetLoadFields("No.");
         // setup SecurityFilter
         SalesShipmentHeader.SetSecurityFilterOnRespCenter();
@@ -75,70 +74,29 @@ codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
         if SearchPreciseNo(DocumentNo, DocNoLen, Result) then
             exit(Result)
         else
-            if SearchAmbiguousNo(DocumentNo, DocNoLen, Result) then
+            if SearchAmbiguousNo(DocumentNo, Result) then
                 exit(Result)
             else
                 Error(NoDocumentFound2Err, DocumentNo);
     end;
 
-    local procedure SearchAmbiguousNo(DocumentNo: Text; DocNoLen: Integer; var Result: Code[20]): Boolean
+    local procedure SearchAmbiguousNo(DocumentNo: Text; var Result: Code[20]): Boolean
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
+        DocumentNoFilter: Text;
     begin
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."No.") then begin
-            // 1. Check if it is document no 
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
-            SalesShipmentHeader.SetFilter("No.", StrSubstNo('*%1*', DocumentNo));
+        DocumentNoFilter := StrSubstNo('*%1*', DocumentNo);
 
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."External Document No.") then begin
-            //2. Check if it is external document no
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
-            SalesShipmentHeader.SetFilter("External Document No.", StrSubstNo('*%1*', DocumentNo));
-
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Order No.") then begin
-            //3. Check if it is order no
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
-            SalesShipmentHeader.SetFilter("Order No.", StrSubstNo('*%1*', DocumentNo));
-
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Quote No.") then begin
-            //4. Check if it is quote no
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
-            SalesShipmentHeader.SetFilter("Quote No.", StrSubstNo('*%1*', DocumentNo));
-
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Your Reference") then begin
-            //5. Check if it is reference no
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
-            SalesShipmentHeader.SetFilter("Your Reference", StrSubstNo('*%1*', DocumentNo));
-
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
+        SalesShipmentHeader.SetLoadFields("No.");
+        SalesShipmentHeader.FilterGroup := -1;
+        SalesShipmentHeader.SetFilter("No.", DocumentNoFilter);
+        SalesShipmentHeader.SetFilter("External Document No.", DocumentNoFilter);
+        SalesShipmentHeader.SetFilter("Order No.", DocumentNoFilter);
+        SalesShipmentHeader.SetFilter("Quote No.", DocumentNoFilter);
+        SalesShipmentHeader.SetFilter("Your Reference", DocumentNoFilter);
+        if SalesShipmentHeader.FindLast() then begin
+            Result := SalesShipmentHeader."No.";
+            exit(true);
         end;
         exit(false);
     end;
@@ -147,61 +105,23 @@ codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
     begin
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."No.") then begin
-            // 1. Check if it is document no 
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
+        SalesShipmentHeader.SetLoadFields("No.");
+        SalesShipmentHeader.FilterGroup := -1;
+        if DocNoLen <= MaxStrLen(SalesShipmentHeader."No.") then
             SalesShipmentHeader.SetRange("No.", DocumentNo);
-
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."External Document No.") then begin
-            //2. Check if it is external document no
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
+        if DocNoLen <= MaxStrLen(SalesShipmentHeader."External Document No.") then
             SalesShipmentHeader.SetRange("External Document No.", DocumentNo);
-
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Order No.") then begin
-            //3. Check if it is order no
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
+        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Order No.") then
             SalesShipmentHeader.SetRange("Order No.", DocumentNo);
-
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Quote No.") then begin
-            //4. Check if it is quote no
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
+        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Quote No.") then
             SalesShipmentHeader.SetRange("Quote No.", DocumentNo);
-
-            if (SalesShipmentHeader.FindLast()) then begin
-                Result := SalesShipmentHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Your Reference") then begin
-            //5. Check if it is reference no
-            SalesShipmentHeader.Reset();
-            SalesShipmentHeader.SetLoadFields("No.");
+        if DocNoLen <= MaxStrLen(SalesShipmentHeader."Your Reference") then
             SalesShipmentHeader.SetRange("Your Reference", DocumentNo);
-
-            if (SalesShipmentHeader.FindLast()) then begin
+        if SalesShipmentHeader.GetFilter("No.") + SalesShipmentHeader.GetFilter("External Document No.") + SalesShipmentHeader.GetFilter("Order No.") + SalesShipmentHeader.GetFilter("Quote No.") + SalesShipmentHeader.GetFilter("Your Reference") <> '' then
+            if SalesShipmentHeader.FindLast() then begin
                 Result := SalesShipmentHeader."No.";
                 exit(true);
             end;
-        end;
         exit(false);
     end;
 
@@ -209,7 +129,6 @@ codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
     var
         SalesShipmentLine: Record "Sales Shipment Line";
         Item: Record Item;
-        UoMMgt: Codeunit "Unit of Measure Management";
         LineNumber: Integer;
     begin
         if not TempSalesLineAiSuggestion.FindLast() then
@@ -217,7 +136,6 @@ codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
         else
             LineNumber := TempSalesLineAiSuggestion."Line No.";
 
-        Item.SetLoadFields("No.", "Sales Unit of Measure");
         SalesShipmentLine.SetLoadFields("No.", "Description", "Type", "Quantity", "Quantity (Base)", "Unit of Measure Code", "Qty. per Unit of Measure", "Variant Code");
         SalesShipmentLine.SetRange("Document No.", DocumentNo);
         SalesShipmentLine.SetRange("Type", SalesShipmentLine.Type::Item);
@@ -226,7 +144,7 @@ codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
                 Item.SetRange("No.", SalesShipmentLine."No.");
                 Item.SetRange(Blocked, false);
                 Item.SetRange("Sales Blocked", false);
-                if Item.FindFirst() then begin
+                if not Item.IsEmpty() then begin
                     TempSalesLineAiSuggestion.Init();
                     LineNumber := LineNumber + 1;
                     TempSalesLineAiSuggestion."Line No." := LineNumber;
@@ -234,13 +152,8 @@ codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
                     TempSalesLineAiSuggestion."No." := SalesShipmentLine."No.";
                     TempSalesLineAiSuggestion.Description := SalesShipmentLine.Description;
                     TempSalesLineAiSuggestion."Variant Code" := SalesShipmentLine."Variant Code";
-                    if Item."Sales Unit of Measure" <> '' then
-                        if SalesShipmentLine."Unit of Measure Code" = Item."Sales Unit of Measure" then
-                            TempSalesLineAiSuggestion.Quantity := SalesShipmentLine.Quantity
-                        else
-                            TempSalesLineAiSuggestion.Quantity := UoMMgt.CalcQtyFromBase(SalesShipmentLine."Quantity (Base)", UoMMgt.GetQtyPerUnitOfMeasure(Item, Item."Sales Unit of Measure"))
-                    else
-                        TempSalesLineAiSuggestion.Quantity := SalesShipmentLine."Quantity (Base)";
+                    TempSalesLineAiSuggestion."Unit of Measure Code" := SalesShipmentLine."Unit of Measure Code";
+                    TempSalesLineAiSuggestion.Quantity := SalesShipmentLine.Quantity;
                     TempSalesLineAiSuggestion.SetSourceDocument(SalesShipmentLine.RecordId());
                     TempSalesLineAiSuggestion.Insert();
                 end;

@@ -94,5 +94,8 @@ enum 18550 "Posting Document Type"
     {
         Caption = 'Posted Service Credit Memo';
     }
-
+    value(22; "GST Distribution Line")
+    {
+        Caption = 'GST Distribution Line';
+    }
 }

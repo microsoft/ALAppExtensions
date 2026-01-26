@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using System.Environment;
 using System.Utilities;
@@ -632,6 +633,24 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                             GetAmtAndSkipIfEmpty(rez_pren5, 'rez_pren5');
                         end;
                     }
+                    textattribute(opr_dane_dan)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(opr_dane_dan, 'opr_dane_dan');
+                        end;
+                    }
+                    textattribute(opr_dane_zd)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(opr_dane_zd, 'opr_dane_zd');
+                        end;
+                    }
                 }
                 textelement(Veta2)
                 {
@@ -953,6 +972,33 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                             GetAmtAndSkipIfEmpty(odp_cu_nar, 'odp_cu_nar');
                         end;
                     }
+                    textattribute(kor_odp_krac)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(kor_odp_krac, 'kor_odp_krac');
+                        end;
+                    }
+                    textattribute(kor_odp_plne)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(kor_odp_plne, 'kor_odp_plne');
+                        end;
+                    }
+                    textattribute(kor_odp_zd)
+                    {
+                        Occurrence = Optional;
+
+                        trigger OnBeforePassVariable()
+                        begin
+                            GetAmtAndSkipIfEmpty(kor_odp_zd, 'kor_odp_zd');
+                        end;
+                    }
                 }
                 textelement(Veta5)
                 {
@@ -1169,13 +1215,15 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                 begin
                     VATStatementName.SetRange("Statement Template Name", VATStatementTemplateName);
                     VATStatementName.SetRange(Name, VATStatementNameCode);
-                    VATStatementName.FindFirst();
                 end;
 
                 trigger OnAfterGetRecord()
                 var
                     VATStatementLine: Record "VAT Statement Line";
                 begin
+                    if XMLTagAmount.Count() <> 0 then
+                        exit;
+
                     VATStatementLine.Reset();
                     VATStatementLine.SetRange("Statement Template Name", VATStatementName."Statement Template Name");
                     VATStatementLine.SetRange("Statement Name", VATStatementName.Name);
@@ -1232,6 +1280,20 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
     procedure ClearVariables()
     begin
         ClearAll();
+    end;
+
+    procedure SetData(var VATStmtReportLineDataCZL: Record "VAT Stmt. Report Line Data CZL")
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        if VATStmtReportLineDataCZL.FindSet() then
+            repeat
+                if (GeneralledgerSetup."Additional Reporting Currency" <> '') and GeneralLedgerSetup."Functional Currency CZL" then
+                    AddAmount(VATStmtReportLineDataCZL."XML Code", VATStmtReportLineDataCZL."Additional-Currency Amount")
+                else
+                    AddAmount(VATStmtReportLineDataCZL."XML Code", VATStmtReportLineDataCZL.Amount);
+            until VATStmtReportLineDataCZL.Next() = 0;
     end;
 
     procedure SetXMLParams(NewXMLParams: Text)
@@ -1486,26 +1548,30 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
 
     local procedure GetColumnValue(var VATStatementLine: Record "VAT Statement Line") ColumnValue: Decimal
     var
-        VATStatement: Report "VAT Statement";
+        VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL";
     begin
-        VATStatement.InitializeRequestCZL(
-          VATStatementName, VATStatementLine, Selection,
-          PeriodSelection, PrintInIntegers, UseAmtsInAddCurr,
-          SettlementNoFilter, RoundingDirection);
-
-        VATStatement.CalcLineTotal(VATStatementLine, ColumnValue, 0);
-        if PrintInIntegers then
-            ColumnValue := Round(ColumnValue, 1, VATStatement.GetAmtRoundingDirectionCZL());
-
-        ColumnValue := ColumnValue;
-
-        if VATStatementLine."Print with" = VATStatementLine."Print with"::"Opposite Sign" then
-            ColumnValue := -ColumnValue;
+        VATStmtCalcParametersCZL := GetVATStmtCalcParameters();
+        VATStatementLine.CalcTotal(VATStmtCalcParametersCZL, ColumnValue);
+        ColumnValue := ColumnValue * VATStatementLine.GetPrintSign();
+        if VATStmtCalcParametersCZL."Print in Integers" then
+            ColumnValue := Round(ColumnValue, 1, VATStmtCalcParametersCZL.GetRoundingDirection());
     end;
 
     procedure CopyAttachmentFilter(var VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL")
     begin
         VATStatementAttachmentCZL.CopyFilters(Attachment);
+    end;
+
+    local procedure GetVATStmtCalcParameters() VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL"
+    begin
+        VATStmtCalcParameters."Start Date" := StartDate;
+        VATStmtCalcParameters.SetEndDate(EndDate);
+        VATStmtCalcParameters."Selection" := Selection;
+        VATStmtCalcParameters."Period Selection" := PeriodSelection;
+        VATStmtCalcParameters."Print in Integers" := PrintInIntegers;
+        VATStmtCalcParameters."Use Amounts in Add. Currency" := UseAmtsInAddCurr;
+        VATStmtCalcParameters.SetRoundingType(RoundingDirection);
+        VATStmtCalcParameters."VAT Settlement No. Filter" := SettlementNoFilter;
     end;
 }
 

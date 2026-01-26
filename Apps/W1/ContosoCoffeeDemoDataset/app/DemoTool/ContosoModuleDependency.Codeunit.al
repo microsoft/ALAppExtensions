@@ -1,3 +1,10 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
 codeunit 5138 "Contoso Module Dependency"
 {
     Access = Internal;
@@ -21,8 +28,8 @@ codeunit 5138 "Contoso Module Dependency"
         if IsCircularDependency(Name, DependsOn) then
             Error(CircularDependencyErr, Name, DependsOn);
 
-        DemoDataFeatureDependency.Validate(Name, Name);
-        DemoDataFeatureDependency.Validate(DependsOn, DependsOn);
+        DemoDataFeatureDependency.Name := Name;
+        DemoDataFeatureDependency.DependsOn := DependsOn;
         DemoDataFeatureDependency.Insert(true);
     end;
 

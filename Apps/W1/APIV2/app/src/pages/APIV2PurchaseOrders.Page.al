@@ -1,14 +1,14 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
 using System.Reflection;
 
@@ -25,6 +25,7 @@ page 30066 "APIV2 - Purchase Orders"
     PageType = API;
     SourceTable = "Purchase Order Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages purchase order documents, exposing vendor details, order status, delivery and payment information, addresses, currency, totals, and discounts. Supports full CRUD operations (GET, POST, PATCH, DELETE) for procurement automation, supplier integration, and inventory replenishment workflows with external platforms. Enables seamless synchronization and lifecycle management of purchase orders between Business Central and third-party systems.';
 
     layout
     {
@@ -770,6 +771,7 @@ page 30066 "APIV2 - Purchase Orders"
     end;
 
     [ServiceEnabled]
+    [Caption('Receives all items on the purchase order and creates a posted purchase invoice')]
     [Scope('Cloud')]
     procedure ReceiveAndInvoice(var ActionContext: WebServiceActionContext)
     var

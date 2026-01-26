@@ -4376,9 +4376,6 @@ End Function</Code>
         <Field Name="UoMLbl">
           <DataField>UoMLbl</DataField>
         </Field>
-        <Field Name="CreatorLbl">
-          <DataField>CreatorLbl</DataField>
-        </Field>
         <Field Name="SubtotalLbl">
           <DataField>SubtotalLbl</DataField>
         </Field>
@@ -4481,6 +4478,9 @@ End Function</Code>
         <Field Name="Amount_PurchaseHeaderFormat">
           <DataField>Amount_PurchaseHeaderFormat</DataField>
         </Field>
+        <Field Name="Formatted_Amount_PurchaseHeader">
+          <DataField>Formatted_Amount_PurchaseHeader</DataField>
+        </Field>
         <Field Name="AmountIncludingVAT_PurchaseHeaderCaption">
           <DataField>AmountIncludingVAT_PurchaseHeaderCaption</DataField>
         </Field>
@@ -4489,6 +4489,9 @@ End Function</Code>
         </Field>
         <Field Name="AmountIncludingVAT_PurchaseHeaderFormat">
           <DataField>AmountIncludingVAT_PurchaseHeaderFormat</DataField>
+        </Field>
+        <Field Name="Formatted_AmountIncludingVAT_PurchaseHeader">
+          <DataField>Formatted_AmountIncludingVAT_PurchaseHeader</DataField>
         </Field>
         <Field Name="DocFooterText">
           <DataField>DocFooterText</DataField>
@@ -4610,6 +4613,9 @@ End Function</Code>
         <Field Name="LineAmount_PurchaseLineFormat">
           <DataField>LineAmount_PurchaseLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_LineAmount_PurchaseLine">
+          <DataField>Formatted_LineAmount_PurchaseLine</DataField>
+        </Field>
         <Field Name="InvDiscountAmount_PurchaseLineCaption">
           <DataField>InvDiscountAmount_PurchaseLineCaption</DataField>
         </Field>
@@ -4618,15 +4624,6 @@ End Function</Code>
         </Field>
         <Field Name="InvDiscountAmount_PurchaseLineFormat">
           <DataField>InvDiscountAmount_PurchaseLineFormat</DataField>
-        </Field>
-        <Field Name="FullName_Employee">
-          <DataField>FullName_Employee</DataField>
-        </Field>
-        <Field Name="PhoneNo_Employee">
-          <DataField>PhoneNo_Employee</DataField>
-        </Field>
-        <Field Name="CompanyEMail_Employee">
-          <DataField>CompanyEMail_Employee</DataField>
         </Field>
       </Fields>
       <Query>

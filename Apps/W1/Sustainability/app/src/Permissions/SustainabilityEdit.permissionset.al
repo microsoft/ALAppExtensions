@@ -14,5 +14,6 @@ permissionset 6213 "Sustainability Edit"
         tabledata "Sustainability Jnl. Template" = IMD,
         tabledata "Sustainability Jnl. Batch" = IMD,
         tabledata "Sustainability Jnl. Line" = IMD,
-        tabledata "Sustainability Ledger Entry" = I;
+        tabledata "Sustainability Ledger Entry" = I,
+        tabledata "Sustainability Value Entry" = I;
 }

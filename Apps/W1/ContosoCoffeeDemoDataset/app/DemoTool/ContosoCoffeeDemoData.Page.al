@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using System.Globalization;
+
 page 4762 "Contoso Coffee Demo Data"
 {
     PageType = Card;
@@ -16,6 +25,10 @@ page 4762 "Contoso Coffee Demo Data"
                 field("Starting Year"; Rec."Starting Year")
                 {
                     ToolTip = 'Specifies the Starting Year that you want to create the demo data with.';
+                }
+                field("Starting Date"; Rec."Starting Date")
+                {
+                    ToolTip = 'Specifies the Starting Date that you want to create the demo date with. In the Analytics module, this will generate data for the past six months from this date. By default, the starting date is set to today''s date and going back six months.';
                 }
                 field("Company Type"; Rec."Company Type")
                 {

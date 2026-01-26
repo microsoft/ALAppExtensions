@@ -16,18 +16,14 @@ tableextension 11795 "Job Ledger Entry CZL" extends "Job Ledger Entry"
             Caption = 'Correction';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31050; "Tariff No. CZL"; Code[20])
         {
             Caption = 'Tariff No.';
             TableRelation = "Tariff Number";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31054; "Net Weight CZL"; Decimal)
@@ -35,13 +31,8 @@ tableextension 11795 "Job Ledger Entry CZL" extends "Job Ledger Entry"
             Caption = 'Net Weight';
             DecimalPlaces = 0 : 5;
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31057; "Country/Reg. of Orig. Code CZL"; Code[10])
@@ -49,27 +40,16 @@ tableextension 11795 "Job Ledger Entry CZL" extends "Job Ledger Entry"
             Caption = 'Country/Region of Origin Code';
             TableRelation = "Country/Region";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31058; "Statistic Indication CZL"; Code[10])
         {
             Caption = 'Statistic Indication';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            TableRelation = "Statistic Indication CZL".Code where("Tariff No." = field("Tariff No. CZL"));
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31059; "Intrastat Transaction CZL"; Boolean)
@@ -77,14 +57,10 @@ tableextension 11795 "Job Ledger Entry CZL" extends "Job Ledger Entry"
             Caption = 'Intrastat Transaction';
             Editable = false;
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
+#endif
     }
 }

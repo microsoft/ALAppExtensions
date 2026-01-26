@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-using Microsoft.Foundation.Shipping;
 using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Foundation.Shipping;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;
@@ -107,10 +107,12 @@ codeunit 31300 "Data Class. Eval. Handler CZ"
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Line", IntrastatReportLine.FieldNo("Internal Note 2 CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Header", IntrastatReportHeader.FieldNo("Statement Type CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("No Item Charges in Int. CZ"));
+#if not CLEAN26
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Transaction Type Mandatory CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Transaction Spec. Mandatory CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Transport Method Mandatory CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Shipment Method Mandatory CZ"));
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Intrastat Rounding Type CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Def. Phys. Trans. - Returns CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::Item, Item.FieldNo("Statistic Indication CZ"));

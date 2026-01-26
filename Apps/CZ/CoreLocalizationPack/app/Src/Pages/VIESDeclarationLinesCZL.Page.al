@@ -52,6 +52,12 @@ page 31141 "VIES Declaration Lines CZL"
                         Rec.DrillDownAmountLCY();
                     end;
                 }
+                field("Additional-Currency Amount"; Rec."Additional-Currency Amount")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies total additional currency amounts of partner trades for selected period.';
+                    Importance = Additional;
+                }
                 field("Trade Role Type"; Rec."Trade Role Type")
                 {
                     ApplicationArea = Basic, Suite;
@@ -156,6 +162,7 @@ page 31141 "VIES Declaration Lines CZL"
         NewVIESDeclarationLineCZL."Country/Region Code" := VIESDeclarationLineCZL."Country/Region Code";
         NewVIESDeclarationLineCZL."VAT Registration No." := VIESDeclarationLineCZL."VAT Registration No.";
         NewVIESDeclarationLineCZL."Amount (LCY)" := VIESDeclarationLineCZL."Amount (LCY)";
+        NewVIESDeclarationLineCZL."Additional-Currency Amount" := VIESDeclarationLineCZL."Additional-Currency Amount";
         NewVIESDeclarationLineCZL."EU 3-Party Trade" := VIESDeclarationLineCZL."EU 3-Party Trade";
         NewVIESDeclarationLineCZL."EU Service" := VIESDeclarationLineCZL."EU Service";
         NewVIESDeclarationLineCZL."EU 3-Party Intermediate Role" := VIESDeclarationLineCZL."EU 3-Party Intermediate Role";

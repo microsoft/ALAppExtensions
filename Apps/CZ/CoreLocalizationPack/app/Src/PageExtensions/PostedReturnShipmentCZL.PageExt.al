@@ -111,18 +111,6 @@ pageextension 11743 "Posted Return Shipment CZL" extends "Posted Return Shipment
                 Editable = false;
                 ToolTip = 'Specifies whether the document is part of a three-party trade.';
             }
-#if not CLEAN22
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude (Obsolete)';
-                Editable = false;
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-            }
-#endif
         }
     }
 }

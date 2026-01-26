@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Warehousing;
+
+using Microsoft.DemoData.Common;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 table 4764 "Warehouse Module Setup"
 {
     DataClassification = CustomerContent;
@@ -86,7 +99,7 @@ table 4764 "Warehouse Module Setup"
         Rec.InitRecord();
 
         if Rec."Vendor No." = '' then
-            Rec.Validate("Vendor No.", CreateContosoCustomerVendor.DomesticVendor1());
+            Rec.Validate("Vendor No.", CreateContosoCustomerVendor.DomesticVendor2());
 
         if Rec."Customer No." = '' then
             Rec.Validate("Customer No.", CreateContosoCustomerVendor.DomesticCustomer1());

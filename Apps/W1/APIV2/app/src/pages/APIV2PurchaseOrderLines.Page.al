@@ -1,8 +1,8 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
 using Microsoft.Inventory.Item;
 using System.Reflection;
@@ -20,6 +20,7 @@ page 30067 "APIV2 - Purchase Order Lines"
     SourceTable = "Purch. Inv. Line Aggregate";
     SourceTableTemporary = true;
     Extensible = false;
+    AboutText = 'Provides detailed access to individual purchase order lines, including item, quantity, pricing, discounts, tax details, location, and expected receipt dates. Supports full CRUD operations for reading, creating, updating, and deleting order lines, enabling integration with procurement platforms, supplier systems, and automated order processing workflows for precise control over purchasing and inventory management.';
 
     layout
     {

@@ -42,7 +42,9 @@ page 4101 "Hist. Migration Status Factbox"
                         ApplicationArea = All;
                         Style = Unfavorable;
                         StyleExpr = (ErrorCount > 0);
+#pragma warning disable AA0219
                         ToolTip = 'Indicates the number of historical snapshot errors that occurred during the GP Detail Snapshot migration.';
+#pragma warning restore AA0219
 
                         trigger OnDrillDown()
                         begin
@@ -53,7 +55,9 @@ page 4101 "Hist. Migration Status Factbox"
                     {
                         Caption = 'GP Detail Snapshot Log Entries';
                         ApplicationArea = All;
+#pragma warning disable AA0219
                         ToolTip = 'Indicates the number of historical snapshot log entries that have been logged during the GP Detail Snapshot migration.';
+#pragma warning restore AA0219
 
                         trigger OnDrillDown()
                         begin

@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 codeunit 10538 "MTD OAuth 2.0 Mgt"
 {
@@ -32,30 +33,6 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         AccessTokenURLPathTxt: Label '/oauth/token', Locked = true;
         RefreshTokenURLPathTxt: Label '/oauth/token', Locked = true;
         AuthorizationResponseTypeTxt: Label 'code', Locked = true;
-        HMRCFraudPreventHeadersTok: label 'HMRC Fraud Prevention Headers', Locked = true;
-        FraudPreventHeadersValidTxt: Label 'Fraud prevention headers are valid. ', Locked = true;
-        FraudPreventHeadersNotValidTxt: Label 'Fraud prevention headers are NOT valid. ', Locked = true;
-        JsonTextBlankErr: Label 'JSON text is blank. ', Locked = true;
-        CannotReadJsonErr: Label 'Cannot read JSON. ', Locked = true;
-        JsonKeyMissingErr: Label 'JSON key %1 is missing. ', Locked = true;
-        CannotReadJsonValueErr: Label 'Cannot read value from JSON key %1. ', Locked = true;
-        JsonValueBlankErr: Label 'Value from key %1 is blank. ', Locked = true;
-        JsonValueNotMatchedErr: Label 'Value from key %1 does not match validation pattern %2. ', Locked = true;
-        ClientBrowserDoNotTrackTxt: Label 'GOV-CLIENT-BROWSER-DO-NOT-TRACK', Locked = true;
-        ClientBrowserJsUserAgentTxt: Label 'GOV-CLIENT-BROWSER-JS-USER-AGENT', Locked = true;
-        ClientConnectionMethodTxt: Label 'GOV-CLIENT-CONNECTION-METHOD', Locked = true;
-        ClientDeviceIdTxt: Label 'GOV-CLIENT-DEVICE-ID', Locked = true;
-        ClientPublicIpTxt: Label 'GOV-CLIENT-PUBLIC-IP', Locked = true;
-        ClientPublicIpTimestampTxt: Label 'GOV-CLIENT-PUBLIC-IP-TIMESTAMP', Locked = true;
-        ClientScreensTxt: Label 'GOV-CLIENT-SCREENS', Locked = true;
-        ClientTimezoneTxt: Label 'GOV-CLIENT-TIMEZONE', Locked = true;
-        ClientUserIdsTxt: Label 'GOV-CLIENT-USER-IDS', Locked = true;
-        ClientWindowSizeTxt: Label 'GOV-CLIENT-WINDOW-SIZE', Locked = true;
-        VendorForwardedTxt: Label 'GOV-VENDOR-FORWARDED', Locked = true;
-        VendorLicenseIdsTxt: Label 'GOV-VENDOR-LICENSE-IDS', Locked = true;
-        VendorProductNameTxt: Label 'GOV-VENDOR-PRODUCT-NAME', Locked = true;
-        VendorPublicIpTxt: Label 'GOV-VENDOR-PUBLIC-IP', Locked = true;
-        VendorVersionTxt: Label 'GOV-VENDOR-VERSION', Locked = true;
 
     internal procedure GetOAuthPRODSetupCode() Result: Code[20]
     begin
@@ -118,12 +95,14 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         if not IsMTDOAuthSetup(Rec) then
             exit;
 
-        with Rec do begin
-            DeleteToken("Client ID");
-            DeleteToken("Client Secret");
-            DeleteToken("Access Token");
-            DeleteToken("Refresh Token");
-        end;
+        if IsolatedStorage.Contains(Rec."Client ID", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Client ID", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Client Secret", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Client Secret", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Access Token", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Access Token", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Refresh Token", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Refresh Token", Rec.GetTokenDataScope());
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', true, true)]
@@ -188,14 +167,27 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         AuthorizationCode := OAuth2ControlAddIn.GetAuthCode();
         if AuthorizationCode <> '' then begin
             OAuth20Setup.Find();
-            if not OAuth20Setup.RequestAccessToken(auth_error, AuthorizationCode) then
-                Error(auth_error);
+            if not RequestAccessToken(OAuth20Setup, AuthorizationCode, auth_error) then
+                Error(auth_error)
+            else
+                if Confirm(CheckCompanyVATNoAfterSuccessAuthorizationQst) then
+                    Page.RunModal(Page::"Company Information")
         end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
     [NonDebuggable]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
+    begin
+        if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
+            exit;
+        Processed := true;
+
+        Result := RequestAccessToken(OAuth20Setup, AuthorizationCode, MessageText)
+    end;
+
+    [NonDebuggable]
+    local procedure RequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var MessageText: Text) Result: Boolean
     var
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
         RequestJSON: Text;
@@ -203,13 +195,12 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         RefreshToken: SecretText;
         TokenDataScope: DataScope;
     begin
-        if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
+        if not IsMTDOAuthSetup(OAuth20Setup) then
             exit;
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
         MTDSessionFraudPrevHdr.DeleteAll();
-        AddFraudPreventionHeaders(RequestJSON, false);
+        AddFraudPreventionHeaders(RequestJSON);
 
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
 
@@ -240,18 +231,27 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRefreshAccessToken', '', true, true)]
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
+    begin
+        if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
+            exit;
+        Processed := true;
+
+        Result := RefreshAccessToken(OAuth20Setup, MessageText)
+    end;
+
+    [NonDebuggable]
+    internal procedure RefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var MessageText: Text) Result: Boolean
     var
         RequestJSON: Text;
         AccessToken: SecretText;
         RefreshToken: SecretText;
         TokenDataScope: DataScope;
     begin
-        if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
+        if not IsMTDOAuthSetup(OAuth20Setup) then
             exit;
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-        AddFraudPreventionHeaders(RequestJSON, true);
+        AddFraudPreventionHeaders(RequestJSON);
 
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         RefreshToken := GetToken(OAuth20Setup."Refresh Token", TokenDataScope);
@@ -294,7 +294,19 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-        AddFraudPreventionHeaders(RequestJSON, true);
+        AddFraudPreventionHeaders(RequestJSON);
+
+        Result := InvokeRequest(OAuth20Setup, RequestJSON, ResponseJSON, HttpError, RetryOnCredentialsFailure);
+    end;
+
+    [NonDebuggable]
+    internal procedure InvokeRequest(var OAuth20Setup: Record "OAuth 2.0 Setup"; RequestJSON: Text; var ResponseJSON: Text; var HttpError: Text; RetryOnCredentialsFailure: Boolean) Result: Boolean
+    begin
+        if not IsMTDOAuthSetup(OAuth20Setup) then
+            exit;
+
+        CheckOAuthConsistencySetup(OAuth20Setup);
+        AddFraudPreventionHeaders(RequestJSON);
 
         Result :=
             OAuth20Mgt.InvokeRequest(
@@ -350,7 +362,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             IsolatedStorage.Set(TokenKey, TokenValue, TokenDataScope);
     end;
 
-    local procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: SecretText
+    internal procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: SecretText
     begin
         if not HasToken(TokenKey, TokenDataScope) then
             exit(TokenValue);
@@ -395,87 +407,12 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         end;
     end;
 
-    local procedure AddFraudPreventionHeaders(var RequestJSON: Text; ConfirmHeaders: Boolean)
+    local procedure AddFraudPreventionHeaders(var RequestJSON: Text)
     var
         MTDFraudPreventionMgt: Codeunit "MTD Fraud Prevention Mgt.";
     begin
-        MTDFraudPreventionMgt.AddFraudPreventionHeaders(RequestJSON, ConfirmHeaders);
-        LogFraudPreventionHeadersValidity(RequestJSON);
-    end;
-
-    local procedure LogFraudPreventionHeadersValidity(RequestJSON: Text)
-    var
-        FeatureTelemetry: Codeunit "Feature Telemetry";
-        JsonObject: JsonObject;
-        HeaderJsonToken: JsonToken;
-        ErrorText: Text;
-    begin
-        if RequestJSON = '' then begin
-            FeatureTelemetry.LogError('0000LJE', HMRCFraudPreventHeadersTok, '', JsonTextBlankErr);
-            exit;
-        end;
-
-        if not JsonObject.ReadFrom(RequestJSON) then begin
-            FeatureTelemetry.LogError('0000LJF', HMRCFraudPreventHeadersTok, '', CannotReadJsonErr);
-            exit;
-        end;
-
-        if not JsonObject.Get('Header', HeaderJsonToken) then begin
-            FeatureTelemetry.LogError('0000LJG', HMRCFraudPreventHeadersTok, '', StrSubstNo(JsonKeyMissingErr, 'Header'));
-            exit;
-        end;
-
-        JsonObject := HeaderJsonToken.AsObject();
-
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientBrowserDoNotTrackTxt, 'true|false');              // true or false
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientBrowserJsUserAgentTxt, '\w+');                    // any letter, digit, or underscore
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientConnectionMethodTxt, 'WEB_APP_VIA_SERVER');       // WEB_APP_VIA_SERVER
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientDeviceIdTxt, '\w+');                              // any letter, digit, or underscore
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientPublicIpTxt, '[0-9]{1,3}(\.[0-9]{1,3}){3}|([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4})');   // IPv4 or IPv6
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientPublicIpTimestampTxt, '\d+[:\.-]\d+[:\.-]\d+');   // for example 13:00:00
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientScreensTxt, '^(?=.*width)(?=.*height).*$');       // width and height must be present in any order
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientTimezoneTxt, '[-+]\d{1,2}');                      // for example +02
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientUserIdsTxt, 'Business.*Central');                 // Business Central
-        ErrorText += CheckJsonTokenValidity(JsonObject, ClientWindowSizeTxt, '^(?=.*width)(?=.*height).*$');    // width and height must be present in any order
-        ErrorText += CheckJsonTokenValidity(JsonObject, VendorForwardedTxt, '[0-9]{1,3}(\.[0-9]{1,3}){3}|([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4})');  // IPv4 or IPv6
-        ErrorText += CheckJsonTokenValidity(JsonObject, VendorLicenseIdsTxt, 'Business.*Central.*\w+');         // Business Central and any letter, digit, or underscore
-        ErrorText += CheckJsonTokenValidity(JsonObject, VendorProductNameTxt, 'Business.*Central');             // Business Central
-        ErrorText += CheckJsonTokenValidity(JsonObject, VendorPublicIpTxt, '[0-9]{1,3}(\.[0-9]{1,3}){3}|([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4})');   // IPv4 or IPv6
-        ErrorText += CheckJsonTokenValidity(JsonObject, VendorVersionTxt, 'Business.*Central.*=\d+');           // for example Business Central=23
-
-        if ErrorText <> '' then
-            FeatureTelemetry.LogError('0000LJH', HMRCFraudPreventHeadersTok, FraudPreventHeadersNotValidTxt, ErrorText)
-        else
-            FeatureTelemetry.LogUsage('0000LJI', HMRCFraudPreventHeadersTok, FraudPreventHeadersValidTxt);
-    end;
-
-    local procedure CheckJsonTokenValidity(var JsonObject: JsonObject; TokenKey: Text; ValidationRegExPattern: Text) ErrorText: Text
-    var
-        JsonToken: JsonToken;
-        TextValue: Text;
-        RegEx: DotNet Regex;
-        RegExOptions: DotNet RegexOptions;
-    begin
-        if not JsonObject.Get(TokenKey, JsonToken) then begin
-            ErrorText := StrSubstNo(JsonKeyMissingErr, TokenKey);
-            exit;
-        end;
-
-        if not JsonToken.WriteTo(TextValue) then begin
-            ErrorText := StrSubstNo(CannotReadJsonValueErr, TokenKey);
-            exit;
-        end;
-
-        if TextValue = '' then begin
-            ErrorText := StrSubstNo(JsonValueBlankErr, TokenKey);
-            exit;
-        end;
-
-        RegEx := RegEx.Regex(ValidationRegExPattern, RegExOptions.IgnoreCase);
-        if not RegEx.IsMatch(TextValue) then begin
-            ErrorText := StrSubstNo(JsonValueNotMatchedErr, TokenKey, ValidationRegExPattern);
-            exit;
-        end;
+        MTDFraudPreventionMgt.AddFraudPreventionHeaders(RequestJSON);
+        MTDFraudPreventionMgt.LogFraudPreventionHeadersValidity(RequestJSON);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"OAuth 2.0 Setup", 'OnBeforeActionEvent', 'RefreshAccessToken', false, false)]

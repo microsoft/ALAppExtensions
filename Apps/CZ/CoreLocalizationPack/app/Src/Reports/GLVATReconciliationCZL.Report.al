@@ -42,13 +42,7 @@ report 11793 "G/L VAT Reconciliation CZL"
             {
                 DataItemLink = "G/L Account No." = field("No.");
                 DataItemTableView = sorting("G/L Account No.", "Posting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-                RequestFilterFields = "Posting Date", "VAT Date CZL";
-#pragma warning restore AL0432
-#else
                 RequestFilterFields = "Posting Date", "VAT Reporting Date";
-#endif
                 column(GLEntry_Posting_Date_; "Posting Date")
                 {
                     IncludeCaption = true;
@@ -95,12 +89,6 @@ report 11793 "G/L VAT Reconciliation CZL"
                 }
                 trigger OnAfterGetRecord()
                 begin
-#if not CLEAN22
-#pragma warning disable AL0432
-                    if not IsReplaceVATDateEnabled() then
-                        "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                     if DifferentOnly and ("Posting Date" = "VAT Reporting Date") then
                         CurrReport.Skip();
                 end;
@@ -140,14 +128,6 @@ report 11793 "G/L VAT Reconciliation CZL"
     begin
         if "G/L Account".GetFilters() <> '' then
             GLAccFilter := "G/L Account".Tablecaption() + ': ' + "G/L Account".GetFilters();
-#if not CLEAN22
-#pragma warning disable AL0432
-        if "G/L Entry".IsReplaceVATDateEnabled() then begin
-            "G/L Entry".CopyFilter("VAT Date CZL", "G/L Entry"."VAT Reporting Date");
-            "G/L Entry".SetRange("VAT Date CZL");
-        end;
-#pragma warning restore AL0432
-#endif
     end;
 
     var

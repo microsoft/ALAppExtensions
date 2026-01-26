@@ -1,6 +1,7 @@
 codeunit 148092 "Swiss QR-Bill Test Print"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -790,9 +791,9 @@ codeunit 148092 "Swiss QR-Bill Test Print"
     procedure PrintUmlautsUsingWesternEuropeanISO88591Codepage()
     var
         TempBlob: Codeunit "Temp Blob";
-        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
-        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
-        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        SwissQRBillIBarcodeProvider: DotNet "IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "QRCode Error Correction Level";
         OutStream: OutStream;
         UmlautChars: Text;
         i: Integer;
@@ -811,9 +812,9 @@ codeunit 148092 "Swiss QR-Bill Test Print"
     procedure PrintUmlautsUsingUTF8CodepageECIModeOn()
     var
         TempBlob: Codeunit "Temp Blob";
-        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
-        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
-        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        SwissQRBillIBarcodeProvider: DotNet "IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "QRCode Error Correction Level";
         OutStream: OutStream;
         UmlautChars: Text;
         i: Integer;
@@ -832,9 +833,9 @@ codeunit 148092 "Swiss QR-Bill Test Print"
     procedure PrintUmlautsUsingUTF8CodepageECIModeOff()
     var
         TempBlob: Codeunit "Temp Blob";
-        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
-        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
-        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        SwissQRBillIBarcodeProvider: DotNet "IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "QRCode Error Correction Level";
         OutStream: OutStream;
         UmlautChars: Text;
         i: Integer;
@@ -853,9 +854,9 @@ codeunit 148092 "Swiss QR-Bill Test Print"
     procedure PrintUmlautsUsingUTF8CodepageBOMOnECIModeOn()
     var
         TempBlob: Codeunit "Temp Blob";
-        SwissQRBillIBarcodeProvider: DotNet "Swiss QR-Bill IBarcode Provider";
-        SwissQRBillQRCodeProvider: DotNet "Swiss QR-Bill QRCode Provider";
-        SwissQRBillErrorCorrectionLevel: DotNet "Swiss QR-Bill Error Correction Level";
+        SwissQRBillIBarcodeProvider: DotNet "IBarcode Provider";
+        SwissQRBillQRCodeProvider: DotNet "QRCode Provider";
+        SwissQRBillErrorCorrectionLevel: DotNet "QRCode Error Correction Level";
         OutStream: OutStream;
         UmlautChars: Text;
         i: Integer;

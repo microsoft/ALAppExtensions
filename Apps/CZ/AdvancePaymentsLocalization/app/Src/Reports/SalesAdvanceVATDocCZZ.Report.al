@@ -9,6 +9,7 @@ using Microsoft.CRM.Team;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.PaymentTerms;
@@ -17,15 +18,15 @@ using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
 using System.Globalization;
 using System.Security.User;
+using System.Text;
 using System.Utilities;
 
 report 31015 "Sales - Advance VAT Doc. CZZ"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesAdvanceVATDoc.rdl';
     Caption = 'Sales - Advance VAT Document';
     PreviewMode = PrintLayout;
     UsageCategory = None;
+    DefaultRenderingLayout = "SalesAdvanceVATDoc.rdl";
     WordMergeDataItem = TempSalesAdvLetterEntry;
 
     dataset
@@ -75,6 +76,17 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     column(LCYCode_GeneralLedgerSetup; "LCY Code")
                     {
                     }
+                    column(VATCurrencyCode; VATCurrencyCode)
+                    {
+                    }
+                    trigger OnAfterGetRecord()
+                    begin
+                        UseFunctionalCurrency := "General Ledger Setup"."Functional Currency CZL";
+                        if UseFunctionalCurrency then
+                            VATCurrencyCode := "General Ledger Setup"."Additional Reporting Currency"
+                        else
+                            VATCurrencyCode := "General Ledger Setup"."LCY Code";
+                    end;
                 }
             }
 
@@ -266,6 +278,9 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 column(AmountIncludingVAT; AmountIncludingVAT)
                 {
                 }
+                column(Formatted_AmountIncludingVAT; Format(AmountIncludingVAT, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Adv. Letter Header"."Currency Code")))
+                {
+                }
                 dataitem(CopyLoop; "Integer")
                 {
                     DataItemTableView = sorting(Number);
@@ -291,9 +306,11 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     {
                         DataItemLink = "Sales Adv. Letter No." = field("Sales Adv. Letter No."), "Document No." = field("Document No.");
                         DataItemLinkReference = TempSalesAdvLetterEntry;
-                        DataItemTableView = sorting("Document No.") where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close"));
+                        DataItemTableView = sorting("Document No.") where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close"), "Auxiliary Entry" = const(false));
 
                         trigger OnAfterGetRecord()
+                        var
+                            VATEntry: Record "VAT Entry";
                         begin
                             TempVATAmountLine.Init();
                             TempVATAmountLine."VAT Identifier" := "VAT Identifier";
@@ -303,6 +320,10 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                             TempVATAmountLine."Amount Including VAT" := -"Amount";
                             TempVATAmountLine."VAT Base (LCY) CZL" := -"VAT Base Amount (LCY)";
                             TempVATAmountLine."VAT Amount (LCY) CZL" := -"VAT Amount (LCY)";
+                            if VATEntry.Get("VAT Entry No.") then begin
+                                TempVATAmountLine."Additional-Currency Base CZL" := -VATEntry."Additional-Currency Base";
+                                TempVATAmountLine."Additional-Currency Amount CZL" := -VATEntry."Additional-Currency Amount";
+                            end;
                             TempVATAmountLine.InsertLine();
                         end;
 
@@ -326,25 +347,41 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                             AutoFormatExpression = "Sales Adv. Letter Header"."Currency Code";
                             AutoFormatType = 1;
                         }
+                        column(Formatted_VATAmtLineVATBase; Format(TempVATAmountLine."VAT Base", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Adv. Letter Header"."Currency Code")))
+                        {
+                        }
                         column(VATAmtLineVATAmt; TempVATAmountLine."VAT Amount")
                         {
                             AutoFormatExpression = "Sales Adv. Letter Header"."Currency Code";
                             AutoFormatType = 1;
+                        }
+                        column(Formatted_VATAmtLineVATAmt; Format(TempVATAmountLine."VAT Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Adv. Letter Header"."Currency Code")))
+                        {
                         }
                         column(VATAmtLineVATBaseLCY; TempVATAmountLine."VAT Base (LCY) CZL")
                         {
                             AutoFormatExpression = "Sales Adv. Letter Header"."Currency Code";
                             AutoFormatType = 1;
                         }
+                        column(Formatted_VATAmtLineVATBaseLCY; Format(TempVATAmountLine."VAT Base (LCY) CZL", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, '')))
+                        {
+                        }
                         column(VATAmtLineVATAmtLCY; TempVATAmountLine."VAT Amount (LCY) CZL")
                         {
                             AutoFormatExpression = "Sales Adv. Letter Header"."Currency Code";
                             AutoFormatType = 1;
                         }
+                        column(Formatted_VATAmtLineVATAmtLCY; Format(TempVATAmountLine."VAT Amount (LCY) CZL", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, '')))
+                        {
+                        }
 
                         trigger OnAfterGetRecord()
                         begin
                             TempVATAmountLine.GetLine(Number);
+                            if UseFunctionalCurrency then begin
+                                TempVATAmountLine."VAT Base (LCY) CZL" := TempVATAmountLine."Additional-Currency Base CZL";
+                                TempVATAmountLine."VAT Amount (LCY) CZL" := TempVATAmountLine."Additional-Currency Amount CZL";
+                            end;
                         end;
 
                         trigger OnPreDataItem()
@@ -394,6 +431,8 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 trigger OnAfterGetRecord()
                 var
                     SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
+                    VATEntry: Record "VAT Entry";
+                    AdditionalCurrencyFactor: Decimal;
                 begin
                     CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
                     CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
@@ -409,17 +448,36 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     else
                         DocFooterText := '';
 
-                    if "Currency Code" = '' then
-                        "Currency Code" := "General Ledger Setup"."LCY Code";
-
-                    if (TempSalesAdvLetterEntry."Currency Factor" <> 0) and (TempSalesAdvLetterEntry."Currency Factor" <> 1) then begin
+                    Clear(ExchRateText);
+                    if "Currency Code" <> '' then begin
                         CurrencyExchangeRate.FindCurrency(TempSalesAdvLetterEntry."Posting Date", "Currency Code", 1);
                         CalculatedExchRate := Round(1 / TempSalesAdvLetterEntry."Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.000001);
                         ExchRateText :=
                           StrSubstNo(ExchangeRateTxt, CalculatedExchRate, "General Ledger Setup"."LCY Code",
                             CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
+                        if "Currency Code" = "General Ledger Setup"."LCY Code" then
+                            ExchRateText := '';
                     end else
                         CalculatedExchRate := 1;
+
+                    if "Currency Code" = '' then
+                        "Currency Code" := "General Ledger Setup"."LCY Code";
+
+                    if UseFunctionalCurrency then begin
+                        AdditionalCurrencyFactor := CurrencyExchangeRate.ExchangeRate(TempSalesAdvLetterEntry."Posting Date", "General Ledger Setup"."Additional Reporting Currency");
+                        if (AdditionalCurrencyFactor <> 0) and (AdditionalCurrencyFactor <> 1) then begin
+                            if (TempSalesAdvLetterEntry."Currency Factor" = 0) or ((TempSalesAdvLetterEntry."VAT Base Amount" + TempSalesAdvLetterEntry."VAT Amount") = 0) then
+                                CalculatedExchRate := Round(AdditionalCurrencyFactor, 0.00001)
+                            else begin
+                                VATEntry.Get(TempSalesAdvLetterEntry."VAT Entry No.");
+                                CalculatedExchRate := Round((VATEntry."Additional-Currency Base" + VATEntry."Additional-Currency Amount") / (TempSalesAdvLetterEntry."VAT Base Amount" + TempSalesAdvLetterEntry."VAT Amount"), 0.00001);
+                            end;
+                            ExchRateText :=
+                              StrSubstNo(ExchangeRateTxt, 1, "Currency Code", CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                        end;
+                        if (CalculatedExchRate = 1) or ("Currency Code" = "General Ledger Setup"."Additional Reporting Currency") then
+                            ExchRateText := '';
+                    end;
 
                     FormatAddress.FormatAddr(CustAddr, "Bill-to Name", "Bill-to Name 2", "Bill-to Contact", "Bill-to Address", "Bill-to Address 2",
                       "Bill-to City", "Bill-to Post Code", "Bill-to County", "Bill-to Country/Region Code");
@@ -449,6 +507,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 if IsCreditMemo(TempSalesAdvLetterEntry) then begin
                     SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", TempSalesAdvLetterEntry."Sales Adv. Letter No.");
                     SalesAdvLetterEntryCZZ.SetRange("Related Entry", TempSalesAdvLetterEntry."Related Entry");
+                    SalesAdvLetterEntryCZZ.SetFilter("Document No.", '<>%1', TempSalesAdvLetterEntry."Document No.");
                     SalesAdvLetterEntryCZZ.SetFilter("Entry No.", '<%1', TempSalesAdvLetterEntry."Entry No.");
                     if SalesAdvLetterEntryCZZ.FindLast() then
                         OriginalAdvanceVATDocumentNo := SalesAdvLetterEntryCZZ."Document No.";
@@ -479,11 +538,30 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         }
     }
 
+    rendering
+    {
+        layout("SalesAdvanceVATDoc.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesAdvanceVATDoc.rdl';
+            Caption = 'Sales Advance VAT Document (RDL)';
+            Summary = 'The Sales Advance VAT Document (RDL) provides a detailed layout.';
+        }
+        layout("SalesAdvanceVATDocEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesAdvanceVATDocEmail.docx';
+            Caption = 'Sales Advance VAT Document Email (Word)';
+            Summary = 'The Sales Advance VAT Document Email (Word) provides an email body layout.';
+        }
+    }
+
     var
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         DocumentFooterCZL: Record "Document Footer CZL";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
+        AutoFormat: Codeunit "Auto Format";
         NoOfLoops: Integer;
         ExchangeRateTxt: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1=calculatedexchrate;%2=general ledger setup.LCY Code;%3=currexchrate.exchange rate amount;%4=currency code';
         DocumentLbl: Label 'VAT Document to Received Payment';
@@ -522,11 +600,16 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         CalculatedExchRate: Decimal;
         CopyNo: Integer;
         NoOfCop: Integer;
+        UseFunctionalCurrency: Boolean;
+        VATCurrencyCode: Code[10];
 
     local procedure IsCreditMemo(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"): Boolean
+    var
+        DocumentAmount: Decimal;
     begin
-        exit(((SalesAdvLetterEntryCZZ.CalcDocumentAmount() > 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment")) or
-             ((SalesAdvLetterEntryCZZ.CalcDocumentAmount() < 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage")) or
+        DocumentAmount := SalesAdvLetterEntryCZZ.CalcDocumentAmount();
+        exit(((SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment") and (DocumentAmount > 0)) or
+             ((SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage") and (DocumentAmount < 0)) or
              (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Close"));
     end;
 }

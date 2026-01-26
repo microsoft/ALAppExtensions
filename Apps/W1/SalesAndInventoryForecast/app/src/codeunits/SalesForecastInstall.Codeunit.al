@@ -8,19 +8,13 @@ using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Item;
 using System.Environment;
 using System.Privacy;
-using System.Upgrade;
 
 codeunit 1855 "Sales Forecast Install"
 {
     Subtype = install;
 
     trigger OnInstallAppPerCompany()
-    var
-        AppInfo: ModuleInfo;
     begin
-        if AppInfo.DataVersion().Major() = 0 then
-            SetAllUpgradeTags();
-
         CompanyInitialize();
     end;
 
@@ -48,17 +42,4 @@ codeunit 1855 "Sales Forecast Install"
 
         DataClassificationMgt.SetTableFieldsToNormal(Database::"MS - Sales Forecast Setup");
     end;
-
-    local procedure SetAllUpgradeTags()
-    var
-        UpgradeTag: Codeunit "Upgrade Tag";
-        SalesForcastUpgrade: Codeunit "Sales Forecast Upgrade";
-    begin
-        if not UpgradeTag.HasUpgradeTag(SalesForcastUpgrade.GetSalesForecastSecretsToISUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(SalesForcastUpgrade.GetSalesForecastSecretsToISUpgradeTag());
-
-        if not UpgradeTag.HasUpgradeTag(SalesForcastUpgrade.GetSalesForecastSecretsToISValidationTag()) then
-            UpgradeTag.SetUpgradeTag(SalesForcastUpgrade.GetSalesForecastSecretsToISValidationTag());
-    end;
-
 }

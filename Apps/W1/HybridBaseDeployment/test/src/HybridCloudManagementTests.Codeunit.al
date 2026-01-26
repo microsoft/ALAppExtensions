@@ -528,23 +528,24 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         LibraryHybridManagement.SetCanModifyDataReplicationRules(true);
         HybridCloudManagement.RefreshIntelligentCloudStatusTable();
 
-        // [WHEN] User opens the cloud migration select tables page and selects a table to be replicated
-        OpenCloudMigSelectTablesPage(CloudMigSelectTables);
+        // [WHEN] User opens the cloud migration select tables page and selects a table to be delta synced
 #pragma warning disable AA0210
+        IntelligentCloudStatus.SetRange("Company Name", '');
         IntelligentCloudStatus.SetRange("Preserve Cloud Data", false);
 #pragma warning restore AA0210
-        IntelligentCloudStatus.FindFirst();
+        if not IntelligentCloudStatus.FindFirst() then begin
+            IntelligentCloudStatus.SetRange("Preserve Cloud Data");
+            IntelligentCloudStatus.FindFirst();
+            IntelligentCloudStatus."Preserve Cloud Data" := false;
+            IntelligentCloudStatus.Modify();
+        end;
+
+        OpenCloudMigSelectTablesPage(CloudMigSelectTables);
         CloudMigSelectTables.Filter.SetFilter("Table Id", Format(IntelligentCloudStatus."Table Id"));
         CloudMigSelectTables.DeltaSyncTables.Invoke();
 
-        // [THEN] The table is marked as included in replication and log is inserted
+        // [THEN] The table is marked as delta sync data in replication and log is inserted
         VerifyDeltaSyncProperty(CloudMigSelectTables, true, IntelligentCloudStatus."Table Id");
-
-        // [WHEN] User invokes reset to default
-        CloudMigSelectTables.ResetToDefault.Invoke();
-
-        // [THEN] The table is marked as excluded from replication
-        VerifyDeltaSyncProperty(CloudMigSelectTables, false, IntelligentCloudStatus."Table Id");
     end;
 
     [Test]
@@ -577,6 +578,132 @@ codeunit 139656 "Hybrid Cloud Management Tests"
 
         // [THEN] The table is marked as excluded from replication
         VerifyDeltaSyncProperty(CloudMigSelectTables, true, IntelligentCloudStatus."Table Id");
+    end;
+
+    [Test]
+    procedure TestMigrateRecordLinksNoMappings()
+    var
+        ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
+        RecordLink: Record "Record Link";
+        RecordLinkMapping: Record "Record Link Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        RecordLinkCount: Integer;
+        ReplicationRecordLinkBufferCount: Integer;
+    begin
+        // [GIVEN] Setup buffer with sample data
+        ReplicationRecordLinkBuffer.DeleteAll();
+        RecordLink.DeleteAll();
+        RecordLinkMapping.DeleteAll();
+        CreateReplicationRecordLinkBuffers();
+        CreateRecordLinks();
+        RecordLinkCount := RecordLink.Count();
+        ReplicationRecordLinkBufferCount := ReplicationRecordLinkBuffer.Count();
+
+        // [WHEN] Call migration
+        HybridCloudManagement.MigrateRecordLinks();
+
+        // [THEN] Record link and Record link mapping should be created
+        Assert.AreEqual(RecordLinkCount + ReplicationRecordLinkBufferCount, RecordLink.Count(), 'Record links not created');
+        Assert.AreEqual(ReplicationRecordLinkBufferCount, RecordLinkMapping.Count(), 'Record link mappings not created');
+        RecordLinkMapping.FindSet();
+        repeat
+            ReplicationRecordLinkBuffer.Get(RecordLinkMapping."Source ID", RecordLinkMapping.Company);
+            RecordLink.Get(RecordLinkMapping."Target ID");
+            VerifyRecordLink(ReplicationRecordLinkBuffer, RecordLink);
+        until RecordLinkMapping.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestMigrateRecordLinksExistingMappings()
+    var
+        ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
+        RecordLink: Record "Record Link";
+        RecordLinkMapping: Record "Record Link Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        RecordLinkCount: Integer;
+        ReplicationRecordLinkBufferCount: Integer;
+        RecordLinkMappingCount: Integer;
+    begin
+        // [GIVEN] Setup buffer with sample data
+        ReplicationRecordLinkBuffer.DeleteAll();
+        RecordLink.DeleteAll();
+        RecordLinkMapping.DeleteAll();
+        CreateReplicationRecordLinkBuffers();
+        CreateRecordLinks();
+        ReplicationRecordLinkBuffer.FindLast();
+        RecordLink.FindLast();
+        CreateRecordLinkMapping(ReplicationRecordLinkBuffer, RecordLink);
+        RecordLinkCount := RecordLink.Count();
+        ReplicationRecordLinkBufferCount := ReplicationRecordLinkBuffer.Count();
+        RecordLinkMappingCount := RecordLinkMapping.Count();
+
+        // [WHEN] Call migration
+        HybridCloudManagement.MigrateRecordLinks();
+
+        // [THEN] Record link and Record link mapping should be created
+        Assert.AreEqual(RecordLinkCount + ReplicationRecordLinkBufferCount - RecordLinkMappingCount, RecordLink.Count(), 'Record links not created');
+        Assert.AreEqual(ReplicationRecordLinkBufferCount, RecordLinkMapping.Count(), 'Record link mappings not created');
+        RecordLinkMapping.FindSet();
+        repeat
+            ReplicationRecordLinkBuffer.Get(RecordLinkMapping."Source ID", RecordLinkMapping.Company);
+            RecordLink.Get(RecordLinkMapping."Target ID");
+            VerifyRecordLink(ReplicationRecordLinkBuffer, RecordLink);
+        until RecordLinkMapping.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestMigrateRecordLinksDataTransfer()
+    var
+        ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
+        RecordLink: Record "Record Link";
+        RecordLinkMapping: Record "Record Link Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        ReplicationRecordLinkBufferCount: Integer;
+    begin
+        // [GIVEN] Setup buffer with sample data
+        LibraryHybridManagement.SetAdlMigrationEnabled(true);
+        ReplicationRecordLinkBuffer.DeleteAll();
+        RecordLink.DeleteAll();
+        RecordLinkMapping.DeleteAll();
+        CreateReplicationRecordLinkBuffers();
+        ReplicationRecordLinkBufferCount := ReplicationRecordLinkBuffer.Count();
+
+        // [WHEN] Call migration
+        HybridCloudManagement.MigrateRecordLinks();
+
+        // [THEN] Record link and Record link mapping should be created
+        Assert.AreEqual(ReplicationRecordLinkBufferCount, RecordLink.Count(), 'Record links not created');
+        Assert.AreEqual(ReplicationRecordLinkBufferCount, RecordLinkMapping.Count(), 'Record link mappings not created');
+        RecordLinkMapping.FindSet();
+        repeat
+            ReplicationRecordLinkBuffer.Get(RecordLinkMapping."Source ID", RecordLinkMapping.Company);
+            RecordLink.Get(RecordLinkMapping."Target ID");
+            VerifyRecordLink(ReplicationRecordLinkBuffer, RecordLink);
+        until RecordLinkMapping.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestMigrateRecordLinksCompanyStatus()
+    var
+        ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
+        RecordLink: Record "Record Link";
+        RecordLinkMapping: Record "Record Link Mapping";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [GIVEN] Setup buffer with sample data
+        ReplicationRecordLinkBuffer.DeleteAll();
+        RecordLink.DeleteAll();
+        RecordLinkMapping.DeleteAll();
+        CreateReplicationRecordLinkBuffers();
+        CreateRecordLinks();
+
+        // [WHEN] Call migration
+        HybridCloudManagement.MigrateRecordLinks();
+
+        // [THEN] Company status is updated
+        HybridCompanyStatus.Get();
+        Assert.IsTrue(HybridCompanyStatus."Record Link Move Completed", 'Record links migration status not updated');
     end;
 
     local procedure OpenCloudMigSelectTablesPage(var CloudMigSelectTables: TestPage "Cloud Mig - Select Tables")
@@ -617,7 +744,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.IsTrue(IntelligentCloudStatus.Get(CloudMigSelectTables."Table Name".Value, CloudMigSelectTables."Company Name".Value), 'Intelligent cloud status record not found');
         Assert.AreEqual(ExpectedDeltaSyncProperty, IntelligentCloudStatus."Preserve Cloud Data", 'Intelligent cloud status record not updated correctly');
         Assert.IsTrue(CloudMigOverrideLog.FindLast(), 'Cloud migration override log record not found');
-        Assert.AreEqual(CloudMigOverrideLog."Table Id", SelectedTableId, 'Cloud migration override log record not updated correctly');
+        Assert.AreEqual(SelectedTableId, CloudMigOverrideLog."Table Id", 'Cloud migration override log record not updated correctly');
         Assert.AreEqual(ExpectedDeltaSyncProperty, CloudMigOverrideLog."Preserve Cloud Data", 'Cloud migration override log record not updated correctly');
     end;
 
@@ -631,5 +758,90 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         WebhookNotification.Notification.CreateOutStream(NotificationOutStream);
         NotificationOutStream.WriteText(Body);
         WebhookNotification.Insert();
+    end;
+
+    local procedure CreateReplicationRecordLinkBuffers()
+    var
+        ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
+        i: Integer;
+        OutStream: OutStream;
+    begin
+        for i := 1 to 10 do begin
+            ReplicationRecordLinkBuffer."Link ID" := i;
+            ReplicationRecordLinkBuffer.Company := CopyStr(CompanyName(), 1, MaxStrLen(ReplicationRecordLinkBuffer.Company));
+            ReplicationRecordLinkBuffer.Description := 'record link buffer description' + Format(i);
+            if i mod 2 = 0 then begin
+                ReplicationRecordLinkBuffer.Type := ReplicationRecordLinkBuffer.Type::Link;
+                ReplicationRecordLinkBuffer.URL1 := 'buffertest' + Format(i) + '.com';
+            end else begin
+                ReplicationRecordLinkBuffer.Type := ReplicationRecordLinkBuffer.Type::Note;
+                ReplicationRecordLinkBuffer.Note.CreateOutStream(OutStream);
+                OutStream.Write('buffer note' + Format(i));
+            end;
+            ReplicationRecordLinkBuffer.Insert();
+        end;
+    end;
+
+    local procedure CreateRecordLinks()
+    var
+        RecordLink: Record "Record Link";
+        RecordLinkManagement: Codeunit "Record Link Management";
+        i: Integer;
+    begin
+        for i := 1 to 2 do begin
+            RecordLink."Link ID" := i;
+            RecordLink.Company := CopyStr(CompanyName(), 1, MaxStrLen(RecordLink.Company));
+            RecordLink.Description := 'record link description' + Format(i);
+            if i mod 2 = 0 then begin
+                RecordLink.Type := RecordLink.Type::Link;
+                RecordLink.URL1 := 'recordlinktest' + Format(i) + '.com';
+            end else begin
+                RecordLink.Type := RecordLink.Type::Note;
+                RecordLinkManagement.WriteNote(RecordLink, 'recordlinknote' + Format(i));
+            end;
+            RecordLink.Insert();
+        end;
+    end;
+
+    local procedure CreateRecordLinkMapping(ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer"; RecordLink: Record "Record Link")
+    var
+        RecordLinkMapping: Record "Record Link Mapping";
+    begin
+        RecordLinkMapping."Source ID" := ReplicationRecordLinkBuffer."Link ID";
+        RecordLinkMapping."Target ID" := RecordLink."Link ID";
+        RecordLinkMapping.Company := ReplicationRecordLinkBuffer.Company;
+        RecordLinkMapping.Insert();
+    end;
+
+    local procedure VerifyRecordLink(ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer"; RecordLink: Record "Record Link")
+    begin
+        Assert.AreEqual(ReplicationRecordLinkBuffer."Record ID", RecordLink."Record ID", 'Record ID mismatch');
+        Assert.AreEqual(ReplicationRecordLinkBuffer.URL1, RecordLink.URL1, 'URL1 mismatch');
+        Assert.AreEqual(ReplicationRecordLinkBuffer.Description, RecordLink.Description, 'Description mismatch');
+        Assert.AreEqual(ReplicationRecordLinkBuffer.Type, RecordLink.Type, 'Type mismatch');
+        Assert.AreEqual(ReplicationRecordLinkBuffer.Created, RecordLink.Created, 'Created mismatch');
+        Assert.AreEqual(ReplicationRecordLinkBuffer."User ID", RecordLink."User ID", 'User ID mismatch');
+        Assert.AreEqual(ReplicationRecordLinkBuffer.Company, RecordLink.Company, 'Company mismatch');
+        Assert.AreEqual(ReplicationRecordLinkBuffer.Notify, RecordLink.Notify, 'Notify mismatch');
+        Assert.AreEqual(ReplicationRecordLinkBuffer."To User ID", RecordLink."To User ID", 'To User ID mismatch');
+        Assert.AreEqual(ReadReplicationRecordLinkBufferNote(ReplicationRecordLinkBuffer), ReadRecordLinkNote(RecordLink), 'Note mismatch');
+    end;
+
+    local procedure ReadReplicationRecordLinkBufferNote(ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer") Result: Text
+    var
+        InStream: InStream;
+    begin
+        ReplicationRecordLinkBuffer.CalcFields(Note);
+        ReplicationRecordLinkBuffer.Note.CreateInStream(InStream);
+        InStream.Read(Result);
+    end;
+
+    local procedure ReadRecordLinkNote(RecordLink: Record "Record Link") Result: Text
+    var
+        InStream: InStream;
+    begin
+        RecordLink.CalcFields(Note);
+        RecordLink.Note.CreateInStream(InStream);
+        InStream.Read(Result);
     end;
 }

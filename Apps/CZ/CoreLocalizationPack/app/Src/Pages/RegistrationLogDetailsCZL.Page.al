@@ -49,11 +49,7 @@ page 31208 "Registration Log Details CZL"
             action(Accept)
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedIsBig = true;
                 Image = Approve;
-                PromotedCategory = Process;
                 Enabled = AcceptEnabled;
                 Caption = 'Accept';
                 ToolTip = 'Apply the value that the service returned to the account.';
@@ -69,11 +65,7 @@ page 31208 "Registration Log Details CZL"
             action(AcceptAll)
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedIsBig = true;
                 Image = Approve;
-                PromotedCategory = Process;
                 Enabled = AcceptAllEnabled;
                 Caption = 'Accept All';
                 ToolTip = 'Accept all returned values and update the account.';
@@ -87,11 +79,7 @@ page 31208 "Registration Log Details CZL"
             action(Reset)
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedIsBig = true;
                 Image = ResetStatus;
-                PromotedCategory = Process;
                 Enabled = ResetEnabled;
                 Caption = 'Reset';
                 ToolTip = 'Reset the value that was applied to the account.';
@@ -107,11 +95,7 @@ page 31208 "Registration Log Details CZL"
             action(ResetAll)
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedIsBig = true;
                 Image = ResetStatus;
-                PromotedCategory = Process;
                 Enabled = ResetAllEnabled;
                 Caption = 'Reset All';
                 ToolTip = 'Reset the values that were applied to the account.';
@@ -120,6 +104,24 @@ page 31208 "Registration Log Details CZL"
                 begin
                     UpdateAllDetailsStatus(Rec.Status::Accepted, Rec.Status::"Not Valid");
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Accept_Promoted; Accept)
+                {
+                }
+                actionref(AcceptAll_Promoted; AcceptAll)
+                {
+                }
+                actionref(Reset_Promoted; Reset)
+                {
+                }
+                actionref(ResetAll_Promoted; ResetAll)
+                {
+                }
             }
         }
     }
@@ -131,7 +133,7 @@ page 31208 "Registration Log Details CZL"
 
     trigger OnAfterGetCurrRecord()
     begin
-        AcceptEnabled := (Rec.Status = Rec.Status::"Not Valid") and (Rec.Response <> '');
+        AcceptEnabled := Rec.Status = Rec.Status::"Not Valid";
         ResetEnabled := Rec.Status = Rec.Status::Accepted;
     end;
 
@@ -146,7 +148,6 @@ page 31208 "Registration Log Details CZL"
         RegistrationLogDetail: Record "Registration Log Detail CZL";
     begin
         RegistrationLogDetail.Copy(Rec);
-        RegistrationLogDetail.SetFilter(Response, '<>%1', '');
         RegistrationLogDetail.SetRange(Status, Before);
         RegistrationLogDetail.ModifyAll(Status, After);
 
@@ -158,8 +159,6 @@ page 31208 "Registration Log Details CZL"
         RegistrationLogDetail: Record "Registration Log Detail CZL";
     begin
         RegistrationLogDetail.CopyFilters(Rec);
-        RegistrationLogDetail.SetFilter(Response, '<>%1', '');
-
         RegistrationLogDetail.SetRange(Status, RegistrationLogDetail.Status::"Not Valid");
         AcceptAllEnabled := not RegistrationLogDetail.IsEmpty();
 

@@ -5,8 +5,8 @@
 namespace System.Environment.Configuration;
 
 using System.Environment;
-using System.Utilities;
 using System.Telemetry;
+using System.Utilities;
 
 page 20600 "Assisted Setup BF"
 {

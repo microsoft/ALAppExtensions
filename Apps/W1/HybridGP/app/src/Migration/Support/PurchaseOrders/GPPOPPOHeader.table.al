@@ -1,24 +1,13 @@
+#if not CLEANSCHEMA25
 namespace Microsoft.DataMigration.GP;
-
-#if not CLEAN22
-using Microsoft.Purchases.Setup;
-using Microsoft.Foundation.Company;
-using System.Integration;
-#endif
-using Microsoft.Purchases.Document;
 
 table 40102 "GP POPPOHeader"
 {
     DataClassification = CustomerContent;
     Extensible = false;
     ObsoleteReason = 'Replaced by table GP POP10100.';
-#if not CLEAN22
-    ObsoleteState = Pending;
-    ObsoleteTag = '22.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '25.0';
-#endif
     fields
     {
         field(1; PONUMBER; Text[18])
@@ -798,85 +787,5 @@ table 40102 "GP POPPOHeader"
             Clustered = true;
         }
     }
-
-#if not CLEAN22
-#pragma warning disable AL0432
-    var
-        PostingDescriptionTxt: Label 'Migrated from GP';
-        PostingGroupTxt: Label 'GP', Locked = true;
-
-    [Obsolete('Logic moved to GP PO Migrator codeunit', '22.0')]
-    procedure MoveStagingData()
-    var
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
-        CompanyInformation: Record "Company Information";
-        PurchaseHeader: Record "Purchase Header";
-        GPPOPPOLine: Record "GP POPPOLine";
-        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
-        PurchaseDocumentType: Enum "Purchase Document Type";
-        PurchaseDocumentStatus: Enum "Purchase Document Status";
-        CountryCode: Code[10];
-    begin
-        if FindSet() then begin
-            CountryCode := CompanyInformation."Country/Region Code";
-            repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(Rec.RecordId));
-
-                if not PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, PONUMBER) then begin
-                    PurchaseHeader.Init();
-                    PurchaseHeader."Document Type" := PurchaseDocumentType::Order;
-                    PurchaseHeader."No." := PONUMBER;
-                    PurchaseHeader.Status := PurchaseDocumentStatus::Open;
-                    PurchaseHeader.Insert(true);
-
-                    PurchaseHeader.Validate("Buy-from Vendor No.", VENDORID);
-                    PurchaseHeader.Validate("Pay-to Vendor No.", VENDORID);
-                    PurchaseHeader.Validate("Order Date", DOCDATE);
-                    PurchaseHeader.Validate("Posting Date", DOCDATE);
-                    PurchaseHeader.Validate("Document Date", DOCDATE);
-                    PurchaseHeader.Validate("Expected Receipt Date", PRMDATE);
-                    PurchaseHeader."Posting Description" := PostingDescriptionTxt;
-                    PurchaseHeader.Validate("Payment Terms Code", CopyStr(PYMTRMID, 1, 10));
-                    PurchaseHeader."Shipment Method Code" := CopyStr(SHIPMTHD, 1, 10);
-                    PurchaseHeader."Vendor Posting Group" := PostingGroupTxt;
-                    PurchaseHeader.Validate("Prices Including VAT", false);
-                    PurchaseHeader.Validate("Vendor Invoice No.", PONUMBER);
-                    PurchaseHeader.Validate("Gen. Bus. Posting Group", PostingGroupTxt);
-                    UpdateShipToAddress(CountryCode, PurchaseHeader);
-
-                    if PurchasesPayablesSetup.FindFirst() then begin
-                        PurchaseHeader.Validate("Posting No. Series", PurchasesPayablesSetup."Posted Invoice Nos.");
-                        PurchaseHeader.Validate("Receiving No. Series", PurchasesPayablesSetup."Posted Receipt Nos.");
-                    end;
-
-                    PurchaseHeader.Modify(true);
-                    GPPOPPOLine.MoveStagingData(PONUMBER);
-                end;
-            until Next() = 0;
-        end;
-    end;
-#pragma warning restore AL0432
-#endif
-
-    local procedure UpdateShipToAddress(CountryCode: Code[10]; var PurchaseHeader: Record "Purchase Header")
-    begin
-        if PRSTADCD.Trim() <> '' then begin
-            PurchaseHeader."Ship-to Code" := CopyStr(DelChr(PRSTADCD, '>', ' '), 1, 10);
-            PurchaseHeader."Ship-to Country/Region Code" := CountryCode;
-        end;
-        if CMPNYNAM.Trim() <> '' then
-            PurchaseHeader."Ship-to Name" := CMPNYNAM;
-        if ADDRESS1.Trim() <> '' then
-            PurchaseHeader."Ship-to Address" := ADDRESS1;
-        if ADDRESS2.Trim() <> '' then
-            PurchaseHeader."Ship-to Address 2" := CopyStr(DelChr(ADDRESS2, '>', ' '), 1, 50);
-        if CITY.Trim() <> '' then
-            PurchaseHeader."Ship-to City" := CopyStr(DelChr(CITY, '>', ' '), 1, 30);
-        if CONTACT.Trim() <> '' then
-            PurchaseHeader."Ship-to Contact" := CONTACT;
-        if ZIPCODE.Trim() <> '' then
-            PurchaseHeader."Ship-to Post Code" := ZIPCODE;
-        if STATE.Trim() <> '' then
-            PurchaseHeader."Ship-to County" := STATE;
-    end;
 }
+#endif

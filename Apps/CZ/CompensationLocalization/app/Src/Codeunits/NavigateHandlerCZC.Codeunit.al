@@ -14,12 +14,12 @@ codeunit 31266 "Navigate Handler CZC"
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateFindRecords', '', false, false)]
     local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text;
-                                                PostingDateFilter: Text; Sender: Page Navigate)
+                                                PostingDateFilter: Text)
     begin
-        FindPostedCompesationHeader(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
+        FindPostedCompesationHeader(DocumentEntry, DocNoFilter, PostingDateFilter);
     end;
 
-    local procedure FindPostedCompesationHeader(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Navigate: Page Navigate)
+    local procedure FindPostedCompesationHeader(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text)
     var
         PostedCompensationTxt: Label 'Posted Compensation';
         DocumentEntryDocumentType: Enum "Document Entry Document Type";
@@ -28,7 +28,7 @@ codeunit 31266 "Navigate Handler CZC"
             PostedCompensationHeaderCZC.Reset();
             PostedCompensationHeaderCZC.SetFilter("No.", DocNoFilter);
             PostedCompensationHeaderCZC.SetFilter("Posting Date", PostingDateFilter);
-            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"Posted Compensation Header CZC", DocumentEntryDocumentType::" ",
+            DocumentEntry.InsertIntoDocEntry(Database::"Posted Compensation Header CZC", DocumentEntryDocumentType::" ",
                 PostedCompensationTxt, PostedCompensationHeaderCZC.Count());
         end;
     end;
@@ -63,10 +63,10 @@ codeunit 31266 "Navigate Handler CZC"
         exit(DocumentEntry."No. of Records");
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeNavigateShowRecords', '', false, false)]
-    local procedure OnBeforeNavigateShowRecords(TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; var TempDocumentEntry: Record "Document Entry"; var IsHandled: Boolean)
+    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeShowRecords', '', false, false)]
+    local procedure OnBeforeShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; var IsHandled: Boolean)
     begin
-        case TableID of
+        case TempDocumentEntry."Table ID" of
             Database::"Posted Compensation Header CZC":
                 begin
                     PostedCompensationHeaderCZC.Reset();

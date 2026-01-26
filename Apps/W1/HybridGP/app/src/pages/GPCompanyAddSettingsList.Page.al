@@ -10,6 +10,7 @@ page 4051 "GP Company Add. Settings List"
     InsertAllowed = false;
     ModifyAllowed = true;
 
+#pragma warning disable AA0219
     layout
     {
         area(content)
@@ -122,6 +123,12 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specify whether to migrate inactive vendors.';
                     ApplicationArea = All;
                 }
+                field("Migrate Temporary Vendors"; Rec."Migrate Temporary Vendors")
+                {
+                    Caption = 'Temporary Vendors';
+                    ToolTip = 'Specify whether to migrate temporary vendors.';
+                    ApplicationArea = All;
+                }
                 field("Migrate Inactive Checkbooks"; Rec."Migrate Inactive Checkbooks")
                 {
                     Caption = 'Inactive Checkbooks';
@@ -140,6 +147,12 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specify whether to migrate discontinued items.';
                     ApplicationArea = All;
                 }
+                field("Migrate Kit Items"; Rec."Migrate Kit Items")
+                {
+                    Caption = 'Kit Items';
+                    ToolTip = 'Specify whether to migrate kit items.';
+                    ApplicationArea = All;
+                }
                 field("Migrate Customer Classes"; Rec."Migrate Customer Classes")
                 {
                     Caption = 'Customer Classes';
@@ -156,6 +169,18 @@ page 4051 "GP Company Add. Settings List"
                 {
                     Caption = 'Item Classes';
                     ToolTip = 'Specify whether to migrate item classes.';
+                    ApplicationArea = All;
+                }
+                field("Recurring Purchasing Lines"; Rec."Recurring Purchasing Lines")
+                {
+                    Caption = 'Recurring Purchasing Lines';
+                    ToolTip = 'Specify whether to migrate recurring purchasing lines.';
+                    ApplicationArea = All;
+                }
+                field("Recurring Sales Lines"; Rec."Recurring Sales Lines")
+                {
+                    Caption = 'Recurring Sales Lines';
+                    ToolTip = 'Specify whether to migrate recurring sales lines.';
                     ApplicationArea = All;
                 }
                 field("Oldest Hist. Year to Migrate"; Rec."Oldest Hist. Year to Migrate")
@@ -229,3 +254,4 @@ page 4051 "GP Company Add. Settings List"
         }
     }
 }
+#pragma warning restore AA0219

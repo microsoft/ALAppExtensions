@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA25
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -5,7 +6,6 @@
 
 namespace System.Azure.Identity;
 
-using System.Security.AccessControl;
 using System.Environment;
 
 table 9048 "Custom User Group In Plan"
@@ -15,13 +15,8 @@ table 9048 "Custom User Group In Plan"
     DataPerCompany = false;
     ReplicateData = false;
     DataClassification = SystemMetadata;
-#if not CLEAN22
-    ObsoleteState = Pending;
-    ObsoleteTag = '22.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '25.0';
-#endif 
     ObsoleteReason = '[220_UserGroups] Use custom permission sets in plan instead. To learn more, go to https://go.microsoft.com/fwlink/?linkid=2245709.';
 
 
@@ -41,13 +36,11 @@ table 9048 "Custom User Group In Plan"
         {
             DataClassification = CustomerContent;
             Caption = 'User Group Code';
-            TableRelation = "User Group".Code;
         }
         field(11; "User Group Name"; Text[50])
         {
-            CalcFormula = Lookup("User Group".Name Where(Code = Field("User Group Code")));
+            DataClassification = CustomerContent;
             Caption = 'User Group Name';
-            FieldClass = FlowField;
         }
         field(20; "Company Name"; Text[30])
         {
@@ -69,39 +62,5 @@ table 9048 "Custom User Group In Plan"
             Unique = true;
         }
     }
-
-#if not CLEAN22
-    trigger OnInsert()
-    begin
-        CustomUserGroupInPlan.VerifyUserHasRequiredUserGroup(Rec."User Group Code", Rec."Company Name");
-
-        CustomUserGroupInPlan.AddPermissionSetsFromUserGroup(Rec);
-    end;
-
-    trigger OnDelete()
-    begin
-        CustomUserGroupInPlan.VerifyUserHasRequiredUserGroup(Rec."User Group Code", Rec."Company Name");
-
-        CustomUserGroupInPlan.RemovePermissionSetsFromUserGroup(Rec);
-    end;
-
-    trigger OnModify()
-    begin
-        CustomUserGroupInPlan.VerifyUserHasRequiredUserGroup(Rec."User Group Code", Rec."Company Name");
-
-        CustomUserGroupInPlan.RemovePermissionSetsFromUserGroup(xRec);
-        CustomUserGroupInPlan.AddPermissionSetsFromUserGroup(Rec);
-    end;
-
-    trigger OnRename()
-    begin
-        CustomUserGroupInPlan.VerifyUserHasRequiredUserGroup(Rec."User Group Code", Rec."Company Name");
-
-        CustomUserGroupInPlan.RemovePermissionSetsFromUserGroup(xRec);
-        CustomUserGroupInPlan.AddPermissionSetsFromUserGroup(Rec);
-    end;
-
-    var
-        CustomUserGroupInPlan: Codeunit "Custom User Group In Plan";
-#endif
 }
+#endif

@@ -1,3 +1,17 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Foundation.Calendar;
+using Microsoft.Service.Contract;
+using Microsoft.Service.Document;
+using Microsoft.Service.Item;
+using Microsoft.Service.Loaner;
+using Microsoft.Service.Maintenance;
+using Microsoft.Service.Setup;
+
 codeunit 5125 "Contoso Service"
 {
     InherentEntitlements = X;
@@ -152,8 +166,8 @@ codeunit 5125 "Contoso Service"
 
         ServiceContractAccountGroup.Validate(Code, GroupCode);
         ServiceContractAccountGroup.Validate(Description, Description);
-        ServiceContractAccountGroup.Validate("Non-Prepaid Contract Acc.", NonPrepaidAccount);
-        ServiceContractAccountGroup.Validate("Prepaid Contract Acc.", PrepaidAccount);
+        ServiceContractAccountGroup."Non-Prepaid Contract Acc." := NonPrepaidAccount;
+        ServiceContractAccountGroup."Prepaid Contract Acc." := PrepaidAccount;
 
         if Exists then
             ServiceContractAccountGroup.Modify(true)

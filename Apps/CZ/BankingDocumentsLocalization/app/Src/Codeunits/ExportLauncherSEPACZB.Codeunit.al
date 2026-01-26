@@ -17,6 +17,7 @@ codeunit 31351 "Export Launcher SEPA CZB"
         IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB";
         BankAccount: Record "Bank Account";
         GenJournalLine: Record "Gen. Journal Line";
+        SEPACTExportFileCZB: Codeunit "SEPA CT-Export File CZB";
     begin
         IssPaymentOrderHeaderCZB.Copy(Rec);
 
@@ -35,7 +36,11 @@ codeunit 31351 "Export Launcher SEPA CZB"
         GenJournalLine.FindFirst();
         Commit();
 
-        if not Codeunit.Run(Codeunit::"SEPA CT-Export File", GenJournalLine) then begin
+        if IssPaymentOrderHeaderCZB."Foreign Payment Order" then
+            SEPACTExportFileCZB.SetXMLPortID(BankAccount.GetForeignPaymentExportXMLPortIdCZB())
+        else
+            SEPACTExportFileCZB.SetXMLPortID(BankAccount.GetPaymentExportXMLPortID());
+        if not SEPACTExportFileCZB.Run(GenJournalLine) then begin
             Page.Run(Page::"Payment Journal", GenJournalLine);
             Error(GetLastErrorText);
         end;

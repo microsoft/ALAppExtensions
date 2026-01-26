@@ -7,28 +7,31 @@ codeunit 139765 "Email Logging OAuth Mock" implements "Email Logging OAuth Clien
     begin
     end;
 
-    internal procedure Initialize(ClientId: Text; ClientSecret: Text; RedirectUrl: Text)
+    internal procedure Initialize(ClientId: Text; ClientSecret: SecretText; RedirectUrl: Text)
     begin
     end;
 
-    internal procedure GetAccessToken(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text)
+    internal procedure GetAccessToken(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: SecretText)
     begin
         TryGetAccessToken(PromptInteraction, AccessToken);
     end;
 
-    internal procedure TryGetAccessToken(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: Text): Boolean
+    internal procedure TryGetAccessToken(PromptInteraction: Enum "Prompt Interaction"; var AccessToken: SecretText): Boolean
     begin
         exit(TryGetAccessToken(AccessToken));
     end;
 
-    internal procedure GetAccessToken(var AccessToken: Text)
+    internal procedure GetAccessToken(var AccessToken: SecretText)
     begin
         TryGetAccessToken(AccessToken);
     end;
 
-    internal procedure TryGetAccessToken(var AccessToken: Text): Boolean
+    internal procedure TryGetAccessToken(var AccessToken: SecretText): Boolean
+    var
+        TestToken: Text;
     begin
-        AccessToken := 'test token';
+        TestToken := 'test token';
+        AccessToken := TestToken;
         exit(true);
     end;
 

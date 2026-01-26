@@ -1,8 +1,8 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
 using Microsoft.Inventory.Item;
 using System.Reflection;
@@ -20,6 +20,7 @@ page 30043 "APIV2 - Sales Invoice Lines"
     SourceTable = "Sales Invoice Line Aggregate";
     SourceTableTemporary = true;
     Extensible = false;
+    AboutText = 'Manages line-level details of sales invoices, including items or accounts, quantities, unit prices, discounts, tax codes, dimensions, and shipment data. Supports full CRUD operations for reading, adding, updating, or deleting invoice lines on unposted invoices, enabling integrations with e-commerce, CPQ, and billing platforms to precisely control invoice composition and pricing.';
 
     layout
     {

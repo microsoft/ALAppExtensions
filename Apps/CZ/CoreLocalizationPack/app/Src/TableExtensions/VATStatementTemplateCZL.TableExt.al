@@ -10,22 +10,21 @@ tableextension 11748 "VAT Statement Template CZL" extends "VAT Statement Templat
 {
     fields
     {
+#if not CLEANSCHEMA29
         field(11770; "XML Format CZL"; Enum "VAT Statement XML Format CZL")
         {
-            Caption = 'XML Format';
+            Caption = 'XML Format (obsoleted)';
             DataClassification = CustomerContent;
-
-            trigger OnValidate()
-            var
-                ConfirmManagement: Codeunit "Confirm Management";
-            begin
-                if ("XML Format CZL" <> xRec."XML Format CZL") then
-                    if ConfirmManagement.GetResponseOrDefault(StrSubstNo(YouChangedXMLFormatQst, FieldCaption("XML Format CZL"), "XML Format CZL", TableCaption, Name), true) then begin
-                        DeleteVATAttributesCZL();
-                        InitVATAttributesCZL();
-                    end;
-            end;
+#if not CLEAN26
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
+            ObsoleteReason = 'Replaced by "XML Format CZL" field in VAT Statement Name table.';
         }
+#endif
         field(11771; "Allow Comments/Attachments CZL"; Boolean)
         {
             Caption = 'Allow Comments/Attachments';
@@ -42,11 +41,20 @@ tableextension 11748 "VAT Statement Template CZL" extends "VAT Statement Templat
             end;
         }
     }
+
+    trigger OnAfterDelete()
+    begin
+        if IsTemporary() then
+            exit;
+
+        DeleteCommentsAndAttachmentsCZL();
+        DeleteVATAttributesCZL();
+    end;
+
     var
         VATAttributeCodeMgtCZL: Codeunit "VAT Attribute Code Mgt. CZL";
         ConfirmManagement: Codeunit "Confirm Management";
         DeleteCommAttachQst: Label 'This will delete all Comments/Attachments related to %1 %2. Do you want to continue?', Comment = '%1=tablecaption, %2=VAT statement template name';
-        YouChangedXMLFormatQst: Label 'You have changed XML format.\\Do you want to initialize %1: "%2" default VAT attributes for %3 %4?', Comment = '%1=fieldcaption, %2=VAT statement XML format, %3=tablecaption, %4=VAT statement template name';
 
     procedure DeleteCommentsAndAttachmentsCZL()
     var
@@ -63,9 +71,14 @@ tableextension 11748 "VAT Statement Template CZL" extends "VAT Statement Templat
     begin
         VATAttributeCodeMgtCZL.DeleteVATAttributes(Rec);
     end;
+#if not CLEAN26
 
+    [Obsolete('Replaced by InitVATAttributesCZL function in VAT Statement Name table.', '26.0')]
     procedure InitVATAttributesCZL();
     begin
+#pragma warning disable AL0432
         VATAttributeCodeMgtCZL.InitVATAttributes(Rec);
+#pragma warning restore AL0432
     end;
+#endif
 }

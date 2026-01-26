@@ -8,7 +8,6 @@ using Microsoft.Bank;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
 
 codeunit 31014 "Fin. Charge Memo Handler CZL"
 {
@@ -34,11 +33,6 @@ codeunit 31014 "Fin. Charge Memo Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FinChrgMemo-Issue", 'OnAfterInitGenJnlLine', '', false, false)]
     local procedure UpdateBankInfoOnAfterInitGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"; FinChargeMemoHeader: Record "Finance Charge Memo Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJnlLine."VAT Date CZL" := FinChargeMemoHeader."Posting Date";
-#pragma warning restore AL0432
-#endif
         GenJnlLine."VAT Reporting Date" := FinChargeMemoHeader."Posting Date";
         if GenJnlLine."Account Type" <> GenJnlLine."Account Type"::Customer then
             exit;
@@ -63,13 +57,5 @@ codeunit 31014 "Fin. Charge Memo Handler CZL"
             exit;
 
         IssuedFinChargeMemoHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(IssuedFinChargeMemoHeader."No.");
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Issued Fin. Charge Memo Header", 'OnBeforeDeleteEvent', '', false, false)]
-    local procedure CheckDeletionAllowOnBeforeDeleteEvent(var Rec: Record "Issued Fin. Charge Memo Header")
-    var
-        PostSalesDelete: Codeunit "PostSales-Delete";
-    begin
-        PostSalesDelete.IsDocumentDeletionAllowed(Rec."Posting Date");
     end;
 }

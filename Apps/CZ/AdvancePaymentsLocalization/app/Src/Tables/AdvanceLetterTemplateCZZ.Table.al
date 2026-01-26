@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -7,7 +7,6 @@ namespace Microsoft.Finance.AdvancePayments;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.NoSeries;
-using System.Reflection;
 using System.Utilities;
 
 table 31003 "Advance Letter Template CZZ"
@@ -101,50 +100,33 @@ table 31003 "Advance Letter Template CZZ"
             DataClassification = CustomerContent;
             TableRelation = "VAT Business Posting Group";
         }
-        field(15; "Document Report ID"; Integer)
-        {
-            Caption = 'Document Report ID (Obsolete)';
-            DataClassification = CustomerContent;
-            BlankZero = true;
-            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Report));
-            ObsoleteReason = 'Replaced by standard report selection.';
-            ObsoleteTag = '23.0';
-            ObsoleteState = Removed;
-        }
-        field(16; "Document Report Caption"; Text[249])
-        {
-            Caption = 'Document Report Caption (Obsolete)';
-            Editable = false;
-            FieldClass = FlowField;
-            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Report), "Object ID" = field("Document Report ID")));
-            ObsoleteReason = 'Replaced by standard report selection.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-        }
-        field(18; "Invoice/Cr. Memo Report ID"; Integer)
-        {
-            Caption = 'Invoice/Cr. Memo Report ID (Obsolete)';
-            DataClassification = CustomerContent;
-            BlankZero = true;
-            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Report));
-            ObsoleteReason = 'Replaced by standard report selection.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-        }
-        field(19; "Invoice/Cr. Memo Rep. Caption"; Text[249])
-        {
-            Caption = 'Invoice/Cr. Memo Report Caption (Obsolete)';
-            FieldClass = FlowField;
-            Editable = false;
-            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Report), "Object ID" = field("Invoice/Cr. Memo Report ID")));
-            ObsoleteReason = 'Replaced by standard report selection.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-        }
         field(25; "Automatic Post VAT Document"; Boolean)
         {
             Caption = 'Automatic Post VAT Document';
             DataClassification = CustomerContent;
+        }
+#if not CLEANSCHEMA30
+        field(26; "Automatic Post Non-Ded. VAT"; Boolean)
+        {
+            Caption = 'Automatic Post Non-Deductible VAT (Obsolete)';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies whether non-deductible VAT will be applied to the tax documents automatically. If you select NO, the system will ask you if you want to reduce input tax every time you post a tax document for non-deductible VAT. If you select YES, the reduction will be done automatically after the tax document is posted to the prepayment, if a combination of VAT posting groups with non-deductible VAT is set up in it.';
+#if not CLEAN27            
+            ObsoleteState = Pending;
+            ObsoleteTag = '27.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '30.0';
+#endif
+            ObsoleteReason = 'The field is obsolete and will be removed in a future version. Non-deductible VAT must always be posted in advances so this field is useless.';
+        }
+#endif
+        field(30; "Post VAT Doc. for Rev. Charge"; Boolean)
+        {
+            Caption = 'Post VAT Document for Reverse Charge';
+            DataClassification = CustomerContent;
+            InitValue = true;
+            ToolTip = 'Specifies whether the VAT document will be posting for reverse charge.';
         }
     }
     keys

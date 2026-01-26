@@ -25,4 +25,8 @@ enum 7279 "Document Lookup Types" implements DocumentLookupSubType
     {
         Implementation = DocumentLookupSubType = SalesQuoteLookup;
     }
+    value(4; "Blanket Sales Order")
+    {
+        Implementation = DocumentLookupSubType = BlanketSalesOrderLookup;
+    }
 }

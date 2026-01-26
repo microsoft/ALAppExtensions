@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TaxEngine.JsonExchange;
 
-using Microsoft.Finance.GST.Base;
-
 codeunit 18005 "GST Tax Type Data"
 {
     procedure GetJObject(): JsonObject
@@ -21,350 +19,8 @@ codeunit 18005 "GST Tax Type Data"
         exit(GSTTaxTypeLbl);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnGetUseCaseConfig', '', false, false)]
-    local procedure OnGetUseCaseConfig(CaseID: Guid; var ConfigText: Text; var IsHandled: Boolean)
-    begin
-        if IsHandled then
-            exit;
-
-        ConfigText := GetConfig(CaseID, IsHandled);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnSetupUseCases', '', false, false)]
-    local procedure OnSetupUseCases()
-    var
-        TaxJsonDeserialization: Codeunit "Tax Json Deserialization";
-        CaseList: list of [Guid];
-        CaseId: Guid;
-    begin
-        UpdateUseCaseList(CaseList);
-
-        if not GuiAllowed then
-            TaxJsonDeserialization.HideDialog(true);
-
-        TaxJsonDeserialization.SkipVersionCheck(true);
-        TaxJsonDeserialization.SkipUseCaseIndentation(true);
-        foreach CaseId in CaseList do
-            TaxJsonDeserialization.ImportUseCases(GetText(CaseId));
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade GST Tax Config", 'OnUpgradeGSTUseCases', '', false, false)]
-    local procedure OnUpgradeGSTUseCases(CaseID: Guid; var UseCaseConfig: Text; var IsHandled: Boolean)
-    begin
-        if IsHandled then
-            exit;
-
-        UseCaseConfig := GetText(CaseID);
-        if UseCaseConfig <> '' then
-            IsHandled := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
-    local procedure OnGetGSTConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
-    begin
-        Configtext := GetConfig(CaseID, IsHandled);
-    end;
-
-    local procedure GetText(CaseId: Guid): Text
-    var
-        IsHandled: Boolean;
-    begin
-        exit(GetConfig(CaseId, IsHandled))
-    end;
-
-    local procedure UpdateUseCaseList(CaseList: list of [Guid])
-    begin
-        CaseList.Add('{F37442C1-AB50-445F-A7C3-8DCA84931B69}');
-        CaseList.Add('{28E2DDFD-2F63-47CB-986C-8E6F5D2356F3}');
-        CaseList.Add('{D460C15F-47A6-41A4-9B9F-8EA3738C2E40}');
-        CaseList.Add('{7B096619-70FB-4622-9E57-8EAE58DC1AB1}');
-        CaseList.Add('{1FF813B4-1776-4717-8C56-8F0E684ACE73}');
-        CaseList.Add('{4DD701D1-41A9-432E-9E95-8F8D08AB2C67}');
-        CaseList.Add('{EC4815D3-A78F-4C4F-8C64-8FE9AF09050C}');
-        CaseList.Add('{7859624E-8AFD-4A64-B361-900053C11266}');
-        CaseList.Add('{DF783FC9-39C3-492B-B94F-90BCF26C04E5}');
-        CaseList.Add('{17ED9604-C26D-496C-B2F4-9124166CF719}');
-        CaseList.Add('{BCB4C9B2-E212-4971-BE8C-914BC1DAAB1B}');
-        CaseList.Add('{DBE9B77E-9171-4F5C-A7CA-9156126D34FC}');
-        CaseList.Add('{26260269-B2BE-4D01-AF43-91BCE15FFF05}');
-        CaseList.Add('{4C68E757-379A-4FD3-A58A-91F57954A9FC}');
-        CaseList.Add('{293882EE-DEB8-47A9-BAF1-9221422B247A}');
-        CaseList.Add('{AB2BDB68-471C-4EC0-B43A-92920239FBF9}');
-        CaseList.Add('{674E08E2-EB2A-4C3D-924B-9370C6ED3DBF}');
-        CaseList.Add('{58CCF42B-75BE-422F-90A5-93E52B2CC817}');
-        CaseList.Add('{F9A5047E-5B27-41E4-AF68-9497E3B52FAE}');
-        CaseList.Add('{0C3618F6-08BD-417F-8744-94A415595940}');
-        CaseList.Add('{812E9032-CA16-4FAB-A80B-94CD7BC5EB8D}');
-        CaseList.Add('{B2047EB4-AD5D-4E8B-BFFC-94FB1C4EED34}');
-        CaseList.Add('{8011782D-C645-47CC-AE43-94FEFE437125}');
-        CaseList.Add('{BBBBD283-C64C-4AFE-A14E-950791E18CF8}');
-        CaseList.Add('{7DBFAC05-5315-4A5F-B5BE-962A065F7D93}');
-        CaseList.Add('{36207D8F-34B2-4AF3-83EC-96642DA44DFB}');
-        CaseList.Add('{F5EA246D-523F-4FFA-B316-967933F01C16}');
-        CaseList.Add('{FDC07938-011D-4291-9888-9685DCBF09E6}');
-        CaseList.Add('{99AB0C39-33A7-47F5-8659-968DBAEEA2F2}');
-        CaseList.Add('{2961B717-F882-4174-A7D0-98737C7F49A2}');
-        CaseList.Add('{580975ED-52DE-4EF9-BD94-99425C52B570}');
-        CaseList.Add('{FDB8B33F-E905-48C4-9191-994768C75A69}');
-        CaseList.Add('{135115A7-1D82-4528-959B-9A35775455CD}');
-        CaseList.Add('{EB39C2FC-37D8-4778-8B44-9A45DDA46B2E}');
-        CaseList.Add('{8A057230-A2A9-4E59-8101-9A947A8D8B91}');
-        CaseList.Add('{A8C8864E-5E75-431A-90D6-9AAB47623BA6}');
-        CaseList.Add('{1FFB6082-63D3-4AF8-A83B-9AE92D2010E2}');
-        CaseList.Add('{40E9E837-E785-42A1-B8ED-9B27D43D1FFC}');
-        CaseList.Add('{2026E996-050E-4647-8D77-9B2E8FF1B068}');
-        CaseList.Add('{FA5B2691-7B6B-43B4-92F1-9B6D10A216E4}');
-        CaseList.Add('{D52A2660-896C-4F50-B98F-9BB270E16A75}');
-        CaseList.Add('{783D79C8-B103-439F-9F75-9CB53B347C73}');
-        CaseList.Add('{34D44752-1655-43CC-8DD8-9CBA775C5554}');
-        CaseList.Add('{0A055D50-A23B-48A5-BADA-9D00D97EED3B}');
-        CaseList.Add('{938B00CD-0C55-4E7E-9E88-9D26724E10E2}');
-        CaseList.Add('{24BF4F23-3693-4E31-ADDA-9D2F91057CA2}');
-        CaseList.Add('{1A8DCBD9-6A50-4C2F-9364-9DB967B50A24}');
-        CaseList.Add('{2D2466D5-E651-49FE-A00C-9DE16690874C}');
-        CaseList.Add('{B47FAAA7-7D45-45F8-930F-9E124266E402}');
-        CaseList.Add('{F3CD2FC6-4CEE-47EF-B0F5-9EB3E46CE74B}');
-        CaseList.Add('{0C04EF8F-6F19-4C41-928B-9F32605898A8}');
-        CaseList.Add('{7422E62E-F5A5-46C6-8A2D-9F9F4C082C91}');
-        CaseList.Add('{851F544F-7349-4E29-AF19-A0B3B72AB0AC}');
-        CaseList.Add('{23C292E2-9704-4112-9AB6-A2FCBDDFFA6A}');
-        CaseList.Add('{997C3EE3-8453-43F1-A179-A32B19EFD8B8}');
-        CaseList.Add('{B8EE2ED8-F29F-465D-B6DC-A3A2A4BB1B3D}');
-        CaseList.Add('{A52E9652-EFC8-4950-B8C1-A41D887AF962}');
-        CaseList.Add('{A6239FAB-E9D2-4FFC-90CC-A5D7858C4CD8}');
-        CaseList.Add('{77D07467-2180-4712-814A-A6292F8D5E59}');
-        CaseList.Add('{B03B25F1-806F-4CE3-86A2-A65BBE1F8360}');
-        CaseList.Add('{DA8551C9-79B9-423C-801E-A8C868788300}');
-        CaseList.Add('{9568C93C-FC46-477D-B554-A8EACAEAF21A}');
-        CaseList.Add('{079237F7-FA64-40B5-8BE7-A92428550117}');
-        CaseList.Add('{4911101A-A3D1-4596-836C-A9EB2F2CB24C}');
-        CaseList.Add('{387B69F6-70EC-4BCC-A4C0-AA1CFAB0D356}');
-        CaseList.Add('{9E59D4DD-C975-4F42-B5A2-AA98AC93FB7F}');
-        CaseList.Add('{DBD883FC-4DD3-4C9C-B9AC-AAAF07FF4F3E}');
-        CaseList.Add('{A4044120-D393-4525-88F4-AB1A71F2E49C}');
-        CaseList.Add('{DA972CCF-D97D-4379-9704-AB397FA9E08F}');
-        CaseList.Add('{E52D7679-7E9C-4623-9CA7-AB704EF2465C}');
-        CaseList.Add('{BE0C902C-E9FC-4548-B8C7-AB70E21388BC}');
-        CaseList.Add('{CAC3F49D-59DD-4F1A-B0F3-AC28F7552973}');
-        CaseList.Add('{62AD7817-C30F-4EC6-B68C-AC4828B07DF8}');
-        CaseList.Add('{429F37B1-0D9F-4B5A-BC3F-AC53F994BC32}');
-        CaseList.Add('{B5C09EE0-1CF9-4818-AADB-AC5E95626AE9}');
-        CaseList.Add('{C215F153-718E-4936-BA99-ACB4E2F2BBC4}');
-        CaseList.Add('{EF5146EB-771F-4DCE-80E7-ACC0B606829F}');
-        CaseList.Add('{7647BA98-B553-41F7-8E2B-AE17EB85A560}');
-        CaseList.Add('{9B55505A-A2FE-4D77-8E6D-AEF8E1080D2C}');
-        CaseList.Add('{C6B64855-0CA9-4749-B21E-AF9FA0AB33D4}');
-        CaseList.Add('{8E7F4564-7BCD-46AA-B833-B040CD01B88D}');
-        CaseList.Add('{8B75A47C-8DD2-45C8-99D9-B04E18C531D5}');
-        CaseList.Add('{1005E09C-7F65-4E7A-AC0C-B071C455A412}');
-        CaseList.Add('{AF13E308-74EA-4A38-86B9-B0EA0DCE1972}');
-        CaseList.Add('{D66CD2EC-C8A4-48B9-A634-B14161E0E03B}');
-        CaseList.Add('{200C22B1-5DC0-4A80-B377-B14F9613D061}');
-        CaseList.Add('{C97F63C3-79EB-44D6-8AEA-B1710A9BBCE9}');
-        CaseList.Add('{2E85F2F7-2ED8-42CC-95F5-B20D32DB41AC}');
-        CaseList.Add('{34A74D02-F64A-4329-B0B3-B20E07D5A79A}');
-        CaseList.Add('{636979B2-6B57-49C6-B0B8-B306261B3304}');
-        CaseList.Add('{B0D75B5B-C42D-4381-80D8-B312BD2360AE}');
-        CaseList.Add('{207FA1CE-712A-475E-AC05-B36812DDE2C8}');
-        CaseList.Add('{D0059E3B-4B5F-44E3-B2AD-B3DB74C1CEC4}');
-        CaseList.Add('{C57B60DB-22D0-43D5-8460-B47D9F11AFC2}');
-        CaseList.Add('{BC7B8A8E-B343-439B-B240-B5D7D0253CC7}');
-        CaseList.Add('{66A65EDD-B06A-4817-84C4-B61B035AC7EE}');
-        CaseList.Add('{7C939AC1-1919-4919-A0D0-B62E3C72B382}');
-        CaseList.Add('{26B7CC70-0C7D-4FD2-B00A-B7845C289215}');
-        CaseList.Add('{5388F401-5CDE-4918-A9B0-B7B134235921}');
-        CaseList.Add('{BE4AF8DF-BB6D-432C-B598-B7B481D8D826}');
-        CaseList.Add('{B7D173ED-4B8F-4F13-95B8-B7C4890B3623}');
-        CaseList.Add('{67139569-E084-4255-A8A9-B8147D430C66}');
-        CaseList.Add('{5DAE448C-0BD5-4DC3-9BF9-B846921D2C71}');
-        CaseList.Add('{C3901ECF-9316-49A7-9897-B8C52A5A66A0}');
-        CaseList.Add('{F4BF9B77-886E-439D-A30B-B93AFF84A663}');
-        CaseList.Add('{5305AA1D-CF40-43CC-B9E3-B9471E33DCB3}');
-        CaseList.Add('{E73369B2-7A52-46D6-909F-BA116399AF39}');
-        CaseList.Add('{96DED9E5-9F22-4F8C-A19D-BA22CA433E0C}');
-        CaseList.Add('{CFC3D6F5-144A-4731-8658-BA626457624A}');
-        CaseList.Add('{C7563021-CD85-4519-ADFB-BA848CA3022F}');
-        CaseList.Add('{5DC7836A-BA61-4738-8506-BA91EC982903}');
-        CaseList.Add('{4CB74CDB-63C8-492B-8819-BA937750388D}');
-        CaseList.Add('{6F745F19-1955-4DAA-A3C4-BAC6D6326232}');
-        CaseList.Add('{853FC9A7-4D6E-4511-8207-BB18D1FFC0E8}');
-        CaseList.Add('{7E6E164B-CB38-4B5A-ADAA-BB51CAEEA5A7}');
-        CaseList.Add('{EC7AE7B0-93FA-42C2-9717-BBD2E8FC4D4C}');
-        CaseList.Add('{2E358EDE-097D-4846-A45B-BC2C1AE07FE9}');
-        CaseList.Add('{4D9AEA2D-B94B-40CC-B9D9-BC8D6FA19425}');
-        CaseList.Add('{A49C7425-A602-4445-873D-BCA89D3C2330}');
-        CaseList.Add('{6CFFB9A1-521E-4D60-AAFB-BDB044405A2A}');
-        CaseList.Add('{08F3F188-43F5-441F-AB95-BE332651AD3D}');
-        CaseList.Add('{AD7D62C2-213F-4288-9506-BE3D205DBB95}');
-        CaseList.Add('{F85B9211-93F9-4443-9784-BE52C220CE24}');
-        CaseList.Add('{20C477FD-F60A-4D5C-B919-BF3082993511}');
-        CaseList.Add('{4BFBD63E-F561-4C68-AB29-BF4139D24F49}');
-        CaseList.Add('{1E1FA21A-35D9-4D34-9EA7-BF9E0EDAA41E}');
-        CaseList.Add('{77160361-37A9-43BD-A71B-BFA6853D1CFB}');
-        CaseList.Add('{B8F32E0D-5D5E-4B84-AE3A-C0D4520470D3}');
-        CaseList.Add('{D659C67C-2384-417C-AE8F-C0E925C7535A}');
-        CaseList.Add('{B8ACD224-FC70-4037-86AD-C18AA5DA085F}');
-        CaseList.Add('{8B6ADE91-D482-4071-B431-C299292EF2BF}');
-        CaseList.Add('{C2730DF7-9769-4732-819E-C39124E5E3F8}');
-        CaseList.Add('{DAC31111-29F4-4C8F-BEEC-C3B31668DAF8}');
-        CaseList.Add('{6C9258C7-AF9C-43E4-A015-C4253265F37E}');
-        CaseList.Add('{DD3CF85B-64EA-4DD4-A626-C472E3B3B072}');
-        CaseList.Add('{94FF400C-34A8-4760-A4E5-C4B367739FA3}');
-        CaseList.Add('{5DA99FBE-AAAE-4DE9-8E7F-C4E15FC778B0}');
-        CaseList.Add('{3835C90E-1BDF-4C46-B50E-C5375ED24ED4}');
-        CaseList.Add('{5F7E0B6C-3D83-418C-9829-C5E5E52460C6}');
-        CaseList.Add('{A26AB5CA-52E6-4626-A426-C656627502E4}');
-        CaseList.Add('{F56F247A-8E36-496E-8672-C6FE2C81CE7B}');
-        CaseList.Add('{CB0F4A5D-EE91-402C-AA30-C8B724D7DCC5}');
-        CaseList.Add('{24E498DD-9DFB-4097-9F32-C8EBD49B8D22}');
-        CaseList.Add('{45189151-3ACF-421C-8984-C932DC8A3A2A}');
-        CaseList.Add('{4D6EF305-AE45-4735-9E9A-C9428D139D38}');
-        CaseList.Add('{21811F58-E56B-4A1B-B6DA-C9BD8EECC3AD}');
-        CaseList.Add('{2D1A7414-2844-4128-B026-CA683BCEA058}');
-        CaseList.Add('{56D375F9-6B43-4460-B0F6-CAB18F44DE92}');
-        CaseList.Add('{6EC9FAFD-8029-4B9C-8899-CB3C494682D1}');
-        CaseList.Add('{744B47C3-E4C1-4AC4-A37E-CBA3102A59A1}');
-        CaseList.Add('{A170BEEF-350A-4B43-B333-CBEA1D197E1B}');
-        CaseList.Add('{4529A161-49CC-44B6-95BA-CC141FA794B1}');
-        CaseList.Add('{E6D39823-CCCC-43DC-BD7E-CC6EEEBDB5EB}');
-        CaseList.Add('{2870E307-F77D-421B-B852-CE120813380F}');
-        CaseList.Add('{8314CDF7-853B-4DEA-A6DF-CE478FB1D3BD}');
-        CaseList.Add('{5CB02A72-982F-4AD6-A762-CE881DC52ACC}');
-        CaseList.Add('{77D351AF-2B06-49FB-B72A-CF9980E31A43}');
-        CaseList.Add('{D8632F51-FEDB-4AF9-8A25-CFE374BD12BA}');
-        CaseList.Add('{C8652C10-76BA-489E-985D-CFFC24D6276B}');
-        CaseList.Add('{BF9D05ED-BF8A-4BC8-9195-D008E4E381FB}');
-        CaseList.Add('{5265955A-2DE6-49CD-AFBE-D314E2D049FB}');
-        CaseList.Add('{0EE4D825-CC7B-458D-9165-D32635F56F41}');
-        CaseList.Add('{A1895816-94BF-4F67-819E-D3898920FAF5}');
-        CaseList.Add('{BECB23D8-56A1-4EB4-BF02-D3903BC14DF1}');
-        CaseList.Add('{94D31994-F430-4825-A72E-D41F51F63952}');
-        CaseList.Add('{AB0E6CA2-960E-4D6F-A7C6-D461F268627F}');
-        CaseList.Add('{4852FE50-F64A-454F-B43F-D46FE4BABECB}');
-        CaseList.Add('{67F7C66D-5296-4A5F-A85F-D4B91D1DBF97}');
-        CaseList.Add('{0B9F94CE-1C82-4FF7-9EF7-D51E156A0286}');
-        CaseList.Add('{2ED393A6-3B1D-49AC-9DBB-D5836930F61C}');
-        CaseList.Add('{BC238FA9-CAD7-43AB-8E7E-D6FFC7035EE9}');
-        CaseList.Add('{F69C2334-D38A-4CC1-B701-D7DC4C3B7CA9}');
-        CaseList.Add('{54CB1855-9AD0-4A47-9777-D811C7FA1FDE}');
-        CaseList.Add('{AE939960-28B0-426C-B5D7-D8535B9AE3C9}');
-        CaseList.Add('{70D71513-B8AE-4D89-8CD0-D87618FA224C}');
-        CaseList.Add('{2DD5FDF7-2C49-42FF-8CD9-D8929A5A3728}');
-        CaseList.Add('{C9CE4C92-F6CD-4B97-BD13-D8EE824D7D66}');
-        CaseList.Add('{06A818C9-817D-4983-B8D9-D96759380A68}');
-        CaseList.Add('{DF134523-53D1-4137-B091-D9C5E1DB8D64}');
-        CaseList.Add('{C0774889-632D-4799-AA04-DA25EB643832}');
-        CaseList.Add('{E474605D-6956-438B-95F2-DA5BE6A6D741}');
-        CaseList.Add('{FA492219-9C2F-4986-B773-DAA35CA74796}');
-        CaseList.Add('{FFBBBCDE-50F5-4D02-8B40-DAD63ED1491E}');
-        CaseList.Add('{7B91DD35-F410-4971-A2BC-DBCB67520105}');
-        CaseList.Add('{5D419270-CBAE-42FB-A135-DC1693C77985}');
-        CaseList.Add('{7EE4EB63-5718-4880-80D7-DC82790F804D}');
-        CaseList.Add('{ADF43278-38CD-463B-8E08-DD604EC3C50C}');
-        CaseList.Add('{F6932043-6A5A-4F55-B06A-DD7F76AFB52B}');
-        CaseList.Add('{68AE0437-E71F-4AC5-8729-DDD40410D69D}');
-        CaseList.Add('{3F866E90-A452-405A-A993-DE4D815A7A2D}');
-        CaseList.Add('{FCB154BF-A72A-43A0-87AB-DF80DEAB4F1C}');
-        CaseList.Add('{47F223C1-06BE-4BD6-A98A-E001F8CE436E}');
-        CaseList.Add('{700AF8A2-1315-41BC-9FE9-E00FB826DC80}');
-        CaseList.Add('{287ED69D-1488-4A48-BA50-E063EC8EF915}');
-        CaseList.Add('{2A85CD62-7897-47FF-808B-E0A11131071F}');
-        CaseList.Add('{F1AFD035-5F0A-4DD2-B15E-E0EEF0BA43D7}');
-        CaseList.Add('{A7619228-F860-4E03-B21E-E0F01EFF6C52}');
-        CaseList.Add('{7B9EA3AF-2235-44F9-AE67-E0F9F74740E6}');
-        CaseList.Add('{38BC1AAB-3066-483F-811E-E147662D48C6}');
-        CaseList.Add('{AE574FA3-E537-4FC1-9F8D-E16EF5D7A40E}');
-        CaseList.Add('{CF4626CB-7022-41C6-95C6-E1FE28C8C370}');
-        CaseList.Add('{869FF9BE-3EA8-424B-973E-E27D6E370807}');
-        CaseList.Add('{43D94D4C-82EA-4A44-B80F-E297292CAA10}');
-        CaseList.Add('{D2E1CF7B-EA38-4EB3-82C3-E2E6949625D3}');
-        CaseList.Add('{77DC6AF2-5D31-4450-8F78-E2F7383B9EAB}');
-        CaseList.Add('{F8591F7C-5D5C-4976-B5F1-E3248733EBC5}');
-        CaseList.Add('{FF5D43D6-C93E-42D5-9CD3-E3FCA99E77DD}');
-        CaseList.Add('{DBFAD9E1-15D2-44E9-9305-E453D15DE128}');
-        CaseList.Add('{C340D02B-697D-414F-9082-E4CC9B4B2A3B}');
-        CaseList.Add('{02670909-9C35-49DA-B64F-E5EA4602693E}');
-        CaseList.Add('{A4A0C6C8-FE70-4DA2-9E3D-E5F0CCA93A22}');
-        CaseList.Add('{EE5198CD-9648-49CF-97C5-E71A9843EE27}');
-        CaseList.Add('{4E53918C-16B7-4834-86DE-E7422FC21E83}');
-        CaseList.Add('{0CCFD5FB-95C8-4189-ACFF-E7D9AE1DB368}');
-        CaseList.Add('{26405773-06F9-4F36-B6B1-E80AA9987628}');
-        CaseList.Add('{FED218A8-8C3F-43D9-BBD5-E8BCBB30D8BD}');
-        CaseList.Add('{E277B92E-D047-425F-B44D-E8EA58FAEE5C}');
-        CaseList.Add('{3167AE22-C71D-4734-8391-E918A2A23775}');
-        CaseList.Add('{75C41C76-22FC-479E-836E-E9C838FF3320}');
-        CaseList.Add('{6A75BFF5-C880-498F-AC1D-E9CF9BE7F888}');
-        CaseList.Add('{E1067E83-D7A7-4D9C-B8E0-EA0285CCA2CD}');
-        CaseList.Add('{4490AC87-E83B-44C4-A6A8-EAF2650E8773}');
-        CaseList.Add('{739B3C04-8659-438B-B9D5-EB62435B9025}');
-        CaseList.Add('{10E9D621-B3A8-49E2-BAA1-EB7D535C0712}');
-        CaseList.Add('{325D0E84-286F-437E-BFE1-EBB6F575AD39}');
-        CaseList.Add('{0751F148-5E1D-4EFB-9008-ECB2F2F6704D}');
-        CaseList.Add('{C6AAB568-68A3-4D8A-A708-ECD7EFD9A3EE}');
-        CaseList.Add('{7D7F45D3-E214-47D5-8CD5-ED31E8F4092F}');
-        CaseList.Add('{81A83FF9-D7EB-4B5F-A2AE-ED346B7A9079}');
-        CaseList.Add('{BAEC40C3-3C56-4B4F-95C9-ED6E1E39A019}');
-        CaseList.Add('{BD845B37-5E0F-4EF3-94CB-ED972B71A3C1}');
-        CaseList.Add('{0282EB09-4676-4A39-B2EC-EDC9568BA92B}');
-        CaseList.Add('{C2D132AB-4A23-47FC-9A25-EEB973689456}');
-        CaseList.Add('{8D8A9485-D248-4B9B-AB8C-EEDB746B190C}');
-        CaseList.Add('{B33DCDC5-21C3-4019-96E3-EF513EAED95E}');
-        CaseList.Add('{512B21D6-5395-499F-A2BE-EF6D24385C89}');
-        CaseList.Add('{67527223-25F5-48B0-A0C2-F0064BD92F18}');
-        CaseList.Add('{C60D4ED2-E3FC-41BC-BB8D-F1B521984712}');
-        CaseList.Add('{72511E89-CA1E-4749-8648-F1EFD6F61D44}');
-        CaseList.Add('{F4A8CF06-D6CE-4263-ACF3-F1FBB744FBFB}');
-        CaseList.Add('{12EFA340-BD17-487B-A7CC-F23993B289CF}');
-        CaseList.Add('{99E193A6-6A7C-4035-BCC1-F2BC49DC4F86}');
-        CaseList.Add('{A43577AE-11F7-4DF9-9EEF-F317ED83ADD4}');
-        CaseList.Add('{2167C0D3-971D-481A-86BA-F45FB92025FB}');
-        CaseList.Add('{A8A42D6F-2A47-4175-8ED8-F482D64554C6}');
-        CaseList.Add('{C2FE3376-EDB2-4C3E-A82D-F49D27D292DE}');
-        CaseList.Add('{A0CED092-3AAD-4121-A5A2-F4DEAC316621}');
-        CaseList.Add('{4F992CE7-BB8C-4129-923A-F53A771DF231}');
-        CaseList.Add('{FC1AEFDA-0537-4D94-A576-F542B6710B71}');
-        CaseList.Add('{9A744701-39FF-4CFF-AA72-F5856E82FBF4}');
-        CaseList.Add('{AA3E77B0-A08A-4756-90E5-F6561C7D4B9B}');
-        CaseList.Add('{36A5E0EC-E197-4102-8FF0-F6DC9B4A47C1}');
-        CaseList.Add('{1A9545C6-CCD5-4B44-9450-F70C9B3F08B7}');
-        CaseList.Add('{ABA6F00E-B423-49DF-8DF5-F74950011703}');
-        CaseList.Add('{BB9814B7-D039-49BC-BF5D-F80127620CAE}');
-        CaseList.Add('{62216594-6660-492B-ACA0-F8BD3893DE49}');
-        CaseList.Add('{EC2138A1-46D7-430B-B335-F8D6C345BB16}');
-        CaseList.Add('{A2153C07-E791-4821-9542-F9C6C3737BAF}');
-        CaseList.Add('{F857355F-9134-460C-89C8-FB0845206988}');
-        CaseList.Add('{AECAE480-71C8-41C4-B247-FB33DFC9C039}');
-        CaseList.Add('{46CB3503-286F-43C3-9B04-FBBD5F2CBAF0}');
-        CaseList.Add('{0B9DBB2B-8F9C-496E-B373-FC5A4BD43F96}');
-        CaseList.Add('{78A245B3-3BAB-4347-B09A-FDE73A600BB2}');
-        CaseList.Add('{CF221DCD-487C-4B3C-BBC4-FE16B6667E76}');
-        CaseList.Add('{1B728E5D-4A32-4E32-A2AA-FE3673AFC2CD}');
-        CaseList.Add('{F3E7CEF3-5437-42EC-9DED-FE81F994FFCB}');
-        CaseList.Add('{041E1938-9B6A-4173-937C-FF0FDC0E7309}');
-        CaseList.Add('{D68B3FE8-78C6-492D-AC1A-FFA29F17A50D}');
-        CaseList.Add('{4F6B53B9-9961-4F29-8151-33C5D413CF58}');
-        CaseList.Add('{C7BA99E0-7A62-41C9-93C4-36BDAD52C328}');
-        CaseList.Add('{4934B903-2938-4ED9-994C-36F89B08E352}');
-        CaseList.Add('{7E781F55-9A83-4206-B18A-46C2CA5E8573}');
-        CaseList.Add('{9154D0D0-5D85-40BE-889D-764E65F8691C}');
-        CaseList.Add('{FB4C68ED-BD93-4229-B1BB-91163250C066}');
-        CaseList.Add('{8F83C983-4368-45FF-9319-952826F72162}');
-        CaseList.Add('{1C3087C6-66E1-4D66-8133-DF7F13FDB0D5}');
-        CaseList.Add('{A4C57AB8-DBFF-473C-B2A3-739975737950}');
-        CaseList.Add('{D187D562-E011-4879-839D-A3CB824D11EC}');
-        CaseList.Add('{1DE560C5-73C9-4476-9447-80FC42CD492C}');
-        CaseList.Add('{13217522-8F07-4C15-9787-8B1840E8CC40}');
-        CaseList.Add('{C6AFDFC6-874B-4B14-BCC9-8FC5B4992157}');
-        CaseList.Add('{17ED9604-C26D-496C-B2F4-9124166CF719}');
-        CaseList.Add('{8153E2CA-FD9A-4A9F-A0E4-A657636F83DB}');
-        CaseList.Add('{8139E94E-D43E-4C24-B6B3-C59F55737321}');
-        CaseList.Add('{5043629A-E2D7-4E0D-AD7F-C9D505507D01}');
-        CaseList.Add('{6EC9FAFD-8029-4B9C-8899-CB3C494682D1}');
-        CaseList.Add('{FA8E63F5-19A9-4940-AD59-DB7067BE069A}');
-        CaseList.Add('{7D7F45D3-E214-47D5-8CD5-ED31E8F4092F}');
-        CaseList.Add('{C447C36E-72FA-4FEA-A49C-F976FE57275D}');
-    end;
-
+#if not CLEAN27
+    [Obsolete('Removal of procedure as all Use cases covered in GSTBaseTaxEngineSetup Codeunit', '27.0')]
     procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
     var
         "{F37442C1-AB50-445F-A7C3-8DCA84931B69}Lbl": Label 'GST Use Cases';
@@ -657,6 +313,8 @@ codeunit 18005 "GST Tax Type Data"
         "{A744EF89-44A8-4CE0-81F8-3D8094623CD1}Lbl": Label 'GST Use Cases';
         "{58789CA5-0F23-4972-B1FE-3EE6E8BC19A1}Lbl": Label 'GST Use Cases';
         "{1DD8BB1A-1AA9-4B82-9F6A-80F26AA8675D}Lbl": Label 'GST Use Cases';
+        "{2c3d6b6c-5f5b-4728-b00f-28df4fa04939}Lbl": Label 'GST Use Cases';
+        "{e449e955-a401-4c0d-9db6-3920da89d68e}Lbl": Label 'GST Use Cases';
     begin
         Handled := true;
 
@@ -1299,10 +957,15 @@ codeunit 18005 "GST Tax Type Data"
                 exit("{58789CA5-0F23-4972-B1FE-3EE6E8BC19A1}Lbl");
             '{1DD8BB1A-1AA9-4B82-9F6A-80F26AA8675D}':
                 exit("{1DD8BB1A-1AA9-4B82-9F6A-80F26AA8675D}Lbl");
+            '{2c3d6b6c-5f5b-4728-b00f-28df4fa04939}':
+                exit("{2c3d6b6c-5f5b-4728-b00f-28df4fa04939}Lbl");
+            '{e449e955-a401-4c0d-9db6-3920da89d68e}':
+                exit("{e449e955-a401-4c0d-9db6-3920da89d68e}Lbl");
         end;
 
         Handled := false;
     end;
+#endif
 
     var
         GSTTaxTypeLbl: Label 'GST Tax Type place holder';

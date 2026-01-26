@@ -10,12 +10,7 @@ permissionset 1680 "Email Logging - Obj."
     Assignable = false;
     Access = Internal;
 
-#if not CLEAN22
-    Permissions = codeunit "Feature Email Log. Using Graph" = X,
-                  codeunit "Email Logging Job Runner" = X,
-#else
     Permissions = codeunit "Email Logging Job Runner" = X,
-#endif              
                   codeunit "Email Logging Invoke" = X,
                   codeunit "Email Logging Management" = X,
                   codeunit "Email Logging OAuth Client" = X,

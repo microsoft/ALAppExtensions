@@ -18,21 +18,6 @@ pageextension 31110 "Posted Sales Shipment CZL" extends "Posted Sales Shipment"
                 Visible = false;
             }
         }
-#if not CLEAN22
-        addlast(Shipping)
-        {
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude (Obsolete)';
-                Editable = false;
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-            }
-        }
-#endif
         addlast(Billing)
         {
             field("VAT Bus. Posting Group CZL"; Rec."VAT Bus. Posting Group")

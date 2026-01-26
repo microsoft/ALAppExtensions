@@ -21,6 +21,9 @@ query 18017 GSTR1CDNRPerQuery
             column(Document_Type; "Document Type")
             {
             }
+            column(Document_Line_No_; "Document Line No.")
+            {
+            }
             filter(Entry_Type; "Entry Type")
             {
                 ColumnFilter = Entry_Type = filter(= "Initial Entry");

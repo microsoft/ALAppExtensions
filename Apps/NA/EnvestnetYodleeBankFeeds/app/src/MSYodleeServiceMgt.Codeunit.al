@@ -1,23 +1,24 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
-using System.Utilities;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Reconciliation;
-using System.Media;
-using System.IO;
-using Microsoft.Finance.GeneralLedger.Journal;
-using System.DataAdministration;
-using System.Security.Encryption;
 using Microsoft.Bank.Statement;
-using System.Environment.Configuration;
-using Microsoft.Foundation.Company;
-using System.Environment;
-using System.Reflection;
-using System.Azure.KeyVault;
-using System.Telemetry;
-using System;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
+using System;
+using System.Apps;
+using System.Azure.KeyVault;
+using System.DataAdministration;
+using System.Environment;
+using System.Environment.Configuration;
+using System.IO;
+using System.Media;
+using System.Reflection;
+using System.Security.Encryption;
+using System.Telemetry;
+using System.Utilities;
 
 codeunit 1450 "MS - Yodlee Service Mgt."
 {
@@ -87,6 +88,8 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         BankAccountRefreshBankInBetaMaintenanceTxt: Label 'Yodlee was unable to update your account because it has started providing data updates for this online bank, and it may take a few days to be successful. Please try again later.';
         BankAccountRefreshTimedOutTxt: Label 'Your request timed out due to technical reasons. Open the corresponding bank account card and choose action Edit Online Bank Account Information. Provide the credentials for the online bank account, close the page and then choose action Refresh Online Bank Account.';
         BankAccountRefreshAdditionalAuthInfoNeededTxt: Label 'Additional authentication information is required. Open the corresponding bank account card and choose action Edit Online Bank Account Information.';
+        BankAccountConsentRequiredTxt: Label 'Access consent update is required for this online bank account. Open the corresponding bank account card, choose action ''Manage Access Consent for Online Bank Account'' and provide consent. If that doesn''t help, choose action ''Edit Online Bank Account Information'' and provide credentials and consent.';
+        UserActionNeededAtSiteTxt: Label 'Your financial institution requires additional action at their site. Sign in to your financial institution''s website to complete the necessary steps.';
         YodleeFastlinkUrlTxt: Label 'YODLEE_FASTLINKURL', Locked = true;
         GLBDisableRethrowException: Boolean;
         ErrorsIgnoredTxt: Label 'This failure has been ignored.';
@@ -99,6 +102,9 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         DemoCompanyWithDefaultCredentialMsg: Label 'You cannot use the Envestnet Yodlee Bank Feeds Service on the demonstration company. Open another company and try again.';
         NoAccountLinkedMsg: Label 'The bank account is not linked to an online bank account.';
         YodleeCobrandSecretEnvironmentNameTok: Label 'YodleeCobrandEnvironmentName';
+        YodleeAdminLoginNameSecretNameTok: Label 'YodleeAdminLoginName';
+        YodleeClientIdSecretNameTok: Label 'YodleeClientId';
+        YodleeClientSecretSecretNameTok: Label 'YodleeClientSecret';
         YodleeCobrandSecretNameTok: Label 'YodleeCobrandName';
         YodleeCobrandPasswordSecretNameTok: Label 'YodleeCobrandPassword';
         YodleeServiceUrlSecretNameTok: Label 'YodleeServiceUri';
@@ -139,8 +145,8 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         UserDisabledNotificationTxt: Label 'The user disabled notification %1.', Locked = true;
         YodleeServiceNameTxt: Label 'Envestnet Yodlee Bank Feeds Service';
         YodleeServiceIdentifierTxt: Label 'Yodlee', Locked = true;
-        MissingCredentialsQst: Label 'The password is missing in the Envestnet Yodlee Bank Feeds Service Setup window.\\Do you want to open the Envestnet Yodlee Bank Feeds Service Setup window?';
-        MissingCredentialsErr: Label 'The password is missing in the Envestnet Yodlee Bank Feeds Service Setup window.';
+        MissingCredentialsQst: Label 'The client secret is missing in the Envestnet Yodlee Bank Feeds Service Setup window.\\Do you want to open the Envestnet Yodlee Bank Feeds Service Setup window?';
+        MissingCredentialsErr: Label 'The client secret is missing in the Envestnet Yodlee Bank Feeds Service Setup window.';
         ProgressWindowMsg: Label 'Waiting for Envestnet Yodlee to complete the bank account refresh #1', Comment = '#1 is a number tracking the progress of the refresh';
         ProgressWindowUpdateTxt: Label '%1 seconds', Comment = '%1 - an integer';
         RefreshTakingTooLongTxt: Label 'Refreshing the bank account on Envestnet Yodlee is taking longer than expected.\\The refresh on Envestnet Yodlee can take up to 5 minutes to complete. You can import transactions up to the last successful refresh date while the refresh is running.';
@@ -152,6 +158,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         UnableToInsertUnlinkedBankAccToBufferErr: Label 'Unable to insert information about account that is linked on Yodlee. ProviderAccount id - %1, AccountId - %2.', Locked = true;
         StartingToRegisterUserTxt: Label 'Starting to register user %1 with currency code %2 on Yodlee.', Locked = true;
         FastlinkDataJsonTok: Label '{"app":"%1","rsession":"%2","token":"%3","redirectReq":"%4","extraParams":"%5"}', Locked = true;
+        FastlinkDataClientCredTok: Label '{"app":"%1","accessToken":"%2","redirectReq":"%3","extraParams":"%4"}', Locked = true;
         FastlinkLinkingExtraParamsTok: Label 'keyword=%1', Locked = true;
         Fastlink4ExtraParamsTok: Label 'configName=DefaultFL4', Locked = true;
         FastlinkMfaRefreshExtraParamsTok: Label 'siteAccountId=%1&flow=refresh&callback=%2', Locked = true;
@@ -160,7 +167,10 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         FastlinkEditAccountExtraParamsTok: Label 'providerAccountId=%1&flow=edit&callback=%2', Locked = true;
         BankAccountNameDisplayLbl: Label '%1 - %2', Locked = true;
         LabelDateExprTok: Label '<%1D>', Locked = true;
-        UserRequestingTransactionsTelemetryTxt: Label 'User requesting transactions for provider account id %1, from %2 to %3.', Locked = true;
+        HttpRequestBlockedErr: Label 'Envestnet Yodlee Bank Feeds app is not allowed to make HTTP requests when running in a non-production environment.';
+        HttpRequestBlockedTelemetryMsg: Label 'Customer trying to enable Envestnet Yodlee Bank Feeds and app is not allowed to make HTTP requests when running in a non-production environment.', Locked = true;
+        HttpRequestAllowedTelemetryMsg: Label 'Customer enabled http requests for Envestnet Yodlee Bank Feeds app via notification action.', Locked = true;
+        EnableHttpRequestActionLbl: Label 'Allow HTTP requests';
 
     procedure SetValuesToDefault(var MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup");
     var
@@ -311,7 +321,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
     local procedure GetCobrandToken(Username: Text; Password: Text; var CobrandToken: Text; var ErrorText: Text): Boolean;
     begin
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetCobrandTokenURL(), 'POST', YodleeAPIStrings.GetCobrandTokenBody(Username, Password), '', ErrorText);
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetCobrandTokenURL(), 'POST', YodleeAPIStrings.GetCobrandTokenBody(Username, Password), '', ErrorText, UserName);
 
         if ErrorText <> '' then
             exit(false);
@@ -323,8 +333,12 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     var
         AuthorizationHeaderValue: Text;
     begin
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, '');
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetConsumerTokenURL(), 'POST', YodleeAPIStrings.GetConsumerTokenBody(Username, Password, CobrandToken), AuthorizationHeaderValue, ErrorText);
+        if ClientCredentialsAuthEnabled() then
+            AuthorizationHeaderValue := ''
+        else
+            AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, '');
+
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetConsumerTokenURL(), 'POST', YodleeAPIStrings.GetConsumerTokenBody(Username, Password, CobrandToken), AuthorizationHeaderValue, ErrorText, UserName);
 
         if ErrorText <> '' then
             exit(false);
@@ -332,13 +346,35 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         exit(GetResponseValue(YodleeAPIStrings.GetConsumerTokenXPath(), ConsumerToken, ErrorText));
     end;
 
+    internal procedure ClientCredentialsAuthEnabled(): Boolean
+    var
+        CompanyInformationMgt: Codeunit "Company Information Mgt.";
+        EnvironmentInformation: Codeunit "Environment Information";
+        AdminLoginName: Text;
+    begin
+        // don't use our client credentials if we are in demo company
+        if EnvironmentInformation.IsSaaS() then
+            exit(not (CompanyInformationMgt.IsDemoCompany()));
+
+        exit(GetYodleeAdminLoginName(AdminLoginName));
+    end;
+
     local procedure GetFastlinkToken(CobrandToken: Text; ConsumerToken: Text; var FastLinkToken: Text; var ErrorText: Text): Boolean;
     var
         AuthorizationHeaderValue: Text;
+        LoginName: Text;
     begin
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetFastLinkTokenURL(), YodleeAPIStrings.GetFastLinkTokenRequestMethod(),
-          YodleeAPIStrings.GetFastLinkTokenBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText);
+        case ClientCredentialsAuthEnabled() of
+            true:
+                begin
+                    AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(ConsumerToken);
+                    LoginName := GetConsumerName();
+                end;
+            false:
+                AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+        end;
+
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetFastLinkTokenURL(), YodleeAPIStrings.GetFastLinkTokenRequestMethod(), YodleeAPIStrings.GetFastLinkTokenBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText, LoginName);
 
         if ErrorText <> '' then
             exit(false);
@@ -360,24 +396,35 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         if not TryAuthenticate(CobrandToken, ConsumerToken, ErrorText) then
             exit('');
 
-        if not GetFastlinkToken(CobrandToken, ConsumerToken, FastlinkToken, ErrorText) then begin
-            ErrorText := GetAdjustedErrorText(ErrorText, FailedTxt);
-            if IsStaleCredentialsErr(ErrorText) then begin
-                ErrorText := StaleCredentialsErr;
-                LogActivityFailed(GetFastlinkTokenTxt, ErrorText, FailureAction::RethrowError, '', STRSUBSTNO(TelemetryActivityFailureTxt, GetFastLinkTokenTxt, ErrorText), VERBOSITY::Warning)
-            end else
-                LogActivityFailed(GetFastlinkTokenTxt, ErrorText, FailureAction::IgnoreError, '', STRSUBSTNO(TelemetryActivityFailureTxt, GetFastLinkTokenTxt, ErrorText), VERBOSITY::Error);
-            exit('');
+        case ClientCredentialsAuthEnabled() of
+            true:
+                Data := STRSUBSTNO(FastlinkDataClientCredTok,
+                    '10003600',
+                    'Bearer ' + ConsumerToken,
+                    'true',
+                    ExtraParams);
+            false:
+                begin
+                    if not GetFastlinkToken(CobrandToken, ConsumerToken, FastlinkToken, ErrorText) then begin
+                        ErrorText := GetAdjustedErrorText(ErrorText, FailedTxt);
+                        if IsStaleCredentialsErr(ErrorText) then begin
+                            ErrorText := StaleCredentialsErr;
+                            LogActivityFailed(GetFastlinkTokenTxt, ErrorText, FailureAction::RethrowError, '', STRSUBSTNO(TelemetryActivityFailureTxt, GetFastLinkTokenTxt, ErrorText), VERBOSITY::Warning)
+                        end else
+                            LogActivityFailed(GetFastlinkTokenTxt, ErrorText, FailureAction::IgnoreError, '', STRSUBSTNO(TelemetryActivityFailureTxt, GetFastLinkTokenTxt, ErrorText), VERBOSITY::Error);
+                        exit('');
+                    end;
+
+                    Data := STRSUBSTNO(FastlinkDataJsonTok,
+                        '10003600',
+                        ConsumerToken,// encoded by GetFastlinkToken
+                        TypeHelper.UrlEncode(FastlinkToken),
+                        'true',
+                        ExtraParams);
+
+                    LogActivitySucceed(GetFastlinkTokenTxt, SuccessTxt, STRSUBSTNO(TelemetryActivitySuccessTxt, GetFastLinkTokenTxt, SuccessTxt));
+                end;
         end;
-
-        Data := STRSUBSTNO(FastlinkDataJsonTok,
-            '10003600',
-            ConsumerToken,// encoded by GetFastlinkToken
-            TypeHelper.UrlEncode(FastlinkToken),
-            'true',
-            ExtraParams);
-
-        LogActivitySucceed(GetFastlinkTokenTxt, SuccessTxt, STRSUBSTNO(TelemetryActivitySuccessTxt, GetFastLinkTokenTxt, SuccessTxt));
 
         exit(Data);
     end;
@@ -482,14 +529,22 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ErrorText: Text;
         AccountID: Text;
         AuthorizationHeaderValue: Text;
+        LoginName: Text;
     begin
         CheckServiceEnabled();
         Authenticate(CobrandToken, ConsumerToken);
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
-
         AccountID := MSYodleeBankAccLink."Online Bank Account ID";
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetUnlinkBankAccountURL(AccountID), YodleeAPIStrings.GetUnlinkBankAccountRequestMethod(),
-          YodleeAPIStrings.GetUnlinkBankAccountBody(CobrandToken, ConsumerToken, AccountID), AuthorizationHeaderValue, ErrorText);
+        case ClientCredentialsAuthEnabled() of
+            true:
+                begin
+                    AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(ConsumerToken);
+                    LoginName := GetConsumerName();
+                end;
+            false:
+                AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+        end;
+
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetUnlinkBankAccountURL(AccountID), YodleeAPIStrings.GetUnlinkBankAccountRequestMethod(), YodleeAPIStrings.GetUnlinkBankAccountBody(CobrandToken, ConsumerToken, AccountID), AuthorizationHeaderValue, ErrorText, LoginName);
 
         if not GLBResponseInStream.EOS() then
             if not GetResponseValue('/', Response, ErrorText) then begin
@@ -527,9 +582,13 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
         Authenticate(CobrandToken, ConsumerToken);
 
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+        if ClientCredentialsAuthEnabled() then
+            AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(ConsumerToken)
+        else
+            AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+
         ExecuteWebServiceRequest(YodleeAPIStrings.GetRemoveConsumerURL(), YodleeAPIStrings.GetRemoveConsumerRequestMethod(),
-          YodleeAPIStrings.GetRemoveConsumerRequestBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText);
+          YodleeAPIStrings.GetRemoveConsumerRequestBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText, '');
 
         if not GetResponseValue('/', Response, ErrorText) then begin
             LogActivityFailed(RemoveConsumerTxt, ErrorText, FailureAction::IgnoreError, '', StrSubstNo(TelemetryActivityFailureTxt, RemoveConsumerTxt, ErrorText), Verbosity::Error);
@@ -558,65 +617,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         exit(true);
     end;
 
-#if not CLEAN24
-#pragma warning disable AL0432
-    [NonDebuggable]
-    [Obsolete('Use RegisterConsumer with SecretText data type for Password parameter.', '24.0')]
-    procedure RegisterConsumer(var Username: Text[250]; var Password: Text; var ErrorText: Text; CobrandToken: Text): Boolean;
-    var
-        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        PasswordHelper: Codeunit "Password Helper";
-        Response: Text;
-        LcyCode: Text;
-        Email: Text;
-        AuthorizationHeaderValue: Text;
-        AlphanumericCharsTxt: Text;
-    begin
-        AlphanumericCharsTxt := 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        CheckServiceEnabled();
-        Username := DelChr(CompanyName(), '=', DelChr(CompanyName(), '=', AlphanumericCharsTxt)) + '_' + FORMAT(CREATEGUID());
-
-        GeneralLedgerSetup.GET();
-        GeneralLedgerSetup.TESTFIELD("LCY Code");
-        LcyCode := GeneralLedgerSetup."LCY Code";
-
-        MSYodleeBankServiceSetup.GET();
-        Email := MSYodleeBankServiceSetup."User Profile Email Address";
-        Password := COPYSTR(PasswordHelper.GeneratePassword(50), 1, 50);
-
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, '');
-        Session.LogMessage('0000DL9', StrSubstNo(StartingToRegisterUserTxt, UserName, LcyCode), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetRegisterConsumerURL(), 'POST',
-            YodleeAPIStrings.GetRegisterConsumerBody(CobrandToken, UserName, Password, Email, LcyCode), AuthorizationHeaderValue,
-            ErrorText);
-
-        if not GetResponseValue('/', Response, ErrorText) then begin
-            ErrorText := GetAdjustedErrorText(ErrorText, FailedRegisterConsumerTxt);
-            if IsStaleCredentialsErr(ErrorText) then begin
-                ErrorText := StaleCredentialsErr;
-                LogActivityFailed(RegisterConsumerTxt, ErrorText, FailureAction::RethrowError, '', StrSubstNo(TelemetryActivityFailureTxt, RegisterConsumerTxt, ErrorText), Verbosity::Warning);
-                exit(false);
-            end;
-            if ErrorText.Contains(BankStmtServiceStaleIllegalArgumentValueExceptionTxt) then begin
-                ErrorText := RegisterConsumerVerifyLCYCodeTxt;
-                LogActivityFailed(RegisterConsumerTxt, ErrorText, FailureAction::RethrowError, '', StrSubstNo(TelemetryActivityFailureTxt, RegisterConsumerTxt, ErrorText), Verbosity::Warning);
-            end else
-                LogActivityFailed(RegisterConsumerTxt, ErrorText, FailureAction::RethrowError, '', StrSubstNo(TelemetryActivityFailureTxt, RegisterConsumerTxt, ErrorText), Verbosity::Error);
-
-            exit(false);
-        end;
-
-        LogActivitySucceed(RegisterConsumerTxt, SuccessRegisterConsumerTxt, StrSubstNo(TelemetryActivitySuccessTxt, RegisterConsumerTxt, SuccessRegisterConsumerTxt));
-
-        MSYodleeBankServiceSetup.VALIDATE("Consumer Name", COPYSTR(Username, 1, MAXSTRLEN(MSYodleeBankServiceSetup."Consumer Name")));
-        MSYodleeBankServiceSetup.SaveConsumerPassword(MSYodleeBankServiceSetup."Consumer Password", Password);
-        MSYodleeBankServiceSetup.MODIFY(true);
-        StoreConsumerName(MSYodleeBankServiceSetup."Consumer Name");
-        exit(true);
-    end;
-#pragma warning restore AL0432
-#endif
 
     [NonDebuggable]
     procedure RegisterConsumer(var Username: Text[250]; var Password: SecretText; var ErrorText: Text; CobrandToken: Text): Boolean;
@@ -640,13 +640,21 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
         MSYodleeBankServiceSetup.GET();
         Email := MSYodleeBankServiceSetup."User Profile Email Address";
-        Password := COPYSTR(PasswordHelper.GenerateSecretPassword(50).Unwrap(), 1, 50);
 
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, '');
+        case ClientCredentialsAuthEnabled() of
+            true:
+                AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken);
+            false:
+                begin
+                    AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, '');
+                    Password := COPYSTR(PasswordHelper.GenerateSecretPassword(50).Unwrap(), 1, 50);
+                end;
+        end;
+
         Session.LogMessage('0000DL9', StrSubstNo(StartingToRegisterUserTxt, UserName, LcyCode), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         ExecuteWebServiceRequest(YodleeAPIStrings.GetRegisterConsumerURL(), 'POST',
             YodleeAPIStrings.GetRegisterConsumerBody(CobrandToken, UserName, Password, Email, LcyCode), AuthorizationHeaderValue,
-            ErrorText);
+            ErrorText, '');
 
         if not GetResponseValue('/', Response, ErrorText) then begin
             ErrorText := GetAdjustedErrorText(ErrorText, FailedRegisterConsumerTxt);
@@ -677,10 +685,19 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     var
         ErrorText: Text;
         AuthorizationHeaderValue: Text;
+        LoginName: Text;
     begin
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedSiteListURL(), YodleeAPIStrings.GetLinkedSiteListRequestMethod(),
-          YodleeAPIStrings.GetLinkedSiteListBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText);
+        case ClientCredentialsAuthEnabled() of
+            true:
+                begin
+                    AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(ConsumerToken);
+                    LoginName := GetConsumerName();
+                end;
+            false:
+                AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+        end;
+
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedSiteListURL(), YodleeAPIStrings.GetLinkedSiteListRequestMethod(), YodleeAPIStrings.GetLinkedSiteListBody(CobrandToken, ConsumerToken), AuthorizationHeaderValue, ErrorText, LoginName);
 
         exit(GetResponseValue(YodleeAPIStrings.GetRootXPath(), SiteListXML, ErrorText));
     end;
@@ -725,13 +742,24 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         BankAccountXML: Text;
         ErrorText: Text;
         AuthorizationHeaderValue: Text;
+        LoginName: Text;
     begin
         CheckServiceEnabled();
         Authenticate(CobrandToken, ConsumerToken);
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+
         Session.LogMessage('00006PN', ProviderAccountId, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedBankAccountsURL(ProviderAccountId), YodleeAPIStrings.GetLinkedBankAccountsRequestMethod(),
-          YodleeAPIStrings.GetLinkedBankAccountsBody(CobrandToken, ConsumerToken, ProviderAccountId), AuthorizationHeaderValue, ErrorText);
+
+        case ClientCredentialsAuthEnabled() of
+            true:
+                begin
+                    AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(ConsumerToken);
+                    LoginName := GetConsumerName();
+                end;
+            false:
+                AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+        end;
+
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedBankAccountsURL(ProviderAccountId), YodleeAPIStrings.GetLinkedBankAccountsRequestMethod(), YodleeAPIStrings.GetLinkedBankAccountsBody(CobrandToken, ConsumerToken, ProviderAccountId), AuthorizationHeaderValue, ErrorText, LoginName);
 
         if ErrorText <> '' then begin
             LogActivityFailed(
@@ -758,12 +786,21 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         BankAccountXML: Text;
         ErrorText: Text;
         AuthorizationHeaderValue: Text;
+        LoginName: Text;
     begin
         CheckServiceEnabled();
         Authenticate(CobrandToken, ConsumerToken);
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedBankAccountURL(AccountId), 'GET',
-          '', AuthorizationHeaderValue, ErrorText);
+        case ClientCredentialsAuthEnabled() of
+            true:
+                begin
+                    AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(ConsumerToken);
+                    LoginName := GetConsumerName();
+                end;
+            false:
+                AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+        end;
+
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedBankAccountURL(AccountId), 'GET', '', AuthorizationHeaderValue, ErrorText, LoginName);
 
         if ErrorText <> '' then begin
             LogActivityFailed(
@@ -915,13 +952,13 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     local procedure UserFriendlyRefreshErrorMessage(RefreshCode: Text): Text;
     begin
         case RefreshCode of
-            '402', 'CREDENTIALS_UPDATE_NEEDED', 'INCORRECT_CREDENTIALS':
+            '402', 'CREDENTIALS_UPDATE_NEEDED', 'INCORRECT_CREDENTIALS', 'INCORRECT_OAUTH_TOKEN':
                 exit(BankAccountRefreshInvalidCredentialsTxt);
             '404', 'TECH_ERROR':
                 exit(BankAccountRefreshUnknownErrorTxt);
             '407', 'ACCOUNT_LOCKED':
                 exit(BankAccountRefreshAccountLockedTxt);
-            '409', 'UNEXPECTED_SITE_ERROR', 'SITE_UNAVAILABLE':
+            '409', 'UNEXPECTED_SITE_ERROR', 'SITE_UNAVAILABLE', 'DATA_NOT_AVAILABLE', 'NOT_AVAILABLE', 'SITE_BLOCKING_ERROR':
                 exit(BankAccountRefreshBankDownTxt);
             '424':
                 exit(BankAccountRefreshBankDownForMaintenanceTxt);
@@ -931,6 +968,10 @@ codeunit 1450 "MS - Yodlee Service Mgt."
                 exit(BankAccountRefreshTimedOutTxt);
             '518', '519', '520', '522', '523', '524', '526', 'ADDL_AUTHENTICATION_REQUIRED', 'INVALID_ADDL_INFO_PROVIDED', 'NEW_AUTHENTICATION_REQUIRED':
                 exit(BankAccountRefreshAdditionalAuthInfoNeededTxt);
+            'CONSENT_EXPIRED', 'CONSENT_REVOKED', 'CONSENT_REQUIRED':
+                exit(BankAccountConsentRequiredTxt);
+            'USER_ACTION_NEEDED_AT_SITE':
+                exit(UserActionNeededAtSiteTxt);
         end;
         exit('');
     end;
@@ -946,23 +987,22 @@ codeunit 1450 "MS - Yodlee Service Mgt."
 
     local procedure GetRefreshBankDate(OnlineBankID: Text; OnlineBankAccountID: Text; var AccountNode: XmlNode): DateTime;
     var
-        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         RefreshDateTime: DateTime;
         RefreshDateTimeTxt: Text;
         ProviderId: Text;
         ProviderName: Text;
         OAuthMigrationStatus: Text;
+        ConsentId: Text;
     begin
         CheckServiceEnabled();
         GetLinkedBankAccount(OnlineBankAccountID, AccountNode);
         ProviderName := FindNodeText(AccountNode, '/root/root/account/providerName');
         ProviderId := FindNodeText(AccountNode, '/root/root/account/providerId');
         OAuthMigrationStatus := FindNodeText(AccountNode, '/root/root/account/oauthMigrationStatus');
+        ConsentId := FindNodeText(AccountNode, '/root/root/account/consentId');
         Session.LogMessage('0000A07', ProviderName, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('0000A08', ProviderId, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-        Session.LogMessage('0000INC', OAuthMigrationStatus, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-        if MSYodleeBankServiceSetup.Get() then
-            Session.LogMessage('0000F76', MSYodleeBankServiceSetup."Consumer Name", Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+        Session.LogMessage('0000INC', OAuthMigrationStatus, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok, 'ConsentId', ConsentId);
         Session.LogMessage('00006PN', OnlineBankID, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         RefreshDateTimeTxt := FindNodeText(AccountNode, '/root/root/account/lastUpdated');
         if Evaluate(RefreshDateTime, RefreshDateTimeTxt, 9) then;
@@ -1036,24 +1076,29 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ErrorText: Text;
         AuthorizationHeaderValue: Text;
         PaginationLink: Text;
+        LoginName: Text;
     begin
         CheckServiceEnabled();
         Authenticate(CobrandToken, ConsumerToken);
-        AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
+
+        if ClientCredentialsAuthEnabled() then begin
+            AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(ConsumerToken);
+            LoginName := GetConsumerName();
+        end
+        else
+            AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
 
         // empty the list of bank feed responses
         // the call(s) below will populate it with new response(s)
         if BankFeedTextList.Count() > 0 then
             BankFeedTextList.RemoveRange(1, BankFeedTextList.Count());
 
-        Session.LogMessage('0000JWP', StrSubstNo(UserRequestingTransactionsTelemetryTxt, OnlineBankAccountId, FromDate, ToDate), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-
         PaginationLink := ExecuteWebServiceRequest(
             YodleeAPIStrings.GetTransactionSearchURL(OnlineBankAccountId, FromDate, ToDate),
             YodleeAPIStrings.GetTransactionSearchRequestMethod(),
             YodleeAPIStrings.GetTransactionSearchBody(CobrandToken, ConsumerToken, OnlineBankAccountId, FromDate, ToDate),
             AuthorizationHeaderValue,
-            ErrorText);
+            ErrorText, LoginName);
 
         // keep requesting more transactions until there is no more pagination link in the response header
         while PaginationLink <> '' do
@@ -1062,7 +1107,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             YodleeAPIStrings.GetTransactionSearchRequestMethod(),
             YodleeAPIStrings.GetTransactionSearchBody(CobrandToken, ConsumerToken, OnlineBankAccountId, FromDate, ToDate),
             AuthorizationHeaderValue,
-            ErrorText);
+            ErrorText, LoginName);
 
         Session.LogMessage('00001SX', STRSUBSTNO(TransactionsDownloadedTelemetryTxt, NumberOfLinkedBankAccounts()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
     end;
@@ -1532,14 +1577,14 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             exit(true);
 
         if not MSYodleeBankServiceSetup.GET() or
-           not MSYodleeBankServiceSetup.HasCobrandPassword(MSYodleeBankServiceSetup."Cobrand Password")
+           not (MSYodleeBankServiceSetup.HasCobrandPassword(MSYodleeBankServiceSetup."Cobrand Password") or MSYodleeBankServiceSetup.HasClientSecret(MSYodleeBankServiceSetup."Client Secret"))
         then
             if not GLBSetupPageIsCallee and GUIALLOWED() then begin
                 if CONFIRM(MissingCredentialsQst, true) then begin
                     COMMIT();
                     PAGE.RUNMODAL(PAGE::"MS - Yodlee Bank Service Setup", MSYodleeBankServiceSetup);
                     if not MSYodleeBankServiceSetup.GET() or
-                       not MSYodleeBankServiceSetup.HasCobrandPassword(MSYodleeBankServiceSetup."Cobrand Password")
+                       not (MSYodleeBankServiceSetup.HasCobrandPassword(MSYodleeBankServiceSetup."Cobrand Password") or MSYodleeBankServiceSetup.HasClientSecret(MSYodleeBankServiceSetup."Client Secret"))
                     then
                         ErrorText := MissingCredentialsErr;
                 end else
@@ -1556,7 +1601,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     end;
 
     [NonDebuggable]
-    local procedure ExecuteWebServiceRequest(URL: Text; Method: Text[6]; BodyText: Text; AuthorizationHeaderValue: Text; var ErrorText: Text) PaginationLink: Text
+    local procedure ExecuteWebServiceRequest(URL: Text; Method: Text[6]; BodyText: Text; AuthorizationHeaderValue: Text; var ErrorText: Text; LoginName: Text) PaginationLink: Text
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         ActivityLog: Record "Activity Log";
@@ -1577,6 +1622,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         UnsuccessfulRequestTelemetryTxt: Text;
         PaginationLinks: array[1] of Text;
         PaginationRelativeLink: Text;
+        HttpRequestBlockedErrorInfo: ErrorInfo;
     begin
         if not TryCheckCredentials(ErrorText) then
             ERROR(ErrorText);
@@ -1592,6 +1638,9 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         CobrandEnvironmentName := GetCobrandEnvironmentName();
         if CobrandEnvironmentName <> '' then
             RequestHeaders.Add('Cobrand-Name', CobrandEnvironmentName);
+        if LoginName <> '' then
+            if ClientCredentialsAuthEnabled() then
+                RequestHeaders.TryAddWithoutValidation('LoginName', LoginName);
         if AuthorizationHeaderValue <> '' then
             RequestHeaders.TryAddWithoutValidation('Authorization', AuthorizationHeaderValue);
         HttpRequestMessage.SetRequestUri(URL);
@@ -1600,7 +1649,10 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             ReqHttpContent.GetHeaders(ContentHeaders);
             ReqHttpContent.WriteFrom(BodyText);
             ContentHeaders.Remove('Content-Type');
-            ContentHeaders.Add('Content-Type', YodleeAPIStrings.GetWebRequestContentType());
+            if URL.EndsWith('auth/token') then
+                ContentHeaders.Add('Content-Type', 'application/x-www-form-urlencoded')
+            else
+                ContentHeaders.Add('Content-Type', YodleeAPIStrings.GetWebRequestContentType());
             HttpRequestMessage.Content(ReqHttpContent);
         end;
 
@@ -1625,6 +1677,15 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         if IsSuccessful then
             GetHttpResponseMessage.Content().ReadAs(GLBResponseInStream)
         else begin
+            if GetHttpResponseMessage.IsBlockedByEnvironment() then begin
+                HttpRequestBlockedErrorInfo.DataClassification := HttpRequestBlockedErrorInfo.DataClassification::SystemMetadata;
+                HttpRequestBlockedErrorInfo.ErrorType := HttpRequestBlockedErrorInfo.ErrorType::Client;
+                HttpRequestBlockedErrorInfo.Verbosity := HttpRequestBlockedErrorInfo.Verbosity::Error;
+                HttpRequestBlockedErrorInfo.Message := HttpRequestBlockedErr;
+                HttpRequestBlockedErrorInfo.AddAction(EnableHttpRequestActionLbl, Codeunit::"MS - Yodlee Service Mgt.", 'EnableHttpRequestForYodlee');
+                Session.LogMessage('0000P7D', HttpRequestBlockedTelemetryMsg, Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+                Error(HttpRequestBlockedErrorInfo);
+            end;
             DotNetExceptionHandler.Collect();
             UnsuccessfulRequestTelemetryTxt := DotNetExceptionHandler.GetMessage();
             FeatureTelemetry.LogError('0000GXZ', 'Yodlee', 'Requesting to Yodlee', RequestUnsuccessfulErr);
@@ -1808,6 +1869,11 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         SecretValue: Text;
     begin
+        if ClientCredentialsAuthEnabled() then begin
+            GetYodleeAdminLoginName(SecretValue);
+            exit(SecretValue);
+        end;
+
         if GetYodleeCobrandNameFromAzureKeyVault(SecretValue) then
             exit(SecretValue);
 
@@ -1822,6 +1888,9 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         SecretValue: Text;
     begin
+        if ClientCredentialsAuthEnabled() then
+            exit('');
+
         if GetYodleeCobrandPassFromAzureKeyVault(SecretValue) then
             exit(SecretValue);
 
@@ -1835,8 +1904,19 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
     begin
+        if ClientCredentialsAuthEnabled() then
+            exit('');
+
         MSYodleeBankServiceSetup.GET();
         exit(MSYodleeBankServiceSetup.GetPassword(MSYodleeBankServiceSetup."Consumer Password"));
+    end;
+
+    internal procedure GetConsumerName(): Text;
+    var
+        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
+    begin
+        MSYodleeBankServiceSetup.Get();
+        exit(MSYodleeBankServiceSetup."Consumer Name");
     end;
 
     [Scope('OnPrem')]
@@ -1859,11 +1939,16 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     end;
 
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure HasCustomCredentialsInAzureKeyVault(): Boolean;
     var
         SecretValue: Text;
+        YodleeAdminLoginName: Text;
+        HasCustomCredentials: Boolean;
     begin
-        exit(GetAzureKeyVaultSecret(SecretValue, YodleeCobrandSecretNameTok));
+        HasCustomCredentials := GetAzureKeyVaultSecret(SecretValue, YodleeCobrandSecretNameTok);
+        HasCustomCredentials := (HasCustomCredentials or (GetAzureKeyVaultSecret(YodleeAdminLoginName, YodleeAdminLoginNameSecretNameTok)));
+        exit(HasCustomCredentials);
     end;
 
     [Scope('OnPrem')]
@@ -1881,10 +1966,27 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     end;
 
     [Scope('OnPrem')]
+    procedure GetYodleeAdminLoginNameFromAzureKeyVault(var YodleeAdminLoginNameValue: Text): Boolean;
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+    begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret(YodleeAdminLoginNameSecretNameTok, YodleeAdminLoginNameValue) then
+            exit(false);
+
+        if YodleeAdminLoginNameValue = '' then
+            exit(false);
+
+        exit(true);
+    end;
+
+    [Scope('OnPrem')]
     procedure GetYodleeCobrandEnvironmentNameFromAzureKeyVault(var YodleeCobrandEnvironmentNameValue: Text): Boolean;
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
     begin
+        if ClientCredentialsAuthEnabled() then
+            exit(false);
+
         if not AzureKeyVault.GetAzureKeyVaultSecret(YodleeCobrandSecretEnvironmentNameTok, YodleeCobrandEnvironmentNameValue) then
             exit(false);
 
@@ -1892,6 +1994,24 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             exit(false);
 
         exit(true);
+    end;
+
+    [Scope('OnPrem')]
+    procedure GetYodleeAdminLoginName(var YodleeAdminLoginNameValue: Text): Boolean;
+    var
+        MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        case Environmentinformation.IsSaaS() of
+            true:
+                exit(GetYodleeAdminLoginNameFromAzureKeyVault(YodleeAdminLoginNameValue));
+            false:
+                begin
+                    MSYodleeBankServiceSetup.Get();
+                    YodleeAdminLoginNameValue := MSYodleeBankServiceSetup.GetAdminLoginName(MSYodleeBankServiceSetup."Admin Login Name");
+                end;
+        end;
+        exit(YodleeAdminLoginNameValue <> '')
     end;
 
     [Scope('OnPrem')]
@@ -1903,6 +2023,36 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             exit(false);
 
         if YodleeCobrandPasswordValue = '' then
+            exit(false);
+
+        exit(true);
+    end;
+
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetYodleeClientIdFromAzureKeyVault(var YodleeClientIdValue: Text): Boolean;
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+    begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret(YodleeClientIdSecretNameTok, YodleeClientIdValue) then
+            exit(false);
+
+        if YodleeClientIdValue = '' then
+            exit(false);
+
+        exit(true);
+    end;
+
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetYodleeClientSecretFromAzureKeyVault(var YodleeClientSecretValue: Text): Boolean;
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+    begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret(YodleeClientSecretSecretNameTok, YodleeClientSecretValue) then
+            exit(false);
+
+        if YodleeClientSecretValue = '' then
             exit(false);
 
         exit(true);
@@ -1999,16 +2149,8 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         GLBDisableRethrowException := NewSetting;
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
-    procedure HandleVANRegisterServiceConnection(var ServiceConnection: Record 1400)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure HandleVANRegisterServiceConnection(var ServiceConnection: Record 1400)
-#endif
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         RecRef: RecordRef;
@@ -2066,7 +2208,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         Dimensions.Add('Bank Name', ProviderName);
         Dimensions.Add('ProviderAccountId', MSYodleeBankAccLink."Online Bank Account ID");
         Dimensions.Add('NumberOfTransactionsImported', Format(NumberOfLinesImported));
-        Session.LogMessage('0000JQ5', Format(NumberOfLinesImported), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, Dimensions);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::Video, 'OnRegisterVideo', '', false, false)]
@@ -2419,7 +2560,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         end;
 
         if MSYodleeBankServiceSetup.GET() then;
-        if not MSYodleeBankServiceSetup.HasCobrandName(MSYodleeBankServiceSetup."Cobrand Name") then
+        if (not MSYodleeBankServiceSetup.HasCobrandName(MSYodleeBankServiceSetup."Cobrand Name")) and (not MSYodleeBankServiceSetup.HasAdminLoginName(MSYodleeBankServiceSetup."Admin Login Name")) then
             exit;
 
         PopulateNameValueBufferWithYodleeInfo(TempNameValueBuffer);
@@ -2863,6 +3004,15 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         MSYodleeBankSession.DeleteAll();
     end;
 
+    internal procedure EnableHttpRequestForYodlee(ErrorInfo: ErrorInfo)
+    var
+        ExtensionManagement: Codeunit "Extension Management";
+        CallerModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(CallerModuleInfo);
+        ExtensionManagement.ConfigureExtensionHttpClientRequestsAllowance(CallerModuleInfo.PackageId(), true);
+        Session.LogMessage('0000P7E', HttpRequestAllowedTelemetryMsg, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"MS - Yodlee Service Mgt.", 'OnAfterSuccessfulActivitySendTelemetry', '', false, false)]
     local procedure SendTelemetryAfterSuccessfulActivity(Message: Text);
@@ -2899,7 +3049,6 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         Session.LogMessage('00001QG', Message, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
     end;
 }
-
 
 
 

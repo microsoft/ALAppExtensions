@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Finance.GeneralLedger.Reversal;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Finance.GeneralLedger.Ledger;
-using System.Utilities;
-using Microsoft.Finance.TDS.TDSOnPayments;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Reversal;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Finance.TDS.TDSOnPayments;
+using System.Utilities;
 
 codeunit 18746 "TDS Pay"
 {
@@ -171,6 +171,7 @@ codeunit 18746 "TDS Pay"
                 NewTDSEntry."Remaining TDS Amount" := -NewTDSEntry."Remaining TDS Amount";
                 NewTDSEntry."Remaining Surcharge Amount" := -NewTDSEntry."Remaining Surcharge Amount";
                 NewTDSEntry."TDS Line Amount" := -NewTDSEntry."TDS Line Amount";
+                NewTDSEntry."Payment Amount" := -NewTDSEntry."Payment Amount";
                 NewTDSEntry."Transaction No." := GenJnlPostLine.GetNextTransactionNo();
                 NewTDSEntry."Source Code" := NewTDSEntry."Source Code";
                 NewTDSEntry."User ID" := CopyStr(UserId, 1, 50);

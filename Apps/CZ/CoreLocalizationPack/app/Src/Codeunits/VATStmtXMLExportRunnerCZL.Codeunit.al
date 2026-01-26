@@ -14,24 +14,16 @@ codeunit 11786 "VAT Stmt XML Export Runner CZL"
     var
         FileName: Text;
     begin
-        GetVATStatementXMLFormat(Rec);
-        FileName := VATStatementExportCZL.ExportToXMLFile(Rec);
+        FileName := GetVATStatementXMLFormat(Rec).ExportToXMLFile(Rec);
     end;
 
     procedure ExportToXMLBlob(VATStatementName: Record "VAT Statement Name"; var TempBlob: Codeunit "Temp Blob")
     begin
-        GetVATStatementXMLFormat(VATStatementName);
-        VATStatementExportCZL.ExportToXMLBlob(VATStatementName, TempBlob);
+        GetVATStatementXMLFormat(VATStatementName).ExportToXMLBlob(VATStatementName, TempBlob);
     end;
 
-    local procedure GetVATStatementXMLFormat(VATStatementName: Record "VAT Statement Name")
-    var
-        VATStatementTemplate: Record "VAT Statement Template";
+    local procedure GetVATStatementXMLFormat(VATStatementName: Record "VAT Statement Name"): Interface "VAT Statement Export CZL"
     begin
-        VATStatementTemplate.Get(VATStatementName."Statement Template Name");
-        VATStatementExportCZL := VATStatementTemplate."XML Format CZL";
+        exit(VATStatementName."XML Format CZL");
     end;
-
-    var
-        VATStatementExportCZL: Interface "VAT Statement Export CZL";
 }

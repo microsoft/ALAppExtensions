@@ -1,0 +1,48 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Projects.Resources.Resource;
+
+codeunit 11613 "Create CH Resource"
+{
+    SingleInstance = true;
+    EventSubscriberInstance = Manual;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
+    [EventSubscriber(ObjectType::Table, Database::Resource, 'OnBeforeInsertEvent', '', false, false)]
+    local procedure OnBeforeInsertResource(var Rec: Record Resource)
+    var
+        CreateResource: Codeunit "Create Resource";
+    begin
+        case Rec."No." of
+            CreateResource.Katherine():
+                ValidateRecordFields(Rec, BernLbl, 92, 101.2, 45, 184, '3000', '');
+            CreateResource.Lina():
+                ValidateRecordFields(Rec, BallwilLbl, 110, 121, 45.24887, 221, '6275', '');
+            CreateResource.Marty():
+                ValidateRecordFields(Rec, BernLbl, 83, 91.3, 45, 166, '3000', '');
+            CreateResource.Terry():
+                ValidateRecordFields(Rec, BernLbl, 92, 101.2, 45, 184, '3000', '');
+        end;
+    end;
+
+    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; ProfitPercent: Decimal; UnitPrice: Decimal; PostCode: Code[20]; County: Text[30])
+    begin
+        Resource.Validate(City, City);
+        Resource.Validate("Direct Unit Cost", DirectUnitCost);
+        Resource.Validate("Unit Cost", UnitCost);
+        Resource.Validate("Profit %", ProfitPercent);
+        Resource.Validate("Unit Price", UnitPrice);
+        Resource.Validate("Post Code", PostCode);
+        Resource.Validate(County, County);
+    end;
+
+    var
+        BernLbl: Label 'Bern', MaxLength = 30;
+        BallwilLbl: Label 'Ballwil', MaxLength = 30;
+}

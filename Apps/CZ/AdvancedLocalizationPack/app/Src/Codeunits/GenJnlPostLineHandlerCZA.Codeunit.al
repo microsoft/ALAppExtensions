@@ -33,4 +33,14 @@ codeunit 31373 "Gen. Jnl.Post Line Handler CZA"
     begin
         GLEntryPostApplicationCZA.AutomatedGLEntryApplication(GenJournalLine, GLEntry);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitGLEntry', '', false, false)]
+    local procedure CloseZeroEntryOnAfterInitGLEntry(var GLEntry: Record "G/L Entry")
+    begin
+        if GLEntry.Amount <> 0 then
+            exit;
+
+        GLEntry."Closed CZA" := true;
+        GLEntry."Closed at Date CZA" := GLEntry."Posting Date";
+    end;
 }

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -111,12 +111,17 @@ page 31180 "Purch. Advance Letters CZZ"
                     ToolTip = 'Specifies to pay amount.';
                     Visible = false;
                 }
+#if not CLEAN26
                 field("To Pay (LCY)"; Rec."To Pay (LCY)")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies to pay (LCY) amount.';
                     Visible = false;
+                    ObsoleteTag = '26.0';
+                    ObsoleteReason = 'This field is obsolete and will be removed in a future release.';
+                    ObsoleteState = Pending;
                 }
+#endif
                 field("To Use"; Rec."To Use")
                 {
                     ApplicationArea = Basic, Suite;
@@ -159,17 +164,6 @@ page 31180 "Purch. Advance Letters CZZ"
                     ToolTip = 'Specifies whether VAT document will be posted automatically.';
                     Visible = false;
                 }
-#if not CLEAN25
-                field("Amount on Iss. Payment Order"; "Amount on Iss. Payment Order")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies amount on issued payment order.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This field is obsolete and will be removed in a future release. The CalcSuggestedAmountToApply function should be used instead.';
-                    ObsoleteTag = '25.0';
-                }
-#endif
                 field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApply())
                 {
                     Caption = 'Suggested Amount to Apply (LCY)';
@@ -215,11 +209,11 @@ page 31180 "Purch. Advance Letters CZZ"
                 ApplicationArea = Basic, Suite;
                 SubPageLink = "No." = field("Pay-to Vendor No.");
             }
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(31008), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Purch. Adv. Letter Header CZZ"), "No." = field("No.");
             }
             part(IncomingDocAttachFactBox; "Incoming Doc. Attach. FactBox")
             {

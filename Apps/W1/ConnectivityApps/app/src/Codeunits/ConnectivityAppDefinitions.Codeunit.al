@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 codeunit 20352 "Connectivity App Definitions"
 {
@@ -28,6 +29,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterSofteraBankfeed();
         RegisterSUManGOAutoBank();
         RegisterYavrioOpenBanking();
+        RegisterEOSOpenBanking();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -246,19 +248,19 @@ codeunit 20352 "Connectivity App Definitions"
         AppId := '1b3790da-e8ba-4a11-92a9-c70e37b4f831';
         AppName := 'Direct Banking';
         AppPublisher := 'IDYN B.V.';
-        AppDescription := 'Automate your banking process in Business Central, no file exchange needed. Streamline bank transactions including matching for your bank accounts, and initiate payment from Business Central.';
-        AppProviderSupportURL := 'https://help.idyn.nl/directbanking/bc/en/topic/about-directbanking';
+        AppDescription := 'Automate your banking processes across 2,000+ connected banks in BC, without exchanging files. Streamline your banking transactions including automatic settlements for your incoming payments and initiate payments from within BC. Direct Banking integrates seamlessly with BC, allowing you to manage your financial tasks directly within the system without having to switch between different applications. Direct Banking integrates with most banks in Europe: HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank. Contact us for a free trial via sales@idyn.nl or click on the link to our website.';
+        AppProviderSupportURL := 'https://idyn.nl/solutions/direct-banking';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking%7CPAPPID.1b3790da-e8ba-4a11-92a9-c70e37b4f831';
         AppApprovedFor := 'NL,BE,DE';
         AppWorksOn := 'W1,NL,BE,DE';
 
-        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 1043);
-        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 2067);
-        AddDescriptionTranslation(AppId, 'Automatisez votre processus bancaire dans Business Central, sans échange de fichiers. Rationalisez les transactions bancaires, y compris l''appariement de vos comptes bancaires, et initiez des paiements à partir de Business Central.', 2060);
-        AddDescriptionTranslation(AppId, 'Automatisez votre processus bancaire dans Business Central, sans échange de fichiers. Rationalisez les transactions bancaires, y compris l''appariement de vos comptes bancaires, et initiez des paiements à partir de Business Central.', 1036);
-        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse in Business Central, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich des Abgleichs mit Ihren Bankkonten, und veranlassen Sie Zahlungen über Business Central.', 1031);
-        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse in Business Central, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich des Abgleichs mit Ihren Bankkonten, und veranlassen Sie Zahlungen über Business Central.', 2055);
-        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse in Business Central, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich des Abgleichs mit Ihren Bankkonten, und veranlassen Sie Zahlungen über Business Central.', 3079);
+        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen via meer dan 2.000 aangesloten banken in BC, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief automatische vereffeningen voor uw ontvangen betalingen en initieer betalingen vanuit BC.  Direct Banking integreert naadloos met BC, zodat u uw financiële taken rechtstreeks binnen het systeem kunt beheren zonder dat u tussen verschillende applicaties hoeft te schakelen. Direct banking integreert met de meeste banken in Europa : HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank.  Contacteer ons voor een gratis proefversie via sales@idyn.nl of klik op de link naar onze website.', 1043);
+        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen via meer dan 2.000 aangesloten banken in BC, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief automatische vereffeningen voor uw ontvangen betalingen en initieer betalingen vanuit BC.  Direct Banking integreert naadloos met BC, zodat u uw financiële taken rechtstreeks binnen het systeem kunt beheren zonder dat u tussen verschillende applicaties hoeft te schakelen. Direct banking integreert met de meeste banken in Europa : HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank.  Contacteer ons voor een gratis proefversie via sales@idyn.nl of klik op de link naar onze website.', 2067);
+        AddDescriptionTranslation(AppId, 'Automatisez vos processus bancaires dans plus de 2 000 banques connectées en BC, sans échange de fichiers. Rationalisez vos transactions bancaires, y compris les règlements automatiques pour vos paiements reçus et initiez des paiements depuis BC. Direct Banking s''intègre parfaitement à BC, vous permettant de gérer vos tâches financières directement dans le système sans avoir à basculer entre différentes applications. Direct Banking s''intègre avec la plupart des banques en Europe : HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank. Contactez-nous pour un essai gratuit via sales@idyn.nl ou cliquez sur le lien vers notre site Web.', 2060);
+        AddDescriptionTranslation(AppId, 'Automatisez vos processus bancaires dans plus de 2 000 banques connectées en BC, sans échange de fichiers. Rationalisez vos transactions bancaires, y compris les règlements automatiques pour vos paiements reçus et initiez des paiements depuis BC. Direct Banking s''intègre parfaitement à BC, vous permettant de gérer vos tâches financières directement dans le système sans avoir à basculer entre différentes applications. Direct Banking s''intègre avec la plupart des banques en Europe : HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank. Contactez-nous pour un essai gratuit via sales@idyn.nl ou cliquez sur le lien vers notre site Web.', 1036);
+        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse über 2.000+ angeschlossene Banken in BC, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich automatischer Abwicklungen für Ihre eingehenden Zahlungen, und initiieren Sie Zahlungen direkt aus BC. Direct Banking integriert sich nahtlos in BC, sodass Sie Ihre finanziellen Aufgaben direkt im System verwalten können, ohne zwischen verschiedenen Anwendungen wechseln zu müssen. Direct Banking integriert sich mit den meisten Banken in Europa: HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank. Kontaktieren Sie uns für eine kostenlose Testversion unter sales@idyn.nl oder klicken Sie auf den Link zu unserer Website.', 1031);
+        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse über 2.000+ angeschlossene Banken in BC, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich automatischer Abwicklungen für Ihre eingehenden Zahlungen, und initiieren Sie Zahlungen direkt aus BC. Direct Banking integriert sich nahtlos in BC, sodass Sie Ihre finanziellen Aufgaben direkt im System verwalten können, ohne zwischen verschiedenen Anwendungen wechseln zu müssen. Direct Banking integriert sich mit den meisten Banken in Europa: HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank. Kontaktieren Sie uns für eine kostenlose Testversion unter sales@idyn.nl oder klicken Sie auf den Link zu unserer Website.', 2055);
+        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse über 2.000+ angeschlossene Banken in BC, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich automatischer Abwicklungen für Ihre eingehenden Zahlungen, und initiieren Sie Zahlungen direkt aus BC. Direct Banking integriert sich nahtlos in BC, sodass Sie Ihre finanziellen Aufgaben direkt im System verwalten können, ohne zwischen verschiedenen Anwendungen wechseln zu müssen. Direct Banking integriert sich mit den meisten Banken in Europa: HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank. Kontaktieren Sie uns für eine kostenlose Testversion unter sales@idyn.nl oder klicken Sie auf den Link zu unserer Website.', 3079);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
@@ -274,7 +276,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU, GB, ES, LV, DE, RO
+            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU, GB, ES, LV, DE, RO, IE, US, EE, CZ, PL
         ***************************************************/
 
         AppId := '74689c09-2ed3-4e69-a2e8-c9310a271b9a';
@@ -283,8 +285,8 @@ codeunit 20352 "Connectivity App Definitions"
         AppDescription := 'Bank statement import & reconciliation.';
         AppProviderSupportURL := 'https://bankfeed.com/banks/';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.74689c09-2ed3-4e69-a2e8-c9310a271b9a';
-        AppApprovedFor := 'LT,DK,HU,GB,ES,LV,DE,RO';
-        AppWorksOn := 'W1,DK,GB,ES,DE';
+        AppApprovedFor := 'LT,DK,HU,GB,ES,LV,DE,RO,IE,US,EE,CZ,PL';
+        AppWorksOn := 'W1,DK,GB,ES,DE,US,CZ';
 
         AddDescriptionTranslation(AppId, 'Banko išrašo importas ir suderinimas.', 1063);
         AddDescriptionTranslation(AppId, 'Kontoudtog import & afstemning.', 1030);
@@ -293,6 +295,9 @@ codeunit 20352 "Connectivity App Definitions"
         AddDescriptionTranslation(AppId, 'Bankas izrakstu importēšana un saskaņošana.', 1062);
         AddDescriptionTranslation(AppId, 'Import und Abgleich von Kontoauszügen.', 1031);
         AddDescriptionTranslation(AppId, 'Import și reconciliere extras de cont bancar.', 1048);
+        AddDescriptionTranslation(AppId, 'Pangaväljavõtte import ja vastavusse viimine.', 1061);
+        AddDescriptionTranslation(AppId, 'Import a odsouhlasení bankovního výpisu.', 1029);
+        AddDescriptionTranslation(AppId, 'Import i uzgadnianie wyciągów bankowych.', 1045);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
@@ -314,14 +319,14 @@ codeunit 20352 "Connectivity App Definitions"
         AppId := '52508c8d-fb2b-49da-9657-f49859fd43cc';
         AppName := 'Sumango AutoBank';
         AppPublisher := 'Sumango AS';
-        AppDescription := 'AutoBank manage payments, receivables, refunds and reconciliation in all currencies directly from Business Central. Streamlines, simplifies and expands bank functionality without leaving your Business Central environment. Sumango AutoBank support banks in Norway, Sweden, Denmark, Finland, Germany, Portugal, United Kingdom and United States. Visit www.sumango.no for more information.';
+        AppDescription := 'Connect Business central to your bank. Sumango AutoBank streamlines, simplifies, and expands functionality to your payment handling, receivables, and reconciliation of your bank transactions. The solution is built with a direct integration to your bank - no more file handling in business central or in your online banking solution. AutoBank supports handling of all currencies interchangeably, including the SEPA standard.';
         AppProviderSupportURL := 'https://oseberg.atlassian.net/wiki/spaces/Autobank/pages/2342191252/Integrated+banks';
         AppSourceUrl := 'https://appsource.microsoft.com/nb-NO/product/dynamics-365-business-central/PUBID.sumango_as%7CAID.sumango_autobank%7CPAPPID.52508c8d-fb2b-49da-9657-f49859fd43cc';
         AppApprovedFor := 'NO,SE';
         AppWorksOn := 'NO,SE';
 
-        AddDescriptionTranslation(AppId, 'AutoBank har som hovedfokus å effektivisere, forenkle og utvide funksjonalitet rundt betaling, innbetalinger, refusjoner og avstemming av banktransaksjoner i alle valutaer. Du kan nå trygt integrere banken din direkte i Business Central uten filhåndtering. AutoBank støtter alle banker i Norge, samt utvalgte banker i Sverige, Danmark, Finland, Tyskland, Portugal, England og USA. (www.sumango.no)', 1044);
-        AddDescriptionTranslation(AppId, 'AutoBanks huvudfokus är att effektivisera, förenkla och utöka funktionaliteten kring leverantör betalningar, kund betalningar, återbetalning och avstämning av banktransaktioner i alla valutor. Du kan nu säkert integrera din bank direkt i Business Central utan filhantering. AutoBank stödjer följande bankar Handelsbanken, SEB, Nordea, Danske Bank, och DNB.', 1053);
+        AddDescriptionTranslation(AppId, 'Koble Business Central til banken. Sumango AutoBank effektiviserer og utvider funksjonaliteten for håndtering av betalinger, innbetalinger og avstemming av banktransaksjoner. Autobank er bygget med direkte integrasjon til din bank, som fjerner behovet for filhåndteringer i Business Central eller i din nettbankløsning. AutoBank støtter håndtering av alle valutaer, inkludert SEPA-standarden.', 1044);
+        AddDescriptionTranslation(AppId, 'Anslut Business Central till banken. Sumango AutoBank effektiviserar och utökar funktionaliteten för hantering av betalningar, inbetalningar och avstämning av banktransaktioner. AutoBank är byggt med direkt integration till din bank vilket eliminerar behovet av ytterligare filhantering i Business Central eller din internetbank. AutoBank stödjer hantering av alla valutor, inklusive SEPA-standarden.', 1053);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
@@ -337,7 +342,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Yavrio Open Banking' to GB
+            Add app 'Yavrio Open Banking' to GB, US, DE
         ***************************************************/
 
         AppId := '3d686c04-e1b1-435e-bea4-862c2c203ca7';
@@ -346,9 +351,40 @@ codeunit 20352 "Connectivity App Definitions"
         AppDescription := 'Yavrio Open Banking uses industry-standard Open Banking technology to connect directly with your Bank Accounts. Using bank-grade security, you can draw down live feeds directly into Business Central, with no files required, and push payments directly from BC onto the Bank.';
         AppProviderSupportURL := 'https://yavr.io/bank-coverage/';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.yavrioltd1647526263468%7CAID.yavrio_open_banking%7CPAPPID.3d686c04-e1b1-435e-bea4-862c2c203ca7';
-        AppApprovedFor := 'GB';
-        AppWorksOn := 'GB';
+        AppApprovedFor := 'GB,US,DE';
+        AppWorksOn := 'GB,US,DE';
 
+        AddDescriptionTranslation(AppId, 'Yavrio Open Banking nutzt industriell etablierte Open-Banking-Technologie, um eine direkte Verbindung zu Ihren Bankkonten herzustellen. Mit bankenzertifizierter Sicherheit können Sie Live-Datenströme direkt in Microsoft Dynamics 365 Business Central integrieren,  ganz ohne Dateiimporte. Zahlungen lassen sich direkt aus Business Central an Ihre Bank übermitteln.', 1031);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+
+    local procedure RegisterEOSOpenBanking()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Open Banking' to IT
+        ***************************************************/
+
+        AppId := 'f1d1f2b1-cdd0-42c7-834e-19fb56af6cec';
+        AppName := 'Open Banking';
+        AppPublisher := 'EOS Solutions';
+        AppDescription := 'Connect to bank accounts through open banking standard, get bank statements and balances, reconcile bank transactions through a permanent connection between ERP and bank databases.';
+        AppProviderSupportURL := 'https://docs.eos-solutions.it/en/docs/apps-func/ex016-open-banking.html';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.eos_solutions%7CAID.ex016_openbanking%7CPAPPID.f1d1f2b1-cdd0-42c7-834e-19fb56af6cec?tab=Overview';
+        AppApprovedFor := 'IT';
+        AppWorksOn := 'IT';
+
+        AddDescriptionTranslation(AppId, 'Collega i conti bancari tramite lo standard open banking, ottieni estratti conto e saldi, riconcilia le transazioni bancarie tramite una connessione permanente tra ERP e database bancari.', 1040);
+        AddDescriptionTranslation(AppId, 'Stellen Sie über den Open-Banking-Standard eine Verbindung zu Bankkonten her, erhalten Sie Kontoauszüge und Kontostände und gleichen Sie Banktransaktionen über eine permanente Verbindung zwischen ERP- und Bankdatenbanken ab.', 1031);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 

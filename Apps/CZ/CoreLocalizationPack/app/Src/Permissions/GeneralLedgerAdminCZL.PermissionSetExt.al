@@ -1,4 +1,5 @@
-﻿permissionsetextension 11746 "General Ledger - Admin CZL" extends "General Ledger - Admin"
+#pragma warning disable AA0247
+permissionsetextension 11746 "General Ledger - Admin CZL" extends "General Ledger - Admin"
 {
     Permissions = tabledata "Commodity CZL" = RIMD,
                   tabledata "Commodity Setup CZL" = RIMD,
@@ -11,7 +12,11 @@
                   tabledata "VAT Ctrl. Report Line CZL" = RIMD,
                   tabledata "VAT Ctrl. Report Section CZL" = RIMD,
                   tabledata "VAT Ctrl. Report Ent. Link CZL" = RIMD,
+#if not CLEAN27
+#pragma warning disable AL0432
                   tabledata "VAT Period CZL" = RIMD,
+#pragma warning restore AL0432
+#endif
                   tabledata "VAT Statement Attachment CZL" = RIMD,
                   tabledata "VAT Statement Comment Line CZL" = RIMD;
 }

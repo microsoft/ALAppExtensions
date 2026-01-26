@@ -5513,6 +5513,9 @@ End Function
         <Field Name="OriginalAmount_IssuedReminderLineFormat">
           <DataField>OriginalAmount_IssuedReminderLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_OriginalAmount_IssuedReminderLineCaption">
+          <DataField>Formatted_OriginalAmount_IssuedReminderLineCaption</DataField>
+        </Field>
         <Field Name="RemainingAmount_IssuedReminderLineCaption">
           <DataField>RemainingAmount_IssuedReminderLineCaption</DataField>
         </Field>
@@ -5521,6 +5524,9 @@ End Function
         </Field>
         <Field Name="RemainingAmount_IssuedReminderLineFormat">
           <DataField>RemainingAmount_IssuedReminderLineFormat</DataField>
+        </Field>
+        <Field Name="Formatted_RemainingAmount_IssuedReminderLine">
+          <DataField>Formatted_RemainingAmount_IssuedReminderLine</DataField>
         </Field>
         <Field Name="Description_IssuedReminderLineCaption">
           <DataField>Description_IssuedReminderLineCaption</DataField>
@@ -5542,6 +5548,9 @@ End Function
         </Field>
         <Field Name="AmountInclVATFormat">
           <DataField>AmountInclVATFormat</DataField>
+        </Field>
+        <Field Name="Formatted_AmountInclVAT">
+          <DataField>Formatted_AmountInclVAT</DataField>
         </Field>
         <Field Name="LineAmountText">
           <DataField>LineAmountText</DataField>
@@ -5567,11 +5576,17 @@ End Function
         <Field Name="OriginalAmount_NotDueLineFormat">
           <DataField>OriginalAmount_NotDueLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_OriginalAmount_NotDueLine">
+          <DataField>Formatted_OriginalAmount_NotDueLine</DataField>
+        </Field>
         <Field Name="RemainingAmount_NotDueLine">
           <DataField>RemainingAmount_NotDueLine</DataField>
         </Field>
         <Field Name="RemainingAmount_NotDueLineFormat">
           <DataField>RemainingAmount_NotDueLineFormat</DataField>
+        </Field>
+        <Field Name="Formatted_RemainingAmount_NotDueLine">
+          <DataField>Formatted_RemainingAmount_NotDueLine</DataField>
         </Field>
         <Field Name="Description_NotDueLine">
           <DataField>Description_NotDueLine</DataField>
@@ -5602,6 +5617,21 @@ End Function
         </Field>
         <Field Name="TotalLineAmountFormat">
           <DataField>TotalLineAmountFormat</DataField>
+        </Field>
+        <Field Name="Formatted_TotalLineAmount">
+          <DataField>Formatted_TotalLineAmount</DataField>
+        </Field>
+        <Field Name="GreetingText">
+          <DataField>GreetingText</DataField>
+        </Field>
+        <Field Name="BodyText">
+          <DataField>BodyText</DataField>
+        </Field>
+        <Field Name="ClosingText">
+          <DataField>ClosingText</DataField>
+        </Field>
+        <Field Name="DescriptionText">
+          <DataField>DescriptionText</DataField>
         </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>

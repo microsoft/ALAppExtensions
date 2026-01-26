@@ -22,4 +22,26 @@ pageextension 31344 "Intrastat Report CZ" extends "Intrastat Report"
             }
         }
     }
+    actions
+    {
+        addafter(CreateFile)
+        {
+            action("Intrastat - Invoice Check CZ")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat - Invoice Checklist';
+                Ellipsis = true;
+                Image = PrintChecklistReport;
+                ToolTip = 'Open the report for intrastat - invoice checklist.';
+
+                trigger OnAction()
+                var
+                    IntrastatReportLine: Record "Intrastat Report Line";
+                begin
+                    IntrastatReportLine.SetRange("Intrastat No.", Rec."No.");
+                    Report.Run(Report::"Intrastat - Invoice Check CZ", true, false, IntrastatReportLine);
+                end;
+            }
+        }
+    }
 }

@@ -375,8 +375,7 @@ report 31244 "Fixed Asset - Book Value 1 CZF"
         FAGeneralReportCZF: Codeunit "FA General Report CZF";
         BudgetDepreciation: Codeunit "Budget Depreciation";
         DeprBookCode: Code[10];
-        FANo, FADescription, MainHeadLineText, DeprBookText, GroupCodeName, GroupHeadLine, StartText, EndText : Text;
-        GroupTotals: Enum "FA Analysis Group CZF";
+        FANo, FADescription, MainHeadLineText, DeprBookText, GroupCodeName, StartText, EndText : Text;
         HeadLineText: array[10] of Text;
         StartAmounts, NetChangeAmounts, DisposalAmounts : array[6] of Decimal;
         GroupStartAmounts, GroupNetChangeAmounts, GroupDisposalAmounts : array[6] of Decimal;
@@ -399,6 +398,10 @@ report 31244 "Fixed Asset - Book Value 1 CZF"
         HasBeenModifiedInFAErr: Label '%1 has been modified in fixed asset %2', Comment = '%1 = FieldCaption, %2 = Fixed Asset No.';
         TwoPlaceholdersTok: Label '%1 %2', Locked = true;
         ThreePlaceholdersTok: Label '%1 %2 %3', Locked = true;
+
+    protected var
+        GroupHeadLine: Text;
+        GroupTotals: Enum "FA Analysis Group CZF";
 
     local procedure AddPostingType(PostingType2: Option "Write-Down",Appreciation,"Custom 1","Custom 2")
     var

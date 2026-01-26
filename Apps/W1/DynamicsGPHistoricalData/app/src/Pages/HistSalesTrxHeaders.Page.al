@@ -187,7 +187,7 @@ page 41002 "Hist. Sales Trx. Headers"
     trigger OnOpenPage()
     begin
         if FilterCustomerNo <> '' then
-            Rec.SetFilter("Customer No.", FilterCustomerNo);
+            Rec.SetRange("Customer No.", FilterCustomerNo);
     end;
 
     procedure SetFilterCustomerNo(CustomerNo: Code[35])

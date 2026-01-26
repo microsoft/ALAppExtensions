@@ -1,3 +1,10 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
 table 5161 "Contoso Demo Data Module"
 {
     DataCaptionFields = Name;
@@ -22,6 +29,14 @@ table 5161 "Contoso Demo Data Module"
         field(3; "Data Level"; Enum "Contoso Demo Data Level")
         {
             Caption = 'Data Level';
+        }
+        field(4; Install; Boolean)
+        {
+            Caption = 'Install';
+        }
+        field(5; "Is Setup Company"; Boolean)
+        {
+            Caption = 'Setup Company';
         }
     }
 

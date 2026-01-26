@@ -58,7 +58,7 @@ page 18546 "Ministries"
                     EditinExcel: Codeunit "Edit in Excel";
                     EditinExcelFilters: Codeunit "Edit in Excel Filters";
                 begin
-                    EditinExcelFilters.AddField('Code', Enum::"Edit in Excel Filter Type"::Equal, Rec.Code, Enum::"Edit in Excel Edm Type"::"Edm.String");
+                    EditinExcelFilters.AddFieldV2('Code', Enum::"Edit in Excel Filter Type"::Equal, Rec.Code, Enum::"Edit in Excel Edm Type"::"Edm.String");
 
                     EditinExcel.EditPageInExcel(
                         'Ministries',

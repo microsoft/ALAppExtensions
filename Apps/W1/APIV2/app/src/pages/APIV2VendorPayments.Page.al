@@ -1,10 +1,10 @@
 namespace Microsoft.API.V2;
 
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Integration.Entity;
-using Microsoft.Purchases.History;
 using Microsoft.Integration.Graph;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Vendor;
 
 page 30060 "APIV2 - Vendor Payments"
 {
@@ -19,6 +19,7 @@ page 30060 "APIV2 - Vendor Payments"
     SourceTable = "Gen. Journal Line";
     Extensible = false;
 
+    AboutText = 'Manages vendor payment transactions including payment amounts, dates, methods, and invoice application details. Supports full CRUD operations for automating accounts payable, integrating with banking systems, and streamlining vendor settlement processes. Enables external systems to create, retrieve, update, and delete vendor payment records for efficient payables reconciliation and payment workflow integration.';
 
     layout
     {

@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN26
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -18,6 +19,9 @@ page 31284 "Apply G/L Entries CZA"
     PageType = Worksheet;
     Permissions = tabledata "G/L Entry" = m;
     SourceTable = "G/L Entry";
+    ObsoleteState = Pending;
+    ObsoleteTag = '26.0';
+    ObsoleteReason = 'Replaced by "Apply Gen. Ledger Entries CZA" page. The new page is optimized using temporary table.';
 
     layout
     {
@@ -319,8 +323,6 @@ page 31284 "Apply G/L Entries CZA"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Set Applies-to ID';
                     Image = SelectLineToApply;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'F7';
                     ToolTip = 'Sets applies to id';
 
@@ -335,8 +337,6 @@ page 31284 "Apply G/L Entries CZA"
                     Caption = 'Post Application';
                     Ellipsis = true;
                     Image = PostApplication;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'F9';
                     ToolTip = 'This batch job posts G/L entries application.';
 
@@ -388,9 +388,6 @@ page 31284 "Apply G/L Entries CZA"
                 Caption = 'Find Entries';
                 Image = Navigate;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 ShortCutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
@@ -399,6 +396,21 @@ page 31284 "Apply G/L Entries CZA"
                     PageNavigate.SetDoc(Rec."Posting Date", Rec."Document No.");
                     PageNavigate.Run();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Navigate_Promoted; Navigate)
+                {
+                }
+                actionref("Set Applies-to ID_Promoted"; "Set Applies-to ID")
+                {
+                }
+                actionref("Post Application_Promoted"; "Post Application")
+                {
+                }
             }
         }
     }
@@ -414,11 +426,9 @@ page 31284 "Apply G/L Entries CZA"
         ApplyGLEntry: Record "G/L Entry";
     begin
         ShowAppliedEntries := false;
-        if not PostingDone then begin
-            ApplyGLEntry := TempGLEntry;
-            if ApplyGLEntry.FindFirst() then
+        if not PostingDone then
+            if ApplyGLEntry.Get(TempGLEntry."Entry No.") then
                 GLEntryPostApplicationCZA.SetApplyingGLEntry(ApplyGLEntry, false, '');
-        end;
     end;
 
     trigger OnOpenPage()
@@ -441,15 +451,9 @@ page 31284 "Apply G/L Entries CZA"
     end;
 
     var
-        TempGLEntry: Record "G/L Entry" temporary;
-        GLEntry: Record "G/L Entry";
         GenJournalLine: Record "Gen. Journal Line";
-        GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA";
         PageNavigate: Page Navigate;
         ShowAppliedEntries: Boolean;
-        ApplyingRemainingAmount: Decimal;
-        ApplyingAmount: Decimal;
-        AvailableAmount: Decimal;
         GLApplID: Code[50];
         Remaining: Decimal;
         ApplEntryNo: Integer;
@@ -459,6 +463,14 @@ page 31284 "Apply G/L Entries CZA"
         CalcType: Option Direct,GenJnlLine;
         AppEntryNeedErr: Label 'You must select an applying entry before posting the application.';
         AppFromWindowErr: Label 'You must post the application from the window where you entered the applying entry.';
+
+    protected var
+        TempGLEntry: Record "G/L Entry" temporary;
+        GLEntry: Record "G/L Entry";
+        GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA";
+        ApplyingRemainingAmount: Decimal;
+        ApplyingAmount: Decimal;
+        AvailableAmount: Decimal;
 
     local procedure FindApplyingGLEntry()
     begin
@@ -489,6 +501,7 @@ page 31284 "Apply G/L Entries CZA"
             Rec.SetFilter(Amount, '<0')
         else
             Rec.SetFilter(Amount, '>0');
+        OnSetApplyingGLEntryByEntryNoOnAfterSetFilters(Rec, GLEntryPostApplicationCZA);
         Rec."Applying Entry CZA" := true;
         Rec.Modify();
 
@@ -542,7 +555,7 @@ page 31284 "Apply G/L Entries CZA"
         GLEntryPostApplicationCZA.SetApplyingGLEntry(GLEntry2, false, GLApplID);
     end;
 
-    local procedure CalcApplnAmount()
+    procedure CalcApplnAmount()
     begin
         ApplyingAmount := 0;
         GLEntry.Reset();
@@ -623,4 +636,10 @@ page 31284 "Apply G/L Entries CZA"
     local procedure OnBeforeSetApplyingGLEntry(var GLEntry: Record "G/L Entry"; IsApplyingEntry: Boolean; AppliesToID: Code[50]; var GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA"; var IsHandled: Boolean);
     begin
     end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnSetApplyingGLEntryByEntryNoOnAfterSetFilters(var GLEntry: Record "G/L Entry"; var GLEntryPostApplicationCZA: Codeunit Microsoft.Finance.GeneralLedger.Posting."G/L Entry Post Application CZA")
+    begin
+    end;
 }
+#endif

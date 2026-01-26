@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Navigate;
 using Microsoft.Purchases.Vendor;
@@ -182,6 +184,25 @@ table 31107 "VAT Ctrl. Report Line CZL"
             Editable = false;
             DataClassification = CustomerContent;
         }
+        field(71; "Additional-Currency Base"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Additional-Currency Base';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+
+        field(72; "Additional-Currency Amount"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Additional-Currency Amount';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {
@@ -227,6 +248,14 @@ table 31107 "VAT Ctrl. Report Line CZL"
     begin
         VATCtrlReportHeaderCZL.Get("VAT Ctrl. Report No.");
         VATCtrlReportHeaderCZL.TestField(Status, VATCtrlReportHeaderCZL.Status::Open);
+    end;
+
+    local procedure GetCurrencyCode(): Code[10]
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.GetRecordOnce();
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
     end;
 
     procedure Navigate()

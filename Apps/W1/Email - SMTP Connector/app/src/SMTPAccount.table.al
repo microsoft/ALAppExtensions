@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace System.Email;
-
 /// <summary>
 /// Holds the information for all e-mail accounts that are registered via the SMTP connector
 /// </summary>
@@ -31,14 +30,16 @@ table 4511 "SMTP Account"
         field(3; "Server"; Text[250])
         {
             DataClassification = CustomerContent;
-        }
+            Caption = 'Server Address';
+            ToolTip = 'Specifies the address of the SMTP server. For example, smtp.office365.com.';
 
-        field(4; Authentication; Enum "SMTP Authentication")
-        {
-            DataClassification = CustomerContent;
-            ObsoleteReason = 'Replaced by "Authentication Types" as the enum is moving to SMTP API app.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
+            trigger OnValidate()
+            begin
+                if Server.StartsWith('http://') then
+                    Server := CopyStr(Server.Replace('http://', ''), 1, MaxStrLen(Server));
+                if Server.StartsWith('https://') then
+                    Server := CopyStr(Server.Replace('https://', ''), 1, MaxStrLen(Server));
+            end;
         }
 
         field(5; "User Name"; Text[250])
@@ -102,16 +103,28 @@ table 4511 "SMTP Account"
         {
             DataClassification = CustomerContent;
         }
-
-        field(12; "Created By"; Text[50])
-        {
-            DataClassification = EndUserIdentifiableInformation;
-            ObsoleteReason = 'Unused, can be replaced by SystemCreatedBy and correlate with the User table''s  User Security Id.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '20.0';
-        }
         field(13; "Authentication Type"; Enum "SMTP Authentication Types")
         {
+            DataClassification = CustomerContent;
+        }
+        field(14; "Client Id Storage Id"; guid)
+        {
+            Caption = 'Client Id Storage Id';
+            DataClassification = CustomerContent;
+        }
+        field(15; "Client Secret Storage Id"; guid)
+        {
+            Caption = 'Client Secret Storage Id';
+            DataClassification = CustomerContent;
+        }
+        field(16; "Tenant Id"; guid)
+        {
+            Caption = 'Tenant Id';
+            DataClassification = CustomerContent;
+        }
+        field(17; "Redirect Uri"; Text[1024])
+        {
+            Caption = 'Redirect Uri';
             DataClassification = CustomerContent;
         }
     }
@@ -127,11 +140,16 @@ table 4511 "SMTP Account"
     var
         UnableToGetPasswordMsg: Label 'Unable to get SMTP Account password';
         UnableToSetPasswordMsg: Label 'Unable to set SMTP Account password';
+        UnableToGetClientIdMsg: Label 'Unable to get SMTP Account Client Id';
+        UnableToSetClientIdMsg: Label 'Unable to set SMTP Account Client Id';
+        UnableToGetClientSecretMsg: Label 'Unable to get SMTP Account Client Secret';
+        UnableToSetClientSecretMsg: Label 'Unable to set SMTP Account Client Secret';
 
     trigger OnDelete()
     begin
-        if not IsNullGuid(Rec."Password Key") then
-            if IsolatedStorage.Delete(Rec."Password Key") then;
+        DeleteIsolatedStorageIfExists(Rec."Password Key");
+        DeleteIsolatedStorageIfExists(Rec."Client Id Storage Id");
+        DeleteIsolatedStorageIfExists(Rec."Client Secret Storage Id");
     end;
 
     [NonDebuggable]
@@ -149,5 +167,59 @@ table 4511 "SMTP Account"
     begin
         if not IsolatedStorage.Get(Format(PasswordKey), DataScope::Company, Password) then
             Error(UnableToGetPasswordMsg);
+    end;
+
+    [NonDebuggable]
+    internal procedure SetClientId(ClientId: SecretText)
+    begin
+        if ClientId.IsEmpty() then begin
+            if not IsNullGuid(Rec."Client Id Storage Id") then
+                if IsolatedStorage.Delete(Format(Rec."Client Id Storage Id"), DataScope::Company) then;
+            exit;
+        end;
+
+        if IsNullGuid(Rec."Client Id Storage Id") then
+            Rec."Client Id Storage Id" := CreateGuid();
+
+        if not IsolatedStorage.Set(Format(Rec."Client Id Storage Id"), ClientId, DataScope::Company) then
+            Error(UnableToSetClientIdMsg);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetClientId(CliendIdKey: Guid) ClientId: SecretText
+    begin
+        if not IsolatedStorage.Get(Format(CliendIdKey), DataScope::Company, ClientId) then
+            Error(UnableToGetClientIdMsg);
+    end;
+
+    [NonDebuggable]
+    internal procedure SetClientSecret(ClientSecret: SecretText)
+    begin
+        if ClientSecret.IsEmpty() then begin
+            if not IsNullGuid(Rec."Client Secret Storage Id") then
+                if IsolatedStorage.Delete(Format(Rec."Client Secret Storage Id"), DataScope::Company) then;
+            exit;
+        end;
+
+        if IsNullGuid(Rec."Client Secret Storage Id") then
+            Rec."Client Secret Storage Id" := CreateGuid();
+
+        if not IsolatedStorage.Set(Format(Rec."Client Secret Storage Id"), ClientSecret, DataScope::Company) then
+            Error(UnableToSetClientSecretMsg);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetClientSecret(ClientSecretKey: Guid) ClientSecret: SecretText
+    begin
+        if not IsolatedStorage.Get(Format(ClientSecretKey), DataScope::Company, ClientSecret) then
+            Error(UnableToGetClientSecretMsg);
+    end;
+
+    local procedure DeleteIsolatedStorageIfExists(KeyToCheck: Guid)
+    begin
+        if IsNullGuid(KeyToCheck) then
+            exit;
+        if IsolatedStorage.Contains(Format(KeyToCheck), DataScope::Company) then
+            IsolatedStorage.Delete(Format(KeyToCheck), DataScope::Company);
     end;
 }

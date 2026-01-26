@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.CashDesk;
 
+using Microsoft.Finance.AllocationAccount;
 using Microsoft.Finance.Dimension;
 using Microsoft.Utilities;
 
@@ -53,6 +54,19 @@ page 31163 "Cash Document Lines CZP"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a description of cash document line.';
+                }
+                field("Allocation Account No."; Rec."Selected Alloc. Account No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the allocation account number that will be used to distribute the amounts during the posting process.';
+                    Visible = UseAllocationAccountNumber;
+
+                    trigger OnValidate()
+                    var
+                        CashDocAllocAccMgtCZP: Codeunit "Cash Doc. Alloc. Acc. Mgt. CZP";
+                    begin
+                        CashDocAllocAccMgtCZP.VerifySelectedAllocationAccountNo(Rec);
+                    end;
                 }
                 field(Amount; Rec.Amount)
                 {
@@ -161,6 +175,42 @@ page 31163 "Cash Document Lines CZP"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies which salesperson is assigned to the cash document line.';
                 }
+                field("Project No."; Rec."Project No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project.';
+                    Visible = false;
+                }
+                field("Project Task No."; Rec."Project Task No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project task.';
+                    Visible = false;
+                }
+                field("Project Planning Line No."; Rec."Project Planning Line No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the project planning line number that the usage should be linked to when the project journal is posted. You can only link to project planning lines that have the Apply Usage Link option enabled.';
+                    Visible = false;
+                }
+                field("Project Line Type"; Rec."Project Line Type")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the type of planning line to create when a project ledger entry is posted. If the field is empty, no planning lines are created.';
+                    Visible = false;
+                }
+                field("Project Quantity"; Rec."Project Quantity")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the quantity of the project line.';
+                    Visible = false;
+                }
+                field("Project Unit Price"; Rec."Project Unit Price")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the unit price of the project line.';
+                    Visible = false;
+                }
             }
         }
     }
@@ -191,6 +241,51 @@ page 31163 "Cash Document Lines CZP"
                 }
             }
         }
+        area(Processing)
+        {
+            group("Related Information")
+            {
+                Caption = 'Related Information';
+                action(RedistributeAccAllocations)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Redistribute Account Allocations';
+                    Image = EditList;
+                    ToolTip = 'Use this action to redistribute the account allocations for this line.';
+
+                    trigger OnAction()
+                    var
+                        AllocAccManualOverride: Page "Redistribute Acc. Allocations";
+                    begin
+                        if ((Rec."Account Type" <> Rec."Account Type"::"Allocation Account") and (Rec."Selected Alloc. Account No." = '')) then
+                            Error(ActionOnlyAllowedForAllocationAccountsErr);
+
+                        AllocAccManualOverride.SetParentSystemId(Rec.SystemId);
+                        AllocAccManualOverride.SetParentTableId(Database::"Cash Document Line CZP");
+                        AllocAccManualOverride.RunModal();
+                    end;
+                }
+                action(ReplaceAllocationAccountWithLines)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Generate lines from Allocation Account Line';
+                    Image = CreateLinesFromJob;
+                    ToolTip = 'Use this action to replace the Allocation Account line with the actual lines that would be generated from the line itself.';
+
+                    trigger OnAction()
+                    var
+                        CashDocAllocAccMgtCZP: Codeunit "Cash Doc. Alloc. Acc. Mgt. CZP";
+                    begin
+                        if ((Rec."Account Type" <> Rec."Account Type"::"Allocation Account") and (Rec."Selected Alloc. Account No." = '')) then
+                            Error(ActionOnlyAllowedForAllocationAccountsErr);
+
+                        CashDocAllocAccMgtCZP.CreateLinesFromAllocationAccountLine(Rec);
+                        Rec.Delete();
+                        CurrPage.Update(false);
+                    end;
+                }
+            }
+        }
         area(Promoted)
         {
             group(Category_Process)
@@ -204,6 +299,11 @@ page 31163 "Cash Document Lines CZP"
         }
     }
 
+    trigger OnOpenPage()
+    begin
+        UseAllocationAccountNumber := AllocationAccountMgt.UseAllocationAccountNoField();
+    end;
+
     trigger OnAfterGetRecord()
     begin
         Rec.ShowShortcutDimCode(ShortcutDimCode);
@@ -214,6 +314,11 @@ page 31163 "Cash Document Lines CZP"
         Clear(ShortcutDimCode);
     end;
 
+    var
+        AllocationAccountMgt: Codeunit "Allocation Account Mgt.";
+        ActionOnlyAllowedForAllocationAccountsErr: Label 'This action is only available for lines that have Allocation Account set as Type.';
+
     protected var
         ShortcutDimCode: array[8] of Code[20];
+        UseAllocationAccountNumber: Boolean;
 }

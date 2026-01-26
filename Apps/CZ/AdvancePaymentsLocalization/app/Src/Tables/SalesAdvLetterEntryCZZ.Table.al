@@ -87,6 +87,14 @@ table 31006 "Sales Adv. Letter Entry CZZ"
             DecimalPlaces = 0 : 15;
             MinValue = 0;
         }
+        field(27; "Additional Currency Factor"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 15;
+            Editable = false;
+            MinValue = 0;
+        }
         field(28; "User ID"; Code[50])
         {
             Caption = 'User ID';
@@ -187,6 +195,12 @@ table 31006 "Sales Adv. Letter Entry CZZ"
             TableRelation = Customer;
             Editable = false;
         }
+        field(80; "Auxiliary Entry"; Boolean)
+        {
+            Caption = 'Auxiliary Entry';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -267,9 +281,11 @@ table 31006 "Sales Adv. Letter Entry CZZ"
     procedure CalcUsageVATAmountLines(var SalesInvoiceHeader: Record "Sales Invoice Header"; var VATAmountLine: Record "VAT Amount Line")
     var
         SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+        VATEntry: Record "VAT Entry";
     begin
         SalesAdvLetterEntryCZZ.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
+        SalesAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
         if SalesAdvLetterEntryCZZ.FindSet() then
             repeat
@@ -282,6 +298,12 @@ table 31006 "Sales Adv. Letter Entry CZZ"
                 VATAmountLine."Amount Including VAT" := -SalesAdvLetterEntryCZZ.Amount;
                 VATAmountLine."VAT Base (LCY) CZL" := -SalesAdvLetterEntryCZZ."VAT Base Amount (LCY)";
                 VATAmountLine."VAT Amount (LCY) CZL" := -SalesAdvLetterEntryCZZ."VAT Amount (LCY)";
+                if SalesAdvLetterEntryCZZ."VAT Entry No." <> 0 then
+                    if VATEntry.Get(SalesAdvLetterEntryCZZ."VAT Entry No.") then begin
+                        VATAmountLine."Additional-Currency Base CZL" := -VATEntry."Additional-Currency Base";
+                        VATAmountLine."Additional-Currency Amount CZL" := -VATEntry."Additional-Currency Amount";
+                    end;
+
                 if SalesInvoiceHeader."Prices Including VAT" then
                     VATAmountLine."Line Amount" := VATAmountLine."Amount Including VAT"
                 else
@@ -303,6 +325,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
     var
         SalesAdvLetterHeader: Record "Sales Adv. Letter Header CZZ";
     begin
+        SalesAdvLetterHeader.SetLoadFields("Bill-to Customer No.");
         SalesAdvLetterHeader.Get("Sales Adv. Letter No.");
         exit(SalesAdvLetterHeader."Bill-to Customer No.");
     end;
@@ -368,6 +391,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         "VAT Calculation Type" := GenJournalLine."VAT Calculation Type";
         "Currency Code" := GenJournalLine."Currency Code";
         "Currency Factor" := GenJournalLine."Currency Factor";
+        "Additional Currency Factor" := GenJournalLine."Additional Currency Factor CZL";
         Amount := GenJournalLine.Amount;
         "Amount (LCY)" := GenJournalLine."Amount (LCY)";
         "VAT Amount" := GenJournalLine."VAT Amount";
@@ -385,6 +409,13 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         "VAT Identifier" := VATPostingSetup."VAT Identifier";
         "VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
         OnAfterCopyFromVATPostingSetup(VATPostingSetup, Rec);
+    end;
+
+    procedure CopyFromSalesAdvLetterHeader(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+        "Sales Adv. Letter No." := SalesAdvLetterHeaderCZZ."No.";
+        "Customer No." := SalesAdvLetterHeaderCZZ."Bill-to Customer No.";
+        OnAfterCopyFromSalesAdvLetterHeader(SalesAdvLetterHeaderCZZ, Rec);
     end;
 
     procedure InsertNewEntry(WriteToDatabase: Boolean) EntryNo: Integer
@@ -431,6 +462,14 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
     end;
 
+    procedure GetAdjustedCurrencyFactor(): Decimal
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        CustLedgerEntry.Get("Cust. Ledger Entry No.");
+        exit(CustLedgerEntry."Adjusted Currency Factor");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
     begin
@@ -468,6 +507,11 @@ table 31006 "Sales Adv. Letter Entry CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromSalesAdvLetterHeader(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
     begin
     end;
 

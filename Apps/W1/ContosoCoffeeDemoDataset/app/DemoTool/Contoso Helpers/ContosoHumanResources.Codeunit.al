@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.HumanResources.Absence;
+using Microsoft.HumanResources.Employee;
+using Microsoft.HumanResources.Setup;
+using System.Utilities;
+
 codeunit 5171 "Contoso Human Resources"
 {
     InherentEntitlements = X;
@@ -294,7 +305,7 @@ codeunit 5171 "Contoso Human Resources"
             HumanResourceUOM.Insert(true);
     end;
 
-    internal procedure UpdateEmployeeDetails(No: Code[20]; BirthDate: Date; EmploymentDate: Date; Address: Text[100]; PostCode: Code[20]; InternalPhoneNo: Text[30]; MobilePhoneNo: Text[30]; PhoneNo: Text[30]; Email: Text[80]; SocialSecurityNo: Text[30]; UnitNo: Text[30])
+    procedure UpdateEmployeeDetails(No: Code[20]; BirthDate: Date; EmploymentDate: Date; Address: Text[100]; PostCode: Code[20]; InternalPhoneNo: Text[30]; MobilePhoneNo: Text[30]; PhoneNo: Text[30]; Email: Text[80]; SocialSecurityNo: Text[30]; UnitNo: Text[30])
     var
         Employee: Record Employee;
     begin
@@ -313,6 +324,15 @@ codeunit 5171 "Contoso Human Resources"
         else
             Employee.Validate("E-Mail", StrSubstNo(EmpEmailLbl, LowerCase(Employee."No.")));
 
+        Employee.Modify(true);
+    end;
+
+    procedure UpdateEmployeeManager(EmployeeNo: Code[20]; ManagerNo: Code[20])
+    var
+        Employee: Record Employee;
+    begin
+        Employee.Get(EmployeeNo);
+        Employee.Validate("Manager No.", ManagerNo);
         Employee.Modify(true);
     end;
 

@@ -1,14 +1,18 @@
+#if not CLEAN26
 namespace Microsoft.DataMigration.GP;
 
 page 4097 "GP Vendor Transactions"
 {
     Caption = 'GP Vendor Transactions';
-    AdditionalSearchTerms = 'staging';
     PageType = List;
     SourceTable = "GP Vendor Transactions";
     ApplicationArea = All;
-    UsageCategory = Lists;
+    UsageCategory = None;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Removing the GP staging table pages because they cause confusion and should not be used.';
+    ObsoleteTag = '26.0';
 
+#pragma warning disable AA0219
     layout
     {
         area(content)
@@ -68,6 +72,7 @@ page 4097 "GP Vendor Transactions"
             }
         }
     }
+#pragma warning restore AA0219
 
     actions
     {
@@ -93,4 +98,4 @@ page 4097 "GP Vendor Transactions"
         }
     }
 }
-
+#endif

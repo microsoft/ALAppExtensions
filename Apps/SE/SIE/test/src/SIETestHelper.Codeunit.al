@@ -63,25 +63,4 @@ codeunit 148016 "SIE Test Helper"
         AuditFileExportHeader.Validate("Parallel Processing", false);
         AuditFileExportHeader.Insert(true);
     end;
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnInitializeFeatureDataUpdateStatus', '', false, false)]
-    local procedure EnableSIEFeatureOnInitializeFeatureDataUpdateStatus(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; var InitializeHandled: Boolean)
-    var
-        FeatureKey: Record "Feature Key";
-        SIEManagement: Codeunit "SIE Management";
-    begin
-        if FeatureDataUpdateStatus."Feature Key" <> SIEManagement.GetSIEAuditFileExportFeatureKeyId() then
-            exit;
-
-        if FeatureDataUpdateStatus."Company Name" <> CopyStr(CompanyName(), 1, MaxStrLen(FeatureDataUpdateStatus."Company Name")) then
-            exit;
-
-        FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
-
-        FeatureKey.Get(FeatureDataUpdateStatus."Feature Key");
-        FeatureKey.Enabled := FeatureKey.Enabled::"All Users";
-        FeatureKey.Modify();
-        InitializeHandled := true;
-    end;
-#endif
 }

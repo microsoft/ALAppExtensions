@@ -18,15 +18,13 @@ codeunit 18002 "GST Navigate"
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         GSTLedgerEntry: Record "GST Ledger Entry";
         GSTTDSTCSEntry: Record "GST TDS/TCS Entry";
-        Navigate: Page Navigate;
     begin
         if GSTLedgerEntry.ReadPermission() then begin
             GSTLedgerEntry.Reset();
             GSTLedgerEntry.SetCurrentKey("Document No.", "Posting Date");
             GSTLedgerEntry.SetFilter("Document No.", DocNoFilter);
             GSTLedgerEntry.SetFilter("Posting Date", PostingDateFilter);
-            Navigate.InsertIntoDocEntry(
-                DocumentEntry,
+            DocumentEntry.InsertIntoDocEntry(
                 Database::"GST Ledger Entry",
                 0,
                 CopyStr(GSTLedgerEntry.TableCaption(), 1, 1024),
@@ -38,8 +36,7 @@ codeunit 18002 "GST Navigate"
             DetailedGSTLedgerEntry.SetCurrentKey("Document No.", "Posting Date");
             DetailedGSTLedgerEntry.SetFilter("Document No.", DocNoFilter);
             DetailedGSTLedgerEntry.SetFilter("Posting Date", PostingDateFilter);
-            Navigate.InsertIntoDocEntry(
-                DocumentEntry,
+            DocumentEntry.InsertIntoDocEntry(
                 Database::"Detailed GST Ledger Entry",
                 0,
                 CopyStr(DetailedGSTLedgerEntry.TableCaption(), 1, 1024),
@@ -51,8 +48,7 @@ codeunit 18002 "GST Navigate"
             GSTTDSTCSEntry.SetCurrentKey("Document No.", "Posting Date");
             GSTTDSTCSEntry.SetFilter("Document No.", DocNoFilter);
             GSTTDSTCSEntry.SetFilter("Posting Date", PostingDateFilter);
-            Navigate.InsertIntoDocEntry(
-                DocumentEntry,
+            DocumentEntry.InsertIntoDocEntry(
                 Database::"GST TDS/TCS Entry",
                 0,
                 CopyStr(GSTTDSTCSEntry.TableCaption(), 1, 1024),

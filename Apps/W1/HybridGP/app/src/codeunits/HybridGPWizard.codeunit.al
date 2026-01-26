@@ -75,15 +75,6 @@ codeunit 4015 "Hybrid GP Wizard"
         Enabled := true;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanRunDiagnostic', '', false, false)]
-    local procedure OnCanRunDiagnostic(var CanRun: Boolean)
-    begin
-        if not (GetGPMigrationEnabled()) then
-            exit;
-
-        CanRun := true;
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnCanSetupAdlMigration', '', false, false)]
     local procedure OnCanSetupAdlMigration(var CanSetup: Boolean)
     begin

@@ -5,7 +5,6 @@
 namespace Microsoft.Sales.Document;
 
 using Microsoft.Inventory.Item;
-using Microsoft.Foundation.UOM;
 
 codeunit 7287 SalesOrderLookup implements DocumentLookupSubType
 {
@@ -20,13 +19,13 @@ codeunit 7287 SalesOrderLookup implements DocumentLookupSubType
     var
         SourceSalesHeader: Record "Sales Header";
         SalesHeader: Record "Sales Header";
-        DocumentLookup: Codeunit "Document Lookup Function";
+        SearchItemsWithFiltersFunc: Codeunit "Search Items With Filters Func";
         DocumentNo: Text;
         StartDateStr: Text;
         EndDateStr: Text;
         FoundDocNo: Code[20];
     begin
-        DocumentLookup.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
+        SearchItemsWithFiltersFunc.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
         SalesHeader.SetLoadFields("No.");
         // Setup SecurityFilter
         SalesHeader.SetSecurityFilterOnRespCenter();
@@ -81,59 +80,29 @@ codeunit 7287 SalesOrderLookup implements DocumentLookupSubType
         if SearchPreciseNo(DocumentNo, DocNoLen, Result) then
             exit(Result)
         else
-            if SearchAmbiguousNo(DocumentNo, DocNoLen, Result) then
+            if SearchAmbiguousNo(DocumentNo, Result) then
                 exit(Result)
             else
                 Error(NoDocumentFound2Err, DocumentNo);
     end;
 
-    local procedure SearchAmbiguousNo(DocumentNo: Text; DocNoLen: Integer; var Result: Code[20]): Boolean
+    local procedure SearchAmbiguousNo(DocumentNo: Text; var Result: Code[20]): Boolean
     var
         SalesHeader: Record "Sales Header";
+        DocumentNoFilter: Text;
     begin
-        if DocNoLen <= MaxStrLen(SalesHeader."No.") then begin
-            // 1. Check if it is document no 
-            SalesHeader.Reset();
-            SalesHeader.SetLoadFields("No.");
-            SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
-            SalesHeader.SetFilter("No.", StrSubstNo('*%1*', DocumentNo));
-            if (SalesHeader.FindLast()) then begin
-                Result := SalesHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesHeader."External Document No.") then begin
-            //2. Check if it is external document no
-            SalesHeader.Reset();
-            SalesHeader.SetLoadFields("No.");
-            SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
-            SalesHeader.SetFilter("External Document No.", StrSubstNo('*%1*', DocumentNo));
-            if (SalesHeader.FindLast()) then begin
-                Result := SalesHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesHeader."Quote No.") then begin
-            //3. Check if it is quote no
-            SalesHeader.Reset();
-            SalesHeader.SetLoadFields("No.");
-            SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
-            SalesHeader.SetFilter("Quote No.", StrSubstNo('*%1*', DocumentNo));
-            if (SalesHeader.FindLast()) then begin
-                Result := SalesHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesHeader."Your Reference") then begin
-            //4. Check if it is reference no
-            SalesHeader.Reset();
-            SalesHeader.SetLoadFields("No.");
-            SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
-            SalesHeader.SetFilter("Your Reference", StrSubstNo('*%1*', DocumentNo));
-            if (SalesHeader.FindLast()) then begin
-                Result := SalesHeader."No.";
-                exit(true);
-            end;
+        DocumentNoFilter := StrSubstNo('*%1*', DocumentNo);
+
+        SalesHeader.SetLoadFields("No.");
+        SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
+        SalesHeader.FilterGroup := -1;
+        SalesHeader.SetFilter("No.", DocumentNoFilter);
+        SalesHeader.SetFilter("External Document No.", DocumentNoFilter);
+        SalesHeader.SetFilter("Quote No.", DocumentNoFilter);
+        SalesHeader.SetFilter("Your Reference", DocumentNoFilter);
+        if SalesHeader.FindLast() then begin
+            Result := SalesHeader."No.";
+            exit(true);
         end;
         exit(false);
     end;
@@ -142,50 +111,22 @@ codeunit 7287 SalesOrderLookup implements DocumentLookupSubType
     var
         SalesHeader: Record "Sales Header";
     begin
-        if DocNoLen <= MaxStrLen(SalesHeader."No.") then begin
-            // 1. Check if it is document no 
-            SalesHeader.Reset();
-            SalesHeader.SetLoadFields("No.");
-            SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
+        SalesHeader.SetLoadFields("No.");
+        SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
+        SalesHeader.FilterGroup := -1;
+        if DocNoLen <= MaxStrLen(SalesHeader."No.") then
             SalesHeader.SetRange("No.", DocumentNo);
-            if (SalesHeader.FindLast()) then begin
-                Result := SalesHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesHeader."External Document No.") then begin
-            //2. Check if it is external document no
-            SalesHeader.Reset();
-            SalesHeader.SetLoadFields("No.");
-            SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
+        if DocNoLen <= MaxStrLen(SalesHeader."External Document No.") then
             SalesHeader.SetRange("External Document No.", DocumentNo);
-            if (SalesHeader.FindLast()) then begin
-                Result := SalesHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesHeader."Quote No.") then begin
-            //3. Check if it is quote no
-            SalesHeader.Reset();
-            SalesHeader.SetLoadFields("No.");
-            SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
+        if DocNoLen <= MaxStrLen(SalesHeader."Quote No.") then
             SalesHeader.SetRange("Quote No.", DocumentNo);
-            if (SalesHeader.FindLast()) then begin
-                Result := SalesHeader."No.";
-                exit(true);
-            end;
-        end;
-        if DocNoLen <= MaxStrLen(SalesHeader."Your Reference") then begin
-            //4. Check if it is reference no
-            SalesHeader.Reset();
-            SalesHeader.SetLoadFields("No.");
-            SalesHeader.SetRange("Document Type", "Sales Document Type"::Order);
+        if DocNoLen <= MaxStrLen(SalesHeader."Your Reference") then
             SalesHeader.SetRange("Your Reference", DocumentNo);
-            if (SalesHeader.FindLast()) then begin
+        if SalesHeader.GetFilter("No.") + SalesHeader.GetFilter("External Document No.") + SalesHeader.GetFilter("Quote No.") + SalesHeader.GetFilter("Your Reference") <> '' then
+            if SalesHeader.FindLast() then begin
                 Result := SalesHeader."No.";
                 exit(true);
             end;
-        end;
         exit(false);
     end;
 
@@ -193,7 +134,6 @@ codeunit 7287 SalesOrderLookup implements DocumentLookupSubType
     var
         SalesLine: Record "Sales Line";
         Item: Record Item;
-        UoMMgt: Codeunit "Unit of Measure Management";
         LineNumber: Integer;
     begin
         if not TempSalesLineAiSuggestion.FindLast() then
@@ -201,7 +141,6 @@ codeunit 7287 SalesOrderLookup implements DocumentLookupSubType
         else
             LineNumber := TempSalesLineAiSuggestion."Line No.";
 
-        Item.SetLoadFields("No.", "Sales Unit of Measure");
         SalesLine.SetLoadFields("No.", "Description", "Type", "Quantity", "Quantity (Base)", "Unit of Measure Code", "Qty. per Unit of Measure", "Variant Code");
         SalesLine.SetRange("Document Type", Enum::"Sales Document Type"::Order);
         SalesLine.SetRange("Document No.", DocumentNo);
@@ -211,7 +150,7 @@ codeunit 7287 SalesOrderLookup implements DocumentLookupSubType
                 Item.SetRange("No.", SalesLine."No.");
                 Item.SetRange(Blocked, false);
                 Item.SetRange("Sales Blocked", false);
-                if Item.FindFirst() then begin
+                if not Item.IsEmpty() then begin
                     TempSalesLineAiSuggestion.Init();
                     LineNumber := LineNumber + 1;
                     TempSalesLineAiSuggestion."Line No." := LineNumber;
@@ -219,13 +158,8 @@ codeunit 7287 SalesOrderLookup implements DocumentLookupSubType
                     TempSalesLineAiSuggestion."No." := SalesLine."No.";
                     TempSalesLineAiSuggestion.Description := SalesLine.Description;
                     TempSalesLineAiSuggestion."Variant Code" := SalesLine."Variant Code";
-                    if Item."Sales Unit of Measure" <> '' then
-                        if SalesLine."Unit of Measure Code" = Item."Sales Unit of Measure" then
-                            TempSalesLineAiSuggestion.Quantity := SalesLine.Quantity
-                        else
-                            TempSalesLineAiSuggestion.Quantity := UoMMgt.CalcQtyFromBase(SalesLine."Quantity (Base)", UoMMgt.GetQtyPerUnitOfMeasure(Item, Item."Sales Unit of Measure"))
-                    else
-                        TempSalesLineAiSuggestion.Quantity := SalesLine."Quantity (Base)";
+                    TempSalesLineAiSuggestion."Unit of Measure Code" := SalesLine."Unit of Measure Code";
+                    TempSalesLineAiSuggestion.Quantity := SalesLine.Quantity;
                     TempSalesLineAiSuggestion.SetSourceDocument(SalesLine.RecordId());
                     TempSalesLineAiSuggestion.Insert();
                 end;

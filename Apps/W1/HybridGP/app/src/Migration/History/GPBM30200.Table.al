@@ -101,5 +101,9 @@ table 41003 "GP BM30200"
         {
             Clustered = true;
         }
+        key(Key2; DEX_ROW_ID)
+        {
+            Clustered = false;
+        }
     }
 }

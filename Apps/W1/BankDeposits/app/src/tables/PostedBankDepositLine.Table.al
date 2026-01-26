@@ -1,17 +1,18 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Intercompany.Partner;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Ledger;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.Dimension;
-using Microsoft.Bank.Ledger;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Sales.Receivables;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Intercompany.Partner;
 using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
 
 table 1692 "Posted Bank Deposit Line"
 {
@@ -116,6 +117,15 @@ table 1692 "Posted Bank Deposit Line"
             if ("Account Type" = const(Vendor)) "Vendor Ledger Entry"
             else
             if ("Account Type" = const("Bank Account")) "Bank Account Ledger Entry";
+        }
+        field(17; "External Document No."; Code[35])
+        {
+            Caption = 'External Document No.';
+        }
+        field(18; "Reason Code"; Code[10])
+        {
+            Caption = 'Reason Code';
+            TableRelation = "Reason Code";
         }
         field(480; "Dimension Set ID"; Integer)
         {

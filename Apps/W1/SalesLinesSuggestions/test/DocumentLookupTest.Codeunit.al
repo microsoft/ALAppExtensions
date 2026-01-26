@@ -5,9 +5,10 @@ using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using System.TestLibraries.Utilities;
 
-codeunit 139783 "Document Lookup Test"
+codeunit 133510 "Document Lookup Test"
 {
     Subtype = Test;
+    TestType = AITest;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -21,6 +22,8 @@ codeunit 139783 "Document Lookup Test"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryInventory: Codeunit "Library - Inventory";
         LibrarySales: Codeunit "Library - Sales";
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
 
         Item1DescriptionLbl: Label 'High Quality Mouse Mat';
         Item2DescriptionLbl: Label 'Yoga Mat';
@@ -54,7 +57,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] When user try to copy sales order with a document No exceeding max acceptable length, the system should not generate any lines and send a notification to the user.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -85,7 +88,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] When copying a sales order, the item variant should also be copied.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -124,7 +127,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] There are 2 lines in the sales order. The second line are blocked. The system should generate only the first line.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -156,7 +159,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] We have one item with a new UoM. When copying a sales order, the item UoM should be set to the default one defined in item.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -187,7 +190,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order 10000' in current customer's sales order. System will find the order and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -217,7 +220,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order 10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -248,7 +251,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order EXTNO123456789123456789123456789123' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -282,7 +285,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order QTO214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -316,7 +319,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order REF214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -350,7 +353,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order EXTNO123456789123456789123456789123' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -384,7 +387,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order] [Ambiguous Search]
         // [SCENARIO] There is an item with Reference Number 'EXTNO123456789123456789123456789123'. User input 'I want all the items from sales order XTNO12345678912345678912345678912' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -418,7 +421,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order] [Ambiguous Search]
         // [SCENARIO] There is an item with Reference Number 'REF214500'. User input 'I want all the items from sales order EF214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -452,7 +455,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order with posting date 01/01/2019' in current customer's sales order. System will find the order and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -485,7 +488,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order with posting date 2019 1 1' in current customer's sales order. System will find the order and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -518,7 +521,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order with posting date 2019 1 Jan' in current customer's sales order. System will find the order and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -551,7 +554,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order with posting date 1/Jan/2019' in current customer's sales order. System will find the order and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -585,7 +588,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales order with posting date 01/01/2019' from another customer's sales order. System cannot find the order and should not generate any lines.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -616,7 +619,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I need all items from sales order on January of 2019' in current customer's sales order. System will find the order and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -649,7 +652,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I need all items from sales order from 2018-12-30 to 2019-Jan-5' in current customer's sales order. System will find the order and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -681,7 +684,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from unknown document'. System cannot find the order and should not generate any lines.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -710,7 +713,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I want all the items from sales invoice 10000' in current customer's sales order. System will find the invoice and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -742,7 +745,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I want all the items from sales invoice 10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -775,7 +778,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I want all the items from sales invoice EXT10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -811,7 +814,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I want all the items from sales invoice QTO214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -847,7 +850,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I want all the items from sales invoice REF214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -882,7 +885,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice] [Ambiguous Search]
         // [SCENARIO] There is an item with External Document Number 'EXTNO123456789123456789123456789123'. User input 'I want all the items from sales invoice XTNO12345678912345678912345678912' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -919,7 +922,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice] [Ambiguous Search]
         // [SCENARIO] There is an item with Quote Number 'QTO214500'. User input 'I want all the items from sales invoice XTNO12345678912345678912345678912' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -954,7 +957,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice] [Ambiguous Search]
         // [SCENARIO] There is an item with Reference Number 'REF214500'. User input 'I want all the items from sales invoice XTNO12345678912345678912345678912' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -990,7 +993,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I need all items from sales invoice with posting date 01/01/2019' in current customer's sales order. System will find the invoice and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -1026,7 +1029,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I need all items from sales invoice with posting date 01/01/2019' from another customer's sales order. System cannot find the order and should not generate any lines.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1060,7 +1063,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I need all items from sales invoice on January of 2019' in current customer's sales order. System will find the invoice and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -1095,7 +1098,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Invoice]
         // [SCENARIO] User input 'I need all items from sales invoice from 2018-12-30 to 2019-Jan-5' in current customer's sales order. System will find the invoice and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -1131,7 +1134,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I want all the items from sales shipment 10000' in current customer's sales order. System will find the shipment and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -1163,7 +1166,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I want all the items from sales shipment 10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1196,7 +1199,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I want all the items from sales shipment EXT10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1232,7 +1235,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I want all the items from sales shipment QTO214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1267,7 +1270,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I want all the items from sales shipment REF214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1302,7 +1305,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the items from sales shipment EXT10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1337,7 +1340,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment] [Ambiguous Search]
         // [SCENARIO] There is an item with Quote Number 'QTO214500'. User input 'I want all the items from sales shipment XTNO12345678912345678912345678912' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1372,7 +1375,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment] [Ambiguous Search]
         // [SCENARIO] There is an item with Reference Number 'REF214500'. User input 'I want all the items from sales shipment XTNO12345678912345678912345678912' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1407,7 +1410,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I need all items from sales shipment with posting date 01/01/2019' in current customer's sales order. System will find the shipment and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -1443,7 +1446,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I need all items from sales shipment with posting date 01/01/2019' from another customer's sales order. System cannot find the order and should not generate any lines.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1476,7 +1479,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I need all items from sales shipment on January of 2019' in current customer's sales order. System will find the shipment and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -1511,7 +1514,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Shipment]
         // [SCENARIO] User input 'I need all items from sales shipment from 2018-12-30 to 2019-Jan-5' in current customer's sales order. System will find the shipment and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -1546,7 +1549,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I want all the items from sales quote 10000' in current customer's sales order. System will find the quote and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create sales quote for customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, Customer."No.");
@@ -1576,7 +1579,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I want all the items from sales quote 10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1607,7 +1610,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I want all the items from sales quote EXT10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1641,7 +1644,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I want all the items from sales quote QTO214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1674,7 +1677,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I want all the items from sales quote QTO214500' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1707,7 +1710,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I want all the items from sales order EXT10000' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1741,7 +1744,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] There is an item with Quote Number 'QTO214500'. User input 'I want all the items from sales quote XTNO12345678912345678912345678912' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1774,7 +1777,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] There is an item with Reference Number 'REF214500'. User input 'I want all the items from sales quote XTNO12345678912345678912345678912' in another customer's sales order. The system should generate 3 lines with item description and quantity.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1807,7 +1810,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I need all items from sales quote with posting date 01/01/2019' in current customer's sales order. System will find the quote and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, Customer."No.");
@@ -1841,7 +1844,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I need all items from sales quote with posting date 01/01/2019' from another customer's sales order. System cannot find the order and should not generate any lines.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomer(Customer2);
         // [GIVEN] Create a new sales order for the new customer
@@ -1872,7 +1875,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I need all items from sales quote on January of 2019' in current customer's sales order. System will find the quote and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer  
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, Customer."No.");
@@ -1905,7 +1908,7 @@ codeunit 139783 "Document Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Quote]
         // [SCENARIO] User input 'I need all items from sales quote from 2018-12-30 to 2019-Jan-5' in current customer's sales order. System will find the quote and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, Customer."No.");
@@ -1925,6 +1928,18 @@ codeunit 139783 "Document Lookup Test"
         CheckSalesLineContent(SalesLine, SalesHeader."No.");
     end;
     //--------------------------------------------------------------------------------------
+
+    local procedure Initialize()
+    begin
+        LibraryVariableStorage.Clear();
+
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
+    end;
 
     // Help functions
     local procedure Create3SalesLinesWithItemDescription(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var CreatedItem: Record Item)

@@ -7,7 +7,6 @@ table 1156 "COHUB Group Company Summary"
     DataCaptionFields = "Environment Name", "Company Name";
     ReplicateData = false;
     DataPerCompany = false;
-    Access = Internal;
 
     fields
     {

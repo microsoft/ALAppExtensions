@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 permissionset 27004 "BANKREC-POST"
 {
@@ -36,10 +37,6 @@ permissionset 27004 "BANKREC-POST"
                   tabledata "Gen. Journal Template" = RI,
                   tabledata "General Ledger Setup" = r,
                   tabledata "General Posting Setup" = r,
-#if not CLEAN25
-                  tabledata "IRS 1099 Adjustment" = RIMD,
-                  tabledata "IRS 1099 Form-Box" = RIMD,
-#endif
                   tabledata "Reversal Entry" = RIMD,
                   tabledata "Tax Area" = R,
                   tabledata "Tax Area Line" = R,

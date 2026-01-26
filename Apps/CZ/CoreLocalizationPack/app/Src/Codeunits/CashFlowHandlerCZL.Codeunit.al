@@ -24,23 +24,9 @@ codeunit 31045 "Cash Flow Handler CZL"
             exit;
 
         VATEntry.Setrange("Document Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not VATEntry.IsReplaceVATDateEnabled() then
-            VATEntry.SetFilter("VAT Date CZL", '<>%1', DummyDate)
-        else
-#pragma warning restore AL0432
-#endif
             VATEntry.SetFilter("VAT Reporting Date", '<>%1', DummyDate);
         if TaxPaymentDueDate <> DummyDate then begin
             CashFlowSetup.GetTaxPeriodStartEndDates(TaxPaymentDueDate, StartDate, EndDate);
-#if not CLEAN22
-#pragma warning disable AL0432
-            if not VATEntry.IsReplaceVATDateEnabled() then
-                VATEntry.SetRange("VAT Date CZL", StartDate, EndDate)
-            else
-#pragma warning restore AL0432
-#endif
                 VATEntry.SetRange("VAT Reporting Date", StartDate, EndDate)
         end;
     end;
@@ -52,12 +38,6 @@ codeunit 31045 "Cash Flow Handler CZL"
     begin
         if not VATReportingDateMgt.IsVATDateEnabled() then
             exit;
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not VATEntry.IsReplaceVATDateEnabled() then
-            VATEntry."VAT Reporting Date" := VATEntry."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         case SourceTableNum of
             Database::"VAT Entry":
                 DocumentDate := VATEntry."VAT Reporting Date";

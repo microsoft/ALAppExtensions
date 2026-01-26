@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 11028 "Elec. VAT Decl. Overview"
 {
     Caption = 'Elec. VAT Decl. Overview';

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionsetextension 20875 "D365 READQuickBooks Data Migration" extends "D365 READ"
 {
     Permissions = tabledata "MigrationQB Account" = R,

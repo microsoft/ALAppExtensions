@@ -17,5 +17,7 @@ permissionsetextension 40900 "D365 Basic Ext." extends "D365 BASIC"
                   tabledata "Hist. Migration Step Status" = R,
                   tabledata "Hist. Migration Current Status" = R,
                   tabledata "Hist. Payables Apply" = R,
-                  tabledata "Hist. Receivables Apply" = R;
+                  tabledata "Hist. Receivables Apply" = R,
+                  tabledata "Hist. Invt. Trx. SerialLot" = R,
+                  tabledata "Hist. Recv. Trx. SerialLot" = R;
 }

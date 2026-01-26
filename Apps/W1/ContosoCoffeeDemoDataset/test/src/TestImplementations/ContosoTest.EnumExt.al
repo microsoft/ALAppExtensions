@@ -1,3 +1,7 @@
+namespace Microsoft.Test.DemoTool;
+
+using Microsoft.DemoTool;
+
 enumextension 148000 "Contoso Test" extends "Contoso Demo Data Module"
 {
     value(148001; "Contoso Test 1")

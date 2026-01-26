@@ -6,6 +6,7 @@
 codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();
@@ -23,7 +24,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         LibraryXPathXMLReader: Codeunit "Library - XPath XML Reader";
         LibraryUtility: Codeunit "Library - Utility";
         OIOUBLNewFileMock: Codeunit "OIOUBL-File Events Mock";
-        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         AmountErr: Label '%1 must be %2 in %3.', Comment = '%1 = Amount Field Caption; %2 = Amount Value; %3 = GL Entry Table Caption';
         GLNNoTxt: Label '3974567891234';
@@ -34,7 +34,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         WrongAllowanceChargeErr: Label 'Wrong value of "AllowanceCharge".';
         DefaultCodeTxt: Label 'DEFAULT', Comment = 'Translate as we translate default term in local languages';
         OIOUBLFormatNameTxt: Label 'OIOUBL';
-        PEPPOLFormatNameTxt: Label 'PEPPOL 2.1';
+        PEPPOLFormatNameTxt: Label 'PEPPOL BIS 3.0';
         WrongInvoiceLineCountErr: Label 'Wrong count of "InvoiceLine".';
         BaseQuantityTxt: Label 'cbc:BaseQuantity';
         NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.', Comment = '%1 = Sales Invoice';
@@ -471,7 +471,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         Initialize();
         UpdateCompanySwiftCode();
         CreateElectronicDocumentFormat(
-          PEPPOLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", CODEUNIT::"Export Sales Inv. - PEPPOL 2.1");
+          PEPPOLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", CODEUNIT::"Exp. Sales Inv. PEPPOL BIS3.0");
 
         // [GIVEN] Document Sending Profile = PEPPOL; Sales Invoice.
         CreateSalesDocumentWithItem(SalesLine, SalesHeader."Document Type"::Invoice);
@@ -679,7 +679,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         Initialize();
         UpdateCompanySwiftCode();
         CreateElectronicDocumentFormat(
-          PEPPOLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Credit Memo", CODEUNIT::"Export Sales Cr.M. - PEPPOL2.1");
+          PEPPOLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Credit Memo", CODEUNIT::"Exp. Sales CrM. PEPPOL BIS3.0");
 
         // [GIVEN] Document Sending Profile = PEPPOL; Sales Credit Memo.
         CreateSalesDocumentWithItem(SalesLine, SalesHeader."Document Type"::"Credit Memo");
@@ -794,33 +794,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesInvoiceHeader.TESTFIELD("OIOUBL-Electronic Invoice Created", false);
         Assert.ExpectedError(StrSubstNo(NonExistingDocumentFormatErr, Format(ElectronicDocumentFormat.Usage::"Sales Invoice")));
         Assert.ExpectedErrorCode('Dialog');
-    end;
-
-    [Test]
-    [HandlerFunctions('PostandSendModalPageHandler,ShipInvoiceQstStrMenuHandler,ErrorMessagesPageHandler')]
-    procedure ShipAndSendSalesOrderOIOUBL();
-    var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        DocumentSendingProfile: Record "Document Sending Profile";
-    begin
-        // [SCENARIO 327540] Post (Ship only) And Send Sales Order to OIOUBL.
-        Initialize();
-
-        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document"; Sales Order;
-        CreateSalesDocumentWithItem(SalesLine, SalesHeader."Document Type"::Order);
-        SalesHeader.GET(SalesLine."Document Type", SalesLine."Document No.");
-        SetDefaultDocumentSendingProfile(DocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
-
-        // [WHEN] Run "Post and Send" for Sales Order. Select "Ship" option for posting.
-        LibraryVariableStorage.Enqueue(SalesHeader.RecordId());
-        SalesHeader.SendToPosting(Codeunit::"Sales-Post and Send");
-
-        // [THEN] OIOUBL Electronic Document is not created. An error "The Sales Shipment Header table is not supported." is thrown.
-        Assert.AreEqual('The Sales Shipment Header table is not supported.', LibraryVariableStorage.DequeueText(), '');
-        Assert.AreEqual('Error', LibraryVariableStorage.DequeueText(), '');
-
-        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
@@ -965,52 +938,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             FileNameLst.Add(GetFileName(PostedDocNo, 'Invoice', 'XML'));
             OIOUBLNewFileMock.PopFilePath(); // dequeue unused XML files names
         end;
-        VerifyFileListInZipArchive(FileNameLst);
-    end;
-
-    [Test]
-    [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
-    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
-    begin
-        SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
-    end;
-
-    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal()
-    var
-        SalesLine: Record "Sales Line";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
-        PostedDocNoLst: List of [Code[20]];
-        FileNameLst: List of [Text];
-        PostedDocNoFilter: Text;
-    begin
-        // [FEATURE] [Zip]
-        // [SCENARIO 336642] Send Posted Sales Document in case Print, E-Mail - PDF & OIOUBL, Disk - PDF & OIOUBL are set in Document Sending Profile.
-        Initialize();
-        MailSetupInitialize();
-        CreateElectronicDocumentFormat(
-            OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", Codeunit::"OIOUBL-Export Sales Invoice");
-
-        // [GIVEN] Default DocumentSendingProfile with Printer = Yes; Disk = "PDF & Electronic Document", Format = OIOUBL;
-        // [GIVEN] E-Mail = Yes, E-Mail Attachment = "PDF & Electronic Document", Format = OIOUBL. Two Posted Sales Invoices.
-        SetDefaultDocumentSendingProfile(
-            DocumentSendingProfile.Printer::"Yes (Prompt for Settings)", DocumentSendingProfile."E-Mail"::"Yes (Prompt for Settings)",
-            DocumentSendingProfile."E-Mail Attachment"::"PDF & Electronic Document", OIOUBLFormatNameTxt,
-            DocumentSendingProfile.Disk::"PDF & Electronic Document", OIOUBLFormatNameTxt);
-        CreateMultiplePostedSalesDocuments(PostedDocNoLst, PostedDocNoFilter, SalesLine."Document Type"::Invoice, 2);
-
-        // [WHEN] Run "Send" for these Posted Sales Invoices.
-        SalesInvoiceHeader.SetFilter("No.", PostedDocNoFilter);
-        SalesInvoiceHeader.SendRecords();
-
-        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Editor is opened.
-        // [THEN] Two ZIP files are created, each of them contains OIOUBL Electronic Document and PDF with printed copy of Posted Sales Invoice.
-        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(1), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(1), 'S.Invoice', 'PDF'));
-        VerifyFileListInZipArchive(FileNameLst);
-
-        Clear(FileNameLst);
-        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(2), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(2), 'S.Invoice', 'PDF'));
         VerifyFileListInZipArchive(FileNameLst);
     end;
 
@@ -1550,6 +1477,49 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         assert.AreNotEqual(CountryRegionErr, GetLastErrorText, ErrorMustMatchErr);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler')]
+    procedure PostPrePaymentFromSalesOrderOIOUBL();
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        OIOUBLDocumentEncode: Codeunit "OIOUBL-Document Encode";
+        SalesOrder: TestPage "Sales Order";
+    begin
+        // [SCENARIO 575524] Electronic XML has Unit of Measure and Sales Order No. when invoice has prepayment no.
+        Initialize();
+
+        // [GIVEN] OIOUBL Country/Region Code, Create Electronic Document Format
+        UpdateOIOUBLCountryRegionCode();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", CODEUNIT::"OIOUBL-Export Sales Invoice");
+
+        // [GIVEN] Default DocumentSendingProfile Disk::"Electronic Document"; Sales Order;
+        CreateSalesDocumentWithPrepayment(SalesLine, SalesHeader."Document Type"::Order);
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        SetDefaultDocumentSendingProfile(DocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+
+        // [WHEN] Post Prepayment.
+        SalesOrder.OpenEdit();
+        SalesOrder.Filter.SetFilter("No.", SalesHeader."No.");
+        SalesOrder.PostPrepaymentInvoice.Invoke();
+
+        // [THEN] Find Sales Invoice Header of Prepayment
+        FindSalesInvoiceHeaderofPrepayment(SalesInvoiceHeader, SalesHeader."No.");
+
+        // [THEN] Find Sales Invoice Line of Prepayment
+        FindSalesInvoiceLineofPrepayment(SalesInvoiceLine, SalesInvoiceHeader."No.");
+
+        // [THEN] Run Electronic Sales Invoice Report with PrePayment
+        RunReportCreateElecSalesInvoices(SalesInvoiceHeader."No.");
+
+        // [VERIFY] Verify Electronic Sales Prepayment Order No
+        VerifyElectronicSalesOrderNo(SalesInvoiceHeader."Prepayment Order No.", OIOUBLDocumentEncode.GetUoMCode(SalesInvoiceLine."Unit of Measure Code"));
+    end;
+
     local procedure Initialize();
     var
         SalesHeader: Record "Sales Header";
@@ -1679,6 +1649,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesHeader.VALIDATE("Bill-to City", PostCode.City);
         SalesHeader.Validate("Ship-to Address", LibraryUtility.GenerateGUID());
         SalesHeader.Validate("Ship-to City", PostCode.City);
+        SalesHeader.Validate("Your Reference", LibraryUtility.GenerateGUID());
         SalesHeader.MODIFY(true);
         ClearVATRegistrationForCustomer(SalesHeader."Sell-to Customer No.");
     end;
@@ -2002,9 +1973,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     local procedure MailSetupInitialize()
     var
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
     begin
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
     end;
 
     local procedure UpdateOIOUBLCountryRegionCode();
@@ -2245,6 +2216,64 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         exit(ClientFileName);
     end;
 
+    local procedure CreateCustomerWith100PercentPrepayment(): Code[20];
+    var
+        Customer: Record Customer;
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Validate("Country/Region Code", CompanyInformation."Country/Region Code");
+        Customer.Validate("VAT Registration No.", CompanyInformation."VAT Registration No.");
+        Customer.Validate(GLN, GLNNoTxt);
+        Customer.Validate("Prepayment %", 100);
+        Customer.Modify(true);
+        exit(Customer."No.")
+    end;
+
+    local procedure CreateSalesDocumentWithPrepayment(var SalesLine: Record "Sales Line"; DocumentType: Enum "Sales Document Type");
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeaderWithPrePayment(SalesHeader, DocumentType);
+        CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, LibraryInventory.CreateItemNo());
+    end;
+
+    local procedure CreateSalesHeaderWithPrePayment(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type");
+    var
+        PostCode: Record "Post Code";
+    begin
+        LibraryERM.FindPostCode(PostCode);
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CreateCustomerWith100PercentPrepayment());
+        SalesHeader.Validate("Sell-to Contact", SalesHeader."No.");
+        SalesHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
+        SalesHeader.Validate("Bill-to City", PostCode.City);
+        SalesHeader.Validate("Ship-to Address", LibraryUtility.GenerateGUID());
+        SalesHeader.Validate("Ship-to City", PostCode.City);
+        SalesHeader.Validate("Your Reference", LibraryUtility.GenerateGUID());
+        SalesHeader.Modify(true);
+        ClearVATRegistrationForCustomer(SalesHeader."Sell-to Customer No.");
+    end;
+
+    local procedure FindSalesInvoiceHeaderofPrepayment(var SalesInvoiceHeader: Record "Sales Invoice Header"; PrePaymentNo: Code[20])
+    begin
+        SalesInvoiceHeader.SetRange("Prepayment Order No.", PrePaymentNo);
+        SalesInvoiceHeader.FindFirst();
+    end;
+
+    local procedure FindSalesInvoiceLineofPrepayment(var SalesInvoiceLine: Record "Sales Invoice Line"; DocumentNo: Code[20])
+    begin
+        SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+        SalesInvoiceLine.FindFirst();
+    end;
+
+    local procedure VerifyElectronicSalesOrderNo(OrderNo: Code[20]; UnitOfMeasure: Text);
+    begin
+        LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath());
+        LibraryXMLReadOnServer.VerifyNodeValue('cbc:SalesOrderID', OrderNo);
+        LibraryXMLReadOnServer.VerifyAttributeValueInSubtree('cac:Price', 'cbc:BaseQuantity', 'unitCode', UnitOfMeasure);
+    end;
+
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
     begin
@@ -2276,21 +2305,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             Choice := 1 // Close email
         else
             Choice := 3; // Use the default profile for all selected documents without confimation.
-    end;
-
-    [StrMenuHandler]
-    procedure ShipInvoiceQstStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
-    begin
-        Choice := 1; // Ship
-    end;
-
-    [PageHandler]
-    procedure ErrorMessagesPageHandler(var ErrorMessages: TestPage "Error Messages");
-    begin
-        ErrorMessages.Filter.SetFilter("Context Record ID", LibraryVariableStorage.DequeueText());
-        LibraryVariableStorage.Enqueue(ErrorMessages.Description.Value());
-        LibraryVariableStorage.Enqueue(ErrorMessages."Message Type".Value());
-        ErrorMessages.Close();
     end;
 
     [ModalPageHandler]

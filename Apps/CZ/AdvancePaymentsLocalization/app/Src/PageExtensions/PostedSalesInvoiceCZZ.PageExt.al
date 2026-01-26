@@ -8,6 +8,16 @@ using Microsoft.Sales.History;
 
 pageextension 31028 "Posted Sales Invoice CZZ" extends "Posted Sales Invoice"
 {
+    layout
+    {
+        addlast(factboxes)
+        {
+            part(AdvanceUsageFactBoxCZZ; "Advance Usage FactBox CZZ")
+            {
+                ApplicationArea = Basic, Suite;
+            }
+        }
+    }
     actions
     {
         addlast(processing)
@@ -75,4 +85,10 @@ pageextension 31028 "Posted Sales Invoice CZZ" extends "Posted Sales Invoice"
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        if GuiAllowed() then
+            CurrPage.AdvanceUsageFactBoxCZZ.Page.SetDocument(Rec);
+    end;
 }

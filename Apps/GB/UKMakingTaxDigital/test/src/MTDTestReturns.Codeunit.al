@@ -6,6 +6,7 @@
 codeunit 148087 "MTDTestReturns"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -397,7 +398,7 @@ codeunit 148087 "MTDTestReturns"
         MTDReturnDetails.DeleteAll();
     end;
 
-    local procedure InitSubmitReturnScenario(var VATReturnPeriod: Record "VAT Return Period"; var VATReportHeader: Record "VAT Report Header"; VATReportStatus: Option)
+    local procedure InitSubmitReturnScenario(var VATReturnPeriod: Record "VAT Return Period"; var VATReportHeader: Record "VAT Report Header"; VATReportStatus: Enum "VAT Report Status")
     begin
         Initialize();
         LibraryMakingTaxDigital.MockVATReturnPeriod(
@@ -446,11 +447,19 @@ codeunit 148087 "MTDTestReturns"
         VATReportArchive: Record "VAT Report Archive";
         TempBlob: Codeunit "Temp Blob";
         OutStream: OutStream;
+#if not CLEAN27        
         DummyGUID: Guid;
+#endif        
     begin
         TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         Outstream.Write(MessageText);
+#if not CLEAN27
+#pragma warning disable AL0432
         VATReportArchive.ArchiveSubmissionMessage(VATReportHeader."VAT Report Config. Code".AsInteger(), VATReportHeader."No.", TempBlob, DummyGUID);
+#else
+        VATReportArchive.ArchiveSubmissionMessage(VATReportHeader."VAT Report Config. Code".AsInteger(), VATReportHeader."No.", TempBlob);
+#pragma warning restore AL0432
+#endif
     end;
 
     local procedure MockVATReportWithStatementSetup(var VATReportHeader: Record "VAT Report Header")

@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Foundation.Company;
 
-using System.Reflection;
 using Microsoft.Finance.VAT.Reporting;
 
 page 31108 "Statutory Reporting Setup CZL"
@@ -225,160 +224,6 @@ page 31108 "Statutory Reporting Setup CZL"
                     ToolTip = 'Specifies the number of tax authority.';
                 }
             }
-#if not CLEAN22
-            group(Intrastat)
-            {
-                Caption = 'Intrastat (Obsolete)';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-
-                field("Transaction Type Mandatory"; Rec."Transaction Type Mandatory")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Transaction Type Mandatory (Obsolete)';
-                    ToolTip = 'Specifies this option to make transaction type specification mandatory.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("Transaction Spec. Mandatory"; Rec."Transaction Spec. Mandatory")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Transaction Specification Mandatory (Obsolete)';
-                    ToolTip = 'Specifies if you are using a mandatory transaction specification for reporting.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("Transport Method Mandatory"; Rec."Transport Method Mandatory")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Transport Method Mandatory (Obsolete)';
-                    ToolTip = 'Specifies this option to make transport method specification mandatory.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("Shipment Method Mandatory"; Rec."Shipment Method Mandatory")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Shipment Method Mandatory (Obsolete)';
-                    ToolTip = 'Specifies this option to make shipment method specification mandatory.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("Tariff No. Mandatory"; Rec."Tariff No. Mandatory")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Tariff No. Mandatory (Obsolete)';
-                    ToolTip = 'Specifies this option to make tariff number specification mandatory.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("Net Weight Mandatory"; Rec."Net Weight Mandatory")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Net Weight Mandatory (Obsolete)';
-                    ToolTip = 'Specifies the possibility to select intrastat item''s net weight.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("Country/Region of Origin Mand."; Rec."Country/Region of Origin Mand.")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Country/Region of Origin Mandatory (Obsolete)';
-                    ToolTip = 'Specifies to determine the item''s country/region of origin information.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("No Item Charges in Intrastat"; Rec."No Item Charges in Intrastat")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'No Item Charges in Intrastat (Obsolete)';
-                    ToolTip = 'Specifies whether item charges will be included in Intrastat reports. Select this option if no item charges will be included.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("Get Tariff No. From"; Rec."Get Tariff No. From")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Get Tariff No. From (Obsolete)';
-                    ToolTip = 'Specifies the source for the item''s tariff number for Intrastat declaration.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-                field("Get Net Weight From"; Rec."Get Net Weight From")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Get Net Weight From (Obsolete)';
-                    ToolTip = 'Specifies the source for the item''s net weight for Intrastat declaration.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-                field("Get Country/Region of Origin"; Rec."Get Country/Region of Origin")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Get Country/Region of Origin (Obsolete)';
-                    ToolTip = 'Specifies the source for the item''s Country/Region of Origin for Intrastat declaration.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-                field("Intrastat Rounding Type"; Rec."Intrastat Rounding Type")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat Rounding Type (Obsolete)';
-                    ToolTip = 'Specifies the rounding type for amount calculation for Intrastat declaration.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                field("Stat. Value Reporting"; Rec."Stat. Value Reporting")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Stat. Value Reporting (Obsolete)';
-                    ToolTip = 'Specifies type of statistical value calculation for Intrastat declaration.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-                field("Cost Regulation %"; Rec."Cost Regulation %")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Cost Regulation % (Obsolete)';
-                    ToolTip = 'Specifies percentage of cost regulation for statistical value calculation for Intrastat declaration when Stat. Value reporting is set to Percentage.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-                field("Include other Period add.Costs"; Rec."Include other Period add.Costs")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Include other Period add.Costs (Obsolete)';
-                    ToolTip = 'Specifies setup for statistical value calculation for Intrastat declaration.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-                field("Intrastat Declaration Nos."; Rec."Intrastat Declaration Nos.")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat Declaration Nos. (Obsolete)';
-                    ToolTip = 'Specifies declaration number series of intrastat.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-            }
-#endif
             group("VAT Statement")
             {
                 Caption = 'VAT Statement';
@@ -453,7 +298,6 @@ page 31108 "Statutory Reporting Setup CZL"
                 field("VIES Declaration Report No."; Rec."VIES Declaration Report No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    LookupPageId = Objects;
                     ToolTip = 'Specifies the object number for VIES declaration report.';
                 }
                 field("VIES Declaration Report Name"; Rec."VIES Declaration Report Name")
@@ -464,7 +308,6 @@ page 31108 "Statutory Reporting Setup CZL"
                 field("VIES Declaration Export No."; Rec."VIES Declaration Export No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    LookupPageId = Objects;
                     ToolTip = 'Specifies the object number for VIES declaration export.';
                 }
                 field("VIES Declaration Export Name"; Rec."VIES Declaration Export Name")

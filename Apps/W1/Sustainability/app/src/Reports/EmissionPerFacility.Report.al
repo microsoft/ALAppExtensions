@@ -1,14 +1,12 @@
 namespace Microsoft.Sustainability.Reports;
 
+using Microsoft.Inventory.Location;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Inventory.Location;
 
 report 6211 "Emission Per Facility"
 {
-    DefaultLayout = Excel;
-    ExcelLayout = './src/Reports/EmissionPerFacility.xlsx';
-    RDLCLayout = './src/Reports/EmissionPerFacility.rdlc';
+    DefaultRenderingLayout = EmissionPerFacilityExcel;
     ApplicationArea = Basic, Suite;
     Caption = 'Emission Per Facility';
     UsageCategory = ReportsAndAnalysis;
@@ -21,6 +19,9 @@ report 6211 "Emission Per Facility"
             DataItemTableView = sorting("Entry No.");
             RequestFilterFields = "Posting Date", "Responsibility Center", "Account No.";
             column(PeriodFilter; StrSubstNo(PeriodLbl, SustLedgDateFilter))
+            {
+            }
+            column(SustLedgDateFilter; SustLedgDateFilter)
             {
             }
             column(CompanyName; CompanyProperty.DisplayName())
@@ -88,13 +89,36 @@ report 6211 "Emission Per Facility"
             end;
         }
     }
+    requestpage
+    {
+        AboutText = 'This report encompasses greenhouse gas (GHG) emission data documented across various facilities - Responsibility Centers.';
+        AboutTitle = 'About Emission Per Facility';
+    }
+    rendering
+    {
+        layout(EmissionPerFacilityExcel)
+        {
+            Type = Excel;
+            Caption = 'Emission Per Facility Excel Layout';
+            LayoutFile = './src/Reports/EmissionPerFacility.xlsx';
+            Summary = 'Built in layout for the Emission Per Facility excel report. This report encompasses greenhouse gas (GHG) emission data documented across various facilities - Responsibility Centers.';
+        }
+        layout(EmissionPerFacilityRDLC)
+        {
+            Type = RDLC;
+            Caption = 'Emission Per Facility RDLC Layout';
+            LayoutFile = './src/Reports/EmissionPerFacility.rdlc';
+            Summary = 'Built in layout for the Emission Per Facility RDLC report. This report encompasses greenhouse gas (GHG) emission data documented across various facilities - Responsibility Centers.';
+        }
+    }
     labels
     {
         EmissionPerFacility = 'Emission Per Facility';
+        EmissionPerFacilityPrint = 'Emission Per Facility (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
         PageCaption = 'Page';
-        EmissionsByRespCenter = 'Emissions by R. C.';
-        AverageByScopeAndRC = 'Average by Scope and R. C.';
-        AverageByAccountAndRC = 'Average by Account and R. C.';
+        EmissionsByRespCenter = 'Emissions by R. C.', MaxLength = 31, Comment = 'Excel worksheet name.';
+        AverageByScopeAndRC = 'Average by Scope and R. C.', MaxLength = 31, Comment = 'Excel worksheet name.';
+        AverageByAccountAndRC = 'Average by Account and R. C.', MaxLength = 31, Comment = 'Excel worksheet name.';
         CompName = 'Company Name';
         CountryRegionCode = 'Country/Region Code';
         EmissionByRespCenter = 'Emissions by Responsibility Center';
@@ -107,6 +131,15 @@ report 6211 "Emission Per Facility"
         AverageOfEmission_CH4 = 'Average of Emission CH4';
         AverageOfEmission_N2O = 'Average of Emission N2O';
         AccountName = 'Account Name';
+        DataRetrieved = 'Data retrieved:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     trigger OnPreReport()

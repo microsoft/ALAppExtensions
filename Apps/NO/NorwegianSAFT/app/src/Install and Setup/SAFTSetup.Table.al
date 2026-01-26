@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -18,33 +18,22 @@ table 10670 "SAF-T Setup"
             DataClassification = CustomerContent;
             Caption = 'Primary Key';
         }
-        field(2; "Dimension No. Series Code"; Code[20])
-        {
-            DataClassification = CustomerContent;
-            Caption = 'Dimension No. Series Code';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Replaced with Dimension No.';
-            ObsoleteTag = '24.0';
-        }
         field(3; "Last Tax Code"; Integer)
         {
             DataClassification = CustomerContent;
             Caption = 'Last Tax Code';
         }
+#if not CLEANSCHEMA26
         field(4; "Not Applicable VAT Code"; Code[20])
         {
             Caption = 'Not Applicable VAT Code';
             DataClassification = CustomerContent;
             TableRelation = "VAT Code";
             ObsoleteReason = 'Use the field "Not Applic. VAT Code" instead';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#endif
         }
+#endif
         field(5; "Dimension No."; Integer)
         {
             DataClassification = CustomerContent;
@@ -88,6 +77,11 @@ table 10670 "SAF-T Setup"
         {
             DataClassification = CustomerContent;
             Caption = 'Check Address';
+        }
+        field(26; "Default Version"; Enum "SAF-T Version")
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Default Version';
         }
     }
 

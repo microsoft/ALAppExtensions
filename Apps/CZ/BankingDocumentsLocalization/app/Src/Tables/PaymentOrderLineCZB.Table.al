@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -129,7 +129,6 @@ table 31257 "Payment Order Line CZB"
                             end;
                         Type::Employee:
                             begin
-                                Testfield("Currency Code", '');
                                 if not Employee.Get("No.") then
                                     Employee.Init();
                                 Employee.Testfield("Privacy Blocked", false);
@@ -464,6 +463,7 @@ table 31257 "Payment Order Line CZB"
                                 VendorLedgerEntries.SetRecord(VendorLedgerEntry);
                             if "No." <> '' then
                                 VendorLedgerEntry.SetRange("Vendor No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetVendorLedgerEntryFilters(VendorLedgerEntry);
                             VendorLedgerEntries.SetTableView(VendorLedgerEntry);
                             VendorLedgerEntries.LookupMode(true);
                             if VendorLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -482,6 +482,7 @@ table 31257 "Payment Order Line CZB"
                                 CustomerLedgerEntries.SetRecord(CustLedgerEntry);
                             if "No." <> '' then
                                 CustLedgerEntry.SetRange("Customer No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetCustomerLedgerEntryFilters(CustLedgerEntry);
                             CustomerLedgerEntries.SetTableView(CustLedgerEntry);
                             CustomerLedgerEntries.LookupMode(true);
                             if CustomerLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -498,6 +499,7 @@ table 31257 "Payment Order Line CZB"
                                 EmployeeLedgerEntries.SetRecord(EmployeeLedgerEntry);
                             if "No." <> '' then
                                 EmployeeLedgerEntry.SetRange("Employee No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetEmployeeLedgerEntryFilters(EmployeeLedgerEntry);
                             EmployeeLedgerEntries.SetTableView(EmployeeLedgerEntry);
                             EmployeeLedgerEntries.LookupMode(true);
                             if EmployeeLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -754,31 +756,6 @@ table 31257 "Payment Order Line CZB"
             Editable = false;
             DataClassification = CustomerContent;
         }
-#pragma warning disable AL0432         
-        field(150; "Letter Type"; Option)
-        {
-            Caption = 'Letter Type';
-            OptionCaption = ' ,,Purchase';
-            OptionMembers = " ",,Purchase;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-        field(151; "Letter No."; Code[20])
-        {
-            Caption = 'Letter No.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-        field(152; "Letter Line No."; Integer)
-        {
-            Caption = 'Letter Line No.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Remove after new Advance Payment Localization for Czech will be implemented.';
-            ObsoleteTag = '22.0';
-        }
-#pragma warning restore AL0432 
         field(190; "VAT Unreliable Payer"; Boolean)
         {
             Caption = 'VAT Unreliable Payer';
@@ -865,7 +842,7 @@ table 31257 "Payment Order Line CZB"
         BankAccount: Record "Bank Account";
         Vendor: Record Vendor;
         PaymentOrderManagementCZB: Codeunit "Payment Order Management CZB";
-        GLSetupRead: Boolean;
+        GLSetupRead, UsePaymentDiscount : Boolean;
         ExistEntryErr: Label 'For the field %1 in table %2 exist more than one value %3.', Comment = '%1 = FieldCaption, %2 = TableCaption, %3 = Applies-to Doc. No.';
         NotExistEntryErr: Label 'For the field %1 in table %2 not exist value %3.', Comment = '%1 = FieldCaption, %2 = TableCaption, %3 = Applies-to Doc. No.';
         StatusCheckSuspended: Boolean;
@@ -894,12 +871,6 @@ table 31257 "Payment Order Line CZB"
                 PaymentOrderCurrency.Get("Payment Order Currency Code");
                 PaymentOrderCurrency.Testfield("Amount Rounding Precision");
             end;
-    end;
-
-    [Obsolete('Replaced by CreateDescription function with PlaceholderValues parameter.', '25.0')]
-    procedure CreateDescription(DocType: Text[30]; DocNo: Text[20]; PartnerNo: Text[20]; PartnerName: Text[100]; ExtNo: Text[35]): Text[50]
-    begin
-        exit(CopyStr(StrSubstNo(BankAccount."Payment Order Line Descr. CZB", DocType, DocNo, PartnerNo, PartnerName, ExtNo), 1, 50));
     end;
 
     procedure CreateDescription(PlaceholderValues: List of [Text[100]]) Description: Text[100]
@@ -1096,11 +1067,13 @@ table 31257 "Payment Order Line CZB"
             Validate("Amount (Paym. Order Currency)", GetRemainingAmountFromEntry(CustLedgerEntry))
         else
             Validate("Amount (LCY)", GetRemainingAmountLCYFromEntry(CustLedgerEntry));
-        "Pmt. Discount Date" := CustLedgerEntry."Pmt. Discount Date";
-        "Pmt. Discount Possible" := true;
-        "Remaining Pmt. Disc. Possible" := CustLedgerEntry."Remaining Pmt. Disc. Possible";
-        if ("Remaining Pmt. Disc. Possible" <> 0) and ("Pmt. Discount Date" <> 0D) then
-            "Due Date" := "Pmt. Discount Date";
+        if UsePaymentDiscount then begin
+            "Pmt. Discount Date" := CustLedgerEntry.GetPmtDiscountDate();
+            "Remaining Pmt. Disc. Possible" := CustLedgerEntry."Remaining Pmt. Disc. Possible";
+            "Pmt. Discount Possible" := ("Remaining Pmt. Disc. Possible" <> 0) and ("Pmt. Discount Date" <> 0D);
+            if "Pmt. Discount Possible" then
+                "Due Date" := "Pmt. Discount Date";
+        end;
         "Original Amount" := Amount;
         "Original Amount (LCY)" := "Amount (LCY)";
         "Orig. Amount(Pay.Order Curr.)" := "Amount (Paym. Order Currency)";
@@ -1121,11 +1094,13 @@ table 31257 "Payment Order Line CZB"
             Validate("Amount (Paym. Order Currency)", GetRemainingAmountFromEntry(VendorLedgerEntry))
         else
             Validate("Amount (LCY)", GetRemainingAmountLCYFromEntry(VendorLedgerEntry));
-        "Pmt. Discount Date" := VendorLedgerEntry."Pmt. Discount Date";
-        "Pmt. Discount Possible" := true;
-        "Remaining Pmt. Disc. Possible" := VendorLedgerEntry."Remaining Pmt. Disc. Possible";
-        if ("Remaining Pmt. Disc. Possible" <> 0) and ("Pmt. Discount Date" <> 0D) then
-            "Due Date" := "Pmt. Discount Date";
+        if UsePaymentDiscount then begin
+            "Pmt. Discount Date" := VendorLedgerEntry.GetPmtDiscountDate();
+            "Remaining Pmt. Disc. Possible" := VendorLedgerEntry."Remaining Pmt. Disc. Possible";
+            "Pmt. Discount Possible" := ("Remaining Pmt. Disc. Possible" <> 0) and ("Pmt. Discount Date" <> 0D);
+            if "Pmt. Discount Possible" then
+                "Due Date" := "Pmt. Discount Date";
+        end;
         "Original Amount" := Amount;
         "Original Amount (LCY)" := "Amount (LCY)";
         "Orig. Amount(Pay.Order Curr.)" := "Amount (Paym. Order Currency)";
@@ -1155,8 +1130,9 @@ table 31257 "Payment Order Line CZB"
     begin
         GetPaymentOrder();
         CustLedgerEntry.CalcFields("Remaining Amount");
-        if (CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Invoice) and
-           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry."Pmt. Discount Date")
+        if UsePaymentDiscount and
+           (CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Invoice) and
+           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry.GetPmtDiscountDate())
         then
             exit(-(CustLedgerEntry."Remaining Amount" - CustLedgerEntry."Remaining Pmt. Disc. Possible"));
         exit(-CustLedgerEntry."Remaining Amount");
@@ -1164,28 +1140,21 @@ table 31257 "Payment Order Line CZB"
 
     local procedure GetRemainingAmountLCYFromEntry(CustLedgerEntry: Record "Cust. Ledger Entry"): Decimal
     var
-        CurrencyAmount: Decimal;
         CurrFactor: Decimal;
     begin
         GetPaymentOrder();
-        CustLedgerEntry.CalcFields("Remaining Amount", "Remaining Amt. (LCY)");
-        if (CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Invoice) and
-           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry."Pmt. Discount Date")
-        then begin
-            CurrencyAmount := -(CustLedgerEntry."Remaining Amount" - CustLedgerEntry."Remaining Pmt. Disc. Possible");
-            CurrFactor := CurrencyExchangeRate.ExchangeRate(PaymentOrderHeaderCZB."Document Date", CustLedgerEntry."Currency Code");
-            exit(Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PaymentOrderHeaderCZB."Document Date",
-                    CustLedgerEntry."Currency Code", CurrencyAmount, CurrFactor)));
-        end;
-        exit(-CustLedgerEntry."Remaining Amt. (LCY)");
+        CurrFactor := CurrencyExchangeRate.ExchangeRate(PaymentOrderHeaderCZB."Document Date", CustLedgerEntry."Currency Code");
+        exit(Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PaymentOrderHeaderCZB."Document Date",
+                    CustLedgerEntry."Currency Code", GetRemainingAmountFromEntry(CustLedgerEntry), CurrFactor)));
     end;
 
     local procedure GetRemainingAmountFromEntry(VendorLedgerEntry: Record "Vendor Ledger Entry"): Decimal
     begin
         GetPaymentOrder();
         VendorLedgerEntry.CalcFields("Remaining Amount");
-        if (VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice) and
-           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry."Pmt. Discount Date")
+        if UsePaymentDiscount and
+           (VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice) and
+           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry.GetPmtDiscountDate())
         then
             exit(-(VendorLedgerEntry."Remaining Amount" - VendorLedgerEntry."Remaining Pmt. Disc. Possible"));
         exit(-VendorLedgerEntry."Remaining Amount");
@@ -1193,20 +1162,12 @@ table 31257 "Payment Order Line CZB"
 
     local procedure GetRemainingAmountLCYFromEntry(VendorLedgerEntry: Record "Vendor Ledger Entry"): Decimal
     var
-        CurrencyAmount: Decimal;
         CurrFactor: Decimal;
     begin
         GetPaymentOrder();
-        VendorLedgerEntry.CalcFields("Remaining Amount", "Remaining Amt. (LCY)");
-        if (VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice) and
-           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry."Pmt. Discount Date")
-        then begin
-            CurrencyAmount := -(VendorLedgerEntry."Remaining Amount" - VendorLedgerEntry."Remaining Pmt. Disc. Possible");
-            CurrFactor := CurrencyExchangeRate.ExchangeRate(PaymentOrderHeaderCZB."Document Date", VendorLedgerEntry."Currency Code");
-            exit(Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PaymentOrderHeaderCZB."Document Date",
-                    VendorLedgerEntry."Currency Code", CurrencyAmount, CurrFactor)));
-        end;
-        exit(-VendorLedgerEntry."Remaining Amt. (LCY)");
+        CurrFactor := CurrencyExchangeRate.ExchangeRate(PaymentOrderHeaderCZB."Document Date", VendorLedgerEntry."Currency Code");
+        exit(Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PaymentOrderHeaderCZB."Document Date",
+                    VendorLedgerEntry."Currency Code", GetRemainingAmountFromEntry(VendorLedgerEntry), CurrFactor)));
     end;
 
     local procedure GetRemainingAmountFromEntry(EmployeeLedgerEntry: Record "Employee Ledger Entry"): Decimal
@@ -1300,10 +1261,6 @@ table 31257 "Payment Order Line CZB"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         EmployeeLedgerEntry: Record "Employee Ledger Entry";
-#if not CLEAN25
-        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
-        AppliesToAdvanceLetterNo: Code[20];
-#endif
     begin
         if "No." = '' then
             exit;
@@ -1320,19 +1277,13 @@ table 31257 "Payment Order Line CZB"
                     if EmployeeLedgerEntry.Get("Applies-to C/V/E Entry No.") then
                         EmployeeLedgerEntry.CollectSuggestedApplicationCZL(Rec, CrossApplicationBufferCZL);
             end;
-#if not CLEAN25
-#pragma warning disable AL0432
-        if Type = Type::Vendor then begin
-            OnBeforeFindRelatedAmoutToApply(Rec, AppliesToAdvanceLetterNo);
-            if AppliesToAdvanceLetterNo <> '' then
-                CrossApplicationMgtCZL.OnGetSuggestedAmountForPurchAdvLetterHeader(
-                    AppliesToAdvanceLetterNo, CrossApplicationBufferCZL,
-                    Database::"Iss. Payment Order Line CZB", Rec."Payment Order No.", Rec."Line No.");
-        end;
-#pragma warning restore AL0432
-#endif
 
         OnAfterCollectSuggestedApplication(Rec, CrossApplicationBufferCZL);
+    end;
+
+    internal procedure SetUsePaymentDiscount(NewUsePaymentDiscount: Boolean)
+    begin
+        UsePaymentDiscount := NewUsePaymentDiscount;
     end;
 
     [IntegrationEvent(false, false)]
@@ -1364,20 +1315,12 @@ table 31257 "Payment Order Line CZB"
     local procedure OnAfterAppliesToEmplLedgEntryNo(var PaymentOrderLineCZB: Record "Payment Order Line CZB"; EmployeeLedgerEntry: Record "Employee Ledger Entry");
     begin
     end;
-#if not CLEAN25
-
-    [Obsolete('The event is obsolete and will be removed in the future version. Use OnAfterCollectSuggestedApplication instead.', '25.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeFindRelatedAmoutToApply(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var AppliesToAdvanceLetterNo: Code[20]);
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCollectSuggestedApplication(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     begin
     end;
-    
+
     [IntegrationEvent(true, false)]
     local procedure OnAfterCreateDescription(PlaceholderDescription: Text[100]; PlaceholderValues: List of [Text[100]]; var Description: Text[100])
     begin
@@ -1407,5 +1350,19 @@ table 31257 "Payment Order Line CZB"
     local procedure OnAfterReplacePlaceholdersWithValues(PlaceholderText: Text[100]; PlaceholderValues: List of [Text[100]]; var ReplacedText: Text[100])
     begin
     end;
-}
 
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetVendorLedgerEntryFilters(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetCustomerLedgerEntryFilters(var CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetEmployeeLedgerEntryFilters(var EmployeeLedgerEntry: Record "Employee Ledger Entry")
+    begin
+    end;
+}

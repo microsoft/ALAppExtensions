@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Common;
+
+using Microsoft.DemoTool;
+
 codeunit 4769 "Common Module" implements "Contoso Demo Data Module"
 {
     Description = 'This module should include common data that most scenarios have dependency on.';
@@ -11,14 +20,13 @@ codeunit 4769 "Common Module" implements "Contoso Demo Data Module"
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"];
     begin
-        exit;
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Finance);
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Sales);
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Purchase);
     end;
 
     procedure CreateSetupData()
-    var
-        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
-        ContosoCoffeeDemoDataSetup.InitRecord();
         Codeunit.Run(Codeunit::"Create Common CountryOrRegion");
         Codeunit.Run(Codeunit::"Create Common Unit Of Measure");
         Codeunit.Run(Codeunit::"Create Common No Series");
@@ -28,11 +36,11 @@ codeunit 4769 "Common Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Common Inventory Setup");
         Codeunit.Run(Codeunit::"Create Common Posting Group");
         Codeunit.Run(Codeunit::"Create Common Posting Setup");
-        Codeunit.Run(Codeunit::"Create Common Location");
     end;
 
     procedure CreateMasterData()
     begin
+        Codeunit.Run(Codeunit::"Create Common Location");
         Codeunit.Run(Codeunit::"Create Common Customer/Vendor");
         Codeunit.Run(Codeunit::"Create Common Item Tracking");
     end;

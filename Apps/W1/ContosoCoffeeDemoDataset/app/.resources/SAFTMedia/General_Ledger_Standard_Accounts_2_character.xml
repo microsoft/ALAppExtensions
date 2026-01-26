@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<StandardAccounts xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="General_Ledger_Standard_Accounts.xsd">
+  <Account>
+    <AccountID>10</AccountID>
+    <Description ISOLanguageCode="NOB">Immaterielle eiendeler o.l.</Description>
+    <Description ISOLanguageCode="ENG">Intangible assets etc</Description>
+  </Account>
+  <Account>
+    <AccountID>11</AccountID>
+    <Description ISOLanguageCode="NOB">Tomter, bygninger og annen fast eiendom</Description>
+    <Description ISOLanguageCode="ENG">Land, buildings and other real property</Description>
+  </Account>
+  <Account>
+    <AccountID>12</AccountID>
+    <Description ISOLanguageCode="NOB">Transportmidler, inventar, maskiner o.l.</Description>
+    <Description ISOLanguageCode="ENG">Means of transport, fixtures and fittings, machinery etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>13</AccountID>
+    <Description ISOLanguageCode="NOB">Finansielle anleggsmidler</Description>
+    <Description ISOLanguageCode="ENG">Financial fixed assets</Description>
+  </Account>
+  <Account>
+    <AccountID>14</AccountID>
+    <Description ISOLanguageCode="NOB">Varelager og forskudd til leverandører</Description>
+    <Description ISOLanguageCode="ENG">Inventory (stocks) and prepayments to suppliers</Description>
+  </Account>
+  <Account>
+    <AccountID>15</AccountID>
+    <Description ISOLanguageCode="NOB">Kortsiktige fordringer</Description>
+    <Description ISOLanguageCode="ENG">Short-term receivables</Description>
+  </Account>
+  <Account>
+    <AccountID>16</AccountID>
+    <Description ISOLanguageCode="NOB">Merverdiavgift, opptjente offentlige tilskudd o.l.</Description>
+    <Description ISOLanguageCode="ENG">VAT (value-added tax), earned public grants etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>17</AccountID>
+    <Description ISOLanguageCode="NOB">Forskuddsbetalt kostnad, påløpt inntekt o.l.</Description>
+    <Description ISOLanguageCode="ENG">Prepaid expenses, accrued income etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>18</AccountID>
+    <Description ISOLanguageCode="NOB">Kortsiktige finansinvesteringer</Description>
+    <Description ISOLanguageCode="ENG">Short-term financial investments</Description>
+  </Account>
+  <Account>
+    <AccountID>19</AccountID>
+    <Description ISOLanguageCode="NOB">Kontanter, bankinnskudd o.l.</Description>
+    <Description ISOLanguageCode="ENG">Cash in hand, bank deposits etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>20</AccountID>
+    <Description ISOLanguageCode="NOB">Egenkapital AS/ASA / Egenkapital andre foretak (inkl. samvirkeforetak)</Description>
+    <Description ISOLanguageCode="ENG">Equity, limited liability companies / Equity, other enterprises (including cooperative societies)</Description>
+  </Account>
+  <Account>
+    <AccountID>21</AccountID>
+    <Description ISOLanguageCode="NOB">Avsetning for forpliktelser</Description>
+    <Description ISOLanguageCode="ENG">Provisions for liabilities and charges</Description>
+  </Account>
+  <Account>
+    <AccountID>22</AccountID>
+    <Description ISOLanguageCode="NOB">Annen langsiktig gjeld</Description>
+    <Description ISOLanguageCode="ENG">Other long-term liabilities</Description>
+  </Account>
+  <Account>
+    <AccountID>23</AccountID>
+    <Description ISOLanguageCode="NOB">Kortsiktige konvertible lån, obligasjonslån og gjeld til kredittinstitusjoner</Description>
+    <Description ISOLanguageCode="ENG">Short-term convertible loans, bond loans and liabilities to financial institutions</Description>
+  </Account>
+  <Account>
+    <AccountID>24</AccountID>
+    <Description ISOLanguageCode="NOB">Leverandørgjeld</Description>
+    <Description ISOLanguageCode="ENG">Trade creditors</Description>
+  </Account>
+  <Account>
+    <AccountID>25</AccountID>
+    <Description ISOLanguageCode="NOB">Betalbar skatt</Description>
+    <Description ISOLanguageCode="ENG">Tax payable</Description>
+  </Account>
+  <Account>
+    <AccountID>26</AccountID>
+    <Description ISOLanguageCode="NOB">Skattetrekk og andre trekk</Description>
+    <Description ISOLanguageCode="ENG">Tax withholding and other deductions</Description>
+  </Account>
+  <Account>
+    <AccountID>27</AccountID>
+    <Description ISOLanguageCode="NOB">Skyldige offentlige avgifter</Description>
+    <Description ISOLanguageCode="ENG">Public duties payable</Description>
+  </Account>
+  <Account>
+    <AccountID>28</AccountID>
+    <Description ISOLanguageCode="NOB">Utbytte</Description>
+    <Description ISOLanguageCode="ENG">Dividends</Description>
+  </Account>
+  <Account>
+    <AccountID>29</AccountID>
+    <Description ISOLanguageCode="NOB">Annen kortsiktig gjeld</Description>
+    <Description ISOLanguageCode="ENG">Other current liabilities</Description>
+  </Account>
+  <Account>
+    <AccountID>30</AccountID>
+    <Description ISOLanguageCode="NOB">Salgsinntekt, avgiftspliktig</Description>
+    <Description ISOLanguageCode="ENG">Sales revenue, subject to VAT</Description>
+  </Account>
+  <Account>
+    <AccountID>31</AccountID>
+    <Description ISOLanguageCode="NOB">Salgsinntekt, avgiftsfri</Description>
+    <Description ISOLanguageCode="ENG">Sales revenue, not subject to VAT</Description>
+  </Account>
+  <Account>
+    <AccountID>32</AccountID>
+    <Description ISOLanguageCode="NOB">Salgsinntekt, unntatt avgiftsplikt</Description>
+    <Description ISOLanguageCode="ENG">Sales revenue, outside of VAT area</Description>
+  </Account>
+  <Account>
+    <AccountID>33</AccountID>
+    <Description ISOLanguageCode="NOB">Offentlig avgift vedrørende omsetning</Description>
+    <Description ISOLanguageCode="ENG">Government fees and taxes related to sales</Description>
+  </Account>
+  <Account>
+    <AccountID>34</AccountID>
+    <Description ISOLanguageCode="NOB">Offentlig tilskudd/refusjon</Description>
+    <Description ISOLanguageCode="ENG">Public grants/refunds</Description>
+  </Account>
+  <Account>
+    <AccountID>35</AccountID>
+    <Description ISOLanguageCode="NOB">Uopptjent inntekt</Description>
+    <Description ISOLanguageCode="ENG">Unearned income</Description>
+  </Account>
+  <Account>
+    <AccountID>36</AccountID>
+    <Description ISOLanguageCode="NOB">Leieinntekt</Description>
+    <Description ISOLanguageCode="ENG">Rental income</Description>
+  </Account>
+  <Account>
+    <AccountID>37</AccountID>
+    <Description ISOLanguageCode="NOB">Provisjonsinntekt</Description>
+    <Description ISOLanguageCode="ENG">Commission income</Description>
+  </Account>
+  <Account>
+    <AccountID>38</AccountID>
+    <Description ISOLanguageCode="NOB">Gevinst ved avgang av anleggsmidler (konto 380-384 samt 388-389). Verdiendring (konto 385-389).</Description>
+    <Description ISOLanguageCode="ENG">Profit on the sale of fixed assets (accounts 380-384 and 388-389). Change in value (accounts 385-389).</Description>
+  </Account>
+  <Account>
+    <AccountID>39</AccountID>
+    <Description ISOLanguageCode="NOB">Annen driftsrelatert inntekt</Description>
+    <Description ISOLanguageCode="ENG">Other operational income</Description>
+  </Account>
+  <Account>
+    <AccountID>40</AccountID>
+    <Description ISOLanguageCode="NOB">Forbruk av råvarer og innkjøpte halvfabrikata</Description>
+    <Description ISOLanguageCode="ENG">Consumption of raw materials and semi-manufactures</Description>
+  </Account>
+  <Account>
+    <AccountID>41</AccountID>
+    <Description ISOLanguageCode="NOB">Forbruk av varer under tilvirkning</Description>
+    <Description ISOLanguageCode="ENG">Consumption of work in progress</Description>
+  </Account>
+  <Account>
+    <AccountID>42</AccountID>
+    <Description ISOLanguageCode="NOB">Forbruk av ferdig tilvirkede varer</Description>
+    <Description ISOLanguageCode="ENG">Consumption of finished manufactured goods</Description>
+  </Account>
+  <Account>
+    <AccountID>43</AccountID>
+    <Description ISOLanguageCode="NOB">Forbruk av innkjøpte varer for videresalg</Description>
+    <Description ISOLanguageCode="ENG">Consumption of goods purchased for resale</Description>
+  </Account>
+  <Account>
+    <AccountID>45</AccountID>
+    <Description ISOLanguageCode="NOB">Fremmedytelse og underentreprise</Description>
+    <Description ISOLanguageCode="ENG">External services and subcontracts</Description>
+  </Account>
+  <Account>
+    <AccountID>46</AccountID>
+    <Description ISOLanguageCode="NOB">Annen varekostnad</Description>
+    <Description ISOLanguageCode="ENG">Other consumption of goods</Description>
+  </Account>
+  <Account>
+    <AccountID>49</AccountID>
+    <Description ISOLanguageCode="NOB">Annen periodisering</Description>
+    <Description ISOLanguageCode="ENG">Other accruals</Description>
+  </Account>
+  <Account>
+    <AccountID>50</AccountID>
+    <Description ISOLanguageCode="NOB">Lønn til ansatte</Description>
+    <Description ISOLanguageCode="ENG">Wages and salaries to employees</Description>
+  </Account>
+  <Account>
+    <AccountID>52</AccountID>
+    <Description ISOLanguageCode="NOB">Fordel i arbeidsforhold</Description>
+    <Description ISOLanguageCode="ENG">Benefit of employment</Description>
+  </Account>
+  <Account>
+    <AccountID>53</AccountID>
+    <Description ISOLanguageCode="NOB">Annen opplysningspliktig godtgjørelse</Description>
+    <Description ISOLanguageCode="ENG">Other reportable remuneration</Description>
+  </Account>
+  <Account>
+    <AccountID>54</AccountID>
+    <Description ISOLanguageCode="NOB">Arbeidsgiveravgift og pensjonskostnad</Description>
+    <Description ISOLanguageCode="ENG">Employers’ national insurance contributions and pension costs</Description>
+  </Account>
+  <Account>
+    <AccountID>55</AccountID>
+    <Description ISOLanguageCode="NOB">Annen kostnadsgodtgjørelse</Description>
+    <Description ISOLanguageCode="ENG">Other expense allowances</Description>
+  </Account>
+  <Account>
+    <AccountID>56</AccountID>
+    <Description ISOLanguageCode="NOB">Arbeidsgodtgjørelse til eiere o.l.</Description>
+    <Description ISOLanguageCode="ENG">Labour remuneration to owners etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>57</AccountID>
+    <Description ISOLanguageCode="NOB">Offentlig tilskudd vedrørende arbeidskraft</Description>
+    <Description ISOLanguageCode="ENG">Public work grant</Description>
+  </Account>
+  <Account>
+    <AccountID>58</AccountID>
+    <Description ISOLanguageCode="NOB">Offentlig refusjon vedrørende arbeidskraft</Description>
+    <Description ISOLanguageCode="ENG">Public refunds related to labour</Description>
+  </Account>
+  <Account>
+    <AccountID>59</AccountID>
+    <Description ISOLanguageCode="NOB">Annen personalkostnad</Description>
+    <Description ISOLanguageCode="ENG">Other personnel costs</Description>
+  </Account>
+  <Account>
+    <AccountID>60</AccountID>
+    <Description ISOLanguageCode="NOB">Av- og nedskrivning</Description>
+    <Description ISOLanguageCode="ENG">Depreciation and write-downs</Description>
+  </Account>
+  <Account>
+    <AccountID>61</AccountID>
+    <Description ISOLanguageCode="NOB">Frakt og transportkostnad vedrørende salg</Description>
+    <Description ISOLanguageCode="ENG">Freight and transport costs related to sales</Description>
+  </Account>
+  <Account>
+    <AccountID>62</AccountID>
+    <Description ISOLanguageCode="NOB">Energi, brensel og vann vedrørende produksjon</Description>
+    <Description ISOLanguageCode="ENG">Energy, fuel and water related to production</Description>
+  </Account>
+  <Account>
+    <AccountID>63</AccountID>
+    <Description ISOLanguageCode="NOB">Kostnad lokaler</Description>
+    <Description ISOLanguageCode="ENG">Costs related to premises</Description>
+  </Account>
+  <Account>
+    <AccountID>64</AccountID>
+    <Description ISOLanguageCode="NOB">Leie maskiner, inventar, o.l.</Description>
+    <Description ISOLanguageCode="ENG">Rental of machinery, fixtures, fittings etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>65</AccountID>
+    <Description ISOLanguageCode="NOB">Verktøy, inventar og driftsmateriale som ikke skal aktiveres</Description>
+    <Description ISOLanguageCode="ENG">Tools, fixtures, fittings and operating materials that are not to be capitalised</Description>
+  </Account>
+  <Account>
+    <AccountID>66</AccountID>
+    <Description ISOLanguageCode="NOB">Reparasjon og vedlikehold</Description>
+    <Description ISOLanguageCode="ENG">Repair and maintenance</Description>
+  </Account>
+  <Account>
+    <AccountID>67</AccountID>
+    <Description ISOLanguageCode="NOB">Fremmed tjeneste</Description>
+    <Description ISOLanguageCode="ENG">External services</Description>
+  </Account>
+  <Account>
+    <AccountID>68</AccountID>
+    <Description ISOLanguageCode="NOB">Kontorkostnad, trykksak o.l.</Description>
+    <Description ISOLanguageCode="ENG">Office costs, printed matter etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>69</AccountID>
+    <Description ISOLanguageCode="NOB">Telefon og porto o.l.</Description>
+    <Description ISOLanguageCode="ENG">Telephone and postage etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>70</AccountID>
+    <Description ISOLanguageCode="NOB">Kostnad transportmidler</Description>
+    <Description ISOLanguageCode="ENG">Costs related to means of transport</Description>
+  </Account>
+  <Account>
+    <AccountID>71</AccountID>
+    <Description ISOLanguageCode="NOB">Kostnad og godtgjørelse for reise, diett, bil, o.l.</Description>
+    <Description ISOLanguageCode="ENG">Costs and allowances for travel, subsistence, car etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>72</AccountID>
+    <Description ISOLanguageCode="NOB">Provisjonskostnad</Description>
+    <Description ISOLanguageCode="ENG">Commission charges</Description>
+  </Account>
+  <Account>
+    <AccountID>73</AccountID>
+    <Description ISOLanguageCode="NOB">Salgs-, reklame- og representasjonskostnader</Description>
+    <Description ISOLanguageCode="ENG">Selling-, advertising- and entertainment expenses</Description>
+  </Account>
+  <Account>
+    <AccountID>74</AccountID>
+    <Description ISOLanguageCode="NOB">Kontingent og gave</Description>
+    <Description ISOLanguageCode="ENG">Membership dues and gifts</Description>
+  </Account>
+  <Account>
+    <AccountID>75</AccountID>
+    <Description ISOLanguageCode="NOB">Forsikringspremie, garanti- og servicekostnad</Description>
+    <Description ISOLanguageCode="ENG">Insurance premiums, guarantee and service costs</Description>
+  </Account>
+  <Account>
+    <AccountID>76</AccountID>
+    <Description ISOLanguageCode="NOB">Lisens- og patentkostnad</Description>
+    <Description ISOLanguageCode="ENG">Licence- and patent costs</Description>
+  </Account>
+  <Account>
+    <AccountID>77</AccountID>
+    <Description ISOLanguageCode="NOB">Annen kostnad</Description>
+    <Description ISOLanguageCode="ENG">Other expenses</Description>
+  </Account>
+  <Account>
+    <AccountID>78</AccountID>
+    <Description ISOLanguageCode="NOB">Tap o.l.</Description>
+    <Description ISOLanguageCode="ENG">Losses etc.</Description>
+  </Account>
+  <Account>
+    <AccountID>79</AccountID>
+    <Description ISOLanguageCode="NOB">Periodiseringskonto</Description>
+    <Description ISOLanguageCode="ENG">Accruals account</Description>
+  </Account>
+  <Account>
+    <AccountID>80</AccountID>
+    <Description ISOLanguageCode="NOB">Finansinntekt</Description>
+    <Description ISOLanguageCode="ENG">Financial income</Description>
+  </Account>
+  <Account>
+    <AccountID>81</AccountID>
+    <Description ISOLanguageCode="NOB">Finanskostnad</Description>
+    <Description ISOLanguageCode="ENG">Financial expenses</Description>
+  </Account>
+  <Account>
+    <AccountID>83</AccountID>
+    <Description ISOLanguageCode="NOB">Skattekostnad på ordinært resultat</Description>
+    <Description ISOLanguageCode="ENG">Tax on ordinary result</Description>
+  </Account>
+  <Account>
+    <AccountID>84</AccountID>
+    <Description ISOLanguageCode="NOB">Ekstraordinær inntekt</Description>
+    <Description ISOLanguageCode="ENG">Extraordinary income</Description>
+  </Account>
+  <Account>
+    <AccountID>85</AccountID>
+    <Description ISOLanguageCode="NOB">Ekstraordinær kostnad</Description>
+    <Description ISOLanguageCode="ENG">Extraordinary expenses</Description>
+  </Account>
+  <Account>
+    <AccountID>86</AccountID>
+    <Description ISOLanguageCode="NOB">Skattekostnad på ekstraordinært resultat</Description>
+    <Description ISOLanguageCode="ENG">Tax on  extraordinary result</Description>
+  </Account>
+  <Account>
+    <AccountID>88</AccountID>
+    <Description ISOLanguageCode="NOB">Årsresultat</Description>
+    <Description ISOLanguageCode="ENG">Net profit or loss for the year</Description>
+  </Account>
+  <Account>
+    <AccountID>89</AccountID>
+    <Description ISOLanguageCode="NOB">Overføringer og disponeringer</Description>
+    <Description ISOLanguageCode="ENG">Transfers and allocations</Description>
+  </Account>
+</StandardAccounts>

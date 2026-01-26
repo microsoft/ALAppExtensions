@@ -10,15 +10,6 @@ pageextension 13678 "OIOUBL-Service Credit Memo" extends "Service Credit Memo"
 {
     layout
     {
-        addafter("Assigned User ID")
-        {
-            field("Your Reference"; "Your Reference")
-            {
-                ApplicationArea = Service;
-                ToolTip = 'Specifies the customer''s reference. This is used in the exported electronic document.';
-            }
-        }
-
         addafter("Contact Name")
         {
             field("OIOUBL-Contact Role"; "OIOUBL-Contact Role")

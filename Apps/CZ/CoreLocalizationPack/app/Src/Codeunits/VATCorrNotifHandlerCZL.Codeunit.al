@@ -8,10 +8,17 @@ using Microsoft.CRM.Outlook;
 using Microsoft.Foundation.Enums;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
 
 codeunit 31029 "VAT Corr. Notif. Handler CZL"
 {
+    var
+        OpenInvoiceVATLCYCorrectionQst: Label 'The invoice has been posted in a foreign currency, please check the conversion of the VAT amount to local currency.\\Do you want to open the posted invoice %1 and check now?', Comment = '%1 = posted document number';
+        OpenCrMemoVATLCYCorrectionQst: Label 'The credit memo has been posted in a foreign currency, please check the conversion of the VAT amount to local currency.\\Do you want to open the posted credit memo %1 and check now?', Comment = '%1 = posted document number';
+
     [EventSubscriber(ObjectType::Page, Page::"Purchase Invoice", 'OnPostDocumentBeforeNavigateAfterPosting', '', false, false)]
     local procedure ShowVATLCYCorrectionAfterPostingPurchaseInvoice(var PurchaseHeader: Record "Purchase Header"; var PostingCodeunitID: Integer; var Navigate: Enum "Navigate After Posting"; DocumentIsPosted: Boolean; var IsHandled: Boolean)
     var
@@ -20,7 +27,6 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
         InstructionMgtCZL: Codeunit "Instruction Mgt. CZL";
         OfficeManagement: Codeunit "Office Management";
         PostedPurchaseInvoice: Page "Posted Purchase Invoice";
-        OpenVATLCYCorrectionQst: Label 'The invoice has been posted in a foreign currency, please check the conversion of the VAT amount to local currency.\\Do you want to open the posted invoice %1 and check now?', Comment = '%1 = posted document number';
         PopUpVATLCYCorrectionCZL: Boolean;
     begin
         if IsHandled then
@@ -36,7 +42,7 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
             PopUpVATLCYCorrectionCZL := true
         else
             if InstructionMgt.IsEnabled(InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
-                if InstructionMgt.ShowConfirm(StrSubstNo(OpenVATLCYCorrectionQst, PurchInvHeader."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
+                if InstructionMgt.ShowConfirm(StrSubstNo(OpenInvoiceVATLCYCorrectionQst, PurchInvHeader."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
                     PopUpVATLCYCorrectionCZL := true;
 
         if not PopUpVATLCYCorrectionCZL then
@@ -66,7 +72,6 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
         InstructionMgtCZL: Codeunit "Instruction Mgt. CZL";
         OfficeManagement: Codeunit "Office Management";
         PostedPurchaseCreditMemo: Page "Posted Purchase Credit Memo";
-        OpenVATLCYCorrectionQst: Label 'The credit memo has been posted in a foreign currency, please check the conversion of the VAT amount to local currency.\\Do you want to open the posted credit memo %1 and check now?', Comment = '%1 = posted document number';
         PopUpVATLCYCorrectionCZL: Boolean;
     begin
         if IsHandled then
@@ -81,7 +86,7 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
             PopUpVATLCYCorrectionCZL := true
         else
             if InstructionMgt.IsEnabled(InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
-                if InstructionMgt.ShowConfirm(StrSubstNo(OpenVATLCYCorrectionQst, PurchCrMemoHdr."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
+                if InstructionMgt.ShowConfirm(StrSubstNo(OpenCrMemoVATLCYCorrectionQst, PurchCrMemoHdr."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
                     PopUpVATLCYCorrectionCZL := true;
 
         if not PopUpVATLCYCorrectionCZL then
@@ -96,6 +101,101 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
 
     [EventSubscriber(ObjectType::Page, Page::"Posted Purchase Credit Memo", 'OnAfterGetCurrRecordEvent', '', false, false)]
     local procedure PopUpVATLCYCorrectionCZLOnOpenPostedPurchaseCreditMemo(var Rec: Record "Purch. Cr. Memo Hdr.")
+    begin
+        if not Rec.GetPopUpVATLCYCorrectionCZL() then
+            exit;
+        Rec.SetPopUpVATLCYCorrectionCZL(false);
+        Rec.MakeVATLCYCorrectionCZL();
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Sales Invoice", 'OnPostDocumentBeforeNavigateAfterPosting', '', false, false)]
+    local procedure ShowVATLCYCorrectionAfterPostingSalesInvoice(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        InstructionMgt: Codeunit "Instruction Mgt.";
+        InstructionMgtCZL: Codeunit "Instruction Mgt. CZL";
+        OfficeManagement: Codeunit "Office Management";
+        PostedSalesInvoice: Page "Posted Sales Invoice";
+        PopUpVATLCYCorrectionCZL: Boolean;
+    begin
+        if IsHandled then
+            exit;
+        SalesInvoiceHeader.SetRange("Pre-Assigned No.", SalesHeader."No.");
+        SalesInvoiceHeader.SetRange("Order No.", '');
+        if not SalesInvoiceHeader.FindFirst() then
+            exit;
+        if not SalesInvoiceHeader.IsVATLCYCorrectionAllowedCZL() then
+            exit;
+
+        SalesReceivablesSetup.Get();
+
+        if OfficeManagement.IsAvailable() then
+            PopUpVATLCYCorrectionCZL := true
+        else
+            if InstructionMgt.IsEnabled(InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageForSalesCode()) and SalesReceivablesSetup."Show VAT Corr When Posting CZL" then
+                if InstructionMgt.ShowConfirm(StrSubstNo(OpenInvoiceVATLCYCorrectionQst, SalesInvoiceHeader."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageForSalesCode()) then
+                    PopUpVATLCYCorrectionCZL := true;
+
+        if not PopUpVATLCYCorrectionCZL then
+            exit;
+
+        IsHandled := true;
+        PostedSalesInvoice.SetTableView(SalesInvoiceHeader);
+        PostedSalesInvoice.SetRecord(SalesInvoiceHeader);
+        PostedSalesInvoice.SetRecPopUpVATLCYCorrectionCZL(true);
+        PostedSalesInvoice.Run();
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Posted Sales Invoice", 'OnAfterGetCurrRecordEvent', '', false, false)]
+    local procedure PopUpVATLCYCorrectionCZLOnOpenPostedSalesInvoice(var Rec: Record "Sales Invoice Header")
+    begin
+        if not Rec.GetPopUpVATLCYCorrectionCZL() then
+            exit;
+        Rec.SetPopUpVATLCYCorrectionCZL(false);
+        Rec.MakeVATLCYCorrectionCZL();
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Sales Credit Memo", 'OnPostDocumentBeforeNavigateAfterPosting', '', false, false)]
+    local procedure ShowVATLCYCorrectionAfterPostingSalesCreditMemo(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        InstructionMgt: Codeunit "Instruction Mgt.";
+        InstructionMgtCZL: Codeunit "Instruction Mgt. CZL";
+        OfficeManagement: Codeunit "Office Management";
+        PostedSalesCreditMemo: Page "Posted Sales Credit Memo";
+        PopUpVATLCYCorrectionCZL: Boolean;
+    begin
+        if IsHandled then
+            exit;
+        SalesCrMemoHeader.SetRange("Pre-Assigned No.", SalesHeader."No.");
+        if not SalesCrMemoHeader.FindFirst() then
+            exit;
+        if not SalesCrMemoHeader.IsVATLCYCorrectionAllowedCZL() then
+            exit;
+
+        SalesReceivablesSetup.Get();
+
+        if OfficeManagement.IsAvailable() then
+            PopUpVATLCYCorrectionCZL := true
+        else
+            if InstructionMgt.IsEnabled(InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageForSalesCode()) and SalesReceivablesSetup."Show VAT Corr When Posting CZL" then
+                if InstructionMgt.ShowConfirm(StrSubstNo(OpenCrMemoVATLCYCorrectionQst, SalesCrMemoHeader."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageForSalesCode()) then
+                    PopUpVATLCYCorrectionCZL := true;
+
+        if not PopUpVATLCYCorrectionCZL then
+            exit;
+
+        IsHandled := true;
+        PostedSalesCreditMemo.SetTableView(SalesCrMemoHeader);
+        PostedSalesCreditMemo.SetRecord(SalesCrMemoHeader);
+        PostedSalesCreditMemo.SetRecPopUpVATLCYCorrectionCZL(true);
+        PostedSalesCreditMemo.Run();
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Posted Sales Credit Memo", 'OnAfterGetCurrRecordEvent', '', false, false)]
+    local procedure PopUpVATLCYCorrectionCZLOnOpenPostedSalesCreditMemo(var Rec: Record "Sales Cr.Memo Header")
     begin
         if not Rec.GetPopUpVATLCYCorrectionCZL() then
             exit;

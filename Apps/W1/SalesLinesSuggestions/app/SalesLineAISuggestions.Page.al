@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
+using Microsoft.Sales.Document.Attachment;
 using System.Telemetry;
 
 page 7275 "Sales Line AI Suggestions"
@@ -95,14 +96,12 @@ page 7275 "Sales Line AI Suggestions"
             systemaction(Generate)
             {
                 Caption = 'Generate';
-                ToolTip = 'Generate sales line suggestions from Dynamics 365 Copilot.';
+                ToolTip = 'Generate sales line suggestions from Copilot.';
 
                 trigger OnAction()
                 var
                     NotificationManager: Codeunit "Notification Manager";
                     MaxSearchQueryLength: Decimal;
-                    SearchQueryLengthExceededErr: Label 'You''ve exceeded the maximum number of allowed characters by %1. Please rephrase and try again.', Comment = '%1 = Integer';
-                    SearchQueryNotProvidedErr: Label 'Please provide a query to generate sales line suggestions.';
                 begin
                     NotificationManager.RecallNotification();
 
@@ -115,18 +114,30 @@ page 7275 "Sales Line AI Suggestions"
 
                     GenerateSalesLineSuggestions(SearchQueryTxt, SearchStyle);
                 end;
-
             }
             systemaction(OK)
             {
                 Caption = 'Insert';
-                ToolTip = 'Keep sales line suggestions proposed by Dynamics 365 Copilot.';
+                ToolTip = 'Keep sales line suggestions proposed by Copilot.';
                 Enabled = IsInsertEnabled;
             }
             systemaction(Cancel)
             {
                 Caption = 'Discard';
-                ToolTip = 'Discard sales line suggestions proposed by Dynamics 365 Copilot.';
+                ToolTip = 'Discard sales line suggestions proposed by Copilot.';
+            }
+            systemaction(Attach)
+            {
+                Caption = 'Attach';
+                ToolTip = 'Attach a file to get sales line suggestions from Copilot.';
+
+                trigger OnAction()
+                var
+                    SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
+                begin
+                    CurrPage.Close();
+                    SalesLineFromAttachment.AttachAndSuggest(GlobalSalesHeader, PromptMode::Prompt);
+                end;
             }
         }
         area(PromptGuide)
@@ -140,12 +151,28 @@ page 7275 "Sales Line AI Suggestions"
                 {
 #pragma warning restore AW0005
 
-                    Caption = 'Copy from [order no.]';
-                    ToolTip = 'Sample prompt for copying line items from another sales document. Text in brackets specifies the document no.';
+                    Caption = 'Copy from order [No.]';
+                    ToolTip = 'Sample prompt for copying line items from another sales order. Text in brackets refers to the order.';
 
                     trigger OnAction()
                     var
-                        CopyFromLbl: Label 'Copy from ';
+                        CopyFromLbl: Label 'Copy from sales order ';
+                    begin
+                        SearchQueryTxt := CopyFromLbl;
+                        CurrPage.Update(false);
+                    end;
+                }
+#pragma warning disable AW0005
+                action(DocumentSearchCopyFromInvoicePrompt)
+                {
+#pragma warning restore AW0005
+
+                    Caption = 'Copy from posted invoice [No.]';
+                    ToolTip = 'Sample prompt for copying line items from a posted sales invoice. Text in brackets refers to the invoice.';
+
+                    trigger OnAction()
+                    var
+                        CopyFromLbl: Label 'Copy from sales invoice ';
                     begin
                         SearchQueryTxt := CopyFromLbl;
                         CurrPage.Update(false);
@@ -155,12 +182,27 @@ page 7275 "Sales Line AI Suggestions"
                 action(DocumentSearchCopyFromLastInvoicePrompt)
                 {
 #pragma warning restore AW0005
-                    Caption = 'Copy from the last invoice';
+                    Caption = 'Copy from the latest posted invoice';
                     ToolTip = 'Sample prompt for copying line items from the customer''s latest posted sales invoice.';
 
                     trigger OnAction()
                     var
-                        CopyFromLbl: Label 'Copy from the last invoice';
+                        CopyFromLbl: Label 'Copy from the latest sales invoice';
+                    begin
+                        SearchQueryTxt := CopyFromLbl;
+                        CurrPage.Update(false);
+                    end;
+                }
+#pragma warning disable AW0005
+                action(CopyItemsFromDocumentPrompt)
+#pragma warning restore AW0005
+                {
+                    Caption = 'Copy items [description] from posted invoice [No.]';
+                    ToolTip = 'Sample prompt for copying specific items from another posted sales invoice. Texts in brackets specify item description and invoice number.';
+
+                    trigger OnAction()
+                    var
+                        CopyFromLbl: Label 'Copy specific items from sales invoice ';
                     begin
                         SearchQueryTxt := CopyFromLbl;
                         CurrPage.Update(false);
@@ -233,6 +275,10 @@ page 7275 "Sales Line AI Suggestions"
         }
     }
 
+    var
+        SearchQueryLengthExceededErr: Label 'You''ve exceeded the maximum number of allowed characters by %1. Please rephrase and try again.', Comment = '%1 = Integer';
+        SearchQueryNotProvidedErr: Label 'Please provide a query to generate sales lines suggestions.';
+
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
         SalesLineUtility: Codeunit "Sales Line Utility";
@@ -244,6 +290,10 @@ page 7275 "Sales Line AI Suggestions"
             TotalCopiedLines := TempSalesLineAISuggestion.Count();
             if TotalCopiedLines > 0 then begin
                 SalesLineUtility.CopySalesLineToDoc(GlobalSalesHeader, TempSalesLineAISuggestion);
+                if SalesLineUtility.CheckIfSuggestedLinesContainErrors(TempSalesLineAISuggestion) then begin
+                    CurrPage.Update(false);
+                    exit(false);
+                end;
                 FeatureTelemetry.LogUptake('0000ME4', SalesLineAISuggestionImpl.GetFeatureName(), Enum::"Feature Uptake Status"::Used);
             end;
         end;

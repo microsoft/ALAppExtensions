@@ -712,6 +712,7 @@ table 11510 "Swiss QR-Bill Buffer"
         LoadSourceRecordBillingInformation(SwissQRBillLayout);
         if PaymentMethod."Swiss QR-Bill Bank Account No." <> '' then
             ValidateBankAccountIBAN(PaymentMethod."Swiss QR-Bill Bank Account No.");
+        OnAfterSetSourceRecord(Rec, SwissQRBillLayout);
     end;
 
     local procedure LoadAdditionalInformation(SwissQRBillLayout: Record "Swiss QR-Bill Layout")
@@ -810,6 +811,11 @@ table 11510 "Swiss QR-Bill Buffer"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterValidateIBAN(var IBAN: Code[50])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSetSourceRecord(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; var SwissQRBillLayout: Record "Swiss QR-Bill Layout")
     begin
     end;
 }

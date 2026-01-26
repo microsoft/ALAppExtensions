@@ -187,10 +187,10 @@ page 41017 "Hist. Payables Documents"
     trigger OnOpenPage()
     begin
         if FilterAuditCode <> '' then
-            Rec.SetFilter("Audit Code", FilterAuditCode);
+            Rec.SetRange("Audit Code", FilterAuditCode);
 
         if FilterVendorNo <> '' then
-            Rec.SetFilter("Vendor No.", FilterVendorNo);
+            Rec.SetRange("Vendor No.", FilterVendorNo);
     end;
 
     procedure SetFilterAuditCode(AuditCode: Code[35])

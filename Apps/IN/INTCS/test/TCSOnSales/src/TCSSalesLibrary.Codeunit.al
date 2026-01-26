@@ -336,6 +336,24 @@ codeunit 18920 "TCS Sales - Library"
         CreateSalesLine(SalesHeader, SalesLine, LineType, LineDiscount);
     end;
 
+    procedure CreateSalesDocumentWithExcludeGSTInTCS(
+        var SalesHeader: Record "Sales Header";
+        DocumentType: Enum "Sales Document Type";
+        CustomerNo: Code[20];
+        PostingDate: Date;
+        LineType: Enum "Sales Line Type";
+        LineDiscount: Boolean)
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
+        SalesHeader.Validate("Posting Date", PostingDate);
+        SalesHeader.Validate("Exclude GST in TCS Base", true);
+        SalesHeader.Modify(true);
+
+        CreateSalesLine(SalesHeader, SalesLine, LineType, LineDiscount);
+    end;
+
     procedure CreateSalesDocumentWithFCY(
         var SalesHeader: Record "Sales Header";
         DocumentType: Enum "Sales Document Type";

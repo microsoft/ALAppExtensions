@@ -606,6 +606,35 @@ codeunit 18786 "Library-TDS"
         AllowedSections.Insert(true);
     end;
 
+    procedure CreateTDSSetupWithMultipleSection(
+        var Vendor: Record Vendor;
+        var TDSPostingSetup: Record "TDS Posting Setup";
+        var ConcessionalCode: Record "Concessional Code")
+    var
+        AssesseeCode: Record "Assessee Code";
+        TDSSection: Record "TDS Section";
+    begin
+        CreateCommonSetup(AssesseeCode, ConcessionalCode);
+        CreateTDSPostingSetupWithSection(TDSPostingSetup, TDSSection);
+        CreateTDSVendor(Vendor, AssesseeCode.Code, TDSSection.Code);
+        CreateTDSPostingSetupWithSection(TDSPostingSetup, TDSSection);
+        UpdateTDSSectionOnVendorWithThresholdOverlook(Vendor."No.", TDSSection.Code);
+        AttachConcessionalWithVendor(Vendor."No.", ConcessionalCode.Code, TDSSection.Code);
+    end;
+
+    local procedure UpdateTDSSectionOnVendorWithThresholdOverlook(
+        VendorNo: Code[20];
+        TDSSection: Code[10])
+    var
+        AllowedSections: Record "Allowed Sections";
+    begin
+        AllowedSections.Init();
+        AllowedSections.Validate("Vendor No", VendorNo);
+        AllowedSections.Validate("TDS Section", TDSSection);
+        AllowedSections.Validate("Threshold Overlook", true);
+        AllowedSections.Insert(true);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Test Publishers", 'CreateTDSSetupStale', '', false, false)]
     local procedure CreateTDSSetupForStaleCheck(var Vendor: Record Vendor; var TDSSection: Code[10])
     var

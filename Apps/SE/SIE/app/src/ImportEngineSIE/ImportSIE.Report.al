@@ -106,26 +106,11 @@ report 5314 "Import SIE"
         actions
         {
         }
-#if CLEAN22
         trigger OnOpenPage()
         begin
             FeatureTelemetry.LogUptake('0000JPN', SieImportTok, Enum::"Feature Uptake Status"::Discovered);
             OnActivateForm();
         end;
-#else
-        trigger OnOpenPage()
-        var
-            SIEManagement: Codeunit "SIE Management";
-        begin
-            if not SIEManagement.IsFeatureEnabled() then begin
-                Report.Run(Report::"SIE Import");
-                Error('');
-            end;
-
-            FeatureTelemetry.LogUptake('0000JPN', SieImportTok, Enum::"Feature Uptake Status"::Discovered);
-            OnActivateForm();
-        end;
-#endif
     }
 
     labels

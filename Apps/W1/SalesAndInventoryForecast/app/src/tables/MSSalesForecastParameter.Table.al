@@ -7,6 +7,7 @@ namespace Microsoft.Inventory.InventoryForecast;
 table 1851 "MS - Sales Forecast Parameter"
 {
     ReplicateData = false;
+    DataClassification = CustomerContent;
 
     fields
     {

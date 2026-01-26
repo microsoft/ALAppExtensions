@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 19300 "India Migration Worksheet"
 {
     fields

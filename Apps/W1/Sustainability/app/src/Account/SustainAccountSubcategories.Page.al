@@ -38,6 +38,28 @@ page 6214 "Sustain. Account Subcategories"
                 {
                     ToolTip = 'Specifies the emission factor for N2O emission.';
                 }
+                field("Water Intensity Factor"; Rec."Water Intensity Factor")
+                {
+                    ToolTip = 'Specifies the intensity factor for Water.';
+                }
+                field("Discharged Into Water Factor"; Rec."Discharged Into Water Factor")
+                {
+                    ToolTip = 'Specifies the intensity factor for Discharged Into Water.';
+                }
+                field("Waste Intensity Factor"; Rec."Waste Intensity Factor")
+                {
+                    ToolTip = 'Specifies the intensity factor for Waste.';
+                }
+                field("Energy Source Code"; Rec."Energy Source Code")
+                {
+                }
+                field("Energy Value Required"; Rec."Energy Value Required")
+                {
+                    ToolTip = 'Specifies the value of the Energy Value Required field.';
+                }
+                field("Energy Onsite"; Rec."Energy Onsite")
+                {
+                }
                 field("Import Data"; Rec."Import Data")
                 {
                     ToolTip = 'Specifies if the data is imported from external source.';

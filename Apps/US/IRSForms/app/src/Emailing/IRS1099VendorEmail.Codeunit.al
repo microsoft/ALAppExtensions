@@ -14,19 +14,14 @@ codeunit 10050 "IRS 1099 Vendor Email"
     InherentPermissions = X;
 
     var
-#if not CLEAN25
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-#endif
         EmailNotSpecifiedErr: Label 'Either E-Mail For IRS or E-mail must be specified to receive 1099 forms electronically.';
         PropagateFieldToOpenedFormDocumentsQst: Label 'Do you want to propagate the %1 to all opened 1099 form documents by this vendor?', Comment = '%1 = field name';
+        PropagateFieldToReleasedFormDocumentsQst: Label 'Do you want to propagate the %1 to all released 1099 form documents by this vendor?', Comment = '%1 = field name';
+        PropagateFieldToSubmittedFormDocumentsQst: Label 'Do you want to propagate the %1 to all submitted 1099 form documents by this vendor?', Comment = '%1 = field name';
         CannotRemoveEmailWhenOpenedFormDocsExistErr: Label 'Cannot remove the e-mail when opened 1099 form documents exist for this vendor.';
 
     procedure CheckEmailForIRS(Vendor: Record Vendor)
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         if GetEmailForIRSReporting(Vendor) = '' then
             error(EmailNotSpecifiedErr);
     end;
@@ -35,10 +30,6 @@ codeunit 10050 "IRS 1099 Vendor Email"
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         if GetEmailForIRSReporting(Vendor) = '' then begin
             if Vendor."Receiving 1099 E-Form Consent" then begin
                 IRS1099FormDocHeader.SetRange("Vendor No.", Vendor."No.");
@@ -50,42 +41,54 @@ codeunit 10050 "IRS 1099 Vendor Email"
         end;
     end;
 
-    procedure PropagateEmailToOpenedFormDocuments(Vendor: Record Vendor)
+    procedure PropagateEmailToFormDocuments(Vendor: Record Vendor)
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         IRS1099FormDocHeader.SetRange("Vendor No.", Vendor."No.");
         IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Open);
-        if IRS1099FormDocHeader.IsEmpty() then
-            exit;
-        if not ConfirmManagement.GetResponse(StrSubstNo(PropagateFieldToOpenedFormDocumentsQst, Vendor.FieldCaption("E-Mail")), false) then
-            exit;
-        IRS1099FormDocHeader.ModifyAll("Vendor E-Mail", GetEmailForIRSReporting(Vendor));
+        if not IRS1099FormDocHeader.IsEmpty() then
+            if ConfirmManagement.GetResponse(StrSubstNo(PropagateFieldToOpenedFormDocumentsQst, Vendor.FieldCaption("E-Mail")), false) then
+                IRS1099FormDocHeader.ModifyAll("Vendor E-Mail", GetEmailForIRSReporting(Vendor));
+
+        IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Released);
+        if not IRS1099FormDocHeader.IsEmpty() then
+            if ConfirmManagement.GetResponse(StrSubstNo(PropagateFieldToReleasedFormDocumentsQst, Vendor.FieldCaption("E-Mail")), false) then
+                IRS1099FormDocHeader.ModifyAll("Vendor E-Mail", GetEmailForIRSReporting(Vendor));
+
+        IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Submitted);
+        if not IRS1099FormDocHeader.IsEmpty() then
+            if ConfirmManagement.GetResponse(StrSubstNo(PropagateFieldToSubmittedFormDocumentsQst, Vendor.FieldCaption("E-Mail")), false) then
+                IRS1099FormDocHeader.ModifyAll("Vendor E-Mail", GetEmailForIRSReporting(Vendor));
     end;
 
-    procedure PropagateReceiving1099EFormConsentToOpenedFormDocuments(Vendor: Record Vendor)
+    procedure PropagateReceiving1099EFormConsentToFormDocuments(Vendor: Record Vendor)
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         IRS1099FormDocHeader.SetRange("Vendor No.", Vendor."No.");
         IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Open);
-        if IRS1099FormDocHeader.IsEmpty() then
-            exit;
-        if not ConfirmManagement.GetResponse(
-            StrSubstNo(PropagateFieldToOpenedFormDocumentsQst, Vendor.FieldCaption("Receiving 1099 E-Form Consent")), false)
-        then
-            exit;
-        IRS1099FormDocHeader.ModifyAll("Receiving 1099 E-Form Consent", Vendor."Receiving 1099 E-Form Consent");
+        if not IRS1099FormDocHeader.IsEmpty() then
+            if ConfirmManagement.GetResponse(
+                StrSubstNo(PropagateFieldToOpenedFormDocumentsQst, Vendor.FieldCaption("Receiving 1099 E-Form Consent")), false)
+            then
+                IRS1099FormDocHeader.ModifyAll("Receiving 1099 E-Form Consent", Vendor."Receiving 1099 E-Form Consent");
+
+        IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Released);
+        if not IRS1099FormDocHeader.IsEmpty() then
+            if ConfirmManagement.GetResponse(
+                StrSubstNo(PropagateFieldToReleasedFormDocumentsQst, Vendor.FieldCaption("Receiving 1099 E-Form Consent")), false)
+            then
+                IRS1099FormDocHeader.ModifyAll("Receiving 1099 E-Form Consent", Vendor."Receiving 1099 E-Form Consent");
+
+        IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Submitted);
+        if not IRS1099FormDocHeader.IsEmpty() then
+            if ConfirmManagement.GetResponse(
+                StrSubstNo(PropagateFieldToSubmittedFormDocumentsQst, Vendor.FieldCaption("Receiving 1099 E-Form Consent")), false)
+            then
+                IRS1099FormDocHeader.ModifyAll("Receiving 1099 E-Form Consent", Vendor."Receiving 1099 E-Form Consent");
     end;
 
     local procedure GetEmailForIRSReporting(Vendor: Record Vendor): Text[80]

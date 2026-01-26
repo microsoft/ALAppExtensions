@@ -16,13 +16,13 @@ codeunit 11791 "Navigate Handler CZP"
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateFindRecords', '', false, false)]
     local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text;
-                                                PostingDateFilter: Text; Sender: Page Navigate)
+                                                PostingDateFilter: Text)
     begin
-        FindPostedCashDocumentHdr(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
+        FindPostedCashDocumentHdr(DocumentEntry, DocNoFilter, PostingDateFilter);
         FindCashDeskLedgerEntries(DocumentEntry, DocNoFilter, PostingDateFilter);
     end;
 
-    local procedure FindPostedCashDocumentHdr(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Navigate: Page Navigate)
+    local procedure FindPostedCashDocumentHdr(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text)
     var
         PostedCashDocumentTxt: Label 'Posted Cash Document';
     begin
@@ -30,7 +30,7 @@ codeunit 11791 "Navigate Handler CZP"
             PostedCashDocumentHdrCZP.Reset();
             PostedCashDocumentHdrCZP.SetFilter("No.", DocNoFilter);
             PostedCashDocumentHdrCZP.SetFilter("Posting Date", PostingDateFilter);
-            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"Posted Cash Document Hdr. CZP", "Document Entry Document Type"::Quote,
+            DocumentEntry.InsertIntoDocEntry(Database::"Posted Cash Document Hdr. CZP", "Document Entry Document Type"::Quote,
                 PostedCashDocumentTxt, PostedCashDocumentHdrCZP.Count());
         end;
     end;
@@ -89,10 +89,10 @@ codeunit 11791 "Navigate Handler CZP"
         exit(DocEntryNoOfRecords);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeNavigateShowRecords', '', false, false)]
-    local procedure OnBeforeNavigateShowRecords(TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; var TempDocumentEntry: Record "Document Entry"; var IsHandled: Boolean)
+    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeShowRecords', '', false, false)]
+    local procedure OnBeforeShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; var IsHandled: Boolean)
     begin
-        case TableID of
+        case TempDocumentEntry."Table ID" of
             Database::"Posted Cash Document Hdr. CZP":
                 begin
                     PostedCashDocumentHdrCZP.Reset();

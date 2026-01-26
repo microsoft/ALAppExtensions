@@ -1,14 +1,14 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Foundation.Company;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.Currency;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Receivables;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
 using System.Globalization;
 using System.Utilities;
 
@@ -549,7 +549,6 @@ report 1690 "Bank Deposit"
             DepositCustLedgerEntry.Reset();
             DepositCustLedgerEntry.SetFilter("Entry No.", '>=%1', FromEntryNo);
             DepositCustLedgerEntry.SetRange("Transaction No.", DepositCustLedgerEntry."Transaction No.");
-            DepositCustLedgerEntry.SetRange("External Document No.", PostedBankDepositLine."Bank Deposit No.");
         end;
     end;
 
@@ -579,7 +578,6 @@ report 1690 "Bank Deposit"
             DepositVendorLedgerEntry.Reset();
             DepositVendorLedgerEntry.SetFilter("Entry No.", '>=%1', FromEntryNo);
             DepositVendorLedgerEntry.SetRange("Transaction No.", DepositVendorLedgerEntry."Transaction No.");
-            DepositVendorLedgerEntry.SetRange("External Document No.", PostedBankDepositLine."Bank Deposit No.");
         end;
     end;
 }

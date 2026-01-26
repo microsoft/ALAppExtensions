@@ -1,25 +1,12 @@
 namespace Microsoft.Bank.Reconciliation;
 
 using System.AI;
-using System.Environment;
 using System.Telemetry;
 
 pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliation List"
 {
     actions
     {
-#if not CLEAN24
-        addbefore(Category_Posting)
-        {
-            actionref("Reconcile With Copilot_Promoted"; "Reconcile With Copilot")
-            {
-                Visible = false;
-                ObsoleteReason = 'Action in the Prompting area.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-            }
-        }
-#endif
         addfirst(Prompting)
         {
             action("Reconcile With Copilot")
@@ -31,6 +18,7 @@ pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliatio
 #pragma warning restore AL0482
                 ToolTip = 'Match statement lines with the assistance of Copilot';
                 Visible = CopilotActionsVisible;
+                Enabled = CopilotActionsVisible;
 
                 trigger OnAction()
                 var
@@ -56,9 +44,11 @@ pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliatio
 
     trigger OnOpenPage()
     var
-        EnvironmentInformation: Codeunit "Environment Information";
+        BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        CopilotCapability: Codeunit "Copilot Capability";
     begin
-        CopilotActionsVisible := EnvironmentInformation.IsSaaSInfrastructure();
+        BankRecAIMatchingImpl.RegisterCapability();
+        CopilotActionsVisible := CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Bank Account Reconciliation");
     end;
 
     var

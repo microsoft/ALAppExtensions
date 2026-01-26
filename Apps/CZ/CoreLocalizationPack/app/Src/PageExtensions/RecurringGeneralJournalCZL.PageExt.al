@@ -3,35 +3,23 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Journal;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
+
+using Microsoft.Finance.ReceivablesPayables;
 
 pageextension 11725 "Recurring General Journal CZL" extends "Recurring General Journal"
 {
     layout
     {
-#if not CLEAN22
-        modify("VAT Reporting Date")
+        modify("Account Type")
         {
-            Visible = ReplaceVATDateEnabled and VATDateEnabled;
+            trigger OnAfterValidate()
+            begin
+                EnableApplyEntriesAction();
+            end;
         }
-#endif
         moveafter("Document No."; "External Document No.")
         addafter("Posting Date")
         {
-#if not CLEAN22
-            field("VAT Date CZL"; Rec."VAT Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'VAT Date (Obsolete)';
-                ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by VAT Reporting Date.';
-                Visible = not ReplaceVATDateEnabled;
-            }
-#endif
             field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -102,20 +90,56 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
                 end;
             }
         }
+        addafter("P&osting")
+        {
+            group(Application)
+            {
+                Caption = 'Application';
+                action("Apply Entries")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Apply Entries';
+                    Ellipsis = true;
+                    Enabled = ApplyEntriesActionEnabled;
+                    Image = ApplyEntries;
+                    RunObject = Codeunit "Gen. Jnl.-Apply";
+                    ShortCutKey = 'Shift+F11';
+                    ToolTip = 'Apply the payment amount on a journal line to a sales or purchase document that was already posted for a customer or vendor. This updates the amount on the posted document, and the document can either be partially paid, or closed as paid or refunded.';
+                }
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref("Apply Entries_Promoted CZL"; "Apply Entries")
+            {
+            }
+        }
     }
-#if not CLEAN22
-    trigger OnOpenPage()
+
+    trigger OnAfterGetCurrRecord()
     begin
-        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
-        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+        EnableApplyEntriesAction();
+    end;
+
+    trigger OnNewRecord(BelowxRec: Boolean)
+    begin
+        EnableApplyEntriesAction();
     end;
 
     var
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        ReplaceVATDateEnabled: Boolean;
-        VATDateEnabled: Boolean;
-#endif
+        ApplyEntriesActionEnabled: Boolean;
+
+    local procedure EnableApplyEntriesAction()
+    begin
+        ApplyEntriesActionEnabled :=
+          (Rec."Account Type" in [Rec."Account Type"::Customer, Rec."Account Type"::Vendor, Rec."Account Type"::Employee]) or
+          (Rec."Bal. Account Type" in [Rec."Bal. Account Type"::Customer, Rec."Bal. Account Type"::Vendor, Rec."Bal. Account Type"::Employee]);
+
+        OnAfterEnableApplyEntriesAction(Rec, ApplyEntriesActionEnabled);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterEnableApplyEntriesAction(GenJournalLine: Record "Gen. Journal Line"; var ApplyEntriesActionEnabled: Boolean)
+    begin
+    end;
 }

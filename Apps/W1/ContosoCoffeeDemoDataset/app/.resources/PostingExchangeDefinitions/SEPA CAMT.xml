@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="SEPA CAMT" Name="SEPA CAMT" Type="0" ExternalDataHandlingCodeunit="1240" FileType="0" ReadingWritingCodeunit="1200">
+    <DataExchLineDef Code="SEPA CAMT" Name="camt.053.001.02.xsd" ColumnCount="0" DataLineTag="/Document/BkToCstmrStmt/Stmt/Ntry" Namespace="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+      <DataExchColumnDef ColumnNo="1" Name="Stmt/Id" Show="false" DataType="0" Description="ID" Path="/Document/BkToCstmrStmt/Stmt/Id" />
+      <DataExchColumnDef ColumnNo="2" Name="Stmt/CreDtTm" Show="true" DataType="1" Description="CreDtTm" Path="/Document/BkToCstmrStmt/Stmt/CreDtTm" />
+      <DataExchColumnDef ColumnNo="3" Name="Stmt/Bal/Tp/CdOrPrtry/Cd" Show="true" DataType="0" Description="Cd" Path="/Document/BkToCstmrStmt/Stmt/Bal/Tp/CdOrPrtry/Cd" />
+      <DataExchColumnDef ColumnNo="4" Name="Stmt/Bal/Amt" Show="true" DataType="2" Description="Amt" Path="/Document/BkToCstmrStmt/Stmt/Bal/Amt" />
+      <DataExchColumnDef ColumnNo="5" Name="Stmt/Acct/Id/IBAN" Show="false" DataType="0" Description="IBAN" Path="/Document/BkToCstmrStmt/Stmt/Acct/Id/IBAN" />
+      <DataExchColumnDef ColumnNo="6" Name="Stmt/Bal/Amt[@Ccy]" Show="true" DataType="0" Description="Ccy" Path="/Document/BkToCstmrStmt/Stmt/Bal/Amt[@Ccy]" />
+      <DataExchColumnDef ColumnNo="7" Name="Stmt/Bal/CdtDbtInd" Show="true" DataType="0" Description="CdtDbtInd" Path="/Document/BkToCstmrStmt/Stmt/Bal/CdtDbtInd" NegativeSignIdentifier="DBIT" />
+      <DataExchColumnDef ColumnNo="8" Name="Stmt/Ntry/Amt" Show="true" DataType="2" Description="Amt" Path="/Document/BkToCstmrStmt/Stmt/Ntry/Amt" />
+      <DataExchColumnDef ColumnNo="9" Name="Stmt/Ntry/Amt[@Ccy]" Show="true" DataType="0" Description="Ccy" Path="/Document/BkToCstmrStmt/Stmt/Ntry/Amt[@Ccy]" />
+      <DataExchColumnDef ColumnNo="10" Name="Stmt/Ntry/CdtDbtInd" Show="true" DataType="0" Description="CdtDbtInd" Path="/Document/BkToCstmrStmt/Stmt/Ntry/CdtDbtInd" NegativeSignIdentifier="DBIT" />
+      <DataExchColumnDef ColumnNo="11" Name="Stmt/Ntry/BookgDt/DtTm" Show="true" DataType="1" Description="DtTm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/BookgDt/DtTm" />
+      <DataExchColumnDef ColumnNo="12" Name="Stmt/Ntry/ValDt/Dt" Show="true" DataType="1" Description="Dt" Path="/Document/BkToCstmrStmt/Stmt/Ntry/ValDt/Dt" />
+      <DataExchColumnDef ColumnNo="13" Name="Stmt/Ntry/AcctSvcrRef" Show="true" DataType="0" Description="AcctSvcrRef" Path="/Document/BkToCstmrStmt/Stmt/Ntry/AcctSvcrRef" />
+      <DataExchColumnDef ColumnNo="14" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Nm" Show="true" DataType="0" Description="Nm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Nm" />
+      <DataExchColumnDef ColumnNo="15" Name="Stmt/Ntry/NtryDtls/TxDtls/RmtInf/Ustrd" Show="true" DataType="0" Description="Ustrd" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RmtInf/Ustrd" />
+      <DataExchColumnDef ColumnNo="16" Name="Stmt/Ntry/AddtlNtryInf" Show="true" DataType="0" Description="AddtlNtryInf" Path="/Document/BkToCstmrStmt/Stmt/Ntry/AddtlNtryInf" />
+      <DataExchColumnDef ColumnNo="17" Name="Stmt/Ntry/BookgDt/Dt" Show="false" DataType="1" Description="BookgDt/Dt" Path="/Document/BkToCstmrStmt/Stmt/Ntry/BookgDt/Dt" />
+      <DataExchColumnDef ColumnNo="18" Name="Stmt/Ntry/ValDt/DtTm" Show="false" DataType="1" Description="ValDt/DtTm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/ValDt/DtTm" />
+      <DataExchColumnDef ColumnNo="19" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/IBAN" Show="true" DataType="0" Description="IBAN" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/IBAN" />
+      <DataExchColumnDef ColumnNo="20" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/Othr/Id" Show="true" DataType="0" Description="Id" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/Othr/Id" />
+      <DataExchColumnDef ColumnNo="21" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/PstlAdr/AdrLine" Show="true" DataType="0" Description="AdrLine" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/PstlAdr/AdrLine" />
+      <DataExchColumnDef ColumnNo="22" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/PstlAdr/TwnNm" Show="true" DataType="0" Description="TwnNm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/PstlAdr/TwnNm" />
+      <DataExchColumnDef ColumnNo="23" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Nm" Show="true" DataType="0" Description="Nm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Nm" />
+      <DataExchColumnDef ColumnNo="24" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN" Show="true" DataType="0" Description="IBAN" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN" />
+      <DataExchColumnDef ColumnNo="25" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/Othr/Id" Show="true" DataType="0" Description="Id" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/Othr/Id" />
+      <DataExchColumnDef ColumnNo="26" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/PstlAdr/AdrLine" Show="true" DataType="0" Description="AdrLine" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/PstlAdr/AdrLine" />
+      <DataExchColumnDef ColumnNo="27" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/PstlAdr/TwnNm" Show="true" DataType="0" Description="TwnNm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/PstlAdr/TwnNm" />
+      <DataExchColumnDef ColumnNo="28" Name="Stmt/Ntry/NtryDtls/TxDtls/Refs/EndToEndId" Show="true" DataType="0" Description="EndToEndId" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/Refs/EndToEndId" />
+      <DataExchColumnDef ColumnNo="29" Name="Stmt/Acct/Id/Othr/Id" Show="false" DataType="0" Description="BankId" Path="/Document/BkToCstmrStmt/Stmt/Acct/Id/Othr/Id" />
+      <DataExchMapping TableId="81" Name="SEPA CAMT to Gen. Journal Line" MappingCodeunit="1260" DataExchNoFieldID="1220" DataExchLineFieldID="1223">
+        <DataExchFieldMapping ColumnNo="8" FieldID="13" Multiplier="-1.00" />
+        <DataExchFieldMapping ColumnNo="10" FieldID="13" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="5" Optional="true" />
+        <DataExchFieldMapping ColumnNo="14" FieldID="1221" Optional="true" />
+        <DataExchFieldMapping ColumnNo="15" FieldID="8" Optional="true" />
+        <DataExchFieldMapping ColumnNo="16" FieldID="1222" Optional="true" />
+        <DataExchFieldMapping ColumnNo="17" FieldID="5" Optional="true" />
+      </DataExchMapping>
+      <DataExchMapping TableId="274" Name="SEPA CAMT to Bank Acc. Reconciliation Line" MappingCodeunit="1261" DataExchNoFieldID="17" DataExchLineFieldID="18">
+        <DataExchFieldMapping ColumnNo="8" FieldID="7" />
+        <DataExchFieldMapping ColumnNo="10" FieldID="7" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="5" Optional="true" />
+        <DataExchFieldMapping ColumnNo="12" FieldID="12" Optional="true" />
+        <DataExchFieldMapping ColumnNo="14" FieldID="15" Optional="true" />
+        <DataExchFieldMapping ColumnNo="15" FieldID="23" Optional="true" />
+        <DataExchFieldMapping ColumnNo="16" FieldID="16" Optional="true" />
+        <DataExchFieldMapping ColumnNo="17" FieldID="5" Optional="true" />
+        <DataExchFieldMapping ColumnNo="18" FieldID="12" Optional="true" />
+        <DataExchFieldMapping ColumnNo="19" FieldID="24" Optional="true" />
+        <DataExchFieldMapping ColumnNo="20" FieldID="24" Optional="true" />
+        <DataExchFieldMapping ColumnNo="21" FieldID="25" Optional="true" />
+        <DataExchFieldMapping ColumnNo="22" FieldID="26" Optional="true" />
+        <DataExchFieldMapping ColumnNo="23" FieldID="15" Optional="true" />
+        <DataExchFieldMapping ColumnNo="24" FieldID="24" Optional="true" />
+        <DataExchFieldMapping ColumnNo="25" FieldID="24" Optional="true" />
+        <DataExchFieldMapping ColumnNo="26" FieldID="25" Optional="true" />
+        <DataExchFieldMapping ColumnNo="27" FieldID="26" Optional="true" />
+        <DataExchFieldMapping ColumnNo="28" FieldID="70" Optional="true" TransformationRule="DELETE_NOTPROVIDED" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

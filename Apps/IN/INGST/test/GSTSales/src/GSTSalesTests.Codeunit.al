@@ -14,6 +14,7 @@ codeunit 18196 "GST Sales Tests"
         Storage: Dictionary of [Text, Code[20]];
         StorageBoolean: Dictionary of [Text, Boolean];
         ComponentPerArray: array[20] of Decimal;
+        isInitialized: Boolean;
         LocationStateCodeLbl: Label 'LocationStateCode';
         KeralaCESSLbl: Label 'KeralaCESS';
         PartialShipLbl: Label 'PartialShip';
@@ -43,6 +44,8 @@ codeunit 18196 "GST Sales Tests"
         PriceInclusiveOfTaxLbl: Label 'WithPIT';
         PANErr: Label 'PAN No. must be entered in Company Information.';
         QRCodeVerifyErr: Label 'QR Code is not generated';
+        TaxTransactionValueEmptyErr: Label 'Tax Transaction Value cannot be empty for %1', Comment = '%1 = Sales Line Archive Record ID';
+        PriceListLineVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
 
     [Test]
     procedure CompanyInformationPANError()
@@ -3794,6 +3797,352 @@ codeunit 18196 "GST Sales Tests"
         Assert.Equal(NatureofSupply::B2B, SalesHeader."Nature of Supply");
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,DocumentArchived')]
+    procedure VerifyTaxInformationDataExistInSalesOrderArchive()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        LineType: Enum "Sales Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTCustomerType: Enum "GST Customer Type";
+    begin
+        //[Scenario] [398967] Check if the system is showing tax information in Sales Order Archive Page
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Customer and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTCustomerType::Registered, GSTGroupType::Service, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Post Sales Order with GST and Line Type as G/L Account for Intrastate Transactions.
+        LibrarySales.SetArchiveOrders(true);
+        CreateAndPostSalesDocument(SalesHeader, SalesLine, LineType::"G/L Account", DocumentType::Order);
+
+        //[THEN] Verify Tax Transaction Value Exist for Sales Order Archive
+        VerifyTaxTransactionValueExist(SalesHeader."Document Type", SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,DocumentArchived')]
+    procedure VerifyTaxInformationDataExistInBlanketSalesOrderArchive()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        LineType: Enum "Sales Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTCustomerType: Enum "GST Customer Type";
+    begin
+        //[Scenario] [398967] Check if the system is showing tax information in Sales Order Archive Page
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Customer and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTCustomerType::Registered, GSTGroupType::Service, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Archive Blanket Sales Order with GST and Line Type as Item for Intrastate Transactions.
+        CreateSalesDocument(SalesHeader, SalesLine, LineType::"Item", DocumentType::"Blanket Order");
+        BlanketSalesOrderArchive(SalesHeader);
+
+        //[THEN] Verify Tax Transaction Value Exist for Sales Order Archive
+        VerifyTaxTransactionValueExist(SalesHeader."Document Type", SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,DocumentArchived')]
+    procedure VerifyTaxInformationDataExistInSalesQuoteArchive()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        LineType: Enum "Sales Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTCustomerType: Enum "GST Customer Type";
+    begin
+        //[Scenario] [398967] Check if the system is showing tax information in Sales Quote Archive Page
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Customer and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTCustomerType::Registered, GSTGroupType::Service, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Archive Sales Quote with GST and Line Type as Item for Intrastate Transactions.
+        CreateSalesDocument(SalesHeader, SalesLine, LineType::"Item", DocumentType::"Quote");
+        SalesQuoteArchive(SalesHeader);
+
+        //[THEN] Verify Tax Transaction Value Exist for Sales Order Archive
+        VerifyTaxTransactionValueExist(SalesHeader."Document Type", SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,DocumentArchived')]
+    procedure VerifyTaxInformationDataExistInSalesReturnOrderArchive()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        LineType: Enum "Sales Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTCustomerType: Enum "GST Customer Type";
+    begin
+        //[Scenario] [398967] Check if the system is showing tax information in Sales Return Order Archive Page
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Customer and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTCustomerType::Registered, GSTGroupType::Service, true);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Archive Sales Return Order with GST and Line Type as Item for Intrastate Transactions.
+        CreateSalesDocument(SalesHeader, SalesLine, LineType::"Item", DocumentType::"Return Order");
+        SalesReturnOrderArchive(SalesHeader);
+
+        //[THEN] Verify Tax Transaction Value Exist for Sales Return Order Archive
+        VerifyTaxTransactionValueExist(SalesHeader."Document Type", SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromSalesInvoiceForSEZCustomerInterStatePIT()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Wrong GST Calculation if Item Price is Incl of Tax and Customer Type is SEZ Unit.
+        // [FEATURE] [Sales Invoice] [Inter-State GST,Sez Unit Customer]
+
+        // [GIVEN] Created GST Setup and tax rates for SEZ Customer with Interstate Jurisdiction and Price Incusive of Tax Setup
+        CreateGSTSetup(GSTCustomeType::"SEZ Unit", GSTGroupType::Goods, false);
+        InitializeShareStep(false, false);
+        SalesWithPriceInclusiveOfTax(true);
+
+        // [WHEN] Create and Post Sales Invoice with GST and Line Type as Item for Interstate Juridisction
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::Item,
+            DocumentType::Invoice);
+
+        // [THEN] Verify GST Ledger Entries and Detailed GST Entries
+        VerifyGSTEntries(PostedDocumentNo, Database::"Sales Invoice Header");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromSalesInvoiceForExportFCYWithPaymentMethodCodeBank()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        LineType: Enum "Sales Line Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [BC-IN] Incorrect currency conversion when GST customer type is Export
+        // [GIVEN] Created GST Setup
+        CreateGSTSetupWithCustomerPaymentMethodBank(GSTCustomeType::Export, GSTGroupType::Service, false);
+        InitializeShareStep(false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        // [WHEN] Create and Post Sales Invoice
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine,
+            LineType::"G/L Account",
+            DocumentType::Invoice);
+
+        // [THEN] G/L Entries and Detailed GST Ledger Entries verified
+        LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 4);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure CreateSalesOrderWithNewSalesPriceWithPriceInclusiveofTax()
+    var
+        Item: Record Item;
+        PriceListHeader: Record "Price List Header";
+        PriceListLine: Record "Price List Line";
+        FeatureKey: Record "Feature Key";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryPriceCalculation: Codeunit "Library - Price Calculation";
+        PriceListManagement: Codeunit "Price List Management";
+        CustomerNo: Code[20];
+        LocationCOde: Code[10];
+        SalesPricesFeatureKeyLbl: Label 'SalesPrices', Locked = true;
+    begin
+        SalesPriceInitialize();
+        PriceListLine.DeleteAll();
+        PriceListHeader.DeleteAll();
+
+        // [GIVEN] Created GST Setup
+        CreateGSTSetup(Enum::"GST Customer Type"::Registered, Enum::"GST Group Type"::Goods, false);
+        InitializeShareStep(false, false);
+
+        // [GIVEN] Sales Prices, for All Customers, Item, without Currency.
+        LibraryInventory.CreateItem(Item);
+        LibraryPriceCalculation.CreatePriceHeader(PriceListHeader, Enum::"Price Type"::Sale, Enum::"Price Source Type"::"All Customers", '');
+        LibraryPriceCalculation.CreatePriceListLine(PriceListLine, PriceListHeader, Enum::"Price Amount Type"::Price, Enum::"Price Asset Type"::Item, Item."No.");
+        PriceListLine."Price Inclusive of Tax" := true;
+        PriceListLine.Status := PriceListLine.Status::Active;
+        PriceListLine.Modify(true);
+        PriceListManagement.ActivateDraftLines(PriceListHeader);
+
+        // [WHEN] Create Sales Order With Item
+        CustomerNo := Storage.Get(CustomerNoLbl);
+        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
+        LibrarySales.CreateSalesOrderWithLocation(SalesHeader, CustomerNo, LocationCode);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", 6);
+
+        // [THEN] Verify Sales Line Price Inclusive of Tax Field
+        if (FeatureKey.Get(SalesPricesFeatureKeyLbl)) and (FeatureKey.Enabled = FeatureKey.Enabled::"All Users") then
+            Assert.AreEqual(SalesLine."Price Inclusive of Tax", true, StrSubstNo(PriceListLineVerifyErr, SalesLine.FieldCaption("Price Inclusive of Tax"), SalesLine.TableCaption))
+        else
+            Assert.AreEqual(SalesLine."Price Inclusive of Tax", false, StrSubstNo(PriceListLineVerifyErr, SalesLine.FieldCaption("Price Inclusive of Tax"), SalesLine.TableCaption));
+    end;
+
+    local procedure SalesPriceInitialize()
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        JobsSetup: Record "Jobs Setup";
+    begin
+        if isInitialized then
+            exit;
+
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup.Validate("Price List Nos.", LibraryERM.CreateNoSeriesCode('SAL'));
+        SalesReceivablesSetup.Modify();
+
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Price List Nos.", LibraryERM.CreateNoSeriesCode('PUR'));
+        PurchasesPayablesSetup.Modify();
+
+        JobsSetup.Get();
+        JobsSetup.Validate("Price List Nos.", LibraryERM.CreateNoSeriesCode('JOB'));
+        JobsSetup.Modify();
+
+        isInitialized := true;
+        Commit();
+    end;
+
+    local procedure CreateGSTSetupWithCustomerPaymentMethodBank(
+        GSTCustomerType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        IntraState: Boolean)
+    var
+        GSTGroup: Record "GST Group";
+        HSNSAC: Record "HSN/SAC";
+        TaxComponent: Record "Tax Component";
+        CompanyInformation: Record "Company information";
+        LocationStateCode: Code[10];
+        CustomerNo: Code[20];
+        LocationCode: Code[10];
+        CustomerStateCode: Code[10];
+        LocPANNo: Code[20];
+        HSNSACCode: Code[10];
+        GSTGroupCode: Code[20];
+        LocationGSTRegNo: Code[15];
+        HsnSacType: Enum "GST Goods And Services Type";
+        GSTComponentCode: Text[30];
+    begin
+        CompanyInformation.Get();
+        if CompanyInformation."P.A.N. No." = '' then begin
+            CompanyInformation."P.A.N. No." := LibraryGST.CreatePANNos();
+            CompanyInformation.Modify();
+        end else
+            LocPANNo := CompanyInformation."P.A.N. No.";
+
+        LocPANNo := CompanyInformation."P.A.N. No.";
+        LocationStateCode := LibraryGST.CreateInitialSetup();
+        Storage.Set(LocationStateCodeLbl, LocationStateCode);
+
+        LocationGSTRegNo := LibraryGST.CreateGSTRegistrationNos(LocationStateCode, LocPANNo);
+        if CompanyInformation."GST Registration No." = '' then begin
+            CompanyInformation."GST Registration No." := LocationGSTRegNo;
+            CompanyInformation.Modify(true);
+        end;
+
+        LocationCode := LibraryGST.CreateLocationSetup(LocationStateCode, LocationGSTRegNo, false);
+        Storage.Set(LocationCodeLbl, LocationCode);
+
+        GSTGroupCode := LibraryGST.CreateGSTGroup(GSTGroup, GSTGroupType, GSTGroup."GST Place Of Supply"::" ", false);
+        Storage.Set(GSTGroupCodeLbl, GSTGroupCode);
+
+        HSNSACCode := LibraryGST.CreateHSNSACCode(HSNSAC, GSTGroupCode, HsnSacType::HSN);
+        Storage.Set(HSNSACCodeLbl, HSNSACCode);
+
+        if IntraState then begin
+            CustomerNo := LibraryGST.CreateCustomerSetup();
+            UpdateCustomerSetupWithGST(CustomerNo, GSTCustomerType, LocationStateCode, LocPANNo);
+            InitializeTaxRateParameters(IntraState, LocationStateCode, LocationStateCode);
+        end else begin
+            CustomerStateCode := LibraryGST.CreateGSTStateCode();
+            CustomerNo := LibraryGST.CreateCustomerSetupWithPaymentMethodBank();
+            UpdateCustomerSetupWithGST(CustomerNo, GSTCustomerType, CustomerStateCode, LocPANNo);
+            if GSTCustomerType in [GSTCustomerType::Export, GSTCustomerType::"SEZ Unit", GSTCustomerType::"SEZ Development"] then
+                InitializeTaxRateParameters(IntraState, '', LocationStateCode)
+            else
+                InitializeTaxRateParameters(IntraState, CustomerStateCode, LocationStateCode);
+        end;
+        Storage.Set(CustomerNoLbl, CustomerNo);
+
+        CreateGSTComponentAndPostingSetup(IntraState, LocationStateCode, TaxComponent, GSTComponentCode);
+
+        CreateTaxRate();
+    end;
+
+    local procedure VerifyTaxTransactionValueExist(DocumentType: Enum "Sales Document Type"; DocumentNo: Code[20])
+    var
+        SalesLineArchive: Record "Sales Line Archive";
+        TaxTransactionValue: Record "Tax Transaction Value";
+    begin
+        SalesLineArchive.SetRange("Document Type", DocumentType);
+        SalesLineArchive.SetRange("Document No.", DocumentNo);
+        SalesLineArchive.FindLast();
+
+        TaxTransactionValue.SetFilter("Document Type Filter", '%1', DocumentType);
+        TaxTransactionValue.SetFilter("Document No. Filter", '%1', DocumentNo);
+        TaxTransactionValue.SetFilter("Line No. Filter", '%1', SalesLineArchive."Line No.");
+        TaxTransactionValue.SetFilter("Version No. Filter", '%1', SalesLineArchive."Version No.");
+        if TaxTransactionValue.IsEmpty then
+            Error(TaxTransactionValueEmptyErr, SalesLineArchive.RecordId());
+    end;
+
+    local procedure BlanketSalesOrderArchive(SalesHeader: Record "Sales Header")
+    var
+        BlanketSalesOrder: TestPage "Blanket Sales Order";
+    begin
+        BlanketSalesOrder.OpenView();
+        BlanketSalesOrder.GoToRecord(SalesHeader);
+        BlanketSalesOrder."Archi&ve Document".Invoke();
+    end;
+
+    local procedure SalesQuoteArchive(SalesHeader: Record "Sales Header")
+    var
+        SalesQuote: TestPage "Sales Quote";
+    begin
+        SalesQuote.OpenView();
+        SalesQuote.GoToRecord(SalesHeader);
+        SalesQuote."Archive Document".Invoke();
+    end;
+
+    local procedure SalesReturnOrderArchive(SalesHeader: Record "Sales Header")
+    var
+        SalesReturnOrder: TestPage "Sales Return Order";
+    begin
+        SalesReturnOrder.OpenView();
+        SalesReturnOrder.GoToRecord(SalesHeader);
+        SalesReturnOrder."Archive Document".Invoke();
+    end;
+
     local procedure CountDetailedGstLedgerEntryLines(var DetailedGSTLedgerEntryCount: Integer; var DetailedGSTLedgerEntryInfoCount: Integer; PostedDocumentNo: code[20])
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
@@ -4757,6 +5106,11 @@ codeunit 18196 "GST Sales Tests"
     begin
         if Message <> SuccessMsg then
             Error(NotPostedErr);
+    end;
+
+    [MessageHandler]
+    procedure DocumentArchived(Message: Text[1024])
+    begin
     end;
 
     [RequestPageHandler]

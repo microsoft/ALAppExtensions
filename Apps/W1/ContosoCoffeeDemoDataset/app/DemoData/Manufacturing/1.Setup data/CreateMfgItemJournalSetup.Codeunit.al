@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Manufacturing;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Inventory.Journal;
+
 codeunit 4765 "Create Mfg Item Journal Setup"
 {
     InherentEntitlements = X;
@@ -8,6 +19,8 @@ codeunit 4765 "Create Mfg Item Journal Setup"
     var
         SourceCodeSetup: Record "Source Code Setup";
         ContosoItem: Codeunit "Contoso Item";
+        ContosoUtilities: Codeunit "Contoso Utilities";
+
     begin
         SourceCodeSetup.Get();
 
@@ -16,14 +29,13 @@ codeunit 4765 "Create Mfg Item Journal Setup"
         ContosoItem.InsertItemJournalTemplate(OutputTemplateName(), OutputJournalLbl, "Item Journal Template Type"::Output, false, SourceCodeSetup."Output Journal");
         ContosoItem.InsertItemJournalTemplate(CapacityTemplateName(), CapacityJournalLbl, "Item Journal Template Type"::Capacity, false, SourceCodeSetup."Capacity Journal");
 
-        ContosoItem.InsertItemJournalBatch(ItemTemplateName(), StartManufacturingBatchName(), StartManufacturingLbl);
+        ContosoItem.InsertItemJournalBatch(ItemTemplateName(), ContosoUtilities.GetDefaultBatchNameLbl(), '');
     end;
 
     var
         ItemTok: Label 'ITEM', MaxLength = 10;
         ItemJournalLbl: Label 'Item Journal', MaxLength = 80;
         StartManufacturingTok: Label 'START-MANF', MaxLength = 10;
-        StartManufacturingLbl: Label 'Start Manufacturing', MaxLength = 80;
         ConsumptionTok: Label 'CONSUMP', MaxLength = 10;
         ConsumptionJournalLbl: Label 'Consumption Journal', MaxLength = 80;
         OUTPUTTok: Label 'OUTPUT', MaxLength = 10;

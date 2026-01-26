@@ -17,7 +17,7 @@ codeunit 12214 "Serv. Decl. Exp. Ext. IT"
         LocalServiceDeclarationMgt: Codeunit "Service Declaration Mgt. IT";
         EUROXLbl: Label 'EUROX', Locked = true;
         ExternalContentErr: Label '%1 is empty.', Comment = '%1 - File Content';
-        FileNameLbl: Label 'ServiceDeclaration.cee', Locked = true;
+        FileNameLbl: Label 'Scambi.cee', Locked = true;
         DownloadFromStreamErr: Label 'The file has not been saved.';
 
     trigger OnRun()
@@ -118,19 +118,32 @@ codeunit 12214 "Serv. Decl. Exp. Ext. IT"
 
     local procedure GetTotals(ServiceDeclarationHeader: Record "Service Declaration Header"): Text
     var
+        ServiceDeclarationLine: Record "Service Declaration Line";
         OutText: Text;
         Amount, LineCount : Integer;
     begin
-        LocalServiceDeclarationMgt.GetTotals(Amount, LineCount);
+        ServiceDeclarationLine.SetRange("Service Declaration No.", ServiceDeclarationHeader."No.");
+        if ServiceDeclarationLine.FindSet() then
+            repeat
+                // Done in a loop because rounded amount is not always the same as the sum of the rounded amounts
+                Amount += Round(ServiceDeclarationLine.Amount, 1);
+            until ServiceDeclarationLine.Next() = 0;
+        LineCount := ServiceDeclarationLine.Count();
 
         if ServiceDeclarationHeader."Corrective Entry" then begin
             OutText += Format('').PadLeft(54, '0');
             OutText += Format(LineCount).PadLeft(5, '0');
-            OutText += Format(Amount).PadLeft(13, '0');
+            if Amount > 0 then
+                OutText += Format(Amount).PadLeft(13, '0')
+            else
+                OutText += ConvertLastDigit(Format(-Amount).PadLeft(13, '0'));
         end else begin
             OutText += Format('').PadLeft(36, '0');
             OutText += Format(LineCount).PadLeft(5, '0');
-            OutText += Format(Amount).PadLeft(13, '0');
+            if Amount > 0 then
+                OutText += Format(Amount).PadLeft(13, '0')
+            else
+                OutText += ConvertLastDigit(Format(-Amount).PadLeft(13, '0'));
 
             if ServiceDeclarationHeader.Type = ServiceDeclarationHeader.Type::Purchases then
                 OutText += Format('').PadLeft(13, '0')
@@ -139,6 +152,38 @@ codeunit 12214 "Serv. Decl. Exp. Ext. IT"
         end;
 
         OutText += Format('').PadLeft(5, '0');
+        exit(OutText);
+    end;
+
+    local procedure ConvertLastDigit(TotalAmount: Text[13]): Text[13]
+    var
+        OutText: Text[13];
+        LastDigit: Text[1];
+    begin
+        LastDigit := CopyStr(TotalAmount, 13, 1);
+        OutText := CopyStr(TotalAmount, 1, 12);
+        case LastDigit of
+            '0':
+                OutText += 'p';
+            '1':
+                OutText += 'q';
+            '2':
+                OutText += 'r';
+            '3':
+                OutText += 's';
+            '4':
+                OutText += 't';
+            '5':
+                OutText += 'u';
+            '6':
+                OutText += 'v';
+            '7':
+                OutText += 'w';
+            '8':
+                OutText += 'x';
+            '9':
+                OutText += 'y';
+        end;
         exit(OutText);
     end;
 

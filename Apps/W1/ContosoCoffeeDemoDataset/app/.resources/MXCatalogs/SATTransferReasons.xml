@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-TransferReasons xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<TransferReason>
+		<Code>01</Code>
+		<Descripcion>Envío de mercancias facturadas con anterioridad </Descripcion>
+	</TransferReason>
+	<TransferReason>
+		<Code>02</Code>
+		<Descripcion>Reubicación de mercancías propias</Descripcion>
+	</TransferReason>
+	<TransferReason>
+		<Code>03</Code>
+		<Descripcion>Envío de mercancías objeto de contrato de consignación</Descripcion>
+	</TransferReason>
+	<TransferReason>
+		<Code>04</Code>
+		<Descripcion>Envío de mercancías para posterior enajenación</Descripcion>
+	</TransferReason>
+	<TransferReason>
+		<Code>05</Code>
+		<Descripcion>Envío de mercancías propiedad de terceros</Descripcion>
+	</TransferReason>
+	<TransferReason>
+		<Code>99</Code>
+		<Descripcion>Otros</Descripcion>
+	</TransferReason>
+</data-set-TransferReasons>

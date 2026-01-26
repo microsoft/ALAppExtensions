@@ -15,9 +15,7 @@ codeunit 31370 "G/L Entry Post Application CZA"
                   tabledata "Detailed G/L Entry CZA" = rim;
 
     var
-        GLEntry: Record "G/L Entry";
         ConfirmManagement: Codeunit "Confirm Management";
-        ApplyingAmount: Decimal;
         NotUseDialog: Boolean;
         ApplicationEntryErr: Label '%1 No. %2 does not have an application entry.', Comment = '%1 = TableCaption G/L Entry, %2 = Entry No.';
         PrecedeLatestErr: Label 'The entered %1 must not precede the latest %1 on %2.', Comment = '%1 = FieldCatpion Postig Date, %2 = TableCaption G/L Entry';
@@ -35,30 +33,38 @@ codeunit 31370 "G/L Entry Post Application CZA"
     var
         ApplyUnapplyParameters: Record "Apply Unapply Parameters";
         DetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
+        GLEntry: Record "G/L Entry";
+        TempAppliedGLEntry: Record "G/L Entry" temporary;
         PostApplication: Page "Post Application";
         WindowDialog: Dialog;
+        ApplyingAmount: Decimal;
         DocumentNo: Code[20];
         PostingDate: Date;
         ApplicationDate: Date;
         TransactionNo: Integer;
-        IsZero: Boolean;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforePostApplyGLEntry(ApplyingGLEntry, IsHandled);
+        if IsHandled then
+            exit;
+
         Clear(PostingDate);
-        GLEntry.SetCurrentKey("Applies-to ID CZA", "Applying Entry CZA");
-        GLEntry.SetLoadFields("Entry No.", "Applies-to ID CZA", "Amount to Apply CZA", Amount, "Posting Date");
+        GLEntry.ReadIsolation(IsolationLevel::ReadCommitted);
+        GLEntry.SetCurrentKey("Applies-to ID CZA");
         GLEntry.SetRange("Applies-to ID CZA", ApplyingGLEntry."Applies-to ID CZA");
-        GLEntry.SetRange("G/L Account No.", ApplyingGLEntry."G/L Account No.");
-        if ApplyingGLEntry.Amount > 0 then
-            GLEntry.SetFilter(Amount, '<0')
-        else
-            GLEntry.SetFilter(Amount, '>0');
+        OnPostApplyGLEntryOnAfterSetFilters(GLEntry, ApplyingGLEntry);
         if GLEntry.FindSet(false) then
             repeat
-                if GLEntry."Amount to Apply CZA" <> 0 then
-                    if (GLEntry.Amount * ApplyingGLEntry.Amount) > 0 then
-                        Error(SignAmtMustBediffErr);
-                if GLEntry."Posting Date" > PostingDate then
-                    PostingDate := GLEntry."Posting Date"
+                if IsAppliedEntry(GLEntry, ApplyingGLEntry) then begin
+                    CheckAmountSign(GLEntry, ApplyingGLEntry);
+                    if GLEntry."Posting Date" > PostingDate then
+                        PostingDate := GLEntry."Posting Date";
+
+                    TempAppliedGLEntry.Init();
+                    TempAppliedGLEntry := GLEntry;
+                    TempAppliedGLEntry.Insert();
+                end;
             until GLEntry.Next() = 0;
 
         if ApplyingGLEntry."Posting Date" > PostingDate then
@@ -84,115 +90,89 @@ codeunit 31370 "G/L Entry Post Application CZA"
         end else
             ApplicationDate := PostingDate;
 
-        ApplyingAmount := 0;
-        if GLEntry.FindSet(true) then
-            repeat
-                ApplyingAmount := ApplyingAmount + GLEntry."Amount to Apply CZA";
-                if GLEntry.Amount = 0 then begin
-                    IsZero := true;
-                    GLEntry."Closed at Date CZA" := ApplicationDate;
-                    GLEntry."Closed CZA" := true;
-                    GLEntry."Applying Entry CZA" := false;
-                    GLEntry."Amount to Apply CZA" := 0;
-                    GLEntry."Applies-to ID CZA" := '';
-                    GLEntry.Modify();
-                end;
-            until GLEntry.Next() = 0;
-        ApplyingAmount := ApplyingAmount + ApplyingGLEntry."Amount to Apply CZA";
+        TempAppliedGLEntry.Reset();
+        TempAppliedGLEntry.CalcSums("Amount to Apply CZA");
+        ApplyingAmount := TempAppliedGLEntry."Amount to Apply CZA";
+        ApplyingAmount += ApplyingGLEntry."Amount to Apply CZA";
 
         if ApplyingAmount <> 0 then begin
             if ApplyingAmount > 0 then
-                GLEntry.SetFilter(Amount, '>0')
+                TempAppliedGLEntry.SetFilter(Amount, '>0')
             else
-                GLEntry.SetFilter(Amount, '<0');
-            GLEntry.SetRange("Applying Entry CZA", false);
-            GLEntry.Ascending(false);
-            if GLEntry.FindSet(true) then
+                TempAppliedGLEntry.SetFilter(Amount, '<0');
+            TempAppliedGLEntry.SetRange("Applying Entry CZA", false);
+            TempAppliedGLEntry.Ascending(false);
+            if TempAppliedGLEntry.FindSet(true) then
                 repeat
-                    if (ApplyingGLEntry.Amount > 0) and (GLEntry.Amount < 0) or
-                       (ApplyingGLEntry.Amount < 0) and (GLEntry.Amount > 0)
+                    if (ApplyingGLEntry.Amount >= 0) and (TempAppliedGLEntry.Amount < 0) or
+                       (ApplyingGLEntry.Amount <= 0) and (TempAppliedGLEntry.Amount > 0)
                     then begin
-                        GLEntry.CalcFields("Applied Amount CZA");
+                        TempAppliedGLEntry.CalcFields("Applied Amount CZA");
                         if (ApplyingAmount <> 0) and
-                           (GLEntry.Amount = GLEntry."Amount to Apply CZA" + GLEntry."Applied Amount CZA")
+                           (TempAppliedGLEntry.Amount = TempAppliedGLEntry."Amount to Apply CZA" + TempAppliedGLEntry."Applied Amount CZA")
                         then begin
-                            SetAmountToApply();
-                            GLEntry.Modify();
+                            SetAmountToApply(TempAppliedGLEntry, ApplyingAmount);
+                            TempAppliedGLEntry.Modify();
                         end;
                     end;
-                until GLEntry.Next() = 0;
+                until TempAppliedGLEntry.Next() = 0;
 
             if ApplyingAmount <> 0 then begin
-                GLEntry.SetFilter("Amount to Apply CZA", '<>0');
-                if GLEntry.FindSet(true) then
+                TempAppliedGLEntry.SetFilter("Amount to Apply CZA", '<>0');
+                if TempAppliedGLEntry.FindSet(true) then
                     repeat
-                        if (ApplyingGLEntry.Amount > 0) and (GLEntry.Amount < 0) or
-                           (ApplyingGLEntry.Amount < 0) and (GLEntry.Amount > 0)
+                        if (ApplyingGLEntry.Amount >= 0) and (TempAppliedGLEntry.Amount < 0) or
+                           (ApplyingGLEntry.Amount <= 0) and (TempAppliedGLEntry.Amount > 0)
                         then begin
-                            SetAmountToApply();
-                            GLEntry.Modify();
+                            SetAmountToApply(TempAppliedGLEntry, ApplyingAmount);
+                            TempAppliedGLEntry.Modify();
                         end;
-                    until GLEntry.Next() = 0;
+                    until TempAppliedGLEntry.Next() = 0;
             end;
-            GLEntry.Ascending(true);
-
-            if ApplyingAmount <> 0 then begin
-                GLEntry.SetRange("Applying Entry CZA", true);
-                if GLEntry.FindFirst() then begin
-                    GLEntry."Amount to Apply CZA" := GLEntry."Amount to Apply CZA" - ApplyingAmount;
-                    ApplyingAmount := 0;
-                    GLEntry.Modify();
-                end;
-            end;
+            TempAppliedGLEntry.Ascending(true);
         end;
-
-        GLEntry.Reset();
-        GLEntry.SetCurrentKey("Applies-to ID CZA");
-        GLEntry.SetRange("Applies-to ID CZA", ApplyingGLEntry."Applies-to ID CZA");
-        GLEntry.SetRange("G/L Account No.", ApplyingGLEntry."G/L Account No.");
-        GLEntry.SetRange("Amount to Apply CZA", 0);
-        if not GLEntry.IsEmpty() then
-            GLEntry.ModifyAll("Applies-to ID CZA", '');
 
         TransactionNo := FindLastTransactionNo() + 1;
 
-        GLEntry.Reset();
-        GLEntry.SetCurrentKey("Applies-to ID CZA");
-        GLEntry.SetLoadFields("Entry No.", "G/L Account No.", "Amount to Apply CZA", "Applies-to ID CZA", Amount);
-        GLEntry.SetRange("Applies-to ID CZA", ApplyingGLEntry."Applies-to ID CZA");
-        GLEntry.SetRange("G/L Account No.", ApplyingGLEntry."G/L Account No.");
-        if GLEntry.FindSet(true) then
+        TempAppliedGLEntry.Init();
+        TempAppliedGLEntry := ApplyingGLEntry;
+        TempAppliedGLEntry."Amount to Apply CZA" -= ApplyingAmount;
+        TempAppliedGLEntry.Insert();
+
+        TempAppliedGLEntry.Reset();
+        TempAppliedGLEntry.SetRange("Applies-to ID CZA", ApplyingGLEntry."Applies-to ID CZA");
+        if TempAppliedGLEntry.FindSet() then
             repeat
-                DetailedGLEntryCZA.Init();
-                DetailedGLEntryCZA."Entry No." := FindLastDtldGLEntryNo() + 1;
-                DetailedGLEntryCZA."G/L Entry No." := GLEntry."Entry No.";
-                DetailedGLEntryCZA."Applied G/L Entry No." := ApplyingGLEntry."Entry No.";
-                DetailedGLEntryCZA."G/L Account No." := GLEntry."G/L Account No.";
-                DetailedGLEntryCZA."Posting Date" := ApplicationDate;
-                DetailedGLEntryCZA."Document No." := DocumentNo;
-                DetailedGLEntryCZA."Transaction No." := TransactionNo;
-                DetailedGLEntryCZA.Amount := -GLEntry."Amount to Apply CZA";
-                if NotUseDialog then
-                    DetailedGLEntryCZA."User ID" := CopyStr(UserId, 1, MaxStrLen(DetailedGLEntryCZA."User ID"))
-                else
-                    DetailedGLEntryCZA."User ID" := GLEntry."Applies-to ID CZA";
-                DetailedGLEntryCZA.Insert();
-                GLEntry.CalcFields("Applied Amount CZA");
-                if GLEntry."Applied Amount CZA" = GLEntry.Amount then begin
-                    GLEntry."Closed at Date CZA" := ApplicationDate;
-                    GLEntry."Closed CZA" := true;
+                if TempAppliedGLEntry.Amount = 0 then
+                    CloseGLEntry(TempAppliedGLEntry, ApplicationDate);
+                if TempAppliedGLEntry."Amount to Apply CZA" = 0 then
+                    TempAppliedGLEntry."Applies-to ID CZA" := ''
+                else begin
+                    DetailedGLEntryCZA.Init();
+                    DetailedGLEntryCZA."Entry No." := FindLastDtldGLEntryNo() + 1;
+                    DetailedGLEntryCZA."G/L Entry No." := TempAppliedGLEntry."Entry No.";
+                    DetailedGLEntryCZA."Applied G/L Entry No." := ApplyingGLEntry."Entry No.";
+                    DetailedGLEntryCZA."G/L Account No." := TempAppliedGLEntry."G/L Account No.";
+                    DetailedGLEntryCZA."Posting Date" := ApplicationDate;
+                    DetailedGLEntryCZA."Document No." := DocumentNo;
+                    DetailedGLEntryCZA."Transaction No." := TransactionNo;
+                    DetailedGLEntryCZA.Amount := -TempAppliedGLEntry."Amount to Apply CZA";
+                    if NotUseDialog then
+                        DetailedGLEntryCZA."User ID" := CopyStr(UserId, 1, MaxStrLen(DetailedGLEntryCZA."User ID"))
+                    else
+                        DetailedGLEntryCZA."User ID" := TempAppliedGLEntry."Applies-to ID CZA";
+                    DetailedGLEntryCZA.Insert();
+
+                    CloseGLEntry(TempAppliedGLEntry, ApplicationDate);
                 end;
-                GLEntry."Applying Entry CZA" := false;
-                GLEntry."Amount to Apply CZA" := 0;
-                GLEntry."Applies-to ID CZA" := '';
-                GLEntry.Modify();
-            until GLEntry.Next() = 0
+
+                WriteToDatabase(TempAppliedGLEntry);
+            until TempAppliedGLEntry.Next() = 0
         else
-            if not NotUseDialog then
-                if not IsZero then begin
-                    WindowDialog.Close();
-                    Error(NothingToApplyErr);
-                end;
+            if not NotUseDialog then begin
+                WindowDialog.Close();
+                Error(NothingToApplyErr);
+            end;
         if not NotUseDialog then begin
             Commit();
             WindowDialog.Close();
@@ -202,8 +182,9 @@ codeunit 31370 "G/L Entry Post Application CZA"
 
     procedure PostUnApplyGLEntry(var DetailedGLEntryCZA: Record "Detailed G/L Entry CZA"; DocumentNo: Code[20]; PostingDate: Date)
     var
-        SelectedDetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
         ChangedDetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
+        GLEntry: Record "G/L Entry";
+        SelectedDetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
         WindowDialog: Dialog;
         ApplicationEntryNo: Integer;
         TransactionNo: Integer;
@@ -269,6 +250,7 @@ codeunit 31370 "G/L Entry Post Application CZA"
     procedure UnApplyGLEntry(GLEntryNo: Integer)
     var
         DetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
+        GLEntry: Record "G/L Entry";
         ApplicationEntryNo: Integer;
     begin
         GLEntry.Get(GLEntryNo);
@@ -335,13 +317,24 @@ codeunit 31370 "G/L Entry Post Application CZA"
             DtldGLEntryNo := 0;
     end;
 
+#if not CLEAN26
+    [Obsolete('The local SetAmountToApply procedure is used instead.', '26.0')]
     procedure SetAmountToApply()
+    var
+        GLEntry: Record "G/L Entry";
+        ApplyingAmount: Decimal;
+    begin
+        SetAmountToApply(GLEntry, ApplyingAmount);
+    end;
+#endif
+
+    local procedure SetAmountToApply(var GLEntry: Record "G/L Entry"; var ApplyingAmount: Decimal)
     begin
         if Abs(GLEntry."Amount to Apply CZA") - Abs(ApplyingAmount) <= 0 then begin
-            ApplyingAmount := ApplyingAmount - GLEntry."Amount to Apply CZA";
+            ApplyingAmount -= GLEntry."Amount to Apply CZA";
             GLEntry."Amount to Apply CZA" := 0;
         end else begin
-            GLEntry."Amount to Apply CZA" := GLEntry."Amount to Apply CZA" - ApplyingAmount;
+            GLEntry."Amount to Apply CZA" -= ApplyingAmount;
             ApplyingAmount := 0;
         end;
     end;
@@ -368,22 +361,15 @@ codeunit 31370 "G/L Entry Post Application CZA"
     procedure ApplyGLEntry(var ApplGLEntry: Record "G/L Entry")
     var
         SelectedGLEntry: Record "G/L Entry";
-        ApplyGLEntriesCZA: Page "Apply G/L Entries CZA";
-        EntryApplID: Code[50];
+        ApplyGenLedgerEntriesCZA: Page "Apply Gen. Ledger Entries CZA";
     begin
         if ApplGLEntry."Closed CZA" then
             Error(ClosedEntryErr);
 
-        EntryApplID := CopyStr(UserId, 1, MaxStrLen(EntryApplID));
-        if EntryApplID = '' then
-            EntryApplID := '***';
-
-        SelectedGLEntry.SetCurrentKey("G/L Account No.");
         SelectedGLEntry.SetRange("G/L Account No.", ApplGLEntry."G/L Account No.");
-        SelectedGLEntry.SetRange("Closed CZA", false);
-        ApplyGLEntriesCZA.SetAplEntry(ApplGLEntry."Entry No.");
-        ApplyGLEntriesCZA.SetTableView(SelectedGLEntry);
-        ApplyGLEntriesCZA.RunModal();
+        ApplyGenLedgerEntriesCZA.InsertEntry(SelectedGLEntry);
+        ApplyGenLedgerEntriesCZA.SetApplyingEntry(ApplGLEntry."Entry No.");
+        ApplyGenLedgerEntriesCZA.RunModal();
     end;
 
     procedure AutomatedGLEntryApplication(var GenJournalLine: Record "Gen. Journal Line"; var VarGLEntry: Record "G/L Entry")
@@ -392,7 +378,7 @@ codeunit 31370 "G/L Entry Post Application CZA"
         IsHandled: Boolean;
     begin
         IsHandled := false;
-        OnBeforeAtomatedGLEntryApplication(GenJournalLine, GLEntry, IsHandled);
+        OnBeforeAtomatedGLEntryApplication(GenJournalLine, VarGLEntry, IsHandled);
         if IsHandled then
             exit;
 
@@ -427,8 +413,210 @@ codeunit 31370 "G/L Entry Post Application CZA"
             end;
     end;
 
+    local procedure IsAppliedEntry(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry") IsOk: Boolean
+    begin
+        IsOk :=
+            (GLEntry."Entry No." <> ApplyingGLEntry."Entry No.") and
+            (GLEntry."G/L Account No." = ApplyingGLEntry."G/L Account No.") and
+            ((GLEntry.Amount * ApplyingGLEntry.Amount) <= 0);
+        OnAfterIsAppliedEntry(GLEntry, ApplyingGLEntry, IsOk);
+    end;
+
+    local procedure CheckAmountSign(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry")
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnPostApplyGLEntryOnBeforeSignAmtCheck(GLEntry, ApplyingGLEntry, IsHandled);
+        if IsHandled then
+            exit;
+
+        if GLEntry."Amount to Apply CZA" <> 0 then
+            if (GLEntry.Amount * ApplyingGLEntry.Amount) > 0 then
+                Error(SignAmtMustBediffErr);
+    end;
+
+    local procedure CloseGLEntry(var GLEntry: Record "G/L Entry"; ClosedAtDate: Date)
+    begin
+        if GLEntry.Amount <> 0 then
+            GLEntry.CalcFields("Applied Amount CZA");
+        if GLEntry."Applied Amount CZA" = GLEntry.Amount then begin
+            GLEntry."Closed at Date CZA" := ClosedAtDate;
+            GLEntry."Closed CZA" := true;
+        end;
+        GLEntry."Applying Entry CZA" := false;
+        GLEntry."Amount to Apply CZA" := 0;
+        GLEntry."Applies-to ID CZA" := '';
+    end;
+
+    local procedure WriteToDatabase(GLEntry: Record "G/L Entry")
+    var
+        ModifiedGLEntry: Record "G/L Entry";
+    begin
+        ModifiedGLEntry.Get(GLEntry."Entry No.");
+        ModifiedGLEntry."Closed at Date CZA" := GLEntry."Closed at Date CZA";
+        ModifiedGLEntry."Closed CZA" := GLEntry."Closed CZA";
+        ModifiedGLEntry."Applying Entry CZA" := GLEntry."Applying Entry CZA";
+        ModifiedGLEntry."Amount to Apply CZA" := GLEntry."Amount to Apply CZA";
+        ModifiedGLEntry."Applies-to ID CZA" := GLEntry."Applies-to ID CZA";
+        ModifiedGLEntry.Modify();
+    end;
+
+    internal procedure IsApplyGLEntryEnabled(GenJnlLine: Record "Gen. Journal Line") IsEnabled: Boolean
+    begin
+        IsEnabled := GetAppliedAccountType(GenJnlLine) = GenJnlLine."Account Type"::"G/L Account";
+        OnIsApplyGLEntryEnabled(GenJnlLine, IsEnabled);
+    end;
+
+    internal procedure GetAppliedAccountType(GenJnlLine: Record "Gen. Journal Line"): Enum "Gen. Journal Account Type"
+    var
+        AccountType: Enum "Gen. Journal Account Type";
+        AccountNo: Code[20];
+        AccountBalance: Boolean;
+    begin
+        GetAppliedAccount(GenJnlLine, AccountType, AccountNo, AccountBalance);
+        exit(AccountType);
+    end;
+
+    internal procedure GetAppliedAccount(GenJnlLine: Record "Gen. Journal Line"; var AccountType: Enum "Gen. Journal Account Type"; var AccountNo: Code[20]; var AccountBalance: Boolean): Code[20]
+    begin
+        if GenJnlLine."Bal. Account Type" in
+               [GenJnlLine."Bal. Account Type"::Customer, GenJnlLine."Bal. Account Type"::Vendor, GenJnlLine."Bal. Account Type"::Employee]
+        then begin
+            AccountType := GenJnlLine."Bal. Account Type";
+            AccountNo := GenJnlLine."Bal. Account No.";
+            AccountBalance := true;
+        end else begin
+            AccountType := GenJnlLine."Account Type";
+            AccountNo := GenJnlLine."Account No.";
+            AccountBalance := false;
+        end;
+
+        if AccountType in [GenJnlLine."Account Type"::Customer, GenJnlLine."Account Type"::Vendor, GenJnlLine."Account Type"::Employee] then
+            exit;
+
+        if (GenJnlLine."Account Type" = GenJnlLine."Account Type"::"G/L Account") and (GenJnlLine."Account No." <> '') then begin
+            AccountType := GenJnlLine."Account Type";
+            AccountNo := GenJnlLine."Account No.";
+            AccountBalance := false;
+        end else begin
+            AccountType := GenJnlLine."Bal. Account Type";
+            AccountNo := GenJnlLine."Bal. Account No.";
+            AccountBalance := true;
+        end;
+    end;
+
+    internal procedure ApplyGLEntry(var GenJnlLine: Record "Gen. Journal Line")
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+        AccountType: Enum "Gen. Journal Account Type";
+        AccountNo: Code[20];
+        AccountBalance: Boolean;
+    begin
+        GetAppliedAccount(GenJnlLine, AccountType, AccountNo, AccountBalance);
+
+        if AccountType <> AccountType::"G/L Account" then
+            exit;
+
+        ApplyGLEntry(GenJnlLine, AccountNo, AccountBalance);
+        CrossApplicationMgtCZL.SetAppliesToID(GenJnlLine."Applies-to ID");
+    end;
+
+    local procedure ApplyGLEntry(var GenJournalLine: Record "Gen. Journal Line"; AccountNo: Code[20]; AccountBalance: Boolean)
+    var
+        GLEntry: Record "G/L Entry";
+        TempGLEntry: Record "G/L Entry" temporary;
+        ApplyGenLedgerEntriesCZA: Page "Apply Gen. Ledger Entries CZA";
+        PreviousAppliesToID: Code[50];
+        EntrySelected: Boolean;
+        MustSpecifyErr: Label 'You must specify %1 or %2.', Comment = '%1 = FieldCaption Document No., %2 = FieldCaption Applies-to ID';
+    begin
+        GLEntry.SetRange("G/L Account No.", AccountNo);
+        if GenJournalLine.Amount > 0 then
+            if AccountBalance then
+                GLEntry.SetFilter(Amount, '>0')
+            else
+                GLEntry.SetFilter(Amount, '<0');
+        if GenJournalLine.Amount < 0 then
+            if AccountBalance then
+                GLEntry.SetFilter(Amount, '<0')
+            else
+                GLEntry.SetFilter(Amount, '>0');
+        PreviousAppliesToID := GenJournalLine."Applies-to ID";
+        if GenJournalLine."Applies-to ID" = '' then
+            GenJournalLine."Applies-to ID" := GenJournalLine."Document No.";
+        if GenJournalLine."Applies-to ID" = '' then
+            Error(
+              MustSpecifyErr,
+              GenJournalLine.FieldCaption("Document No."), GenJournalLine.FieldCaption("Applies-to ID"));
+
+        if GLEntry.IsEmpty() then
+            exit;
+
+        GLEntry.SetAutoCalcFields("Applied Amount CZA");
+        GLEntry.SetLoadFields("Applies-to ID CZA", "Posting Date", "Document Type", "Document No.", "G/L Account No.", Description, Amount, "Amount to Apply CZA", "Applying Entry CZA", "Applied Amount CZA",
+            "Gen. Bus. Posting Group", "Gen. Prod. Posting Group", "VAT Bus. Posting Group", "VAT Prod. Posting Group");
+
+        ApplyGenLedgerEntriesCZA.InsertEntry(GLEntry);
+        ApplyGenLedgerEntriesCZA.SetGenJournalLine(GenJournalLine);
+        ApplyGenLedgerEntriesCZA.LookupMode(true);
+        EntrySelected := ApplyGenLedgerEntriesCZA.RunModal() = Action::LookupOK;
+        if not EntrySelected then begin
+            GenJournalLine."Applies-to ID" := PreviousAppliesToID;
+            exit;
+        end;
+        ApplyGenLedgerEntriesCZA.CopyEntry(TempGLEntry);
+
+        TempGLEntry.Reset();
+        TempGLEntry.SetRange("Closed CZA", false);
+        TempGLEntry.SetRange("Applies-to ID CZA", GenJournalLine."Applies-to ID");
+        if TempGLEntry.FindSet() then begin
+            if GenJournalLine.Amount = 0 then begin
+                repeat
+                    if Abs(TempGLEntry."Amount to Apply CZA") >= Abs(TempGLEntry.RemainingAmountCZA()) then
+                        GenJournalLine.Amount := GenJournalLine.Amount - TempGLEntry.RemainingAmountCZA()
+                    else
+                        GenJournalLine.Amount := GenJournalLine.Amount - TempGLEntry."Amount to Apply CZA";
+                until TempGLEntry.Next() = 0;
+                if GenJournalLine."Account Type" <> GenJournalLine."Bal. Account Type"::"G/L Account" then
+                    GenJournalLine.Amount := -GenJournalLine.Amount;
+                GenJournalLine.Validate(Amount);
+            end;
+            GenJournalLine."Applies-to Doc. Type" := GenJournalLine."Applies-to Doc. Type"::" ";
+            GenJournalLine."Applies-to Doc. No." := '';
+        end else
+            GenJournalLine."Applies-to ID" := '';
+        if GenJournalLine."Line No." <> 0 then
+            GenJournalLine.Modify();
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAtomatedGLEntryApplication(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnPostApplyGLEntryOnAfterSetFilters(var GLEntry: Record "G/L Entry"; var ApplyingGLEntry: Record "G/L Entry")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnPostApplyGLEntryOnBeforeSignAmtCheck(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterIsAppliedEntry(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry"; var IsOk: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostApplyGLEntry(var ApplyingGLEntry: Record "G/L Entry"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnIsApplyGLEntryEnabled(GenJnlLine: Record "Gen. Journal Line"; var IsEnabled: Boolean)
     begin
     end;
 }

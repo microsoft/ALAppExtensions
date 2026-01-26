@@ -3,6 +3,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     // version Test,W1
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();
@@ -24,7 +25,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         InvalidResponseTxt: Label 'The response was not valid.';
         DataEncryptExportTxt: Label 'The encryption key file must be protected by a password and stored in a safe location.';
         DataEncryptConfirmTxt: Label 'Enabling encryption will generate an encryption key on the server.';
-        MissingPasswordTxt: Label 'The password is missing in the Envestnet Yodlee Bank Feeds Service Setup window.';
+        MissingPasswordTxt: Label 'The client secret is missing in the Envestnet Yodlee Bank Feeds Service Setup window.';
         CobrandMustBeSpecifiedTxt: Label 'By modifying the Service URL you must specify your own Cobrand credentials.';
         DisableServiceAndRemoveAccTxt: Label 'Disabling the service will unlink all online bank accounts.';
         NoLinkedBankAccountsTxt: Label 'Do you want to clear the online bank login details?';
@@ -104,13 +105,9 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         CryptographyManagement: Codeunit "Cryptography Management";
-        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         MSYodleeBankServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
     begin
         Initialize();
-
-        // Enable SaaS mode
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(TRUE);
 
         // Configure encryption key if it does not exist
         IF NOT CryptographyManagement.IsEncryptionEnabled() THEN BEGIN
@@ -144,6 +141,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         MSYodleeBankServiceSetup."Accept Terms of Use" := TRUE;
         IF MSYodleeBankServiceSetup."Bank Feed Import Format" = '' THEN
             MSYodleeBankServiceSetup."Bank Feed Import Format" := 'YODLEEBANKFEED';
+        IF MSYodleeBankServiceSetup."User Profile Email Address" = '' THEN
+            MSYodleeBankServiceSetup."User Profile Email Address" := 'cristina@contoso.com';
         MSYodleeBankServiceSetup.MODIFY();
     end;
 
@@ -1734,6 +1733,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         MSYodleeBankServiceSetupPage.OPENEDIT();
         MSYodleeBankServiceSetupPage.SetDefaults.INVOKE();
+        MSYodleeBankServiceSetupPage."User Profile Email Address".SetValue('cristina@contoso.com');
         MSYodleeBankServiceSetupPage.Enabled.SETVALUE(TRUE);
         MSYodleeBankServiceSetupPage.CLOSE();
 
@@ -1929,11 +1929,13 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
     procedure TestDemoCompanyWarnsUserOnAction();
     var
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         BankAccountList: TestPage "Bank Account List";
         BankAccountCard: TestPage "Bank Account Card";
     begin
         // Setup
         Initialize();
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         SetDemoCompanyState(TRUE);
         BankAccountCard.OPENVIEW();
         BankAccountList.OPENVIEW();
@@ -1950,6 +1952,8 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         LibraryVariableStorage.Enqueue(DemoCompanyWithDefaultCredentialMsg);
         BankAccountCard.LinkToOnlineBankAccount.INVOKE();
+
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
 
     [Test]
@@ -1974,6 +1978,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         // Assert
         asserterror MSYodleeBankServiceSetup.GET();
+        Assert.ExpectedErrorCannotFind(Database::"MS - Yodlee Bank Service Setup");
         Assert.ExpectedError('The MS - Yodlee Bank Service Setup does not exist');
     end;
 

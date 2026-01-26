@@ -384,10 +384,6 @@ page 31137 "EET Simple Registration CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Send';
                 Image = SendElectronicDocument;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Sends the selected entry to the EET service to register.';
 
                 trigger OnAction()
@@ -395,6 +391,15 @@ page 31137 "EET Simple Registration CZL"
                     SendToService();
                     CurrPage.Update();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Send_Promoted; Send)
+                {
+                }
             }
         }
     }

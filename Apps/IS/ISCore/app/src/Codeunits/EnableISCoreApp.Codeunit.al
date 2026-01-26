@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance;
 
-using System.Reflection;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.IRS;
 using Microsoft.FixedAssets.Depreciation;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Sales.Setup;
+using System.Reflection;
 
 codeunit 14611 "Enable IS Core App"
 {
@@ -64,7 +64,7 @@ codeunit 14611 "Enable IS Core App"
                     TargetFieldRef := TargetRecRef.Field(SourceFieldRefNo);
                     TargetFieldRef.VALUE := SourceFieldRef.VALUE;
                 until SourceField.Next() = 0;
-            TargetRecRef.Insert();
+            if TargetRecRef.Insert() then;
         until SourceRecRef.Next() = 0;
         SourceRecRef.Close();
         TargetRecRef.Close();
@@ -92,8 +92,20 @@ codeunit 14611 "Enable IS Core App"
         SourceRecRef.Close();
     end;
 
+    procedure UpdateDocumentRetentionPeriod();
+    var
+        ISCoreInstall: codeunit "IS Core Install";
+    begin
+        ISCoreInstall.UpdateGeneralLedgserSetup();
+    end;
+
     procedure GetISCoreAppUpdateTag(): Code[250]
     begin
         exit('MS-460511-ISCoreApp-20231118');
+    end;
+
+    procedure GetISDocRetentionPeriodTag(): Code[250]
+    begin
+        exit('MS-534853-DocRetentionPeriod-20240514');
     end;
 }

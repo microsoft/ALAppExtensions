@@ -456,8 +456,8 @@ report 18001 "Archived Purchase Quote GST"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.LANGUAGE := Language.GetLanguageID("Language Code");
-                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
+                CurrReport.LANGUAGE := GlobalLanguage.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
                 Vendor.Get("Buy-from Vendor No.");
                 CompanyInformation.Get();
 
@@ -540,7 +540,7 @@ report 18001 "Archived Purchase Quote GST"
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
         RespCenter: Record "Responsibility Center";
-        Language: Codeunit "Language";
+        GlobalLanguage: Codeunit "Language";
         FormatAddr: Codeunit "Format Address";
         PurchCountPrintedArch: Codeunit "Purch.HeaderArch-Printed";
         VendAddr: array[8] of Text[50];

@@ -42,6 +42,22 @@ codeunit 139860 "APIV2 - G/L Setup E2E"
         Assert.AreEqual(GeneralLedgerSetup."Additional Reporting Currency", PropertyJsonToken.AsValue().AsCode(), 'Expected the same additionalReportingCurrency for generalLedgerSetup');
         JsonToken.AsObject().Get('localCurrencySymbol', PropertyJsonToken);
         Assert.AreEqual(GeneralLedgerSetup."Local Currency Symbol", PropertyJsonToken.AsValue().AsText(), 'Expected the same localCurrencySymbol for generalLedgerSetup');
+        JsonToken.AsObject().Get('shortcutDimension1Code', PropertyJsonToken);
+        Assert.AreEqual(GeneralLedgerSetup."Shortcut Dimension 1 Code", PropertyJsonToken.AsValue().AsText(), 'Expected the same shortcutDimension1Code for generalLedgerSetup');
+        JsonToken.AsObject().Get('shortcutDimension2Code', PropertyJsonToken);
+        Assert.AreEqual(GeneralLedgerSetup."Shortcut Dimension 2 Code", PropertyJsonToken.AsValue().AsText(), 'Expected the same shortcutDimension2Code for generalLedgerSetup');
+        JsonToken.AsObject().Get('shortcutDimension3Code', PropertyJsonToken);
+        Assert.AreEqual(GeneralLedgerSetup."Shortcut Dimension 3 Code", PropertyJsonToken.AsValue().AsText(), 'Expected the same shortcutDimension3Code for generalLedgerSetup');
+        JsonToken.AsObject().Get('shortcutDimension4Code', PropertyJsonToken);
+        Assert.AreEqual(GeneralLedgerSetup."Shortcut Dimension 4 Code", PropertyJsonToken.AsValue().AsText(), 'Expected the same shortcutDimension4Code for generalLedgerSetup');
+        JsonToken.AsObject().Get('shortcutDimension5Code', PropertyJsonToken);
+        Assert.AreEqual(GeneralLedgerSetup."Shortcut Dimension 5 Code", PropertyJsonToken.AsValue().AsText(), 'Expected the same shortcutDimension5Code for generalLedgerSetup');
+        JsonToken.AsObject().Get('shortcutDimension6Code', PropertyJsonToken);
+        Assert.AreEqual(GeneralLedgerSetup."Shortcut Dimension 6 Code", PropertyJsonToken.AsValue().AsText(), 'Expected the same shortcutDimension6Code for generalLedgerSetup');
+        JsonToken.AsObject().Get('shortcutDimension7Code', PropertyJsonToken);
+        Assert.AreEqual(GeneralLedgerSetup."Shortcut Dimension 7 Code", PropertyJsonToken.AsValue().AsText(), 'Expected the same shortcutDimension7Code for generalLedgerSetup');
+        JsonToken.AsObject().Get('shortcutDimension8Code', PropertyJsonToken);
+        Assert.AreEqual(GeneralLedgerSetup."Shortcut Dimension 8 Code", PropertyJsonToken.AsValue().AsText(), 'Expected the same shortcutDimension8Code for generalLedgerSetup');
     end;
 
 }

@@ -48,6 +48,12 @@ page 5010 "Service Declaration Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether the VAT Registration No. is enabled for the service declaration.';
                 }
+                field("Enable Serv. Trans. Types"; Rec."Enable Serv. Trans. Types")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether the service transaction types are enabled for the service declaration.';
+
+                }
                 field("Vend. VAT Reg. No. Type"; Rec."Vend. VAT Reg. No. Type")
                 {
                     ApplicationArea = Basic, Suite;

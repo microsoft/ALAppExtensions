@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -27,9 +27,6 @@ permissionset 5262 "Audit Export - Objects"
                   page "Audit File Export Subpage" = X,
                   page "Audit Files" = X,
                   page "G/L Account Mapping" = X,
-#if not CLEAN24
-                  page "G/L Account Mapping Card" = X,
-#endif
                   page "G/L Acc. Mapping Card" = X,
                   page "G/L Account Mapping Subpage" = X,
                   page "Standard Account Categories" = X,

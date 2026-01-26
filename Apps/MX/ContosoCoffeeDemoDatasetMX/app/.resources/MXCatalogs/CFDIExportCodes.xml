@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-ExportCodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ExportCode>
+		<Code>01</Code>
+		<Description>No aplica</Description>
+		<ForeignTrade>0</ForeignTrade>
+	</ExportCode>
+	<ExportCode>
+		<Code>02</Code>
+		<Description>Definitiva</Description>
+		<ForeignTrade>1</ForeignTrade>
+	</ExportCode>
+	<ExportCode>
+		<Code>03</Code>
+		<Description>Temporal</Description>
+		<ForeignTrade>1</ForeignTrade>
+	</ExportCode>
+	<ExportCode>
+		<Code>04</Code>
+		<Description>Definitiva con clave distinta a A1 o no existe CFF</Description>
+		<ForeignTrade>1</ForeignTrade>
+	</ExportCode>
+</data-set-ExportCodes>

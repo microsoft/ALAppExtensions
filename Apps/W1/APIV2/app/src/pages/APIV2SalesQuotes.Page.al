@@ -1,11 +1,11 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Integration.Graph;
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Entity;
+using Microsoft.Integration.Graph;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using System.Reflection;
 
@@ -22,6 +22,7 @@ page 30037 "APIV2 - Sales Quotes"
     PageType = API;
     SourceTable = "Sales Quote Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages sales quote documents including customer details, quote status, pricing, addresses, and validity dates. Supports full lifecycle operations (GET, POST, PATCH, DELETE) for creating, retrieving, updating, and deleting sales quotes, enabling integration with lead management, e-commerce platforms, and automated quoting workflows. Ideal for external systems needing to automate or synchronize sales quoting processes with Business Central.';
 
     layout
     {
@@ -828,6 +829,7 @@ page 30037 "APIV2 - Sales Quotes"
     end;
 
     [ServiceEnabled]
+    [Caption('Converts the sales quote directly into a sales invoice')]
     [Scope('Cloud')]
     procedure MakeInvoice(var ActionContext: WebServiceActionContext)
     var
@@ -842,6 +844,7 @@ page 30037 "APIV2 - Sales Quotes"
     end;
 
     [ServiceEnabled]
+    [Caption('Converts the sales quote into a sales order for fulfillment')]
     [Scope('Cloud')]
     procedure MakeOrder(var ActionContext: WebServiceActionContext)
     var
@@ -856,6 +859,7 @@ page 30037 "APIV2 - Sales Quotes"
     end;
 
     [ServiceEnabled]
+    [Caption('Sends the sales quote document to the customer via email')]
     [Scope('Cloud')]
     procedure Send(var ActionContext: WebServiceActionContext)
     var

@@ -11,20 +11,8 @@ codeunit 11783 "Sales Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignItemValues', '', false, false)]
     local procedure CopyFromItemOnAfterAssignItemValues(var SalesLine: Record "Sales Line"; Item: Record Item)
-#if not CLEAN22
-    var
-        SalesHeader: Record "Sales Header";
-#endif
     begin
         SalesLine."Tariff No. CZL" := Item."Tariff No.";
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
-        SalesLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
-        if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
-            SalesLine."Physical Transfer CZL" := SalesHeader."Physical Transfer CZL";
-#pragma warning restore AL0432
-#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignResourceValues', '', false, false)]

@@ -13,7 +13,6 @@ page 11702 "Acc. Schedule File Mapping CZL"
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = Worksheet;
-    SaveValues = true;
     SourceTable = "Acc. Schedule Line";
 
     layout
@@ -30,24 +29,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     Lookup = true;
                     LookupPageId = "Account Schedule Names";
                     ToolTip = 'Specifies the account schedule name.';
-#if CLEAN22
                     Editable = false;
-#else
-                    trigger OnLookup(var Text: Text): Boolean
-                    var
-                        EntrdSchedName: Text[10];
-                    begin
-                        EntrdSchedName := CopyStr(Text, 1, 10);
-                        if AccSchedManagement.LookupName(CurrentSchedName, EntrdSchedName) then
-                            Text := EntrdSchedName;
-                    end;
-
-                    trigger OnValidate()
-                    begin
-                        AccSchedManagement.CheckName(CurrentSchedName);
-                        CurrentSchedNameOnAfterValidate();
-                    end;
-#endif
                 }
                 field(CurrentColumnName; CurrentColumnName)
                 {
@@ -56,24 +38,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                     Lookup = true;
                     TableRelation = "Column Layout Name".Name;
                     ToolTip = 'Specifies the name of the column layout that you want to use in the window.';
-#if CLEAN22
                     Editable = false;
-#else
-                    trigger OnLookup(var Text: Text): Boolean
-                    var
-                        EntrdColumnName: Text[10];
-                    begin
-                        EntrdColumnName := CopyStr(Text, 1, 10);
-                        if AccSchedManagement.LookupColumnName(CurrentColumnName, EntrdColumnName) then
-                            CurrentColumnName := EntrdColumnName;
-                    end;
-
-                    trigger OnValidate()
-                    begin
-                        AccSchedManagement.CheckColumnName(CurrentColumnName);
-                        CurrentColumnNameOnAfterValidate();
-                    end;
-#endif
                 }
             }
             repeater(Control1)
@@ -369,10 +334,6 @@ page 11702 "Acc. Schedule File Mapping CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Previous Column';
                 Image = PreviousRecord;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Show the account schedule based on the previous column.';
 
                 trigger OnAction()
@@ -385,16 +346,24 @@ page 11702 "Acc. Schedule File Mapping CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Next Column';
                 Image = NextRecord;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Show the account schedule based on the next column.';
 
                 trigger OnAction()
                 begin
                     AdjustColumnOffset(1);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref("Previous Column_Promoted"; "Previous Column")
+                {
+                }
+                actionref("Next Column_Promoted"; "Next Column")
+                {
+                }
             }
         }
     }
@@ -429,16 +398,8 @@ page 11702 "Acc. Schedule File Mapping CZL"
     trigger OnOpenPage()
     begin
         GeneralLedgerSetup.Get();
-#if not CLEAN22
-        if NewCurrentSchedName <> '' then
-            CurrentSchedName := NewCurrentSchedName;
-#endif
         if CurrentSchedName = '' then
             CurrentSchedName := SchedNameTxt;
-#if not CLEAN22
-        if NewCurrentColumnName <> '' then
-            CurrentColumnName := NewCurrentColumnName;
-#endif
         if CurrentColumnName = '' then
             CurrentColumnName := SchedNameTxt;
         AccSchedManagement.CopyColumnsToTemp(CurrentColumnName, TempColumnLayout);
@@ -457,10 +418,6 @@ page 11702 "Acc. Schedule File Mapping CZL"
         AccSchedManagement: Codeunit AccSchedManagement;
         CurrentSchedName: Code[10];
         CurrentColumnName: Code[10];
-#if not CLEAN22
-        NewCurrentSchedName: Code[10];
-        NewCurrentColumnName: Code[10];
-#endif
         ColumnValues: array[12] of Code[50];
         ColumnCaptions: array[12] of Text[80];
         ColumnOffset: Integer;
@@ -468,20 +425,12 @@ page 11702 "Acc. Schedule File Mapping CZL"
 
     procedure SetAccSchedName(NewAccSchedName: Code[10])
     begin
-#if not CLEAN22
-        NewCurrentSchedName := NewAccSchedName;
-#else
         CurrentSchedName := NewAccSchedName;
-#endif
     end;
 
     procedure SetColumnLayoutName(NewColumnLayoutName: Code[10])
     begin
-#if not CLEAN22
-        NewCurrentColumnName := NewColumnLayoutName;
-#else
         CurrentColumnName := NewColumnLayoutName;
-#endif
     end;
 
     procedure ValidateColumn(ColumnNo: Integer)
@@ -550,24 +499,4 @@ page 11702 "Acc. Schedule File Mapping CZL"
             CurrPage.Update(false);
         end;
     end;
-
-#if not CLEAN22
-    local procedure CurrentSchedNameOnAfterValidate()
-    begin
-        CurrPage.SaveRecord();
-        AccSchedManagement.SetName(CurrentSchedName, Rec);
-        AccSchedManagement.CopyColumnsToTemp(CurrentColumnName, TempColumnLayout);
-        AccSchedManagement.SetColumnName(CurrentColumnName, TempColumnLayout);
-
-        CurrPage.Update(false);
-    end;
-
-    local procedure CurrentColumnNameOnAfterValidate()
-    begin
-        AccSchedManagement.CopyColumnsToTemp(CurrentColumnName, TempColumnLayout);
-        AccSchedManagement.SetColumnName(CurrentColumnName, TempColumnLayout);
-        UpdateColumnCaptions();
-        CurrPage.Update(false);
-    end;
-#endif
 }

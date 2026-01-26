@@ -16,40 +16,40 @@ codeunit 31434 "Navigate Handler CZB"
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateFindRecords', '', false, false)]
     local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text;
-                                                PostingDateFilter: Text; Sender: Page Navigate)
+                                                PostingDateFilter: Text)
     begin
-        FindIssuedBankStatementHeader(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
-        FindIssuedPaymentOrderHeader(DocumentEntry, DocNoFilter, PostingDateFilter, Sender);
+        FindIssuedBankStatementHeader(DocumentEntry, DocNoFilter, PostingDateFilter);
+        FindIssuedPaymentOrderHeader(DocumentEntry, DocNoFilter, PostingDateFilter);
     end;
 
-    local procedure FindIssuedBankStatementHeader(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Navigate: Page Navigate)
+    local procedure FindIssuedBankStatementHeader(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text)
     begin
         if not IssBankStatementHeaderCZB.ReadPermission() then
             exit;
         IssBankStatementHeaderCZB.Reset();
         IssBankStatementHeaderCZB.SetFilter("No.", DocNoFilter);
         IssBankStatementHeaderCZB.SetFilter("Document Date", PostingDateFilter);
-        Navigate.InsertIntoDocEntry(
-            DocumentEntry, Database::"Iss. Bank Statement Header CZB", Enum::"Document Entry Document Type"::" ",
+        DocumentEntry.InsertIntoDocEntry(
+            Database::"Iss. Bank Statement Header CZB", Enum::"Document Entry Document Type"::" ",
             IssBankStatementHeaderCZB.TableCaption, IssBankStatementHeaderCZB.Count);
     end;
 
-    local procedure FindIssuedPaymentOrderHeader(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; Navigate: Page Navigate)
+    local procedure FindIssuedPaymentOrderHeader(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text)
     begin
         if not IssPaymentOrderHeaderCZB.ReadPermission() then
             exit;
         IssPaymentOrderHeaderCZB.Reset();
         IssPaymentOrderHeaderCZB.SetFilter("No.", DocNoFilter);
         IssPaymentOrderHeaderCZB.SetFilter("Document Date", PostingDateFilter);
-        Navigate.InsertIntoDocEntry(
-            DocumentEntry, Database::"Iss. Payment Order Header CZB", Enum::"Document Entry Document Type"::" ",
+        DocumentEntry.InsertIntoDocEntry(
+            Database::"Iss. Payment Order Header CZB", Enum::"Document Entry Document Type"::" ",
             IssPaymentOrderHeaderCZB.TableCaption, IssPaymentOrderHeaderCZB.Count);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateShowRecords', '', false, false)]
-    local procedure OnBeforeNavigateShowRecords(TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; var TempDocumentEntry: Record "Document Entry")
+    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeShowRecords', '', false, false)]
+    local procedure OnBeforeShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; var IsHandled: Boolean)
     begin
-        case TableID of
+        case TempDocumentEntry."Table ID" of
             Database::"Iss. Bank Statement Header CZB":
                 begin
                     IssBankStatementHeaderCZB.Reset();
@@ -61,6 +61,7 @@ codeunit 31434 "Navigate Handler CZB"
                         Page.Run(Page::"Iss. Bank Statement CZB", IssBankStatementHeaderCZB)
                     end else
                         Page.Run(0, IssBankStatementHeaderCZB);
+                    IsHandled := true;
                 end;
             Database::"Iss. Payment Order Header CZB":
                 begin
@@ -73,6 +74,7 @@ codeunit 31434 "Navigate Handler CZB"
                         Page.Run(Page::"Iss. Payment Order CZB", IssPaymentOrderHeaderCZB)
                     end else
                         Page.Run(0, IssPaymentOrderHeaderCZB);
+                    IsHandled := true;
                 end;
         end;
     end;

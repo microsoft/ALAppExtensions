@@ -56,9 +56,6 @@ codeunit 11517 "Swiss QR-Bill Install"
         with SwissQRBillSetup do
             if IsEmpty() then begin
                 "Address Type" := "Address Type"::Structured;
-#if not CLEAN23
-                "Umlaut Chars Encode Mode" := "Umlaut Chars Encode Mode"::Double;
-#endif
                 if NewDefaultLayoutCode <> '' then
                     "Default Layout" := NewDefaultLayoutCode;
                 InitDefaultJournalSetup();
@@ -165,105 +162,8 @@ codeunit 11517 "Swiss QR-Bill Install"
 
     local procedure MoveOldTables()
     var
-        OldSwissQRBillSetup: Record "Swiss QRBill Setup";
-        OldSwissQRBillLayout: Record "Swiss QRBill Layout";
-        OldSwissQRBillBillingInfo: Record "Swiss QRBill Billing Info";
-        SwissQRBillSetup: Record "Swiss QR-Bill Setup";
-        SwissQRBillLayout: Record "Swiss QR-Bill Layout";
-        SwissQRBillBillingInfo: Record "Swiss QR-Bill Billing Info";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
-        if OldSwissQRBillSetup.Get() then begin
-            SwissQRBillSetup.Init();
-            SwissQRBillSetup."Address Type" := MapAddressType(OldSwissQRBillSetup."Address Type");
-#if not CLEAN23
-            SwissQRBillSetup."Umlaut Chars Encode Mode" := MapEncodeMode(OldSwissQRBillSetup."Umlaut Chars Encode Mode");
-#endif
-            SwissQRBillSetup."Default Layout" := OldSwissQRBillSetup."Default Layout";
-            SwissQRBillSetup."Last Used Reference No." := OldSwissQRBillSetup."Last Used Reference No.";
-            SwissQRBillSetup."Journal Template" := OldSwissQRBillSetup."Journal Template";
-            SwissQRBillSetup."Journal Batch" := OldSwissQRBillSetup."Journal Batch";
-            if SwissQRBillSetup.Insert() then;
-            OldSwissQRBillSetup.Delete();
-        end;
-
-        if OldSwissQRBillLayout.FindSet() then begin
-            repeat
-                SwissQRBillLayout.Init();
-                SwissQRBillLayout.Code := OldSwissQRBillLayout.Code;
-                SwissQRBillLayout."IBAN Type" := MapIBANType(OldSwissQRBillLayout."IBAN Type");
-                SwissQRBillLayout."Unstr. Message" := OldSwissQRBillLayout."Unstr. Message";
-                SwissQRBillLayout."Billing Information" := OldSwissQRBillLayout."Billing Information";
-                SwissQRBillLayout."Payment Reference Type" := MapPaymentReferenceType(OldSwissQRBillLayout."Payment Reference Type");
-                SwissQRBillLayout."Alt. Procedure Name 1" := OldSwissQRBillLayout."Alt. Procedure Name 1";
-                SwissQRBillLayout."Alt. Procedure Value 1" := OldSwissQRBillLayout."Alt. Procedure Value 1";
-                SwissQRBillLayout."Alt. Procedure Name 2" := OldSwissQRBillLayout."Alt. Procedure Name 2";
-                SwissQRBillLayout."Alt. Procedure Value 2" := OldSwissQRBillLayout."Alt. Procedure Value 2";
-                if SwissQRBillLayout.Insert() then;
-            until OldSwissQRBillLayout.Next() = 0;
-            OldSwissQRBillLayout.DeleteAll();
-        end;
-
-        if OldSwissQRBillBillingInfo.FindSet() then begin
-            repeat
-                SwissQRBillBillingInfo.Init();
-                SwissQRBillBillingInfo.Code := OldSwissQRBillBillingInfo.Code;
-                SwissQRBillBillingInfo."Document No." := OldSwissQRBillBillingInfo."Document No.";
-                SwissQRBillBillingInfo."Document Date" := OldSwissQRBillBillingInfo."Document Date";
-                SwissQRBillBillingInfo."VAT Number" := OldSwissQRBillBillingInfo."VAT Number";
-                SwissQRBillBillingInfo."VAT Date" := OldSwissQRBillBillingInfo."VAT Date";
-                SwissQRBillBillingInfo."VAT Details" := OldSwissQRBillBillingInfo."VAT Details";
-                SwissQRBillBillingInfo."Payment Terms" := OldSwissQRBillBillingInfo."Payment Terms";
-                if SwissQRBillBillingInfo.Insert() then;
-            until OldSwissQRBillBillingInfo.Next() = 0;
-            OldSwissQRBillBillingInfo.DeleteAll();
-        end;
-
         UpgradeTag.SetAllUpgradeTags();
-    end;
-
-    local procedure MapAddressType(AddressType: Option Structured,Combined) SwissQRBillAddressType: Enum "Swiss QR-Bill Address Type"
-    begin
-        case AddressType of
-            AddressType::Structured:
-                exit(SwissQRBillAddressType::Structured);
-            AddressType::Combined:
-                exit(SwissQRBillAddressType::Combined);
-        end;
-    end;
-#if not CLEAN23
-    local procedure MapEncodeMode(EncodeMode: Option Single,Double,Remove) SwissQRBillUmlautEncoding: Enum "Swiss QR-Bill Umlaut Encoding"
-    begin
-        case EncodeMode of
-            EncodeMode::Single:
-                exit(SwissQRBillUmlautEncoding::Single);
-            EncodeMode::Double:
-                exit(SwissQRBillUmlautEncoding::Double);
-            EncodeMode::Remove:
-                exit(SwissQRBillUmlautEncoding::Remove);
-        end;
-    end;
-#endif
-
-    local procedure MapIBANType(IBANType: Option IBAN,"QR-IBAN") SwissQRBillIBANType: Enum "Swiss QR-Bill IBAN Type"
-    begin
-        case IBANType of
-            IBANType::IBAN:
-                exit(SwissQRBillIBANType::IBAN);
-            IBANType::"QR-IBAN":
-                exit(SwissQRBillIBANType::"QR-IBAN");
-        end;
-    end;
-
-    local procedure MapPaymentReferenceType(PaymentReferenceType: Option "Without Reference","Creditor Reference (ISO 11649)","QR Reference") SwissQRBillPaymentReferenceType: Enum "Swiss QR-Bill Payment Reference Type"
-    begin
-        case PaymentReferenceType of
-            PaymentReferenceType::"Without Reference":
-                exit(SwissQRBillPaymentReferenceType::"Without Reference");
-            PaymentReferenceType::"Creditor Reference (ISO 11649)":
-                exit(SwissQRBillPaymentReferenceType::"Creditor Reference (ISO 11649)");
-            PaymentReferenceType::"QR Reference":
-                exit(SwissQRBillPaymentReferenceType::"QR Reference");
-        end;
     end;
 }

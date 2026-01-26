@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
+using Microsoft.Foundation.Shipping;
 using Microsoft.Inventory.Transfer;
 using Microsoft.Purchases.Archive;
 using Microsoft.Purchases.Document;
@@ -14,9 +15,8 @@ using Microsoft.Sales.History;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Environment.Configuration;
-using System.Upgrade;
-using Microsoft.Foundation.Shipping;
 using System.IO;
+using System.Upgrade;
 
 codeunit 31306 "Upgrade Application CZ"
 {
@@ -77,6 +77,7 @@ codeunit 31306 "Upgrade Application CZ"
         UpgradeTransferShipmentHeader();
         UpgradeIntrastatDeliveryGroup();
         UpgradeIntrastatDescription();
+        UpgradeMandatoryFields();
     end;
 
     local procedure UpgradeDirectTransHeader()
@@ -460,5 +461,23 @@ codeunit 31306 "Upgrade Application CZ"
         end;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatDescriptionUpgradeTag());
+    end;
+
+    local procedure UpgradeMandatoryFields()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatMandatoryFieldsUpgradeTag()) then
+            exit;
+
+        if IntrastatReportSetup.Get() then begin
+            IntrastatReportSetup."Transaction Type Mandatory" := IntrastatReportSetup."Transaction Type Mandatory CZ";
+            IntrastatReportSetup."Transaction Spec. Mandatory" := IntrastatReportSetup."Transaction Spec. Mandatory CZ";
+            IntrastatReportSetup."Transport Method Mandatory" := IntrastatReportSetup."Transport Method Mandatory CZ";
+            IntrastatReportSetup."Shipment Method Mandatory" := IntrastatReportSetup."Shipment Method Mandatory CZ";
+            IntrastatReportSetup.Modify()
+        end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatMandatoryFieldsUpgradeTag());
     end;
 }

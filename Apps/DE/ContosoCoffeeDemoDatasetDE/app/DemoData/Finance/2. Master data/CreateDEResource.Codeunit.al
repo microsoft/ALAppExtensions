@@ -1,0 +1,50 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Projects.Resources.Resource;
+
+codeunit 11084 "Create DE Resource"
+{
+    SingleInstance = true;
+    EventSubscriberInstance = Manual;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
+    [EventSubscriber(ObjectType::Table, Database::Resource, 'OnBeforeInsertEvent', '', false, false)]
+    local procedure OnBeforeInsertResource(var Rec: Record Resource)
+    var
+        CreateResource: Codeunit "Create Resource";
+    begin
+        case Rec."No." of
+            CreateResource.Katherine():
+                begin
+                    Rec.Validate("Employment Date", 20050525D);
+                    ValidateResource(Rec, DiepholzLbl, 77, 84.7, 45.35484, 155, '49293');
+                end;
+            CreateResource.Lina():
+                ValidateResource(Rec, HamburgLbl, 93, 102.3, 45, 186, '20203');
+            CreateResource.Marty():
+                ValidateResource(Rec, DiepholzLbl, 70, 77, 44.60432, 139, '49293');
+            CreateResource.Terry():
+                ValidateResource(Rec, DiepholzLbl, 77, 84.7, 45.35484, 155, '49293');
+        end;
+    end;
+
+    local procedure ValidateResource(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; ProfitPercent: Decimal; UnitPrice: Decimal; PostCode: Code[20])
+    begin
+        Resource.Validate(City, City);
+        Resource.Validate("Direct Unit Cost", DirectUnitCost);
+        Resource.Validate("Unit Cost", UnitCost);
+        Resource.Validate("Profit %", ProfitPercent);
+        Resource.Validate("Unit Price", UnitPrice);
+        Resource.Validate("Post Code", PostCode);
+    end;
+
+    var
+        DiepholzLbl: Label 'Diepholz', MaxLength = 30;
+        HamburgLbl: Label 'Hamburg', MaxLength = 30;
+}

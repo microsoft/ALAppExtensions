@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Manufacturing;
+
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 4782 "Create Mfg Posting Group"
 {
     InherentEntitlements = X;
@@ -5,13 +15,12 @@ codeunit 4782 "Create Mfg Posting Group"
 
     trigger OnRun()
     var
-        ManufacturingDemoDataSetup: Record "Manufacturing Module Setup";
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
-        CreateContosoPostingGroup: Codeunit "Create Common Posting Group";
     begin
-        ManufacturingDemoDataSetup.Get();
+        FinanceModuleSetup.Get();
 
-        ContosoPostingGroup.InsertGenProductPostingGroup(Manufacturing(), CapacitiesTok, CreateContosoPostingGroup.StandardVAT());
+        ContosoPostingGroup.InsertGenProductPostingGroup(Manufacturing(), CapacitiesTok, FinanceModuleSetup."VAT Prod. Post Grp. Standard");
 
         ContosoPostingGroup.InsertInventoryPostingGroup(Finished(), FinishedItemsLbl);
     end;

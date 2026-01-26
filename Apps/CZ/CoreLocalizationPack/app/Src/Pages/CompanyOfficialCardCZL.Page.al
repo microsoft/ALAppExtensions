@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -13,7 +13,6 @@ page 11766 "Company Official Card CZL"
     Caption = 'Company Official Card';
     PageType = Card;
     SourceTable = "Company Official CZL";
-    PromotedActionCategories = 'New,Process,Report,Company Official,Navigate';
 
     layout
     {
@@ -183,11 +182,11 @@ page 11766 "Company Official Card CZL"
                 ApplicationArea = BasicHR;
                 SubPageLink = "No." = field("No.");
             }
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(11793), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Company Official CZL"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -214,9 +213,6 @@ page 11766 "Company Official Card CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Attachments';
                     Image = Attach;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedOnly = true;
                     ToolTip = 'Add a file as an attachment. You can attach images as well as documents.';
 
                     trigger OnAction()
@@ -234,13 +230,32 @@ page 11766 "Company Official Card CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = '&Picture';
                     Image = Picture;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedOnly = true;
                     RunObject = page "Company Official Picture CZL";
                     RunPageLink = "No." = field("No.");
                     ToolTip = 'View or add a picture of the employee or, for example, the company''s logo.';
                 }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Report)
+            {
+                Caption = 'Report', Comment = 'Generated from the PromotedActionCategories property index 2.';
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Company Official', Comment = 'Generated from the PromotedActionCategories property index 3.';
+
+                actionref(Attachments_Promoted; Attachments)
+                {
+                }
+                actionref("&Picture_Promoted"; "&Picture")
+                {
+                }
+            }
+            group(Category_Category5)
+            {
+                Caption = 'Navigate', Comment = 'Generated from the PromotedActionCategories property index 4.';
             }
         }
     }

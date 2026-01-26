@@ -1,12 +1,12 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Sales.Document;
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
 using Microsoft.Utilities;
@@ -25,6 +25,7 @@ page 30028 "APIV2 - Sales Orders"
     PageType = API;
     SourceTable = "Sales Order Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages sales order documents including customer details, billing and shipping addresses, order status, delivery dates, and financial totals. Supports full CRUD operations for creating, retrieving, updating, and deleting sales orders, enabling integration with e-commerce platforms, order processing systems, and automated sales workflows. Facilitates synchronization and lifecycle management of sales orders between Business Central and external applications.';
 
     layout
     {
@@ -503,6 +504,14 @@ page 30028 "APIV2 - Sales Orders"
                     EntitySetName = 'salesOrderLines';
                     SubPageLink = "Document Id" = field(Id);
                 }
+                part(pdfDocument; "APIV2 - PDF Document")
+                {
+                    Caption = 'PDF Document';
+                    Multiplicity = ZeroOrOne;
+                    EntityName = 'pdfDocument';
+                    EntitySetName = 'pdfDocument';
+                    SubPageLink = "Document Id" = field(Id), "Document Type" = const("Sales Order");
+                }
                 field(discountAmount; Rec."Invoice Discount Amount")
                 {
                     Caption = 'Discount Amount';
@@ -820,6 +829,7 @@ page 30028 "APIV2 - Sales Orders"
     end;
 
     [ServiceEnabled]
+    [Caption('Ships all items on the sales order and creates a posted sales invoice')]
     [Scope('Cloud')]
     procedure ShipAndInvoice(var ActionContext: WebServiceActionContext)
     var

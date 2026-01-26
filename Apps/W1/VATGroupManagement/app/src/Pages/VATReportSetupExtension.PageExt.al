@@ -25,28 +25,29 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(AuthenticationTypeControlOnPrem)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and not IsSaas;
+                    Visible = false;
                     ShowCaption = false;
                     field(VATGroupAuthenticationType; Rec."VAT Group Authentication Type")
                     {
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies which authentication type will be used to send data to the group representative.';
+                        ValuesAllowed = OAuth2;
                     }
                 }
                 group(AuthenticationTypeControlOnSaas)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and IsSaas;
+                    Visible = false;
                     ShowCaption = false;
                     field(VATGroupAuthenticationTypeSaas; AuthenticationTypeSaas)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Authentication Type';
                         ToolTip = 'Specifies which authentication type will be used to send data to the group representative.';
+                        ValuesAllowed = OAuth2;
+
                         trigger OnValidate()
                         begin
                             case AuthenticationTypeSaas of
-                                AuthenticationTypeSaas::WebServiceAccessKey:
-                                    Rec."VAT Group Authentication Type" := Rec."VAT Group Authentication Type"::WebServiceAccessKey;
                                 AuthenticationTypeSaas::OAuth2:
                                     Rec."VAT Group Authentication Type" := Rec."VAT Group Authentication Type"::OAuth2;
                             end;
@@ -90,7 +91,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(UserNameControl)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::WebServiceAccessKey);
+                    Visible = false;
                     ShowCaption = false;
                     field(UserName; UserNameText)
                     {
@@ -107,7 +108,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(WebserviceAccessKeyControl)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::WebServiceAccessKey);
+                    Visible = false;
                     ShowCaption = false;
                     field(WebserviceAccessKey; WebServiceAccessKeyText)
                     {
@@ -124,7 +125,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(GroupRepresentativeOnBCOnlineControl)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::OAuth2) and IsSaas;
+                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and IsSaas;
                     ShowCaption = false;
                     field(GroupRepresentativeOnBCOnline; Rec."Group Representative On SaaS")
                     {
@@ -134,7 +135,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(ClientIdControl)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::OAuth2) and (not Rec."Group Representative On SaaS");
+                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (not Rec."Group Representative On SaaS");
                     ShowCaption = false;
                     field(ClientId; ClientIDText)
                     {
@@ -151,7 +152,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(ClientSecretControl)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::OAuth2) and (not Rec."Group Representative On SaaS");
+                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (not Rec."Group Representative On SaaS");
                     ShowCaption = false;
                     field(ClientSecret; ClientSecretText)
                     {
@@ -168,7 +169,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(AuthorityURLControl)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::OAuth2) and (not Rec."Group Representative On SaaS");
+                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (not Rec."Group Representative On SaaS");
                     ShowCaption = false;
                     field(AuthorityURL; Rec."Authority URL")
                     {
@@ -178,7 +179,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(ResourceURLControl)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::OAuth2) and (not Rec."Group Representative On SaaS");
+                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (not Rec."Group Representative On SaaS");
                     ShowCaption = false;
                     field(ResourceURL; Rec."Resource URL")
                     {
@@ -188,7 +189,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 }
                 group(RedirectURLControl)
                 {
-                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::OAuth2) and (not Rec."Group Representative On SaaS");
+                    Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member) and (not Rec."Group Representative On SaaS");
                     ShowCaption = false;
                     field(RedirectURL; Rec."Redirect URL")
                     {
@@ -266,7 +267,7 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                 Promoted = true;
                 PromotedCategory = Process;
                 Image = AuthorizeCreditCard;
-                Visible = (Rec."VAT Group Authentication Type" = Rec."VAT Group Authentication Type"::OAuth2) and (Rec."VAT Group Role" = Rec."VAT Group Role"::Member);
+                Visible = (Rec."VAT Group Role" = Rec."VAT Group Role"::Member);
 
                 trigger OnAction()
                 var
@@ -302,6 +303,8 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
             Rec."Redirect URL" := CopyStr(RedirectURLText, 1, MaxStrLen(Rec."Redirect URL"));
         end;
 
+        Rec."VAT Group Authentication Type" := Rec."VAT Group Authentication Type"::OAuth2;
+
         if IsSaas then
             ConvertAuthenticationTypeToSaaS(Rec."VAT Group Authentication Type");
         Rec.Modify();
@@ -312,8 +315,6 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
         case AuthenticationType of
             AuthenticationType::OAuth2:
                 AuthenticationTypeSaaS := AuthenticationTypeSaaS::OAuth2;
-            AuthenticationType::WebServiceAccessKey:
-                AuthenticationTypeSaaS := AuthenticationTypeSaaS::WebServiceAccessKey;
         end;
     end;
 

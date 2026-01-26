@@ -13,6 +13,7 @@ codeunit 18131 "GST On Purchase Tests"
         ComponentPerArray: array[20] of Decimal;
         Storage: Dictionary of [Text, Text[20]];
         StorageBoolean: Dictionary of [Text, Boolean];
+        StorageDecimal: Dictionary of [Text, Decimal];
         AccountNoLbl: Label 'AccountNo', locked = true;
         NoOfLineLbl: Label 'NoOfLine', Locked = true;
         LocationStateCodeLbl: Label 'LocationStateCode', Locked = true;
@@ -26,6 +27,8 @@ codeunit 18131 "GST On Purchase Tests"
         FromStateCodeLbl: Label 'FromStateCode', Locked = true;
         ToStateCodeLbl: Label 'ToStateCode', Locked = true;
         PaymentDocNoLbl: Label 'PaymentDocNo', Locked = true;
+        GSTTaxPercentLbl: Label 'GSTTaxPercent', Locked = true;
+        LineAmountLbl: Label 'LineAmount', Locked = true;
         CGSTLbl: Label 'CGST';
         SGSTLbl: Label 'SGST';
         IGSTLbl: Label 'IGST';
@@ -36,6 +39,7 @@ codeunit 18131 "GST On Purchase Tests"
         SuccessMsg: Label 'Credit Adjustment Journal posted successfully.', Locked = true;
         NotPostedErr: Label 'The entries were not posted.', locked = true;
         VendLedgerEntryVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
+        TaxTransactionValueEmptyErr: Label 'Tax Transaction Value cannot be empty for %1', Comment = '%1 = Purchase Line Archive Record ID';
 
     // [SCENARIO] User can Apply Vendor Payments to invoice with different currency exchange rates
     // [FEATURE] [Adjust Exchange Rate] [FCY] [Post Application-Vendor]    
@@ -1020,6 +1024,338 @@ codeunit 18131 "GST On Purchase Tests"
         Assert.IsTrue(libraryGSTPurchase.GetVendorSetupWithGovtGST(VendorNo, GSTVendorType, false, true, LocationStateCode, LocPANNo), 'Sucess');
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,DocumentArchived')]
+    procedure VerifyTaxInformationDataExistInPurchaseOrderArchive()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        //[Scenario] [398967] Check if the system is showing tax information in Purchase Order Archive Page
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, true, true);
+        InitializeShareStep(true, false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Post Purchase Order with GST and Line Type as G/L Account for Intrastate Transactions.
+        LibraryPurchase.SetArchiveOrders(true);
+        CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        //[THEN] Verify Tax Transaction Value Exist for Purchase Order Archive
+        VerifyTaxTransactionValueExist(PurchaseHeader."Document Type", PurchaseHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,DocumentArchived')]
+    procedure VerifyTaxInformationDataExistInBlanketPurchaseOrderArchive()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        //[Scenario] [398967] Check if the system is showing tax information in Purchase Order Archive Page
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, true, true);
+        InitializeShareStep(true, false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Archive Blanket Purchase Order with GST and Line Type as Item for Intrastate Transactions.
+        CreatePurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"Item", DocumentType::"Blanket Order");
+        BlanketPurchaseOrderArchive(PurchaseHeader);
+
+        //[THEN] Verify Tax Transaction Value Exist for Purchase Order Archive
+        VerifyTaxTransactionValueExist(PurchaseHeader."Document Type", PurchaseHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,DocumentArchived')]
+    procedure VerifyTaxInformationDataExistInPurchaseQuoteArchive()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        //[Scenario] [398967] Check if the system is showing tax information in Purchase Quote Archive Page
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, true, true);
+        InitializeShareStep(true, false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Archive Purchase Quote with GST and Line Type as Item for Intrastate Transactions.
+        CreatePurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"Item", DocumentType::"Quote");
+        PurchaseQuoteArchive(PurchaseHeader);
+
+        //[THEN] Verify Tax Transaction Value Exist for Purchase Order Archive
+        VerifyTaxTransactionValueExist(PurchaseHeader."Document Type", PurchaseHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler,DocumentArchived')]
+    procedure VerifyTaxInformationDataExistInPurchaseReturnOrderArchive()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        //[Scenario] [398967] Check if the system is showing tax information in Purchase Return Order Archive Page
+
+        //[GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit is Available with GST group type as Service with RCM
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, true, true);
+        InitializeShareStep(true, false, false);
+        Storage.Set(NoOfLineLbl, Format(1));
+
+        //[WHEN] Create and Archive Purchase Return Order with GST and Line Type as Item for Intrastate Transactions.
+        CreatePurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"Item", DocumentType::"Return Order");
+        PurchaseReturnOrderArchive(PurchaseHeader);
+
+        //[THEN] Verify Tax Transaction Value Exist for Purchase Return Order Archive
+        VerifyTaxTransactionValueExist(PurchaseHeader."Document Type", PurchaseHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostApplicationFromPurchRCMInvVendorWithNormalPayment()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        GenJournalLine: Record "Gen. Journal Line";
+        VendorLedgerEntryPayment: Record "Vendor Ledger Entry";
+        VendorLedgerEntryInvoice: Record "Vendor Ledger Entry";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocumentType: Enum "Purchase Document Type";
+        LineType: Enum "Sales Line Type";
+        TemplateType: Enum "Gen. Journal Template Type";
+        DocumentNo: Code[20];
+        VendorNo: Code[20];
+    begin
+        // [SCENARIO] [IN BC] Unapplying a payment with a RCM invoice is not reversing the GST related entries.
+        InitializeShareStep(true, false, false);
+
+        // [GIVEN] Create GST Setup, and tax rates for Unregistered Vendor with input Tax Credit is availment where Jurisdiction type is Interstate
+        CreateGSTSetup(GSTVendorType::Unregistered, GSTGroupType::Service, false, true);
+        Storage.Set(NoOfLineLbl, '1');
+        Evaluate(VendorNo, Storage.Get(VendorNoLbl));
+
+        // [GIVEN] Create and Post Purchase Invoice with GST and Line type as G/L Account
+        DocumentNo := CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Invoice);
+
+        // [GIVEN] Post Bank Payment Voucher
+        CreateGenJnlLineForVoucher(GenJournalLine, TemplateType::"Bank Payment Voucher");
+        Storage.Set(PaymentDocNoLbl, GenJournalLine."Document No.");
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [GIVEN] Post Apply Payment to Invoice
+        VendorLedgerEntryPayment.SetRange("Vendor No.", VendorNo);
+        VendorLedgerEntryPayment.SetRange("Document Type", VendorLedgerEntryPayment."Document Type"::Payment);
+
+        LibraryERM.SetAppliestoIdVendor(VendorLedgerEntryPayment);
+
+        VendorLedgerEntryInvoice.SetRange("Vendor No.", VendorNo);
+        LibraryERM.FindVendorLedgerEntry(
+          VendorLedgerEntryInvoice, VendorLedgerEntryInvoice."Document Type"::Invoice, DocumentNo);
+
+        LibraryERM.SetAppliestoIdVendor(VendorLedgerEntryInvoice);
+
+        LibraryERM.PostVendLedgerApplication(VendorLedgerEntryPayment);
+
+        // [WHEN] Unapply Vendor Ledger Payment Entry
+        UnapplyVendLedgerEntry(VendorLedgerEntryPayment."Document Type", VendorLedgerEntryPayment."Document No.");
+
+        // [THEN] G/L Entries are created and verified
+        LibraryGST.VerifyGLEntries(VendorLedgerEntryPayment."Document Type", VendorLedgerEntryPayment."Document No.", 6);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromPurchInvServicesForRegVendorWithOfflineApplicationApplyPaymentToInvoice()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        GenJournalLine: Record "Gen. Journal Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocumentType: Enum "Purchase Document Type";
+        LineType: Enum "Sales Line Type";
+        TemplateType: Enum "Gen. Journal Template Type";
+        GenJournalDocumentType: Enum "Gen. Journal Document Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [Check if the system is Successfully posting offline application of GST payment to Invoice of Services Registered Vendor where Input Tax Credit is available - Inter-State through Purchase Invoice]
+
+        // [GIVEN] Create GST Setup and tax rates for Registered Vendor with input Tax Credit is availment where Jurisdiction type is Interstate
+        InitializeShareStep(true, false, false);
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, false, true);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Bank Payment Voucher with GST Advance Payment
+        CreateGenJnlLineForVoucherWithAdvancePayment(GenJournalLine, TemplateType::"Bank Payment Voucher");
+        Storage.Set(PaymentDocNoLbl, GenJournalLine."Document No.");
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [WHEN] Create and Post Purchase Orderwhere line type is G/L account
+        PostedDocumentNo := CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        // [THEN] Apply Vendor Ledger Entry and Verify
+        LibraryERM.ApplyVendorLedgerEntries(GenJournalDocumentType::Payment, GenJournalDocumentType::Invoice, (Storage.Get(PaymentDocNoLbl)), PostedDocumentNo);
+        VerifyAdvInvoiceApplied(PostedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromGSTPurchInvRegVendWithNonITCItemInterState()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        InventorySetup: Record "Inventory Setup";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type enum";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO] [381415] Check if system is calculating GST Amount for Registered Vendor Interstate with Goods on Purchase Invoice with Non-Availment and impact on Item Ledger Entries.
+        // [FEATURE] [Goods] [ITC Non Availment, Registered Vendor, Inter-State]
+
+        // [GIVEN] Created GST Setup and tax rates for Registered Vendor and GST Credit adjustment is Non Available with GST group type as Goods
+        CreateGeneralLedgerSetup();
+        InventorySetup."Automatic Cost Posting" := true;
+        InventorySetup."Automatic Cost Adjustment" := InventorySetup."Automatic Cost Adjustment"::Always;
+
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Goods, false, false);
+        InitializeShareStep(false, false, false);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Purchase Invoice with GST and Line type as item for Interstate Transactions.
+        DocumentNo := CreateAndPostPurchaseDocumentForPurchInv(PurchaseHeader, PurchaseLine, LineType::Item, DocumentType::Invoice);
+
+        // [THEN] GST ledger entries are created and Verified
+        VerifyGSTLedgerEntriesAmount(DocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ApplyDistributionEntries,ConfirmationHandler,DimensionHandler,NoSeriesHandler')]
+    procedure PostInterStateInvDistributionITCToITCWithLocationDistNo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        GSTVendorType: Enum "GST Vendor Type";
+        LineType: Enum "Purchase Line Type";
+        DocumentType: Enum "Purchase Document Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocType: Enum "BankCharges DocumentType";
+        DistGSTCredit: Enum "GST Credit";
+        RcptGSTCredit: Enum "GST Credit";
+    begin
+        // [SCENARIO]Check if the system is handling Interstate Distribution of Invoice with Input Tax Credit to Recipient location as Input Tax Credit is available
+        // [FEATURE] [ITC Distribution] [InterState Input Distribution]
+
+        // [GIVEN] Created GST Setup and tax rates for registered Vendor where input tax credit is available with GST Group Code type is Service
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, false, false);
+        InitializeShareStep(true, false, false);
+        UpdateInputServiceDistributer(true);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Purchase Order with GST and Line Type as Services for Interstate Transactions.
+        CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        // [THEN] Create and Post Distribution Document with Document type Inoivce and Distribution GST Credit is Availment and Receipt GST Credit is Availment
+        CreateAndPostDistributionDocumentNo(DocType::Invoice, DistGSTCredit::Availment, RcptGSTCredit::Availment, false);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ReferenceInvoiceNoPageHandler,ApplyDistributionEntries,ConfirmationHandler,DimensionHandler,NoSeriesHandler')]
+    procedure PostInterStateCrMemoDistributionITCToITCFromLocAsToLocforReverse()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocType: Enum "BankCharges DocumentType";
+        DistGSTCredit: Enum "GST Credit";
+        RcptGSTCredit: Enum "GST Credit";
+    begin
+        // [Scenario] Check if the system is handling Interstate Distribution of Credit Memo with Input Tax Credit to Recipient location as Input Tax Credit is available
+        // [FEATURE] [Inter-State Services, Purchase Credit Memo] [ITC, Registered Vendor]
+
+        // [GIVEN] Created GST Setup and tax rates for registered Vendor where input tax credit is available with GST Group Code type is Service
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, false, false);
+        InitializeShareStep(true, false, false);
+        UpdateInputServiceDistributer(true);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Purchase Order with GST and Line Type as Services for Interstate Transactions.
+        CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        // [THEN] Create and Post Distribution Document with Document type Inoivce and Distribution GST Credit is Availment and Receipt GST Credit is Availment
+        CreateAndPostDistributionDocumentNo(DocType::Invoice, DistGSTCredit::Availment, RcptGSTCredit::Availment, false);
+
+        // [THEN] Create and Post Distribution Document with Document type Inoivce and Distribution GST Credit is Availment and Receipt GST Credit is Availment
+        CreateAndPostDistributionDocument(DocType::"Credit Memo", DistGSTCredit::Availment, RcptGSTCredit::Availment, true);
+    end;
+
+    local procedure VerifyTaxTransactionValueExist(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20])
+    var
+        PurchaseLineArchive: Record "Purchase Line Archive";
+        TaxTransactionValue: Record "Tax Transaction Value";
+    begin
+        PurchaseLineArchive.SetRange("Document Type", DocumentType);
+        PurchaseLineArchive.SetRange("Document No.", DocumentNo);
+        PurchaseLineArchive.FindLast();
+
+        TaxTransactionValue.SetFilter("Document Type Filter", '%1', DocumentType);
+        TaxTransactionValue.SetFilter("Document No. Filter", '%1', DocumentNo);
+        TaxTransactionValue.SetFilter("Line No. Filter", '%1', PurchaseLineArchive."Line No.");
+        TaxTransactionValue.SetFilter("Version No. Filter", '%1', PurchaseLineArchive."Version No.");
+        if TaxTransactionValue.IsEmpty then
+            Error(TaxTransactionValueEmptyErr, PurchaseLineArchive.RecordId());
+    end;
+
+    local procedure BlanketPurchaseOrderArchive(PurchaseHeader: Record "Purchase Header")
+    var
+        BlanketPurchaseOrder: TestPage "Blanket Purchase Order";
+    begin
+        BlanketPurchaseOrder.OpenView();
+        BlanketPurchaseOrder.GoToRecord(PurchaseHeader);
+        BlanketPurchaseOrder."Archi&ve Document".Invoke();
+    end;
+
+    local procedure PurchaseQuoteArchive(PurchaseHeader: Record "Purchase Header")
+    var
+        PurchaseQuote: TestPage "Purchase Quote";
+    begin
+        PurchaseQuote.OpenView();
+        PurchaseQuote.GoToRecord(PurchaseHeader);
+        PurchaseQuote."Archive Document".Invoke();
+    end;
+
+    local procedure PurchaseReturnOrderArchive(PurchaseHeader: Record "Purchase Header")
+    var
+        PurchaseReturnOrder: TestPage "Purchase Return Order";
+    begin
+        PurchaseReturnOrder.OpenView();
+        PurchaseReturnOrder.GoToRecord(PurchaseHeader);
+        PurchaseReturnOrder."Archive Document".Invoke();
+    end;
+
     local procedure CancelPostedPurchaseInvoiceToCreatePostedCreditMemo(PurchInvHeader: Record "Purch. Inv. Header"; PurchaseOrderNo: Code[20])
     var
         PostedPurchInvoice: TestPage "Posted Purchase Invoice";
@@ -1258,6 +1594,18 @@ codeunit 18131 "GST On Purchase Tests"
         Assert.AreNotEqual(VendorLedgerEntry.Amount, VendorLedgerEntry."Remaining Amount", StrSubstNo(VendLedgerEntryVerifyErr, VendorLedgerEntry.FieldName("Remaining Amount"), VendorLedgerEntry.TableCaption));
     end;
 
+    local procedure VerifyAdvInvoiceApplied(PostedDocumentNo: Code[20])
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
+        VendorLedgerEntry.SetRange("Document No.", PostedDocumentNo);
+        VendorLedgerEntry.FindFirst();
+        VendorLedgerEntry.CalcFields(Amount, "Remaining Amount");
+
+        Assert.AreNotEqual(VendorLedgerEntry.Amount, VendorLedgerEntry."Remaining Amount", StrSubstNo(VendLedgerEntryVerifyErr, VendorLedgerEntry.FieldName("Remaining Amount"), VendorLedgerEntry.TableCaption));
+    end;
+
     local procedure CalculateGST(GenJournalLine: Record "Gen. Journal Line")
     var
         CalculateTax: Codeunit "Calculate Tax";
@@ -1383,6 +1731,22 @@ codeunit 18131 "GST On Purchase Tests"
         end;
     end;
 
+    local procedure CreatePurchaseDocument(
+        var PurchaseHeader: Record "Purchase Header";
+        var PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+                      DocumentType: Enum "Purchase Document Type")
+    var
+        VendorNo: Code[20];
+        LocationCode: Code[10];
+        PurchaseInvoiceType: Enum "GST Invoice Type";
+    begin
+        Evaluate(VendorNo, Storage.Get(VendorNoLbl));
+        Evaluate(LocationCode, Storage.Get(LocationCodeLbl));
+        CreatePurchaseHeaderWithGST(PurchaseHeader, VendorNo, DocumentType, LocationCode, PurchaseInvoiceType::" ");
+        CreatePurchaseLineWithGST(PurchaseHeader, PurchaseLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(InputCreditAvailmentLbl), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
+    end;
+
     local procedure InitializeTaxRateParameters(IntraState: Boolean; FromState: Code[10]; ToState: Code[10])
     var
         GSTTaxPercent: Decimal;
@@ -1390,6 +1754,7 @@ codeunit 18131 "GST On Purchase Tests"
         Storage.Set(FromStateCodeLbl, FromState);
         Storage.Set(ToStateCodeLbl, ToState);
         GSTTaxPercent := LibraryRandom.RandDecInRange(10, 18, 0);
+        StorageDecimal.Set(GSTTaxPercentLbl, GSTTaxPercent);
         if IntraState then begin
             ComponentPerArray[1] := (GSTTaxPercent / 2);
             ComponentPerArray[2] := (GSTTaxPercent / 2);
@@ -1486,6 +1851,7 @@ codeunit 18131 "GST On Purchase Tests"
                     PurchaseLine.Validate("Custom Duty Amount", LibraryRandom.RandInt(1000));
                 end;
             PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandInt(1000));
+            StorageDecimal.set(LineAmountLbl, PurchaseLine."Line Amount");
             PurchaseLine.Modify(true);
         end;
     end;
@@ -1510,6 +1876,33 @@ codeunit 18131 "GST On Purchase Tests"
         if not PostingNoSeries.FindFirst() then begin
             PostingNoSeries.Init();
             PostingNoSeries.Validate("Document Type", PostingNoSeries."Document Type"::"GST Distribution");
+            PostingNoSeries.Validate("Posting No. Series", LibraryERM.CreateNoSeriesCode());
+            PostingNoSeries.Insert(true);
+        end;
+
+        SetupGSTComponentMapping();
+    end;
+
+    local procedure CreateInitialSetupForGSTDistributionLine()
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        SourceCode: Record "Source Code";
+        PostingNoSeries: Record "Posting No. Series";
+    begin
+        if SourceCodeSetup."GST Distribution" = '' then begin
+            SourceCode.Init();
+            SourceCode.Code := (LibraryRandom.RandText(10));
+            SourceCode.Insert();
+
+            SourceCodeSetup."GST Distribution" := SourceCode.Code;
+            SourceCodeSetup.Modify();
+        end;
+
+        PostingNoSeries.SetRange("Document Type", PostingNoSeries."Document Type"::"GST Distribution Line");
+        PostingNoSeries.SetFilter("Posting No. Series", '<>%1', '');
+        if not PostingNoSeries.FindFirst() then begin
+            PostingNoSeries.Init();
+            PostingNoSeries.Validate("Document Type", PostingNoSeries."Document Type"::"GST Distribution Line");
             PostingNoSeries.Validate("Posting No. Series", LibraryERM.CreateNoSeriesCode());
             PostingNoSeries.Insert(true);
         end;
@@ -1601,21 +1994,23 @@ codeunit 18131 "GST On Purchase Tests"
 
     local procedure CreateToLocation(): Code[20]
     var
-        State: Record State;
+        CompanyInformation: Record "Company information";
+        //State: Record State;
         TaxComponent: Record "Tax Component";
         LocationGSTRegNo: Code[15];
         LocPANNo: Code[20];
         LocationCode: Code[10];
+        StateCode: Code[10];
     begin
-        LocPANNo := LibraryGST.CreatePANNos();
-        LibraryGST.CreateState(State);
-        LocationGSTRegNo := LibraryGST.CreateGSTRegistrationNos(State.Code, LocPANNo);
-        LocationCode := LibraryGST.CreateLocationSetup(State.Code, LocationGSTRegNo, false);
-
+        CompanyInformation.Get();
+        LocPANNo := CompanyInformation."P.A.N. No.";
+        StateCode := LibraryGST.CreateGSTStateCode();
+        LocationGSTRegNo := LibraryGST.CreateGSTRegistrationNos(StateCode, LocPANNo);
+        LocationCode := LibraryGST.CreateLocationSetup(StateCode, LocationGSTRegNo, false);
         TaxComponent.SetFilter(Name, '%1|%2|%3', CGSTLbl, SGSTLbl, IGSTLbl);
         if TaxComponent.FindSet() then
             repeat
-                LibraryGST.CreateGSTPostingSetup(TaxComponent, State.Code)
+                LibraryGST.CreateGSTPostingSetup(TaxComponent, StateCode)
             until TaxComponent.Next() = 0;
 
         exit(LocationCode);
@@ -1633,6 +2028,59 @@ codeunit 18131 "GST On Purchase Tests"
         DocumentNo: Code[20];
     begin
         CreateInitialSetupForGSTDistribution();
+        GSTDistributionHeader.Init();
+        GSTDistributionHeader.Insert(true);
+        GSTDistributionHeader.Validate("Posting Date", WorkDate());
+        if Reversal then begin
+            GSTDistributionHeader.Validate(Reversal, Reversal);
+            GSTDistributionHeader.Validate("Reversal Invoice No.", Storage.Get(PostedDistributionNoLbl));
+        end else begin
+            if DocType = DocType::Invoice then
+                GSTDistributionHeader.Validate("ISD Document Type", GSTDistributionHeader."ISD Document Type"::Invoice)
+            else
+                GSTDistributionHeader.Validate("ISD Document Type", GSTDistributionHeader."ISD Document Type"::"Credit Memo");
+            GSTDistributionHeader.Validate("From Location Code", Storage.Get(LocationCodeLbl));
+            GSTDistributionHeader.Validate("Dist. Document Type", DocType);
+            GSTDistributionHeader.Validate("Dist. Credit Type", DistGSTCredit);
+        end;
+        GSTDistributionHeader.Modify(true);
+
+        if not Reversal then begin
+            GSTDistributionLine.Init();
+            GSTDistributionLine.Validate("Distribution No.", GSTDistributionHeader."No.");
+            GSTDistributionLine.Validate("To Location Code", CreateToLocation());
+            GSTDistributionLine.Validate("Rcpt. Credit Type", RcptGSTCredit);
+            GSTDistributionLine.Validate("Distribution %", 100);
+            GSTDistributionLine.Insert(true);
+        end;
+
+        DimensionValue.SetRange("Global Dimension No.", 1);
+        if DimensionValue.FindFirst() then
+            GSTDistributionHeader.Validate("Shortcut Dimension 1 Code", DimensionValue.Code);
+
+        DimensionValue.SetRange("Global Dimension No.", 2);
+        if DimensionValue.FindFirst() then
+            GSTDistributionHeader.Validate("Shortcut Dimension 2 Code", DimensionValue.Code);
+        GSTDistributionHeader.Modify(true);
+
+        DocumentNo := GSTDistributionHeader."No.";
+        ApplyAndPostEntries(GSTDistributionHeader."No.", Reversal);
+        VerifyGSTDistribution(DocumentNo);
+    end;
+
+    local procedure CreateAndPostDistributionDocumentNo(
+            DocType: Enum "BankCharges DocumentType";
+                         DistGSTCredit: Enum "GST Credit";
+                         RcptGSTCredit: Enum "GST Credit";
+                         Reversal: Boolean)
+    var
+        GSTDistributionHeader: Record "GST Distribution Header";
+        GSTDistributionLine: Record "GST Distribution Line";
+        DimensionValue: Record "Dimension Value";
+        DocumentNo: Code[20];
+    begin
+        CreateInitialSetupForGSTDistribution();
+        CreateInitialSetupForGSTDistributionLine();
         GSTDistributionHeader.Init();
         GSTDistributionHeader.Insert(true);
         GSTDistributionHeader.Validate("Posting Date", WorkDate());
@@ -1751,6 +2199,63 @@ codeunit 18131 "GST On Purchase Tests"
         Assert.RecordIsNotEmpty(PurchCrMemoHdr);
     end;
 
+    local procedure CreateGeneralLedgerSetup()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."Inv. Rounding Precision (LCY)" := 1;
+        GeneralLedgerSetup."Unit-Amount Rounding Precision" := 0.00001;
+        GeneralLedgerSetup."Inv. Rounding Type (LCY)" := GeneralLedgerSetup."Inv. Rounding Type (LCY)"::Nearest;
+        GeneralLedgerSetup.Modify();
+    end;
+
+    local procedure CreateAndPostPurchaseDocumentForPurchInv(
+        var PurchaseHeader: Record "Purchase Header";
+        var PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+                      DocumentType: Enum "Purchase Document Type"): Code[20];
+    var
+        VendorNo: Code[20];
+        LocationCode: Code[10];
+        DocumentNo: Code[20];
+        PurchaseInvoiceType: Enum "GST Invoice Type";
+    begin
+        Evaluate(VendorNo, Storage.Get(VendorNoLbl));
+        Evaluate(LocationCode, Storage.Get(LocationCodeLbl));
+        CreatePurchaseHeaderWithGST(PurchaseHeader, VendorNo, DocumentType, LocationCode, PurchaseInvoiceType::" ");
+        CreatePurchaseLineWithGST(PurchaseHeader, PurchaseLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(InputCreditAvailmentLbl), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
+
+        LibraryGST.CreateGeneralPostingSetup(PurchaseLine."Gen. Bus. Posting Group", PurchaseLine."VAT Prod. Posting Group");
+        if not (PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Quote) then begin
+            DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+            Storage.Set(PostedDocumentNoLbl, DocumentNo);
+            exit(DocumentNo);
+        end;
+    end;
+
+    local procedure VerifyGSTLedgerEntriesAmount(DocumentNo: Code[20])
+    var
+        DummyGLEntry: Record "G/L entry";
+        GenLedgerSetup: Record "General Ledger Setup";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        GSTBaseAmount: Decimal;
+        GSTTaxRate: Decimal;
+        TotalAmount: Decimal;
+    begin
+        GenLedgerSetup.Get();
+        DummyGLEntry.SetCurrentKey("Document No.");
+        DummyGLEntry.SetRange("Document No.", DocumentNo);
+        DummyGLEntry.SetRange("Document Type", DummyGLEntry."Document Type"::" ");
+        DummyGLEntry.FindFirst();
+        PurchaseInvoiceHeader.Get(DocumentNo);
+        GSTBaseAmount := StorageDecimal.Get(LineAmountLbl);
+        GSTTaxRate := StorageDecimal.Get(GSTTaxPercentLbl);
+        TotalAmount := GSTBaseAmount + (GSTBaseAmount * GSTTaxRate / 100);
+
+        Assert.AreNearlyEqual(TotalAmount, DummyGLEntry.Amount, GenLedgerSetup."Inv. Rounding Precision (LCY)", '');
+    end;
+
     [ModalPageHandler]
     procedure ReferenceInvoiceNoPageHandler(var VendorLedgerEntries: TestPage "Vendor Ledger Entries")
     begin
@@ -1773,6 +2278,11 @@ codeunit 18131 "GST On Purchase Tests"
     begin
         if Message <> SuccessMsg then
             Error(NotPostedErr);
+    end;
+
+    [MessageHandler]
+    procedure DocumentArchived(Msg: Text[1024])
+    begin
     end;
 
     [PageHandler]

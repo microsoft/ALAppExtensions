@@ -4,7 +4,7 @@ using Microsoft.Sales.History;
 query 1950 "LPP Sales Invoice Header Input"
 {
     Caption = 'Late Payment Model Input';
-    OrderBy = Ascending(DueDate);
+    OrderBy = ascending(DueDate);
 
     elements
     {

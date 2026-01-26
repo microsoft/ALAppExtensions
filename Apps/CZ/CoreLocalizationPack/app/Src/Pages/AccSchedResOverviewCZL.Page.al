@@ -169,10 +169,6 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Next Set';
                 Image = NextSet;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Go to the next set of the account schedule results.';
 
                 trigger OnAction()
@@ -187,9 +183,6 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Previous Set';
                 Image = PreviousSet;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
                 ToolTip = 'Go to the previous set of the account schedule results.';
 
                 trigger OnAction()
@@ -198,6 +191,18 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                     UpdateColumnSet();
                     CurrPage.SubForm.PAGE.Load(MATRIX_ColumnSet, MATRIX_ColumnCaption);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref("Next Set_Promoted"; "Next Set")
+                {
+                }
+                actionref("Previous Set_Promoted"; "Previous Set")
+                {
+                }
             }
         }
     }

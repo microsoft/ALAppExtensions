@@ -7,12 +7,12 @@ namespace Microsoft.Finance.GST.Subcontracting;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Item;
-using Microsoft.Warehouse.Structure;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Manufacturing.Document;
 using Microsoft.Purchases.Document;
+using Microsoft.Warehouse.Structure;
 
 table 18479 "Sub Order Component List"
 {
@@ -337,7 +337,7 @@ table 18479 "Sub Order Component List"
         SubOrderComponents.FindSet();
         repeat
             SubOrderComponents.Validate(
-              "Quantity To Send", ("Deliver Comp. For" * SubOrderComponents."Quantity per"));
+              "Quantity To Send", PurchLine.GetQuantityToSendForSubOrderCompList(SubOrderComponents, "Deliver Comp. For"));
             SubOrderComponents.Validate(
               "Qty. for Rework", (SubOrderComponents."Quantity per" * "Qty. to Reject (Rework)"));
             if SubOrderComponents."Scrap %" <> 0 then begin
@@ -396,6 +396,7 @@ table 18479 "Sub Order Component List"
     begin
         TestField("Item No.");
         InitTrackingSpecification(TrackingSpecification);
+        ItemTrackingForm.SetRunMode(Enum::"Item Tracking Run Mode"::Reclass);
         ItemTrackingForm.SetSourceSpec(TrackingSpecification, WorkDate());
         ItemTrackingForm.RunModal();
     end;

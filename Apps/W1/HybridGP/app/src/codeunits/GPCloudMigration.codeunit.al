@@ -2,8 +2,8 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.DataMigration;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Utilities;
 using System.Integration;
@@ -126,6 +126,7 @@ codeunit 4025 "GP Cloud Migration"
         SelectLatestVersion();
         HelperFunctions.SetProcessesRunning(true);
 
+        HelperFunctions.RunPreMigrationCleanup();
         GPPopulateCombinedTables.PopulateAllMappedTables();
         Commit();
 
@@ -256,6 +257,7 @@ codeunit 4025 "GP Cloud Migration"
 
         UpdateOrInsertRecord(Database::"GP IV00101", 'IV00101');
         UpdateOrInsertRecord(Database::"GP IV00102", 'IV00102');
+        UpdateOrInsertRecord(Database::"GP IV00104", 'IV00104');
         UpdateOrInsertRecord(Database::"GP IV00105", 'IV00105');
         UpdateOrInsertRecord(Database::"GP IV00200", 'IV00200');
         UpdateOrInsertRecord(Database::"GP IV00300", 'IV00300');
@@ -277,8 +279,10 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP MC40200", 'MC40200', false);
 
         UpdateOrInsertRecord(Database::"GP PM00100", 'PM00100');
+        UpdateOrInsertRecord(Database::"GP PM00101", 'PM00101');
         UpdateOrInsertRecord(Database::"GP PM00200", 'PM00200');
         UpdateOrInsertRecord(Database::"GP PM00201", 'PM00201');
+        UpdateOrInsertRecord(Database::"GP PM00203", 'PM00203');
         UpdateOrInsertRecord(Database::"GP PM00204", 'PM00204');
         UpdateOrInsertRecord(Database::"GP Vendor Address", 'PM00300');
         UpdateOrInsertRecord(Database::"GP PM10200", 'PM10200');

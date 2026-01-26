@@ -3,5 +3,15 @@
         "codeunitId": 139604,
         "CodeunitName": "Shpfy Product Mapping Test",
         "Method": "*"
+    },
+    {
+        "codeunitId": 139605,
+        "CodeunitName": "Shpfy Product Price Calc. Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139646,
+        "CodeunitName": "Shpfy Catalog Prices Test",
+        "Method": "*"
     }
 ]

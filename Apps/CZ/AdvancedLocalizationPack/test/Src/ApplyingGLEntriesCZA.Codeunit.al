@@ -15,6 +15,7 @@ codeunit 148081 "Applying G/L Entries CZA"
         LibraryRandom: Codeunit "Library - Random";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        FromGLEntryNo: Integer;
         isInitialized: Boolean;
         UnexpectedRemAmtErr: Label 'Unexpected Remaining Amount.';
 
@@ -24,6 +25,9 @@ codeunit 148081 "Applying G/L Entries CZA"
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Applying G/L Entries CZA");
         LibraryRandom.Init();
+
+        InitFromGLEntryNo();
+
         if isInitialized then
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Applying G/L Entries CZA");
@@ -213,6 +217,615 @@ codeunit 148081 "Applying G/L Entries CZA"
         Assert.AreEqual(true, GLEntry."Closed CZA", GLEntry.FieldCaption("Closed CZA"));
     end;
 
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerSingle,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingGLEntriesWithSamePostingDateToZero()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: Record "G/L Entry";
+    begin
+        // [SCENARIO] Applying G/L Entries with the same posting date to zero
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '>%1', 0);
+        ApplyingGLEntry.FindFirst();
+
+        // [GIVEN] The G/L entry with work date and the negative amount has been found
+        AppliedGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry.SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry.SetRange(Amount, -ApplyingGLEntry.Amount);
+        AppliedGLEntry.FindFirst();
+
+        // [WHEN] Run the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry);
+
+        // [THEN] The applied G/L entry will be fully applied
+        AppliedGLEntry.Find('=');
+        VerifyGLEntry(AppliedGLEntry);
+
+        // [THEN] The applying G/L entry will be fully applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry);
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerSingle,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingGLEntriesWithDifferentPostingDateToZero()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: Record "G/L Entry";
+    begin
+        // [SCENARIO] Applying G/L Entries with the different posting date to zero
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '>%1', 0);
+        ApplyingGLEntry.FindFirst();
+
+        // [GIVEN] The G/L entry with work date +1D and the negative amount has been found
+        AppliedGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry.SetRange("Posting Date", CalcDate('<CD+1D>', ApplyingGLEntry."Posting Date"));
+        AppliedGLEntry.SetRange(Amount, -ApplyingGLEntry.Amount);
+        AppliedGLEntry.FindFirst();
+
+        // [WHEN] Run the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry);
+
+        // [THEN] The applied G/L entry will be fully applied
+        AppliedGLEntry.Find('=');
+        VerifyGLEntry(AppliedGLEntry, AppliedGLEntry."Posting Date");
+
+        // [THEN] The applying G/L entry will be fully applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry, AppliedGLEntry."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerSingle,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingGLEntriesWithPositiveBalance()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: Record "G/L Entry";
+    begin
+        // [SCENARIO] Applying G/L Entries with positive balance
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the highest positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '>%1', 0);
+        ApplyingGLEntry.FindLast();
+
+        // [GIVEN] The G/L entry with work date and the abs value of amount less than applying amount has been found
+        AppliedGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry.SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry.SetFilter(Amount, '>%1&<%2', -ApplyingGLEntry.Amount, 0);
+        AppliedGLEntry.FindLast();
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry);
+
+        // [THEN] The applied G/L entry will be fully applied
+        AppliedGLEntry.Find('=');
+        VerifyGLEntry(AppliedGLEntry);
+
+        // [THEN] The applying G/L entry will be partly applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry,
+            Abs(ApplyingGLEntry.Amount) - Abs(AppliedGLEntry.Amount),
+            -AppliedGLEntry.Amount, ApplyingGLEntry."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerSingle,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingGLEntriesWithNegativeBalance()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: Record "G/L Entry";
+    begin
+        // [SCENARIO] Applying G/L Entries with negative balance
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the lowest negative amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '<%1', 0);
+        ApplyingGLEntry.FindLast();
+
+        // [GIVEN] The G/L entry with work date and the abs value of amount less than applying amount has been found
+        AppliedGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry.SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry.SetFilter(Amount, '<%1&>%2', -ApplyingGLEntry.Amount, 0);
+        AppliedGLEntry.FindLast();
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry);
+
+        // [THEN] The applied G/L entry will be fully applied
+        AppliedGLEntry.Find('=');
+        VerifyGLEntry(AppliedGLEntry);
+
+        // [THEN] The applying G/L entry will be partly applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry,
+            -(Abs(ApplyingGLEntry.Amount) - Abs(AppliedGLEntry.Amount)),
+            -AppliedGLEntry.Amount, ApplyingGLEntry."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerMultiple,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingPositiveGLEntryToMultipleNegativeGLEntriesWithPositiveBalance()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: array[2] of Record "G/L Entry";
+        ListOfGLEntryNo: List of [Integer];
+    begin
+        // [SCENARIO] Applying positive G/L entry to multiple negative G/L entries with positive balance
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the highest positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '>%1', 0);
+        ApplyingGLEntry.FindLast();
+
+        // [GIVEN] The G/L entry with work date and the lowest negative amount has been found
+        AppliedGLEntry[1].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[1].SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry[1].SetFilter(Amount, '<%1', 0);
+        AppliedGLEntry[1].FindFirst();
+        ListOfGLEntryNo.Add(AppliedGLEntry[1]."Entry No.");
+
+        // [GIVEN] The G/L entry with work date and the second owest negative amount has been found
+        AppliedGLEntry[2].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[2].SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry[2].SetFilter(Amount, '<%1&<%2', 0, AppliedGLEntry[1].Amount);
+        AppliedGLEntry[2].FindFirst();
+        ListOfGLEntryNo.Add(AppliedGLEntry[2]."Entry No.");
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, ListOfGLEntryNo);
+
+        // [THEN] The applying G/L entry will be partly applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry,
+            Abs(ApplyingGLEntry.Amount) - Abs(AppliedGLEntry[1].Amount) - Abs(AppliedGLEntry[2].Amount),
+            Abs(AppliedGLEntry[1].Amount) + Abs(AppliedGLEntry[2].Amount), ApplyingGLEntry."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerMultiple,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingPositiveGLEntryToMultipleNegativeGLEntriesAndDiffPostingDateWithPositiveBalance()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: array[2] of Record "G/L Entry";
+        ListOfGLEntryNo: List of [Integer];
+    begin
+        // [SCENARIO] Applying positive G/L entry to multiple negative G/L entries and different posting date with positive balance
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the highest positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '>%1', 0);
+        ApplyingGLEntry.FindLast();
+
+        // [GIVEN] The G/L entry with work date + 1D and the lowest negative amount has been found
+        AppliedGLEntry[1].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[1].SetRange("Posting Date", CalcDate('<CD+1D>', ApplyingGLEntry."Posting Date"));
+        AppliedGLEntry[1].SetFilter(Amount, '<%1', 0);
+        AppliedGLEntry[1].FindFirst();
+        ListOfGLEntryNo.Add(AppliedGLEntry[1]."Entry No.");
+
+        // [GIVEN] The G/L entry with work date + 1D and the second owest negative amount has been found
+        AppliedGLEntry[2].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[2].SetRange("Posting Date", CalcDate('<CD+1D>', ApplyingGLEntry."Posting Date"));
+        AppliedGLEntry[2].SetFilter(Amount, '<%1&<%2', 0, AppliedGLEntry[1].Amount);
+        AppliedGLEntry[2].FindFirst();
+        ListOfGLEntryNo.Add(AppliedGLEntry[2]."Entry No.");
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, ListOfGLEntryNo);
+
+        // [THEN] The applying G/L entry will be fully applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry,
+            Abs(ApplyingGLEntry.Amount) - Abs(AppliedGLEntry[1].Amount) - Abs(AppliedGLEntry[2].Amount),
+            Abs(AppliedGLEntry[1].Amount) + Abs(AppliedGLEntry[2].Amount), AppliedGLEntry[1]."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerMultiple,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingNegativeGLEntryToMultiplePositiveGLEntriesWithNegativeBalance()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: array[2] of Record "G/L Entry";
+        ListOfGLEntryNo: List of [Integer];
+    begin
+        // [SCENARIO] Applying negative G/L entry to multiple positive G/L entries with negative balance
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the highest positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '<%1', 0);
+        ApplyingGLEntry.FindLast();
+
+        // [GIVEN] The G/L entry with work date and the lowest negative amount has been found
+        AppliedGLEntry[1].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[1].SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry[1].SetFilter(Amount, '>%1', 0);
+        AppliedGLEntry[1].FindFirst();
+        ListOfGLEntryNo.Add(AppliedGLEntry[1]."Entry No.");
+
+        // [GIVEN] The G/L entry with work date and the second owest negative amount has been found
+        AppliedGLEntry[2].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[2].SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry[2].SetFilter(Amount, '>%1&>%2', 0, AppliedGLEntry[1].Amount);
+        AppliedGLEntry[2].FindFirst();
+        ListOfGLEntryNo.Add(AppliedGLEntry[2]."Entry No.");
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, ListOfGLEntryNo);
+
+        // [THEN] The applying G/L entry will be partly applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry,
+            -(Abs(ApplyingGLEntry.Amount) - Abs(AppliedGLEntry[1].Amount) - Abs(AppliedGLEntry[2].Amount)),
+            -(Abs(AppliedGLEntry[1].Amount) + Abs(AppliedGLEntry[2].Amount)), ApplyingGLEntry."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerSingle,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingPositiveGLEntryToGLEntryWithHigherAmount()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: Record "G/L Entry";
+    begin
+        // [SCENARIO] Applying positive G/L entry to G/L entry with higher amount
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the lowest positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '>%1', 0);
+        ApplyingGLEntry.FindFirst();
+
+        // [GIVEN] The G/L entry with work date has been found
+        AppliedGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry.SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry.SetFilter(Amount, '<%1', 0);
+        AppliedGLEntry.FindLast();
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry);
+
+        // [THEN] The applied G/L entry will be partly applied
+        AppliedGLEntry.Find('=');
+        VerifyGLEntry(AppliedGLEntry, -(Abs(AppliedGLEntry.Amount) - Abs(ApplyingGLEntry.Amount)), -ApplyingGLEntry.Amount, ApplyingGLEntry."Posting Date");
+
+        // [THEN] The applying G/L entry will be fully applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry);
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerSingle,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingNegativeGLEntryToGLEntryWithHigherAmount()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: Record "G/L Entry";
+    begin
+        // [SCENARIO] Applying negative G/L entry to G/L entry with higher amount
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the lowest negative amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '<%1', 0);
+        ApplyingGLEntry.FindFirst();
+
+        // [GIVEN] The G/L entry with work date has been found
+        AppliedGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry.SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry.SetFilter(Amount, '>%1', 0);
+        AppliedGLEntry.FindLast();
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry);
+
+        // [THEN] The applied G/L entry will be partly applied
+        AppliedGLEntry.Find('=');
+        VerifyGLEntry(AppliedGLEntry, Abs(AppliedGLEntry.Amount) - Abs(ApplyingGLEntry.Amount), -ApplyingGLEntry.Amount, ApplyingGLEntry."Posting Date");
+
+        // [THEN] The applying G/L entry will be fully applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry);
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerMultiple,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingPositiveGLEntryToMultipleNegativeGLEntries()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: array[2] of Record "G/L Entry";
+        ListOfGLEntryNo: List of [Integer];
+    begin
+        // [SCENARIO] Applying positive G/L entry to multiple negative G/L entries
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the lowest positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '>%1', 0);
+        ApplyingGLEntry.FindFirst();
+
+        // [GIVEN] The G/L entry with work date and the lowest negative amount has been found
+        AppliedGLEntry[1].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[1].SetRange("Posting Date", CalcDate('<CD+1D>', ApplyingGLEntry."Posting Date"));
+        AppliedGLEntry[1].SetFilter(Amount, '<%1', 0);
+        AppliedGLEntry[1].FindLast();
+        ListOfGLEntryNo.Add(AppliedGLEntry[1]."Entry No.");
+
+        // [GIVEN] The G/L entry with work date and the second lowest negative amount has been found
+        AppliedGLEntry[2].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[2].SetRange("Posting Date", CalcDate('<CD+1D>', ApplyingGLEntry."Posting Date"));
+        AppliedGLEntry[2].SetFilter(Amount, '<%1&>%2', 0, AppliedGLEntry[1].Amount);
+        AppliedGLEntry[2].FindLast();
+        ListOfGLEntryNo.Add(AppliedGLEntry[2]."Entry No.");
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, ListOfGLEntryNo);
+
+        // [THEN] The applying G/L entry will be fully applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry, 0, ApplyingGLEntry.Amount, AppliedGLEntry[1]."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerMultiple,ModalPostApplicationHandler,MessageHandler')]
+    procedure ApplyingNegativeGLEntryToMultiplePositiveGLEntries()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: array[2] of Record "G/L Entry";
+        ListOfGLEntryNo: List of [Integer];
+    begin
+        // [SCENARIO] Applying negative G/L entry to multiple positive G/L entries
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the lowest negative amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '<%1', 0);
+        ApplyingGLEntry.FindFirst();
+
+        // [GIVEN] The G/L entry with work date and the lowest negative amount has been found
+        AppliedGLEntry[1].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[1].SetRange("Posting Date", CalcDate('<CD+1D>', ApplyingGLEntry."Posting Date"));
+        AppliedGLEntry[1].SetFilter(Amount, '>%1', 0);
+        AppliedGLEntry[1].FindLast();
+        ListOfGLEntryNo.Add(AppliedGLEntry[1]."Entry No.");
+
+        // [GIVEN] The G/L entry with work date and the second owest negative amount has been found
+        AppliedGLEntry[2].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[2].SetRange("Posting Date", CalcDate('<CD+1D>', ApplyingGLEntry."Posting Date"));
+        AppliedGLEntry[2].SetFilter(Amount, '>%1&<%2', 0, AppliedGLEntry[1].Amount);
+        AppliedGLEntry[2].FindLast();
+        ListOfGLEntryNo.Add(AppliedGLEntry[2]."Entry No.");
+
+        // [WHEN] Start the applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, ListOfGLEntryNo);
+
+        // [THEN] The applying G/L entry will be fully applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry, 0, ApplyingGLEntry.Amount, AppliedGLEntry[1]."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerSingle,ModalPostApplicationHandler,MessageHandler')]
+    procedure DoubleApplyingGLEntriesWithPositiveBalance()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: array[2] of Record "G/L Entry";
+    begin
+        // [SCENARIO] Double applying G/L Entries with positive balance
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the highest positive amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '>%1', 0);
+        ApplyingGLEntry.FindLast();
+
+        // [GIVEN] The G/L entry with work date and the abs value of amount less than applying amount has been found
+        AppliedGLEntry[1].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[1].SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry[1].SetFilter(Amount, '<%1', 0);
+        AppliedGLEntry[1].FindFirst();
+
+        // [GIVEN] Applying of the G/L entries has been started
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry[1]);
+
+        // [GIVEN] The G/L entry with work date and the abs value of amount less than applying amount has been found
+        AppliedGLEntry[2].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[2].SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry[2].SetFilter(Amount, '<%1&<%2', 0, AppliedGLEntry[1].Amount);
+        AppliedGLEntry[2].FindFirst();
+
+        // [WHEN] Start applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry[2]);
+
+        // [THEN] The applying G/L entry will be partly applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry,
+            Abs(ApplyingGLEntry.Amount) - Abs(AppliedGLEntry[1].Amount) - Abs(AppliedGLEntry[2].Amount),
+            -(AppliedGLEntry[1].Amount + AppliedGLEntry[2].Amount), ApplyingGLEntry."Posting Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalApplyGLEntriesHandlerSingle,ModalPostApplicationHandler,MessageHandler')]
+    procedure DoubleApplyingGLEntriesWithNegativeBalance()
+    var
+        ApplyingGLEntry: Record "G/L Entry";
+        AppliedGLEntry: array[2] of Record "G/L Entry";
+    begin
+        // [SCENARIO] Double applying G/L Entries with negative balance
+        Initialize();
+
+        // [GIVEN] The general journal lines with more than 10 lines have been posted
+        PostGenJournalLines();
+
+        // [GIVEN] The G/L entry with work date and the lowest negative amount has been found
+        ApplyingGLEntry.SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        ApplyingGLEntry.SetRange("Posting Date", WorkDate());
+        ApplyingGLEntry.SetFilter(Amount, '<%1', 0);
+        ApplyingGLEntry.FindLast();
+
+        // [GIVEN] The G/L entry with work date and the abs value of amount less than applying amount has been found
+        AppliedGLEntry[1].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[1].SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry[1].SetFilter(Amount, '>%1', 0);
+        AppliedGLEntry[1].FindFirst();
+
+        // [GIVEN] Applying of the G/L entries has been started
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry[1]);
+
+        // [GIVEN] The G/L entry with work date and the abs value of amount less than applying amount has been found
+        AppliedGLEntry[2].SetFilter("Entry No.", '>%1', GetFromGLEntryNo());
+        AppliedGLEntry[2].SetRange("Posting Date", ApplyingGLEntry."Posting Date");
+        AppliedGLEntry[2].SetFilter(Amount, '>%1&>%2', 0, AppliedGLEntry[1].Amount);
+        AppliedGLEntry[2].FindFirst();
+
+        // [WHEN] Start applying of the G/L entries
+        ApplyGLEntryFromGLEntry(ApplyingGLEntry, AppliedGLEntry[2]);
+
+        // [THEN] The applying G/L entry will be partly applied
+        ApplyingGLEntry.Find('=');
+        VerifyGLEntry(ApplyingGLEntry,
+            -(Abs(ApplyingGLEntry.Amount) - Abs(AppliedGLEntry[1].Amount) - Abs(AppliedGLEntry[2].Amount)),
+            -(AppliedGLEntry[1].Amount + AppliedGLEntry[2].Amount), ApplyingGLEntry."Posting Date");
+    end;
+
+    local procedure PostGenJournalLines()
+    begin
+        PostGenJournalLines(WorkDate(), CalcDate('<CD+1D>', WorkDate()),
+            LibraryRandom.RandDec(100, 2), LibraryRandom.RandIntInRange(10, 15));
+    end;
+
+    local procedure PostGenJournalLines(StartPostingDate: Date; EndPostingDate: Date; StartAmount: Decimal; LinesCount: Integer)
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GLAccountNo: Code[20];
+        Amount: Decimal;
+        PostingDate: Date;
+        i: Integer;
+    begin
+        SelectGenJournalBatch(GenJournalBatch);
+        LibraryERM.ClearGenJournalLines(GenJournalBatch);
+        GLAccountNo := LibraryERM.CreateGLAccountNo();
+
+        for PostingDate := StartPostingDate to EndPostingDate do begin
+            i := 0;
+            Amount := StartAmount;
+            WorkDate := PostingDate;
+            for i := 1 to LinesCount do begin
+                LibraryERM.CreateGeneralJnlLineWithBalAcc(
+                  GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::" ",
+                  GenJournalLine."Account Type"::"G/L Account", GLAccountNo,
+                  GenJournalLine."Account Type"::"G/L Account", GLAccountNo,
+                  Amount);
+                Amount += StartAmount;
+            end;
+        end;
+
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+        WorkDate := StartPostingDate;
+    end;
+
+    local procedure InitFromGLEntryNo()
+    begin
+        FromGLEntryNo := 0;
+        FromGLEntryNo := GetFromGLEntryNo();
+    end;
+
+    local procedure GetFromGLEntryNo(): Integer
+    begin
+        if FromGLEntryNo = 0 then
+            FromGLEntryNo := GetLastGLEntryNo() + 1;
+        exit(FromGLEntryNo);
+    end;
+
+    local procedure GetLastGLEntryNo(): Integer
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.FindLast();
+        exit(GLEntry."Entry No.");
+    end;
+
+    local procedure VerifyGLEntry(GLEntry: Record "G/L Entry")
+    begin
+        VerifyGLEntry(GLEntry, WorkDate());
+    end;
+
+    local procedure VerifyGLEntry(GLEntry: Record "G/L Entry"; PostingDate: Date)
+    begin
+        VerifyGLEntry(GLEntry, 0, GLEntry.Amount, PostingDate);
+    end;
+
+    local procedure VerifyGLEntry(GLEntry: Record "G/L Entry"; ExpectedRemainingAmount: Decimal; ExpectedAppliedAmount: Decimal; PostingDate: Date)
+    var
+        DetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
+    begin
+        GLEntry.CalcFields("Applied Amount CZA");
+        Assert.AreEqual(ExpectedRemainingAmount, GLEntry.RemainingAmountCZA(), 'Unexpected Remaining Amount.');
+        Assert.AreEqual(ExpectedAppliedAmount, GLEntry."Applied Amount CZA", 'Unexpected Applied Amount.');
+        DetailedGLEntryCZA.SetRange("G/L Entry No.", GLEntry."Entry No.");
+        DetailedGLEntryCZA.FindFirst();
+        Assert.AreEqual(PostingDate, DetailedGLEntryCZA."Posting Date", 'Unexpected Posting Date.');
+    end;
 
     local procedure ApplyGenJournalLine(var GenJournalLine: Record "Gen. Journal Line")
     begin
@@ -222,14 +835,30 @@ codeunit 148081 "Applying G/L Entries CZA"
     local procedure SelectGenJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
     begin
         LibraryERM.SelectGenJnlBatch(GenJournalBatch);
-        LibraryERM.ClearGenJournalLines(GenJournalBatch)
+        LibraryERM.ClearGenJournalLines(GenJournalBatch);
     end;
 
-    local procedure ApplyGLEntryFromGLEntry(var GLEntry: Record "G/L Entry")
+    local procedure ApplyGLEntryFromGLEntry(var AppplyingGLEntry: Record "G/L Entry")
     var
-        GLENtryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA";
+        GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA";
     begin
-        GLENtryPostApplicationCZA.ApplyGLEntry(GLEntry);
+        GLEntryPostApplicationCZA.ApplyGLEntry(AppplyingGLEntry);
+    end;
+
+    local procedure ApplyGLEntryFromGLEntry(var AppplyingGLEntry: Record "G/L Entry"; var AppliedGLEntry: Record "G/L Entry")
+    var
+        GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA";
+    begin
+        LibraryVariableStorage.Enqueue(AppliedGLEntry);
+        GLEntryPostApplicationCZA.ApplyGLEntry(AppplyingGLEntry);
+    end;
+
+    local procedure ApplyGLEntryFromGLEntry(var AppplyingGLEntry: Record "G/L Entry"; AppliedGLEntryNoList: List of [Integer])
+    var
+        GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA";
+    begin
+        LibraryVariableStorage.Enqueue(AppliedGLEntryNoList);
+        GLEntryPostApplicationCZA.ApplyGLEntry(AppplyingGLEntry);
     end;
 
     local procedure ApplyGLEntries()
@@ -239,23 +868,56 @@ codeunit 148081 "Applying G/L Entries CZA"
     end;
 
     [ModalPageHandler]
-    procedure ModalApplyGLEntriesHandler(var ApplyGLEntriesCZA: TestPage "Apply G/L Entries CZA")
+    procedure ModalApplyGLEntriesHandler(var ApplyGenLedgerEntriesCZA: TestPage "Apply Gen. Ledger Entries CZA")
     var
         FieldVariant: Variant;
     begin
         LibraryVariableStorage.Dequeue(FieldVariant);
-        ApplyGLEntriesCZA.Filter.SetFilter("Document No.", FieldVariant);
-        ApplyGLEntriesCZA.First();
+        ApplyGenLedgerEntriesCZA.Filter.SetFilter("Document No.", FieldVariant);
+        ApplyGenLedgerEntriesCZA.First();
         LibraryVariableStorage.Dequeue(FieldVariant);
         if FieldVariant.IsCode then begin
-            ApplyGLEntriesCZA."Set Applies-to ID".Invoke();
-            ApplyGLEntriesCZA."Applies-to ID".AssertEquals(FieldVariant);
+            ApplyGenLedgerEntriesCZA."Set Applies-to ID".Invoke();
+            ApplyGenLedgerEntriesCZA."Applies-to ID".AssertEquals(FieldVariant);
         end;
         if FieldVariant.IsDecimal then begin
-            ApplyGLEntriesCZA."Amount to Apply".SetValue(FieldVariant);
-            ApplyGLEntriesCZA."Post Application".Invoke();
+            ApplyGenLedgerEntriesCZA."Amount to Apply".SetValue(FieldVariant);
+            ApplyGenLedgerEntriesCZA."Post Application".Invoke();
         end;
-        ApplyGLEntriesCZA.OK().Invoke();
+        ApplyGenLedgerEntriesCZA.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure ModalApplyGLEntriesHandlerSingle(var ApplyGenLedgerEntriesCZA: TestPage "Apply Gen. Ledger Entries CZA")
+    var
+        GLEntry: Record "G/L Entry";
+        FieldVariant: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(FieldVariant);
+        GLEntry := FieldVariant;
+        ApplyGenLedgerEntriesCZA.Filter.SetFilter("Entry No.", Format(GLEntry."Entry No."));
+        ApplyGenLedgerEntriesCZA.First();
+        ApplyGenLedgerEntriesCZA."Set Applies-to ID".Invoke();
+        ApplyGenLedgerEntriesCZA."Post Application".Invoke();
+        ApplyGenLedgerEntriesCZA.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure ModalApplyGLEntriesHandlerMultiple(var ApplyGenLedgerEntriesCZA: TestPage "Apply Gen. Ledger Entries CZA")
+    var
+        ListOfGLEntryNo: List of [Integer];
+        GLEntryNo: Integer;
+        FieldVariant: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(FieldVariant);
+        ListOfGLEntryNo := FieldVariant;
+        foreach GLEntryNo in ListOfGLEntryNo do begin
+            ApplyGenLedgerEntriesCZA.Filter.SetFilter("Entry No.", Format(GLEntryNo));
+            ApplyGenLedgerEntriesCZA.First();
+            ApplyGenLedgerEntriesCZA."Set Applies-to ID".Invoke();
+        end;
+        ApplyGenLedgerEntriesCZA."Post Application".Invoke();
+        ApplyGenLedgerEntriesCZA.OK().Invoke();
     end;
 
     [ModalPageHandler]

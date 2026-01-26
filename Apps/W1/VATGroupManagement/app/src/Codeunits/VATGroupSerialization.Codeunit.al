@@ -17,7 +17,7 @@ codeunit 4704 "VAT Group Serialization"
         VATReportSetup.Get();
 
         VATSubmissionJson := FillVATSubmissionHeaderJson(VATReportHeader);
-        CASE VATReportSetup."VAT Group BC Version" OF
+        case VATReportSetup."VAT Group BC Version" of
             VATReportSetup."VAT Group BC Version"::NAV2017:
                 begin
                     FillVATSubmissionLinesJson(VATReportHeader).WriteTo(LinesJson);
@@ -26,7 +26,7 @@ codeunit 4704 "VAT Group Serialization"
             VATReportSetup."VAT Group BC Version"::NAV2018,
             VATReportSetup."VAT Group BC Version"::BC:
                 VATSubmissionJson.Add('vatGroupSubmissionLines', FillVATSubmissionLinesJson(VATReportHeader));
-        END;
+        end;
 
         exit(VATSubmissionJson);
     end;

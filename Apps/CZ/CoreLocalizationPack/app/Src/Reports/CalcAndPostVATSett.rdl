@@ -45,45 +45,45 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>0.72878in</Width>
+                  <Width>1.8511cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.61982in</Width>
+                  <Width>1.57434cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.18567in</Width>
+                  <Width>0.4716cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.18567in</Width>
+                  <Width>0.4716cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.70866in</Width>
+                  <Width>1.8cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.70866in</Width>
+                  <Width>1.8cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.70866in</Width>
+                  <Width>1.8cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.70866in</Width>
+                  <Width>1.8cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.5in</Width>
+                  <Width>1.27cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.16604in</Width>
+                  <Width>2.96174cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.557in</Width>
+                  <Width>1.41478cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.34039in</Width>
+                  <Width>0.86459cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>0.37495in</Height>
+                  <Height>0.95237cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -258,6 +258,9 @@
                           </Paragraphs>
                           <ZIndex>120</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -269,14 +272,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="VATEntryUnrealizedBaseCaption">
+                        <Textbox Name="OriginalVATBaseCaption">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=First(Fields!UnrealizedBaseCaption.Value)</Value>
+                                  <Value>=First(Fields!OriginalVATBaseCaption.Value)</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
@@ -290,6 +293,9 @@
                           </Paragraphs>
                           <ZIndex>119</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -301,14 +307,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="VATEntryUnrealizedAmountCaption">
+                        <Textbox Name="OriginalVATAmountCaption">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=First(Fields!UnrealizedAmountCaption.Value)</Value>
+                                  <Value>=First(Fields!OriginalVATAmountCaption.Value)</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
@@ -322,6 +328,9 @@
                           </Paragraphs>
                           <ZIndex>118</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Bottom</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -451,7 +460,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.16654in</Height>
+                  <Height>0.42301cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -744,7 +753,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.16654in</Height>
+                  <Height>0.42301cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -922,17 +931,17 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="VATEntryUnrealizedBase">
+                        <Textbox Name="OriginalVATBase_VATEntry">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!UnrealizedBase_VATEntry.Value</Value>
+                                  <Value>=Fields!OriginalVATBase_VATEntry.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!UnrealizedBase_VATEntryFormat.Value</Format>
+                                    <Format>=Fields!OriginalVATBase_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -941,6 +950,9 @@
                           </Paragraphs>
                           <ZIndex>85</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -952,17 +964,17 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="VATEntryUnrealizedAmount">
+                        <Textbox Name="OriginalVATAmount_VATEntry">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!UnrealizedAmount_VATEntry.Value</Value>
+                                  <Value>=Fields!OriginalVATAmount_VATEntry.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!UnrealizedAmount_VATEntryFormat.Value</Format>
+                                    <Format>=Fields!OriginalVATAmount_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -971,6 +983,9 @@
                           </Paragraphs>
                           <ZIndex>84</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -1097,7 +1112,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.16654in</Height>
+                  <Height>0.42301cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1275,17 +1290,17 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="VATEntryAddCurrencyUnrealizedBase">
+                        <Textbox Name="OriginalVATBaseACY_VATEntry">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!AddCurrUnrlzdBas_VATEntry.Value</Value>
+                                  <Value>=Fields!OriginalVATBaseACY_VATEntry.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
+                                    <Format>=Fields!OriginalVATBaseACY_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1294,6 +1309,9 @@
                           </Paragraphs>
                           <ZIndex>73</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -1305,17 +1323,17 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="VATEntryAddCurrencyUnrealizedAmt">
+                        <Textbox Name="OriginalVATAmountACY_VATEntry">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!AddCurrUnrlzdAmt_VATEntry.Value</Value>
+                                  <Value>=Fields!OriginalVATAmountACY_VATEntry.Value</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
+                                    <Format>=Fields!OriginalVATAmountACY_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1324,6 +1342,9 @@
                           </Paragraphs>
                           <ZIndex>72</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -1450,7 +1471,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.16654in</Height>
+                  <Height>0.42301cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1652,7 +1673,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1662,6 +1682,9 @@
                           <rd:DefaultName>textbox60</rd:DefaultName>
                           <ZIndex>61</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -1684,7 +1707,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1694,6 +1716,9 @@
                           <rd:DefaultName>textbox61</rd:DefaultName>
                           <ZIndex>60</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -1830,7 +1855,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.16654in</Height>
+                  <Height>0.42301cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -2028,7 +2053,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2038,6 +2062,9 @@
                           <rd:DefaultName>textbox70</rd:DefaultName>
                           <ZIndex>49</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2060,7 +2087,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2070,6 +2096,9 @@
                           <rd:DefaultName>textbox71</rd:DefaultName>
                           <ZIndex>48</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2205,7 +2234,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.16654in</Height>
+                  <Height>0.42301cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -2403,7 +2432,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2413,6 +2441,9 @@
                           <rd:DefaultName>textbox83</rd:DefaultName>
                           <ZIndex>37</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2435,7 +2466,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2445,6 +2475,9 @@
                           <rd:DefaultName>textbox84</rd:DefaultName>
                           <ZIndex>36</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2475,6 +2508,9 @@
                           <rd:DefaultName>textbox85</rd:DefaultName>
                           <ZIndex>35</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2579,7 +2615,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.16654in</Height>
+                  <Height>0.42301cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -2775,7 +2811,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2785,6 +2820,9 @@
                           <rd:DefaultName>textbox99</rd:DefaultName>
                           <ZIndex>5</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2807,7 +2845,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2817,6 +2854,9 @@
                           <rd:DefaultName>textbox100</rd:DefaultName>
                           <ZIndex>4</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2950,7 +2990,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.182in</Height>
+                  <Height>0.46228cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -3081,7 +3121,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=First(Fields!VATAmountAddCurrFormat.Value)</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -3091,6 +3130,9 @@
                           <rd:DefaultName>textbox6</rd:DefaultName>
                           <ZIndex>17</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -3118,6 +3160,9 @@
                           <rd:DefaultName>textbox4</rd:DefaultName>
                           <ZIndex>16</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -3235,7 +3280,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.182in</Height>
+                  <Height>0.46228cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -3351,7 +3396,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -3367,7 +3411,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=First(Fields!VATAmountFormat.Value)</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -3377,6 +3420,9 @@
                           <rd:DefaultName>textbox8</rd:DefaultName>
                           <ZIndex>27</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -3618,8 +3664,8 @@
             </TablixRowHierarchy>
             <DataSetName>DataSet_Result</DataSetName>
             <Top>3.49206cm</Top>
-            <Height>4.83801cm</Height>
-            <Width>18.07974cm</Width>
+            <Height>4.838cm</Height>
+            <Width>18.07975cm</Width>
             <ZIndex>1</ZIndex>
             <Style />
           </Tablix>
@@ -4066,7 +4112,7 @@ Public Function BlankNegAndZero(ByVal Value As Decimal)
     Return Value
 End Function
 </Code>
-  <rd:ReportUnitType>Invalid</rd:ReportUnitType>
+  <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>aaf30a90-5292-48be-a30c-751c34e29d31</rd:ReportID>
   <DataSets>
     <DataSet Name="DataSet_Result">
@@ -4155,11 +4201,11 @@ End Function
         <Field Name="AmountCaption">
           <DataField>AmountCaption</DataField>
         </Field>
-        <Field Name="UnrealizedBaseCaption">
-          <DataField>UnrealizedBaseCaption</DataField>
+        <Field Name="OriginalVATBaseCaption">
+          <DataField>OriginalVATBaseCaption</DataField>
         </Field>
-        <Field Name="UnrealizedAmountCaption">
-          <DataField>UnrealizedAmountCaption</DataField>
+        <Field Name="OriginalVATAmountCaption">
+          <DataField>OriginalVATAmountCaption</DataField>
         </Field>
         <Field Name="VATCalculationCaption">
           <DataField>VATCalculationCaption</DataField>
@@ -4224,29 +4270,29 @@ End Function
         <Field Name="UserID_VATEntry">
           <DataField>UserID_VATEntry</DataField>
         </Field>
-        <Field Name="UnrealizedAmount_VATEntry">
-          <DataField>UnrealizedAmount_VATEntry</DataField>
+        <Field Name="OriginalVATAmount_VATEntry">
+          <DataField>OriginalVATAmount_VATEntry</DataField>
         </Field>
-        <Field Name="UnrealizedAmount_VATEntryFormat">
-          <DataField>UnrealizedAmount_VATEntryFormat</DataField>
+        <Field Name="OriginalVATAmount_VATEntryFormat">
+          <DataField>OriginalVATAmount_VATEntryFormat</DataField>
         </Field>
-        <Field Name="UnrealizedBase_VATEntry">
-          <DataField>UnrealizedBase_VATEntry</DataField>
+        <Field Name="OriginalVATBase_VATEntry">
+          <DataField>OriginalVATBase_VATEntry</DataField>
         </Field>
-        <Field Name="UnrealizedBase_VATEntryFormat">
-          <DataField>UnrealizedBase_VATEntryFormat</DataField>
+        <Field Name="OriginalVATBase_VATEntryFormat">
+          <DataField>OriginalVATBase_VATEntryFormat</DataField>
         </Field>
-        <Field Name="AddCurrUnrlzdAmt_VATEntry">
-          <DataField>AddCurrUnrlzdAmt_VATEntry</DataField>
+        <Field Name="OriginalVATAmountACY_VATEntry">
+          <DataField>OriginalVATAmountACY_VATEntry</DataField>
         </Field>
-        <Field Name="AddCurrUnrlzdAmt_VATEntryFormat">
-          <DataField>AddCurrUnrlzdAmt_VATEntryFormat</DataField>
+        <Field Name="OriginalVATAmountACY_VATEntryFormat">
+          <DataField>OriginalVATAmountACY_VATEntryFormat</DataField>
         </Field>
-        <Field Name="AddCurrUnrlzdBas_VATEntry">
-          <DataField>AddCurrUnrlzdBas_VATEntry</DataField>
+        <Field Name="OriginalVATBaseACY_VATEntry">
+          <DataField>OriginalVATBaseACY_VATEntry</DataField>
         </Field>
-        <Field Name="AddCurrUnrlzdBas_VATEntryFormat">
-          <DataField>AddCurrUnrlzdBas_VATEntryFormat</DataField>
+        <Field Name="OriginalVATBaseACY_VATEntryFormat">
+          <DataField>OriginalVATBaseACY_VATEntryFormat</DataField>
         </Field>
         <Field Name="AdditionlCurrAmt_VATEntry">
           <DataField>AdditionlCurrAmt_VATEntry</DataField>

@@ -6,6 +6,7 @@ namespace Microsoft.HumanResources.Payables;
 
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.HumanResources.Employee;
 
 tableextension 11790 "Employee Ledger Entry CZL" extends "Employee Ledger Entry"
 {
@@ -14,18 +15,21 @@ tableextension 11790 "Employee Ledger Entry CZL" extends "Employee Ledger Entry"
         field(11717; "Specific Symbol CZL"; Code[10])
         {
             Caption = 'Specific Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             DataClassification = CustomerContent;
         }
         field(11718; "Variable Symbol CZL"; Code[10])
         {
             Caption = 'Variable Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             DataClassification = CustomerContent;
         }
         field(11719; "Constant Symbol CZL"; Code[10])
         {
             Caption = 'Constant Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             TableRelation = "Constant Symbol CZL";
             DataClassification = CustomerContent;
@@ -58,5 +62,27 @@ tableextension 11790 "Employee Ledger Entry CZL" extends "Employee Ledger Entry"
         CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
     begin
         CrossApplicationMgtCZL.DrillDownSuggestedAmountToApply(Rec);
+    end;
+
+    procedure GetPayablesAccNoCZL(): Code[20]
+    var
+        EmployeePostingGroup: Record "Employee Posting Group";
+        GLAccountNo: Code[20];
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGetPayablesAccountNoCZL(Rec, GLAccountNo, IsHandled);
+        if IsHandled then
+            exit(GLAccountNo);
+
+        TestField("Employee Posting Group");
+        EmployeePostingGroup.Get("Employee Posting Group");
+        EmployeePostingGroup.TestField("Payables Account");
+        exit(EmployeePostingGroup.GetPayablesAccount());
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetPayablesAccountNoCZL(EmployeeLedgerEntry: Record "Employee Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
+    begin
     end;
 }

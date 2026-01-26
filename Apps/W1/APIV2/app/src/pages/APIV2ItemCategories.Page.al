@@ -1,7 +1,7 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Inventory.Item;
 using Microsoft.Integration.Graph;
+using Microsoft.Inventory.Item;
 
 page 30025 "APIV2 - Item Categories"
 {
@@ -15,6 +15,7 @@ page 30025 "APIV2 - Item Categories"
     PageType = API;
     SourceTable = "Item Category";
     Extensible = false;
+    AboutText = 'Manages item category records including codes, descriptions, parent-child relationships, and hierarchy structure. Supports GET, POST, PATCH, and DELETE operations, enabling external systems to organize, classify, and synchronize product categories for catalog management, inventory reporting, and integration with e-commerce or product information management platforms.';
 
     layout
     {

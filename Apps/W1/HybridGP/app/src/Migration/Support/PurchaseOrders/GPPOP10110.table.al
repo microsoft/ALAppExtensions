@@ -128,4 +128,14 @@ table 40138 "GP POP10110"
             Clustered = true;
         }
     }
+
+    procedure IsInventoryItem(): Boolean
+    var
+        GPIV00101: Record "GP IV00101";
+    begin
+        if GPIV00101.Get(Rec.ITEMNMBR) then
+            exit(GPIV00101.IsInventoryItem() or (Rec.NONINVEN = 0));
+
+        exit(false);
+    end;
 }

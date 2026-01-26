@@ -142,12 +142,6 @@ report 31122 "VAT Register CZL"
                         Base := "Additional-Currency Base";
                         Amount := "Additional-Currency Amount";
                     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-                    if not IsReplaceVATDateEnabled() then
-                        "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 end;
 
                 trigger OnPreDataItem()

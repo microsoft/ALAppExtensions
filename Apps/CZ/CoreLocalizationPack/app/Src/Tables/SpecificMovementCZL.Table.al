@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEANSCHEMA25
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -7,14 +8,8 @@ namespace Microsoft.Inventory.Intrastat;
 table 31077 "Specific Movement CZL"
 {
     Caption = 'Specific Movement';
-#if not CLEAN22
-    LookupPageID = "Specific Movements CZL";
-    ObsoleteState = Pending;
-    ObsoleteTag = '22.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '25.0';
-#endif
     ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
     fields
@@ -45,3 +40,4 @@ table 31077 "Specific Movement CZL"
         }
     }
 }
+#endif

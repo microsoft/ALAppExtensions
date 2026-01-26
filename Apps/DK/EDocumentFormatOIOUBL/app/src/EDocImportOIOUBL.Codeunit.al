@@ -4,15 +4,27 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
-using System.Utilities;
-using Microsoft.Purchases.Document;
-using System.IO;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sustainability.Certificate;
+using Microsoft.Sustainability.Codes;
+using Microsoft.Sustainability.Setup;
+using System.IO;
+using System.Utilities;
 
 codeunit 13911 "EDoc Import OIOUBL"
 {
     Access = Internal;
+
+
+    var
+        EDocumentImportHelper: codeunit "E-Document Import Helper";
+        LCYCode: Code[10];
+        SustainabilityInfo: Dictionary of [Text, Text];
+        Name: Text;
+
     procedure ParseBasicInfo(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob")
     var
         TempXMLBuffer: Record "XML Buffer" temporary;
@@ -202,8 +214,11 @@ codeunit 13911 "EDoc Import OIOUBL"
                 ParseInvoice(PurchaseHeader, PurchaseLine, TempXMLBuffer.Path, TempXMLBuffer.Value);
             until TempXMLBuffer.Next() = 0;
 
-        // Insert last line
-        PurchaseLine.Insert();
+        // Apply sustainability information to item if available
+        if PurchaseLine."Document No." <> '' then begin
+            ApplySustainabilityInfoToItem(PurchaseLine);
+            PurchaseLine.Insert();
+        end;
         PurchaseHeader.Modify();
 
         // Allowance charge
@@ -223,8 +238,11 @@ codeunit 13911 "EDoc Import OIOUBL"
                 ParseCreditMemo(PurchaseHeader, PurchaseLine, TempXMLBuffer.Path, TempXMLBuffer.Value);
             until TempXMLBuffer.Next() = 0;
 
-        // Insert last line
-        PurchaseLine.Insert();
+        // Apply sustainability information to item if available
+        if PurchaseLine."Document No." <> '' then begin
+            ApplySustainabilityInfoToItem(PurchaseLine);
+            PurchaseLine.Insert();
+        end;
         PurchaseHeader.Modify();
 
         // Allowance charge
@@ -341,8 +359,10 @@ codeunit 13911 "EDoc Import OIOUBL"
                     Evaluate(PurchaseHeader."Amount Including VAT", Value, 9);
             '/CreditNote/cac:CreditNoteLine':
                 begin
-                    if PurchaseLine."Document No." <> '' then
+                    if PurchaseLine."Document No." <> '' then begin
+                        ApplySustainabilityInfoToItem(PurchaseLine);
                         PurchaseLine.Insert();
+                    end;
 
                     PurchaseLine.Init();
                     PurchaseLine."Document Type" := PurchaseHeader."Document Type";
@@ -377,6 +397,17 @@ codeunit 13911 "EDoc Import OIOUBL"
                     Evaluate(PurchaseLine."Quantity (Base)", Value, 9);
             '/CreditNote/cac:CreditNoteLine/cbc:Note':
                 SetLineType(PurchaseLine, Value);
+            // Sustainability information parsing
+            '/CreditNote/cac:CreditNoteLine/cbc:Certificate/cac:ID':
+                ParseSustainabilityField('CertificateId', Value);
+            '/CreditNote/cac:CreditNoteLine/cbc:Certificate/cac:CertificateTypeCode':
+                ParseSustainabilityField('CertificateTypeCode', Value);
+            '/CreditNote/cac:CreditNoteLine/cbc:Certificate/cac:CertificateType':
+                ParseSustainabilityField('CertificateType', Value);
+            '/CreditNote/cac:CreditNoteLine/cbc:AdditionalItemProperty/cac:Name':
+                Name := Value;
+            '/CreditNote/cac:CreditNoteLine/cbc:AdditionalItemProperty/cac:Value':
+                ParseSustainabilityField(Name, Value);
         end
     end;
 
@@ -407,8 +438,10 @@ codeunit 13911 "EDoc Import OIOUBL"
                     Evaluate(PurchaseHeader."Invoice Discount Value", Value, 9);
             '/Invoice/cac:InvoiceLine':
                 begin
-                    if PurchaseLine."Document No." <> '' then
+                    if PurchaseLine."Document No." <> '' then begin
+                        ApplySustainabilityInfoToItem(PurchaseLine);
                         PurchaseLine.Insert();
+                    end;
 
                     PurchaseLine.Init();
                     PurchaseLine."Document Type" := PurchaseHeader."Document Type";
@@ -440,6 +473,17 @@ codeunit 13911 "EDoc Import OIOUBL"
                     Evaluate(PurchaseLine."Quantity (Base)", Value, 9);
             '/Invoice/cac:InvoiceLine/cbc:Note':
                 SetLineType(PurchaseLine, Value);
+            // Sustainability information parsing
+            '/Invoice/cac:InvoiceLine/cbc:Certificate/cac:ID':
+                ParseSustainabilityField('CertificateId', Value);
+            '/Invoice/cac:InvoiceLine/cbc:Certificate/cac:CertificateTypeCode':
+                ParseSustainabilityField('CertificateTypeCode', Value);
+            '/Invoice/cac:InvoiceLine/cbc:Certificate/cac:CertificateType':
+                ParseSustainabilityField('CertificateType', Value);
+            '/Invoice/cac:InvoiceLine/cbc:AdditionalItemProperty/cac:Name':
+                Name := Value;
+            '/Invoice/cac:InvoiceLine/cbc:AdditionalItemProperty/cac:Value':
+                ParseSustainabilityField(Name, Value);
         end;
     end;
 
@@ -537,7 +581,88 @@ codeunit 13911 "EDoc Import OIOUBL"
         end;
     end;
 
+    local procedure ParseSustainabilityField(DictKey: Text; Value: Text)
+    begin
+        SustainabilityInfo.Set(DictKey, Value);
+    end;
+
+    local procedure ApplySustainabilityInfoToItem(var PurchaseLine: record "Purchase Line" temporary)
     var
-        EDocumentImportHelper: codeunit "E-Document Import Helper";
-        LCYCode: Code[10];
+        SustainabilitySetup: Record "Sustainability Setup";
+        CertificateTypeCode: Text;
+        EmissionFactor, ClassificationCode, NetEmissionQuantity : Text;
+        NetEmissionQuantityDecimal: Decimal;
+    begin
+        SustainabilitySetup.GetRecordOnce();
+        if not SustainabilitySetup."Use Sustainability in E-Doc." then
+            exit;
+
+        // Get sustainability values from temporary storage
+        if SustainabilityInfo.Get('CertificateTypeCode', CertificateTypeCode) then;
+        if SustainabilityInfo.Get('EmissionFactor', EmissionFactor) then;
+        if SustainabilityInfo.Get('NetEmissionQuantity', NetEmissionQuantity) then;
+        if SustainabilityInfo.Get('ClassificationCode', ClassificationCode) then;
+
+        // Apply emission factor if not already set on item
+        if (EmissionFactor <> '') then
+            if Evaluate(NetEmissionQuantityDecimal, NetEmissionQuantity, 9) then
+                PurchaseLine."Emission CO2" := NetEmissionQuantityDecimal;
+
+        PurchaseLine."Received Sust. Prod. CL. Code" := CopyStr(ClassificationCode, 1, MaxStrLen(PurchaseLine."Received Sust. Prod. CL. Code"));
+        PurchaseLine."Received Sust. Cert. Type Code" := CopyStr(CertificateTypeCode, 1, MaxStrLen(PurchaseLine."Received Sust. Cert. Type Code"));
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Create Purch. Doc.", OnCreateNewPurchLineOnBeforeRecRefModify, '', false, false)]
+    local procedure OnCreateNewPurchLineOnBeforeRecRefModify(var EDocument: Record "E-Document"; var TempDocumentHeader: RecordRef; var DocumentHeader: RecordRef; var TempDocumentLine: RecordRef; var DocumentLine: RecordRef);
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+        SustainabilityCertificate: Record "Sustainability Certificate";
+        PurchaseLine: Record "Purchase Line";
+        Item: Record Item;
+        ProductClassificationCode: Record "Product Classification Code";
+        EDocumentErrorHelper: Codeunit "E-Document Error Helper";
+        ModifyItem: Boolean;
+        DifferentSustCertMsg: Label 'Imported Item has different sustainability certificate code than defined on Item %1', Comment = '%1 - Item no';
+    begin
+        if TempDocumentHeader.Number() <> Database::"Purchase Header" then
+            exit;
+
+        SustainabilitySetup.GetRecordOnce();
+        if not SustainabilitySetup."Use Sustainability in E-Doc." then
+            exit;
+
+        DocumentLine.SetTable(PurchaseLine);
+        if PurchaseLine."No." = '' then
+            exit;
+
+        case PurchaseLine.Type of
+            Enum::"Purchase Line Type"::Item:
+                begin
+                    if not Item.Get(PurchaseLine."No.") then
+                        exit;
+
+                    if PurchaseLine."Received Sust. Prod. CL. Code" <> '' then
+                        if ProductClassificationCode.Get(PurchaseLine."Received Sust. Prod. CL. Code") then begin
+                            Item.Validate("Product Classification Code", ProductClassificationCode.Code);
+                            Item."Product Classification Type" := ProductClassificationCode.Type;
+                            ModifyItem := true;
+                        end;
+
+                    if PurchaseLine."Received Sust. Cert. Type Code" <> '' then
+                        if Item."Sust. Cert. No." <> '' then
+                            if Item."Sust. Cert. No." <> PurchaseLine."Received Sust. Cert. Type Code" then
+                                EDocumentErrorHelper.LogWarningMessage(EDocument, Item, Item.FieldNo("Sust. Cert. No."), StrSubstNo(DifferentSustCertMsg, Item."No."));
+
+                    if Item."Sust. Cert. No." = '' then
+                        if SustainabilityCertificate.Get(SustainabilityCertificate.Type::Item, PurchaseLine."Received Sust. Cert. Type Code") then begin
+                            Item.Validate("Sust. Cert. No.", SustainabilityCertificate."No.");
+                            ModifyItem := true;
+                        end;
+                end;
+        end;
+        if ModifyItem then
+            Item.Modify();
+    end;
+
 }

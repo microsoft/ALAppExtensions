@@ -15,6 +15,7 @@ page 30017 "APIV2 - Employees"
     PageType = API;
     SourceTable = Employee;
     Extensible = false;
+    AboutText = 'Manages employee master data including personal details, contact information, employment status, job titles, payroll attributes, and banking information. Supports full CRUD operations for retrieving, creating, updating, and deleting employee records, enabling seamless integration with external HR, payroll, and workforce management systems. Ideal for synchronizing employee lifecycle events and maintaining accurate workforce data across platforms.';
 
     layout
     {
@@ -181,6 +182,33 @@ page 30017 "APIV2 - Employees"
                 field(statisticsGroupCode; Rec."Statistics Group Code")
                 {
                     Caption = 'Statistics Group Code';
+                }
+                field(bankBranchNumber; Rec."Bank Branch No.")
+                {
+                    Caption = 'Bank Branch No.';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo("Bank Branch No."));
+                    end;
+                }
+                field(bankAccountNumber; Rec."Bank Account No.")
+                {
+                    Caption = 'Bank Account No.';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo("Bank Account No."));
+                    end;
+                }
+                field(iban; Rec.IBAN)
+                {
+                    Caption = 'IBAN';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo(IBAN));
+                    end;
                 }
                 field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {

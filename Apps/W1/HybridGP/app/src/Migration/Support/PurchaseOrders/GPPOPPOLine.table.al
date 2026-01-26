@@ -1,23 +1,13 @@
+#if not CLEANSCHEMA25
 namespace Microsoft.DataMigration.GP;
-
-using Microsoft.Purchases.Document;
-using Microsoft.Inventory.Item;
-#if not CLEAN22
-using System.Integration;
-#endif
 
 table 40103 "GP POPPOLine"
 {
     DataClassification = CustomerContent;
     Extensible = false;
     ObsoleteReason = 'Replaced by table GP POP10110.';
-#if not CLEAN22
-    ObsoleteState = Pending;
-    ObsoleteTag = '22.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '25.0';
-#endif
 
     fields
     {
@@ -567,131 +557,5 @@ table 40103 "GP POPPOLine"
             Clustered = true;
         }
     }
-
-    var
-        PostingGroupTxt: Label 'GP', Locked = true;
-
-#if not CLEAN22
-    [Obsolete('Logic moved to GP PO Migrator codeunit', '22.0')]
-    procedure MoveStagingData(PO_Number: Text[18])
-    var
-        PurchaseLine: Record "Purchase Line";
-        GPPOPReceiptApply: Record GPPOPReceiptApply;
-        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
-        PurchaseDocumentType: Enum "Purchase Document Type";
-        PurchaseLineType: Enum "Purchase Line Type";
-        LineNo: Integer;
-        QtyShipped: Decimal;
-    begin
-        LineNo := 10000;
-        SetRange(PONUMBER, PO_Number);
-        if FindSet() then
-            repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(Rec.RecordId));
-
-                PurchaseLine.Init();
-                PurchaseLine."Document No." := PO_Number;
-                PurchaseLine."Document Type" := PurchaseDocumentType::Order;
-                PurchaseLine."Line No." := LineNo;
-                PurchaseLine."Buy-from Vendor No." := VENDORID;
-                PurchaseLine.Type := PurchaseLineType::Item;
-                if NONINVEN = 1 then
-                    CreateNonInventoryItem(CopyStr(ITEMNMBR, 1, 20), CopyStr(ITEMDESC, 1, 100), UNITCOST, UOFM);
-
-                PurchaseLine.Validate("Gen. Bus. Posting Group", PostingGroupTxt);
-                PurchaseLine.Validate("Gen. Prod. Posting Group", PostingGroupTxt);
-                PurchaseLine."Unit of Measure" := UOFM;
-                PurchaseLine."Unit of Measure Code" := UOFM;
-                PurchaseLine.Validate("No.", CopyStr(ITEMNMBR, 1, 20));
-                PurchaseLine."Location Code" := CopyStr(LOCNCODE, 1, 10);
-                PurchaseLine."Posting Group" := PostingGroupTxt;
-                PurchaseLine.Validate("Expected Receipt Date", PRMDATE);
-                PurchaseLine.Description := CopyStr(ITEMDESC, 1, 100);
-
-                QtyShipped := GPPOPReceiptApply.GetSumQtyShipped(PO_Number, ORD);
-                PurchaseLine.Validate("Quantity (Base)", QTYORDER - QTYCANCE);
-                PurchaseLine."Quantity Received" := QtyShipped;
-                PurchaseLine."Qty. Received (Base)" := QtyShipped;
-                PurchaseLine."Quantity Invoiced" := GPPOPReceiptApply.GetSumQtyInvoiced(PO_Number, ORD);
-                PurchaseLine."Outstanding Quantity" := PurchaseLine."Quantity (Base)" - QtyShipped;
-                PurchaseLine.Validate("Direct Unit Cost", UNITCOST);
-                PurchaseLine.Validate(Amount, EXTDCOST);
-                PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * UNITCOST);
-                PurchaseLine."Qty. Rcd. Not Invoiced" := QtyShipped - PurchaseLine."Quantity Invoiced";
-                PurchaseLine.Validate("Amt. Rcd. Not Invoiced", PurchaseLine."Qty. Rcd. Not Invoiced" * UNITCOST);
-                PurchaseLine."Outstanding Amount (LCY)" := PurchaseLine."Outstanding Amount";
-                PurchaseLine."Amt. Rcd. Not Invoiced (LCY)" := PurchaseLine."Amt. Rcd. Not Invoiced";
-                PurchaseLine."Unit Cost" := UNITCOST;
-                PurchaseLine.Insert(true);
-
-                if QtyShipped > (QTYORDER - QTYCANCE) then
-                    ProcessOverReceipt(PurchaseLine, QtyShipped - (QTYORDER - QTYCANCE));
-
-                PurchaseLine.Validate("Qty. to Receive (Base)", PurchaseLine."Outstanding Quantity");
-                PurchaseLine.Validate("Outstanding Qty. (Base)", PurchaseLine."Outstanding Quantity");
-                PurchaseLine.Validate("Qty. to Invoice (Base)", PurchaseLine."Quantity (Base)" - PurchaseLine."Quantity Invoiced");
-
-                if PurchaseLine.Amount > 0 then
-                    PurchaseLine.Validate("Line Amount", PurchaseLine.Amount)
-                else
-                    PurchaseLine."Line Amount" := PurchaseLine.Amount;
-
-                PurchaseLine.Modify(true);
-                LineNo := LineNo + 10000;
-            until Next() = 0;
-    end;
-#endif
-
-    local procedure CreateNonInventoryItem(ItemNo: Code[20]; ItemDescription: Text[100]; ItemUnitCost: Decimal; UnitOfMeasure: Text[10])
-    var
-        NewItem: Record Item;
-        ItemType: Enum "Item Type";
-    begin
-        NewItem.SetRange("No.", ItemNo);
-        if not NewItem.IsEmpty() then
-            exit;
-
-        NewItem.Init();
-        NewItem.Validate("No.", ItemNo);
-        NewItem.Description := ItemDescription;
-        NewItem.Validate(Type, ItemType::"Non-Inventory");
-        NewItem.Validate("Unit Cost", ItemUnitCost);
-        NewItem.Validate("Gen. Prod. Posting Group", PostingGroupTxt);
-        NewItem.Insert(true);
-        NewItem.Validate("Base Unit of Measure", UnitOfMeasure);
-        NewItem.Modify(true);
-    end;
-
-    local procedure ProcessOverReceipt(var PurchaseLine: Record "Purchase Line"; OverReceiptQty: Decimal)
-    var
-        OverReceiptCode: Record "Over-Receipt Code";
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseDocumentStatus: Enum "Purchase Document Status";
-        OveragePercentage: Decimal;
-    begin
-        OveragePercentage := OverReceiptQty / PurchaseLine.Quantity;
-        if OveragePercentage > 1 then
-            OveragePercentage := 1;
-
-        if not OverReceiptCode.Get('GP') then begin
-            OverReceiptCode.Validate(Code, 'GP');
-            OverReceiptCode.Validate(Description, 'Migrated from GP');
-            OverReceiptCode.Validate("Over-Receipt Tolerance %", OveragePercentage * 100);
-            OverReceiptCode.Insert(true);
-        end else
-            if OverReceiptCode."Over-Receipt Tolerance %" < OveragePercentage * 100 then begin
-                OverReceiptCode.Validate("Over-Receipt Tolerance %", OveragePercentage * 100);
-                OverReceiptCode.Modify();
-            end;
-
-        if PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, PurchaseLine."Document No.") then begin
-            PurchaseHeader.Status := PurchaseDocumentStatus::Released;
-            PurchaseHeader.Modify();
-            PurchaseLine.Validate("Over-Receipt Code", 'GP');
-            PurchaseLine.Validate("Over-Receipt Quantity", OverReceiptQty);
-            PurchaseLine.Modify();
-            PurchaseHeader.Status := PurchaseDocumentStatus::Open;
-            PurchaseHeader.Modify();
-        end;
-    end;
 }
+#endif

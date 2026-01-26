@@ -1,6 +1,7 @@
 codeunit 148107 "SAF-T Data Check Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -519,19 +520,19 @@ codeunit 148107 "SAF-T Data Check Tests"
     var
         SAFTSetup: Record "SAF-T Setup";
     begin
-        LibraryTestInitialize.OnTestInitialize(CODEUNIT::"SAF-T XML Tests");
+        LibraryTestInitialize.OnTestInitialize(CODEUNIT::"SAF-T Data Check Tests");
         LibrarySetupStorage.Restore();
         if IsInitialized then
             exit;
 
-        LibraryTestInitialize.OnBeforeTestSuiteInitialize(CODEUNIT::"SAF-T XML Tests");
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(CODEUNIT::"SAF-T Data Check Tests");
         SAFTSetup.DeleteAll();
         SAFTSetup.Init();
         SAFTSetup.Insert();
         LibrarySetupStorage.Save(Database::"SAF-T Setup");
         LibrarySetupStorage.Save(Database::"Company Information");
         IsInitialized := true;
-        LibraryTestInitialize.OnAfterTestSuiteInitialize(CODEUNIT::"SAF-T XML Tests");
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(CODEUNIT::"SAF-T Data Check Tests");
     end;
 
     local procedure CreateCustomerWithFullData(var Customer: Record Customer)

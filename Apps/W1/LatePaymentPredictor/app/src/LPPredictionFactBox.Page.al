@@ -1,7 +1,7 @@
 namespace Microsoft.Finance.Latepayment;
 
-using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
 page 1951 "LP Prediction FactBox"
 {
     PageType = CardPart;
@@ -11,19 +11,26 @@ page 1951 "LP Prediction FactBox"
     {
         area(Content)
         {
-            field(Prediction; "Payment Prediction")
+            group(Disclaimer)
+            {
+                Caption = ' ';
+                ShowCaption = false;
+                Editable = false;
+                InstructionalText = 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
+            }
+            field(Prediction; Rec."Payment Prediction")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Prediction';
                 ToolTip = 'Specifies that the payment for this invoice is predicted to be late.';
             }
-            field(Confidence; "Prediction Confidence")
+            field(Confidence; Rec."Prediction Confidence")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Confidence';
                 ToolTip = 'Specifies the reliability of the late payment prediction. High is above 90%, Medium is between 80% and 90%, and Low is less than 80%.';
             }
-            field(PredictionConfidencePercentage; "Prediction Confidence %")
+            field(PredictionConfidencePercentage; Rec."Prediction Confidence %")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Confidence %';

@@ -19,6 +19,7 @@ codeunit 18547 "Calculate Statistics"
         PurchaseLine: Record "Purchase Line";
         RecordIDList: List of [RecordID];
         GSTAmount: Decimal;
+        CessAmount: Decimal;
         TDSAmount: Decimal;
     begin
         Clear(TotalInclTaxAmount);
@@ -32,9 +33,10 @@ codeunit 18547 "Calculate Statistics"
             until PurchaseLine.Next() = 0;
 
         OnGetPurchaseHeaderGSTAmount(PurchaseHeader, GSTAmount);
+        OnGetPurchaseHeaderCessAmount(PurchaseHeader, CessAmount);
         OnGetPurchaseHeaderTDSAmount(PurchaseHeader, TDSAmount);
 
-        TotalInclTaxAmount := RoundInvoicePrecision((TotalInclTaxAmount + GSTAmount - TDSAmount));
+        TotalInclTaxAmount := RoundInvoicePrecision((TotalInclTaxAmount + GSTAmount + CessAmount - TDSAmount));
     end;
 
     procedure GetPartialPurchaseInvStatisticsAmount(
@@ -299,6 +301,11 @@ codeunit 18547 "Calculate Statistics"
         InvRoundingPrecision := GeneralLedgerSetup."Inv. Rounding Precision (LCY)";
 
         exit(Round(InvoiceAmount, InvRoundingPrecision, InvRoundingDirection));
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnGetPurchaseHeaderCessAmount(PurchaseHeader: Record "Purchase Header"; var CessAmount: Decimal)
+    begin
     end;
 
     [IntegrationEvent(false, false)]

@@ -106,25 +106,6 @@ codeunit 139660 "HybridGP Management Test"
         Assert.IsTrue(IntelligentcloudManagement.ManageCustomTables.Enabled(), 'Map tables action is not enabled');
     end;
 
-    [Test]
-    procedure DiagnosticRunActionIsAvailable()
-    var
-        IntelligentCloudManagement: TestPage "Intelligent Cloud Management";
-    begin
-        // [SCENARIO] The "Create Diagnostic Run" action is visible and enabled for GP migrations.
-
-        // [GIVEN] Intelligent cloud is set up for GP
-        Initialize();
-
-        // [WHEN] The Intelligent Cloud Management page is launched
-        IntelligentCloudManagement.Trap();
-        Page.Run(Page::"Intelligent Cloud Management");
-
-        // [THEN] The action to manage mapped tables is enabled and visible
-        Assert.IsTrue(IntelligentCloudManagement.RunDiagnostic.Visible(), 'Diagnostic run action is not visible');
-        Assert.IsTrue(IntelligentcloudManagement.RunDiagnostic.Enabled(), 'Diagnostic run action is not enabled');
-    end;
-
     local procedure Initialize()
     var
         WebhookSubscription: Record "Webhook Subscription";

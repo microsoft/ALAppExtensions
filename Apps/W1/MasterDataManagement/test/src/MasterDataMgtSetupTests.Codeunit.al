@@ -1,6 +1,7 @@
 codeunit 139770 "Master Data Mgt. Setup Tests"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -14,6 +15,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryRandom: Codeunit "Library - Random";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryMasterDataMgt: Codeunit "Library - Master Data Mgt.";
         InitializeHandled: Boolean;
 
     [Test]
@@ -321,6 +323,24 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         Assert.AreEqual(0, IntegrationTableMapping.Count(), '');
         Assert.AreEqual(0, IntegrationFieldMapping.Count(), '');
         Assert.AreEqual(0, MasterDataMgtCoupling.Count(), '');
+    end;
+
+    [Test]
+    procedure NoDuplicatesAddedToSetupOnSelectingTableWithCyclicReference()
+    var
+        SynchTables: List of [Integer];
+        RelatedTablesToAdd: List of [Integer];
+        TablesToAddText: Text;
+        IncorrectTablesListErr: Label 'Synchronization tables list is incorrect.';
+    begin
+        // [SCENARIO] When selecting a table that has a self-reference or other reference that create a cycle, duplicate records are not added to the setup list
+
+        Initialize();
+
+        LibraryMasterDataMgt.FindRelatedTables(SynchTables, RelatedTablesToAdd, TablesToAddText, Database::"MDM Test Table A");
+
+        Assert.AreEqual(1, RelatedTablesToAdd.Count, IncorrectTablesListErr);
+        Assert.IsTrue(RelatedTablesToAdd.Contains(Database::"MDM Test Table B"), IncorrectTablesListErr);
     end;
 
     local procedure Initialize()

@@ -1,3 +1,27 @@
 {
-    "MaxAllowedObsoleteVersion":  "24"
+    "MaxAllowedObsoleteVersion":  "24",
+    "AppsNotToBePublished": [
+        "AMC Banking 365 Fundamentals",
+        "AMC Banking 365 Fundamentals Test Automations",
+        "Automatic Account Codes",
+        "Automatic Account Codes Tests",
+        "Basic Experience",
+        "Basic Experience Tests",
+        "Dynamics GP History SmartLists",
+        "Dynamics GP Historical Data",
+        "Dynamics GP Historical Data Tests",
+        "Dynamics GP Intelligent Cloud",
+        "Dynamics GP Intelligent Cloud Tests",
+        "Image Analyzer",
+        "Image Analyzer Tests",
+        "Import of QuickBooks Payroll Files",
+        "Quickbooks Payroll File Import Tests",
+        "Send remittance advice by email Tests",
+        "AMC Banking 365 Fundamentals Test Automations",
+        "Tax Engine",
+        "Tax Engine Test",
+        "Transactions and Receipts Storage",
+        "WorldPay Payments Standard",
+        "WorldPay Payments Standard Tests"
+    ]
 }

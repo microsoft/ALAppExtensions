@@ -21,7 +21,6 @@ using Microsoft.CostAccounting.Reports;
 using Microsoft.CRM.Contact;
 using Microsoft.EServices.EDocument;
 using Microsoft.Finance;
-using Microsoft.Finance.VAT.Registration;
 using Microsoft.Finance.Analysis;
 using Microsoft.Finance.Consolidation;
 using Microsoft.Finance.Currency;
@@ -34,7 +33,9 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Reports;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Registration;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.FixedAsset;
@@ -67,15 +68,15 @@ using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
-using Microsoft.Sales.Reminder;
 using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reminder;
 using Microsoft.Sales.Reports;
 using System.Automation;
 using System.Email;
 using System.Environment;
+using System.Integration.PowerBI;
 using System.Threading;
 using System.Visualization;
-using System.Integration.PowerBI;
 
 page 31210 "Accountant CZ Role Center CZL"
 {
@@ -260,19 +261,6 @@ page 31210 "Accountant CZ Role Center CZL"
                 RunObject = page "G/L Budget Names";
                 ToolTip = 'View or edit estimated amounts for a range of accounting periods.';
             }
-#if not CLEAN22
-            action(Intrastat)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat';
-                RunObject = page "Intrastat Jnl. Batches";
-                ToolTip = 'Report your trade with other EU countries/regions for Intrastat reporting.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-            }
-#endif
             action(Items)
             {
                 ApplicationArea = Basic, Suite;
@@ -412,19 +400,6 @@ page 31210 "Accountant CZ Role Center CZL"
                     ToolTip = 'Post intercompany transactions. IC general journal lines must contain either an IC partner account or a customer or vendor account that has been assigned an intercompany partner code.';
                     Visible = false;
                 }
-#if not CLEAN22
-                action("Intrastat Journals")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat Journals';
-                    Image = Report;
-                    RunObject = page "Intrastat Jnl. Batches";
-                    ToolTip = 'Summarize the value of your purchases and sales with business partners in the EU for statistical purposes and prepare to send it to the relevant authority.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-#endif
                 action("Posted General Journals")
                 {
                     ApplicationArea = Basic, Suite;
@@ -826,20 +801,6 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Post Inventory Cost to G/L";
                     ToolTip = 'Record the quantity and value changes to the inventory in the item ledger entries and the value entries when you post inventory transactions, such as sales shipments or purchase receipts.';
                 }
-#if not CLEAN22
-                action("Intrastat J1ournal")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat Journal';
-                    Image = Journal;
-                    RunObject = page "Intrastat Jnl. Batches";
-                    ToolTip = 'Summarize the value of your purchases and sales with business partners in the EU for statistical purposes and prepare to send it to the relevant authority.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-#endif
                 action("Create Reminders")
                 {
                     ApplicationArea = Basic, Suite;
@@ -911,13 +872,26 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = page "VAT Entries";
                     ToolTip = 'Views all VAT entries.';
                 }
+#if not CLEAN28
                 action("VAT Periods")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'VAT Periods';
+                    Caption = 'VAT Periods (Obsolete)';
                     RunObject = page "VAT Periods CZL";
                     Image = Period;
                     ToolTip = 'View and set VAT periods.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The VAT Periods CZL page is obsolete. Use the VAT Return Periods action instead.';
+                    ObsoleteTag = '28.0';
+                }
+#endif
+                action(VATReturnPeriod)
+                {
+                    Caption = 'VAT Return Periods';
+                    ApplicationArea = Basic, Suite;
+                    Image = Period;
+                    RunObject = page "VAT Return Period List";
+                    Tooltip = 'Open the VAT return periods page.';
                 }
                 action("Get All Unreliable Payers")
                 {
@@ -936,6 +910,38 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Calc. and Post VAT Settlement";
                     Ellipsis = true;
                     ToolTip = 'Close open VAT entries and transfers purchase and sales VAT amounts to the VAT settlement account. For every VAT posting group, the batch job finds all the VAT entries in the VAT Entry table that are included in the filters in the definition window.';
+                }
+                action("Non-Deductible VAT Setup CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Non-Deductible VAT Setup';
+                    Image = VATPostingSetup;
+                    RunObject = page "Non-Deductible VAT Setup CZL";
+                    ToolTip = 'Set up VAT coefficient correction.';
+                }
+                action("VAT Coeff. Correction CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'VAT Coefficient Correction';
+                    Image = AdjustVATExemption;
+                    RunObject = report "VAT Coeff. Correction CZL";
+                    ToolTip = 'The report recalculate the value of non-deductible VAT according to settlement coeffiecient on VAT entries.';
+                }
+                action("VAT Return Period List")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'VAT Return Periods';
+                    Image = Period;
+                    RunObject = page "VAT Return Period List";
+                    Tooltip = 'Open the VAT return periods page.';
+                }
+                action("VAT Report List")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'VAT Returns';
+                    Image = VATStatement;
+                    RunObject = Page "VAT Report List";
+                    ToolTip = 'Prepare the VAT Return report so you can submit VAT amounts to a tax authority.';
                 }
             }
             group(History)
@@ -1098,6 +1104,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Turnover Rpt. by Gl. Dim. CZL";
                     ToolTip = 'View, print, or send the turnover report by global dimensions.';
                 }
+#if not CLEAN28
                 action("G/L Trial Balance")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1106,7 +1113,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     Image = Report;
                     RunObject = report "Trial Balance";
                     ToolTip = 'View, print, or send a report that shows the balances for the general ledger accounts, including the debits and credits. You can use this report to ensure accurate accounting practices.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 action("Detail Trial Balance")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1182,6 +1193,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ToolTip = 'View or edit estimated amounts for a range of accounting periods.';
                     Visible = false;
                 }
+#if not CLEAN28
                 action("Trial Balance/Budget")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1191,7 +1203,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Trial Balance/Budget";
                     ToolTip = 'View a trial balance in comparison to a budget. You can choose to see a trial balance for selected dimensions. You can use the report at the close of an accounting period or fiscal year.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 action("Trial Balance by Period")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1374,6 +1390,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Vendor-Bal. Reconciliation CZL";
                     ToolTip = 'View, print, or send the vendor balance reconciliation report.';
                 }
+#if not CLEAN28
                 action("Vendor - Top 10")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1382,7 +1399,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     Image = Report;
                     RunObject = report "Vendor - Top 10 List";
                     ToolTip = 'View, print, or send the vendor - top 10 report.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 action("Quantity Received Check")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1392,6 +1413,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Quantity Received Check CZL";
                     ToolTip = 'View, print, or send the quantity received check report.';
                 }
+#if not CLEAN28
                 action("Aged Accounts Payable")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1401,7 +1423,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Aged Accounts Payable";
                     ToolTip = 'View an overview of when your payables to vendors are due or overdue (divided into four periods). You must specify the date you want aging calculated from and the length of the period that each column will contain data for.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
             }
             group("Receivable Reports")
             {
@@ -1424,6 +1450,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Cust.- Bal. Reconciliation CZL";
                     ToolTip = 'View, print, or send the customer balance reconciliation report.';
                 }
+#if not CLEAN28
                 action("Customer - Top 10")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1432,7 +1459,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     Image = Report;
                     RunObject = report "Customer - Top 10 List";
                     ToolTip = 'View, print, or send the customer - top 10 report.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 action("Quantity Shipped Check")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1442,6 +1473,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Quantity Shipped Check CZL";
                     ToolTip = 'View, print, or send the quantity shipped check report.';
                 }
+#if not CLEAN28
                 action("Aged Accounts Receivable")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1451,7 +1483,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Aged Accounts Receivable";
                     ToolTip = 'View an overview of when your receivables from customers are due or overdue (divided into four periods). You must specify the date you want aging calculated from and the length of the period that each column will contain data for.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
             }
             group("Inventory Reports")
             {
@@ -1528,33 +1564,6 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Retained Earnings Statement";
                     ToolTip = 'View a report that shows your company''s changes in retained earnings for a specified period by reconciling the beginning and ending retained earnings for the period, using information such as net income from the other financial statements.';
                 }
-#if not CLEAN22
-                action("Intrastat - Checklist")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat - Checklist';
-                    Ellipsis = true;
-                    Image = Report;
-                    RunObject = report "Intrastat - Checklist";
-                    ToolTip = 'View a checklist that you can use to find possible errors before printing and also as documentation for what is printed. You can use the report to check the Intrastat journal before you use the Intrastat - Make Disk Tax Auth batch job.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                action("Intrastat - Form")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat - Form';
-                    Ellipsis = true;
-                    Image = Report;
-                    RunObject = report "Intrastat - Form";
-                    ToolTip = 'View all the information that must be transferred to the printed Intrastat form.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-#endif
                 action("Cost Accounting P/L Statement")
                 {
                     ApplicationArea = Basic, Suite;

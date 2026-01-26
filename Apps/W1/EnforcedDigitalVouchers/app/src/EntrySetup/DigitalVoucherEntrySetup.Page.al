@@ -12,6 +12,7 @@ page 5579 "Digital Voucher Entry Setup"
     AboutText = 'Here you can select the line with a certain entry type and setup the type of the digital voucher''s check you want to perform.';
     ApplicationArea = Basic, Suite;
     UsageCategory = Administration;
+    DelayedInsert = true;
 
     layout
     {
@@ -36,6 +37,10 @@ page 5579 "Digital Voucher Entry Setup"
                 field("Skip If Manually Added"; Rec."Skip If Manually Added")
                 {
                     ToolTip = 'Specifies if the automatically generated digital voucher do not to be added to the document even if the manual attachment has already been added.';
+                }
+                field("Consider Blank Doc. Type"; Rec."Consider Blank Doc. Type")
+                {
+                    ToolTip = 'Specifies if the blank document type is considered for the entry type. This option is only available for the General Journal, Sales Journal and Purchase Journal.';
                 }
             }
             group(VoucherEntryTypeDescription)

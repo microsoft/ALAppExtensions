@@ -1,13 +1,17 @@
 namespace Microsoft.Bank.Reconciliation;
 
+using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Statement;
+using Microsoft.Finance.GeneralLedger.Journal;
+using System.Security.User;
+using System.Telemetry;
 
 page 7252 "Trans. To GL Acc. AI Proposal"
 {
     Caption = 'Copilot Proposals for Posting Differences to G/L Accounts';
     DataCaptionExpression = PageCaptionLbl;
     PageType = PromptDialog;
-    IsPreview = true;
+    IsPreview = false;
     Extensible = false;
     PromptMode = Generate;
     ApplicationArea = All;
@@ -90,6 +94,8 @@ page 7252 "Trans. To GL Acc. AI Proposal"
                     Caption = 'Statement Ending Balance';
                     Editable = true;
                     ToolTip = 'Specifies the ending balance shown on the bank''s statement that you want to reconcile with the bank account.';
+                    AutoFormatType = 1;
+                    AutoFormatExpression = GetBankAccountCurrencyCode();
 
                     trigger OnValidate()
                     var
@@ -99,6 +105,44 @@ page 7252 "Trans. To GL Acc. AI Proposal"
                             LocalBankAccReconciliation."Statement Ending Balance" := StatementEndingBalance;
                             LocalBankAccReconciliation.Modify();
                         end;
+                    end;
+                }
+                field("Journal Template Name"; Rec."Journal Template Name")
+                {
+                    ApplicationArea = All;
+                    Editable = true;
+                    ShowMandatory = true;
+                    ToolTip = 'Specifies the template for the journal batch in which the proposed payments will be created.';
+
+                    trigger OnValidate()
+                    var
+                        GenJournalBatch: Record "Gen. Journal Batch";
+                    begin
+                        GenJournalBatch.SetRange("Journal Template Name", Rec."Journal Template Name");
+                        if GenJournalBatch.Count() = 1 then begin
+                            GenJournalBatch.FindFirst();
+                            Rec."Journal Batch Name" := GenJournalBatch.Name;
+                            JournalBatchName := GenJournalBatch.Name;
+                        end
+                        else begin
+                            Rec."Journal Batch Name" := '';
+                            JournalBatchName := '';
+                        end;
+                        JournalTemplateName := Rec."Journal Template Name";
+                        Rec.Modify();
+                    end;
+                }
+                field("Journal Batch Name"; Rec."Journal Batch Name")
+                {
+                    ApplicationArea = All;
+                    Editable = true;
+                    ShowMandatory = true;
+                    ToolTip = 'Specifies the journal batch in which the proposed payments will be created.';
+
+                    trigger OnValidate()
+                    begin
+                        JournalBatchName := Rec."Journal Batch Name";
+                        Rec.Modify();
                     end;
                 }
                 group(Posting)
@@ -163,6 +207,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             {
                 Caption = 'Keep it';
                 ToolTip = 'Post the difference amounts to G/L Accounts as proposed by Copilot.';
+                Enabled = (JournalTemplateName <> '') and (JournalBatchName <> '');
             }
             systemaction(Cancel)
             {
@@ -175,6 +220,28 @@ page 7252 "Trans. To GL Acc. AI Proposal"
     trigger OnOpenPage()
     begin
         SummaryStyleTxt := 'Ambiguous';
+        CurrPage.ProposalDetails.Page.SetProposalFieldCaption(PostToGLAccountTxt);
+    end;
+
+    local procedure InitializeJournalBatch()
+    var
+        TransToGLAccJnlBatch: Record "Trans. to G/L Acc. Jnl. Batch";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+    begin
+        if TransToGLAccJnlBatch.FindFirst() then
+            if GenJournalTemplate.Get(TransToGLAccJnlBatch."Journal Template Name") then begin
+                Rec."Journal Template Name" := GenJournalTemplate.Name;
+                JournalTemplateName := GenJournalTemplate.Name;
+                if GenJournalBatch.Get(GenJournalTemplate.Name, TransToGLAccJnlBatch."Journal Batch Name") then begin
+                    Rec."Journal Batch Name" := GenJournalBatch.Name;
+                    JournalBatchName := GenJournalBatch.Name;
+                end;
+                if TransToGLAccJnlBatch."Open Journal Batch" then begin
+                    TransToGLAccJnlBatch."Open Journal Batch" := false;
+                    TransToGLAccJnlBatch.Modify();
+                end;
+            end;
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -183,6 +250,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccountStatement: Record "Bank Account Statement";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('Category', BankRecAIMatchingImpl.FeatureName());
@@ -220,6 +288,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             if LocalBankAccReconciliation.Get(LocalBankAccReconciliation."Statement Type"::"Bank Reconciliation", BankAccNo, StatementNo) then
                 TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
             Session.LogMessage('0000LFB', TelemetryUserNotAcceptedProposalsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+            FeatureTelemetry.LogUsage('0000PGX', BankRecAIMatchingImpl.FeatureName(), TelemetryUserNotAcceptedProposalsTxt);
         end;
     end;
 
@@ -265,22 +334,33 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             StatementDate := LocalBankAccReconciliation."Statement Date";
             TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
         end;
+        InitializeJournalBatch();
         if not Rec.Insert() then
             Rec.Modify();
         PageCaptionLbl := StrSubstNo(ContentAreaCaptionTxt, BankAccNo, StatementNo, StatementDate);
+        VerifyAllowedPostingDates();
         Session.LogMessage('0000LFC', TelemetryCopilotProposedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
     end;
 
     local procedure PostNewPaymentsToProposedGLAccounts()
     var
+        TransToGLAccJnlBatch: Record "Trans. to G/L Acc. Jnl. Batch";
         TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary;
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccRecTransToAcc: Codeunit "Bank Acc. Rec. Trans. to Acc.";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
+        if not TransToGLAccJnlBatch.FindFirst() then begin
+            TransToGLAccJnlBatch.Init();
+            TransToGLAccJnlBatch.Insert();
+        end;
+        TransToGLAccJnlBatch.Validate("Journal Template Name", JournalTemplateName);
+        TransToGLAccJnlBatch.Validate("Journal Batch Name", JournalBatchName);
+        TransToGLAccJnlBatch.Modify();
         CurrPage.ProposalDetails.Page.GetTempRecord(TempBankAccRecAIProposal);
-        AcceptedProposalCount := BankAccRecTransToAcc.PostNewPaymentsToProposedGLAccounts(TempBankAccRecAIProposal, TempBankStatementMatchingBuffer);
+        AcceptedProposalCount := BankAccRecTransToAcc.PostNewPaymentsToProposedGLAccounts(TempBankAccRecAIProposal, TempBankStatementMatchingBuffer, TransToGLAccJnlBatch);
         TelemetryDimensions.Add('Category', BankRecAIMatchingImpl.FeatureName());
         TelemetryDimensions.Add('TotalLines', Format(TotalLines));
         TelemetryDimensions.Add('AppliedLinesUpFront', Format(AppliedLinesUpFront));
@@ -290,6 +370,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         if LocalBankAccReconciliation.Get(LocalBankAccReconciliation."Statement Type"::"Bank Reconciliation", BankAccNo, StatementNo) then
             TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
         Session.LogMessage('0000LFD', TelemetryUserAcceptedProposalsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        FeatureTelemetry.LogUsage('0000PGY', BankRecAIMatchingImpl.FeatureName(), TelemetryUserAcceptedProposalsTxt)
     end;
 
     internal procedure SetBankAccReconciliationLines(var InputBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line");
@@ -322,6 +403,34 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         PageCaptionLbl := InputPageCaption;
     end;
 
+    local procedure VerifyAllowedPostingDates()
+    var
+        TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary;
+        BankAccRecTransToAcc: Codeunit "Bank Acc. Rec. Trans. to Acc.";
+        UserSetupManagement: Codeunit "User Setup Management";
+        FoundInvalidPostingDates: Boolean;
+    begin
+        CurrPage.ProposalDetails.Page.GetTempRecord(TempBankAccRecAIProposal);
+        if TempBankAccRecAIProposal.FindSet() then
+            repeat
+                if not UserSetupManagement.IsPostingDateValidWithGenJnlTemplate(TempBankAccRecAIProposal."Transaction Date", Rec."Journal Template Name") then
+                    FoundInvalidPostingDates := true;
+            until (TempBankAccRecAIProposal.Next() = 0) or FoundInvalidPostingDates;
+
+        if FoundInvalidPostingDates then
+            Message(BankAccRecTransToAcc.GetStatementLinesWithDisallowedDatesLbl());
+    end;
+
+    local procedure GetBankAccountCurrencyCode(): Code[10]
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        if BankAccNo <> '' then
+            if BankAccount.Get(BankAccNo) then
+                exit(BankAccount."Currency Code");
+        exit('')
+    end;
+
     var
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
         TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary;
@@ -341,6 +450,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         AllLinesMatchedTxt: label 'All lines (100%) are matched. Review match proposals.';
         SubsetOfLinesMatchedTxt: label '%1% of lines are matched. Review match proposals.', Comment = '%1 - a decimal between 0 and 100';
         InputWithReservedWordsRemovedTxt: label 'Statement line descriptions or G/L Account names with reserved AI chat completion prompt words were detected. For security reasons, they were excluded from the auto-matching process. You must match these statement lines or G/L Accounts manually.';
+        PostToGLAccountTxt: label 'Post to G/L account';
         StatementDate: Date;
         StatementEndingBalance: Decimal;
         BankAccNo: Code[20];
@@ -354,4 +464,6 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         SummaryTxt: Text;
         SummaryStyleTxt: Text;
         WarningTxt: Text;
+        JournalTemplateName: Code[10];
+        JournalBatchName: Code[10];
 }

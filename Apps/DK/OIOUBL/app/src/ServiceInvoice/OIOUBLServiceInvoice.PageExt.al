@@ -19,15 +19,6 @@ pageextension 13676 "OIOUBL-Service Invoice" extends "Service Invoice"
             }
         }
 
-        addafter("Assigned User ID")
-        {
-            field("Your Reference"; "Your Reference")
-            {
-                Tooltip = 'Specifies Your Reference. This is used in the exported electronic document.';
-                ApplicationArea = Service;
-            }
-        }
-
         addafter("Bill-to Contact")
         {
             field("OIOUBL-GLN"; "OIOUBL-GLN")

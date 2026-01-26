@@ -88,9 +88,6 @@ codeunit 148008 "Library - Purch. Advances CZZ"
     procedure CreatePurchInvoice(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; VendorNo: Code[20]; PostingDate: Date; VATDate: Date; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20]; CurrencyCode: Code[10]; ExchangeRate: Decimal; PricesIncVAT: Boolean; Amount: Decimal)
     var
         GLAccount: Record "G/L Account";
-#if not CLEAN22
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#endif
     begin
         CreateGLAccount(GLAccount);
         GLAccount.Validate("VAT Bus. Posting Group", VATBusPostingGroupCode);
@@ -99,11 +96,6 @@ codeunit 148008 "Library - Purch. Advances CZZ"
 
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo);
         PurchaseHeader.Validate("Posting Date", PostingDate);
-#if not CLEAN22
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            PurchaseHeader.Validate("VAT Date CZL", VATDate)
-        else
-#endif
         PurchaseHeader.Validate("VAT Reporting Date", VATDate);
         PurchaseHeader.Validate("Prepayment %", 100);
         PurchaseHeader.Validate("Prices Including VAT", PricesIncVAT);

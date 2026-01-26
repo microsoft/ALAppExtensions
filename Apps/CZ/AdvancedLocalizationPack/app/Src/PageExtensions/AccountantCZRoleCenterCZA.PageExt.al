@@ -19,7 +19,7 @@ pageextension 31201 "Accountant CZ Role Center CZA" extends "Accountant CZ Role 
                 Caption = 'Apply G/L Entries';
                 Ellipsis = true;
                 Image = ApplicationWorksheet;
-                RunObject = Page "Apply G/L Entries CZA";
+                RunObject = Page "Apply Gen. Ledger Entries CZA";
                 ToolTip = 'Handle application of G/L entries.';
             }
         }

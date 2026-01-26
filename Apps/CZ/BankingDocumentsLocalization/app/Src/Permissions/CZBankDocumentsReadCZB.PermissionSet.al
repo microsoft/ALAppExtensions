@@ -1,4 +1,5 @@
-﻿permissionset 11790 "CZ Bank Documents - Read CZB"
+#pragma warning disable AA0247
+permissionset 11790 "CZ Bank Documents - Read CZB"
 {
     Access = Internal;
     Assignable = false;

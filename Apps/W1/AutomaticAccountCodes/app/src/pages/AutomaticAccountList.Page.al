@@ -44,18 +44,8 @@ page 4852 "Automatic Account List"
     trigger OnInit()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
-#if not CLEAN22
-        AutoAccCodesPageMgt: Codeunit "Auto. Acc. Codes Page Mgt.";
-        AutoAccCodesFeatureMgt: Codeunit "Auto. Acc. Codes Feature Mgt.";
-#endif
     begin
         FeatureTelemetry.LogUptake('0001P9L', AccTok, Enum::"Feature Uptake Status"::Discovered);
-#if not CLEAN22
-        if not AutoAccCodesFeatureMgt.IsEnabled() then begin
-            AutoAccCodesPageMgt.OpenAutoAccGroupListPage();
-            Error('');
-        end;
-#endif
     end;
 
     var

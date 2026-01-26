@@ -2094,6 +2094,42 @@
       </DefaultValue>
       <Prompt>DocumentDate_InvtShipmentHeaderCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="PostingDescription_InvtShipmentHeaderCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>PostingDescription_InvtShipmentHeaderCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>PostingDescription_InvtShipmentHeaderCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SalespersonCode_InvtShipmentHeaderCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SalespersonCode_InvtShipmentHeaderCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SalespersonCode_InvtShipmentHeaderCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SalespersonName_InvtShipmentHeaderCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SalespersonName_InvtShipmentHeaderCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SalespersonName_InvtShipmentHeaderCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="ExternalDocumentNo_InvtShipmentHeaderCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>ExternalDocumentNo_InvtShipmentHeaderCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>ExternalDocumentNo_InvtShipmentHeaderCaption</Prompt>
+    </ReportParameter>
     <ReportParameter Name="ItemNo_InvtShipmentLineCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2139,11 +2175,38 @@
       </DefaultValue>
       <Prompt>Quantity_InvtShipmentLineCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="VariantCode_InvtShipmentLineCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>VariantCode_InvtShipmentLineCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>VariantCode_InvtShipmentLineCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="BinCode_InvtShipmentLineCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>BinCode_InvtShipmentLineCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>BinCode_InvtShipmentLineCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="ItemCategoryCode_InvtShipmentLineCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>ItemCategoryCode_InvtShipmentLineCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>ItemCategoryCode_InvtShipmentLineCaption</Prompt>
+    </ReportParameter>
   </ReportParameters>
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>16</NumberOfRows>
+      <NumberOfRows>23</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -2203,27 +2266,62 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>11</RowIndex>
-          <ParameterName>ItemNo_InvtShipmentLineCaption</ParameterName>
+          <ParameterName>PostingDescription_InvtShipmentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>12</RowIndex>
-          <ParameterName>Description_InvtShipmentLineCaption</ParameterName>
+          <ParameterName>SalespersonCode_InvtShipmentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>13</RowIndex>
-          <ParameterName>LocationCode_InvtShipmentLineCaption</ParameterName>
+          <ParameterName>SalespersonName_InvtShipmentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>14</RowIndex>
-          <ParameterName>UnitofMeasureCode_InvtShipmentLineCaption</ParameterName>
+          <ParameterName>ExternalDocumentNo_InvtShipmentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>15</RowIndex>
+          <ParameterName>ItemNo_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>16</RowIndex>
+          <ParameterName>Description_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>17</RowIndex>
+          <ParameterName>LocationCode_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>18</RowIndex>
+          <ParameterName>UnitofMeasureCode_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>19</RowIndex>
           <ParameterName>Quantity_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>20</RowIndex>
+          <ParameterName>VariantCode_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>21</RowIndex>
+          <ParameterName>BinCode_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>22</RowIndex>
+          <ParameterName>ItemCategoryCode_InvtShipmentLineCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>
@@ -2306,6 +2404,18 @@ End Function
         <Field Name="RegisterUserID">
           <DataField>RegisterUserID</DataField>
         </Field>
+        <Field Name="PostingDescription_InvtShipmentHeader">
+          <DataField>PostingDescription_InvtShipmentHeader</DataField>
+        </Field>
+        <Field Name="SalespersonCode_InvtShipmentHeader">
+          <DataField>SalespersonCode_InvtShipmentHeader</DataField>
+        </Field>
+        <Field Name="SalespersonName_InvtShipmentHeader">
+          <DataField>SalespersonName_InvtShipmentHeader</DataField>
+        </Field>
+        <Field Name="ExternalDocumentNo_InvtShipmentHeader">
+          <DataField>ExternalDocumentNo_InvtShipmentHeader</DataField>
+        </Field>
         <Field Name="ItemNo_InvtShipmentLine">
           <DataField>ItemNo_InvtShipmentLine</DataField>
         </Field>
@@ -2335,6 +2445,15 @@ End Function
         </Field>
         <Field Name="Amount_InvtShipmentLineFormat">
           <DataField>Amount_InvtShipmentLineFormat</DataField>
+        </Field>
+        <Field Name="VariantCode_InvtShipmentLine">
+          <DataField>VariantCode_InvtShipmentLine</DataField>
+        </Field>
+        <Field Name="BinCode_InvtShipmentLine">
+          <DataField>BinCode_InvtShipmentLine</DataField>
+        </Field>
+        <Field Name="ItemCategoryCode_InvtShipmentLine">
+          <DataField>ItemCategoryCode_InvtShipmentLine</DataField>
         </Field>
       </Fields>
       <Query>

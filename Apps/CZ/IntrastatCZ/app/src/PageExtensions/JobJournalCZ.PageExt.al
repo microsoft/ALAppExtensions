@@ -10,36 +10,14 @@ pageextension 31305 "Job Journal CZ" extends "Job Journal"
 {
     layout
     {
-#if not CLEAN22
-#pragma warning disable AL0432
-        modify("Statistic Indication CZL")
-#pragma warning restore AL0432
-        {
-            Enabled = not IntrastatEnabled;
-        }
-#endif
         addlast(Control1)
         {
             field("Statistic Indication CZ"; Rec."Statistic Indication CZ")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the Statistic indication for Intrastat reporting purposes.';
-#if not CLEAN22
-                Enabled = IntrastatEnabled;
-#endif
                 Visible = false;
             }
         }
     }
-#if not CLEAN22
-
-    trigger OnOpenPage()
-    begin
-        IntrastatEnabled := IntrastatReportManagement.IsFeatureEnabled();
-    end;
-
-    var
-        IntrastatReportManagement: Codeunit IntrastatReportManagement;
-        IntrastatEnabled: Boolean;
-#endif
 }

@@ -1,0 +1,257 @@
+<SalesSequence MaxNumberOfInvoicesPerPeriod="3" Periods="15">	
+	<Sales item="1896-S" ScaleToAverageQuantity="12">
+		<Period OriginalQuantity="30392"/>
+		<Period OriginalQuantity="42229"/>
+		<Period OriginalQuantity="51020"/>
+		<Period OriginalQuantity="57770"/>
+		<Period OriginalQuantity="45420"/>
+		<Period OriginalQuantity="47840"/>
+		<Period OriginalQuantity="33288"/>
+		<Period OriginalQuantity="35710"/>
+		<Period OriginalQuantity="30780"/>
+		<Period OriginalQuantity="30964"/>
+		<Period OriginalQuantity="27670"/>
+		<Period OriginalQuantity="19326"/>
+		<Period OriginalQuantity="34006"/>
+		<Period OriginalQuantity="47884"/>
+		<Period OriginalQuantity="59376"/>
+	</Sales>
+	<Sales item="1900-S" ScaleToAverageQuantity="8">
+		<Period OriginalQuantity="1540"/>
+		<Period OriginalQuantity="1912"/>
+		<Period OriginalQuantity="2153"/>
+		<Period OriginalQuantity="2074"/>
+		<Period OriginalQuantity="1430"/>
+		<Period OriginalQuantity="1283"/>
+		<Period OriginalQuantity="1491"/>
+		<Period OriginalQuantity="1597"/>
+		<Period OriginalQuantity="743"/>
+		<Period OriginalQuantity="1263"/>
+		<Period OriginalQuantity="1443"/>
+		<Period OriginalQuantity="565"/>
+		<Period OriginalQuantity="1589"/>
+		<Period OriginalQuantity="2356"/>
+		<Period OriginalQuantity="1917"/>
+	</Sales>
+	<Sales item="1906-S" ScaleToAverageQuantity="7">
+		<Period OriginalQuantity="1446"/>
+		<Period OriginalQuantity="1852"/>
+		<Period OriginalQuantity="2088"/>
+		<Period OriginalQuantity="2019"/>
+		<Period OriginalQuantity="1405"/>
+		<Period OriginalQuantity="1263"/>
+		<Period OriginalQuantity="1661"/>
+		<Period OriginalQuantity="1562"/>
+		<Period OriginalQuantity="718"/>
+		<Period OriginalQuantity="2233"/>
+		<Period OriginalQuantity="1398"/>
+		<Period OriginalQuantity="545"/>
+		<Period OriginalQuantity="1424"/>
+		<Period OriginalQuantity="2411"/>
+		<Period OriginalQuantity="2237"/>
+	</Sales>
+	<Sales item="1908-S" ScaleToAverageQuantity="5">
+		<Period OriginalQuantity="21236"/>
+		<Period OriginalQuantity="20047"/>
+		<Period OriginalQuantity="25534"/>
+		<Period OriginalQuantity="26679"/>
+		<Period OriginalQuantity="22887"/>
+		<Period OriginalQuantity="20904"/>
+		<Period OriginalQuantity="18768"/>
+		<Period OriginalQuantity="24136"/>
+		<Period OriginalQuantity="16213"/>
+		<Period OriginalQuantity="19206"/>
+		<Period OriginalQuantity="18678"/>
+		<Period OriginalQuantity="10955"/>
+		<Period OriginalQuantity="22545"/>
+		<Period OriginalQuantity="24830"/>
+		<Period OriginalQuantity="29285"/>
+	</Sales>
+	<Sales item="1920-S" ScaleToAverageQuantity="5">
+		<Period OriginalQuantity="6564"/>
+		<Period OriginalQuantity="5739"/>
+		<Period OriginalQuantity="9050"/>
+		<Period OriginalQuantity="7857"/>
+		<Period OriginalQuantity="10231"/>
+		<Period OriginalQuantity="6976"/>
+		<Period OriginalQuantity="6780"/>
+		<Period OriginalQuantity="7823"/>
+		<Period OriginalQuantity="5790"/>
+		<Period OriginalQuantity="5500"/>
+		<Period OriginalQuantity="5576"/>
+		<Period OriginalQuantity="2351"/>
+		<Period OriginalQuantity="7634"/>
+		<Period OriginalQuantity="7650"/>
+		<Period OriginalQuantity="8508"/>
+	</Sales>
+	<Sales item="1928-S" ScaleToAverageQuantity="11">
+		<Period OriginalQuantity="183878"/>
+		<Period OriginalQuantity="204018"/>
+		<Period OriginalQuantity="242967"/>
+		<Period OriginalQuantity="251563"/>
+		<Period OriginalQuantity="205938"/>
+		<Period OriginalQuantity="242811"/>
+		<Period OriginalQuantity="198756"/>
+		<Period OriginalQuantity="193342"/>
+		<Period OriginalQuantity="174918"/>
+		<Period OriginalQuantity="181507"/>
+		<Period OriginalQuantity="170451"/>
+		<Period OriginalQuantity="113440"/>
+		<Period OriginalQuantity="205318"/>
+		<Period OriginalQuantity="237683"/>
+		<Period OriginalQuantity="294958"/>
+	</Sales>
+	<Sales item="1936-S" ScaleToAverageQuantity="9">
+		<Period OriginalQuantity="44085"/>
+		<Period OriginalQuantity="47838"/>
+		<Period OriginalQuantity="56974"/>
+		<Period OriginalQuantity="60228"/>
+		<Period OriginalQuantity="50590"/>
+		<Period OriginalQuantity="52132"/>
+		<Period OriginalQuantity="43440"/>
+		<Period OriginalQuantity="50374"/>
+		<Period OriginalQuantity="36974"/>
+		<Period OriginalQuantity="47420"/>
+		<Period OriginalQuantity="40060"/>
+		<Period OriginalQuantity="26480"/>
+		<Period OriginalQuantity="47711"/>
+		<Period OriginalQuantity="60696"/>
+		<Period OriginalQuantity="69530"/>
+	</Sales>
+	<Sales item="1960-S" ScaleToAverageQuantity="7">
+		<Period OriginalQuantity="77868"/>
+		<Period OriginalQuantity="82107"/>
+		<Period OriginalQuantity="98540"/>
+		<Period OriginalQuantity="99428"/>
+		<Period OriginalQuantity="87792"/>
+		<Period OriginalQuantity="93164"/>
+		<Period OriginalQuantity="77712"/>
+		<Period OriginalQuantity="82060"/>
+		<Period OriginalQuantity="59824"/>
+		<Period OriginalQuantity="66548"/>
+		<Period OriginalQuantity="65588"/>
+		<Period OriginalQuantity="41572"/>
+		<Period OriginalQuantity="80088"/>
+		<Period OriginalQuantity="92156"/>
+		<Period OriginalQuantity="108008"/>
+	</Sales>
+	<Sales item="1964-S" ScaleToAverageQuantity="5">
+		<Period OriginalQuantity="22008"/>
+		<Period OriginalQuantity="22191"/>
+		<Period OriginalQuantity="27902"/>
+		<Period OriginalQuantity="29691"/>
+		<Period OriginalQuantity="24477"/>
+		<Period OriginalQuantity="24837"/>
+		<Period OriginalQuantity="21057"/>
+		<Period OriginalQuantity="27128"/>
+		<Period OriginalQuantity="16535"/>
+		<Period OriginalQuantity="20594"/>
+		<Period OriginalQuantity="19520"/>
+		<Period OriginalQuantity="11695"/>
+		<Period OriginalQuantity="26027"/>
+		<Period OriginalQuantity="25668"/>
+		<Period OriginalQuantity="33513"/>
+	</Sales>
+	<Sales item="1968-S" ScaleToAverageQuantity="7">
+		<Period OriginalQuantity="12346"/>
+		<Period OriginalQuantity="11265"/>
+		<Period OriginalQuantity="16181"/>
+		<Period OriginalQuantity="17073"/>
+		<Period OriginalQuantity="14990"/>
+		<Period OriginalQuantity="15932"/>
+		<Period OriginalQuantity="13052"/>
+		<Period OriginalQuantity="16048"/>
+		<Period OriginalQuantity="10659"/>
+		<Period OriginalQuantity="18368"/>
+		<Period OriginalQuantity="12319"/>
+		<Period OriginalQuantity="7335"/>
+		<Period OriginalQuantity="13004"/>
+		<Period OriginalQuantity="11976"/>
+		<Period OriginalQuantity="16522"/>
+	</Sales>
+	<Sales item="1972-S" ScaleToAverageQuantity="7">
+		<Period OriginalQuantity="10338"/>
+		<Period OriginalQuantity="9704"/>
+		<Period OriginalQuantity="13493"/>
+		<Period OriginalQuantity="14526"/>
+		<Period OriginalQuantity="12648"/>
+		<Period OriginalQuantity="14227"/>
+		<Period OriginalQuantity="9372"/>
+		<Period OriginalQuantity="8495"/>
+		<Period OriginalQuantity="7208"/>
+		<Period OriginalQuantity="9707"/>
+		<Period OriginalQuantity="6812"/>
+		<Period OriginalQuantity="4915"/>
+		<Period OriginalQuantity="9165"/>
+		<Period OriginalQuantity="9960"/>
+		<Period OriginalQuantity="12871"/>
+	</Sales>
+	<Sales item="1980-S" ScaleToAverageQuantity="4">
+		<Period OriginalQuantity="146500"/>
+		<Period OriginalQuantity="141086"/>
+		<Period OriginalQuantity="187978"/>
+		<Period OriginalQuantity="152380"/>
+		<Period OriginalQuantity="158926"/>
+		<Period OriginalQuantity="164596"/>
+		<Period OriginalQuantity="118156"/>
+		<Period OriginalQuantity="118864"/>
+		<Period OriginalQuantity="106672"/>
+		<Period OriginalQuantity="115962"/>
+		<Period OriginalQuantity="94573"/>
+		<Period OriginalQuantity="66680"/>
+		<Period OriginalQuantity="121926"/>
+		<Period OriginalQuantity="147704"/>
+		<Period OriginalQuantity="178520"/>
+	</Sales>
+	<Sales item="1988-S" ScaleToAverageQuantity="5">
+		<Period OriginalQuantity="4053"/>
+		<Period OriginalQuantity="4070"/>
+		<Period OriginalQuantity="5182"/>
+		<Period OriginalQuantity="4417"/>
+		<Period OriginalQuantity="4878"/>
+		<Period OriginalQuantity="5021"/>
+		<Period OriginalQuantity="2570"/>
+		<Period OriginalQuantity="3374"/>
+		<Period OriginalQuantity="3374"/>
+		<Period OriginalQuantity="4177"/>
+		<Period OriginalQuantity="4164"/>
+		<Period OriginalQuantity="2218"/>
+		<Period OriginalQuantity="4151"/>
+		<Period OriginalQuantity="5112"/>
+		<Period OriginalQuantity="6236"/>
+	</Sales>
+	<Sales item="1996-S" ScaleToAverageQuantity="8">
+		<Period OriginalQuantity="25665"/>
+		<Period OriginalQuantity="23684"/>
+		<Period OriginalQuantity="35756"/>
+		<Period OriginalQuantity="37570"/>
+		<Period OriginalQuantity="34679"/>
+		<Period OriginalQuantity="35346"/>
+		<Period OriginalQuantity="26900"/>
+		<Period OriginalQuantity="32534"/>
+		<Period OriginalQuantity="24700"/>
+		<Period OriginalQuantity="25668"/>
+		<Period OriginalQuantity="21472"/>
+		<Period OriginalQuantity="15680"/>
+		<Period OriginalQuantity="27891"/>
+		<Period OriginalQuantity="35415"/>
+		<Period OriginalQuantity="44274"/>
+	</Sales>
+	<Sales item="2000-S" ScaleToAverageQuantity="6">
+		<Period OriginalQuantity="24985"/>
+		<Period OriginalQuantity="24204"/>
+		<Period OriginalQuantity="31776"/>
+		<Period OriginalQuantity="37312"/>
+		<Period OriginalQuantity="31331"/>
+		<Period OriginalQuantity="31076"/>
+		<Period OriginalQuantity="25584"/>
+		<Period OriginalQuantity="33156"/>
+		<Period OriginalQuantity="22546"/>
+		<Period OriginalQuantity="30893"/>
+		<Period OriginalQuantity="22162"/>
+		<Period OriginalQuantity="14960"/>
+		<Period OriginalQuantity="24835"/>
+		<Period OriginalQuantity="34545"/>
+		<Period OriginalQuantity="39798"/>
+	</Sales>
+</SalesSequence>

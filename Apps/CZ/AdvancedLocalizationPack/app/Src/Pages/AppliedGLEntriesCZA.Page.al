@@ -76,9 +76,6 @@ page 31286 "Applied G/L Entries CZA"
                 Caption = 'Find Entries';
                 Image = Navigate;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 ShortCutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
@@ -87,6 +84,15 @@ page 31286 "Applied G/L Entries CZA"
                     PageNavigate.SetDoc(Rec."Posting Date", Rec."Document No.");
                     PageNavigate.Run();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Navigate_Promoted; Navigate)
+                {
+                }
             }
         }
     }

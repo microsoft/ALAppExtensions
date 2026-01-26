@@ -46,8 +46,6 @@ pageextension 31248 "Fixed Asset Card CZF" extends "Fixed Asset Card"
                 ApplicationArea = FixedAssets;
                 Caption = 'FA History Entries';
                 Image = History;
-                Promoted = true;
-                PromotedCategory = Process;
                 RunObject = Page "FA History Entries CZF";
                 RunPageLink = "FA No." = field("No.");
                 RunPageView = sorting("FA No.");
@@ -96,6 +94,12 @@ pageextension 31248 "Fixed Asset Card CZF" extends "Fixed Asset Card"
                 Image = FixedAssets;
                 RunObject = Report "Fixed Asset Card CZF";
                 ToolTip = 'The report prints fixed assets card and entries.';
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref(FAHistoryCZF_Promoted; FAHistoryCZF)
+            {
             }
         }
     }

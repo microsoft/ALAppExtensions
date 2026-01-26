@@ -3,6 +3,7 @@ codeunit 139737 "APIV1 - Sales CrMemo Lines E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -601,39 +602,6 @@ codeunit 139737 "APIV1 - Sales CrMemo Lines E2E"
 
         // [THEN] Lower Credit Memo discount is applied
         VerifyTotals(SalesHeader, 0, SalesHeader."Invoice Discount Calculation"::"%");
-        RecallNotifications();
-    end;
-
-    [Test]
-    procedure TestInsertingLineKeepsCreditMemoDiscountAmt()
-    var
-        SalesHeader: Record "Sales Header";
-        Item: Record "Item";
-        TargetURL: Text;
-        ResponseText: Text;
-        CreditMemoLineJSON: Text;
-        DiscountAmount: Decimal;
-    begin
-        // [FEATURE] [Discount]
-        // [SCENARIO] Adding an credit memo through API will keep Discount Amount
-        // [GIVEN] An unposted credit memo for customer with credit memo discount amount
-        Initialize();
-        SetupAmountDiscountTest(SalesHeader, DiscountAmount);
-        CreditMemoLineJSON := CreateCreditMemoLineJSON(Item.SystemId, LibraryRandom.RandIntInRange(1, 100), SalesHeader."Document Date");
-
-        COMMIT();
-
-        // [WHEN] We create a line through API
-        TargetURL := LibraryGraphMgt
-          .CreateTargetURLWithSubpage(
-            SalesHeader.SystemId,
-            PAGE::"APIV1 - Sales Credit Memos",
-            CreditMemoServiceNameTxt,
-            CreditMemoServiceLinesNameTxt);
-        ASSERTERROR LibraryGraphMgt.PostToWebService(TargetURL, CreditMemoLineJSON, ResponseText);
-
-        // [THEN] Discount Amount is Kept
-        VerifyTotals(SalesHeader, DiscountAmount, SalesHeader."Invoice Discount Calculation"::Amount);
         RecallNotifications();
     end;
 

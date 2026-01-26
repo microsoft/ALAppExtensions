@@ -27,6 +27,13 @@ table 10030 "IRS Forms Setup"
         field(21; "Email Body"; Text[2048])
         {
         }
+        field(30; "Business Name Control"; Code[4])
+        {
+        }
+        field(31; "IRIS API Client ID"; Text[36])
+        {
+            Editable = false;
+        }
         field(100; Implementation; Enum "IRS Forms Implementation")
         {
         }
@@ -76,6 +83,10 @@ table 10030 "IRS Forms Setup"
             MinValue = 1;
             MaxValue = 99999;
         }
+        field(510; "Last Document ID"; Integer)
+        {
+            Editable = false;
+        }
     }
 
     keys
@@ -87,6 +98,7 @@ table 10030 "IRS Forms Setup"
     }
 
     var
+        KeyVaultClientIRIS: Codeunit "Key Vault Client IRIS";
         EmailSubjectTxt: Label '1099 Form Copy for Your Records';
         EmailBodyTxt: Label 'Dear Sir/Madam,<div>&nbsp;</div><div>We hope this email finds you well. As part of our tax reporting process, we are attaching the 1099 copy substitution form for the payments made to you during the past year. Please review the form, and if you have any questions or need further clarification, feel free to reach out.</div><div><br></div><div>Thank you for your prompt attention to this matter. We appreciate your continued partnership.</div><div><br></div><div>Best regards,</div><div><br></div>%1', Comment = '%1 - Company Name', Locked = true;
         NotPossibleToRunDataTransferErr: Label 'It is not possible to run the data transfer because it is currently in progress.';
@@ -109,9 +121,35 @@ table 10030 "IRS Forms Setup"
             Error(DataTransferAlreadyCompletedErr);
     end;
 
+    internal procedure GetIRISAPIClientID(): Text[36]
+    begin
+        InitSetup();
+        InitIRISAPIClientID();
+        exit(Rec."IRIS API Client ID");
+    end;
+
+    internal procedure InitIRISAPIClientID()
+    var
+        IRISAPIClientID: Text[36];
+    begin
+        IRISAPIClientID := KeyVaultClientIRIS.GetAPIClientIDFromKV();
+        if (IRISAPIClientID <> '') and (IRISAPIClientID <> Rec."IRIS API Client ID") then
+            Rec."IRIS API Client ID" := IRISAPIClientID;
+    end;
+
     procedure DataTransferInProgress(): Boolean
     begin
         exit((not IsNullGuid(Rec."Data Transfer Task ID")) and (not Rec."Data Transfer Completed"));
+    end;
+
+    procedure GetNextDocumentID(): Integer
+    begin
+        InitSetup();
+        Rec.LockTable();
+        Rec.Get();
+        Rec."Last Document ID" += 1;
+        Rec.Modify();
+        exit(Rec."Last Document ID");
     end;
 
 }

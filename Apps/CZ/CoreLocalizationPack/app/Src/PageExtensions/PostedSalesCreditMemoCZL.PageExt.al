@@ -5,20 +5,18 @@
 namespace Microsoft.Sales.History;
 
 using Microsoft.Finance.Currency;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
+using Microsoft.Finance.GeneralLedger.Setup;
 
 pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit Memo"
 {
     layout
     {
-#if not CLEAN22
-        modify("VAT Reporting Date")
+        modify("VAT Registration No.")
         {
-            Visible = ReplaceVATDateEnabled and VATDateEnabled;
+            Importance = Standard;
+            Visible = true;
         }
-#endif
+        movelast("Invoice Details"; "VAT Registration No.")
         addlast(General)
         {
             field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
@@ -38,22 +36,6 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
                 Visible = true;
             }
         }
-#if not CLEAN22
-        addafter("Posting Date")
-        {
-            field("VAT Date CZL"; Rec."VAT Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'VAT Date (Obsolete)';
-                ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
-                Editable = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by VAT Reporting Date.';
-                Visible = not ReplaceVATDateEnabled;
-            }
-        }
-#endif
         addafter("Document Date")
         {
             field("Correction CZL"; Rec.Correction)
@@ -73,16 +55,22 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
         }
         addlast("Invoice Details")
         {
+#if not CLEAN27
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
             {
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+                ObsoleteReason = 'Replaced by standard "VAT Registration No." field.';
             }
-            field("Registration No. CZL"; Rec."Registration No. CZL")
+#endif
+            field("Registration No. CZL"; Rec."Registration Number")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
+                ToolTip = 'Specifies the customer''s registration number.';
                 Editable = false;
             }
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
@@ -95,6 +83,21 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
         }
         addafter("Currency Code")
         {
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
+            {
+                ApplicationArea = Suite;
+                Editable = false;
+                Caption = 'Additional Currency Code';
+                ToolTip = 'Specifies the exchange rate to be used if you post in an additional currency.';
+                Visible = AddCurrencyVisible;
+
+                trigger OnAssistEdit()
+                begin
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    ChangeExchangeRate.Editable(false);
+                    ChangeExchangeRate.RunModal();
+                end;
+            }
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
             {
                 ApplicationArea = Suite;
@@ -106,12 +109,6 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
                 var
                     ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-#if not CLEAN22
-#pragma warning disable AL0432
-                    if not ReplaceVATDateEnabled then
-                        Rec."VAT Reporting Date" := Rec."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                     ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date");
                     ChangeExchangeRate.Editable(false);
                     ChangeExchangeRate.RunModal();
@@ -147,28 +144,6 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
                     Editable = false;
                     ToolTip = 'Specifies whether the invoice was part of an EU 3-party trade transaction.';
                 }
-#if not CLEAN22
-                field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat Exclude (Obsolete)';
-                    Editable = false;
-                    ToolTip = 'Specifies that entry will be excluded from intrastat.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-                field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
-                {
-                    ApplicationArea = SalesReturnOrder;
-                    Caption = 'Physical Transfer (Obsolete)';
-                    ToolTip = 'Specifies if there is physical transfer of the item.';
-                    Editable = false;
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-#endif
                 field("Transaction Type CZL"; Rec."Transaction Type")
                 {
                     ApplicationArea = BasicEU;
@@ -266,19 +241,45 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
             }
         }
     }
-#if not CLEAN22
+
+    actions
+    {
+        addlast(Processing)
+        {
+            action(VATLCYCorrectionCZL)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'VAT LCY Correction';
+                Image = AdjustEntries;
+                ToolTip = 'Allows you to adjust the VAT amount in LCY for sales documents charged in a foreign currency.';
+                Visible = VATLCYCorrectionCZLVisible;
+
+                trigger OnAction()
+                begin
+                    Rec.MakeVATLCYCorrectionCZL();
+                end;
+            }
+        }
+    }
+
     trigger OnOpenPage()
     begin
-        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
-        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        VATLCYCorrectionCZLVisible := Rec.IsVATLCYCorrectionAllowedCZL();
     end;
 
     var
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-        ReplaceVATDateEnabled: Boolean;
-        VATDateEnabled: Boolean;
-#endif
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        ChangeExchangeRate: Page "Change Exchange Rate";
+        VATLCYCorrectionCZLVisible: Boolean;
+        AddCurrencyVisible: Boolean;
+
+    procedure SetRecPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection: Boolean)
+    begin
+        Rec.SetPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection);
+    end;
 }

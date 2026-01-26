@@ -130,16 +130,6 @@ codeunit 20339 "Service Posting Subscribers"
             Currency."Amount Rounding Precision");
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnBeforePostCustomerEntry', '', false, false)]
-    local procedure OnBeforePostCustomerEntry(var GenJournalLine: Record "Gen. Journal Line")
-    var
-        TaxPostingBufferMgmt: Codeunit "Tax Posting Buffer Mgmt.";
-    begin
-        GenJournalLine."Tax ID" := TaxPostingBufferMgmt.GetTaxID();
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line")
     var

@@ -27,4 +27,27 @@ tableextension 31052 "CV Ledger Entry Buffer CZL" extends "CV Ledger Entry Buffe
             DataClassification = SystemMetadata;
         }
     }
+
+    internal procedure InsertFrom(var CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer")
+    var
+        EntryNo: Integer;
+    begin
+        EntryNo := GetLastEntryNo();
+        CVLedgerEntryBuffer.Reset();
+        if CVLedgerEntryBuffer.FindSet() then
+            repeat
+                EntryNo += 1;
+                Init();
+                Rec := CVLedgerEntryBuffer;
+                "Entry No." := EntryNo;
+                Insert();
+            until CVLedgerEntryBuffer.Next() = 0;
+    end;
+
+    local procedure GetLastEntryNo(): Integer
+    begin
+        if FindLast() then
+            exit("Entry No.");
+        exit(0);
+    end;
 }

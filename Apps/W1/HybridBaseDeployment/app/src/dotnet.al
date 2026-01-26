@@ -9,9 +9,5 @@ dotnet
         type("Microsoft.Dynamics.Nav.Runtime.AL.CompanionTableRecordConsistencyRepair"; "CompanionTableRecordConsistencyRepair")
         {
         }
-
-        type("Microsoft.Dynamics.Nav.Runtime.AL.ALCloudMigration"; "ALCloudMigration")
-        {
-        }
     }
 }

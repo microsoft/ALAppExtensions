@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Calculation;
 
+using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
@@ -17,63 +18,55 @@ using Microsoft.Sales.Customer;
 table 11727 "VAT LCY Correction Buffer CZL"
 {
     Caption = 'VAT LCY Correction Buffer';
+    DataClassification = SystemMetadata;
 
     fields
     {
         field(1; "Entry No."; Integer)
         {
             Caption = 'Entry No.';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(4; "Posting Date"; Date)
         {
             Caption = 'Posting Date';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(5; "Document No."; Code[20])
         {
             Caption = 'Document No.';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(6; "Document Type"; Enum "Gen. Journal Document Type")
         {
             Caption = 'Document Type';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(7; Type; Enum "General Posting Type")
         {
             Caption = 'Type';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(8; "VAT Base"; Decimal)
         {
             AutoFormatType = 1;
             Caption = 'VAT Base';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(9; "VAT Amount"; Decimal)
         {
             AutoFormatType = 1;
             Caption = 'VAT Amount';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(11; "VAT Date"; Date)
         {
             Caption = 'VAT Date';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(12; "Bill-to/Pay-to No."; Code[20])
         {
             Caption = 'Bill-to/Pay-to No.';
-            DataClassification = SystemMetadata;
             Editable = false;
             TableRelation = if (Type = const(Purchase)) Vendor else
             if (Type = const(Sale)) Customer;
@@ -81,28 +74,24 @@ table 11727 "VAT LCY Correction Buffer CZL"
         field(15; "Source Code"; Code[10])
         {
             Caption = 'Source Code';
-            DataClassification = SystemMetadata;
             Editable = false;
             TableRelation = "Source Code";
         }
         field(19; "Country/Region Code"; Code[10])
         {
             Caption = 'Country/Region Code';
-            DataClassification = SystemMetadata;
             Editable = false;
             TableRelation = "Country/Region";
         }
         field(39; "VAT Bus. Posting Group"; Code[20])
         {
             Caption = 'VAT Bus. Posting Group';
-            DataClassification = SystemMetadata;
             Editable = false;
             TableRelation = "VAT Business Posting Group";
         }
         field(40; "VAT Prod. Posting Group"; Code[20])
         {
             Caption = 'VAT Prod. Posting Group';
-            DataClassification = SystemMetadata;
             Editable = false;
             TableRelation = "VAT Product Posting Group";
         }
@@ -110,7 +99,6 @@ table 11727 "VAT LCY Correction Buffer CZL"
         {
             Caption = 'VAT %';
             DecimalPlaces = 0 : 5;
-            DataClassification = SystemMetadata;
             Editable = false;
             MaxValue = 100;
             MinValue = 0;
@@ -119,14 +107,12 @@ table 11727 "VAT LCY Correction Buffer CZL"
         {
             AutoFormatType = 1;
             Caption = 'VAT Correction Amount';
-            DataClassification = SystemMetadata;
             Editable = false;
         }
         field(55; "Corrected VAT Amount"; Decimal)
         {
             AutoFormatType = 1;
             Caption = 'Corrected VAT Amount';
-            DataClassification = SystemMetadata;
 
             trigger OnValidate()
             begin
@@ -137,25 +123,27 @@ table 11727 "VAT LCY Correction Buffer CZL"
         {
             Caption = 'VAT LCY Correction';
             Editable = false;
-            DataClassification = SystemMetadata;
         }
         field(65; "VAT Registration No."; Text[20])
         {
             Caption = 'VAT Registration No.';
             Editable = false;
-            DataClassification = SystemMetadata;
+        }
+        field(480; "Dimension Set ID"; Integer)
+        {
+            Caption = 'Dimension Set ID';
+            Editable = false;
+            TableRelation = "Dimension Set Entry";
         }
         field(11781; "Registration No."; Text[20])
         {
             Caption = 'Registration No.';
             Editable = false;
-            DataClassification = SystemMetadata;
         }
         field(11782; "Tax Registration No."; Text[20])
         {
             Caption = 'Tax Registration No.';
             Editable = false;
-            DataClassification = SystemMetadata;
         }
     }
 
@@ -196,12 +184,6 @@ table 11727 "VAT LCY Correction Buffer CZL"
         Rec.Type := VATEntry.Type;
         Rec."VAT Base" := VATEntry.Base;
         Rec."VAT Amount" := VATEntry.Amount;
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not VATEntry.IsReplaceVATDateEnabled() then
-            VATEntry."VAT Reporting Date" := VATEntry."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         Rec."VAT Date" := VATEntry."VAT Reporting Date";
         Rec."Bill-to/Pay-to No." := VATEntry."Bill-to/Pay-to No.";
         Rec."Source Code" := VATEntry."Source Code";

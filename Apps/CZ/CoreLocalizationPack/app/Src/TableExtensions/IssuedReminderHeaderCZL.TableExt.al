@@ -6,6 +6,7 @@ namespace Microsoft.Sales.Reminder;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
+using Microsoft.Sales.History;
 
 tableextension 11741 "Issued Reminder Header CZL" extends "Issued Reminder Header"
 {
@@ -14,6 +15,7 @@ tableextension 11741 "Issued Reminder Header CZL" extends "Issued Reminder Heade
         field(11717; "Specific Symbol CZL"; Code[10])
         {
             Caption = 'Specific Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             Editable = false;
             DataClassification = CustomerContent;
@@ -21,6 +23,7 @@ tableextension 11741 "Issued Reminder Header CZL" extends "Issued Reminder Heade
         field(11718; "Variable Symbol CZL"; Code[10])
         {
             Caption = 'Variable Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             Editable = false;
             DataClassification = CustomerContent;
@@ -28,6 +31,7 @@ tableextension 11741 "Issued Reminder Header CZL" extends "Issued Reminder Heade
         field(11719; "Constant Symbol CZL"; Code[10])
         {
             Caption = 'Constant Symbol';
+            OptimizeForTextSearch = true;
             CharAllowed = '09';
             TableRelation = "Constant Symbol CZL";
             Editable = false;
@@ -86,4 +90,11 @@ tableextension 11741 "Issued Reminder Header CZL" extends "Issued Reminder Heade
             DataClassification = CustomerContent;
         }
     }
+
+    trigger OnBeforeDelete()
+    var
+        PostSalesDelete: Codeunit "PostSales-Delete";
+    begin
+        PostSalesDelete.IsDocumentDeletionAllowed(Rec."Posting Date");
+    end;
 }

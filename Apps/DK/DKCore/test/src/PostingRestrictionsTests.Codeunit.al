@@ -13,8 +13,11 @@ codeunit 148017 "Posting Restrictions Tests"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryJournals: Codeunit "Library - Journals";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryUtility: Codeunit "Library - Utility";
+        LibraryXMLRead: Codeunit "Library - XML Read";
         Assert: Codeunit "Assert";
         isInitialized: Boolean;
+        ServerFileName: Text;
         CannotPostWithoutCVRNumberErr: Label 'You cannot post without a valid CVR number filled in. Open the Company Information page and enter a CVR number in the Registration No. field.';
 
     trigger OnRun()
@@ -342,6 +345,138 @@ codeunit 148017 "Posting Restrictions Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
     end;
 
+    [Test]
+    procedure PostToGLInProdSaaSWhenEvaluationCompanyCVRNotSpecified()
+    var
+        GeneralJournalLine: Record "Gen. Journal Line";
+    begin
+        // [SCENARIO 504365] Stan can post to general ledger in production SaaS environment in Evaluation company when CVR number is not specified.
+        Initialize();
+
+        // [GIVEN] SaaS environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [GIVEN] Production environment
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+
+        // [GIVEN] Current company is evaluation company
+        UpdateEvaluationOnCompany(true);
+
+        // [GIVEN] CVR number is not specified
+        SetCVRNumberInCompanyInformation('');
+
+        LibraryLowerPermissions.SetJournalsPost();
+        LibraryLowerPermissions.AddO365Setup();
+
+        // [WHEN] Stan posts to general ledger
+        PostGeneralJournal(GeneralJournalLine);
+
+        // [THEN] General ledger entries have been created
+        VerifyGLEntry(GeneralJournalLine."Posting Date", GeneralJournalLine."Document No.");
+
+        // restore environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+        UpdateEvaluationOnCompany(false);
+    end;
+
+    [Test]
+    procedure PostSalesInvInProdSaaSWhenEvaluationCompanyCVRNotSpecified()
+    var
+        SalesHeader: Record "Sales Header";
+        InvNo: Code[20];
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 504365] Stan can post sales invoice in production SaaS environment in Evaluation company when CVR number is not specified.
+        Initialize();
+
+        // [GIVEN] SaaS environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [GIVEN] Production environment
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+
+        // [GIVEN] CVR number is not specified
+        SetCVRNumberInCompanyInformation('');
+
+        // [GIVEN] Current company is evaluation company
+        UpdateEvaluationOnCompany(true);
+
+        LibraryLowerPermissions.SetSalesDocsPost();
+        LibraryLowerPermissions.AddO365Setup();
+
+        // [WHEN] Stan posts to general ledger
+        InvNo := PostSalesInvoice(SalesHeader);
+
+        // [THEN] General ledger entries have been created
+        VerifyGLEntry(SalesHeader."Posting Date", InvNo);
+
+        // restore environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+        UpdateEvaluationOnCompany(false);
+    end;
+
+    [Test]
+    procedure PostPurchInvInProdSaaSWhenEvaluationCompanyCVRNotSpecified()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        InvNo: Code[20];
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 504365] Stan can post purchase invoice in Production SaaS environment in Evaluation company when the CVR number is not specified.
+        Initialize();
+
+        // [GIVEN] SaaS environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [GIVEN] Production environment
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+
+        // [GIVEN] CVR number is not specified
+        SetCVRNumberInCompanyInformation('');
+
+        // [GIVEN] Current company is evaluation company
+        UpdateEvaluationOnCompany(true);
+
+        LibraryLowerPermissions.SetPurchDocsPost();
+        LibraryLowerPermissions.AddO365Setup();
+        // [WHEN] Stan posts a purchase invoice
+        InvNo := PostPurchaseInvoice(PurchaseHeader);
+        // [THEN] General ledger entries have been created
+        VerifyGLEntry(PurchaseHeader."Posting Date", InvNo);
+
+        // restore environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+        UpdateEvaluationOnCompany(false);
+    end;
+
+    [Test]
+    procedure VerifyIBANNoWhenBranchNoAndBankAccountNotEmpty()
+    var
+        BankAccount: Record "Bank Account";
+        CustomerBankAccount: Record "Customer Bank Account";
+        DirectDebitCollectionEntry: Record "Direct Debit Collection Entry";
+    begin
+        // [SCENARIO 59770] Verify the IBAN number when the Bank Branch number, Bank Account number, and IBAN are not empty.
+        Initialize();
+
+        // [GIVEN] Create Customer and Customer Bank Account.
+        CreateCustomerWithCustomerBankAccount(CustomerBankAccount);
+
+        // [GIVEN] Create Direct Debit Collection Entry and Customer Ledger Entry.
+        CreateDirectDebitCollectionEntryWithBank(CustomerBankAccount, DirectDebitCollectionEntry, BankAccount);
+
+        // [WHEN] Export the SEPA file.
+        ExportToServerTempFile(DirectDebitCollectionEntry);
+
+        // [THEN] Verify IBAN No.
+        LibraryXMLRead.Initialize(ServerFileName);
+        LibraryXMLRead.VerifyNodeValueInSubtree('CdtrAcct', 'IBAN', BankAccount.IBAN);
+        LibraryXMLRead.VerifyNodeValueInSubtree('DbtrAcct', 'IBAN', CustomerBankAccount.IBAN);
+    end;
+
     local procedure Initialize()
     begin
         LibrarySetupStorage.Restore();
@@ -362,6 +497,15 @@ codeunit 148017 "Posting Restrictions Tests"
         CompanyInformation.Get();
         CompanyInformation."Registration No." := CVRNumber;
         CompanyInformation.Modify();
+    end;
+
+    local procedure UpdateEvaluationOnCompany(IsEvaluation: Boolean)
+    var
+        Company: Record Company;
+    begin
+        Company.Get(CompanyName());
+        Company."Evaluation Company" := IsEvaluation;
+        Company.Modify();
     end;
 
     local procedure PostGeneralJournal()
@@ -391,6 +535,8 @@ codeunit 148017 "Posting Restrictions Tests"
     local procedure PostSalesInvoice(var SalesHeader: Record "Sales Header"): Code[20]
     begin
         LibrarySales.CreateSalesInvoice(SalesHeader);
+        SalesHeader.Validate("Incoming Document Entry No.", MockIncomingDocument(SalesHeader."Posting Date", SalesHeader."No."));
+        SalesHeader.Modify(true);
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
@@ -404,7 +550,24 @@ codeunit 148017 "Posting Restrictions Tests"
     local procedure PostPurchaseInvoice(var PurchaseHeader: Record "Purchase Header"): Code[20]
     begin
         LibraryPurchase.CreatePurchaseInvoice(PurchaseHeader);
+        PurchaseHeader.Validate("Incoming Document Entry No.", MockIncomingDocument(PurchaseHeader."Posting Date", PurchaseHeader."No."));
+        PurchaseHeader.Modify(true);
         exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+    end;
+
+    local procedure MockIncomingDocument(PostingDate: Date; DocNo: Code[20]): Integer
+    var
+        IncomingDocument: Record "Incoming Document";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+    begin
+        IncomingDocument."Entry No." :=
+            LibraryUtility.GetNewRecNo(IncomingDocument, IncomingDocument.FieldNo("Entry No."));
+        IncomingDocument."Posting Date" := PostingDate;
+        IncomingDocument."Document No." := DocNo;
+        IncomingDocument.Insert();
+        IncomingDocumentAttachment."Incoming Document Entry No." := IncomingDocument."Entry No.";
+        IncomingDocumentAttachment.Insert();
+        exit(IncomingDocument."Entry No.");
     end;
 
     local procedure VerifyGLEntry(PostingDate: Date; DocNo: Code[20])
@@ -414,5 +577,110 @@ codeunit 148017 "Posting Restrictions Tests"
         GLEntry.SetRange("Posting Date", PostingDate);
         GLEntry.SetRange("Document No.", DocNo);
         Assert.IsTrue(not GLEntry.IsEmpty(), 'No G/L Entry found after posting');
+    end;
+
+    local procedure CreateCustomerWithCustomerBankAccount(var CustomerBankAccount: Record "Customer Bank Account")
+    var
+        Customer: Record Customer;
+    begin
+        LibrarySales.CreateCustomerWithAddress(Customer);
+        Customer.Validate("Currency Code", LibraryERM.GetCurrencyCode('EUR'));
+        Customer.Modify(true);
+        LibrarySales.CreateCustomerBankAccount(CustomerBankAccount, Customer."No.");
+        CustomerBankAccount."Bank Account No." := Format(LibraryRandom.RandIntInRange(111111111, 999999999)); // avoid local values validation
+        CustomerBankAccount."Bank Branch No." := Format(LibraryRandom.RandIntInRange(100, 200));
+        CustomerBankAccount.IBAN := Format(LibraryRandom.RandIntInRange(11111111, 99999999));
+        CustomerBankAccount."SWIFT Code" := Format(LibraryRandom.RandIntInRange(1111, 9999));
+        CustomerBankAccount.Modify(true);
+
+        Customer.Validate("Preferred Bank Account Code", CustomerBankAccount.Code);
+        Customer.Validate("Partner Type", Customer."Partner Type"::Company);
+        Customer.Modify(true);
+    end;
+
+    local procedure CreateDirectDebitCollectionEntryWithBank(CustomerBankAccount: Record "Customer Bank Account"; var DirectDebitCollectionEntry: Record "Direct Debit Collection Entry"; var BankAccount: Record "Bank Account")
+    var
+        BankExportImportSetup: Record "Bank Export/Import Setup";
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        Customer: Record Customer;
+        DirectDebitCollection: Record "Direct Debit Collection";
+        SEPADirectDebitMandate: Record "SEPA Direct Debit Mandate";
+    begin
+        Customer.Get(CustomerBankAccount."Customer No.");
+        LibrarySales.CreateCustomerMandate(SEPADirectDebitMandate, CustomerBankAccount."Customer No.", CustomerBankAccount.Code, Today(), WorkDate());
+        PostSalesInvoice(Customer, SEPADirectDebitMandate.ID, LibraryERM.GetCurrencyCode('EUR'));
+
+        CreateSEPABankAccount(BankAccount);
+        BankAccount.Validate("Bank Branch No.", Format(LibraryRandom.RandIntInRange(5000, 9000)));
+        BankAccount.Validate("Direct Debit Msg. Nos.", CreateNoSeries());
+        BankExportImportSetup.SetRange("Processing XMLport ID", Xmlport::"SEPA DD pain.008.001.02");
+        BankExportImportSetup.FindFirst();
+        BankAccount.Validate("Payment Export Format", BankExportImportSetup.Code);
+        BankAccount.Modify(true);
+
+        if DirectDebitCollection."No." = 0 then
+            DirectDebitCollection.CreateRecord(BankAccount.GetDirectDebitMessageNo(), BankAccount."No.", Customer."Partner Type");
+        DirectDebitCollectionEntry.SetRange("Direct Debit Collection No.", DirectDebitCollection."No.");
+        CustLedgerEntry.FindLast();
+        DirectDebitCollectionEntry.CreateNew(DirectDebitCollection."No.", CustLedgerEntry);
+        DirectDebitCollectionEntry.Modify(true);
+    end;
+
+    local procedure CreateSEPABankAccount(var BankAccount: Record "Bank Account")
+    var
+        NoSeries: Record "No. Series";
+        BankExportImportSetup: Record "Bank Export/Import Setup";
+    begin
+        NoSeries.FindFirst();
+        BankExportImportSetup.SetRange("Processing Codeunit ID", CODEUNIT::"SEPA DD-Export File");
+        BankExportImportSetup.FindFirst();
+
+        LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount."Bank Account No." := Format(LibraryRandom.RandIntInRange(111, 999));
+        BankAccount."Bank Branch No." := Format(LibraryRandom.RandIntInRange(1000, 2000));
+        BankAccount.IBAN := Format(LibraryRandom.RandIntInRange(11111111, 99999999));
+        BankAccount."SWIFT Code" := Format(LibraryRandom.RandIntInRange(1111, 9999));
+        BankAccount."Creditor No." := Format(LibraryRandom.RandIntInRange(11111111, 99999999));
+        BankAccount."SEPA Direct Debit Exp. Format" := BankExportImportSetup.Code;
+        BankAccount.Validate("Direct Debit Msg. Nos.", NoSeries.Code);
+        BankAccount.Modify();
+    end;
+
+    local procedure PostSalesInvoice(var Customer: Record Customer; DirectDebitMandateID: Code[35]; CurrencyCode: Code[10])
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibrarySales.CreateSalesInvoiceForCustomerNo(SalesHeader, Customer."No.");
+        SalesHeader.Validate("Currency Code", CurrencyCode);
+        SalesHeader.Validate("Direct Debit Mandate ID", DirectDebitMandateID);
+        SalesHeader.Modify(true);
+
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+    end;
+
+    local procedure CreateNoSeries(): Code[20]
+    var
+        NoSeries: Record "No. Series";
+        NoSeriesLine: Record "No. Series Line";
+    begin
+        LibraryUtility.CreateNoSeries(NoSeries, true, false, false);
+        LibraryUtility.CreateNoSeriesLine(NoSeriesLine, NoSeries.Code, '', '');
+
+        exit(NoSeries.Code);
+    end;
+
+    local procedure ExportToServerTempFile(var DirectDebitCollectionEntry: Record "Direct Debit Collection Entry")
+    var
+        FileManagement: Codeunit "File Management";
+        ExportFile: File;
+        OutStream: OutStream;
+    begin
+        ServerFileName := FileManagement.ServerTempFileName('.xml');
+        ExportFile.WriteMode := true;
+        ExportFile.TextMode := true;
+        ExportFile.Create(ServerFileName);
+        ExportFile.CreateOutStream(OutStream);
+        XMLPORT.Export(XMLPORT::"SEPA DD pain.008.001.02", OutStream, DirectDebitCollectionEntry);
+        ExportFile.Close();
     end;
 }

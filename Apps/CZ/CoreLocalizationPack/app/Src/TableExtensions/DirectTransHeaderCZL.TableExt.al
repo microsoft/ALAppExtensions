@@ -4,33 +4,33 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Transfer;
 
+#if not CLEAN26
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
+#endif
 using Microsoft.Inventory.Ledger;
 
 tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
 {
+#if not CLEANSCHEMA25
     fields
     {
         field(31000; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
     }
-
+#endif
+#if not CLEAN26
     var
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;
 
+    [Obsolete('Pending removal. Use IsIntrastatTransactionCZ from Intrastat CZ extension instead.', '26.0')]
     procedure IsIntrastatTransactionCZL(): Boolean
     begin
         if ("No." <> GlobalDocumentNo) or ("No." = '') then begin
@@ -51,12 +51,6 @@ tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
         if IsHandled then
             exit(Result);
 
-#if not CLEAN22
-#pragma warning disable AL0432
-        if "Intrastat Exclude CZL" then
-            exit(false);
-#pragma warning restore AL0432
-#endif
         if "Trsf.-from Country/Region Code" = "Trsf.-to Country/Region Code" then
             exit(false);
 
@@ -67,6 +61,7 @@ tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
             exit(CountryRegion.IsIntrastatCZL("Trsf.-from Country/Region Code", false));
         exit(false);
     end;
+#endif
 
     procedure GetRegisterUserIDCZL(): Code[50]
     var
@@ -76,9 +71,11 @@ tableextension 31054 "Direct Trans. Header CZL" extends "Direct Trans. Header"
         if ItemLedgerEntry.FindFirst() then
             exit(ItemLedgerEntry.GetRegisterUserIDCZL());
     end;
-
+#if not CLEAN26
+    [Obsolete('Pending removal. Use OnBeforeIsIntrastatTransactionCZ from Intrastat CZ extension instead.', '26.0')]
     [IntegrationEvent(true, false)]
     local procedure OnBeforeUpdateGlobalIsIntrastatTransactionCZL(DirectTransHeader: Record "Direct Trans. Header"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
+#endif
 }

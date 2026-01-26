@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.DemoTool;
+using System.Environment;
+using System.Text;
+using System.Utilities;
+
 codeunit 5142 "Contoso Utilities"
 {
     InherentEntitlements = X;
@@ -71,5 +82,48 @@ codeunit 5142 "Contoso Utilities"
     internal procedure RandBarcodeInt(): Integer
     begin
         exit(10000000 - 1 + Random(99999999 - 10000000 + 1));
+    end;
+
+    var
+        DefaultBatchNameLbl: Label 'DEFAULT', MaxLength = 10;
+
+    procedure GetDefaultBatchNameLbl(): Code[10]
+    begin
+        exit(DefaultBatchNameLbl);
+    end;
+
+    procedure GetTempBlobFromFile(FilePath: Text) result: Codeunit "Temp Blob"
+    var
+        ObjInStream: InStream;
+        OutStr: OutStream;
+    begin
+        NavApp.GetResource(FilePath, ObjInStream);
+        result.CreateOutStream(OutStr);
+        CopyStream(OutStr, ObjInStream);
+    end;
+
+    [Scope('OnPrem')]
+    procedure InsertBLOBFromFile(FilePath: Text; FileName: Text): Code[50]
+    var
+        MediaResources: Record "Media Resources";
+        BLOBInStream: InStream;
+        BLOBOutStream: OutStream;
+        MediaResourceCode: Code[50];
+    begin
+        MediaResourceCode := CopyStr(FileName, 1, MaxStrLen(MediaResourceCode));
+        if MediaResources.Get(MediaResourceCode) then
+            exit;
+
+        NavApp.GetResource(FilePath + FileName, BLOBInStream);
+
+        MediaResources.Init();
+        MediaResources.Validate(Code, MediaResourceCode);
+        MediaResources.Blob.CreateOutStream(BLOBOutStream);
+        CopyStream(BLOBOutStream, BLOBInStream);
+
+#pragma warning disable AS0059
+        MediaResources.Insert(true);
+#pragma warning restore AS0059
+        exit(MediaResourceCode);
     end;
 }

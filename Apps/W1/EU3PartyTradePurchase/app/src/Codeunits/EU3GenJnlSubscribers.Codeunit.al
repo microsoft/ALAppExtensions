@@ -17,28 +17,14 @@ codeunit 4883 "EU3 Gen. Jnl. Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeader', '', false, false)]
     local procedure OnAfterCopyGenJnlLineFromPurchHeader(PurchaseHeader: Record "Purchase Header"; var GenJournalLine: Record "Gen. Journal Line")
     var
-#if not CLEAN23
-        EU3PartyTradeFeatureMgt: Codeunit "EU3 Party Trade Feature Mgt.";
-#endif
     begin
-#if not CLEAN23
-        if not EU3PartyTradeFeatureMgt.IsEnabled() then
-            exit;
-#endif
         GenJournalLine."EU 3-Party Trade" := PurchaseHeader."EU 3 Party Trade";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeaderPrepmt', '', false, false)]
     local procedure OnAfterCopyGenJnlLineFromPurchHeaderPrepmt(PurchaseHeader: Record "Purchase Header"; var GenJournalLine: Record "Gen. Journal Line")
     var
-#if not CLEAN23
-        EU3PartyTradeFeatureMgt: Codeunit "EU3 Party Trade Feature Mgt.";
-#endif
     begin
-#if not CLEAN23
-        if not EU3PartyTradeFeatureMgt.IsEnabled() then
-            exit;
-#endif
         GenJournalLine."EU 3-Party Trade" := PurchaseHeader."EU 3 Party Trade";
     end;
 }

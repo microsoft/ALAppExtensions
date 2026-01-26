@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -12,6 +13,9 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
 {
     Permissions = TableData "AMC Banking Setup" = r;
     TableNo = "Data Exch.";
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     var
@@ -95,6 +99,7 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
         ChildXmlElement: XmlElement;
         PackXmlElement: XmlElement;
         TempXmlDocText: Text;
+        SecretContent: SecretText;
     begin
 
         BodyContentXmlDoc := XmlDocument.Create();
@@ -115,8 +120,9 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
 
         BodyContentXmlDoc.WriteTo(TempXmlDocText);
         AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
-        contentHttpContent.WriteFrom(TempXmlDocText);
-        ReportExportHttpRequestMessage.Content(contentHttpContent);
+        SecretContent := TempXmlDocText;
+        ContentHttpContent.WriteFrom(SecretContent);
+        ReportExportHttpRequestMessage.Content(ContentHttpContent);
     end;
 
     local procedure EncodeBankStatementFile(TempBlob: Codeunit "Temp Blob"): Text
@@ -176,4 +182,4 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
     end;
 
 }
-
+#endif

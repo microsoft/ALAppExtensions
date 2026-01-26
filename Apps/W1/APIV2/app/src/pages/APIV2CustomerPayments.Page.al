@@ -1,10 +1,10 @@
 namespace Microsoft.API.V2;
 
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Sales.Customer;
 using Microsoft.Integration.Entity;
-using Microsoft.Sales.History;
 using Microsoft.Integration.Graph;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
 
 page 30055 "APIV2 - Customer Payments"
 {
@@ -19,6 +19,7 @@ page 30055 "APIV2 - Customer Payments"
     SourceTable = "Gen. Journal Line";
     Extensible = false;
 
+    AboutText = 'Manages customer payment transactions, including payment amounts, dates, methods, related invoices, and journal details. Supports creation, retrieval, update, and deletion of payment records for integration with banking platforms, payment automation solutions, and accounts receivable reconciliation, ensuring accurate and up-to-date customer balances.';
 
     layout
     {

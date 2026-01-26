@@ -8,7 +8,6 @@ using Microsoft.Bank;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
 
 codeunit 11749 "Reminder Handler CZL"
 {
@@ -34,11 +33,6 @@ codeunit 11749 "Reminder Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder-Issue", 'OnAfterInitGenJnlLine', '', false, false)]
     local procedure UpdateBankInfoOnAfterInitGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; ReminderHeader: Record "Reminder Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := ReminderHeader."Posting Date";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := ReminderHeader."Posting Date";
         if GenJournalLine."Account Type" <> GenJournalLine."Account Type"::Customer then
             exit;
@@ -65,11 +59,22 @@ codeunit 11749 "Reminder Handler CZL"
         IssuedReminderHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(IssuedReminderHeader."No.");
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Issued Reminder Header", 'OnBeforeDeleteEvent', '', false, false)]
-    local procedure CheckDeletionAllowOnBeforeDeleteEvent(var Rec: Record "Issued Reminder Header")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder Communication", 'OnBeforeExitReportIDOnReplaceHTMLText', '', false, false)]
+    local procedure RecordIDOnBeforeExitReportIDOnReplaceHTMLText(ReportID: Integer; var RecordVariant: Variant; var ReportIDExit: Boolean)
     var
-        PostSalesDelete: Codeunit "PostSales-Delete";
+        IssuedReminderHeader: Record "Issued Reminder Header";
+        RecordReference: RecordRef;
     begin
-        PostSalesDelete.IsDocumentDeletionAllowed(Rec."Posting Date");
+        if ReportID <> Report::"Reminder CZL" then
+            exit;
+
+        if not RecordVariant.IsRecordRef() then
+            exit;
+
+        RecordReference.GetTable(RecordVariant);
+        if RecordReference.Number <> IssuedReminderHeader.RecordId.TableNo then
+            exit;
+
+        ReportIDExit := false;
     end;
 }

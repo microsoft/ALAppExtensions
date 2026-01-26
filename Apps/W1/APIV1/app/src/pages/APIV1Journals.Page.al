@@ -1,8 +1,8 @@
 namespace Microsoft.API.V1;
 
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Integration.Graph;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Integration.Graph;
 
 page 20016 "APIV1 - Journals"
 {

@@ -64,9 +64,6 @@ page 31115 "Cross Application CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Show Document Line';
                 Image = Line;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ShortcutKey = 'Ctrl+F7';
                 ToolTip = 'Displays related applied document line.';
 
@@ -74,6 +71,15 @@ page 31115 "Cross Application CZL"
                 begin
                     OnShowCrossApplicationDocument(Rec."Table ID", Rec."Applied Document No.", Rec."Applied Document Line No.");
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(ShowDocumentLine_Promoted; ShowDocumentLine)
+                {
+                }
             }
         }
     }

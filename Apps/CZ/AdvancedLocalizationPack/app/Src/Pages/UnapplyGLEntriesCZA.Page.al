@@ -104,9 +104,6 @@ page 31285 "Unapply G/L Entries CZA"
                 ApplicationArea = Basic, Suite;
                 Caption = '&Unapply';
                 Image = UnApply;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Unselect one or more ledger entries that you want to unapply this record.';
 
                 trigger OnAction()
@@ -118,6 +115,15 @@ page 31285 "Unapply G/L Entries CZA"
                     GLEntryPostApplicationCZA.PostUnApplyGLEntry(DetailedGLEntryCZA, DocNo, PostingDate);
                     CurrPage.Close();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Unapply_Promoted; Unapply)
+                {
+                }
             }
         }
     }

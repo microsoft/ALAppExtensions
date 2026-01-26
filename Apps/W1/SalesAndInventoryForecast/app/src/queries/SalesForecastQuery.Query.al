@@ -1,7 +1,7 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -34,7 +34,7 @@ query 1850 "Sales Forecast Query"
                 {
                     DataItemLink = "Item No." = Item."No.";
                     SqlJoinType = InnerJoin;
-                    DataItemTableFilter = "Forecast Data" = Const(Result);
+                    DataItemTableFilter = "Forecast Data" = const(Result);
                     filter(Date; Date)
                     {
                     }

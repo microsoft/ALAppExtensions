@@ -10,39 +10,27 @@ pageextension 31377 "Posted Direct Transfer CZ" extends "Posted Direct Transfer"
 {
     layout
     {
-#if not CLEAN22
-#pragma warning disable AL0432
-        modify("Intrastat Exclude CZL")
-#pragma warning restore AL0432
+        addafter("Transfer-from")
         {
-            Enabled = not IntrastatEnabled;
-            Visible = not IntrastatEnabled;
-        }
-#endif
-        addafter(IsIntrastatTransactionCZL)
-        {
-            field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+            group("Foreign Trade CZ")
             {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude';
-                Editable = false;
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-#if not CLEAN22
-                Enabled = IntrastatEnabled;
-                Visible = IntrastatEnabled;
-#endif
+                Caption = 'Foreign Trade';
+
+                field(IsIntrastatTransactionCZ; Rec.IsIntrastatTransactionCZ())
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Intrastat Transaction';
+                    Editable = false;
+                    ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+                }
+                field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Intrastat Exclude';
+                    Editable = false;
+                    ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                }
             }
         }
     }
-#if not CLEAN22
-
-    trigger OnOpenPage()
-    begin
-        IntrastatEnabled := IntrastatReportManagement.IsFeatureEnabled();
-    end;
-
-    var
-        IntrastatReportManagement: Codeunit IntrastatReportManagement;
-        IntrastatEnabled: Boolean;
-#endif
 }

@@ -12,6 +12,7 @@ tableextension 5285 "VAT Posting Setup SAF-T" extends "VAT Posting Setup"
     {
         field(5280; "Sales Tax Code SAF-T"; Code[9])
         {
+            Caption = 'Sales Tax Code SAF-T';
             trigger OnValidate()
             begin
                 VerifyTaxCodeUnique("Sales Tax Code SAF-T");
@@ -19,12 +20,16 @@ tableextension 5285 "VAT Posting Setup SAF-T" extends "VAT Posting Setup"
         }
         field(5281; "Purchase Tax Code SAF-T"; Code[9])
         {
+            Caption = 'Purchase Tax Code SAF-T';
             trigger OnValidate()
             begin
                 VerifyTaxCodeUnique("Purchase Tax Code SAF-T");
             end;
         }
-        field(5285; "Starting Date"; Date) { }
+        field(5285; "Starting Date"; Date)
+        {
+            Caption = 'Starting Date';
+        }
     }
 
     var

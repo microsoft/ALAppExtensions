@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -86,11 +86,11 @@ page 31274 "Compensation List CZC"
         }
         area(factboxes)
         {
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(31272), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Compensation Header CZC"), "No." = field("No.");
             }
             part(WorkflowStatus; "Workflow Status FactBox")
             {

@@ -20,7 +20,7 @@
       <DataExchColumnDef ColumnNo="16" Name="Transport Method" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
       <DataExchColumnDef ColumnNo="17" Name="Payment Method" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
       <DataExchColumnDef ColumnNo="18" Name="Country/Region of Payment Code" Show="false" DataType="0" Length="2" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
-      <DataExchMapping TableId="5024" Name="" KeyIndex="2" MappingCodeunit="1269" PostMappingCodeunit="12215">
+      <DataExchMapping TableId="5024" Name="" KeyIndex="2" MappingCodeunit="1269">
         <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" DefaultValue="EUROX" />
         <DataExchFieldMapping ColumnNo="2" FieldID="12214" />
         <DataExchFieldMapping ColumnNo="3" FieldID="12215" TransformationRule="NUMBERSONLY">
@@ -155,7 +155,7 @@
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
         </DataExchFieldMapping>
-        <DataExchFieldMapping ColumnNo="16" FieldID="12225" TransformationRule="FIRSTCHAR">
+        <DataExchFieldMapping ColumnNo="16" FieldID="12225" Optional="true" TransformationRule="FIRSTCHAR">
           <TransformationRules>
             <Code>FIRSTCHAR</Code>
             <Description>First Character</Description>

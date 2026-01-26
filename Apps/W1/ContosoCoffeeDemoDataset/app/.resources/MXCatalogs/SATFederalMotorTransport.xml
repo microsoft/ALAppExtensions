@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-AutotransporteFederal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<c_TipoAutotransporteFederal>
+		<Code>C2</Code>
+		<Descripcion>Camión Unitario (2 llantas en el eje delantero y 4 llantas en el eje trasero)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>C3</Code>
+		<Descripcion>Camión Unitario (2 llantas en el eje delantero y 6 o 8 llantas en los dos ejes traseros)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>C2R2</Code>
+		<Descripcion>Camión-Remolque (6 llantas en el camión y 8 llantas en remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>C3R2</Code>
+		<Descripcion>Camión-Remolque (10 llantas en el camión y 8 llantas en remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>C2R3</Code>
+		<Descripcion>Camión-Remolque (6 llantas en el camión y 12 llantas en remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>C3R3</Code>
+		<Descripcion>Camión-Remolque (10 llantas en el camión y 12 llantas en remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T2S1</Code>
+		<Descripcion>Tractocamión Articulado (6 llantas en el tractocamión, 4 llantas en el semirremolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T2S2</Code>
+		<Descripcion>Tractocamión Articulado (6 llantas en el tractocamión, 8 llantas en el semirremolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T2S3</Code>
+		<Descripcion>Tractocamión Articulado (6 llantas en el tractocamión, 12 llantas en el semirremolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S1</Code>
+		<Descripcion>Tractocamión Articulado (10 llantas en el tractocamión, 4 llantas en el semirremolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S2</Code>
+		<Descripcion>Tractocamión Articulado (10 llantas en el tractocamión, 8 llantas en el semirremolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S3</Code>
+		<Descripcion>Tractocamión Articulado (10 llantas en el tractocamión, 12 llantas en el semirremolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T2S1R2</Code>
+		<Descripcion>Tractocamión Semirremolque-Remolque (6 llantas en el tractocamión, 4 llantas en el semirremolque y 8 llantas en el remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T2S2R2</Code>
+		<Descripcion>Tractocamión Semirremolque-Remolque (6 llantas en el tractocamión, 8 llantas en el semirremolque y 8 llantas en el remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T2S1R3</Code>
+		<Descripcion>Tractocamión Semirremolque-Remolque (6 llantas en el tractocamión, 4 llantas en el semirremolque y 12 llantas en el remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S1R2</Code>
+		<Descripcion>Tractocamión Semirremolque-Remolque (10 llantas en el tractocamión, 4 llantas en el semirremolque y 8 llantas en el remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S1R3</Code>
+		<Descripcion>Tractocamión Semirremolque-Remolque (10 llantas en el tractocamión, 4 llantas en el semirremolque y 12 llantas en el remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S2R2</Code>
+		<Descripcion>Tractocamión Semirremolque-Remolque (10 llantas en el tractocamión, 8 llantas en el semirremolque y 8 llantas en el remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S2R3</Code>
+		<Descripcion>Tractocamión Semirremolque-Remolque (10 llantas en el tractocamión, 8 llantas en el semirremolque y 12 llantas en el remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S2R4</Code>
+		<Descripcion>Tractocamión Semirremolque-Remolque (10 llantas en el tractocamión, 8 llantas en el semirremolque y 16 llantas en el remolque)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T2S2S2</Code>
+		<Descripcion>Tractocamión Semirremolque-Semirremolque (6 llantas en el tractocamión, 8 llantas en el semirremolque delantero y 8 llantas en el semirremolque trasero)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S2S2</Code>
+		<Descripcion>Tractocamión Semirremolque-Semirremolque (10 llantas en el tractocamión, 8 llantas en el semirremolque delantero y 8 llantas en el semirremolque trasero)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>T3S3S2</Code>
+		<Descripcion>Tractocamión Semirremolque-Semirremolque (10 llantas en el tractocamión, 12 llantas en el semirremolque delantero y 8 llantas en el semirremolque trasero)</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>OTROEV</Code>
+		<Descripcion>Especializado de Voluminoso</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>OTROEGP</Code>
+		<Descripcion>Especializado de Gran Peso</Descripcion>
+	</c_TipoAutotransporteFederal>
+	<c_TipoAutotransporteFederal>
+		<Code>OTROSG</Code>
+		<Descripcion>Servicio de Grúas</Descripcion>
+	</c_TipoAutotransporteFederal>
+</data-set-AutotransporteFederal>

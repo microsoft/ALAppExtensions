@@ -17,4 +17,11 @@ tableextension 31040 "Iss. Payment Order Line CZZ" extends "Iss. Payment Order L
             TableRelation = if (Type = const(Vendor)) "Purch. Adv. Letter Header CZZ"."No.";
         }
     }
+
+    keys
+    {
+        key(PurchAdvanceLetterNoCZZ; "Purch. Advance Letter No. CZZ")
+        {
+        }
+    }
 }

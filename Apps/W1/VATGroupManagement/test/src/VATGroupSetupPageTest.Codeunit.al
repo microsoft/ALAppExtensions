@@ -1,6 +1,7 @@
 codeunit 139524 "VAT Group Setup Page Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -9,6 +10,8 @@ codeunit 139524 "VAT Group Setup Page Test"
         ControlShouldBeVisibleTxt: Label 'Control should be visible.';
         ControlShouldNotBeVisibleTxt: Label 'Control should not be visible.';
         ValueShouldBeMaskedTxt: Label 'Value should be masked.';
+        ClientIdTxt: Label 'testkey';
+        ClientSecretTxt: Label 'testuser';
 
     [Test]
     procedure TestVATReportSetupNoRolePageBehavior()
@@ -24,14 +27,10 @@ codeunit 139524 "VAT Group Setup Page Test"
         TestPageVATReportSetup.VATGroupRole.SetValue(0);
 
         // [THEN] No page controls and buttons related to any VAT Group role should be displayed
-        Assert.IsFalse(TestPageVATReportSetup.VATGroupAuthenticationType.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.VATGroupAuthenticationTypeSaas.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.MemberIdentifier.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.APIURL.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.GroupRepresentativeBCVersion.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.GroupRepresentativeCompany.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.UserName.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.WebserviceAccessKey.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.ClientId.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.ClientSecret.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.AuthorityURL.Visible(), ControlShouldNotBeVisibleTxt);
@@ -59,14 +58,10 @@ codeunit 139524 "VAT Group Setup Page Test"
         TestPageVATReportSetup.VATGroupRole.SetValue(1);
 
         // [THEN] Only 1 control should be visible
-        Assert.IsFalse(TestPageVATReportSetup.VATGroupAuthenticationType.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.VATGroupAuthenticationTypeSaas.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.MemberIdentifier.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.APIURL.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.GroupRepresentativeBCVersion.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.GroupRepresentativeCompany.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.UserName.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.WebserviceAccessKey.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.ClientId.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.ClientSecret.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsFalse(TestPageVATReportSetup.AuthorityURL.Visible(), ControlShouldNotBeVisibleTxt);
@@ -94,40 +89,6 @@ codeunit 139524 "VAT Group Setup Page Test"
     end;
 
     [Test]
-    procedure TestVATReportSetupMemberWindowsPageBehavior()
-    var
-        TestPageVATReportSetup: TestPage "VAT Report Setup";
-    begin
-        // [SCENARIO 374187] VAT Report Setup Member Windows Page Behavior
-
-        // [GIVEN] The VAT Report Setup page is open
-        TestPageVATReportSetup.OpenEdit();
-
-        // [GIVEN] The Member role is selected
-        TestPageVATReportSetup.VATGroupRole.SetValue(2);
-
-        // [WHEN] Windows authentication is selected
-        TestPageVATReportSetup.VATGroupAuthenticationType.SetValue(2);
-
-        // [THEN] Only page controls related to this role and authentication method should be visible
-        Assert.IsTrue(TestPageVATReportSetup.VATGroupAuthenticationType.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.VATGroupAuthenticationTypeSaas.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.MemberIdentifier.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.APIURL.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.GroupRepresentativeBCVersion.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.GroupRepresentativeCompany.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.UserName.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.WebserviceAccessKey.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.ClientId.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.ClientSecret.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.AuthorityURL.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.ResourceURL.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.RedirectURL.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.ApprovedMembers.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.RenewToken.Visible(), ControlShouldNotBeVisibleTxt);
-    end;
-
-    [Test]
     procedure TestVATReportSetupMemberOnSaaSPageBehavior()
     var
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
@@ -144,53 +105,7 @@ codeunit 139524 "VAT Group Setup Page Test"
         // [WHEN] The Member role is selected
         TestPageVATReportSetup.VATGroupRole.SetValue(2);
 
-        // [THEN] The SaaS specific authentication type control should be visible
-        Assert.IsFalse(TestPageVATReportSetup.VATGroupAuthenticationType.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.VATGroupAuthenticationTypeSaas.Visible(), ControlShouldBeVisibleTxt);
-
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
-    end;
-
-    [Test]
-    procedure TestVATReportSetupMemberWSAKPageBehavior()
-    var
-        TestPageVATReportSetup: TestPage "VAT Report Setup";
-    begin
-        // [SCENARIO 374187] VAT Report Setup Member WSAK Page Behavior
-
-        // [GIVEN] The VAT Report Setup page is open
-        TestPageVATReportSetup.OpenEdit();
-
-        // [GIVEN] The Member role is selected
-        TestPageVATReportSetup.VATGroupRole.SetValue(2);
-
-        // [WHEN] Windows authentication is selected
-        TestPageVATReportSetup.VATGroupAuthenticationType.SetValue(0);
-
-        // [WHEN] Secret values are inputed
-        TestPageVATReportSetup.WebserviceAccessKey.SetValue('testkey');
-        TestPageVATReportSetup.UserName.SetValue('testuser');
-
-        // [THEN] Only page controls related to this role and authentication method should be visible
-        Assert.IsTrue(TestPageVATReportSetup.VATGroupAuthenticationType.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.VATGroupAuthenticationTypeSaas.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.MemberIdentifier.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.GroupRepresentativeBCVersion.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.APIURL.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.GroupRepresentativeCompany.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.UserName.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsTrue(TestPageVATReportSetup.WebserviceAccessKey.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.ClientId.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.ClientSecret.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.AuthorityURL.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.ResourceURL.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.RedirectURL.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.ApprovedMembers.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.RenewToken.Visible(), ControlShouldNotBeVisibleTxt);
-
-        // [THEN] Secret values should be obfuscated
-        Assert.AreEqual('●●●●●●●●●●', TestPageVATReportSetup.UserName.Value(), ValueShouldBeMaskedTxt);
-        Assert.AreEqual('●●●●●●●●●●', TestPageVATReportSetup.WebserviceAccessKey.Value(), ValueShouldBeMaskedTxt);
     end;
 
     [Test]
@@ -206,22 +121,15 @@ codeunit 139524 "VAT Group Setup Page Test"
         // [GIVEN] The Member role is selected
         TestPageVATReportSetup.VATGroupRole.SetValue(2);
 
-        // [WHEN] Windows authentication is selected
-        TestPageVATReportSetup.VATGroupAuthenticationType.SetValue(1);
-
         // [WHEN] Secret values are inputed
-        TestPageVATReportSetup.ClientId.SetValue('testkey');
-        TestPageVATReportSetup.ClientSecret.SetValue('testuser');
+        TestPageVATReportSetup.ClientId.SetValue(ClientIdTxt);
+        TestPageVATReportSetup.ClientSecret.SetValue(ClientSecretTxt);
 
-        // [THEN] Only page controls related to this role and authentication method should be visible
-        Assert.IsTrue(TestPageVATReportSetup.VATGroupAuthenticationType.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.VATGroupAuthenticationTypeSaas.Visible(), ControlShouldNotBeVisibleTxt);
+        // [THEN] Only page controls related to this role and OAuth2 authentication method should be visible
         Assert.IsTrue(TestPageVATReportSetup.MemberIdentifier.Visible(), ControlShouldBeVisibleTxt);
         Assert.IsTrue(TestPageVATReportSetup.GroupRepresentativeBCVersion.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsTrue(TestPageVATReportSetup.APIURL.Visible(), ControlShouldBeVisibleTxt);
         Assert.IsTrue(TestPageVATReportSetup.GroupRepresentativeCompany.Visible(), ControlShouldBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.UserName.Visible(), ControlShouldNotBeVisibleTxt);
-        Assert.IsFalse(TestPageVATReportSetup.WebserviceAccessKey.Visible(), ControlShouldNotBeVisibleTxt);
         Assert.IsTrue(TestPageVATReportSetup.ClientId.Visible(), ControlShouldBeVisibleTxt);
         Assert.IsTrue(TestPageVATReportSetup.ClientSecret.Visible(), ControlShouldBeVisibleTxt);
         Assert.IsTrue(TestPageVATReportSetup.AuthorityURL.Visible(), ControlShouldBeVisibleTxt);
@@ -231,7 +139,69 @@ codeunit 139524 "VAT Group Setup Page Test"
         Assert.IsTrue(TestPageVATReportSetup.RenewToken.Visible(), ControlShouldBeVisibleTxt);
 
         // [THEN] Secret values should be obfuscated
-        Assert.AreEqual('●●●●●●●●●●', TestPageVATReportSetup.ClientId.Value(), ValueShouldBeMaskedTxt);
-        Assert.AreEqual('●●●●●●●●●●', TestPageVATReportSetup.ClientSecret.Value(), ValueShouldBeMaskedTxt);
+        // Checking that the values are not equal to the original input values as the values should be masked
+        // We're not using the masked value here to avoid issues with formatting and the need to update the test if the masking changes.
+        Assert.AreNotEqual(ClientIdTxt, TestPageVATReportSetup.ClientId.Value(), ValueShouldBeMaskedTxt);
+        Assert.AreNotEqual(ClientSecretTxt, TestPageVATReportSetup.ClientSecret.Value(), ValueShouldBeMaskedTxt);
+    end;
+
+    [Test]
+    procedure PrepareURIEncodesCompanyNameWithSpecialCharacters()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+        VATGroupCommunication: Codeunit "VAT Group Communication";
+        TypeHelper: Codeunit "Type Helper";
+        ResultURI: Text;
+        CompanyNameWithSpecialChars: Text;
+        ExpectedEncodedCompany: Text;
+    begin
+        // [SCENARIO 613572] PrepareURI URL encodes company name with special characters
+
+        // [GIVEN] VAT Report Setup with company name "Test (Company) Name"
+        CompanyNameWithSpecialChars := 'Test (Company) Name';
+        LibraryVATGroup.DeleteVATReportSetup();
+        VATReportSetup.Init();
+        VATReportSetup."VAT Group Role" := VATReportSetup."VAT Group Role"::Member;
+        VATReportSetup."VAT Group BC Version" := VATReportSetup."VAT Group BC Version"::BC;
+        VATReportSetup."Group Representative API URL" := 'https://api.test.com';
+        VATReportSetup."Group Representative Company" := CopyStr(CompanyNameWithSpecialChars, 1, MaxStrLen(VATReportSetup."Group Representative Company"));
+        VATReportSetup."Group Member ID" := CreateGuid();
+        VATReportSetup.Insert();
+
+        // [WHEN] PrepareURI is called with endpoint
+        ResultURI := VATGroupCommunication.PrepareURI('/testendpoint');
+
+        // [THEN] Company name is URL encoded in the result
+        ExpectedEncodedCompany := TypeHelper.UriEscapeDataString(CompanyNameWithSpecialChars);
+        Assert.IsTrue(StrPos(ResultURI, ExpectedEncodedCompany) > 0, 'URI should contain URL encoded company name');
+        Assert.IsFalse(StrPos(ResultURI, '(Company)') > 0, 'URI should not contain unencoded parentheses');
+    end;
+
+    [Test]
+    procedure PrepareURIKeepsPlainCompanyNameUnchanged()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+        VATGroupCommunication: Codeunit "VAT Group Communication";
+        ResultURI: Text;
+        PlainCompanyName: Text;
+    begin
+        // [SCENARIO 613572] PrepareURI keeps plain company name unchanged in URL
+
+        // [GIVEN] VAT Report Setup with plain company name "TestCompany"
+        PlainCompanyName := 'TestCompany';
+        LibraryVATGroup.DeleteVATReportSetup();
+        VATReportSetup.Init();
+        VATReportSetup."VAT Group Role" := VATReportSetup."VAT Group Role"::Member;
+        VATReportSetup."VAT Group BC Version" := VATReportSetup."VAT Group BC Version"::BC;
+        VATReportSetup."Group Representative API URL" := 'https://api.test.com';
+        VATReportSetup."Group Representative Company" := CopyStr(PlainCompanyName, 1, MaxStrLen(VATReportSetup."Group Representative Company"));
+        VATReportSetup."Group Member ID" := CreateGuid();
+        VATReportSetup.Insert();
+
+        // [WHEN] PrepareURI is called with endpoint
+        ResultURI := VATGroupCommunication.PrepareURI('/testendpoint');
+
+        // [THEN] Company name appears unchanged in the result
+        Assert.IsTrue(StrPos(ResultURI, 'name=''' + PlainCompanyName + '''') > 0, 'URI should contain plain company name unchanged');
     end;
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <DataExchDef Code="US EFT DEFAULT" Name="US EFT Default" Type="10000" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="10323" FileType="2" ReadingWritingCodeunit="10322" ValidationCodeunit="10321" UserFeedbackCodeunit="10324">
+    <DataExchLineDef LineType="0" Code="DETAIL" Name="Detail" ColumnCount="12">
+      <DataExchColumnDef ColumnNo="1" Name="Record Type" Show="false" DataType="0" Length="1" Constant="6" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Transaction Code" Show="false" DataType="0" Length="2" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Customer/Vendor Transit No." Show="false" DataType="0" Length="9" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Customer/Vendor Bank Account No." Show="false" DataType="0" Length="17" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Payment Amount" Show="false" DataType="2" DataFormat="&lt;Precision,2:2&gt;&lt;Standard Format,0&gt;" DataFormattingCulture="en-US" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="6" Name="Customer/Vendor No." Show="false" DataType="0" Length="15" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="7" Name="Addenda Record Indicator" Show="false" DataType="0" Length="4" Constant="0" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="8" Name="Customer/Vendor Name" Show="false" DataType="0" Length="22" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="9" Name="Reserved" Show="false" DataType="0" Length="2" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="10" Name="Account Type" Show="false" DataType="0" Length="2" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="11" Name="Addenda Record Indicator" Show="false" DataType="0" Length="1" Constant="0" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="12" Name="Trace Number" Show="false" DataType="0" Length="15" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="10301" Name="ACH US Detail" MappingCodeunit="10328" PreMappingCodeunit="10327">
+        <DataExchFieldMapping ColumnNo="1" FieldID="11" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="2" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="3" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="4" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="5" Multiplier="100.00" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="6" />
+        <DataExchFieldMapping ColumnNo="7" FieldID="9" />
+        <DataExchFieldMapping ColumnNo="8" FieldID="7" TransformationRule="UPPERCASE" />
+        <DataExchFieldMapping ColumnNo="9" FieldID="35" Optional="true" />
+        <DataExchFieldMapping ColumnNo="10" FieldID="8" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="9" Optional="true" />
+        <DataExchFieldMapping ColumnNo="12" FieldID="10" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="2" Code="FOOTER A" Name="Batch Footer" ColumnCount="12">
+      <DataExchColumnDef ColumnNo="1" Name="Record Type" Show="false" DataType="0" Length="1" Constant="8" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Service Class Code" Show="false" DataType="0" Length="3" Constant="220" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Addenda Count" Show="false" DataType="0" Length="6" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Hash Total" Show="false" DataType="2" DataFormattingCulture="en-US" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Total Debit Amount" Show="false" DataType="2" DataFormat="&lt;Precision,2:2&gt;&lt;Standard Format,0&gt;" DataFormattingCulture="en-US" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="6" Name="Total Credit Amount" Show="false" DataType="2" DataFormat="&lt;Precision,2:2&gt;&lt;Standard Format,0&gt;" DataFormattingCulture="en-US" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="7" Name="EIN Indicator" Show="false" DataType="0" Length="1" Constant="1" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="8" Name="Federal ID" Show="false" DataType="0" Length="9" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="9" Name="Reserved" Show="false" DataType="0" Length="19" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="10" Name="Reserved" Show="false" DataType="0" Length="6" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="11" Name="Bank Transit No." Show="false" DataType="0" Length="8" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="12" Name="Batch Number" Show="false" DataType="0" Length="7" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="10302" Name="ACH US Footer" MappingCodeunit="10330" PreMappingCodeunit="10329">
+        <DataExchFieldMapping ColumnNo="1" FieldID="10" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="13" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="2" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="20" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="17" Multiplier="100.00" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="18" Multiplier="100.00" />
+        <DataExchFieldMapping ColumnNo="8" FieldID="19" />
+        <DataExchFieldMapping ColumnNo="9" FieldID="7" Optional="true" />
+        <DataExchFieldMapping ColumnNo="10" FieldID="7" Optional="true" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="9" />
+        <DataExchFieldMapping ColumnNo="12" FieldID="14" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="2" Code="FOOTER B" Name="File Footer" ColumnCount="8">
+      <DataExchColumnDef ColumnNo="1" Name="Record Type" Show="false" DataType="0" Length="1" Constant="9" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Batch Count" Show="false" DataType="0" Length="6" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Block Count" Show="false" DataType="0" Length="6" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Addenda Count" Show="false" DataType="0" Length="8" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Hash Total" Show="false" DataType="2" DataFormattingCulture="en-US" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="6" Name="Total Debit Amount" Show="false" DataType="2" DataFormat="&lt;Precision,2:2&gt;&lt;Standard Format,0&gt;" DataFormattingCulture="en-US" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="7" Name="Total Credit Amount" Show="false" DataType="2" DataFormat="&lt;Precision,2:2&gt;&lt;Standard Format,0&gt;" DataFormattingCulture="en-US" Length="12" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="8" Name="Reserved" Show="false" DataType="0" Length="39" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="10302" Name="ACH US Footer" MappingCodeunit="10330" PreMappingCodeunit="10329">
+        <DataExchFieldMapping ColumnNo="1" FieldID="10" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="15" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="16" />
+        <DataExchFieldMapping ColumnNo="4" FieldID="2" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="3" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="4" Multiplier="100.00" />
+        <DataExchFieldMapping ColumnNo="7" FieldID="5" Multiplier="100.00" />
+        <DataExchFieldMapping ColumnNo="8" FieldID="7" Optional="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="HEADER A" Name="File Header" ColumnCount="14">
+      <DataExchColumnDef ColumnNo="1" Name="Record Type" Show="false" DataType="0" Length="1" Constant="1" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Priority Code" Show="false" DataType="0" Length="2" Constant="1" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Bank Transit No." Show="false" DataType="0" Length="10" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="EIN Indicator" Show="false" DataType="0" Length="1" Constant="1" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Federal ID" Show="false" DataType="0" Length="9" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="6" Name="File Creation Date" Show="false" DataType="1" DataFormat="&lt;Year,2&gt;&lt;Month,2&gt;&lt;Day,2&gt;" DataFormattingCulture="en-US" Length="6" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="7" Name="File Creation Time" Show="false" DataType="3" DataFormat="&lt;Hours24,2&gt;&lt;Minutes,2&gt;" DataFormattingCulture="en-US" Length="4" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="8" Name="File ID Modifier" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="9" Name="Record Size" Show="false" DataType="0" Length="3" Constant="94" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="10" Name="Blocking Factor" Show="false" DataType="0" Length="2" Constant="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="11" Name="Format Code" Show="false" DataType="0" Length="1" Constant="1" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="12" Name="Back Account Name" Show="false" DataType="0" Length="23" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="13" Name="Company Name" Show="false" DataType="0" Length="23" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="14" Name="Reference" Show="false" DataType="0" Length="8" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="10300" Name="ACH US Header" MappingCodeunit="10326" PreMappingCodeunit="10325">
+        <DataExchFieldMapping ColumnNo="1" FieldID="6" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="1" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="7" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="24" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="4" />
+        <DataExchFieldMapping ColumnNo="7" FieldID="5" />
+        <DataExchFieldMapping ColumnNo="8" FieldID="8" />
+        <DataExchFieldMapping ColumnNo="9" FieldID="9" />
+        <DataExchFieldMapping ColumnNo="10" FieldID="10" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="11" />
+        <DataExchFieldMapping ColumnNo="12" FieldID="26" TransformationRule="UPPERCASE" />
+        <DataExchFieldMapping ColumnNo="13" FieldID="2" TransformationRule="UPPERCASE" />
+        <DataExchFieldMapping ColumnNo="14" FieldID="12" Optional="true" />
+      </DataExchMapping>
+    </DataExchLineDef>
+    <DataExchLineDef LineType="1" Code="HEADER B" Name="Batch Header" ColumnCount="13">
+      <DataExchColumnDef ColumnNo="1" Name="Record Type" Show="false" DataType="0" Length="1" Constant="5" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="Service Class Code" Show="false" DataType="0" Length="3" Constant="220" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="Company Name" Show="false" DataType="0" Length="36" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="EIN Indicator" Show="false" DataType="0" Length="1" Constant="1" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="5" Name="Federal ID" Show="false" DataType="0" Length="9" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="6" Name="Entry Class Code" Show="false" DataType="0" Length="3" Constant="CTX" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="7" Name="Entry Description" Show="false" DataType="0" Length="10" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="8" Name="Work Date" Show="false" DataType="1" DataFormat="&lt;Year&gt;&lt;Month,2&gt;&lt;Day,2&gt;" DataFormattingCulture="en-US" Length="6" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="9" Name="Settle Date" Show="false" DataType="1" DataFormat="&lt;Year&gt;&lt;Month,2&gt;&lt;Day,2&gt;" DataFormattingCulture="en-US" Length="6" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="10" Name="Reserved" Show="false" DataType="0" Length="3" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="11" Name="Originator Status Code" Show="false" DataType="0" Length="1" Constant="1" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="12" Name="Bank Transit No." Show="false" DataType="0" Length="8" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="13" Name="Batch Number" Show="false" DataType="0" Length="7" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="10300" Name="ACH US Header" MappingCodeunit="10326" PreMappingCodeunit="10325">
+        <DataExchFieldMapping ColumnNo="1" FieldID="6" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="13" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="2" TransformationRule="UPPERCASE" />
+        <DataExchFieldMapping ColumnNo="5" FieldID="24" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="16" />
+        <DataExchFieldMapping ColumnNo="7" FieldID="17" />
+        <DataExchFieldMapping ColumnNo="8" FieldID="18" />
+        <DataExchFieldMapping ColumnNo="9" FieldID="19" />
+        <DataExchFieldMapping ColumnNo="10" FieldID="34" Optional="true" />
+        <DataExchFieldMapping ColumnNo="11" FieldID="21" />
+        <DataExchFieldMapping ColumnNo="12" FieldID="7" />
+        <DataExchFieldMapping ColumnNo="13" FieldID="22" />
+      </DataExchMapping>
+    </DataExchLineDef>
+  </DataExchDef>
+</root>

@@ -1,12 +1,8 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
-#if not CLEAN24
-
-using Microsoft.Finance.EU3PartyTrade;
-#endif
 
 pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
 {
@@ -39,19 +35,6 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 ToolTip = 'Specifies the code for the Gen. Prod. Posting Group that applies to the entry.';
                 Visible = false;
             }
-#if not CLEAN24
-            field("EU-3 Party Trade CZL"; Rec."EU-3 Party Trade CZL")
-            {
-                ApplicationArea = VAT;
-                Caption = 'EU 3-Party Trade (Obsolete)';
-                ToolTip = 'Specifies whether the document is part of a three-party trade.';
-                Visible = false;
-                Enabled = not EU3PartyTradeFeatureEnabled;
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'Replaced by "EU 3 Party Trade" field in "EU 3-Party Trade Purchase" app.';
-            }
-#endif
             field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
             {
                 ApplicationArea = VAT;
@@ -114,8 +97,6 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 ApplicationArea = VAT;
                 Caption = 'P&review';
                 Image = View;
-                Promoted = true;
-                PromotedCategory = Process;
                 RunObject = page "VAT Statement Preview CZL";
                 RunPageLink = "Statement Template Name" = field("Statement Template Name"), Name = field("Statement Name");
                 ToolTip = 'Preview the VAT statement report.';
@@ -129,9 +110,6 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 Caption = 'Export';
                 Ellipsis = true;
                 Image = Export;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
                 ToolTip = 'Export VAT statement data to XML format. The structure of the output XML file is determined by the VAT statement template field XML format.';
 
                 trigger OnAction()
@@ -173,18 +151,28 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 ToolTip = 'Print reconciliation G/L entries and VAT entries.';
             }
         }
+        addlast(navigation)
+        {
+            action(VATReturnsCZL)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'VAT Returns';
+                RunObject = page "VAT Report List";
+                Image = VATLedger;
+                Tooltip = 'Open the VAT Returns page.';
+            }
+        }
+        addfirst(Category_Process)
+        {
+            actionref(ExportCZL_Promoted; ExportCZL)
+            {
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref("P&review CZL_Promoted"; "P&review CZL")
+            {
+            }
+        }
     }
-#if not CLEAN24
-
-    trigger OnOpenPage()
-    begin
-        EU3PartyTradeFeatureEnabled := EU3PartyTradeFeatMgt.IsEnabled();
-    end;
-
-    var
-#pragma warning disable AL0432
-        EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
-#pragma warning restore AL0432
-        EU3PartyTradeFeatureEnabled: Boolean;
-#endif
 }

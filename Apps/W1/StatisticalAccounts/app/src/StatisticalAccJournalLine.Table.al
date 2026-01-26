@@ -178,6 +178,7 @@ table 2631 "Statistical Acc. Journal Line"
     var
         StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
     begin
+        Commit();
         if PAGE.RunModal(PAGE::"Statistical Acc. Journal Batch", StatisticalAccJournalBatch) = ACTION::LookupOK then begin
             JournalBatchName := StatisticalAccJournalBatch.Name;
             SetName(JournalBatchName, StatisticalAccJournalLine);
@@ -220,17 +221,21 @@ table 2631 "Statistical Acc. Journal Line"
     internal procedure SelectJournal(var JournalBatchName: Code[10])
     var
         DefaultStatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
+        JnlBatchNameIdentified: Boolean;
     begin
         if JournalBatchName <> '' then
-            if Rec.CheckName(JournalBatchName) then
-                exit;
+            JnlBatchNameIdentified := Rec.CheckName(JournalBatchName);
 
-        if not DefaultStatisticalAccJournalBatch.FindFirst() then begin
-            DefaultStatisticalAccJournalBatch.CreateDefaultBatch();
-            DefaultStatisticalAccJournalBatch.FindFirst();
+        if not JnlBatchNameIdentified then begin
+            if not DefaultStatisticalAccJournalBatch.FindFirst() then begin
+                DefaultStatisticalAccJournalBatch.CreateDefaultBatch();
+                DefaultStatisticalAccJournalBatch.FindFirst();
+            end;
+            JournalBatchName := DefaultStatisticalAccJournalBatch.Name;
         end;
-
-        JournalBatchName := DefaultStatisticalAccJournalBatch.Name;
+        Rec.FilterGroup := 2;
+        Rec.SetRange("Journal Batch Name", JournalBatchName);
+        Rec.FilterGroup := 0;
     end;
 
     internal procedure SetUpNewLine(PreviousStatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; JournalBatchName: Code[10])

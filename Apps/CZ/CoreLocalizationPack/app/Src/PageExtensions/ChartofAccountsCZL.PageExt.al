@@ -19,10 +19,6 @@ pageextension 11765 "Chart of Accounts CZL" extends "Chart of Accounts"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Close Balance Sheet CZ';
                 Image = CloseYear;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 RunObject = report "Close Balance Sheet CZL";
                 ToolTip = 'Start the balances transfer of the balance sheet accounts to an closing balance sheet account and close the balance sheet accounts.';
             }
@@ -31,10 +27,6 @@ pageextension 11765 "Chart of Accounts CZL" extends "Chart of Accounts"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Open Balance Sheet CZ';
                 Image = Period;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 RunObject = report "Open Balance Sheet CZL";
                 ToolTip = 'Start the balances transfer of the balance sheet accounts from an opening balance sheet account and open the balance sheet accounts.';
             }
@@ -88,6 +80,15 @@ pageextension 11765 "Chart of Accounts CZL" extends "Chart of Accounts"
                 Image = Report;
                 RunObject = report "General Ledger Document CZL";
                 ToolTip = 'View, print, or send a report of transactions posted to general ledger in form of a document.';
+            }
+        }
+        addfirst(Category_Process)
+        {
+            actionref(CloseBalanceSheetCZL_Promoted; CloseBalanceSheetCZL)
+            {
+            }
+            actionref(OpenBalanceSheetCZL_Promoted; OpenBalanceSheetCZL)
+            {
             }
         }
     }

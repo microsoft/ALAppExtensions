@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -15,7 +16,9 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
     Permissions = TableData "Data Exch." = rimd,
                   TableData "AMC Banking Setup" = r;
     TableNo = "Data Exch.";
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     var
         BankAccount: Record "Bank Account";
@@ -115,6 +118,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         BodyXMLElement: XmlElement;
         Found: Boolean;
         TempXmlDocText: text;
+        SecretContent: SecretText;
         contentHttpContent: HttpContent;
     begin
         AMCBankingSetup.Get();
@@ -131,6 +135,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
         EnvelopeXmlDoc.WriteTo(TempXmlDocText);
         AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
+        SecretContent := TempXmlDocText;
         contentHttpContent.WriteFrom(TempXmlDocText);
         PaymentHttpRequestMessage.Content(contentHttpContent);
     end;
@@ -256,6 +261,5 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
         exit('');
     end;
-
-
 }
+#endif

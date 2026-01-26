@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -14,29 +14,24 @@ table 11512 "Swiss QR-Bill Setup"
 
     fields
     {
-        field(1; "Primary key"; Code[10]) { }
-        field(2; "Swiss-Cross Image"; Media)
+        field(1; "Primary key"; Code[10])
         {
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-            ObsoleteReason = 'Use W1 codeunit 4113 "Swiss QR Code Helper"';
         }
         field(3; "Address Type"; enum "Swiss QR-Bill Address Type")
         {
             Caption = 'Address Type';
         }
+#if not CLEANSCHEMA26
+#pragma warning disable AS0105
         field(6; "Umlaut Chars Encode Mode"; Enum "Swiss QR-Bill Umlaut Encoding")
         {
             Caption = 'German Umlaut Chars Encoding Mode';
             ObsoleteReason = 'No need to convert umlauts, because encoding was changed to UTF-8.';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#endif
         }
+#pragma warning restore AS0105
+#endif
         field(8; "Default Layout"; Code[20])
         {
             Caption = 'Default QR-Bill Layout';

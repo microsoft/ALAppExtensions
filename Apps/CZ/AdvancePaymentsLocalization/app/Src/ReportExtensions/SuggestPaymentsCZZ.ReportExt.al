@@ -42,9 +42,6 @@ reportextension 31000 "Suggest Payments CZZ" extends "Suggest Payments CZB"
 
                 trigger OnAfterGetRecord()
                 begin
-                    if VendorType = VendorType::OnlyBalance then
-                        if VendorBalanceTest("Pay-to Vendor No.") then
-                            CurrReport.Skip();
                     if SkipBlocked and VendorBlockedTest("Pay-to Vendor No.") then begin
                         IsSkippedBlocked := true;
                         CurrReport.Skip();

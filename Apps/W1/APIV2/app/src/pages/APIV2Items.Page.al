@@ -1,9 +1,9 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Foundation.UOM;
-using Microsoft.Inventory.Item;
 using Microsoft.Finance.SalesTax;
+using Microsoft.Foundation.UOM;
 using Microsoft.Integration.Graph;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Posting;
 
@@ -20,6 +20,7 @@ page 30008 "APIV2 - Items"
     PageType = API;
     SourceTable = Item;
     Extensible = false;
+    AboutText = 'Exposes item master data including product descriptions, pricing, unit costs, tax groups, categorization, and real-time inventory levels. Supports full CRUD operations for creating, updating, retrieving, and deleting items, enabling seamless synchronization of product catalogs and inventory between Business Central and external e-commerce, warehouse, or retail systems.';
 
     layout
     {

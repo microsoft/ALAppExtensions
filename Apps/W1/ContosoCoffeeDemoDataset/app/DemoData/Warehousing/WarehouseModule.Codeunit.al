@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Warehousing;
+
+using Microsoft.DemoTool;
+using Microsoft.Warehouse.Setup;
+
 codeunit 5140 "Warehouse Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;
@@ -19,18 +29,20 @@ codeunit 5140 "Warehouse Module" implements "Contoso Demo Data Module"
     begin
         WarehouseModuleSetup.InitRecord();
         Codeunit.Run(Codeunit::"Create Whse Put Away Template");
-        Codeunit.Run(Codeunit::"Create Whse Location");
         Codeunit.Run(Codeunit::"Create Whse No Series");
         Codeunit.Run(Codeunit::"Create Whse Posting Setup");
         Codeunit.Run(Codeunit::"Create Whse Inventory Setup");
-        Codeunit.Run(Codeunit::"Create Whse Item Category");
     end;
 
     procedure CreateMasterData()
     var
         WarehouseModuleSetup: Record "Warehouse Module Setup";
+        CreateWhseInventorySetup: Codeunit "Create Whse Inventory Setup";
     begin
+        Codeunit.Run(Codeunit::"Create Whse Location");
+        CreateWhseInventorySetup.CreateInventoryPostingSetup();
         WarehouseModuleSetup.InitWarehousingDemoDataSetup();
+        Codeunit.Run(Codeunit::"Create Whse Item Category");
         Codeunit.Run(Codeunit::"Create Whse Item");
     end;
 

@@ -22,18 +22,6 @@ pageextension 11767 "Customer List CZL" extends "Customer List"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the registration number of customer.';
             }
-#if not CLEAN23
-            field("Registration No. CZL"; Rec."Registration No. CZL")
-            {
-                Caption = 'Registration No. (Obsolete)';
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-            }
-#endif
         }
     }
 
@@ -57,10 +45,14 @@ pageextension 11767 "Customer List CZL" extends "Customer List"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Balance Reconciliation';
                 Image = Balance;
-                Promoted = true;
-                PromotedCategory = "Report";
                 RunObject = report "Cust.- Bal. Reconciliation CZL";
                 ToolTip = 'Open the report for customer''s balance reconciliation.';
+            }
+        }
+        addlast(Category_Report)
+        {
+            actionref("Balance Reconciliation CZL_Promoted"; "Balance Reconciliation CZL")
+            {
             }
         }
     }

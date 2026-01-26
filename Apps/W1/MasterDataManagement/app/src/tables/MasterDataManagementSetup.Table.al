@@ -1,11 +1,11 @@
 namespace Microsoft.Integration.MDM;
 
-using System.Threading;
-using System.Environment;
 using Microsoft.Foundation.Company;
-using System.Telemetry;
 using Microsoft.Integration.SyncEngine;
 using Microsoft.Utilities;
+using System.Environment;
+using System.Telemetry;
+using System.Threading;
 
 table 7230 "Master Data Management Setup"
 {

@@ -16,14 +16,14 @@ using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
+using System.Text;
 using System.Utilities;
 
 report 31182 "Reminder CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/Reminder.rdl';
     Caption = 'Reminder';
     PreviewMode = PrintLayout;
+    DefaultRenderingLayout = "Reminder.rdl";
     WordMergeDataItem = "Issued Reminder Header";
 
     dataset
@@ -224,10 +224,16 @@ report 31182 "Reminder CZL"
                     column(OriginalAmount_IssuedReminderLine; "Original Amount")
                     {
                     }
+                    column(Formatted_OriginalAmount_IssuedReminderLineCaption; format("Original Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
+                    {
+                    }
                     column(RemainingAmount_IssuedReminderLineCaption; FieldCaption("Remaining Amount"))
                     {
                     }
                     column(RemainingAmount_IssuedReminderLine; "Remaining Amount")
+                    {
+                    }
+                    column(Formatted_RemainingAmount_IssuedReminderLine; format("Remaining Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
                     {
                     }
                     column(Description_IssuedReminderLineCaption; FieldCaption(Description))
@@ -246,6 +252,9 @@ report 31182 "Reminder CZL"
                     {
                     }
                     column(AmountInclVAT; AmountInclVAT)
+                    {
+                    }
+                    column(Formatted_AmountInclVAT; format(AmountInclVAT, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
                     {
                     }
                     column(LineAmountText; LineAmountText)
@@ -309,7 +318,13 @@ report 31182 "Reminder CZL"
                     column(OriginalAmount_NotDueLine; "Original Amount")
                     {
                     }
+                    column(Formatted_OriginalAmount_NotDueLine; format("Original Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
+                    {
+                    }
                     column(RemainingAmount_NotDueLine; "Remaining Amount")
+                    {
+                    }
+                    column(Formatted_RemainingAmount_NotDueLine; format("Remaining Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
                     {
                     }
                     column(Description_NotDueLine; Description)
@@ -351,6 +366,27 @@ report 31182 "Reminder CZL"
                     column(TotalLineAmount; TotalLineAmount)
                     {
                     }
+                    column(Formatted_TotalLineAmount; format(TotalLineAmount, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
+                    {
+                    }
+                    column(GreetingText; GreetingTxt)
+                    {
+                    }
+                    column(BodyText; BodyTxt)
+                    {
+                    }
+                    column(ClosingText; ClosingTxt)
+                    {
+                    }
+                    column(DescriptionText; DescriptionTxt)
+                    {
+                    }
+                    trigger OnPreDataItem()
+                    var
+                        ReminderCommunication: Codeunit "Reminder Communication";
+                    begin
+                        ReminderCommunication.PopulateEmailText("Issued Reminder Header", "Company Information", GreetingTxt, AmtDueTxt, BodyTxt, ClosingTxt, DescriptionTxt, TotalLineAmount);
+                    end;
                 }
                 dataitem("User Setup"; "User Setup")
                 {
@@ -461,6 +497,24 @@ report 31182 "Reminder CZL"
         end;
     }
 
+    rendering
+    {
+        layout("Reminder.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/Reminder.rdl';
+            Caption = 'Reminder (RDL)';
+            Summary = 'The Reminder (RDL) provides a detailed layout.';
+        }
+        layout("ReminderEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/ReminderEmail.docx';
+            Caption = 'Reminder Email (Word)';
+            Summary = 'The Reminder Email (Word) provides an email body layout.';
+        }
+    }
+
     trigger OnPreReport()
     begin
         if not CurrReport.UseRequestPage then
@@ -472,6 +526,7 @@ report 31182 "Reminder CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
+        AutoFormat: Codeunit "Auto Format";
         LogInteractionEnable: Boolean;
         TotalLbl: Label 'Total';
         DocumentLbl: Label 'Reminder';
@@ -495,6 +550,10 @@ report 31182 "Reminder CZL"
         LogInteraction: Boolean;
         ShowNotDueAmounts: Boolean;
         AmtDueTxt: Text;
+        GreetingTxt: Text;
+        BodyTxt: Text;
+        ClosingTxt: Text;
+        DescriptionTxt: Text;
         LineAmountText: Text;
         AmountInclVAT: Decimal;
         LineAmount: Decimal;

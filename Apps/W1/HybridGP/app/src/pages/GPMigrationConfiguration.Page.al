@@ -148,8 +148,8 @@ page 4050 "GP Migration Configuration"
 
             group(MasterOnly)
             {
-                Caption = 'Master Data Only';
-                InstructionalText = 'Indicate if you want to migrate master data only.';
+                Caption = 'Master Data Only (no transactions)';
+                InstructionalText = 'Indicate if you want to migrate master data only, which will exclude transactions.';
 
                 field("Migrate Only GL Master"; Rec."Migrate Only GL Master")
                 {
@@ -164,6 +164,9 @@ page 4050 "GP Migration Configuration"
                                 GPCompanyAdditionalSettings.Validate("Migrate Only GL Master", Rec."Migrate Only GL Master");
                                 GPCompanyAdditionalSettings.Modify();
                             until GPCompanyAdditionalSettings.Next() = 0;
+
+                        if ShouldShowMasterDataOnlyWarning(Rec."Migrate Only GL Master") then
+                            Message(MasterDataOnlyWarningMsg);
                     end;
                 }
                 field("Migrate Only Bank Master"; Rec."Migrate Only Bank Master")
@@ -179,6 +182,9 @@ page 4050 "GP Migration Configuration"
                                 GPCompanyAdditionalSettings.Validate("Migrate Only Bank Master", Rec."Migrate Only Bank Master");
                                 GPCompanyAdditionalSettings.Modify();
                             until GPCompanyAdditionalSettings.Next() = 0;
+
+                        if ShouldShowMasterDataOnlyWarning(Rec."Migrate Only Bank Master") then
+                            Message(MasterDataOnlyWarningMsg);
                     end;
                 }
                 field("Migrate Only Payables Master"; Rec."Migrate Only Payables Master")
@@ -194,6 +200,9 @@ page 4050 "GP Migration Configuration"
                                 GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", Rec."Migrate Only Payables Master");
                                 GPCompanyAdditionalSettings.Modify();
                             until GPCompanyAdditionalSettings.Next() = 0;
+
+                        if ShouldShowMasterDataOnlyWarning(Rec."Migrate Only Payables Master") then
+                            Message(MasterDataOnlyWarningMsg);
                     end;
                 }
                 field("Migrate Only Rec. Master"; Rec."Migrate Only Rec. Master")
@@ -209,6 +218,9 @@ page 4050 "GP Migration Configuration"
                                 GPCompanyAdditionalSettings.Validate("Migrate Only Rec. Master", Rec."Migrate Only Rec. Master");
                                 GPCompanyAdditionalSettings.Modify();
                             until GPCompanyAdditionalSettings.Next() = 0;
+
+                        if ShouldShowMasterDataOnlyWarning(Rec."Migrate Only Rec. Master") then
+                            Message(MasterDataOnlyWarningMsg);
                     end;
                 }
                 field("Migrate Only Inventory Master"; Rec."Migrate Only Inventory Master")
@@ -224,10 +236,13 @@ page 4050 "GP Migration Configuration"
                                 GPCompanyAdditionalSettings.Validate("Migrate Only Inventory Master", Rec."Migrate Only Inventory Master");
                                 GPCompanyAdditionalSettings.Modify();
                             until GPCompanyAdditionalSettings.Next() = 0;
+
+                        if ShouldShowMasterDataOnlyWarning(Rec."Migrate Only Inventory Master") then
+                            Message(MasterDataOnlyWarningMsg);
                     end;
                 }
             }
-
+#pragma warning disable AA0219
             group(SkipPosting)
             {
                 Caption = 'Disable Auto Posting';
@@ -309,11 +324,13 @@ page 4050 "GP Migration Configuration"
                     end;
                 }
             }
+#pragma warning restore AA0219
 
-            group(Inactives)
+
+            group(IncludeTheseRecords)
             {
-                Caption = 'Inactive Records';
-                InstructionalText = 'Select the inactive records to be migrated.';
+                Caption = 'Include These Records';
+                InstructionalText = 'Select which additional records to include in the migration.';
 
                 field("Migrate Inactive Customers"; Rec."Migrate Inactive Customers")
                 {
@@ -343,6 +360,24 @@ page 4050 "GP Migration Configuration"
                                 GPCompanyAdditionalSettings.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
                                 GPCompanyAdditionalSettings.Modify();
                             until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Temporary Vendors"; Rec."Migrate Temporary Vendors")
+                {
+                    Caption = 'Temporary Vendors';
+                    ToolTip = 'Specifies whether to migrate temporary vendors.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Temporary Vendors", Rec."Migrate Temporary Vendors");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+
+                        if not Rec."Migrate Temporary Vendors" then
+                            Message('If a temporary vendor has any open invoices or purchase orders, that vendor will be migrated to Business Central.');
                     end;
                 }
                 field("Migrate Inactive Checkbooks"; Rec."Migrate Inactive Checkbooks")
@@ -388,6 +423,58 @@ page 4050 "GP Migration Configuration"
                         if PrepSettingsForFieldUpdate() then
                             repeat
                                 GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", Rec."Migrate Discontinued Items");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Kit Items"; Rec."Migrate Kit Items")
+                {
+                    Caption = 'Kit Items';
+                    ToolTip = 'Specifies whether to migrate kit items.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Kit Items", Rec."Migrate Kit Items");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+            }
+
+            group(RecurringLines)
+            {
+                Caption = 'Recurring Lines';
+                InstructionalText = 'Select these options to generate recurring sales or purchasing lines using the default sales or purchasing accounts defined on the Vendor, Customer, Class or Posting Setup in GP.';
+
+                field("Recurring Purchasing Lines"; Rec."Recurring Purchasing Lines")
+                {
+                    Caption = 'Purchasing Lines';
+                    ToolTip = 'Specifies whether to migrate recurring purchasing lines.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Recurring Purchasing Lines", Rec."Recurring Purchasing Lines");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Recurring Sales Lines"; Rec."Recurring Sales Lines")
+                {
+                    Caption = 'Sales Lines';
+                    ToolTip = 'Specifies whether to migrate recurring sales lines.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Recurring Sales Lines", Rec."Recurring Sales Lines");
                                 GPCompanyAdditionalSettings.Modify();
                             until GPCompanyAdditionalSettings.Next() = 0;
                     end;
@@ -641,8 +728,8 @@ page 4050 "GP Migration Configuration"
             action(GP)
             {
                 ApplicationArea = All;
-                Caption = 'Upgrade settings';
-                ToolTip = 'Change the settings for the GP upgrade.';
+                Caption = 'Migration settings';
+                ToolTip = 'Change the settings for the GP migration.';
                 RunObject = page "GP Upgrade Settings";
                 Image = Setup;
             }
@@ -686,10 +773,15 @@ page 4050 "GP Migration Configuration"
                     GPCompanyAdditionalSettingsEachCompany.Validate(Name, HybridCompany.Name);
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Customers", Rec."Migrate Inactive Customers");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Temporary Vendors", Rec."Migrate Temporary Vendors");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Items", Rec."Migrate Inactive Items");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Kit Items", Rec."Migrate Kit Items");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Recurring Purchasing Lines", Rec."Recurring Purchasing Lines");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Recurring Sales Lines", Rec."Recurring Sales Lines");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate GL Module", Rec."Migrate GL Module");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Bank Module", Rec."Migrate Bank Module");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
@@ -751,10 +843,15 @@ page 4050 "GP Migration Configuration"
 
         Rec.Validate("Migrate Inactive Customers", GPCompanyAdditionalSettingsInit."Migrate Inactive Customers");
         Rec.Validate("Migrate Inactive Vendors", GPCompanyAdditionalSettingsInit."Migrate Inactive Vendors");
+        Rec.Validate("Migrate Temporary Vendors", GPCompanyAdditionalSettingsInit."Migrate Temporary Vendors");
         Rec.Validate("Migrate Inactive Checkbooks", GPCompanyAdditionalSettingsInit."Migrate Inactive Checkbooks");
+        Rec.Validate("Migrate Inactive Items", GPCompanyAdditionalSettingsInit."Migrate Inactive Items");
+        Rec.Validate("Migrate Kit Items", GPCompanyAdditionalSettingsInit."Migrate Kit Items");
         Rec.Validate("Migrate Vendor Classes", GPCompanyAdditionalSettingsInit."Migrate Vendor Classes");
         Rec.Validate("Migrate Customer Classes", GPCompanyAdditionalSettingsInit."Migrate Customer Classes");
         Rec.Validate("Migrate Item Classes", GPCompanyAdditionalSettingsInit."Migrate Item Classes");
+        Rec.Validate("Recurring Purchasing Lines", GPCompanyAdditionalSettingsInit."Recurring Purchasing Lines");
+        Rec.Validate("Recurring Sales Lines", GPCompanyAdditionalSettingsInit."Recurring Sales Lines");
         Rec.Validate("Migrate GL Module", GPCompanyAdditionalSettingsInit."Migrate GL Module");
         Rec.Validate("Migrate Bank Module", GPCompanyAdditionalSettingsInit."Migrate Bank Module");
         Rec.Validate("Migrate Payables Module", GPCompanyAdditionalSettingsInit."Migrate Payables Module");
@@ -799,6 +896,10 @@ page 4050 "GP Migration Configuration"
             if (not Confirm(AllModulesDisabledExitQst)) then
                 exit(false);
 
+        if SettingsHasCompanyGLYearZero() then
+            if (not Confirm(CompanyGLYearZeroExitQst)) then
+                exit(false);
+
         if ShowManagementPromptOnClose then
             if Confirm(OpenCloudMigrationPageQst) then
                 Page.Run(page::"Intelligent Cloud Management");
@@ -823,6 +924,16 @@ page 4050 "GP Migration Configuration"
             until GPCompanyAdditionalSettingsCompanies.Next() = 0;
 
         exit(false);
+    end;
+
+    local procedure SettingsHasCompanyGLYearZero(): Boolean
+    var
+        GPCompanyAdditionalSettingsCompanies: Record "GP Company Additional Settings";
+    begin
+        GPCompanyAdditionalSettingsCompanies.SetFilter("Name", '<>%1', '');
+        GPCompanyAdditionalSettingsCompanies.SetRange("Migration Completed", false);
+        GPCompanyAdditionalSettingsCompanies.SetRange("Oldest GL Year to Migrate", 0);
+        exit(not GPCompanyAdditionalSettingsCompanies.IsEmpty());
     end;
 
     local procedure AssignDimension(DimensionNumber: Integer; DimensionLabel: Text[30])
@@ -855,6 +966,33 @@ page 4050 "GP Migration Configuration"
         exit(not GPSegmentName.IsEmpty());
     end;
 
+    local procedure ShouldShowMasterDataOnlyWarning(CurrentMasterDataOnlySettingValue: Boolean): Boolean
+    var
+        MasterDataOnlyEnabledCount: Integer;
+    begin
+        if not CurrentMasterDataOnlySettingValue then
+            exit;
+
+        MasterDataOnlyEnabledCount := 0;
+
+        if Rec."Migrate Only GL Master" then
+            MasterDataOnlyEnabledCount += 1;
+
+        if Rec."Migrate Only Bank Master" then
+            MasterDataOnlyEnabledCount += 1;
+
+        if Rec."Migrate Only Payables Master" then
+            MasterDataOnlyEnabledCount += 1;
+
+        if Rec."Migrate Only Rec. Master" then
+            MasterDataOnlyEnabledCount += 1;
+
+        if Rec."Migrate Only Inventory Master" then
+            MasterDataOnlyEnabledCount += 1;
+
+        exit(MasterDataOnlyEnabledCount = 1);
+    end;
+
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         ShowManagementPromptOnClose: Boolean;
@@ -862,5 +1000,7 @@ page 4050 "GP Migration Configuration"
         OpenCloudMigrationPageQst: Label 'Would you like to open the Cloud Migration Management page to manage your data migrations?';
         ResetAllQst: Label 'Are you sure? This will reset all company migration settings to their default values.';
         AllModulesDisabledExitQst: Label 'All modules are disabled and nothing will migrate (with the exception of the Snapshot if configured). Are you sure you want to exit?';
+        CompanyGLYearZeroExitQst: Label 'One or more companies selected for migration have an Oldest G/L Year value set to zero. This will prevent beginning balances from being migrated. Are you sure you want to exit?';
+        MasterDataOnlyWarningMsg: Label 'Enabling the master data only settings will make the migration not migrate transactions for the configured areas.';
         EnableDisableAllHistTrx: Boolean;
 }

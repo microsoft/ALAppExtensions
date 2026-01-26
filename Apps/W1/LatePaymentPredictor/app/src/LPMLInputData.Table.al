@@ -6,6 +6,7 @@ using Microsoft.Sales.Receivables;
 using System.AI;
 table 1951 "LP ML Input Data"
 {
+    DataClassification = CustomerContent;
     ReplicateData = false;
 
     fields
@@ -136,7 +137,7 @@ table 1951 "LP ML Input Data"
     begin
         Init();
 
-        if NOT GET(SalesHeader."No.") Then begin
+        if not Get(SalesHeader."No.") then begin
 
             SalesHeader.CalcFields(Amount);
 

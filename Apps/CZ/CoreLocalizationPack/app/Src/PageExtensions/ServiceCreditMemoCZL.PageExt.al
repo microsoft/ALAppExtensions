@@ -5,20 +5,11 @@
 namespace Microsoft.Service.Document;
 
 using Microsoft.Finance.Currency;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 
 pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
 {
     layout
     {
-#if not CLEAN22
-        modify("VAT Reporting Date")
-        {
-            Visible = ReplaceVATDateEnabled and VATDateEnabled;
-        }
-#endif
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -41,35 +32,6 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ToolTip = 'Specifies the reason code on the entry.';
             }
         }
-#if not CLEAN22
-        addafter("Posting Date")
-        {
-            field("VAT Date CZL"; Rec."VAT Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'VAT Date (Obsolete)';
-                ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by VAT Reporting Date.';
-                Visible = not ReplaceVATDateEnabled;
-            }
-        }
-        addafter("Customer Posting Group")
-        {
-            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
-            {
-                ApplicationArea = Basic, Suite;
-                Editable = false;
-                Visible = false;
-                Importance = Additional;
-                ToolTip = 'Specifies the customer''s market type to link business transactions to.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by Customer Posting Group field.';
-            }
-        }
-#endif
         addlast(Invoicing)
         {
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
@@ -101,12 +63,6 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 var
                     ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-#if not CLEAN22
-#pragma warning disable AL0432
-                    if not ReplaceVATDateEnabled then
-                        Rec."VAT Reporting Date" := Rec."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                     if Rec."VAT Reporting Date" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date")
                     else
@@ -123,20 +79,6 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 end;
             }
         }
-#if not CLEAN22
-        addlast(Shipping)
-        {
-            field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Physical Transfer (Obsolete)';
-                ToolTip = 'Specifies if there is physical transfer of the item.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-            }
-        }
-#endif
         addlast("Foreign Trade")
         {
             field("Language Code CZL"; Rec."Language Code")
@@ -154,22 +96,17 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the service header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
+#if not CLEAN26
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
-            }
-#if not CLEAN22
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude (Obsolete)';
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                Visible = false;
                 ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
+                ObsoleteReason = 'The declaration of the field is moved to Intrastat CZ extension.';
+                ObsoleteTag = '26.0';
             }
 #endif
         }
@@ -238,19 +175,4 @@ pageextension 11750 "Service Credit Memo CZL" extends "Service Credit Memo"
             }
         }
     }
-#if not CLEAN22
-    trigger OnOpenPage()
-    begin
-        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
-        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
-    end;
-
-    var
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        ReplaceVATDateEnabled: Boolean;
-        VATDateEnabled: Boolean;
-#endif
 }

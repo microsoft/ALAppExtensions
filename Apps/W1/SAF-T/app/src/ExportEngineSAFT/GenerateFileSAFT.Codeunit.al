@@ -82,6 +82,7 @@ codeunit 5289 "Generate File SAF-T"
         InvoiceTypeTxt: label 'Invoice', Locked = true;
         CreditMemoTypeTxt: label 'CrMemo', Locked = true;
         SAFTExportTok: label 'Audit File Export SAFT', Locked = true;
+        NATxt: Label 'NA', Comment = 'Stands for Not Applicable';
 
     procedure GenerateFileContent(var AuditFileExportLine: Record "Audit File Export Line"; var TempBlob: Codeunit "Temp Blob")
     var
@@ -373,22 +374,23 @@ codeunit 5289 "Generate File SAF-T"
                 ExportGLAccount(
                     GLAccountMappingLine."G/L Account No.", '',
                     GLAccountMappingLine."Standard Account Category No.", GLAccountMappingLine."Standard Account No.",
+                    GLAccountMappingHeader."Standard Account Type",
                     AuditFileExportHeader."Starting Date", AuditFileExportHeader."Ending Date")
             else
                 ExportGLAccount(
                     GLAccountMappingLine."G/L Account No.", GLAccountMappingLine."Standard Account No.",
-                    '', '', AuditFileExportHeader."Starting Date", AuditFileExportHeader."Ending Date");
+                    '', '', GLAccountMappingHeader."Standard Account Type",
+                    AuditFileExportHeader."Starting Date", AuditFileExportHeader."Ending Date");
         until GLAccountMappingLine.Next() = 0;
         XmlHelper.FinalizeXmlNode();
     end;
 
-    local procedure ExportGLAccount(GLAccNo: Code[20]; StandardAccNo: Text; GroupingCategory: Code[20]; GroupingNo: Code[20]; StartingDate: Date; EndingDate: Date)
+    local procedure ExportGLAccount(GLAccNo: Code[20]; StandardAccNo: Text; GroupingCategory: Code[20]; GroupingNo: Code[20]; StandardAccountType: Enum "Standard Account Type"; StartingDate: Date; EndingDate: Date)
     var
         GLAccount: Record "G/L Account";
-        OpeningDebitBalance: Decimal;
-        OpeningCreditBalance: Decimal;
-        ClosingDebitBalance: Decimal;
-        ClosingCreditBalance: Decimal;
+        StandardAccountCategory: Record "Standard Account Category";
+        GroupingCategoryValue: Text;
+        OpeningDebitBalance, OpeningCreditBalance, ClosingDebitBalance, ClosingCreditBalance : Decimal;
     begin
         GLAccount.Get(GLAccNo);
 
@@ -420,7 +422,12 @@ codeunit 5289 "Generate File SAF-T"
         if StandardAccNo <> '' then
             XmlHelper.AppendXmlNode('StandardAccountID', StandardAccNo)
         else begin
-            XmlHelper.AppendXmlNode('GroupingCategory', GroupingCategory);
+            // Use Extended No. if available for long category codes
+            GroupingCategoryValue := GroupingCategory;
+            if StandardAccountCategory.Get(StandardAccountType, GroupingCategory) then
+                if StandardAccountCategory."Extended No." <> '' then
+                    GroupingCategoryValue := StandardAccountCategory."Extended No.";
+            XmlHelper.AppendXmlNode('GroupingCategory', GroupingCategoryValue);
             XmlHelper.AppendXmlNode('GroupingCode', GroupingNo);
         end;
 
@@ -1197,9 +1204,9 @@ codeunit 5289 "Generate File SAF-T"
                     XmlHelper.FinalizeXmlNode();        // close previous Transaction node
                 ExportGLEntryTransactionInfo(GLEntry, CurrentTransactionID);
                 PrevTransactionID := GetSAFTTransactionID(GLEntry);
-                SAFTDataMgt.GetFCYData(CurrencyCode, ExchangeRate, GLEntry, AuditFileExportHeader."Export Currency Information");
             end;
 
+            SAFTDataMgt.GetFCYData(CurrencyCode, ExchangeRate, GLEntry, AuditFileExportHeader."Export Currency Information");
             ExportGLEntryLine(GLEntry, CurrencyCode, ExchangeRate);
         until not GLEntrySAFT.Read();
 
@@ -1227,7 +1234,7 @@ codeunit 5289 "Generate File SAF-T"
         else
             TransactionTypeValue := Format(GLEntry."Document Type");
         XmlHelper.AppendXmlNode('TransactionType', SAFTDataMgt.GetSAFTShortText(TransactionTypeValue));
-        XmlHelper.AppendXmlNode('Description', GLEntry.Description);
+        XmlHelper.AppendXmlNode('Description', GetGLEntryDescription(GLEntry));
         XmlHelper.AppendXmlNode('BatchID', Format(GLEntry."Transaction No."));
         if GLEntry."Last Modified DateTime" = 0DT then
             SystemEntryDate := GLEntry."Posting Date"
@@ -1274,9 +1281,7 @@ codeunit 5289 "Generate File SAF-T"
                         XmlHelper.AppendXmlNode('SupplierID', GLEntry."Source No.");
                 end;
         end;
-        if GLEntry.Description = '' then
-            GLEntry.Description := GLEntry."G/L Account No.";
-        XmlHelper.AppendXmlNode('Description', GLEntry.Description);
+        XmlHelper.AppendXmlNode('Description', GetGLEntryDescription(GLEntry));
         SAFTDataMgt.GetAmountInfoFromGLEntry(AmountXMLNode, Amount, GLEntry);
         ExportAmountWithCurrencyInfo(AmountXMLNode, GLEntry."G/L Account No.", CurrencyCode, ExchangeRate, Amount);
         if (GLEntry."VAT Bus. Posting Group" <> '') or (GLEntry."VAT Prod. Posting Group" <> '') then begin
@@ -2747,6 +2752,7 @@ codeunit 5289 "Generate File SAF-T"
         GLEntry."VAT Bus. Posting Group" := GLEntrySAFT.VAT_Bus__Posting_Group;
         GLEntry."VAT Prod. Posting Group" := GLEntrySAFT.VAT_Prod__Posting_Group;
         GLEntry."Last Modified DateTime" := GLEntrySAFT.Last_Modified_DateTime;
+        GLEntry.Amount := GLEntrySAFT.Amount;
         GLEntry."Debit Amount" := GLEntrySAFT.Debit_Amount;
         GLEntry."Credit Amount" := GLEntrySAFT.Credit_Amount;
     end;
@@ -2815,6 +2821,15 @@ codeunit 5289 "Generate File SAF-T"
             ReceivablesAccounts.Add(CustomerPostingGroup.Code, CustomerPostingGroup."Receivables Account");
             ReceivablesAcc := CustomerPostingGroup."Receivables Account";
         end;
+    end;
+
+    local procedure GetGLEntryDescription(var GLEntry: Record "G/L Entry") Description: Text
+    begin
+        Description := GLEntry.Description;
+        if Description = '' then
+            Description := GLEntry."G/L Account No.";
+        if Description = '' then
+            Description := NATxt;
     end;
 
     local procedure UpdateDataSourceInProgressDialog(DataSourceCaption: Text)

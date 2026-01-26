@@ -1,6 +1,9 @@
+#if not CLEAN28
 codeunit 130102 "Library - Payment AMC"
 {
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
     end;
@@ -10,9 +13,10 @@ codeunit 130102 "Library - Payment AMC"
     //LocalhostURLTxt: Label 'https://host.docker.internal:8088/', Locked = true; //AMC - Internal host at AMC for testing
 
     [Scope('OnPrem')]
-    procedure EnableTestServiceSetup(var TempAMCBankingSetup: Record "AMC Banking Setup" temporary) OldPassword: Text
+    procedure EnableTestServiceSetup(var TempAMCBankingSetup: Record "AMC Banking Setup" temporary) OldPassword: SecretText
     var
         AMCBankingSetup: Record "AMC Banking Setup";
+        NewTestPassword: Text;
     begin
         AMCBankingSetup.Get();
         OldPassword := AMCBankingSetup.GetPassword();
@@ -22,7 +26,8 @@ codeunit 130102 "Library - Payment AMC"
         TempAMCBankingSetup."Service URL" := AMCBankingSetup."Service URL";
 
         AMCBankingSetup."User Name" := 'demouser';
-        AMCBankingSetup.SavePassword('Demo Password');
+        NewTestPassword := 'Demo Password';
+        AMCBankingSetup.SavePassword(NewTestPassword);
         AMCBankingSetup."Service URL" := LocalhostURLTxt;
         AMCBankingSetup.Modify();
     end;
@@ -41,3 +46,4 @@ codeunit 130102 "Library - Payment AMC"
 
 }
 
+#endif

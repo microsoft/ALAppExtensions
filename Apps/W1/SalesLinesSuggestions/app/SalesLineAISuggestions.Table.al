@@ -4,14 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
-using Microsoft.Sales.History;
 using Microsoft.Inventory.Item;
+using Microsoft.Sales.History;
 
 table 7275 "Sales Line AI Suggestions"
 {
     TableType = Temporary;
     InherentEntitlements = X;
     InherentPermissions = RIMDX;
+    Caption = 'Sales Line AI Suggestion';
     Access = Internal;
 
     fields
@@ -46,6 +47,7 @@ table 7275 "Sales Line AI Suggestions"
             Caption = 'Quantity';
             ToolTip = 'Specifies the Quantity in the Sales Unit of Measure defined on the Item card.';
             DecimalPlaces = 0 : 5;
+            AutoFormatType = 0;
         }
         field(16; Confidence; Enum "Search Confidence")
         {
@@ -62,6 +64,17 @@ table 7275 "Sales Line AI Suggestions"
         field(30; "Source Line Record ID"; RecordId)
         {
             Caption = 'Source Line Record ID';
+        }
+        field(35; "Line Style"; Text[30])
+        {
+            Caption = 'Line Style';
+        }
+        field(5407; "Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Unit of Measure Code';
+            ToolTip = 'Specifies the unit of measure code of the item on the line.';
+            TableRelation = "Item Unit of Measure".Code where("Item No." = field("No."));
+            ValidateTableRelation = false;
         }
     }
 

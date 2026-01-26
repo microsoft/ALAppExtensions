@@ -11,9 +11,6 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Preview;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.HumanResources.Employee;
@@ -68,7 +65,7 @@ codeunit 11729 "Cash Document-Post CZP"
         SourceCodeSetup.TestField("Cash Desk CZP");
         OnRunOnBeforeCheckCashDocument(CashDocumentHeaderCZP, NoCheckCashDocument);
         if not NoCheckCashDocument then
-            CashDocumentReleaseCZP.CheckCashDocument(Rec);
+            CashDocumentReleaseCZP.CheckCashDocumentForPosting(Rec);
         OnRunOnAfterCheckCashDocument(CashDocumentHeaderCZP, NoCheckCashDocument);
 
         WindowDialog.Open(DialogMsg);
@@ -125,11 +122,6 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine.Description := CashDocumentHeaderCZP."Payment Purpose";
         TempGenJournalLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
         TempGenJournalLine."Document Date" := CashDocumentHeaderCZP."Document Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-        TempGenJournalLine."VAT Date CZL" := CashDocumentHeaderCZP."VAT Date";
-#pragma warning restore AL0432
-#endif
         TempGenJournalLine."VAT Reporting Date" := CashDocumentHeaderCZP."VAT Date";
         TempGenJournalLine."Original Doc. VAT Date CZL" := CashDocumentHeaderCZP."VAT Date";
         TempGenJournalLine."Account Type" := TempGenJournalLine."Account Type"::"Bank Account";
@@ -226,11 +218,6 @@ codeunit 11729 "Cash Document-Post CZP"
 
     procedure InitGenJnlLine(InitCashDocumentHeaderCZP: Record "Cash Document Header CZP"; InitCashDocumentLineCZP: Record "Cash Document Line CZP")
     var
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         Sign: Integer;
     begin
         TempGenJournalLine.Init();
@@ -243,13 +230,6 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine."Document No." := InitCashDocumentHeaderCZP."No.";
         TempGenJournalLine."External Document No." := InitCashDocumentLineCZP."External Document No.";
         TempGenJournalLine."Posting Date" := InitCashDocumentHeaderCZP."Posting Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            TempGenJournalLine.Validate("VAT Date CZL", InitCashDocumentHeaderCZP."VAT Date")
-        else
-#pragma warning restore AL0432
-#endif
         TempGenJournalLine.Validate("VAT Reporting Date", InitCashDocumentHeaderCZP."VAT Date");
         TempGenJournalLine.Validate("Original Doc. VAT Date CZL", InitCashDocumentHeaderCZP."VAT Date");
         TempGenJournalLine."Posting Group" := InitCashDocumentLineCZP."Posting Group";
@@ -317,6 +297,18 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine."Source Curr. VAT Base Amount" := TempGenJournalLine."VAT Base Amount";
         TempGenJournalLine."Source Curr. VAT Amount" := TempGenJournalLine."VAT Amount";
         TempGenJournalLine."System-Created Entry" := true;
+        if InitCashDocumentLineCZP."Project No." <> '' then begin
+            TempGenJournalLine."System-Created Entry" := false;
+            TempGenJournalLine.Validate(TempGenJournalLine."Job No.", InitCashDocumentLineCZP."Project No.");
+            TempGenJournalLine.Validate(TempGenJournalLine."Job Task No.", InitCashDocumentLineCZP."Project Task No.");
+            TempGenJournalLine.Validate(TempGenJournalLine."Job Line Type", InitCashDocumentLineCZP."Project Line Type");
+            TempGenJournalLine.Validate("Job Planning Line No.", InitCashDocumentLineCZP."Project Planning Line No.");
+            TempGenJournalLine.Validate(TempGenJournalLine."Job Quantity", InitCashDocumentLineCZP."Project Quantity");
+            if InitCashDocumentLineCZP."Document Type" = InitCashDocumentLineCZP."Document Type"::Receipt then
+                TempGenJournalLine.Validate(TempGenJournalLine."Job Unit Price", InitCashDocumentLineCZP."Project Unit Price" * -1)
+            else
+                TempGenJournalLine.Validate(TempGenJournalLine."Job Unit Price", InitCashDocumentLineCZP."Project Unit Price");
+        end;
         TempGenJournalLine."Shortcut Dimension 1 Code" := InitCashDocumentLineCZP."Shortcut Dimension 1 Code";
         TempGenJournalLine."Shortcut Dimension 2 Code" := InitCashDocumentLineCZP."Shortcut Dimension 2 Code";
         TempGenJournalLine."Dimension Set ID" := InitCashDocumentLineCZP."Dimension Set ID";

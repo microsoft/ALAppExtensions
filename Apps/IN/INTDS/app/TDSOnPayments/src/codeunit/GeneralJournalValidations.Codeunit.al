@@ -5,13 +5,13 @@
 namespace Microsoft.Finance.TDS.TDSOnPayments;
 
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.PostingHandler;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Finance.TDS.TDSForCustomer;
-using Microsoft.Inventory.Location;
 using Microsoft.Foundation.Company;
-using Microsoft.Finance.TaxBase;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Vendor;
 
 codeunit 18766 "General Journal Validations"
 {

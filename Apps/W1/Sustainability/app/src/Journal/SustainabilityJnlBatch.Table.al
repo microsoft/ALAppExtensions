@@ -1,8 +1,9 @@
 namespace Microsoft.Sustainability.Journal;
 
-using Microsoft.Foundation.NoSeries;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
 using Microsoft.Sustainability.Account;
+using System.Automation;
 
 table 6213 "Sustainability Jnl. Batch"
 {
@@ -71,6 +72,13 @@ table 6213 "Sustainability Jnl. Batch"
                 end;
             end;
         }
+        field(22; Recurring; Boolean)
+        {
+            CalcFormula = lookup("Sustainability Jnl. Template".Recurring where(Name = field("Journal Template Name")));
+            Caption = 'Recurring';
+            Editable = false;
+            FieldClass = FlowField;
+        }
     }
 
     keys
@@ -85,6 +93,8 @@ table 6213 "Sustainability Jnl. Batch"
     var
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
     begin
+        ApprovalsMgmt.PreventDeletingRecordWithOpenApprovalEntry(Rec);
+
         SustainabilityJnlLine.SetRange("Journal Template Name", "Journal Template Name");
         SustainabilityJnlLine.SetRange("Journal Batch Name", Name);
         SustainabilityJnlLine.DeleteAll(true);
@@ -96,4 +106,17 @@ table 6213 "Sustainability Jnl. Batch"
     begin
         SustainabilityJnlTemplate.Get("Journal Template Name");
     end;
+
+    trigger OnModify()
+    begin
+        ApprovalsMgmt.PreventModifyRecIfOpenApprovalEntryExistForCurrentUser(Rec);
+    end;
+
+    trigger OnRename()
+    begin
+        ApprovalsMgmt.OnRenameRecordInApprovalRequest(xRec.RecordId, RecordId);
+    end;
+
+    var
+        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
 }

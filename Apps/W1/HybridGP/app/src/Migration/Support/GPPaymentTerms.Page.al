@@ -11,6 +11,7 @@ page 40134 "GP Payment Terms"
     DeleteAllowed = false;
     Editable = true;
 
+#pragma warning disable AA0219
     layout
     {
         area(content)
@@ -90,6 +91,7 @@ page 40134 "GP Payment Terms"
             }
         }
     }
+#pragma warning restore AA0219
 
     trigger OnAfterGetRecord()
     begin

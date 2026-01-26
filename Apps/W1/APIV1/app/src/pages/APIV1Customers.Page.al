@@ -1,13 +1,13 @@
 namespace Microsoft.API.V1;
 
-using Microsoft.Sales.Customer;
-using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
-using Microsoft.Bank.BankAccount;
-using Microsoft.Integration.Graph;
 using Microsoft.Integration.Entity;
+using Microsoft.Integration.Graph;
+using Microsoft.Sales.Customer;
 
 page 20009 "APIV1 - Customers"
 {

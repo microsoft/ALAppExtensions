@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -165,6 +165,16 @@ page 31170 "Sales Advance Letters CZZ"
                     ToolTip = 'Specifies the code for Shortcut Dimension 2, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
                     Visible = false;
                 }
+                field("Job No."; Rec."Job No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Visible = false;
+                }
+                field("Job Task No."; Rec."Job Task No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Visible = false;
+                }
             }
         }
         area(FactBoxes)
@@ -179,11 +189,11 @@ page 31170 "Sales Advance Letters CZZ"
                 ApplicationArea = Basic, Suite;
                 SubPageLink = "No." = field("Bill-to Customer No.");
             }
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(31004), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Sales Adv. Letter Header CZZ"), "No." = field("No.");
             }
             part(IncomingDocAttachFactBox; "Incoming Doc. Attach. FactBox")
             {

@@ -1,6 +1,5 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Foundation.Reporting;
 using System.Telemetry;
 
@@ -72,13 +71,18 @@ page 1696 "Posted Bank Deposit List"
                     ToolTip = 'Specifies the currency code of the bank account that the deposit was deposited in.';
                     Visible = false;
                 }
-                field(Reversed; GLRegisterReversed)
+#if not CLEAN27
+                field(Reversed; Rec.IsReversed())
                 {
                     ApplicationArea = Suite;
                     Editable = false;
                     Caption = 'Reversed';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Removing this field from the list to improve performance. Use the Reversed field on the Posted Bank Deposit card page.';
+                    ObsoleteTag = '27.0';
                     ToolTip = 'Specifies if transactions from the corresponding G/L Register have been reversed.';
                 }
+#endif
                 field("Language Code"; Rec."Language Code")
                 {
                     ApplicationArea = Basic, Suite;
@@ -191,20 +195,6 @@ page 1696 "Posted Bank Deposit List"
         }
     }
 
-    trigger OnAfterGetCurrRecord()
-    var
-        GLRegister: Record "G/L Register";
-        GLRegNo: Integer;
-    begin
-        GLRegisterReversed := false;
-
-        if Rec.FindGLRegisterNo(GLRegNo) then begin
-            GLRegister.Get(GLRegNo);
-            if GLRegister.Reversed then
-                GLRegisterReversed := true;
-        end;
-    end;
-
     trigger OnInit()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -213,7 +203,6 @@ page 1696 "Posted Bank Deposit List"
     end;
 
     var
-        GLRegisterReversed: Boolean;
         BankDepositReportSelectionErr: Label 'Bank deposit report has not been set up.';
         UndoPostingQst: Label 'This will reverse all ledger entries that are related to the lines of the bank deposit. Do you want to continue?';
         BankDepositNonGUISessionErr: Label 'To undo the posting of a bank deposit, you must sign in to Business Central from a web browser.';

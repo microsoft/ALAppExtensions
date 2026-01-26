@@ -40,6 +40,16 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetSubstCustVendPostingGroupUpgradeTag());
         PerCompanyUpgradeTags.Add(GetVATStatementReportExtensionUpgradeTag());
         PerCompanyUpgradeTags.Add(GetAllowVATPostingUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetOriginalVATAmountsInVATEntriesUpgradeTag());
+#if not CLEAN27        
+        PerCompanyUpgradeTags.Add(GetFunctionalCurrencyUpgradeTag());
+#endif
+        PerCompanyUpgradeTags.Add(GetEnableNonDeductibleVATCZUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetVATReportUpgradeTag());
+        PerCompanyUpgradeTags.Add(SetEnableNonDeductibleVATCZUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetUseW1RegistrationNumberFromSalesDocUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetOriginalVATAmountsACYInVATEntriesUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -170,5 +180,47 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetAllowVATPostingUpgradeTag(): Code[250]
     begin
         exit('CZL-495916-AllowVATPostingUpgradeTag-20240109');
+    end;
+
+    procedure GetOriginalVATAmountsInVATEntriesUpgradeTag(): Code[250]
+    begin
+        exit('CZL-539623-OriginalVATAmountsInVATEntriesUpgradeTag-20240627');
+    end;
+#if not CLEAN27
+    [Obsolete('This function will be removed in a future version.', '27.0')]
+    procedure GetFunctionalCurrencyUpgradeTag(): Code[250]
+    begin
+        exit('CZL-542349-FunctionalCurrencyUpgradeTag-20240718');
+    end;
+#endif
+
+    procedure GetEnableNonDeductibleVATCZUpgradeTag(): Code[250]
+    begin
+        exit('CZL-543968-EnableNonDeductibleVATCZUpgradeTag-20240812');
+    end;
+
+    procedure GetVATReportUpgradeTag(): code[250]
+    begin
+        exit('CZL-534204-VATReportUpgradeTag-20240808');
+    end;
+
+    procedure SetEnableNonDeductibleVATCZUpgradeTag(): Code[250]
+    begin
+        exit('CZL-554704-SetEnableNonDeductibleVATCZUpgradeTag-20241017');
+    end;
+
+    procedure GetUseW1RegistrationNumberFromSalesDocUpgradeTag(): Code[250]
+    begin
+        exit('CZL-575057-UseW1RegistrationNumberFromSalesDocUpgrade-20250424');
+    end;
+
+    procedure GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag(): Code[250]
+    begin
+        exit('CZL-579504-UseVATReturnPeriodInsteadOfVATPeriodUpgrade-20250909');
+    end;
+
+    procedure GetOriginalVATAmountsACYInVATEntriesUpgradeTag(): Code[250]
+    begin
+        exit('CZL-616614-OriginalVATAmountsACYInVATEntriesTag-20251217');
     end;
 }

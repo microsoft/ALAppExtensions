@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSBase;
 
-using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Finance.TaxEngine.JsonExchange;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 
 codeunit 18693 "Upgrade TDS Tax Config"
 {

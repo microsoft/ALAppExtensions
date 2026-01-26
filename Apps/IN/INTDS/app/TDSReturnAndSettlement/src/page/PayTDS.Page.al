@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TDS.TDSBase;
 
 page 18746 "Pay TDS"
 {
@@ -239,6 +239,8 @@ page 18746 "Pay TDS"
                             TDSEntry."Pay TDS Document No." := ' ';
                             TDSEntry.Modify();
                         until TDSEntry.Next() = 0;
+
+                    CurrPage.SetSelectionFilter(Rec);
 
                     TDSEntry.Copy(Rec);
                     if TDSEntry.FindSet() then

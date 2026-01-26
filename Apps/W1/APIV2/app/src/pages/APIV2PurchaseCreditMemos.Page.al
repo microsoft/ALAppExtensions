@@ -1,19 +1,19 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Purchases.History;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
-using Microsoft.Upgrade;
-using System.Upgrade;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Upgrade;
 using Microsoft.Utilities;
 using System.Reflection;
+using System.Upgrade;
 
 page 30083 "APIV2 - Purchase Credit Memos"
 {
@@ -28,6 +28,7 @@ page 30083 "APIV2 - Purchase Credit Memos"
     PageType = API;
     SourceTable = "Purch. Cr. Memo Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages purchase credit memo documents, exposing vendor details, transaction amounts, addresses, currency, payment terms, and status. Supports full lifecycle operations (GET, POST, PATCH, DELETE) for automating supplier returns, vendor refunds, and accounts payable adjustments in external procurement and finance integrations. Enables seamless synchronization of credit memo data between Business Central and third-party systems.';
 
     layout
     {
@@ -129,6 +130,15 @@ page 30083 "APIV2 - Purchase Credit Memos"
                 {
                     Caption = 'Vendor Name';
                     Editable = false;
+                }
+                field(vendorCreditMemoNumber; Rec."Vendor Cr. Memo No.")
+                {
+                    Caption = 'Vendor Credit Memo No.';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo("Vendor Cr. Memo No."));
+                    end;
                 }
                 field(payToVendorId; Rec."Pay-to Vendor Id")
                 {
@@ -864,6 +874,7 @@ page 30083 "APIV2 - Purchase Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Posts the draft purchase credit memo to create a finalized posted credit memo')]
     [Scope('Cloud')]
     procedure Post(var ActionContext: WebServiceActionContext)
     var
@@ -876,6 +887,7 @@ page 30083 "APIV2 - Purchase Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Cancels the posted purchase credit memo by creating a corrective invoice')]
     [Scope('Cloud')]
     procedure Cancel(var ActionContext: WebServiceActionContext)
     var

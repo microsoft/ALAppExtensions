@@ -11,12 +11,15 @@ report 10032 "IRS 1099 Print"
 {
     ApplicationArea = All;
     DefaultRenderingLayout = WordLayout;
+    WordMergeDataItem = IRS1099FormDocHeader;
 
     dataset
     {
         dataitem(IRS1099FormDocHeader; "IRS 1099 Form Doc. Header")
         {
             DataItemTableView = sorting("Period No.", "Form No.", "Vendor No.");
+            RequestFilterFields = ID, "Period No.", "Vendor No.", "Form No.", Status;
+
             column(Period_No; "Period No.") { }
             column(Vendor_No; "Vendor No.") { }
             column(Form_No; "Form No.") { }
@@ -35,6 +38,8 @@ report 10032 "IRS 1099 Print"
             dataitem(IRS1099ReportLine; "IRS 1099 Report Line")
             {
                 DataItemTableView = sorting("Line No.");
+                UseTemporary = true;
+
                 column(Line_No; "Line No.") { }
                 column(Line_Name; Name) { }
                 column(Line_Value; Value) { }
@@ -103,6 +108,7 @@ report 10032 "IRS 1099 Print"
     requestpage
     {
         ShowFilter = false;
+        SaveValues = true;
 
         layout
         {

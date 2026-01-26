@@ -1,4 +1,5 @@
-﻿permissionset 11731 "CZ Core Pack - Edit CZL"
+#pragma warning disable AA0247
+permissionset 11731 "CZ Core Pack - Edit CZL"
 {
     Access = Internal;
     Assignable = false;
@@ -31,29 +32,13 @@
                   tabledata "Enhanced Currency Buffer CZL" = IMD,
                   tabledata "Excel Template CZL" = IMD,
                   tabledata "G/L Account Adjust. Buffer CZL" = IMD,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  tabledata "Intrastat Delivery Group CZL" = IMD,
-#pragma warning restore AL0432
-#endif
                   tabledata "Invt. Movement Template CZL" = IMD,
+                  tabledata "Non-Deductible VAT Setup CZL" = IMD,
                   tabledata "Reg. No. Service Config CZL" = IMD,
                   tabledata "Registration Log CZL" = IMD,
                   tabledata "Registration Log Detail CZL" = IMD,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  tabledata "Specific Movement CZL" = IMD,
-                  tabledata "Statistic Indication CZL" = IMD,
-#pragma warning restore AL0432
-#endif
                   tabledata "Statutory Reporting Setup CZL" = IMD,
                   tabledata "Stockkeeping Unit Template CZL" = IMD,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  tabledata "Subst. Cust. Posting Group CZL" = IMD,
-                  tabledata "Subst. Vend. Posting Group CZL" = IMD,
-#pragma warning restore AL0432
-#endif
                   tabledata "Unrel. Payer Service Setup CZL" = IMD,
                   tabledata "Unreliable Payer Entry CZL" = IMD,
                   tabledata "User Setup Line CZL" = IMD,
@@ -64,7 +49,13 @@
                   tabledata "VAT Ctrl. Report Line CZL" = IMD,
                   tabledata "VAT Ctrl. Report Section CZL" = IMD,
                   tabledata "VAT LCY Correction Buffer CZL" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "VAT Period CZL" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "VAT Report Entry Link CZL" = IMD,
+                  tabledata "VAT Stmt. Report Line Data CZL" = IMD,
                   tabledata "VAT Statement Attachment CZL" = IMD,
                   tabledata "VAT Statement Comment Line CZL" = IMD,
                   tabledata "VIES Declaration Header CZL" = IMD,

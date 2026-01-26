@@ -1,0 +1,3323 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-c_Localidad xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Localidad>
+		<Code>01</Code>
+		<State>AGU</State>
+		<Descripcion>Aguascalientes</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>BCN</State>
+		<Descripcion>Ensenada</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>BCS</State>
+		<Descripcion>Ciudad Constitución</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>CAM</State>
+		<Descripcion>San Francisco de Campeche</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>COA</State>
+		<Descripcion>Ciudad Acuña</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>COL</State>
+		<Descripcion>Colima</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>CHH</State>
+		<Descripcion>Santa Rosalía de Camargo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>CHP</State>
+		<Descripcion>Comitán de Domínguez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>DUR</State>
+		<Descripcion>Victoria de Durango</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>GRO</State>
+		<Descripcion>Acapulco de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>GUA</State>
+		<Descripcion>Acámbaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>HID</State>
+		<Descripcion>Actopan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>JAL</State>
+		<Descripcion>Ameca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>MEX</State>
+		<Descripcion>Ciudad Adolfo López Mateos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>MIC</State>
+		<Descripcion>Apatzingán de la Constitución</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>MOR</State>
+		<Descripcion>Cuautla (Cuautla de Morelos)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>NAY</State>
+		<Descripcion>Santiago Ixcuintla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>NLE</State>
+		<Descripcion>Ciudad Apodaca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>OAX</State>
+		<Descripcion>Juchitán (Juchitán de Zaragoza)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>PUE</State>
+		<Descripcion>Atlixco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>QUE</State>
+		<Descripcion>Querétaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>ROO</State>
+		<Descripcion>Cancún</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>SIN</State>
+		<Descripcion>Los Mochis</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>SLP</State>
+		<Descripcion>Ciudad Valles</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>SON</State>
+		<Descripcion>San Luis Río Colorado</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>TAB</State>
+		<Descripcion>Cárdenas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>TAM</State>
+		<Descripcion>Altamira</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>TLA</State>
+		<Descripcion>Apizaco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>VER</State>
+		<Descripcion>Acayucan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>YUC</State>
+		<Descripcion>Mérida</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>01</Code>
+		<State>ZAC</State>
+		<Descripcion>Fresnillo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>AGU</State>
+		<Descripcion>Calvillo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>BCN</State>
+		<Descripcion>Mexicali</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>BCS</State>
+		<Descripcion>La Paz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>CAM</State>
+		<Descripcion>Ciudad del Carmen</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>COA</State>
+		<Descripcion>Frontera</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>COL</State>
+		<Descripcion>Manzanillo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>CHH</State>
+		<Descripcion>Chihuahua</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>CHP</State>
+		<Descripcion>San Cristóbal de las Casas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>DUR</State>
+		<Descripcion>Gómez Palacio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>GRO</State>
+		<Descripcion>Chilpancingo de los Bravo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>GUA</State>
+		<Descripcion>San miguel de Allende</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>HID</State>
+		<Descripcion>Apan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>JAL</State>
+		<Descripcion>Ciudad Guzmán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>MEX</State>
+		<Descripcion>Chimalhuacán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>MIC</State>
+		<Descripcion>Los Reyes de Salgado</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>MOR</State>
+		<Descripcion>Cuernavaca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>NAY</State>
+		<Descripcion>Tepic</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>NLE</State>
+		<Descripcion>San Pedro Garza García</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>OAX</State>
+		<Descripcion>Oaxaca de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>PUE</State>
+		<Descripcion>Izúcar de Matamoros</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>QUE</State>
+		<Descripcion>San Juan del Rio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>ROO</State>
+		<Descripcion>Cozumel</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>SIN</State>
+		<Descripcion>Culiacán Rosales</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>SLP</State>
+		<Descripcion>Ébano</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>SON</State>
+		<Descripcion>Agua Prieta</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>TAB</State>
+		<Descripcion>Villahermosa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>TAM</State>
+		<Descripcion>Ciudad Camargo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>TLA</State>
+		<Descripcion>Villa Vicente Guerrero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>VER</State>
+		<Descripcion>Naranjos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>YUC</State>
+		<Descripcion>Tizimín</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>02</Code>
+		<State>ZAC</State>
+		<Descripcion>Jerez de García Salinas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>AGU</State>
+		<Descripcion>San Francisco de los Romo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>BCN</State>
+		<Descripcion>Tecate</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>BCS</State>
+		<Descripcion>Cabo San Lucas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>CAM</State>
+		<Descripcion>Calkini</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>COA</State>
+		<Descripcion>Matamoros</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>COL</State>
+		<Descripcion>Tecoman</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>CHH</State>
+		<Descripcion>Cuauhtémoc</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>CHP</State>
+		<Descripcion>Tapachula de Córdova y Ordóñez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>DUR</State>
+		<Descripcion>Ciudad Lerdo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>GRO</State>
+		<Descripcion>Iguala de la Independencia</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>GUA</State>
+		<Descripcion>Celaya</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>HID</State>
+		<Descripcion>Pachuca de Soto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>JAL</State>
+		<Descripcion>Guadalajara</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>MEX</State>
+		<Descripcion>Coacalco de Berriozabal</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>MIC</State>
+		<Descripcion>Ciudad Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>MOR</State>
+		<Descripcion>Galeana</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>NAY</State>
+		<Descripcion>Tuxpan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>NLE</State>
+		<Descripcion>Ciudad General Escobedo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>OAX</State>
+		<Descripcion>Salina Cruz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>PUE</State>
+		<Descripcion>Puebla (Heroica Puebla)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>ROO</State>
+		<Descripcion>Felipe Carrillo Puerto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>SIN</State>
+		<Descripcion>Escuinapa de Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>SLP</State>
+		<Descripcion>Matehuala</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>SON</State>
+		<Descripcion>Heroica Caborca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>TAB</State>
+		<Descripcion>Comalcalco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>TAM</State>
+		<Descripcion>Ciudad Madero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>TLA</State>
+		<Descripcion>Tlaxcala (Tlaxcala de Xicotencatl)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>VER</State>
+		<Descripcion>Boca del RÍo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>YUC</State>
+		<Descripcion>Ticul</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>03</Code>
+		<State>ZAC</State>
+		<Descripcion>Zacatecas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>AGU</State>
+		<Descripcion>Jesús María</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>BCN</State>
+		<Descripcion>Tijuana</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>BCS</State>
+		<Descripcion>San José del Cabo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>CAM</State>
+		<Descripcion>Candelaria</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>COA</State>
+		<Descripcion>Monclova</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>COL</State>
+		<Descripcion>Ciudad de Villa de Álvarez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>CHH</State>
+		<Descripcion>Delicias</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>CHP</State>
+		<Descripcion>Tuxtla Gutiérrez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>DUR</State>
+		<Descripcion>Santiago Papasquiaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>GRO</State>
+		<Descripcion>Taxco de Alarcón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>GUA</State>
+		<Descripcion>Cortazar</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>HID</State>
+		<Descripcion>Cd. de Fray Bernardino de Sahagún</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>JAL</State>
+		<Descripcion>Lagos de Moreno</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>MEX</State>
+		<Descripcion>Cuautitlán Izcalli</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>MIC</State>
+		<Descripcion>Jacona de Plancarte</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>MOR</State>
+		<Descripcion>Jojutla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>NAY</State>
+		<Descripcion>Acaponeta</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>NLE</State>
+		<Descripcion>Guadalupe</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>OAX</State>
+		<Descripcion>San Juan Bautista Tuxtepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>PUE</State>
+		<Descripcion>San Martín Texmelucan de Labastida</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>QUE</State>
+		<Descripcion>El Pueblito</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>ROO</State>
+		<Descripcion>Chetumal</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>SIN</State>
+		<Descripcion>Guasave</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>SLP</State>
+		<Descripcion>Rioverde</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>SON</State>
+		<Descripcion>Ciudad Obregón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>TAB</State>
+		<Descripcion>Emiliano Zapata</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>TAM</State>
+		<Descripcion>Ciudad Mante</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>TLA</State>
+		<Descripcion>Huamantla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>VER</State>
+		<Descripcion>Coatepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>YUC</State>
+		<Descripcion>Motul de Carrillo Puerto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>04</Code>
+		<State>ZAC</State>
+		<Descripcion>Guadalupe</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>AGU</State>
+		<Descripcion>Pabellón de Arteaga</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>BCN</State>
+		<Descripcion>Playas de Rosarito</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>BCS</State>
+		<Descripcion>Loreto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>CAM</State>
+		<Descripcion>Escárcega</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>COA</State>
+		<Descripcion>Parras de la Fuente</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>COL</State>
+		<Descripcion>Ciudad de Armería</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>CHH</State>
+		<Descripcion>Hidalgo del Parral</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>CHP</State>
+		<Descripcion>Venustiano Carranza</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>DUR</State>
+		<Descripcion>Canatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>GRO</State>
+		<Descripcion>Arcelia</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>GUA</State>
+		<Descripcion>Guanajuato</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>HID</State>
+		<Descripcion>Tula de Allende</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>JAL</State>
+		<Descripcion>Ocotlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>MEX</State>
+		<Descripcion>Ecatepec de Morelos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>MIC</State>
+		<Descripcion>La piedad de Cabadas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>MOR</State>
+		<Descripcion>Puente de Ixtla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>NAY</State>
+		<Descripcion>Tecuala</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>NLE</State>
+		<Descripcion>Linares</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>OAX</State>
+		<Descripcion>Matías Romero Avendaño</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>PUE</State>
+		<Descripcion>Tehuacan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>ROO</State>
+		<Descripcion>Playa del Carmen</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>SIN</State>
+		<Descripcion>Mazatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>SLP</State>
+		<Descripcion>San Luis Potosí</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>SON</State>
+		<Descripcion>Empalme</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>TAB</State>
+		<Descripcion>Jalpa de Méndez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>TAM</State>
+		<Descripcion>Heroica Matamoros</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>TLA</State>
+		<Descripcion>Calpulalpan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>VER</State>
+		<Descripcion>Agua dulce</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>YUC</State>
+		<Descripcion>Valladolid</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>05</Code>
+		<State>ZAC</State>
+		<Descripcion>Río Grande</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>AGU</State>
+		<Descripcion>Rincón de Romos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>BCN</State>
+		<Descripcion>Rodolfo Sánchez T. (Maneadero)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>BCS</State>
+		<Descripcion>Puerto Adolfo López Mateos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>CAM</State>
+		<Descripcion>Sabancuy</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>COA</State>
+		<Descripcion>Piedras Negras</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>CHH</State>
+		<Descripcion>Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>CHP</State>
+		<Descripcion>Jiquipilas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>DUR</State>
+		<Descripcion>San Juan del Río del Centauro del Norte</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>GRO</State>
+		<Descripcion>Ayutla de los Libres</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>GUA</State>
+		<Descripcion>Irapuato</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>HID</State>
+		<Descripcion>Tulancingo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>JAL</State>
+		<Descripcion>Puerto Vallarta</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>MEX</State>
+		<Descripcion>Huixquilucan de Degollado</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>MIC</State>
+		<Descripcion>Morelia</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>MOR</State>
+		<Descripcion>Santa Rosa Treinta</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>NAY</State>
+		<Descripcion>Compostela</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>NLE</State>
+		<Descripcion>Montemorelos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>OAX</State>
+		<Descripcion>Heroica Ciudad de Huajuapan de León</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>PUE</State>
+		<Descripcion>Teziutlan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>ROO</State>
+		<Descripcion>Kantunilkín</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>SIN</State>
+		<Descripcion>Guamúchil</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>SLP</State>
+		<Descripcion>Soledad de Graciano Sánchez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>SON</State>
+		<Descripcion>Heroica Guaymas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>TAM</State>
+		<Descripcion>Nuevo Laredo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>TLA</State>
+		<Descripcion>Chiautempan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>VER</State>
+		<Descripcion>Coatzacoalcos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>YUC</State>
+		<Descripcion>Kanasín</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>06</Code>
+		<State>ZAC</State>
+		<Descripcion>Ciudad Cuauhtémoc</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>AGU</State>
+		<Descripcion>Asientos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>BCN</State>
+		<Descripcion>San Felipe</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>BCS</State>
+		<Descripcion>Todos Santos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>CAM</State>
+		<Descripcion>Hopelchén</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>COA</State>
+		<Descripcion>Sabinas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>CHH</State>
+		<Descripcion>Nuevo Casas Grandes</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>CHP</State>
+		<Descripcion>Villaflores</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>DUR</State>
+		<Descripcion>Peñón Blanco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>GRO</State>
+		<Descripcion>Atoyac de Álvarez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>GUA</State>
+		<Descripcion>León de los Aldama</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>HID</State>
+		<Descripcion>Zimapan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>JAL</State>
+		<Descripcion>San Juan de los Lagos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>MEX</State>
+		<Descripcion>Los Reyes Acaquilpan (La Paz)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>MIC</State>
+		<Descripcion>Pátzcuaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>MOR</State>
+		<Descripcion>Zacatepec de Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>NAY</State>
+		<Descripcion>Francisco I. Madero (Puga)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>NLE</State>
+		<Descripcion>Monterrey</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>OAX</State>
+		<Descripcion>Loma Bonita</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>PUE</State>
+		<Descripcion>San Andrés Cholula</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>ROO</State>
+		<Descripcion>Isla Mujeres</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>SIN</State>
+		<Descripcion>Navolato</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>SLP</State>
+		<Descripcion>Charcas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>SON</State>
+		<Descripcion>Hermosillo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>TAB</State>
+		<Descripcion>Macuspana</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>TAM</State>
+		<Descripcion>Reynosa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>VER</State>
+		<Descripcion>Córdoba</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>07</Code>
+		<State>ZAC</State>
+		<Descripcion>Ojocaliente</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>AGU</State>
+		<Descripcion>Tepezalá</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>BCS</State>
+		<Descripcion>Heroica Mulegé</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>CAM</State>
+		<Descripcion>Champotón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>COA</State>
+		<Descripcion>Saltillo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>CHP</State>
+		<Descripcion>Las Margaritas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>DUR</State>
+		<Descripcion>Francisco I. Madero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>GUA</State>
+		<Descripcion>Moroleón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>HID</State>
+		<Descripcion>Huejutla de Reyes</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>JAL</State>
+		<Descripcion>Tepatitlán de Morelos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>MEX</State>
+		<Descripcion>Metepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>MIC</State>
+		<Descripcion>Sahuayo de Morelos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>MOR</State>
+		<Descripcion>Tlaquiltenango</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>NAY</State>
+		<Descripcion>Villa Hidalgo (El Nuevo)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>NLE</State>
+		<Descripcion>Ciudad Sabinas Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>OAX</State>
+		<Descripcion>Puerto Escondido</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>PUE</State>
+		<Descripcion>San Pedro Cholula</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>ROO</State>
+		<Descripcion>Bacalar</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>SIN</State>
+		<Descripcion>Quila</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>SLP</State>
+		<Descripcion>Salinas de Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>SON</State>
+		<Descripcion>Huatabampo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>TAB</State>
+		<Descripcion>Tenosique de Pino Suárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>TAM</State>
+		<Descripcion>Ciudad Río Bravo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>VER</State>
+		<Descripcion>Tres Valles</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>08</Code>
+		<State>ZAC</State>
+		<Descripcion>Villa Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>AGU</State>
+		<Descripcion>Cosío</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>BCS</State>
+		<Descripcion>Villa Alberto Andrés Alvarado Arámburo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>CAM</State>
+		<Descripcion>Hecelchakán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>COA</State>
+		<Descripcion>Nueva Rosita</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>CHH</State>
+		<Descripcion>Madera</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>CHP</State>
+		<Descripcion>Arriaga</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>DUR</State>
+		<Descripcion>Nombre de Dios</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>GRO</State>
+		<Descripcion>San Jerónimo de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>GUA</State>
+		<Descripcion>Salamanca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>HID</State>
+		<Descripcion>Tlaxcoapan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>JAL</State>
+		<Descripcion>Tlaquepaque</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>MEX</State>
+		<Descripcion>Naucalpan de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>MIC</State>
+		<Descripcion>Uruapan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>NAY</State>
+		<Descripcion>Ruiz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>NLE</State>
+		<Descripcion>San Nicolás de los Garza</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>OAX</State>
+		<Descripcion>Río Grande o Piedra Parada</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>PUE</State>
+		<Descripcion>Huauchinango</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>SIN</State>
+		<Descripcion>Ahome</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>SLP</State>
+		<Descripcion>Cárdenas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>SON</State>
+		<Descripcion>Navojoa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>TAB</State>
+		<Descripcion>Teapa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>TAM</State>
+		<Descripcion>San Fernando</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>VER</State>
+		<Descripcion>Jáltipan de Morelos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>09</Code>
+		<State>ZAC</State>
+		<Descripcion>Villanueva</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>BCS</State>
+		<Descripcion>San Ignacio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>COA</State>
+		<Descripcion>San Pedro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>CHH</State>
+		<Descripcion>Colonia Anáhuac</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>CHP</State>
+		<Descripcion>Palenque</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>DUR</State>
+		<Descripcion>Vicente Guerrero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>GRO</State>
+		<Descripcion>Ciudad Apaxtla de Castrejón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>GUA</State>
+		<Descripcion>San Francisco del Rincón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>HID</State>
+		<Descripcion>Tizayuca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>JAL</State>
+		<Descripcion>Zapopan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>MEX</State>
+		<Descripcion>Ciudad Nezahualcoyotl</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>MIC</State>
+		<Descripcion>Zacapu</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>NAY</State>
+		<Descripcion>San Blas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>NLE</State>
+		<Descripcion>Ciudad Santa Catarina</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>PUE</State>
+		<Descripcion>Acatlán de Osorio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>SIN</State>
+		<Descripcion>Higuera de Zaragoza</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>SLP</State>
+		<Descripcion>Cerritos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>SON</State>
+		<Descripcion>Heroica Nogales</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>TAB</State>
+		<Descripcion>Paraíso</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>TAM</State>
+		<Descripcion>Tampico</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>VER</State>
+		<Descripcion>Xalapa-Enríquez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>10</Code>
+		<State>ZAC</State>
+		<Descripcion>Villa de Cos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>BCS</State>
+		<Descripcion>Guerrero Negro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>CAM</State>
+		<Descripcion>Pomuch</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>COA</State>
+		<Descripcion>Torreón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>CHH</State>
+		<Descripcion>Juan Aldama</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>CHP</State>
+		<Descripcion>Ocosingo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>DUR</State>
+		<Descripcion>El Salto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>GRO</State>
+		<Descripcion>Ciudad Altamirano</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>GUA</State>
+		<Descripcion>Silao</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>HID</State>
+		<Descripcion>Santiago Tulantepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>JAL</State>
+		<Descripcion>Tlajomulco de Zúñiga</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>MEX</State>
+		<Descripcion>Villa Nicolás Romero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>MIC</State>
+		<Descripcion>Zamora de Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>NAY</State>
+		<Descripcion>Ixtlán del Río</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>NLE</State>
+		<Descripcion>Doctor Arroyo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>OAX</State>
+		<Descripcion>Santiago Suchilquitongo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>PUE</State>
+		<Descripcion>Cuautlancingo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>SIN</State>
+		<Descripcion>Choix</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>SLP</State>
+		<Descripcion>Tamuin</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>SON</State>
+		<Descripcion>Puerto Peñasco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>TAB</State>
+		<Descripcion>Frontera</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>TAM</State>
+		<Descripcion>Ciudad Victoria</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>VER</State>
+		<Descripcion>Minatitlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>11</Code>
+		<State>ZAC</State>
+		<Descripcion>Nochistlán de Mejía</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>BCS</State>
+		<Descripcion>Santa Rosalía</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>COA</State>
+		<Descripcion>Castaños</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>CHH</State>
+		<Descripcion>José Mariano Jiménez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>CHP</State>
+		<Descripcion>Tonalá</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>DUR</State>
+		<Descripcion>Santa María del Oro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>GRO</State>
+		<Descripcion>Buenavista de Cuellar</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>GUA</State>
+		<Descripcion>Jerécuaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>HID</State>
+		<Descripcion>Ixmiquilpan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>JAL</State>
+		<Descripcion>Tonalá</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>MEX</State>
+		<Descripcion>Tecamac de Felipe Villanueva</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>MIC</State>
+		<Descripcion>Heroica Zitácuaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>NAY</State>
+		<Descripcion>Bucerías</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>NLE</State>
+		<Descripcion>Ciénega de Flores</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>OAX</State>
+		<Descripcion>San Felipe Jalapa de Díaz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>PUE</State>
+		<Descripcion>Tepeaca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>SIN</State>
+		<Descripcion>Villa Unión</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>SLP</State>
+		<Descripcion>Tamasopo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>SON</State>
+		<Descripcion>Heroica Ciudad de Cananea</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>TAB</State>
+		<Descripcion>Cunduacán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>TAM</State>
+		<Descripcion>González</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>VER</State>
+		<Descripcion>Orizaba</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>12</Code>
+		<State>ZAC</State>
+		<Descripcion>Víctor Rosales</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>COA</State>
+		<Descripcion>Francisco I. Madero (Chávez)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>CHH</State>
+		<Descripcion>Manuel Ojinaga</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>CHP</State>
+		<Descripcion>Mapastepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>GRO</State>
+		<Descripcion>Cutzamala de Pinzón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>GUA</State>
+		<Descripcion>Santiago Maravatío</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>HID</State>
+		<Descripcion>Tepeji del Rio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>JAL</State>
+		<Descripcion>Tuxpan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>MEX</State>
+		<Descripcion>Tepotzotlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>MIC</State>
+		<Descripcion>Paracho de Verduzco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>NAY</State>
+		<Descripcion>Las Varas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>NLE</State>
+		<Descripcion>Hualahuises</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>OAX</State>
+		<Descripcion>Bahias de Huatulco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>PUE</State>
+		<Descripcion>Tecamachalco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>SIN</State>
+		<Descripcion>Sinaloa de Leyva</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>SLP</State>
+		<Descripcion>Ciudad del Maíz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>SON</State>
+		<Descripcion>Sonoita</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>TAB</State>
+		<Descripcion>Huimanguillo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>TAM</State>
+		<Descripcion>Jaumave</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>VER</State>
+		<Descripcion>Papantla de Olarte</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>13</Code>
+		<State>ZAC</State>
+		<Descripcion>Valparaíso</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>COA</State>
+		<Descripcion>Cuatro Ciénegas de Carranza</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>CHH</State>
+		<Descripcion>Bachíniva</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>CHP</State>
+		<Descripcion>Las Rosas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>GRO</State>
+		<Descripcion>Coyuca de Catalán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>GUA</State>
+		<Descripcion>Romita</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>HID</State>
+		<Descripcion>Cruz Azul</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>JAL</State>
+		<Descripcion>Tototlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>MEX</State>
+		<Descripcion>Tlalnepantla de Baz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>MIC</State>
+		<Descripcion>Tangancícuaro de Arista</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>NAY</State>
+		<Descripcion>Xalisco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>OAX</State>
+		<Descripcion>Putla Villa de Guerrero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>PUE</State>
+		<Descripcion>Zacatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>SIN</State>
+		<Descripcion>Mocorito</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>SLP</State>
+		<Descripcion>Cedral</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>SON</State>
+		<Descripcion>Magdalena de Kino</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>TAM</State>
+		<Descripcion>Ciudad Gustavo Díaz Ordaz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>VER</State>
+		<Descripcion>Poza Rica de Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>14</Code>
+		<State>ZAC</State>
+		<Descripcion>Luis Moya</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>COA</State>
+		<Descripcion>Nadadores</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>CHH</State>
+		<Descripcion>Saucillo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>CHP</State>
+		<Descripcion>Chiapa de Corzo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>GRO</State>
+		<Descripcion>Tierra Colorada</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>GUA</State>
+		<Descripcion>Tarandacuao</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>HID</State>
+		<Descripcion>Tepeapulco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>JAL</State>
+		<Descripcion>San Diego de Alejandría</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>MEX</State>
+		<Descripcion>Santa Maria Tultepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>MIC</State>
+		<Descripcion>Maravatío de Ocampo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>NAY</State>
+		<Descripcion>San pedro Lagunillas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>NLE</State>
+		<Descripcion>Cadereyta Jiménez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>OAX</State>
+		<Descripcion>Cosolapa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>PUE</State>
+		<Descripcion>Xicotepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>SIN</State>
+		<Descripcion>Angostura</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>SLP</State>
+		<Descripcion>Tierra Nueva</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>TAM</State>
+		<Descripcion>Estación Manuel (Úrsulo Galván)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>VER</State>
+		<Descripcion>San Andrés Tuxtla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>15</Code>
+		<State>ZAC</State>
+		<Descripcion>Moyahua de Estrada</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>COA</State>
+		<Descripcion>Ramos Arizpe</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>CHP</State>
+		<Descripcion>Cacahoatán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>DIF</State>
+		<Descripcion>Ciudad de México</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>GRO</State>
+		<Descripcion>Coyuca de Benítez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>GUA</State>
+		<Descripcion>Huanímaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>JAL</State>
+		<Descripcion>La Resolana</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>MEX</State>
+		<Descripcion>Tultitlán de Mariano Escobedo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>MIC</State>
+		<Descripcion>Zinapécuaro de Figueroa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>NAY</State>
+		<Descripcion>La peñita de Jaltemba</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>OAX</State>
+		<Descripcion>Tlacolula de Matamoros</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>PUE</State>
+		<Descripcion>Ciudad Serdán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>SIN</State>
+		<Descripcion>San Blas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>SLP</State>
+		<Descripcion>Villa de Reyes</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>TAM</State>
+		<Descripcion>Xicoténcatl</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>VER</State>
+		<Descripcion>Túxpam de Rodríguez Cano</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>16</Code>
+		<State>ZAC</State>
+		<Descripcion>Sombrerete</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>COA</State>
+		<Descripcion>Nava</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>CHP</State>
+		<Descripcion>Ocozocoautla de Espinosa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>GRO</State>
+		<Descripcion>Olinalá</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>GUA</State>
+		<Descripcion>Comonfort</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>JAL</State>
+		<Descripcion>Atotonilco el Alto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>MEX</State>
+		<Descripcion>Cuautitlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>MIC</State>
+		<Descripcion>Puruándiro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>NAY</State>
+		<Descripcion>Jala</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>NLE</State>
+		<Descripcion>Santiago</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>OAX</State>
+		<Descripcion>San Pablo Villa de Mitla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>PUE</State>
+		<Descripcion>Amozoc</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>SIN</State>
+		<Descripcion>La Cruz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>SLP</State>
+		<Descripcion>Fracción el Refugio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>TAM</State>
+		<Descripcion>Ciudad Miguel Alemán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>VER</State>
+		<Descripcion>Veracruz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>17</Code>
+		<State>ZAC</State>
+		<Descripcion>Jalpa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>COA</State>
+		<Descripcion>Zaragoza</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>CHP</State>
+		<Descripcion>Cintalapa de Figueroa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>GRO</State>
+		<Descripcion>Marquelia</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>GUA</State>
+		<Descripcion>Uriangato</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>JAL</State>
+		<Descripcion>Jalostotitlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>MEX</State>
+		<Descripcion>Ixtapaluca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>MIC</State>
+		<Descripcion>Yurécuaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>NAY</State>
+		<Descripcion>Ahuacatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>NLE</State>
+		<Descripcion>El cercado</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>OAX</State>
+		<Descripcion>Natividad</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>SIN</State>
+		<Descripcion>El rosario</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>SLP</State>
+		<Descripcion>Tamazunchale</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>TAM</State>
+		<Descripcion>Soto la Marina</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>VER</State>
+		<Descripcion>Tierra Blanca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>18</Code>
+		<State>ZAC</State>
+		<Descripcion>Loreto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>COA</State>
+		<Descripcion>San Buenaventura</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>CHP</State>
+		<Descripcion>Pichucalco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>GRO</State>
+		<Descripcion>Zumpango del Río</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>GUA</State>
+		<Descripcion>Pénjamo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>JAL</State>
+		<Descripcion>Poncitlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>MEX</State>
+		<Descripcion>Texcoco de Mora</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>MIC</State>
+		<Descripcion>Huetamo de Núñez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>OAX</State>
+		<Descripcion>Teotitlán de Flores Magón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>SIN</State>
+		<Descripcion>Estación Naranjo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>SLP</State>
+		<Descripcion>Santa María del Río</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>TAM</State>
+		<Descripcion>Ciudad Tula</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>VER</State>
+		<Descripcion>Cosamaloapan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>19</Code>
+		<State>ZAC</State>
+		<Descripcion>Juan Aldama</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>COA</State>
+		<Descripcion>Ciudad Melchor Múzquiz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>CHP</State>
+		<Descripcion>Puerto Madero (San Benito)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>GRO</State>
+		<Descripcion>San Luis de la Loma</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>GUA</State>
+		<Descripcion>Cuerámaro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>JAL</State>
+		<Descripcion>Arandas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>MEX</State>
+		<Descripcion>Toluca de Lerdo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>MIC</State>
+		<Descripcion>Tacámbaro de Codallos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>NLE</State>
+		<Descripcion>Anáhuac</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>OAX</State>
+		<Descripcion>Santa María Huatulco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>SIN</State>
+		<Descripcion>Aguaruto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>SLP</State>
+		<Descripcion>El Naranjo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>TAM</State>
+		<Descripcion>Nueva Ciudad Guerrero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>20</Code>
+		<State>VER</State>
+		<Descripcion>Carlos A. Carrillo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>COA</State>
+		<Descripcion>Viesca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>CHP</State>
+		<Descripcion>Pijijiapan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>GRO</State>
+		<Descripcion>Petatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>GUA</State>
+		<Descripcion>Empalme Escobedo (Escobedo)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>JAL</State>
+		<Descripcion>Talpa de Allende</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>MEX</State>
+		<Descripcion>Valle de Chalco Solidaridad</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>MIC</State>
+		<Descripcion>Ciudad Lázaro Cárdenas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>NLE</State>
+		<Descripcion>García</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>OAX</State>
+		<Descripcion>San Juan Bautista Cuicatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>SIN</State>
+		<Descripcion>Cosalá</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>TAM</State>
+		<Descripcion>Valle Hermoso</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>21</Code>
+		<State>VER</State>
+		<Descripcion>Pánuco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>COA</State>
+		<Descripcion>Morelos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>CHP</State>
+		<Descripcion>Reforma</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>GRO</State>
+		<Descripcion>La Unión</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>GUA</State>
+		<Descripcion>San Luis de la Paz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>JAL</State>
+		<Descripcion>Etzatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>MEX</State>
+		<Descripcion>Tejupilco de Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>MIC</State>
+		<Descripcion>Las Guacamayas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>NLE</State>
+		<Descripcion>Ciudad Benito Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>OAX</State>
+		<Descripcion>Villa Sola de Vega</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>SIN</State>
+		<Descripcion>San Ignacio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>22</Code>
+		<State>VER</State>
+		<Descripcion>Tampico Alto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>COA</State>
+		<Descripcion>Arteaga</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>CHP</State>
+		<Descripcion>Huixtla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>GRO</State>
+		<Descripcion>San Luis San Pedro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>GUA</State>
+		<Descripcion>Valle de Santiago</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>JAL</State>
+		<Descripcion>Sayula</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>MEX</State>
+		<Descripcion>Chalco de Díaz Covarrubias</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>MIC</State>
+		<Descripcion>Jiquilpan de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>OAX</State>
+		<Descripcion>Ocotlán de Morelos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>SIN</State>
+		<Descripcion>Topolobampo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>23</Code>
+		<State>VER</State>
+		<Descripcion>Tempoal de Sánchez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>COA</State>
+		<Descripcion>Allende</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>CHP</State>
+		<Descripcion>Motozintla de Mendoza</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>GRO</State>
+		<Descripcion>Teloloapan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>GUA</State>
+		<Descripcion>Abasolo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>JAL</State>
+		<Descripcion>Ahualulco de Mercado</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>MEX</State>
+		<Descripcion>Amatepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>MIC</State>
+		<Descripcion>Tuxpan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>OAX</State>
+		<Descripcion>Villa de Zaachila</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>SIN</State>
+		<Descripcion>Lic. Benito Juárez (Campo Gobierno)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>24</Code>
+		<State>VER</State>
+		<Descripcion>Tantoyuca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>25</Code>
+		<State>CHP</State>
+		<Descripcion>Acala</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>25</Code>
+		<State>GRO</State>
+		<Descripcion>Técpan de Galeana</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>25</Code>
+		<State>GUA</State>
+		<Descripcion>Rincón de Tamayo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>25</Code>
+		<State>JAL</State>
+		<Descripcion>Autlán de Navarro</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>25</Code>
+		<State>MIC</State>
+		<Descripcion>Cotija de la Paz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>25</Code>
+		<State>OAX</State>
+		<Descripcion>Miahuatlán de Porfirio Díaz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>25</Code>
+		<State>VER</State>
+		<Descripcion>Gutiérrez Zamora</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>26</Code>
+		<State>GRO</State>
+		<Descripcion>Huitzuco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>26</Code>
+		<State>GUA</State>
+		<Descripcion>Villagrán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>26</Code>
+		<State>JAL</State>
+		<Descripcion>Magdalena</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>26</Code>
+		<State>MEX</State>
+		<Descripcion>Melchor Ocampo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>26</Code>
+		<State>MIC</State>
+		<Descripcion>Nueva Italia de Ruiz</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>26</Code>
+		<State>OAX</State>
+		<Descripcion>Unión Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>26</Code>
+		<State>VER</State>
+		<Descripcion>Platón Sánchez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>27</Code>
+		<State>GRO</State>
+		<Descripcion>Tixtla de Guerrero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>27</Code>
+		<State>GUA</State>
+		<Descripcion>Yuriria</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>27</Code>
+		<State>JAL</State>
+		<Descripcion>San Julián</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>27</Code>
+		<State>MEX</State>
+		<Descripcion>San Vicente Chicoloapan de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>27</Code>
+		<State>MIC</State>
+		<Descripcion>Cuitzeo del Porvenir</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>27</Code>
+		<State>OAX</State>
+		<Descripcion>El Camarón</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>27</Code>
+		<State>VER</State>
+		<Descripcion>Juan Rodríguez Clara</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>28</Code>
+		<State>GRO</State>
+		<Descripcion>Tepecoacuilco de Trujano</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>28</Code>
+		<State>GUA</State>
+		<Descripcion>Apaseo el Grande</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>28</Code>
+		<State>JAL</State>
+		<Descripcion>Cocula</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>28</Code>
+		<State>MEX</State>
+		<Descripcion>Capulhuac</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>28</Code>
+		<State>OAX</State>
+		<Descripcion>San Pedro Mixtepec -Dto. 22-</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>28</Code>
+		<State>VER</State>
+		<Descripcion>Huatusco de Chicuellar</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>29</Code>
+		<State>GRO</State>
+		<Descripcion>San Marcos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>29</Code>
+		<State>GUA</State>
+		<Descripcion>Purísima de Bustos</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>29</Code>
+		<State>JAL</State>
+		<Descripcion>El Grullo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>29</Code>
+		<State>MEX</State>
+		<Descripcion>Juchitepec de Mariano Riva Palacio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>29</Code>
+		<State>OAX</State>
+		<Descripcion>Santa Cruz Itundujia</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>29</Code>
+		<State>VER</State>
+		<Descripcion>Ixtaczoquitlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>30</Code>
+		<State>GRO</State>
+		<Descripcion>Azoyú</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>30</Code>
+		<State>GUA</State>
+		<Descripcion>Salvatierra</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>30</Code>
+		<State>JAL</State>
+		<Descripcion>San Miguel el Alto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>30</Code>
+		<State>MEX</State>
+		<Descripcion>Tequixquiac</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>30</Code>
+		<State>OAX</State>
+		<Descripcion>Chahuites</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>30</Code>
+		<State>VER</State>
+		<Descripcion>Río Blanco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>31</Code>
+		<State>GRO</State>
+		<Descripcion>Tlapehuala</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>31</Code>
+		<State>GUA</State>
+		<Descripcion>Marfil</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>31</Code>
+		<State>JAL</State>
+		<Descripcion>Tala</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>31</Code>
+		<State>MEX</State>
+		<Descripcion>Xonacatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>31</Code>
+		<State>OAX</State>
+		<Descripcion>Heroica Ciudad de Ejutla de Crespo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>31</Code>
+		<State>VER</State>
+		<Descripcion>Isla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>32</Code>
+		<State>GRO</State>
+		<Descripcion>San Luis Acatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>32</Code>
+		<State>GUA</State>
+		<Descripcion>San José Iturbide</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>32</Code>
+		<State>JAL</State>
+		<Descripcion>La Barca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>32</Code>
+		<State>MEX</State>
+		<Descripcion>San Mateo Atenco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>32</Code>
+		<State>OAX</State>
+		<Descripcion>San Pedro Tapanatepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>32</Code>
+		<State>VER</State>
+		<Descripcion>Cuitláhuac</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>33</Code>
+		<State>GRO</State>
+		<Descripcion>Chilapa de Álvarez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>33</Code>
+		<State>GUA</State>
+		<Descripcion>Apaseo el Alto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>33</Code>
+		<State>JAL</State>
+		<Descripcion>Jamay</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>33</Code>
+		<State>OAX</State>
+		<Descripcion>Vicente Camalote</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>33</Code>
+		<State>VER</State>
+		<Descripcion>Fortín de las Flores</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>34</Code>
+		<State>GRO</State>
+		<Descripcion>Tlapa de Comonfort</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>34</Code>
+		<State>GUA</State>
+		<Descripcion>Ciudad Manuel Doblado</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>34</Code>
+		<State>JAL</State>
+		<Descripcion>Yahualica de González Gallo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>34</Code>
+		<State>OAX</State>
+		<Descripcion>Villa de Tamazulápam del Progreso</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>34</Code>
+		<State>VER</State>
+		<Descripcion>Alvarado</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>35</Code>
+		<State>GRO</State>
+		<Descripcion>Tlalixtaquilla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>35</Code>
+		<State>GUA</State>
+		<Descripcion>Jaral del Progreso</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>35</Code>
+		<State>JAL</State>
+		<Descripcion>Colotlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>35</Code>
+		<State>OAX</State>
+		<Descripcion>San Juan Bautista lo de Soto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>35</Code>
+		<State>VER</State>
+		<Descripcion>José Cardel</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>36</Code>
+		<State>GRO</State>
+		<Descripcion>Cuajinicuilapa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>36</Code>
+		<State>GUA</State>
+		<Descripcion>San Diego de la Unión</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>36</Code>
+		<State>JAL</State>
+		<Descripcion>Cihuatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>36</Code>
+		<State>MEX</State>
+		<Descripcion>Chiconcuac</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>36</Code>
+		<State>OAX</State>
+		<Descripcion>San Juan Cacahuatepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>36</Code>
+		<State>VER</State>
+		<Descripcion>Banderilla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>37</Code>
+		<State>GRO</State>
+		<Descripcion>Huamuxtitlan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>37</Code>
+		<State>GUA</State>
+		<Descripcion>Santa Cruz Juventino Rosas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>37</Code>
+		<State>JAL</State>
+		<Descripcion>Zapotiltic</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>37</Code>
+		<State>OAX</State>
+		<Descripcion>San Pedro Totolapa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>37</Code>
+		<State>VER</State>
+		<Descripcion>Paraje Nuevo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>38</Code>
+		<State>GRO</State>
+		<Descripcion>Cruz Grande</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>38</Code>
+		<State>GUA</State>
+		<Descripcion>Doctor Mora</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>38</Code>
+		<State>JAL</State>
+		<Descripcion>Villa Corona</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>38</Code>
+		<State>OAX</State>
+		<Descripcion>San Miguel el Grande</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>38</Code>
+		<State>VER</State>
+		<Descripcion>Playa Vicente</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>39</Code>
+		<State>GRO</State>
+		<Descripcion>Ocotito</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>39</Code>
+		<State>GUA</State>
+		<Descripcion>Dolores Hgo. Cuna de la Indep. Nal.</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>39</Code>
+		<State>JAL</State>
+		<Descripcion>Teocaltiche</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>39</Code>
+		<State>MEX</State>
+		<Descripcion>Almoloya de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>39</Code>
+		<State>OAX</State>
+		<Descripcion>Zimatlán de Álvarez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>39</Code>
+		<State>VER</State>
+		<Descripcion>Altotonga</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>40</Code>
+		<State>GRO</State>
+		<Descripcion>Copala</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>40</Code>
+		<State>MEX</State>
+		<Descripcion>Ocoyoacac</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>40</Code>
+		<State>OAX</State>
+		<Descripcion>San Pablo Huitzo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>40</Code>
+		<State>VER</State>
+		<Descripcion>Juan Díaz Covarrubias</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>41</Code>
+		<State>GRO</State>
+		<Descripcion>Zihuatanejo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>41</Code>
+		<State>JAL</State>
+		<Descripcion>Tequila</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>41</Code>
+		<State>MEX</State>
+		<Descripcion>Zumpango</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>41</Code>
+		<State>OAX</State>
+		<Descripcion>San Francisco Telixtlahuaca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>41</Code>
+		<State>VER</State>
+		<Descripcion>Cuichapa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>42</Code>
+		<State>JAL</State>
+		<Descripcion>El Quince (San José el Quince)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>42</Code>
+		<State>OAX</State>
+		<Descripcion>Mariscala de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>42</Code>
+		<State>VER</State>
+		<Descripcion>Santiago Tuxtla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>43</Code>
+		<State>JAL</State>
+		<Descripcion>San José el Verde (El Verde)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>43</Code>
+		<State>OAX</State>
+		<Descripcion>Santiago Pinotepa Nacional</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>43</Code>
+		<State>VER</State>
+		<Descripcion>Huayacocotla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>44</Code>
+		<State>JAL</State>
+		<Descripcion>Jocotepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>44</Code>
+		<State>OAX</State>
+		<Descripcion>Santiago Jamiltepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>44</Code>
+		<State>VER</State>
+		<Descripcion>Paso de Ovejas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>45</Code>
+		<State>JAL</State>
+		<Descripcion>Tecalitlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>45</Code>
+		<State>OAX</State>
+		<Descripcion>San Pedro Pochutla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>45</Code>
+		<State>VER</State>
+		<Descripcion>Catemaco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>46</Code>
+		<State>JAL</State>
+		<Descripcion>Chapala</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>46</Code>
+		<State>OAX</State>
+		<Descripcion>Heroica Ciudad de Tlaxiaco</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>46</Code>
+		<State>VER</State>
+		<Descripcion>Nogales</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>47</Code>
+		<State>JAL</State>
+		<Descripcion>Ajijic</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>47</Code>
+		<State>OAX</State>
+		<Descripcion>San Juan Bautista Valle Nacional</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>47</Code>
+		<State>VER</State>
+		<Descripcion>Las Choapas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>48</Code>
+		<State>JAL</State>
+		<Descripcion>San Ignacio Cerro Gordo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>48</Code>
+		<State>OAX</State>
+		<Descripcion>Lagunas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>48</Code>
+		<State>VER</State>
+		<Descripcion>General Miguel Alemán (Potrero Nuevo)</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>49</Code>
+		<State>JAL</State>
+		<Descripcion>Zacoalco de Torres</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>49</Code>
+		<State>OAX</State>
+		<Descripcion>Ciudad Ixtepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>49</Code>
+		<State>VER</State>
+		<Descripcion>Coatzintla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>50</Code>
+		<State>JAL</State>
+		<Descripcion>Huejuquilla el Alto</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>50</Code>
+		<State>OAX</State>
+		<Descripcion>Santiago Juxtlahuaca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>50</Code>
+		<State>VER</State>
+		<Descripcion>Ángel R. Cabada</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>51</Code>
+		<State>JAL</State>
+		<Descripcion>Villa Hidalgo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>51</Code>
+		<State>OAX</State>
+		<Descripcion>San Sebastián Tecomaxtlahuaca</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>51</Code>
+		<State>VER</State>
+		<Descripcion>San Rafael</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>52</Code>
+		<State>JAL</State>
+		<Descripcion>Unión de San Antonio</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>52</Code>
+		<State>OAX</State>
+		<Descripcion>Asunción Nochixtlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>52</Code>
+		<State>VER</State>
+		<Descripcion>Tlacojalpan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>53</Code>
+		<State>JAL</State>
+		<Descripcion>Las Pintitas</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>53</Code>
+		<State>OAX</State>
+		<Descripcion>San Francisco Ixhuatán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>53</Code>
+		<State>VER</State>
+		<Descripcion>Cosoleacaque</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>54</Code>
+		<State>JAL</State>
+		<Descripcion>Tamazula de Gordiano</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>54</Code>
+		<State>OAX</State>
+		<Descripcion>San Blas Atempa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>54</Code>
+		<State>VER</State>
+		<Descripcion>Lerdo de Tejada</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>55</Code>
+		<State>JAL</State>
+		<Descripcion>Acatlán de Juárez</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>55</Code>
+		<State>OAX</State>
+		<Descripcion>Santo Domingo Tehuantepec</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>55</Code>
+		<State>VER</State>
+		<Descripcion>Tihuatlán</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>56</Code>
+		<State>JAL</State>
+		<Descripcion>Valle de Guadalupe</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>56</Code>
+		<State>OAX</State>
+		<Descripcion>Cuilápam de Guerrero</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>56</Code>
+		<State>VER</State>
+		<Descripcion>Atoyac</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>57</Code>
+		<State>OAX</State>
+		<Descripcion>El Rosario</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>57</Code>
+		<State>VER</State>
+		<Descripcion>Huiloapan de Cuauhtémoc</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>58</Code>
+		<State>OAX</State>
+		<Descripcion>Santa Lucia del Camino</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>58</Code>
+		<State>VER</State>
+		<Descripcion>Cazones de Herrera</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>59</Code>
+		<State>OAX</State>
+		<Descripcion>San Antonio de la Cal</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>59</Code>
+		<State>VER</State>
+		<Descripcion>Yecuatla</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>60</Code>
+		<State>VER</State>
+		<Descripcion>Soledad de Doblado</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>61</Code>
+		<State>VER</State>
+		<Descripcion>Cerro Azul</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>62</Code>
+		<State>VER</State>
+		<Descripcion>Tezonapa</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>66</Code>
+		<State>VER</State>
+		<Descripcion>Sihuapan</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>67</Code>
+		<State>VER</State>
+		<Descripcion>El Higo</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>68</Code>
+		<State>VER</State>
+		<Descripcion>Paso del Macho</Descripcion>
+	</Localidad>
+	<Localidad>
+		<Code>69</Code>
+		<State>VER</State>
+		<Descripcion>Tlapacoyan</Descripcion>
+	</Localidad>
+</data-set-c_Localidad>

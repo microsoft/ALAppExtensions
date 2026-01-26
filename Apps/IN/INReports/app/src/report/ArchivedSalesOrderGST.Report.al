@@ -914,8 +914,8 @@ report 18002 "Archived Sales Order GST"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.LANGUAGE := Language.GetLanguageID("Language Code");
-                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
+                CurrReport.LANGUAGE := GlobalLanguage.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
                 Customer.Get("Bill-to Customer No.");
                 if ResponsibilityCenter.Get("Responsibility Center") then begin
                     FormatAddr.RespCenter(CompanyAddr, ResponsibilityCenter);
@@ -1059,7 +1059,7 @@ report 18002 "Archived Sales Order GST"
         DimSetEntry2: Record "Dimension Set Entry";
         ResponsibilityCenter: Record "Responsibility Center";
         CurrExchRate: Record "Currency Exchange Rate";
-        Language: Codeunit "Language";
+        GlobalLanguage: Codeunit "Language";
         SalesCountPrintedArch: Codeunit "SalesCount-PrintedArch";
         FormatAddr: Codeunit "Format Address";
         CustAddr: array[8] of Text[50];

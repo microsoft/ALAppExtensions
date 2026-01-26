@@ -8,6 +8,7 @@ using Microsoft.CRM.BusinessRelation;
 using Microsoft.Finance.Registration;
 using Microsoft.Inventory.Intrastat;
 using Microsoft.Purchases.Payables;
+using System.Utilities;
 
 #pragma warning disable AA0232
 tableextension 11702 "Vendor CZL" extends Vendor
@@ -36,55 +37,24 @@ tableextension 11702 "Vendor CZL" extends Vendor
                     if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
                         LogNotVerified := false;
                         RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Vendor);
-                        ResultRecordRef.SetTable(Rec);
+                        if ResultRecordRef.Number <> 0 then
+                            ResultRecordRef.SetTable(Rec);
                     end;
 
                 if LogNotVerified then
                     RegistrationLogMgtCZL.LogVendor(Rec);
             end;
         }
+#if not CLEANSCHEMA26
         field(11770; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';
             DataClassification = CustomerContent;
-#if not CLEAN23
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#endif
             ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-#if not CLEAN23
-
-            trigger OnValidate()
-            var
-                RegistrationLogCZL: Record "Registration Log CZL";
-                RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
-                ResultRecordRef: RecordRef;
-                LogNotVerified: Boolean;
-                IsHandled: Boolean;
-            begin
-                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
-                if IsHandled then
-                    exit;
-
-                if not RegistrationNoMgtCZL.CheckRegistrationNo("Registration No. CZL", "No.", Database::Vendor) then
-                    exit;
-
-                LogNotVerified := true;
-                if "Registration No. CZL" <> xRec."Registration No. CZL" then
-                    if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
-                        LogNotVerified := false;
-                        RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Vendor);
-                        ResultRecordRef.SetTable(Rec);
-                    end;
-
-                if LogNotVerified then
-                    RegistrationLogMgtCZL.LogVendor(Rec);
-            end;
-#endif
         }
+#endif
         field(11771; "Tax Registration No. CZL"; Text[20])
         {
             Caption = 'Tax Registration No.';
@@ -124,18 +94,14 @@ tableextension 11702 "Vendor CZL" extends Vendor
             Caption = 'Disable Unreliability Check';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA25
         field(31070; "Transaction Type CZL"; Code[10])
         {
             Caption = 'Transaction Type';
             TableRelation = "Transaction Type";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31071; "Transaction Specification CZL"; Code[10])
@@ -143,13 +109,8 @@ tableextension 11702 "Vendor CZL" extends Vendor
             Caption = 'Transaction Specification';
             TableRelation = "Transaction Specification";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field will not be used anymore.';
         }
         field(31072; "Transport Method CZL"; Code[10])
@@ -157,27 +118,21 @@ tableextension 11702 "Vendor CZL" extends Vendor
             Caption = 'Transport Method';
             TableRelation = "Transport Method";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
-    }
-#if not CLEAN23
-    keys
-    {
-        key(Key11700; "Registration No. CZL")
-        {
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-            ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-        }
-    }
 #endif
+    }
+
+    trigger OnDelete()
+    var
+        UnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
+    begin
+        UnreliablePayerEntryCZL.SetRange("Vendor No.", Rec."No.");
+        UnreliablePayerEntryCZL.DeleteAll(true);
+        RegistrationLogMgtCZL.DeleteVendorLog(Rec);
+    end;
 
     var
         UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL";
@@ -185,10 +140,23 @@ tableextension 11702 "Vendor CZL" extends Vendor
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
         RegistrationNoMgtCZL: Codeunit "Registration No. Mgt. CZL";
         RegistrationNo: Text[20];
+        ImportSuccessfulQst: Label 'Import was successful. Do you want to open unreliable payer entries page?';
 
     procedure ImportUnrPayerStatusCZL()
+    var
+        UnreliablePayerEntry: Record "Unreliable Payer Entry CZL";
+        ConfirmManagement: Codeunit "Confirm Management";
     begin
-        UnreliablePayerMgtCZL.ImportUnrPayerStatusForVendor(Rec);
+        if not UnreliablePayerMgtCZL.ImportUnrPayerStatusForVendor(Rec) then
+            exit;
+
+        if not ConfirmManagement.GetResponse(ImportSuccessfulQst, true) then
+            exit;
+
+        Commit();
+        UnreliablePayerEntry.SetRange("Vendor No.", "No.");
+        UnreliablePayerEntry."Vendor No." := "No.";
+        Page.RunModal(Page::"Unreliable Payer Entries CZL", UnreliablePayerEntry);
     end;
 
     procedure IsUnreliablePayerCheckPossibleCZL(): Boolean

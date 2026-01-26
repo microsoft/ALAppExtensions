@@ -109,21 +109,14 @@ codeunit 31420 "Report Selection Handler CZZ"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Report Distribution Management", 'OnAfterGetFullDocumentTypeText', '', false, false)]
-    local procedure AddAdvanceReportsOnAfterGetFullDocumentTypeText(DocumentVariant: Variant; var DocumentTypeText: Text[50])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Report Distribution Management", 'OnGetFullDocumentTypeTextElseCase', '', false, false)]
+    local procedure AddAdvanceReportsOnGetFullDocumentTypeTextElseCase(DocumentRecordRef: RecordRef; var DocumentTypeText: Text[50])
     var
-        DocumentRecordRef: RecordRef;
         SalesAdvanceLetterLbl: Label 'Sales Advance';
         SalesAdvanceVATDocumentLbl: Label 'Sales Advance VAT Document';
         PurchaseAdvanceLetterLbl: Label 'Purchase Advance';
         PurchaseAdvanceVATDocumentLbl: Label 'Purchase Advance VAT Document';
     begin
-        if DocumentVariant.IsRecord then
-            DocumentRecordRef.GetTable(DocumentVariant)
-        else
-            if DocumentVariant.IsRecordRef then
-                DocumentRecordRef := DocumentVariant;
-
         case DocumentRecordRef.Number of
             Database::"Sales Adv. Letter Header CZZ":
                 DocumentTypeText := SalesAdvanceLetterLbl;
@@ -133,6 +126,40 @@ codeunit 31420 "Report Selection Handler CZZ"
                 DocumentTypeText := PurchaseAdvanceLetterLbl;
             Database::"Purch. Adv. Letter Entry CZZ":
                 DocumentTypeText := PurchaseAdvanceVATDocumentLbl;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Report Distribution Management", 'OnGetDocumentLanguageCodeCaseElse', '', false, false)]
+    local procedure GetLanguageCodeFromAdvancesOnGetDocumentLanguageCodeCaseElse(DocumentRecordRef: RecordRef; var LanguageCode: Code[10])
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+    begin
+        case DocumentRecordRef.Number of
+            Database::"Sales Adv. Letter Header CZZ":
+                begin
+                    DocumentRecordRef.SetTable(SalesAdvLetterHeaderCZZ);
+                    LanguageCode := SalesAdvLetterHeaderCZZ."Language Code";
+                end;
+            Database::"Sales Adv. Letter Entry CZZ":
+                begin
+                    DocumentRecordRef.SetTable(SalesAdvLetterEntryCZZ);
+                    SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
+                    LanguageCode := SalesAdvLetterHeaderCZZ."Language Code";
+                end;
+            Database::"Purch. Adv. Letter Header CZZ":
+                begin
+                    DocumentRecordRef.SetTable(PurchAdvLetterHeaderCZZ);
+                    LanguageCode := PurchAdvLetterHeaderCZZ."Language Code";
+                end;
+            Database::"Purch. Adv. Letter Entry CZZ":
+                begin
+                    DocumentRecordRef.SetTable(PurchAdvLetterEntryCZZ);
+                    PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
+                    LanguageCode := PurchAdvLetterHeaderCZZ."Language Code";
+                end;
         end;
     end;
 

@@ -14,15 +14,19 @@ codeunit 31456 "Purch. Post Advance Letter CZZ"
 
     trigger OnRun()
     begin
+        PurchAdvLetterManagementCZZ.SetPreviewMode(PreviewMode);
+
         case DocumentType of
             DocumentType::PaymentVAT:
-                PurchAdvLetterManagementCZZ.PostAdvancePaymentVAT(Rec, 0D);
+                PurchAdvLetterManagementCZZ.PostAdvancePaymentVAT(Rec);
             DocumentType::PaymentUsageVAT:
                 PurchAdvLetterManagementCZZ.PostAdvancePaymentUsageVAT(Rec);
             DocumentType::CreditMemoVAT:
                 PurchAdvLetterManagementCZZ.PostAdvanceCreditMemoVAT(Rec);
             DocumentType::CancelUsageVAT:
                 PurchAdvLetterManagementCZZ.PostCancelUsageVAT(Rec);
+            DocumentType::NonDeductibleVAT:
+                PurchAdvLetterManagementCZZ.PostNonDeductibleVAT(Rec);
         end;
 
         if PreviewMode then
@@ -32,7 +36,7 @@ codeunit 31456 "Purch. Post Advance Letter CZZ"
     var
         GenJnlPostPreview: Codeunit "Gen. Jnl.-Post Preview";
         PurchAdvLetterManagementCZZ: Codeunit "PurchAdvLetterManagement CZZ";
-        DocumentType: Option PaymentVAT,PaymentUsageVAT,CreditMemoVAT,CancelUsageVAT;
+        DocumentType: Option PaymentVAT,PaymentUsageVAT,CreditMemoVAT,CancelUsageVAT,NonDeductibleVAT;
         PreviewMode: Boolean;
 
     procedure PostPaymentVAT(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; Preview: Boolean)
@@ -59,6 +63,12 @@ codeunit 31456 "Purch. Post Advance Letter CZZ"
         Post(PurchAdvLetterEntryCZZ, Preview);
     end;
 
+    procedure PostNonDeductibleVAT(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; Preview: Boolean)
+    begin
+        DocumentType := DocumentType::NonDeductibleVAT;
+        Post(PurchAdvLetterEntryCZZ, Preview);
+    end;
+
     local procedure Post(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; Preview: Boolean)
     begin
         if Preview then begin
@@ -73,7 +83,7 @@ codeunit 31456 "Purch. Post Advance Letter CZZ"
         PreviewMode := NewPreviewMode;
     end;
 
-    procedure SetDocumentType(NewDocumentType: Option PaymentVAT,PaymentUsageVAT,CreditMemoVAT,CancelUsageVAT)
+    procedure SetDocumentType(NewDocumentType: Option PaymentVAT,PaymentUsageVAT,CreditMemoVAT,CancelUsageVAT,NonDeductibleVAT)
     begin
         DocumentType := NewDocumentType;
     end;

@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 codeunit 10537 "MTD Connection"
 {
@@ -108,13 +109,14 @@ codeunit 10537 "MTD Connection"
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+        MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
     begin
         CheckOAuthConfigured(false);
         OAuth20Setup.Get(GetOAuthSetupCode());
         Session.LogMessage('0000CCE', RefreshAccessTokenMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UKMakingTaxDigitalTok);
         if ResetFraudPreventionSessionHeaders then
             MTDSessionFraudPrevHdr.DeleteAll();
-        exit(OAuth20Setup.RefreshAccessToken(HttpError));
+        exit(MTDOAuth20Mgt.RefreshAccessToken(OAuth20Setup, HttpError));
     end;
 
     local procedure CheckOAuthConfigured(OpenSetup: Boolean)
@@ -174,6 +176,7 @@ codeunit 10537 "MTD Connection"
         OAuth20Setup: Record "OAuth 2.0 Setup";
         VATReportSetup: Record "VAT Report Setup";
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
+        MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
         JObject: JsonObject;
         JObject2: JsonObject;
         HttpLogError: Text;
@@ -200,7 +203,7 @@ codeunit 10537 "MTD Connection"
 
         IF ResetFraudPreventionSessionHeaders then
             MTDSessionFraudPrevHdr.DeleteAll();
-        Result := OAuth20Setup.InvokeRequest(RequestJson, ResponseJson, HttpError, true);
+        Result := MTDOAuth20Mgt.InvokeRequest(OAuth20Setup, RequestJson, ResponseJson, HttpError, true);
 
         if not Result then
             TryParseHMRCErrors(HttpError, HttpLogError, ResponseJson);

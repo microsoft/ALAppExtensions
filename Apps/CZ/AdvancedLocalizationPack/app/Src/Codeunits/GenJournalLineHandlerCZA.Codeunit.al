@@ -26,7 +26,7 @@ codeunit 31380 "Gen. Journal Line Handler CZA"
                             repeat
                                 GLEntry."Amount to Apply CZA" := 0;
                                 GLEntry."Applies-to ID CZA" := '';
-                                Codeunit.Run(Codeunit::"G/L Entry - Edit CZA", GLEntry);
+                                Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
                             until GLEntry.Next() = 0;
                     end else
                         if xGenJournalLine."Applies-to Doc. No." <> '' then begin
@@ -39,7 +39,7 @@ codeunit 31380 "Gen. Journal Line Handler CZA"
                                 repeat
                                     GLEntry."Amount to Apply CZA" := 0;
                                     GLEntry."Applies-to ID CZA" := '';
-                                    Codeunit.Run(Codeunit::"G/L Entry - Edit CZA", GLEntry);
+                                    Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
                                 until GLEntry.Next() = 0;
                         end;
                 end;
@@ -55,6 +55,13 @@ codeunit 31380 "Gen. Journal Line Handler CZA"
 
     [EventSubscriber(ObjectType::Page, Page::"Payment Journal", 'OnAfterEnableApplyEntriesAction', '', false, false)]
     local procedure ApplyEntriesActionEnabledOnAfterEnableApplyEntriesActionPaymentJournal(GenJournalLine: Record "Gen. Journal Line"; var ApplyEntriesActionEnabled: Boolean)
+    begin
+        ApplyEntriesActionEnabled := ApplyEntriesActionEnabled or
+          (GenJournalLine."Account Type" = GenJournalLine."Account Type"::"G/L Account") or (GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"G/L Account");
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Recurring General Journal", 'OnAfterEnableApplyEntriesAction', '', false, false)]
+    local procedure ApplyEntriesActionEnabledOnAfterEnableApplyEntriesActionRecurringGeneralJournal(GenJournalLine: Record "Gen. Journal Line"; var ApplyEntriesActionEnabled: Boolean)
     begin
         ApplyEntriesActionEnabled := ApplyEntriesActionEnabled or
           (GenJournalLine."Account Type" = GenJournalLine."Account Type"::"G/L Account") or (GenJournalLine."Bal. Account Type" = GenJournalLine."Bal. Account Type"::"G/L Account");

@@ -19,6 +19,24 @@ page 1851 "Sales Forecast No Chart"
     {
         area(content)
         {
+            group(Disclaimer)
+            {
+                Caption = '';
+                Editable = false;
+                ShowCaption = false;
+
+                field(DisclaimerText; DisclaimerValueMsg)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Enabled = true;
+                    Visible = true;
+                    MultiLine = true;
+                    Style = AttentionAccent;
+                    StyleExpr = true;
+                    ToolTip = 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
+                    ShowCaption = false;
+                }
+            }
             field(StatusText; StatusTextValue)
             {
                 ApplicationArea = Basic, Suite;
@@ -65,7 +83,7 @@ page 1851 "Sales Forecast No Chart"
 
     trigger OnAfterGetRecord()
     begin
-        if ("No." = '') or (xRec."No." <> "No.") or NeedsUpdate or IsForecastUpdated() then begin
+        if (Rec."No." = '') or (xRec."No." <> Rec."No.") or NeedsUpdate or IsForecastUpdated() then begin
             if MSSalesForecastSetup.Get() then;
             UpdateStatus();
             LastUpdatedValue := MSSalesForecastParameter."Last Updated";
@@ -81,6 +99,7 @@ page 1851 "Sales Forecast No Chart"
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
         MSSalesForecastParameter: Record "MS - Sales Forecast Parameter";
         NoForecastLbl: Label 'Sales forecast not available for this item.';
+        DisclaimerValueMsg: Label 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
         NeedsUpdate: Boolean;
         StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast";
         StatusTextValue: Text;
@@ -112,7 +131,7 @@ page 1851 "Sales Forecast No Chart"
         if MSSalesForecastSetup.Get() then;
 
         // check if forecast exists in DB
-        if not MSSalesForecastParameter.Get("No.") then begin
+        if not MSSalesForecastParameter.Get(Rec."No.") then begin
             SetStatusText(StatusType::" ");
             exit;
         end;
@@ -128,7 +147,7 @@ page 1851 "Sales Forecast No Chart"
         end;
 
         VariancePercSetup := MSSalesForecastSetup."Variance %";
-        MSSalesForecast.SetRange("Item No.", "No.");
+        MSSalesForecast.SetRange("Item No.", Rec."No.");
         MSSalesForecast.SetRange("Forecast Data", MSSalesForecast."Forecast Data"::Result);
         MSSalesForecast.SetFilter("Variance %", '<=%1', VariancePercSetup);
         if MSSalesForecast.IsEmpty() then
@@ -143,7 +162,7 @@ page 1851 "Sales Forecast No Chart"
         // check if there is enough historical data
         TimeSeriesManagement.SetMaximumHistoricalPeriods(MSSalesForecastSetup."Historical Periods");
         TimeSeriesManagement.SetMinimumHistoricalPeriods(5);
-        SalesForecastHandler.SetItemLedgerEntryFilters(ItemLedgerEntry, "No.");
+        SalesForecastHandler.SetItemLedgerEntryFilters(ItemLedgerEntry, Rec."No.");
 
         HasMinimumHistory := TimeSeriesManagement.HasMinimumHistoricalData(
             NumberOfPeriodsToPredict,
@@ -151,8 +170,8 @@ page 1851 "Sales Forecast No Chart"
             ItemLedgerEntry.FieldNo("Posting Date"),
             MSSalesForecastSetup."Period Type",
             WorkDate());
-        OnAfterHasMinimumSIHistData("No.", HasMinimumHistoryLoc, NumberOfPeriodsWithHistoryLoc, MSSalesForecastSetup."Period Type", WorkDate(), StatusType);
-        HasMinimumHistory := (HasMinimumHistory OR HasMinimumHistoryLoc);
+        OnAfterHasMinimumSIHistData(Rec."No.", HasMinimumHistoryLoc, NumberOfPeriodsWithHistoryLoc, MSSalesForecastSetup."Period Type", WorkDate(), StatusType);
+        HasMinimumHistory := (HasMinimumHistory or HasMinimumHistoryLoc);
         if not HasMinimumHistory then begin
             SetStatusText(StatusType::"Not enough historical data");
             exit;
@@ -184,14 +203,14 @@ page 1851 "Sales Forecast No Chart"
 
     local procedure IsForecastUpdated(): Boolean
     begin
-        if MSSalesForecastParameter.Get("No.") then
+        if MSSalesForecastParameter.Get(Rec."No.") then
             if LastUpdatedValue <> MSSalesForecastParameter."Last Updated" then
                 exit(true);
         exit(false);
     end;
 
     [IntegrationEvent(false, false)]
-    procedure OnAfterHasMinimumSIHistData(ItemNo: Code[20]; VAR HasMinimumHistoryLoc: boolean; VAR NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; VAR StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available");
+    procedure OnAfterHasMinimumSIHistData(ItemNo: Code[20]; var HasMinimumHistoryLoc: boolean; var NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; var StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available");
     begin
     end;
 

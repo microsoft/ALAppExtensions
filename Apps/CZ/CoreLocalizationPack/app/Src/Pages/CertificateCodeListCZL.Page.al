@@ -40,15 +40,21 @@ page 31045 "Certificate Code List CZL"
             {
                 Caption = 'Certificates';
                 Image = Certificate;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 RunObject = page "Certificate List";
                 RunPageLink = "Certificate Code CZL" = field(Code);
                 RunPageMode = View;
                 RunPageView = order(descending);
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'View or edit the certificates that are set up for the certificate code.';
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Certificates_Promoted; Certificates)
+                {
+                }
             }
         }
     }

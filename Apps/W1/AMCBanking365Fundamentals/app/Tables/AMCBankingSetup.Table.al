@@ -1,15 +1,26 @@
-﻿// ------------------------------------------------------------------------------------------------
+#if not CLEANSCHEMA31
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Payment;
-
+#if not CLEAN28
 using System.Integration;
 using System.Privacy;
-
+using System.Telemetry;
+#endif
 table 20101 "AMC Banking Setup"
 {
     Caption = 'AMC Banking Setup';
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+#if not CLEAN28
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '31.0';
+#endif
+
 
     fields
     {
@@ -39,7 +50,7 @@ table 20101 "AMC Banking Setup"
         {
             Caption = 'Service URL';
             DataClassification = CustomerContent;
-
+#if not CLEAN28
             trigger OnValidate()
             var
                 WebRequestHelper: Codeunit "Web Request Helper";
@@ -49,6 +60,7 @@ table 20101 "AMC Banking Setup"
                     ClearCredentials();
                 end;
             end;
+#endif            
         }
         field(20105; "Support URL"; Text[250])
         {
@@ -70,13 +82,19 @@ table 20101 "AMC Banking Setup"
         {
             Caption = 'Enabled';
             DataClassification = SystemMetadata;
+#if not CLEAN28
             trigger OnValidate()
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                AMCBankingConsentProvidedLbl: Label 'AMC Banking Fundamentals - consent provided by UserSecurityId %1.', Locked = true;
             begin
                 if not xRec."AMC Enabled" and Rec."AMC Enabled" then
                     Rec."AMC Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+                if Rec."AMC Enabled" then
+                    AuditLog.LogAuditMessage(StrSubstNo(AMCBankingConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
             end;
+#endif
         }
     }
 
@@ -92,6 +110,7 @@ table 20101 "AMC Banking Setup"
     {
     }
 
+#if not CLEAN28
     trigger OnDelete()
     begin
         DeletePassword();
@@ -115,12 +134,12 @@ table 20101 "AMC Banking Setup"
         DemoUserNameTxt: Label 'demouser', Locked = true;
         DemoPasswordTxt: Label 'Demo Password', Locked = true;
 
-    internal procedure SavePassword(PasswordText: Text)
+    internal procedure SavePassword(PasswordText: SecretText)
     begin
         if IsNullGuid("Password Key") then
             "Password Key" := CreateGuid();
 
-        if (PasswordText <> '') then begin
+        if (not PasswordText.IsEmpty()) then begin
             if not EncryptionEnabled() then
                 IsolatedStorage.Set(CopyStr("Password Key", 1, 200), PasswordText, Datascope::Company)
             else
@@ -144,14 +163,15 @@ table 20101 "AMC Banking Setup"
         exit(ServiceUserName);
     end;
 
-    [NonDebuggable]
-    internal procedure GetPassword(): Text
+    internal procedure GetPassword(): SecretText
     var
-        Value: Text;
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        Value: SecretText;
     begin
         if ("User Name" = GetDemoUserName()) then
             exit(GetDemoPass());
 
+        FeatureTelemetry.LogUptake('0000OFK', 'AMC Banking 365 Fundamentals', Enum::"Feature Uptake Status"::Used);
         if not IsolatedStorage.Get(CopyStr("Password Key", 1, 200), Datascope::Company, Value) then;
         exit(Value);
     end;
@@ -208,5 +228,6 @@ table 20101 "AMC Banking Setup"
     procedure OnGetUserName(var UserName: Text[50])
     begin
     end;
+#endif
 }
-
+#endif

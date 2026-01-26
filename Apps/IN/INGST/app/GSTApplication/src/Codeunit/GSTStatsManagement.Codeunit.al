@@ -13,6 +13,7 @@ codeunit 18448 "GST Stats Management"
 
     var
         GSTStatsAmount: Decimal;
+        CessAmount: Decimal;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Document Stats Mgmt.", 'OnAfterFillTotalsByTaxType', '', false, false)]
     local procedure OnAfterFillTotalsByTaxType(TotalsByTaxType: Dictionary of [Code[20], Decimal])
@@ -24,6 +25,9 @@ codeunit 18448 "GST Stats Management"
 
         if TotalsByTaxType.ContainsKey(GSTSetup."GST Tax Type") then
             GSTStatsAmount += TotalsByTaxType.Get(GSTSetup."GST Tax Type");
+
+        if TotalsByTaxType.ContainsKey(GSTSetup."Cess Tax Type") then
+            CessAmount += TotalsByTaxType.Get(GSTSetup."Cess Tax Type");
     end;
 
     procedure GetGstStatsAmount(): Decimal
@@ -31,8 +35,14 @@ codeunit 18448 "GST Stats Management"
         exit(GSTStatsAmount);
     end;
 
+    procedure GetGstCessAmount(): Decimal
+    begin
+        exit(CessAmount);
+    end;
+
     procedure ClearSessionVariable()
     begin
         GSTStatsAmount := 0;
+        CessAmount := 0;
     end;
 }

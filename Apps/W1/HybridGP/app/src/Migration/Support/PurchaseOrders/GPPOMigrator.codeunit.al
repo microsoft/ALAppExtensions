@@ -1,17 +1,17 @@
 namespace Microsoft.DataMigration.GP;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Inventory.Journal;
-using Microsoft.Purchases.Setup;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.UOM;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Inventory.Item;
-using Microsoft.Purchases.Posting;
-using Microsoft.Inventory.Posting;
 using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Posting;
 using Microsoft.Inventory.Setup;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
 using System.Integration;
 
 codeunit 40108 "GP PO Migrator"
@@ -22,6 +22,8 @@ codeunit 40108 "GP PO Migrator"
         ItemJournalBatchNameTxt: Label 'GPPOITEMS', Comment = 'Item journal batch name for item adjustments', Locked = true;
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
         MigrationLogAreaTxt: Label 'PO', Locked = true;
+        POLineSkippedWarningTxt: Label 'PO line skipped because the item was not migrated. %1', Comment = '%1 = Reason';
+        POLineCouldNotBeCreatedErr: Label 'PO line could not be created because the item was expected to exist but does not. Reason unknown. %1', Comment = '%1 Identifier';
         ItemJnlBatchLineNo: Integer;
         PostPurchaseOrderNoList: List of [Text];
         InitialAutomaticCostAdjustmentType: Enum "Automatic Cost Adjustment Type";
@@ -80,7 +82,6 @@ codeunit 40108 "GP PO Migrator"
                 PurchaseHeader."Shipment Method Code" := CopyStr(GPPOP10100.SHIPMTHD, 1, MaxStrLen(PurchaseHeader."Shipment Method Code"));
                 PurchaseHeader.Validate("Prices Including VAT", false);
                 PurchaseHeader.Validate("Vendor Invoice No.", GPPOP10100.PONUMBER);
-                PurchaseHeader.Validate("Gen. Bus. Posting Group", GPCodeTxt);
 
                 UpdateShipToAddress(GPPOP10100, CountryCode, PurchaseHeader);
 
@@ -141,7 +142,10 @@ codeunit 40108 "GP PO Migrator"
         GPPOP10110: Record "GP POP10110";
         GPPOPReceiptApply: Record GPPOPReceiptApply;
         GPPOPReceiptApplyLineUnitCost: Record GPPOPReceiptApply;
+        Item: Record Item;
+        GPMigrationWarnings: Record "GP Migration Warnings";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        HelperFunctions: Codeunit "Helper Functions";
         LineQuantityRemaining: Decimal;
         LineNo: Integer;
         LocationCode: Code[10];
@@ -150,6 +154,9 @@ codeunit 40108 "GP PO Migrator"
         LastLineUnitCost: Decimal;
         LineQtyReceivedByUnitCost: Decimal;
         LineQtyInvoicedByUnitCost: Decimal;
+        ItemNo: Text;
+        ShouldCreateLine: Boolean;
+        NotMigratedWarningTxt: Text[500];
     begin
         GPPOP10110.SetRange(PONUMBER, PONumber);
         if not GPPOP10110.FindSet() then
@@ -159,41 +166,61 @@ codeunit 40108 "GP PO Migrator"
         repeat
             LastLocation := '';
             LastLineUnitCost := 0;
+            ShouldCreateLine := true;
 
-            LineQuantityRemaining := GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE;
-            if LineQuantityRemaining > 0 then begin
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPPOP10110.RecordId));
-                GPPOPReceiptApplyLineUnitCost.SetLoadFields(TRXLOCTN, PCHRPTCT, UOFM);
-                GPPOPReceiptApplyLineUnitCost.SetCurrentKey(TRXLOCTN, PCHRPTCT);
-                GPPOPReceiptApplyLineUnitCost.SetRange(PONUMBER, GPPOP10110.PONUMBER);
-                GPPOPReceiptApplyLineUnitCost.SetRange(POLNENUM, GPPOP10110.ORD);
-                GPPOPReceiptApplyLineUnitCost.SetRange(Status, GPPOPReceiptApplyLineUnitCost.Status::Posted);
-                GPPOPReceiptApplyLineUnitCost.SetFilter(POPTYPE, '1|3');
-                GPPOPReceiptApplyLineUnitCost.SetFilter(QTYSHPPD, '>%1', 0);
-                GPPOPReceiptApplyLineUnitCost.SetFilter(PCHRPTCT, '>%1', 0);
+            ItemNo := CopyStr(GPPOP10110.ITEMNMBR.Trim(), 1, MaxStrLen(Item."No."));
+            Item.SetLoadFields(Blocked);
+            if Item.Get(ItemNo) then begin
+                if Item.Blocked then
+                    ShouldCreateLine := false
+            end else
+                if GPPOP10110.NONINVEN = 0 then
+                    ShouldCreateLine := false;
 
-                if GPPOPReceiptApplyLineUnitCost.FindSet() then
-                    repeat
-                        if ((LastLocation <> GPPOPReceiptApplyLineUnitCost.TRXLOCTN) or (LastLineUnitCost <> GPPOPReceiptApplyLineUnitCost.PCHRPTCT)) then begin
-                            LocationCode := CopyStr(GPPOPReceiptApplyLineUnitCost.TRXLOCTN, 1, MaxStrLen(LocationCode));
-                            UnitOfMeasure := CopyStr(GPPOPReceiptApplyLineUnitCost.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
-                            LineQtyReceivedByUnitCost := GPPOPReceiptApply.GetSumQtyShippedByUnitCost(GPPOP10110.PONUMBER, GPPOP10110.ORD, LocationCode, GPPOPReceiptApplyLineUnitCost.PCHRPTCT);
-                            LineQtyInvoicedByUnitCost := GPPOPReceiptApply.GetSumQtyInvoicedByUnitCost(GPPOP10110.PONUMBER, GPPOP10110.ORD, LocationCode, GPPOPReceiptApplyLineUnitCost.PCHRPTCT);
+            if ShouldCreateLine then begin
+                LineQuantityRemaining := GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE;
+                if LineQuantityRemaining > 0 then begin
+                    DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPPOP10110.RecordId));
+                    GPPOPReceiptApplyLineUnitCost.SetLoadFields(TRXLOCTN, PCHRPTCT, UOFM);
+                    GPPOPReceiptApplyLineUnitCost.SetCurrentKey(TRXLOCTN, PCHRPTCT);
+                    GPPOPReceiptApplyLineUnitCost.SetRange(PONUMBER, GPPOP10110.PONUMBER);
+                    GPPOPReceiptApplyLineUnitCost.SetRange(POLNENUM, GPPOP10110.ORD);
+                    GPPOPReceiptApplyLineUnitCost.SetRange(Status, GPPOPReceiptApplyLineUnitCost.Status::Posted);
+                    GPPOPReceiptApplyLineUnitCost.SetFilter(POPTYPE, '1|3');
+                    GPPOPReceiptApplyLineUnitCost.SetFilter(QTYSHPPD, '>%1', 0);
+                    GPPOPReceiptApplyLineUnitCost.SetFilter(PCHRPTCT, '>%1', 0);
 
-                            if (LineQtyReceivedByUnitCost > LineQtyInvoicedByUnitCost) then
-                                CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, LineQtyReceivedByUnitCost, LineQtyInvoicedByUnitCost, GPPOPReceiptApplyLineUnitCost.PCHRPTCT, LocationCode, UnitOfMeasure)
-                            else
-                                LineQuantityRemaining := LineQuantityRemaining - LineQtyReceivedByUnitCost;
+                    if GPPOPReceiptApplyLineUnitCost.FindSet() then
+                        repeat
+                            if ((LastLocation <> GPPOPReceiptApplyLineUnitCost.TRXLOCTN) or (LastLineUnitCost <> GPPOPReceiptApplyLineUnitCost.PCHRPTCT)) then begin
+                                LocationCode := CopyStr(GPPOPReceiptApplyLineUnitCost.TRXLOCTN, 1, MaxStrLen(LocationCode));
+                                UnitOfMeasure := CopyStr(GPPOPReceiptApplyLineUnitCost.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
+                                LineQtyReceivedByUnitCost := GPPOPReceiptApply.GetSumQtyShippedByUnitCost(GPPOP10110.PONUMBER, GPPOP10110.ORD, LocationCode, GPPOPReceiptApplyLineUnitCost.PCHRPTCT);
+                                LineQtyInvoicedByUnitCost := GPPOPReceiptApply.GetSumQtyInvoicedByUnitCost(GPPOP10110.PONUMBER, GPPOP10110.ORD, LocationCode, GPPOPReceiptApplyLineUnitCost.PCHRPTCT);
 
-                            LastLocation := GPPOPReceiptApplyLineUnitCost.TRXLOCTN;
-                            LastLineUnitCost := GPPOPReceiptApplyLineUnitCost.PCHRPTCT;
-                        end;
-                    until GPPOPReceiptApplyLineUnitCost.Next() = 0;
+                                if (LineQtyReceivedByUnitCost > LineQtyInvoicedByUnitCost) then
+                                    CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, LineQtyReceivedByUnitCost, LineQtyInvoicedByUnitCost, GPPOPReceiptApplyLineUnitCost.PCHRPTCT, LocationCode, UnitOfMeasure)
+                                else
+                                    LineQuantityRemaining := LineQuantityRemaining - LineQtyReceivedByUnitCost;
 
-                LocationCode := CopyStr(GPPOP10110.LOCNCODE.Trim(), 1, MaxStrLen(LocationCode));
-                UnitOfMeasure := CopyStr(GPPOP10110.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
-                if LineQuantityRemaining > 0 then
-                    CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, 0, 0, GPPOP10110.UNITCOST, LocationCode, UnitOfMeasure);
+                                LastLocation := GPPOPReceiptApplyLineUnitCost.TRXLOCTN;
+                                LastLineUnitCost := GPPOPReceiptApplyLineUnitCost.PCHRPTCT;
+                            end;
+                        until GPPOPReceiptApplyLineUnitCost.Next() = 0;
+
+                    LocationCode := CopyStr(GPPOP10110.LOCNCODE.Trim(), 1, MaxStrLen(LocationCode));
+                    UnitOfMeasure := CopyStr(GPPOP10110.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
+                    if LineQuantityRemaining > 0 then
+                        CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, 0, 0, GPPOP10110.UNITCOST, LocationCode, UnitOfMeasure);
+                end;
+            end
+            else begin
+                if not HelperFunctions.ShouldMigrateItem(ItemNo) then
+                    NotMigratedWarningTxt := StrSubstNo(POLineSkippedWarningTxt, 'The item is either inactive or discontinued.')
+                else
+                    NotMigratedWarningTxt := StrSubstNo(POLineSkippedWarningTxt, 'Reason unknown and should be investigated.');
+
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, PONumber + ' - ' + ItemNo, NotMigratedWarningTxt);
             end;
         until GPPOP10110.Next() = 0;
     end;
@@ -238,18 +265,18 @@ codeunit 40108 "GP PO Migrator"
             IsInventoryItem := Item.Type = Item.Type::Inventory;
         end;
 
+		if not FoundItem then
+            if not GPPOP10110.IsInventoryItem() then
+                CreateNonInventoryItem(GPPOP10110)
+            else
+                Error(POLineCouldNotBeCreatedErr, PONumber + ' - ' + ItemNo);
+                
         PurchaseLine.Init();
         PurchaseLine."Document No." := PONumber;
         PurchaseLine."Document Type" := PurchaseDocumentType::Order;
         PurchaseLine."Line No." := LineNo;
         PurchaseLine."Buy-from Vendor No." := GPPOP10110.VENDORID;
         PurchaseLine.Type := PurchaseLineType::Item;
-
-        if not FoundItem then
-            if GPPOP10110.NONINVEN = 1 then
-                CreateNonInventoryItem(GPPOP10110);
-
-        PurchaseLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
         PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
         PurchaseLine."Unit of Measure" := UnitOfMeasure;
         PurchaseLine."Unit of Measure Code" := UnitOfMeasure;

@@ -16,9 +16,6 @@ pageextension 11702 "Financial Reports CZL" extends "Financial Reports"
                 Caption = 'Set up Custom Functions';
                 Ellipsis = true;
                 Image = NewSum;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = false;
                 RunObject = page "Acc. Schedule Extensions CZL";
                 ToolTip = 'Specifies acc. schedule extensions page';
             }
@@ -27,9 +24,6 @@ pageextension 11702 "Financial Reports CZL" extends "Financial Reports"
                 ApplicationArea = Basic, Suite;
                 Caption = 'File Mapping';
                 Image = ExportToExcel;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = false;
                 ToolTip = 'File Mapping allows to set up export to Excel. You can see three dots next to the field with Amount.';
 
                 trigger OnAction()
@@ -46,12 +40,21 @@ pageextension 11702 "Financial Reports CZL" extends "Financial Reports"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Results';
                 Image = ViewDetails;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = false;
                 RunObject = page "Acc. Sched. Res. Hdr. List CZL";
                 RunPageLink = "Acc. Schedule Name" = field("Financial Report Row Group");
                 ToolTip = 'Opens acc. schedule res. header list';
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref("Set up Custom Functions CZL_Promoted"; "Set up Custom Functions CZL")
+            {
+            }
+            actionref("File Mapping CZL_Promoted"; "File Mapping CZL")
+            {
+            }
+            actionref("Results CZL_Promoted"; "Results CZL")
+            {
             }
         }
     }

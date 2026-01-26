@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-TipoDeRemolque xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<c_TipoRemolques>
+		<Code>CTR001</Code>
+		<Descripcion>Caballete</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR002</Code>
+		<Descripcion>Caja</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR003</Code>
+		<Descripcion>Caja Abierta</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR004</Code>
+		<Descripcion>Caja Cerrada</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR005</Code>
+		<Descripcion>Caja De Recolección Con Cargador Frontal</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR006</Code>
+		<Descripcion>Caja Refrigerada</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR007</Code>
+		<Descripcion>Caja Seca</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR008</Code>
+		<Descripcion>Caja Transferencia</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR009</Code>
+		<Descripcion>Cama Baja o Cuello Ganso</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR010</Code>
+		<Descripcion>Chasis Portacontenedor</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR011</Code>
+		<Descripcion>Convencional De Chasis</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR012</Code>
+		<Descripcion>Equipo Especial</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR013</Code>
+		<Descripcion>Estacas</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR014</Code>
+		<Descripcion>Góndola Madrina</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR015</Code>
+		<Descripcion>Grúa Industrial</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR016</Code>
+		<Descripcion>Grúa </Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR017</Code>
+		<Descripcion>Integral</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR018</Code>
+		<Descripcion>Jaula</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR019</Code>
+		<Descripcion>Media Redila</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR020</Code>
+		<Descripcion>Pallet o Celdillas</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR021</Code>
+		<Descripcion>Plataforma</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR022</Code>
+		<Descripcion>Plataforma Con Grúa</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR023</Code>
+		<Descripcion>Plataforma Encortinada</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR024</Code>
+		<Descripcion>Redilas</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR025</Code>
+		<Descripcion>Refrigerador</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR026</Code>
+		<Descripcion>Revolvedora</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR027</Code>
+		<Descripcion>Semicaja</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR028</Code>
+		<Descripcion>Tanque</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR029</Code>
+		<Descripcion>Tolva</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR030</Code>
+		<Descripcion>Tractor</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR031</Code>
+		<Descripcion>Volteo</Descripcion>
+	</c_TipoRemolques>
+	<c_TipoRemolques>
+		<Code>CTR032</Code>
+		<Descripcion>Volteo Desmontable</Descripcion>
+	</c_TipoRemolques>
+</data-set-TipoDeRemolque>

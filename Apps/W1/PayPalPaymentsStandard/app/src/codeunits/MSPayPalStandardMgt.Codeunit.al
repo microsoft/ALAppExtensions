@@ -7,10 +7,10 @@ using Microsoft.Foundation.Company;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Utilities;
-using System.Integration;
 using System.Environment;
 using System.Environment.Configuration;
 using System.Globalization;
+using System.Integration;
 using System.Reflection;
 using System.Telemetry;
 
@@ -523,8 +523,6 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         TargetURL: Text;
     begin
         MSPayPalStandardAccount.HideAllDialogs();
-
-        Account := LowerCase(Account);
 
         if not MSPayPalStandardAccount.FindFirst() then begin
             RegisterPayPalStandardTemplate(TempPaymentServiceSetup);

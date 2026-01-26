@@ -3,6 +3,7 @@ namespace Microsoft.DataMigration.GP;
 using Microsoft.CRM.Outlook;
 using Microsoft.Foundation.Period;
 using Microsoft.Inventory.Setup;
+using System.Integration;
 
 codeunit 40107 FiscalPeriods
 {
@@ -10,6 +11,7 @@ codeunit 40107 FiscalPeriods
     var
         GPSY40101: Record "GP SY40101";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         InitialYear: Integer;
     begin
         InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
@@ -18,6 +20,8 @@ codeunit 40107 FiscalPeriods
 
         if not GPSY40101.FindSet() then
             exit;
+
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPSY40101.RecordId()));
 
         repeat
             CreateFiscalPeriods(GPSY40101);

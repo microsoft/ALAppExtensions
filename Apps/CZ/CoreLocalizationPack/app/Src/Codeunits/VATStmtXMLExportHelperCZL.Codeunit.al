@@ -224,7 +224,6 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
         XMLRootNode: XmlElement;
         AttachmentNode: XmlNode;
         XMLNodes: XmlNodeList;
-
     begin
         XMLDocument.GetRoot(XMLRootNode);
         if XMLRootNode.SelectNodes(AttachmentXPath, XMLNodes) then
@@ -356,9 +355,17 @@ codeunit 11787 "VAT Stmt XML Export Helper CZL"
     end;
 
     procedure GetVATControlReportAddParams(var ReasonsObservedOnDate: Date; var FastAppelReaction: Option " ",B,P; var AppelDocumentNo: Text; ParamsXmlDoc: XmlDocument)
+    var
+        UseAmtsInAddCurr: Boolean;
+    begin
+        GetVATControlReportAddParams(ReasonsObservedOnDate, FastAppelReaction, AppelDocumentNo, UseAmtsInAddCurr, ParamsXmlDoc);
+    end;
+
+    procedure GetVATControlReportAddParams(var ReasonsObservedOnDate: Date; var FastAppelReaction: Option " ",B,P; var AppelDocumentNo: Text; var UseAmtsInAddCurr: Boolean; ParamsXmlDoc: XmlDocument)
     begin
         Evaluate(ReasonsObservedOnDate, GetRequestPageOptionValue(ReasonsObservedOnTok, ParamsXmlDoc), 9);
         Evaluate(FastAppelReaction, GetRequestPageOptionValue(FastAppelReactionTok, ParamsXmlDoc), 9);
         Evaluate(AppelDocumentNo, GetRequestPageOptionValue(AppelDocumentNoTok, ParamsXmlDoc), 9);
+        Evaluate(UseAmtsInAddCurr, GetRequestPageOptionValue(UseAmtsInAddCurrTok, ParamsXmlDoc), 9);
     end;
 }

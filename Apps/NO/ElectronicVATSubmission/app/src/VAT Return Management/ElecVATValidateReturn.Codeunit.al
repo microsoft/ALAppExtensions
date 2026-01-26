@@ -6,9 +6,6 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Foundation.Company;
 using System.Utilities;
-#if not CLEAN23
-using Microsoft.Finance.VAT.Setup;
-#endif
 
 codeunit 10686 "Elec. VAT Validate Return"
 {
@@ -29,11 +26,7 @@ codeunit 10686 "Elec. VAT Validate Return"
         VATStatementReportLine: Record "VAT Statement Report Line";
         ErrorMessage: Record "Error Message";
         CompanyInformation: Record "Company Information";
-#if CLEAN23
         VATReportingCode: Record "VAT Reporting Code";
-#else
-        VATCode: Record "VAT Code";
-#endif
         VATCodeValue: Code[20];
         ExpectedVATAmount: Decimal;
     begin
@@ -49,7 +42,6 @@ codeunit 10686 "Elec. VAT Validate Return"
         VATStatementReportLine.SetRange("VAT Report No.", VATReportHeader."No.");
         VATStatementReportLine.FindSet();
         repeat
-#if CLEAN23
             VATCodeValue := CopyStr(VATStatementReportLine."Box No.", 1, MaxStrLen(VATCodeValue));
             VATReportingCode.Get(VATCodeValue);
             if VATReportingCode."Report VAT Rate" and (VATStatementReportLine.Base <> 0) then begin
@@ -57,15 +49,6 @@ codeunit 10686 "Elec. VAT Validate Return"
                 if Abs(ExpectedVATAmount - VATStatementReportLine.Amount) > 1 then
                     Error(VATAmountCalcErr, VATStatementReportLine."Box No.");
             end;
-#else
-            VATCodeValue := CopyStr(VATStatementReportLine."Box No.", 1, MaxStrLen(VATCodeValue));
-            VATCode.Get(VATCodeValue);
-            if VATCode."Report VAT Rate" and (VATStatementReportLine.Base <> 0) then begin
-                ExpectedVATAmount := Round(VATStatementReportLine.Base * VATCode."VAT Rate For Reporting" / 100);
-                if abs(ExpectedVATAmount - VATStatementReportLine.Amount) > 1 then
-                    error(VATAmountCalcErr, VATStatementReportLine."Box No.");
-            end;
-#endif
         until VATStatementReportLine.Next() = 0;
     end;
 }

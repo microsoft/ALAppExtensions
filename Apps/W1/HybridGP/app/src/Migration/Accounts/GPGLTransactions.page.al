@@ -1,3 +1,4 @@
+#if not CLEAN26
 namespace Microsoft.DataMigration.GP;
 
 page 4091 "GP GLTransactions"
@@ -5,7 +6,11 @@ page 4091 "GP GLTransactions"
     PageType = List;
     SourceTable = "GP GLTransactions";
     Caption = 'General Ledger Transactions';
-
+    UsageCategory = None;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Removing the GP staging table pages because they cause confusion and should not be used.';
+    ObsoleteTag = '26.0';
+#pragma warning disable AA0219
     layout
     {
         area(content)
@@ -115,3 +120,5 @@ page 4091 "GP GLTransactions"
         }
     }
 }
+#pragma warning restore AA0219
+#endif

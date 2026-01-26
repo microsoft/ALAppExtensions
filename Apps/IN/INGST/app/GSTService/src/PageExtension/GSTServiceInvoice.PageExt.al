@@ -150,6 +150,7 @@ pageextension 18442 "GST Service Invoice" extends "Service Invoice"
                     var
                         GSTServiceValidations: Codeunit "GST Service Validations";
                     begin
+                        CurrPage.SaveRecord();
                         GSTServiceValidations.CallTaxEngineOnServiceHeader(Rec);
                     end;
                 }

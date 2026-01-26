@@ -7,15 +7,16 @@ namespace Microsoft.Finance.VAT.Group;
 using Microsoft.Finance.VAT.Reporting;
 using System.Azure.KeyVault;
 using System.Environment;
+using System.Reflection;
 using System.Security.Authentication;
-using System.Text;
+using System.Telemetry;
 
 codeunit 4700 "VAT Group Communication"
 {
     var
         VATReportSetup: Record "VAT Report Setup";
         NoVATSetupErr: Label 'The VAT Report Setup could not be found.';
-        BearerTokenFromCacheErr: Label 'The Bearer token could not be retrieved from cache. Please refresh the VAT Group bearer token by logging in the %1 page', Comment = '%1 the caption of a page.';
+        BearerTokenFromCacheErr: Label 'The OAuth2 token could not be retrieved from cache. Choose the action Renew OAuth2 Token on the page %1 and log in to get a new token.', Comment = '%1 the caption of a page.';
         OAuthFailedNoErr: label 'Authorization has failed with an unexpected error.';
         OAuthFailedErr: Label 'Authorization has failed with the error %1', Comment = '%1 is the error description.';
         URLAppendixCompanyLbl: Label '/api/microsoft/vatgroup/v1.0/companies(name=''%1'')', Locked = true;
@@ -36,10 +37,14 @@ codeunit 4700 "VAT Group Communication"
         // Telemetry
         VATGroupTok: Label 'VATGroupTelemetryCategoryTok', Locked = true;
         HttpSuccessMsg: Label 'The http request was successful and the resource was created', Locked = true;
-        BearerTokenSuccessMsg: Label 'The OAuth2 authentication was successfull, a token has been issued.', Locked = true;
+        BearerTokenSuccessMsg: Label 'The OAuth2 authentication was successful, a token has been issued.', Locked = true;
         HttpErrorMsg: Label 'Error Code: %1, Error Msg: %2', Locked = true;
         OAuthAuthorityUrlTxt: Label 'https://login.microsoftonline.com/common/oauth2', Locked = true;
+        OAuthAuthorityUrlPPETxt: Label 'https://login.windows-ppe.net/common/oauth2', Locked = true;
         BCResourceURLTxt: Label 'https://api.businesscentral.dynamics.com', Locked = true;
+        BCResourceURLPPETxt: Label 'https://api.businesscentral.dynamics-tie.com', Locked = true;
+        BCRedirectURLPPETxt: Label 'https://businesscentral.dynamics-tie.com/OAuthLanding.htm', Locked = true;
+        BCRedirectURLTxt: Label 'https://businesscentral.dynamics.com/OAuthLanding.htm', Locked = true;
         BCReadWriteScopeTok: Label '/Financials.ReadWrite.All', Locked = true;
         BCUserImpersonationScopeTok: Label '/user_impersonation', Locked = true;
         AuthTokenOrCodeNotReceivedErr: Label 'No access token or authorization error code received.', Locked = true;
@@ -47,6 +52,13 @@ codeunit 4700 "VAT Group Communication"
         VATGroupClientSecretAKVSecretNameLbl: Label 'vatgroup-clientsecret', Locked = true;
         MissingClientIdOrSecretTelemetryTxt: Label 'The Client Id or Client Secret could not be retrieved from Azure Key Vault.', Locked = true;
         VATReportSetupIsLoaded: Boolean;
+        FirstPartyAppIdAKVSecretNameLbl: Label 'vatgroupmgtappid', Locked = true;
+        FirstPartyAppCertificateNameAKVSecretNameLbl: Label 'vatgroupmgtcertname', Locked = true;
+        MissingFirstPartyappIdOrCertificateTelemetryTxt: Label 'The first-party app id or certificate have not been initialized.', Locked = true;
+        AttemptingAuthCodeTokenFromCacheWithCertTxt: Label 'Attempting to acquire a bearer token via authorization code flow from cache, with a SNI certificate', Locked = true;
+        AttemptingAuthCodeTokenWithCertTxt: Label 'Attempting to acquire a bearer token via authorization code flow, with a SNI certificate', Locked = true;
+        AttemptingAuthCodeTokenWithClientSecretTxt: Label 'Attempting to acquire a bearer token via authorization code flow, with a client secret', Locked = true;
+        AttemptingAuthCodeTokenFromCacheWithClientSecretTxt: Label 'Attempting to acquire a bearer token via authorization code flow from cache, with a client secret', Locked = true;
 
     [TryFunction]
     internal procedure Send(Method: Text; Endpoint: Text; Content: Text; var HttpResponseBodyText: Text; IsBatch: Boolean)
@@ -64,9 +76,6 @@ codeunit 4700 "VAT Group Communication"
             HttpRequestMessage.SetRequestUri(PrepareURI(Endpoint));
         PrepareHeaders(HttpRequestMessage, IsBatch);
         PrepareContent(HttpRequestMessage, Content);
-
-        if VATReportSetup."VAT Group Authentication Type" = VATReportSetup."VAT Group Authentication Type"::WindowsAuthentication then
-            HttpClient.UseDefaultNetworkWindowsAuthentication();
 
         HttpClient.Send(HttpRequestMessage, HttpResponseMessage);
         HttpResponseMessage.Content().ReadAs(HttpResponseBodyText);
@@ -117,29 +126,34 @@ codeunit 4700 "VAT Group Communication"
         EnvironmentInformation: Codeunit "Environment Information";
         PromptInteraction: Enum "Prompt Interaction";
         Scopes: List of [Text];
-        BearerToken, AuthError : Text;
+        FirstPartyAppId: Text;
+        FirstPartyAppCertificate: SecretText;
+        BearerToken: SecretText;
+        AuthError: Text;
     begin
         if not VATReportSetup.Get() then
             Error(NoVATSetupErr);
 
         if EnvironmentInformation.IsSaaSInfrastructure() and VATReportSetup."Group Representative On SaaS" then begin
-            GetClientIDAndSecretFromAKV(ClientId, ClientSecret);
-            AuthorityURL := OAuthAuthorityUrlTxt;
-            RedirectURL := '';                     //empty is the default BCOnline redirect URI.
-            ResourceURL := BCResourceURLTxt;
+            FirstPartyAppId := GetFirstPartyAppId();
+            FirstPartyAppCertificate := GetFirstPartyAppCertificate();
+            if (FirstPartyAppId = '') or FirstPartyAppCertificate.IsEmpty() then
+                GetClientIDAndSecretFromAKV(ClientId, ClientSecret);
+            AuthorityURL := GetOAuthAuthorityURL();
+            RedirectURL := GetRedirectURL();
+            ResourceURL := GetResourceURL();
         end;
 
-        CreateScopesFromResourceURL(ResourceURL, Scopes);
-        OAuth2.AcquireTokenByAuthorizationCode(ClientId,
-            ClientSecret,
-            AuthorityURL,
-            RedirectURL,
-            Scopes,
-            PromptInteraction::Login,
-            BearerToken,
-            AuthError);
+        if (FirstPartyAppId <> '') and (not FirstPartyAppCertificate.IsEmpty()) then begin
+            Session.LogMessage('0000MXQ', AttemptingAuthCodeTokenWithCertTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok, 'AppId', FirstPartyAppId);
+            OAuth2.AcquireTokenByAuthorizationCodeWithCertificate(FirstPartyAppId, FirstPartyAppCertificate, AuthorityURL, RedirectURL, ResourceURL, PromptInteraction::Login, BearerToken, AuthError)
+        end else begin
+            CreateScopesFromResourceURL(ResourceURL, Scopes);
+            Session.LogMessage('0000MXR', AttemptingAuthCodeTokenWithClientSecretTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok, 'AppId', ClientId);
+            OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, AuthorityURL, RedirectURL, Scopes, PromptInteraction::Login, BearerToken, AuthError);
+        end;
 
-        if BearerToken <> '' then begin
+        if not BearerToken.IsEmpty() then begin
             Message(BearerTokenSuccessMsg);
             exit;
         end;
@@ -160,22 +174,30 @@ codeunit 4700 "VAT Group Communication"
         EnvironmentInformation: Codeunit "Environment Information";
         VATReportSetupPage: Page "VAT Report Setup";
         Scopes: List of [Text];
-        BearerToken: Text;
+        BearerToken: SecretText;
         AKVClientId: Text;
         AKVClientSecret: Text;
+        FirstPartyAppId: Text;
+        FirstPartyAppCertificate: SecretText;
+        ResourceURL: Text;
     begin
         if not VATReportSetup.Get() then
             Error(NoVATSetupErr);
 
         if EnvironmentInformation.IsSaaSInfrastructure() and VATReportSetup."Group Representative On SaaS" then begin
-            GetClientIDAndSecretFromAKV(AKVClientId, AKVClientSecret);
-            CreateScopesFromResourceURL(BCResourceURLTxt, Scopes);
-            OAuth2.AcquireAuthorizationCodeTokenFromCache(AKVClientId,
-                AKVClientSecret,
-                '',                     //empty is the default BCOnline redirect URI.
-                OAuthAuthorityUrlTxt,
-                Scopes,
-                BearerToken)
+            FirstPartyAppId := GetFirstPartyAppId();
+            FirstPartyAppCertificate := GetFirstPartyAppCertificate();
+            if (FirstPartyAppId = '') or FirstPartyAppCertificate.IsEmpty() then
+                GetClientIDAndSecretFromAKV(AKVClientId, AKVClientSecret);
+            ResourceURL := GetResourceURL();
+            if (FirstPartyAppId <> '') and (not FirstPartyAppCertificate.IsEmpty()) then begin
+                Session.LogMessage('0000MXS', AttemptingAuthCodeTokenFromCacheWithCertTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok);
+                OAuth2.AcquireAuthorizationCodeTokenFromCacheWithCertificate(FirstPartyAppId, FirstPartyAppCertificate, GetRedirectURL(), GetOAuthAuthorityURL(), ResourceURL, BearerToken)
+            end else begin
+                CreateScopesFromResourceURL(BCResourceURLTxt, Scopes);
+                Session.LogMessage('0000MXT', AttemptingAuthCodeTokenFromCacheWithClientSecretTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok);
+                OAuth2.AcquireAuthorizationCodeTokenFromCache(AKVClientId, AKVClientSecret, GetRedirectURL(), GetOAuthAuthorityURL(), Scopes, BearerToken);
+            end
         end else begin
             CreateScopesFromResourceURL(VATReportSetup."Resource URL", Scopes);
             OAuth2.AcquireAuthorizationCodeTokenFromCache(VATReportSetup.GetSecretAsSecretText(VATReportSetup."Client ID Key").Unwrap(),
@@ -186,27 +208,86 @@ codeunit 4700 "VAT Group Communication"
                 BearerToken);
         end;
 
-        if BearerToken = '' then
+        if BearerToken.IsEmpty() then
             Error(BearerTokenFromCacheErr, VATReportSetupPage.Caption());
 
         exit(BearerToken);
     end;
 
+    local procedure IsPPE(): Boolean
+    begin
+        exit(StrPos(LowerCase(GetUrl(ClientType::Web)), 'businesscentral.dynamics-tie.com') <> 0);
+    end;
+
+    local procedure GetOAuthAuthorityURL(): Text
+    begin
+        if IsPPE() then
+            exit(OAuthAuthorityUrlPPETxt);
+
+        exit(OAuthAuthorityUrlTxt);
+    end;
+
+    local procedure GetRedirectURL(): Text
+    begin
+        if IsPPE() then
+            exit(BCRedirectURLPPETxt);
+
+        exit(BCRedirectURLTxt);
+    end;
+
+    local procedure GetResourceURL(): Text
+    begin
+        if IsPPE() then
+            exit(BCResourceURLPPETxt);
+
+        exit(BCResourceURLTxt);
+    end;
+
+    [NonDebuggable]
+    local procedure GetFirstPartyAppId(): Text
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        EnvironmentInformation: Codeunit "Environment Information";
+        AppId: Text;
+    begin
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if not AzureKeyVault.GetAzureKeyVaultSecret(FirstPartyAppIdAKVSecretNameLbl, AppId) then
+                Session.LogMessage('0000MXU', MissingFirstPartyappIdOrCertificateTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok)
+            else
+                exit(AppId);
+        exit(AppId);
+    end;
+
+    local procedure GetFirstPartyAppCertificate(): SecretText;
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        EnvironmentInformation: Codeunit "Environment Information";
+        Certificate: SecretText;
+        CertificateName: Text;
+    begin
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if not AzureKeyVault.GetAzureKeyVaultSecret(FirstPartyAppCertificateNameAKVSecretNameLbl, CertificateName) then begin
+                Session.LogMessage('0000MXV', MissingFirstPartyappIdOrCertificateTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok);
+                exit(Certificate);
+            end;
+
+        if not AzureKeyVault.GetAzureKeyVaultCertificate(CertificateName, Certificate) then
+            Session.LogMessage('0000MXW', MissingFirstPartyappIdOrCertificateTelemetryTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok);
+
+        exit(Certificate);
+    end;
+
     [NonDebuggable]
     local procedure PrepareHeaders(HttpRequestMessage: HttpRequestMessage; IsBatch: Boolean)
     var
-        Base64Convert: Codeunit "Base64 Convert";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         HttpRequestHeaders: HttpHeaders;
-        Base64AuthHeader: SecretText;
     begin
+        FeatureTelemetry.LogUptake('0000NG8', FeatureName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000NG9', FeatureName(), 'Submitting VAT return to group representative.');
         HttpRequestMessage.GetHeaders(HttpRequestHeaders);
 
         HttpRequestHeaders.Add('Accept', 'application/json');
-
-        if VATReportSetup."VAT Group Authentication Type" = VATReportSetup."VAT Group Authentication Type"::WebServiceAccessKey then begin
-            Base64AuthHeader := Base64Convert.ToBase64(VATReportSetup.GetSecretAsSecretText(VATReportSetup."User Name Key").Unwrap() + ':' + VATReportSetup.GetSecretAsSecretText(VATReportSetup."Web Service Access Key Key").Unwrap());
-            HttpRequestHeaders.Add('Authorization', SecretStrSubstNo('Basic %1', GetBearerTokenFromCache()));
-        end;
 
         if VATReportSetup."VAT Group Authentication Type" = VATReportSetup."VAT Group Authentication Type"::OAuth2 then
             HttpRequestHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', GetBearerTokenFromCache()));
@@ -243,17 +324,21 @@ codeunit 4700 "VAT Group Communication"
     end;
 
     internal procedure PrepareURI(Endpoint: Text) Result: Text
+    var
+        TypeHelper: Codeunit "Type Helper";
+        GroupRepCompanyName: Text;
     begin
         CheckLoadVATReportSetup();
         Result := VATReportSetup."Group Representative API URL";
-        CASE VATReportSetup."VAT Group BC Version" OF
+        GroupRepCompanyName := VATReportSetup."Group Representative Company";
+        case VATReportSetup."VAT Group BC Version" of
             VATReportSetup."VAT Group BC Version"::BC:
-                Result += StrSubstNo(URLAppendixCompanyLbl, VATReportSetup."Group Representative Company");
+                Result += StrSubstNo(URLAppendixCompanyLbl, TypeHelper.UriEscapeDataString(GroupRepCompanyName));
             VATReportSetup."VAT Group BC Version"::NAV2018:
-                Result += StrSubstNo(URLAppendixCompany2018Lbl, VATReportSetup."Group Representative Company");
+                Result += StrSubstNo(URLAppendixCompany2018Lbl, TypeHelper.UriEscapeDataString(GroupRepCompanyName));
             VATReportSetup."VAT Group BC Version"::NAV2017:
-                Result += StrSubstNo(URLAppendixCompany2017Lbl, VATReportSetup."Group Representative Company");
-        END;
+                Result += StrSubstNo(URLAppendixCompany2017Lbl, TypeHelper.UriEscapeDataString(GroupRepCompanyName));
+        end;
         Result += Endpoint;
     end;
 
@@ -296,5 +381,10 @@ codeunit 4700 "VAT Group Communication"
     begin
         Scopes.Add(ResourceURL + BCReadWriteScopeTok);
         Scopes.Add(ResourceURL + BCUserImpersonationScopeTok);
+    end;
+
+    internal procedure FeatureName(): Text
+    begin
+        exit('VAT Group Management');
     end;
 }

@@ -1,0 +1,88 @@
+{
+  "name": "Ruleset for base app",
+  "description": "This ruleset applies to the base application",
+  "generalAction": "Error",
+  "includedRuleSets": [
+    {
+      "action": "Default",
+      "path": "./base.ruleset.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "AA0230",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0247",
+      "action": "None",
+      "justification": "Tests should not be namespaced."
+    },
+    {
+      "id": "AA0462",
+      "action": "Warning",
+      "justification": "The CalcDate should only be used with DataFormula variables. Alternatively the string should be enclosed using the <> symbols."
+    },
+    {
+      "id": "AA0150",
+      "action": "Warning",
+      "justification": "Parameter is declared by reference but never changed in method."
+    },
+    {
+      "id": "AA0210",
+      "action": "None"
+    },
+    {
+      "id": "AA0213",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0241",
+      "action": "None"
+    },
+    {
+      "id": "AL0590",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0667",
+      "action": "Warning"
+    },
+    {
+      "id": "AL1025",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0062",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0059",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0054",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0075",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0471",
+      "action": "Error"
+    },
+    {
+      "id": "AA0472",
+      "action": "Error"
+    },
+    {
+      "id": "AA0473",
+      "action": "Error"
+    },
+    {
+      "id": "AA0474",
+      "action": "Error"
+    }
+  ]
+}

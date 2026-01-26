@@ -4,15 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSOnReceipt;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.TaxEngine.TaxTypeHandler;
-using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Finance.Currency;
-using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Sales.Customer;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Sales.Customer;
 
 codeunit 18903 "TCS On Receipt Of Pmt. Handler"
 {

@@ -61,6 +61,11 @@ page 31198 "User Setup Card CZL"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether is allowed to change the VAT Date.';
                 }
+                field("Allow Orig Doc VAT Date Ch CZL"; Rec."Allow Orig Doc VAT Date Ch CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether is allowed to change the Original Document VAT Date.';
+                }
             }
             group(Posting)
             {
@@ -125,6 +130,30 @@ page 31198 "User Setup Card CZL"
 
     actions
     {
+        area(Processing)
+        {
+            group(Functions)
+            {
+                Caption = 'Functions';
+
+                action("Copy User Setup CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Copy User Setup';
+                    Ellipsis = true;
+                    Image = Copy;
+                    ToolTip = 'Allows to copy user setup from user to another user.';
+
+                    trigger OnAction()
+                    var
+                        CopyUserSetupCZL: Report "Copy User Setup CZL";
+                    begin
+                        CopyUserSetupCZL.SetFromUserId(Rec."User ID");
+                        CopyUserSetupCZL.RunModal();
+                    end;
+                }
+            }
+        }
         area(navigation)
         {
             group("U&ser Check")
@@ -164,9 +193,6 @@ page 31198 "User Setup Card CZL"
                 Caption = 'Print';
                 Ellipsis = true;
                 Image = Print;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 ToolTip = 'Allows the user setup card printout.';
 
                 trigger OnAction()
@@ -177,6 +203,21 @@ page 31198 "User Setup Card CZL"
                     UserSetup.SetRecFilter();
                     REPORT.RunModal(REPORT::"User Setup List CZL", true, false, UserSetup);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            actionref(CopyUserSetup_Promoted; "Copy User Setup CZL")
+            {
+            }
+            actionref(Lines_Promoted; Lines)
+            {
+            }
+            actionref(Dimensions_Promoted; Dimensions)
+            {
+            }
+            actionref("Print_Promoted"; Print)
+            {
             }
         }
     }

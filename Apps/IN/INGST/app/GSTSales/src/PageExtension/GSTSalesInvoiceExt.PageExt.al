@@ -108,21 +108,6 @@ pageextension 18148 "GST Sales Invoice Ext" extends "Sales Invoice"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the customer number for which merchant id has to be recorded.';
             }
-#if not CLEAN23
-            field("E-Commerce Merchant Id"; Rec."E-Commerce Merchant Id")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the merchant ID provided to customers by their payment processor.';
-                ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-
-                trigger OnValidate()
-                begin
-                    Error(UnusedFieldLbl);
-                end;
-            }
-#endif
             field("E-Comm. Merchant Id"; Rec."E-Comm. Merchant Id")
             {
                 ApplicationArea = Basic, Suite;
@@ -333,7 +318,4 @@ pageextension 18148 "GST Sales Invoice Ext" extends "Sales Invoice"
     }
 
     var
-#if not CLEAN23
-        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use â€˜E-Comm. Merchant Idâ€™';
-#endif
 }

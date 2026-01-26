@@ -2,9 +2,9 @@ namespace Microsoft.Inventory.InventoryForecast;
 
 using System.AI;
 using System.Environment;
+using System.Privacy;
 using System.Security.Encryption;
 using System.Security.User;
-using System.Privacy;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -24,15 +24,6 @@ table 1853 "MS - Sales Forecast Setup"
         {
             InitValue = Month;
             OptionMembers = Day,Week,Month,Quarter,Year;
-            DataClassification = CustomerContent;
-        }
-        field(3; "Show Setup Notification"; Boolean)
-        {
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Notification is now using the My notifications table';
-            ObsoleteTag = '18.0';
-            Editable = false;
-            InitValue = true;
             DataClassification = CustomerContent;
         }
         field(4; "Stockout Warning Horizon"; Integer)
@@ -104,39 +95,6 @@ table 1853 "MS - Sales Forecast Setup"
             Editable = false;
             DataClassification = CustomerContent;
         }
-        field(15; "API Cache Minutes"; Integer)
-        {
-            Description = 'Default period in minutes for caching the API URI and API Key.';
-            InitValue = 5;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not Used After Refactoring';
-            DataClassification = CustomerContent;
-            ObsoleteTag = '18.0';
-        }
-        field(16; "API Cache Expiry"; DateTime)
-        {
-            Description = 'Expiration datetime for the API URI and API Key.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not Used After Refactoring';
-            DataClassification = CustomerContent;
-            ObsoleteTag = '18.0';
-        }
-        field(17; "Service Pass API Uri ID"; Guid)
-        {
-            Description = 'The Key for retrieving the API URI from the Service Password table.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not Used After Refactoring';
-            DataClassification = CustomerContent;
-            ObsoleteTag = '18.0';
-        }
-        field(18; "Service Pass API Key ID"; Guid)
-        {
-            Description = 'The Key for retrieving the API Key from the Service Password table.';
-            ObsoleteState = Removed;
-            ObsoleteReason = 'Not Used After Refactoring';
-            DataClassification = CustomerContent;
-            ObsoleteTag = '18.0';
-        }
         field(19; "Timeseries Model"; Option)
         {
             OptionMembers = ARIMA,ETS,STL,"ETS+ARIMA","ETS+STL",ALL,TBATS;
@@ -191,20 +149,6 @@ table 1853 "MS - Sales Forecast Setup"
         exit((GetAPIUri() = '') or GetAPIKeyAsSecret().IsEmpty());
     end;
 
-#if not CLEAN24
-    [NonDebuggable]
-    [Scope('OnPrem')]
-    [Obsolete('Use GetUserDefinedAPIKeyAsSecret() instead.', '24.0')]
-    procedure GetUserDefinedAPIKey(): Text[250]
-    begin
-        // If the user has defined the API Key in the page UI, then retrieve it from
-        // the encrypted Isolated Storage table
-        if IsNullGuid("API Key ID") then
-            exit('');
-
-        exit(CopyStr(TryReadAPICredentialAsSecret("API Key ID").Unwrap(), 1, 250));
-    end;
-#endif
     [Scope('OnPrem')]
     procedure GetUserDefinedAPIKeyAsSecret(): SecretText
     var
@@ -230,30 +174,13 @@ table 1853 "MS - Sales Forecast Setup"
         "API Key ID" := InsertAPICredential(UserDefinedAPIKey);
     end;
 
-#if not CLEAN24
-    [NonDebuggable]
-    [Obsolete('Use GetAPIKeyAsSecret() instead.', '24.0')]
-    procedure GetAPIKey(): Text[250]
-    var
-        UserDefinedAPIKey: Text[250];
+#pragma warning disable AS0022
+    internal procedure GetAPIKeyAsSecret(): SecretText
     begin
         // The API Key and URI entered by the user take precedence
-        UserDefinedAPIKey := CopyStr(GetUserDefinedAPIKeyAsSecret().Unwrap(), 1, 250);
-        if UserDefinedAPIKey <> '' then
-            exit(UserDefinedAPIKey);
-        exit('');
+        exit(GetUserDefinedAPIKeyAsSecret());
     end;
-#endif
-    procedure GetAPIKeyAsSecret(): SecretText
-    var
-        UserDefinedAPIKey: SecretText;
-    begin
-        // The API Key and URI entered by the user take precedence
-        UserDefinedAPIKey := GetUserDefinedAPIKeyAsSecret();
-        if not UserDefinedAPIKey.IsEmpty() then
-            exit(UserDefinedAPIKey);
-        exit(UserDefinedAPIKey);
-    end;
+#pragma warning restore AS0022
 
     procedure GetAPIUri(): Text[250]
     begin
@@ -322,4 +249,3 @@ table 1853 "MS - Sales Forecast Setup"
         end;
     end;
 }
-

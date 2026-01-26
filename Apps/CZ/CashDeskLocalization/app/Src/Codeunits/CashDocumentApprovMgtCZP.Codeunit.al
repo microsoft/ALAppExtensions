@@ -10,10 +10,8 @@ using System.Security.User;
 codeunit 11713 "Cash Document Approv. Mgt. CZP"
 {
     var
-        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
-        ApprovalAmount: Decimal;
-        ApprovalAmountLCY: Decimal;
         NoWorkflowEnabledErr: Label 'No approval workflow for this record type is enabled.';
+        NothingToApproveErr: Label 'There is nothing to approve.';
 
     procedure CalcCashDocAmount(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var ApprovalAmount: Decimal; var ApprovalAmountLCY: Decimal)
     begin
@@ -55,9 +53,22 @@ codeunit 11713 "Cash Document Approv. Mgt. CZP"
     end;
 
     procedure CheckCashDocApprovalsWorkflowEnabled(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"): Boolean
+    var
+        IsHandled: Boolean;
+        Result: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCheckCashDocApprovalsWorkflowEnabled(CashDocumentHeaderCZP, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
         if not IsCashDocApprovalsWorkflowEnabled(CashDocumentHeaderCZP) then
             Error(NoWorkflowEnabledErr);
+
+        if not CashDocumentHeaderCZP.CashDocLinesExist() then
+            Error(NothingToApproveErr);
+
+        OnAfterCheckCashDocApprovalPossible(CashDocumentHeaderCZP);
 
         exit(true);
     end;
@@ -81,6 +92,10 @@ codeunit 11713 "Cash Document Approv. Mgt. CZP"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Approvals Mgmt.", 'OnPopulateApprovalEntryArgument', '', false, false)]
     local procedure ApprovalsMgmtOnPopulateApprovalEntryArgument(var RecRef: RecordRef; var ApprovalEntryArgument: Record "Approval Entry")
+    var
+        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
+        ApprovalAmount: Decimal;
+        ApprovalAmountLCY: Decimal;
     begin
         if RecRef.Number = Database::"Cash Document Header CZP" then begin
             RecRef.SetTable(CashDocumentHeaderCZP);
@@ -125,6 +140,16 @@ codeunit 11713 "Cash Document Approv. Mgt. CZP"
 
     [IntegrationEvent(false, false)]
     procedure OnCancelCashDocumentApprovalRequest(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckCashDocApprovalsWorkflowEnabled(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCheckCashDocApprovalPossible(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
     end;
 }

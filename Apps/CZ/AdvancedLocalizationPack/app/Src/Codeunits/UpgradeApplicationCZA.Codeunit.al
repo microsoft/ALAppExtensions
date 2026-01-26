@@ -5,12 +5,12 @@
 namespace System.Upgrade;
 
 using Microsoft;
+using Microsoft.Assembly.Document;
+using Microsoft.Assembly.History;
+using Microsoft.Assembly.Setup;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Inventory.Item;
-#if not CLEAN22
-using Microsoft.Inventory.Item.Catalog;
-#endif
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Setup;
 using Microsoft.Inventory.Transfer;
@@ -20,234 +20,115 @@ using System.Environment.Configuration;
 codeunit 31251 "Upgrade Application CZA"
 {
     Subtype = Upgrade;
-    Permissions = tabledata "Detailed G/L Entry CZA" = im,
+    Permissions = tabledata "Assembly Setup" = m,
+                  tabledata "Assembly Header" = m,
+                  tabledata "Assembly Line" = m,
+                  tabledata "Detailed G/L Entry CZA" = im,
                   tabledata "G/L Entry" = m,
                   tabledata "Inventory Setup" = m,
                   tabledata "Manufacturing Setup" = m,
+                  tabledata "Posted Assembly Header" = m,
+                  tabledata "Posted Assembly Line" = m,
                   tabledata "Transfer Shipment Line" = m,
                   tabledata "Item Entry Relation" = m,
-#if not CLEAN22
-                  tabledata "Nonstock Item Setup" = m,
-#endif
                   tabledata "Standard Item Journal Line" = m;
 
     var
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
         UpgradeTag: Codeunit "Upgrade Tag";
         UpgradeTagDefinitionsCZA: Codeunit "Upgrade Tag Definitions CZA";
-        InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
-        AppInfo: ModuleInfo;
+        InstallApplicationsCZA: Codeunit "Install Application CZA";
 
     trigger OnUpgradePerDatabase()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-        UpgradePermission();
         SetDatabaseUpgradeTags();
     end;
 
     trigger OnUpgradePerCompany()
     begin
         DataUpgradeMgt.SetUpgradeInProgress();
-        BindSubscription(InstallApplicationsMgtCZL);
-        UpgradeUsage();
-        UpgradeData();
-        UnbindSubscription(InstallApplicationsMgtCZL);
-        SetCompanyUpgradeTags();
+        BindSubscription(InstallApplicationsCZA);
+        UpgradeDefaultBusinessPostingGroup();
+        UpgradePostedDefaultBusinessPostingGroup();
+        UpgradeAutoCreateDefaultDimensionValuePosting();
+        UnbindSubscription(InstallApplicationsCZA);
     end;
 
-    local procedure UpgradePermission()
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag()) then
-            exit;
-
-        NavApp.GetCurrentModuleInfo(AppInfo);
-        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag());
-    end;
-
-    local procedure UpgradeUsage()
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerDatabaseUpgradeTag()) then
-            exit;
-
-        InstallApplicationsMgtCZL.InsertTableDataUsage(Database::"Detailed G/L Entry", Database::"Detailed G/L Entry CZA");
-    end;
-
-    local procedure UpgradeData()
-    begin
-        UpgradeDetailedGLEntry();
-        UpgradeGLEntry();
-        UpgradeDefaultDimension();
-        UpgradeInventorySetup();
-        UpgradeManufacturingSetup();
-        UpgradeTransferShipmentLine();
-        UpgradeItemEntryRelation();
-        UpgradeStandardItemJournalLine();
-#if not CLEAN22
-        UpgradeNonStockItemSetup();
-#endif
-    end;
-
-    local procedure UpgradeDetailedGLEntry()
-    var
-        DetailedGLEntry: Record "Detailed G/L Entry";
-        DetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
-            exit;
-
-        if DetailedGLEntry.FindSet() then
-            repeat
-                if not DetailedGLEntryCZA.Get(DetailedGLEntry."Entry No.") then begin
-                    DetailedGLEntryCZA.Init();
-                    DetailedGLEntryCZA."Entry No." := DetailedGLEntry."Entry No.";
-                    DetailedGLEntryCZA.SystemId := DetailedGLEntry.SystemId;
-                    DetailedGLEntryCZA.Insert(false, true);
-                end;
-                DetailedGLEntryCZA."G/L Entry No." := DetailedGLEntry."G/L Entry No.";
-                DetailedGLEntryCZA."Applied G/L Entry No." := DetailedGLEntry."Applied G/L Entry No.";
-                DetailedGLEntryCZA."G/L Account No." := DetailedGLEntry."G/L Account No.";
-                DetailedGLEntryCZA."Posting Date" := DetailedGLEntry."Posting Date";
-                DetailedGLEntryCZA."Document No." := DetailedGLEntry."Document No.";
-                DetailedGLEntryCZA."Transaction No." := DetailedGLEntry."Transaction No.";
-                DetailedGLEntryCZA.Amount := DetailedGLEntry.Amount;
-                DetailedGLEntryCZA.Unapplied := DetailedGLEntry.Unapplied;
-                DetailedGLEntryCZA."Unapplied by Entry No." := DetailedGLEntry."Unapplied by Entry No.";
-                DetailedGLEntryCZA."User ID" := DetailedGLEntry."User ID";
-                DetailedGLEntryCZA.Modify(false);
-            until DetailedGLEntry.Next() = 0;
-    end;
-
-    local procedure UpgradeGLEntry();
-    var
-        GLEntry: Record "G/L Entry";
-        GLEntryDataTransfer: DataTransfer;
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
-            exit;
-
-        GLEntryDataTransfer.SetTables(Database::"G/L Entry", Database::"G/L Entry");
-        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo(Closed), GLEntry.FieldNo("Closed CZA"));
-        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("Closed at Date"), GLEntry.FieldNo("Closed at Date CZA"));
-        GLEntryDataTransfer.AddSourceFilter(GLEntry.FieldNo(Closed), '%1', true);
-        GLEntryDataTransfer.CopyFields();
-    end;
-
-    local procedure UpgradeDefaultDimension();
-    var
-        DefaultDimension: Record "Default Dimension";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag()) then
-            exit;
-
-        DefaultDimension.SetLoadFields("Automatic Create", "Dimension Description Field ID", "Dimension Description Format", "Dimension Description Update", "Automatic Cr. Value Posting");
-        DefaultDimension.SetRange("Automatic Create", true);
-        if DefaultDimension.FindSet(true) then
-            repeat
-                DefaultDimension."Automatic Create CZA" := DefaultDimension."Automatic Create";
-                DefaultDimension."Dim. Description Field ID CZA" := DefaultDimension."Dimension Description Field ID";
-                DefaultDimension."Dim. Description Format CZA" := DefaultDimension."Dimension Description Format";
-                DefaultDimension."Dim. Description Update CZA" := DefaultDimension."Dimension Description Update";
-                case DefaultDimension."Automatic Cr. Value Posting" of
-                    DefaultDimension."Automatic Cr. Value Posting"::" ":
-                        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::" ";
-                    DefaultDimension."Automatic Cr. Value Posting"::"No Code":
-                        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"No Code";
-                    DefaultDimension."Automatic Cr. Value Posting"::"Same Code":
-                        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Same Code";
-                    DefaultDimension."Automatic Cr. Value Posting"::"Code Mandatory":
-                        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Code Mandatory";
-                end;
-                Clear(DefaultDimension."Automatic Create");
-                Clear(DefaultDimension."Dimension Description Field ID");
-                Clear(DefaultDimension."Dimension Description Format");
-                Clear(DefaultDimension."Dimension Description Update");
-                Clear(DefaultDimension."Automatic Cr. Value Posting");
-                DefaultDimension.Modify(false);
-            until DefaultDimension.Next() = 0;
-    end;
-
-    local procedure UpgradeInventorySetup();
-    var
-        InventorySetup: Record "Inventory Setup";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
-            exit;
-
-        if InventorySetup.Get() then begin
-            InventorySetup."Exact Cost Revers. Mandat. CZA" := InventorySetup."Exact Cost Reversing Mandatory";
-            InventorySetup.Modify(false);
-        end;
-    end;
-
-    local procedure UpgradeManufacturingSetup();
+    local procedure UpgradeDefaultBusinessPostingGroup()
     var
         ManufacturingSetup: Record "Manufacturing Setup";
+        AssemblySetup: Record "Assembly Setup";
+        AssemblyHeader: Record "Assembly Header";
+        AssemblyLine: Record "Assembly Line";
+        AssemblyHeaderDataTransfer: DataTransfer;
+        AssemblyLineDataTransfer: DataTransfer;
+
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDefaultBusinessPostingGroupUpgradeTag()) then
             exit;
 
         if ManufacturingSetup.Get() then begin
-            ManufacturingSetup."Exact Cost Rev.Mand. Cons. CZA" := ManufacturingSetup."Exact Cost Rev.Manda. (Cons.)";
-            ManufacturingSetup.Modify(false);
+            ManufacturingSetup."Default Gen. Bus. Post. Group" := ManufacturingSetup."Default Gen.Bus.Post. Grp. CZA";
+            ManufacturingSetup.Modify();
         end;
+
+        if AssemblySetup.Get() then begin
+            AssemblySetup."Default Gen. Bus. Post. Group" := AssemblySetup."Default Gen.Bus.Post. Grp. CZA";
+            AssemblySetup.Modify();
+        end;
+
+        AssemblyHeaderDataTransfer.SetTables(Database::"Assembly Header", Database::"Assembly Header");
+        AssemblyHeaderDataTransfer.AddFieldValue(AssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"), AssemblyHeader.FieldNo("Gen. Bus. Posting Group"));
+        AssemblyHeaderDataTransfer.CopyFields();
+
+        AssemblyLineDataTransfer.SetTables(Database::"Assembly Line", Database::"Assembly Line");
+        AssemblyLineDataTransfer.AddFieldValue(AssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"), AssemblyLine.FieldNo("Gen. Bus. Posting Group"));
+        AssemblyLineDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDefaultBusinessPostingGroupUpgradeTag());
     end;
 
-    local procedure UpgradeTransferShipmentLine();
+    local procedure UpgradePostedDefaultBusinessPostingGroup()
     var
-        TransferShipmentLine: Record "Transfer Shipment Line";
-        TransferShipmentLineDataTransfer: DataTransfer;
+        PostedAssemblyHeader: Record "Posted Assembly Header";
+        PostedAssemblyLine: Record "Posted Assembly Line";
+        PostedAssemblyHeaderDataTransfer: DataTransfer;
+        PostedAssemblyLineDataTransfer: DataTransfer;
+
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetPostedDefaultBusinessPostingGroupUpgradeTag()) then
             exit;
 
-        TransferShipmentLineDataTransfer.SetTables(Database::"Transfer Shipment Line", Database::"Transfer Shipment Line");
-        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo(Correction), TransferShipmentLine.FieldNo("Correction CZA"));
-        TransferShipmentLineDataTransfer.AddFieldValue(TransferShipmentLine.FieldNo("Transfer Order Line No."), TransferShipmentLine.FieldNo("Transfer Order Line No. CZA"));
-        TransferShipmentLineDataTransfer.CopyFields();
+        PostedAssemblyHeaderDataTransfer.SetTables(Database::"Posted Assembly Header", Database::"Posted Assembly Header");
+        PostedAssemblyHeaderDataTransfer.AddFieldValue(PostedAssemblyHeader.FieldNo("Gen. Bus. Posting Group CZA"), PostedAssemblyHeader.FieldNo("Gen. Bus. Posting Group"));
+        PostedAssemblyHeaderDataTransfer.CopyFields();
+
+        PostedAssemblyLineDataTransfer.SetTables(Database::"Posted Assembly Line", Database::"Posted Assembly Line");
+        PostedAssemblyLineDataTransfer.AddFieldValue(PostedAssemblyLine.FieldNo("Gen. Bus. Posting Group CZA"), PostedAssemblyLine.FieldNo("Gen. Bus. Posting Group"));
+        PostedAssemblyLineDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetPostedDefaultBusinessPostingGroupUpgradeTag());
     end;
 
-    local procedure UpgradeItemEntryRelation();
+    local procedure UpgradeAutoCreateDefaultDimensionValuePosting()
     var
-        ItemEntryRelation: Record "Item Entry Relation";
-        ItemEntryRelationDataTransfer: DataTransfer;
+        DefaultDimension: Record "Default Dimension";
+        DefaultDimensionDataTransfer: DataTransfer;
+        DefaultDimensionValuePosting: Enum "Default Dimension Value Posting Type";
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetAutoCreateDefaultDimensionValuePostingUpgradeTag()) then
             exit;
 
-        ItemEntryRelationDataTransfer.SetTables(Database::"Item Entry Relation", Database::"Item Entry Relation");
-        ItemEntryRelationDataTransfer.AddFieldValue(ItemEntryRelation.FieldNo(Undo), ItemEntryRelation.FieldNo("Undo CZA"));
-        ItemEntryRelationDataTransfer.CopyFields();
+        DefaultDimensionDataTransfer.SetTables(Database::"Default Dimension", Database::"Default Dimension");
+        DefaultDimensionDataTransfer.AddSourceFilter(DefaultDimension.FieldNo("Automatic Create CZA"), '=%1', true);
+        DefaultDimensionDataTransfer.AddConstantValue(DefaultDimensionValuePosting::" ", DefaultDimension.FieldNo("Value Posting"));
+        DefaultDimensionDataTransfer.UpdateAuditFields := false;
+        DefaultDimensionDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetAutoCreateDefaultDimensionValuePostingUpgradeTag());
     end;
 
-    local procedure UpgradeStandardItemJournalLine();
-    var
-        StandardItemJournalLine: Record "Standard Item Journal Line";
-        StandardItemJournalLineDataTransfer: DataTransfer;
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion210PerCompanyUpgradeTag()) then
-            exit;
-
-        StandardItemJournalLineDataTransfer.SetTables(Database::"Standard Item Journal Line", Database::"Standard Item Journal Line");
-        StandardItemJournalLineDataTransfer.AddFieldValue(StandardItemJournalLine.FieldNo("New Location Code"), StandardItemJournalLine.FieldNo("New Location Code CZA"));
-        StandardItemJournalLineDataTransfer.CopyFields();
-    end;
-#if not CLEAN22
-    local procedure UpgradeNonStockItemSetup();
-    var
-        NonstockItemSetup: Record "Nonstock Item Setup";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion220PerCompanyUpgradeTag()) then
-            exit;
-
-        if NonstockItemSetup.Get() then
-            if NonstockItemSetup."No. Format" = NonstockItemSetup."No. Format"::"Item No. Series CZA" then begin
-                NonstockItemSetup."No. Format" := NonstockItemSetup."No. Format"::"Item No. Series";
-                NonstockItemSetup."No. Format Separator" := '';
-                NonstockItemSetup.Modify(false);
-            end;
-    end;
-#endif
     local procedure SetDatabaseUpgradeTags();
     begin
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerDatabaseUpgradeTag()) then
@@ -260,19 +141,5 @@ codeunit 31251 "Upgrade Application CZA"
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerDatabaseUpgradeTag());
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion220PerDatabaseUpgradeTag()) then
             UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion220PerDatabaseUpgradeTag());
-    end;
-
-    local procedure SetCompanyUpgradeTags();
-    begin
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerCompanyUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion182PerCompanyUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion183PerCompanyUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion200PerCompanyUpgradeTag());
-        if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion220PerCompanyUpgradeTag()) then
-            UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion220PerCompanyUpgradeTag());
     end;
 }

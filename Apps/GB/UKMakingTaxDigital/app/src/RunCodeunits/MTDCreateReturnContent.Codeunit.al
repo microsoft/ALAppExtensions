@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 codeunit 10531 "MTD Create Return Content"
 {
@@ -26,7 +27,13 @@ codeunit 10531 "MTD Create Return Content"
 
         TempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
         OutStream.WriteText(RequestJson);
+#if not CLEAN27   
+#pragma warning disable AL0432       
         VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code".AsInteger(), "No.", TempBlob, DummyGUID);
+#else
+        VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code".AsInteger(), "No.", TempBlob);
+#pragma warning restore AL0432 
+#endif
     end;
 
     local procedure CreateReturnContent(VATReportHeader: Record "VAT Report Header"): Text;

@@ -8,6 +8,17 @@ using Microsoft.Purchases.Setup;
 
 pageextension 31108 "Purchases & Payables Setup CZZ" extends "Purchases & Payables Setup"
 {
+    layout
+    {
+        modify("Posted Prepmt. Inv. Nos.")
+        {
+            Visible = false;
+        }
+        modify("Posted Prepmt. Cr. Memo Nos.")
+        {
+            Visible = false;
+        }
+    }
     actions
     {
         addlast(navigation)

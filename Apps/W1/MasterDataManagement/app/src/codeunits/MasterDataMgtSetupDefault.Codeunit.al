@@ -1,28 +1,28 @@
 namespace Microsoft.Integration.MDM;
 
-using System.IO;
-using Microsoft.Integration.SyncEngine;
-using Microsoft.Sales.Customer;
-using System.Reflection;
-using Microsoft.Purchases.Vendor;
+using Microsoft.CRM.BusinessRelation;
 using Microsoft.CRM.Contact;
-using Microsoft.Foundation.Address;
-using System.Globalization;
-using Microsoft.Finance.Currency;
-using Microsoft.Foundation.PaymentTerms;
-using Microsoft.Sales.Setup;
 using Microsoft.CRM.Setup;
 using Microsoft.CRM.Team;
-using Microsoft.Purchases.Setup;
-using Microsoft.Foundation.NoSeries;
-using Microsoft.Foundation.Shipping;
-using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.SalesTax;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.Dimension;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
-using Microsoft.CRM.BusinessRelation;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 
 codeunit 7230 "Master Data Mgt. Setup Default"
@@ -149,11 +149,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Customer.FieldNo(Customer.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Customer.FieldNo(Customer."Tax Area ID"), Customer.FieldNo(Customer."Contact ID"), Customer.FieldNo(Customer."Contact Graph Id"), Customer.FieldNo(Customer."Search Name"), Customer.FieldNo(Customer.Contact), Customer.FieldNo(Customer."Coupled to CRM"), Customer.FieldNo(Customer."Last Date Modified"), Customer.FieldNo(Customer."Last Modified Date Time")]) then
-#else
                 if not (TableField."No." in [Customer.FieldNo(Customer."Tax Area ID"), Customer.FieldNo(Customer."Contact ID"), Customer.FieldNo(Customer."Contact Graph Id"), Customer.FieldNo(Customer."Search Name"), Customer.FieldNo(Customer.Contact), Customer.FieldNo(Customer."Last Date Modified"), Customer.FieldNo(Customer."Last Modified Date Time")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -196,11 +192,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Vendor.FieldNo(Vendor.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Vendor.FieldNo(Vendor."Search Name"), Vendor.FieldNo(Vendor.Contact), Vendor.FieldNo(Vendor."Coupled to CRM"), Vendor.FieldNo(Vendor."Last Date Modified"), Vendor.FieldNo(Vendor."Last Modified Date Time")]) then
-#else
                 if not (TableField."No." in [Vendor.FieldNo(Vendor."Search Name"), Vendor.FieldNo(Vendor.Contact), Vendor.FieldNo(Vendor."Last Date Modified"), Vendor.FieldNo(Vendor."Last Modified Date Time")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -244,11 +236,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Contact.FieldNo(Contact.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Contact.FieldNo(Contact."Search Name"), Contact.FieldNo(Contact."Search E-Mail"), Contact.FieldNo(Contact."Xrm Id"), Contact.FieldNo(Contact."Last Date Modified"), Contact.FieldNo(Contact."Coupled to CRM"), Contact.FieldNo(Contact."Lookup Contact No.")]) then
-#else
                 if not (TableField."No." in [Contact.FieldNo(Contact."Search Name"), Contact.FieldNo(Contact."Search E-Mail"), Contact.FieldNo(Contact."Xrm Id"), Contact.FieldNo(Contact."Last Date Modified"), Contact.FieldNo(Contact."Lookup Contact No.")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -388,11 +376,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Currency.FieldNo(Currency.SystemId)));
         if TableField.FindSet() then
             repeat
-#if not CLEAN23
-                if not (TableField."No." in [Currency.FieldNo(Currency."Last Date Modified"), Currency.FieldNo(Currency."Last Modified Date Time"), Currency.FieldNo(Currency."Coupled to CRM"), Currency.FieldNo(Currency."Last Date Adjusted")]) then
-#else
                 if not (TableField."No." in [Currency.FieldNo(Currency."Last Date Modified"), Currency.FieldNo(Currency."Last Modified Date Time"), Currency.FieldNo(Currency."Last Date Adjusted")]) then
-#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -760,11 +744,6 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         FieldNumbers.Add(NoSeriesLine.FieldNo(Open));
         FieldNumbers.Add(NoSeriesLine.FieldNo("Sequence Name"));
         FieldNumbers.Add(NoSeriesLine.FieldNo("Starting Sequence No."));
-#if not CLEAN24
-#pragma warning disable AL0432
-        FieldNumbers.Add(NoSeriesLine.FieldNo("Allow Gaps in Nos."));
-#pragma warning restore AL0432
-#endif
         FieldNumbers.Add(NoSeriesLine.FieldNo(Implementation));
 
         GenerateIntegrationTableMapping(IntegrationTableMapping, FieldNumbers, IntegrationTableMappingName, Database::"No. Series Line", '', true, ShouldRecreateJobQueueEntry);
@@ -1331,8 +1310,18 @@ codeunit 7230 "Master Data Mgt. Setup Default"
                 end;
             until TableField.Next() = 0;
 
-        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, DefaultNumberOfMinutesBetweenRuns(), ShouldRecreateJobQueueEntry, DefaultInactivityTimeoutPeriod());
         Commit();
+    end;
+
+    internal procedure DefaultNumberOfMinutesBetweenRuns(): Integer
+    begin
+        exit(20 + Random(10))
+    end;
+
+    internal procedure DefaultInactivityTimeoutPeriod(): Integer
+    begin
+        exit(680 + Random(40))
     end;
 
     internal procedure InsertIntegrationFieldMapping(IntegrationTableMappingName: Code[20]; var IntegrationFieldMapping: Record "Integration Field Mapping"; TableFieldNo: Integer; IntegrationTableFieldNo: Integer; SynchDirection: Option; ConstValue: Text; ValidateField: Boolean; ValidateIntegrationTableField: Boolean)
@@ -1674,7 +1663,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeResetTableMapping(var IntegrationTableMappingName: Code[20]; var ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    internal procedure OnBeforeResetTableMapping(var IntegrationTableMappingName: Code[20]; var ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
     begin
     end;
 
@@ -1688,4 +1677,3 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     begin
     end;
 }
-

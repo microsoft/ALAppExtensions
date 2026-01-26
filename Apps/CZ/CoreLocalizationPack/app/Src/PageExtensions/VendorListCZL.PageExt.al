@@ -23,18 +23,6 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the registration number of vendor.';
             }
-#if not CLEAN23
-            field("Registration No. CZL"; Rec."Registration No. CZL")
-            {
-                Caption = 'Registration No. (Obsolete)';
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of vendor.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-            }
-#endif
         }
     }
 
@@ -81,10 +69,14 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Balance Reconciliation';
                 Image = Balance;
-                Promoted = true;
-                PromotedCategory = "Report";
                 RunObject = report "Vendor-Bal. Reconciliation CZL";
                 ToolTip = 'Open the report for vendor''s balance reconciliation.';
+            }
+        }
+        addlast(Category_Report)
+        {
+            actionref("Balance Reconciliation CZL_Promoted"; "Balance Reconciliation CZL")
+            {
             }
         }
     }

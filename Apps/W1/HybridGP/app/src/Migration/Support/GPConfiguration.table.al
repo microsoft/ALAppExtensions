@@ -31,19 +31,16 @@ table 4024 "GP Configuration"
         {
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA27
         field(7; "PreMigration Cleanup Completed"; Boolean)
         {
             DataClassification = SystemMetadata;
             InitValue = false;
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
             ObsoleteReason = 'Cleaning up tables before running the migration is no longer wanted.';
         }
+#endif
         field(8; "Dimensions Created"; Boolean)
         {
             DataClassification = SystemMetadata;

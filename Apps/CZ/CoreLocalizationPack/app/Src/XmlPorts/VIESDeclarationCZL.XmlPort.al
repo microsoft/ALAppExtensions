@@ -62,6 +62,8 @@ xmlport 31061 "VIES Declaration CZL"
                     }
                     trigger OnAfterGetRecord()
                     var
+                        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+                        VATStmtXMLExportHelperCZL: Codeunit "VAT Stmt XML Export Helper CZL";
                         TempParam: Text[30];
                     begin
                         if Header."Declaration Period" = Header."Declaration Period"::Month then
@@ -74,12 +76,9 @@ xmlport 31061 "VIES Declaration CZL"
                         else
                             FormType := 'N';
 
-                        DocumentDate := Format(Header."Document Date", 0, '<Day,2>.<Month,2>.<Year4>');
+                        DocumentDate := FormatDate(Header."Document Date");
                         Dic := Header.GetVATRegNo();
-                        if Header."Company Type" = Header."Company Type"::Corporate then
-                            Typds := 'P'
-                        else
-                            Typds := 'F';
+                        Typds := VATStmtXMLExportHelperCZL.ConvertSubjectType(Header."Company Type");
 
                         DPH := 'DPH';
                         SHV := 'SHV';
@@ -98,6 +97,16 @@ xmlport 31061 "VIES Declaration CZL"
                         HouseNo := Header."House No.";
                         MunicipalityNo := Header."Municipality No.";
                         PostCode := DelChr(Header."Post Code", '=', ' ');
+
+                        StatutoryReportingSetupCZL.Get();
+                        zast_kod := StatutoryReportingSetupCZL."Official Code";
+                        zast_typ := VATStmtXMLExportHelperCZL.ConvertSubjectType(StatutoryReportingSetupCZL."Official Type");
+                        zast_nazev := StatutoryReportingSetupCZL."Official Name";
+                        zast_jmeno := StatutoryReportingSetupCZL."Official First Name";
+                        zast_prijmeni := StatutoryReportingSetupCZL."Official Surname";
+                        zast_dat_nar := FormatDate(StatutoryReportingSetupCZL."Official Birth Date");
+                        zast_ev_cislo := StatutoryReportingSetupCZL."Official Reg.No.of Tax Adviser";
+                        zast_ic := StatutoryReportingSetupCZL."Official Registration No.";
                     end;
                 }
                 textelement(VetaP)
@@ -199,6 +208,46 @@ xmlport 31061 "VIES Declaration CZL"
                     {
                         XmlName = 'sest_telef';
                     }
+                    textattribute(zast_dat_nar)
+                    {
+                        Occurrence = Optional;
+                        XmlName = 'zast_dat_nar';
+                    }
+                    textattribute(zast_ev_cislo)
+                    {
+                        Occurrence = Optional;
+                        XmlName = 'zast_ev_cislo';
+                    }
+                    textattribute(zast_ic)
+                    {
+                        Occurrence = Optional;
+                        XmlName = 'zast_ic';
+                    }
+                    textattribute(zast_jmeno)
+                    {
+                        Occurrence = Optional;
+                        XmlName = 'zast_jmeno';
+                    }
+                    textattribute(zast_kod)
+                    {
+                        Occurrence = Optional;
+                        XmlName = 'zast_kod';
+                    }
+                    textattribute(zast_nazev)
+                    {
+                        Occurrence = Optional;
+                        XmlName = 'zast_nazev';
+                    }
+                    textattribute(zast_prijmeni)
+                    {
+                        Occurrence = Optional;
+                        XmlName = 'zast_prijmeni';
+                    }
+                    textattribute(zast_typ)
+                    {
+                        Occurrence = Optional;
+                        XmlName = 'zast_typ';
+                    }
                 }
                 tableelement(Line; "VIES Declaration Line CZL")
                 {
@@ -245,7 +294,10 @@ xmlport 31061 "VIES Declaration CZL"
                             CancelCode := Line.GetCancelCode();
                         SupplyCode := Line.GetTradeRole();
                         VATRegNo := Line.GetVATRegNo();
-                        Amount := Format(Line."Amount (LCY)", 0, 9);
+                        if not ShowAmtInAddCurrency then
+                            Amount := Format(Line."Amount (LCY)", 0, 9)
+                        else
+                            Amount := Format(Line."Additional-Currency Amount", 0, 9);
                     end;
                 }
                 tableelement(CallOfStockLine; "VIES Declaration Line CZL")
@@ -322,4 +374,17 @@ xmlport 31061 "VIES Declaration CZL"
         TempVIESDeclarationLineCZL.Reset();
         TempVIESDeclarationLineCZL.DeleteAll();
     end;
+
+    procedure SetShowAmtInAddCurrency(SetAmtInAddCurrency: Boolean)
+    begin
+        ShowAmtInAddCurrency := SetAmtInAddCurrency;
+    end;
+
+    local procedure FormatDate(Date: Date): Text
+    begin
+        exit(Format(Date, 0, '<Day,2>.<Month,2>.<Year4>'));
+    end;
+
+    var
+        ShowAmtInAddCurrency: Boolean;
 }

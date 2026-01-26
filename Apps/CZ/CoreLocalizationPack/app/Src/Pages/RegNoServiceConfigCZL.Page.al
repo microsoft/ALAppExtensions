@@ -90,10 +90,6 @@ page 11755 "Reg. No. Service Config CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Set Default Endpoint';
                 Image = Default;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Set the default URL in the Service Endpoint field.';
 
                 trigger OnAction()
@@ -109,6 +105,15 @@ page 11755 "Reg. No. Service Config CZL"
                     Rec."Service Endpoint" := RegLookupExtDataCZL.GetRegistrationNoValidationWebServiceURL();
                     Rec.Modify(true);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(SettoDefault_Promoted; SettoDefault)
+                {
+                }
             }
         }
     }

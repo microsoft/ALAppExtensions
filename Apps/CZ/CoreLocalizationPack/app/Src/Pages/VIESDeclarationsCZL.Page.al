@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -72,11 +72,11 @@ page 31140 "VIES Declarations CZL"
         }
         area(FactBoxes)
         {
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(31075), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"VIES Declaration Header CZL"), "No." = field("No.");
             }
         }
     }
@@ -92,9 +92,6 @@ page 31140 "VIES Declarations CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Re&lease';
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ShortcutKey = 'Ctrl+F9';
                     ToolTip = 'Release the document to the next stage of processing. When a document is released, it will be possible to print or export declaration. You must reopen the document before you can make changes to it.';
 
@@ -108,9 +105,6 @@ page 31140 "VIES Declarations CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Re&open';
                     Image = Replan;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ToolTip = 'Reopen the document to change it after it has been approved. Approved documents have tha Released status and must be opened before they can be changed.';
 
                     trigger OnAction()
@@ -123,9 +117,6 @@ page 31140 "VIES Declarations CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = '&Export';
                     Image = CreateXMLFile;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ToolTip = 'This batch job is used for VIES declaration results export in XML format.';
 
                     trigger OnAction()
@@ -143,9 +134,6 @@ page 31140 "VIES Declarations CZL"
                 Caption = 'Test Report';
                 Ellipsis = true;
                 Image = TestReport;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'View a test report so that you can find and correct any errors before you issue or export document.';
 
                 trigger OnAction()
@@ -159,9 +147,6 @@ page 31140 "VIES Declarations CZL"
                 Caption = '&Declaration';
                 Image = Report;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'View a VIES declaration report.';
 
                 trigger OnAction()
@@ -174,9 +159,6 @@ page 31140 "VIES Declarations CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
@@ -203,6 +185,33 @@ page 31140 "VIES Declarations CZL"
                     DocumentAttachmentDetails.OpenForRecRef(RecRef);
                     DocumentAttachmentDetails.RunModal();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref("Re&lease_Promoted"; "Re&lease")
+                {
+                }
+                actionref("Re&open_Promoted"; "Re&open")
+                {
+                }
+                actionref("&Export_Promoted"; "&Export")
+                {
+                }
+            }
+            group(Category_Report)
+            {
+                actionref("Test Report_Promoted"; "Test Report")
+                {
+                }
+                actionref("&Declaration_Promoted"; "&Declaration")
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
             }
         }
     }

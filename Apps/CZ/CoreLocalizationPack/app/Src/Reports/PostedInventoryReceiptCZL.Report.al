@@ -153,7 +153,8 @@ report 11751 "Posted Inventory Receipt CZL"
             begin
                 CurrReport.Language := LanguageMGt.GetLanguageIdOrDefault("Language Code");
                 CurrReport.FormatRegion := LanguageMGt.GetFormatRegionOrDefault("Format Region");
-                SalespersonPurchaser.Get("Purchaser Code");
+                if not SalespersonPurchaser.Get("Purchaser Code") then
+                    SalespersonPurchaser.Init();
 
                 if not IsReportInPreviewMode() then
                     Codeunit.Run(Codeunit::"Posted Invt. Rcpt.-Printed CZL", "Invt. Receipt Header");

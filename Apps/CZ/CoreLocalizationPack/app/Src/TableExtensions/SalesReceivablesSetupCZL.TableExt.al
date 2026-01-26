@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -11,36 +11,18 @@ tableextension 11714 "Sales & Receivables Setup CZL" extends "Sales & Receivable
 {
     fields
     {
+#if not CLEANSCHEMA25
 #pragma warning disable AL0842
-#if not CLEAN22
-#pragma warning disable AL0432
-#endif
         field(11780; "Default VAT Date CZL"; Enum "Default VAT Date CZL")
-#if not CLEAN22
-#pragma warning restore AL0432
-#endif
 #pragma warning restore AL0842
         {
             Caption = 'Default VAT Date';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Replaced by VAT Reporting Date in General Ledger Setup.';
         }
-        field(11781; "Allow Alter Posting Groups CZL"; Boolean)
-        {
-            Caption = 'Allow Alter Posting Groups';
-            DataClassification = CustomerContent;
-            ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
-            ObsoleteReason = 'It will be replaced by "Allow Multiple Posting Groups" field.';
-
-        }
+#endif
         field(11782; "Print QR Payment CZL"; Boolean)
         {
             Caption = 'Print QR payment';
@@ -51,6 +33,12 @@ tableextension 11714 "Sales & Receivables Setup CZL" extends "Sales & Receivable
                 if "Print QR Payment CZL" then
                     CreatePrintQROnPremFontkNotification();
             end;
+        }
+        field(11783; "Show VAT Corr When Posting CZL"; Boolean)
+        {
+            Caption = 'Show VAT Correction When Posting';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies whether the page for possible correction of the VAT amount in the local currency will be shown when posting a sales document in a foreign currency. If this is not activated, the VAT amount can only be changed from the posted sales document.';
         }
     }
     local procedure CreatePrintQROnPremFontkNotification()

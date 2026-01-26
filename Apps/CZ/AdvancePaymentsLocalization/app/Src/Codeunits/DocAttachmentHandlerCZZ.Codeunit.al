@@ -20,8 +20,8 @@ codeunit 31067 "Doc. Attachment Handler CZZ"
         InitDocumentAttachmentFields(DocumentAttachment, RecRef);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Document Attachment Factbox", 'OnBeforeDrillDown', '', false, false)]
-    local procedure GetTableOnBeforeDrillDown(DocumentAttachment: Record "Document Attachment"; var RecRef: RecordRef)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", 'OnAfterGetRefTable', '', false, false)]
+    local procedure GetTableOnAfterGetRefTable(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment")
     begin
         GetDocumentAttachmentTable(DocumentAttachment, RecRef);
     end;

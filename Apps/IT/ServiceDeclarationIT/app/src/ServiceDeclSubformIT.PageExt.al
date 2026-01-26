@@ -20,10 +20,6 @@ pageextension 12217 "Service Decl. Subform IT" extends "Service Declaration Subf
         {
             Visible = false;
         }
-        modify("Service Transaction Code")
-        {
-            Visible = false;
-        }
         modify("VAT Reg. No.")
         {
             Visible = true;
@@ -97,6 +93,7 @@ pageextension 12217 "Service Decl. Subform IT" extends "Service Declaration Subf
             field("Source Entry No."; Rec."Source Entry No.")
             {
                 ApplicationArea = BasicEU;
+                Editable = false;
                 ToolTip = 'Specifies the source VAT Entry number.';
             }
             field("Custom Office No."; Rec."Custom Office No.")
@@ -113,6 +110,7 @@ pageextension 12217 "Service Decl. Subform IT" extends "Service Declaration Subf
             {
                 ApplicationArea = BasicEU;
                 ToolTip = 'Specifies the document number of the corrected Service Declaration entry.';
+                Visible = false;
             }
             field("Progressive No."; Rec."Progressive No.")
             {

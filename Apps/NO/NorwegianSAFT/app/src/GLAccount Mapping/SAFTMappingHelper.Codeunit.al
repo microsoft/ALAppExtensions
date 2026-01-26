@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -9,10 +9,6 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Utilities;
-#if not CLEAN24
-using System.Environment.Configuration;
-using System.Media;
-#endif
 using System.Utilities;
 
 codeunit 10672 "SAF-T Mapping Helper"
@@ -31,21 +27,16 @@ codeunit 10672 "SAF-T Mapping Helper"
         NoGLAccountMappingErr: Label 'No G/L account mapping was created for range ID %1', Comment = '%1 = any integer number';
         MappingExistsErr: Label 'Mapping for category %1 with mapping code %2 already exists for range ID %3.', Comment = '%1 = category no., %2 = mapping code, %3 = any integer number';
         MappingNotDoneErr: Label 'One or more G/L accounts do not have a mapping setup. Open the SAF-T Mapping Setup page for the selected mapping range and map each G/L account either to the  standard account or the grouping code.';
+        Mapping13NotDoneErr: Label 'One or more G/L accounts do not have a mapping setup. Open the SAF-T Mapping Setup page for the selected mapping range and map each G/L account either to the category code and mapping number.';
         MappingDoneErr: Label 'One or more G/L accounts already have a mapping setup. Create a new mapping range with another mapping type.';
         DimensionWithoutAnalysisCodeErr: Label 'One or more dimensions do not have a SAF-T analysis code. Open the Dimensions page and specify a SAF-T analysis code for each dimension.';
         VATPostingSetupWithoutTaxCodeErr: Label 'One or more VAT posting setup do not have a %1. Open the VAT Posting Setup page and specify %1 for each VAT posting setup combination.';
         SourceCodeWithoutSAFTCodeErr: Label 'One or more source codes do not have a SAF-T source code. Open the Source Codes page and specify a SAF-T source code for each source code.';
         ChartOfAccountsAlreadyExistsErr: Label 'A chart of accounts must be empty to be created based on SAF-T standard accounts.';
-#if not CLEAN23
-        CopyReportingCodesToSAFTCodesQst: Label 'Do you want to copy sales and purchase reporting codes to sales/purchase SAF-T standard tax codes?';
-#endif
         AssortedJournalsSourceCodeDescriptionLbl: Label 'Assorted Journals';
         GeneralLedgerJournalsSourceCodeDescriptionLbl: Label 'General Ledger Journals';
         AccountReceivablesSourceCodeDescriptionLbl: Label 'Account Receivables';
         AccountPayablesSourceCodeDescriptionLbl: Label 'Account Payables';
-#if not CLEAN24
-        SAFTSetupGuideTxt: Label 'Set up SAF-T';
-#endif
         DefaultLbl: Label 'DEFAULT';
 
     trigger OnRun()
@@ -214,28 +205,6 @@ codeunit 10672 "SAF-T Mapping Helper"
             until SAFTGLAccountMapping.Next() = 0;
     end;
 
-#if not CLEAN23
-    [Obsolete('The procedure will be removed, no need to copy the fields', '23.0')]
-    procedure CopyReportingCodesToSAFTCodes()
-    var
-        VATPostingSetup: Record "VAT Posting Setup";
-        ConfirmManagement: Codeunit "Confirm Management";
-    begin
-        if not ConfirmManagement.GetResponse(CopyReportingCodesToSAFTCodesQst, false) then
-            exit;
-
-        if not VATPostingSetup.FindSet(true) then
-            exit;
-
-        repeat
-            if VATPostingSetup."Sales VAT Reporting Code" <> '' then
-                VATPostingSetup.Validate("Sales SAF-T Standard Tax Code", VATPostingSetup."Sales VAT Reporting Code");
-            if VATPostingSetup."Purchase VAT Reporting Code" <> '' then
-                VATPostingSetup.Validate("Purch. SAF-T Standard Tax Code", VATPostingSetup."Purchase VAT Reporting Code");
-            VATPostingSetup.Modify(true);
-        until VATPostingSetup.Next() = 0;
-    end;
-#endif
     local procedure GLAccHasEntries(GLAccNo: Code[20]; StartingDate: Date; EndingDate: Date; IncludeIncomingBalance: Boolean): Boolean
     var
         GLAccount: Record "G/L Account";
@@ -425,6 +394,28 @@ codeunit 10672 "SAF-T Mapping Helper"
         end;
     end;
 
+    procedure VerifyMapping13IsDone(MappingRangeCode: Code[20])
+    var
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTMappingHelper: Codeunit "SAF-T Mapping Helper";
+    begin
+        SAFTMappingHelper.UpdateGLEntriesExistStateForGLAccMapping(MappingRangeCode);
+        SAFTGLAccountMapping.SetRange("Mapping Range Code", MappingRangeCode);
+        SAFTGLAccountMapping.SetRange("Category No.", '');
+        if not SAFTGLAccountMapping.IsEmpty() then begin
+            SAFTMappingRange.Get(MappingRangeCode);
+            LogError(SAFTMappingRange, Mapping13NotDoneErr);
+            exit;
+        end;
+        SAFTGLAccountMapping.SetRange("Category No.");
+        SAFTGLAccountMapping.SetRange("No.", '');
+        if not SAFTGLAccountMapping.IsEmpty() then begin
+            SAFTMappingRange.Get(MappingRangeCode);
+            LogError(SAFTMappingRange, Mapping13NotDoneErr);
+        end;
+    end;
+
     procedure VerifyNoMappingDone(SAFTMappingRange: Record "SAF-T Mapping Range")
     var
         SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
@@ -496,11 +487,7 @@ codeunit 10672 "SAF-T Mapping Helper"
         TotalCount := VATPostingSetup.Count();
         if VATPostingSetup.FindSet() then
             repeat
-#if CLEAN23
                 if (VATPostingSetup."Sale VAT Reporting Code" <> '') or (VATPostingSetup."Purch. VAT Reporting Code" <> '') then
-#else
-                if (VATPostingSetup."Sales SAF-T Standard Tax Code" <> '') or (VATPostingSetup."Purch. SAF-T Standard Tax Code" <> '') then
-#endif
                     Count += 1;
             until VATPostingSetup.Next() = 0;
         exit(StrSubstNo('%1/%2', Count, TotalCount));
@@ -524,26 +511,6 @@ codeunit 10672 "SAF-T Mapping Helper"
         ErrorMessageManagement.LogContextFieldError(0, ErrorMessage, SourceVariant, SourceFieldNo, '');
     end;
 
-#if not CLEAN24
-    [Obsolete('The procedure is not used will be removed', '24.0')]
-    procedure AddSAFTAssistedSetup()
-    var
-        GuidedExperience: Codeunit "Guided Experience";
-    begin
-        GuidedExperience.InsertAssistedSetup(
-            CopyStr(SAFTSetupGuideTxt, 1, 2048),
-            CopyStr(SAFTSetupGuideTxt, 1, 50),
-            '',
-            1,
-            ObjectType::Page,
-            PAGE::"SAF-T Setup Wizard",
-            "Assisted Setup Group"::GettingStarted,
-            '',
-            "Video Category"::Uncategorized,
-            ''
-        );
-    end;
-#endif
 
     procedure InsertDefaultNoSeriesInSAFTSetup()
     var

@@ -21,6 +21,7 @@ codeunit 148124 "Sales Adv. Payments FCY CZZ"
         LibraryReportDataset: Codeunit "Library - Report Dataset";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         isInitialized: Boolean;
+        ApplyAdvanceLetterQst: Label 'Apply Advance Letter?';
         CannotBeFoundErr: Label 'The field Advance Letter No. of table Gen. Journal Line contains a value (%1) that cannot be found in the related table (%2).', Comment = '%1 = advance letter no., %2 = table name';
         UnapplyAdvLetterQst: Label 'Unapply advance letter: %1\Continue?', Comment = '%1 = Advance Letters';
         CurrExchRateAdjustedMsg: Label 'One or more currency exchange rates have been adjusted.';
@@ -28,9 +29,6 @@ codeunit 148124 "Sales Adv. Payments FCY CZZ"
     local procedure Initialize()
     var
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
-#if not CLEAN22
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#endif
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Sales Adv. Payments FCY CZZ");
         LibraryRandom.Init();
@@ -41,11 +39,6 @@ codeunit 148124 "Sales Adv. Payments FCY CZZ"
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Sales Adv. Payments FCY CZZ");
 
         GeneralLedgerSetup.Get();
-#if not CLEAN22
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            GeneralLedgerSetup."Use VAT Date CZL" := true
-        else
-#endif
         GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Enabled;
         GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date";
         GeneralLedgerSetup."Max. VAT Difference Allowed" := 0.5;
@@ -567,7 +560,7 @@ codeunit 148124 "Sales Adv. Payments FCY CZZ"
 
         // [GIVEN] Second sales advance letter in foreign currency has been created
         // [GIVEN] Sales advance letter line with normal VAT has been created
-        CreateSalesAdvLetter(SalesAdvLetterHeaderCZZ2, SalesAdvLetterLineCZZ2, SalesAdvLetterHeaderCZZ1."Bill-to Customer No.");
+        CreateSalesAdvLetter(SalesAdvLetterHeaderCZZ2, SalesAdvLetterLineCZZ2, '', SalesAdvLetterHeaderCZZ1."Bill-to Customer No.");
 
         // [GIVEN] Second sales advance letter has been released
         LibrarySalesAdvancesCZZ.ReleaseSalesAdvLetter(SalesAdvLetterHeaderCZZ2);
@@ -816,6 +809,94 @@ codeunit 148124 "Sales Adv. Payments FCY CZZ"
         Assert.RecordIsNotEmpty(SalesAdvLetterEntryCZZ);
     end;
 
+    [Test]
+    [HandlerFunctions('RequestPageAdjustExchangeRatesHandler,MessageHandler,ConfirmHandler')]
+    procedure ReapplyAdvanceLetterInFCYAndAdjustedPayment()
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        GLEntry: Record "G/L Entry";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        CustomerPostingGroup: Record "Customer Posting Group";
+        Customer: Record Customer;
+        CurrencyCode: Code[10];
+        PostedDocumentNo: Code[20];
+        FromEntryNo: Integer;
+    begin
+        // [SCENARIO] Apply the unapplied sales advance letter in foreign currency and adjusted payment to the posted sales invoice and check the zero balance of the advance letter g/l account and receivables account
+        Initialize();
+
+        // [GIVEN] Foreign currency with random exchange rates has been created
+        CurrencyCode := LibraryERM.CreateCurrencyWithRandomExchRates();
+
+        // [GIVEN] Sales advance letter in foreign currency has been created
+        // [GIVEN] Sales advance letter line with normal VAT has been created
+        CreateSalesAdvLetter(SalesAdvLetterHeaderCZZ, SalesAdvLetterLineCZZ, CurrencyCode);
+
+        // [GIVEN] Sales advance letter has been released
+        ReleaseSalesAdvLetter(SalesAdvLetterHeaderCZZ);
+
+        // [GIVEN] Sales advance letter has been paid in full by the general journal
+        GLEntry.FindLast();
+        FromEntryNo := GLEntry."Entry No." + 1;
+        CreateAndPostPaymentSalesAdvLetter(SalesAdvLetterHeaderCZZ, -SalesAdvLetterLineCZZ."Amount Including VAT", 0, WorkDate());
+
+        // [GIVEN] New currency exchange rate has been created
+        CurrencyExchangeRate.SetRange("Currency Code", CurrencyCode);
+        CurrencyExchangeRate.FindFirst();
+        LibraryERM.CreateExchangeRate(CurrencyCode, CalcDate('<-CY+1Y>', WorkDate()),
+            CurrencyExchangeRate."Exchange Rate Amount",
+            CurrencyExchangeRate."Adjustment Exch. Rate Amount" * LibraryRandom.RandDec(1, 2));
+
+        // [GIVEN] Adjust exchange rate has been ran
+        Commit();
+        SetExpectedMessage(CurrExchRateAdjustedMsg);
+        RunAdjustExchangeRates(
+            SalesAdvLetterHeaderCZZ."Bill-to Customer No.", SalesAdvLetterHeaderCZZ."Currency Code",
+            CalcDate('<-CY+1Y>', WorkDate()), CalcDate('<CY+1Y>', WorkDate()), CalcDate('<-CY+1Y>', WorkDate()),
+            SalesAdvLetterHeaderCZZ."No.", true, false, false, true, false);
+
+        // [GIVEN] Sales invoice in foreign currency has been created
+        // [GIVEN] Sales invoice line has been created
+        LibrarySalesAdvancesCZZ.CreateSalesInvoice(
+            SalesHeader, SalesLine, SalesAdvLetterHeaderCZZ."Bill-to Customer No.", CalcDate('<-CY+1Y>', WorkDate()),
+            SalesAdvLetterLineCZZ."VAT Bus. Posting Group", SalesAdvLetterLineCZZ."VAT Prod. Posting Group",
+            SalesAdvLetterHeaderCZZ."Currency Code", 0, true, SalesAdvLetterLineCZZ."Amount Including VAT");
+
+        // [GIVEN] Whole advance letter has been linked to sales invoice
+        LibrarySalesAdvancesCZZ.LinkSalesAdvanceLetterToDocument(
+            SalesAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice", SalesHeader."No.",
+            SalesAdvLetterLineCZZ."Amount Including VAT", SalesAdvLetterLineCZZ."Amount Including VAT (LCY)");
+
+        // [GIVEN] Sales invoice has been posted
+        PostedDocumentNo := PostSalesDocument(SalesHeader);
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+
+        // [GIVEN] Sales advance letter from posted sales invoice has been unlinked
+        SetExpectedConfirm(StrSubstNo(UnapplyAdvLetterQst, SalesAdvLetterHeaderCZZ."No."), true);
+        LibrarySalesAdvancesCZZ.UnapplyAdvanceLetter(SalesInvoiceHeader);
+
+        // [WHEN] Link advance letter to posted sales invoice again
+        SetExpectedConfirm(ApplyAdvanceLetterQst, true);
+        LibrarySalesAdvancesCZZ.ApplySalesAdvanceLetter(SalesAdvLetterHeaderCZZ, SalesInvoiceHeader);
+
+        // [THEN] The balance of advance letter g/l account will be zero
+        GLEntry.SetFilter("Entry No.", '%1..', FromEntryNo);
+        GLEntry.SetRange("G/L Account No.", AdvanceLetterTemplateCZZ."Advance Letter G/L Account");
+        GLEntry.CalcSums(Amount);
+        Assert.AreEqual(0, GLEntry.Amount, 'The balance of advance letter g/l account must be zero.');
+
+        // [THEN] The balance of receivables account will be zero
+        Customer.Get(SalesAdvLetterHeaderCZZ."Bill-to Customer No.");
+        CustomerPostingGroup.Get(Customer."Customer Posting Group");
+        GLEntry.SetRange("G/L Account No.", CustomerPostingGroup."Receivables Account");
+        GLEntry.CalcSums(Amount);
+        Assert.AreEqual(0, GLEntry.Amount, 'The balance of receivables account must be zero.');
+    end;
+
     local procedure UpdateCurrency()
     var
         Currency: Record Currency;
@@ -831,7 +912,7 @@ codeunit 148124 "Sales Adv. Payments FCY CZZ"
         LibraryERM.CreateExchangeRate(Currency.Code, CalcDate('<CY>', WorkDate()), 1 / 27, 1 / 27);
     end;
 
-    local procedure CreateSalesAdvLetter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; CustomerNo: Code[20])
+    local procedure CreateSalesAdvLetter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; CurrencyCode: Code[10]; CustomerNo: Code[20])
     var
         Currency: Record Currency;
         VATPostingSetup: Record "VAT Posting Setup";
@@ -846,14 +927,23 @@ codeunit 148124 "Sales Adv. Payments FCY CZZ"
             CustomerNo := Customer."No.";
         end;
 
+        Currency.Code := CurrencyCode;
+        if Currency.Code = '' then
+            FindForeignCurrency(Currency);
+
         FindForeignCurrency(Currency);
         LibrarySalesAdvancesCZZ.CreateSalesAdvLetterHeader(SalesAdvLetterHeaderCZZ, AdvanceLetterTemplateCZZ.Code, CustomerNo, Currency.Code);
         LibrarySalesAdvancesCZZ.CreateSalesAdvLetterLine(SalesAdvLetterLineCZZ, SalesAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
     end;
 
+    local procedure CreateSalesAdvLetter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; CurrencyCode: Code[10])
+    begin
+        CreateSalesAdvLetter(SalesAdvLetterHeaderCZZ, SalesAdvLetterLineCZZ, CurrencyCode, '');
+    end;
+
     local procedure CreateSalesAdvLetter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ")
     begin
-        CreateSalesAdvLetter(SalesAdvLetterHeaderCZZ, SalesAdvLetterLineCZZ, '');
+        CreateSalesAdvLetter(SalesAdvLetterHeaderCZZ, SalesAdvLetterLineCZZ, '', '');
     end;
 
     local procedure CreateAndPostPaymentSalesAdvLetter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; Amount: Decimal; ExchangeRate: Decimal; PostingDate: Date)

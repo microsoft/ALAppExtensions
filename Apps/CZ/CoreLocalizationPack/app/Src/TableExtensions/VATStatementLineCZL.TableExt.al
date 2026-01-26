@@ -1,13 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-#if not CLEAN23
-using Microsoft.Finance.EU3PartyTrade;
-#endif
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
 
 tableextension 11739 "VAT Statement Line CZL" extends "VAT Statement Line"
 {
@@ -52,21 +50,18 @@ tableextension 11739 "VAT Statement Line CZL" extends "VAT Statement Line"
             OptionMembers = " ",Yes,No;
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA27
         field(31073; "EU-3 Party Trade CZL"; Option)
         {
             Caption = 'EU-3 Party Trade';
             OptionCaption = ' ,Yes,No';
             OptionMembers = " ",Yes,No;
             DataClassification = CustomerContent;
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
             ObsoleteReason = 'Replaced by "EU 3 Party Trade" field in "EU 3-Party Trade Purchase" app.';
         }
+#endif
         field(31110; "VAT Ctrl. Report Section CZL"; Code[20])
         {
             Caption = 'VAT Control Report Section Code';
@@ -79,33 +74,53 @@ tableextension 11739 "VAT Statement Line CZL" extends "VAT Statement Line"
             DataClassification = CustomerContent;
         }
     }
-#if not CLEAN23
-    internal procedure ConvertEU3PartyTradeToEnum(): Enum "EU3 Party Trade Filter"
+
+    var
+        VATStatementCalculationCZL: Codeunit "VAT Statement Calculation CZL";
+
+    procedure CalcTotal(VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL"; var TotalAmount: Decimal)
     begin
-#pragma warning disable AL0432
-        case "EU-3 Party Trade CZL" of
-            "EU-3 Party Trade CZL"::" ":
-                exit("EU 3 Party Trade"::All);
-            "EU-3 Party Trade CZL"::Yes:
-                exit("EU 3 Party Trade"::EU3);
-            "EU-3 Party Trade CZL"::No:
-                exit("EU 3 Party Trade"::"non-EU3");
-        end
-#pragma warning restore AL0432
+        VATStatementCalculationCZL.CalcLineTotal(Rec, VATStmtCalcParametersCZL, TotalAmount);
     end;
 
-    internal procedure ConvertEnumToEU3PartyTrade(EU3PartyTradeFilter: Enum "EU3 Party Trade Filter")
+    procedure CalcTotal(VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL"; var TotalAmount: Decimal; var TotalBase: Decimal)
     begin
-#pragma warning disable AL0432
-        case EU3PartyTradeFilter of
-            EU3PartyTradeFilter::EU3:
-                "EU-3 Party Trade CZL" := "EU-3 Party Trade CZL"::Yes;
-            EU3PartyTradeFilter::"non-EU3":
-                "EU-3 Party Trade CZL" := "EU-3 Party Trade CZL"::No;
-            EU3PartyTradeFilter::All:
-                "EU-3 Party Trade CZL" := "EU-3 Party Trade CZL"::" ";
-        end;
-#pragma warning restore AL0432
+        VATStatementCalculationCZL.CalcLineTotal(Rec, VATStmtCalcParametersCZL, TotalAmount, TotalBase);
     end;
-#endif
+
+    internal procedure DrillDown(VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL")
+    begin
+        VATStatementCalculationCZL.DrillDownLineTotal(Rec, VATStmtCalcParametersCZL);
+    end;
+
+    internal procedure GetVATEntries(VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL"; var OutTempVATEntry: Record "VAT Entry" temporary)
+    begin
+        VATStatementCalculationCZL.GetVATEntries(Rec, VATStmtCalcParametersCZL, OutTempVATEntry);
+    end;
+
+    internal procedure ShowAmountAsZero(Amount: Decimal): Boolean
+    begin
+        case "Show CZL" of
+            "Show CZL"::"Zero If Negative":
+                exit(Amount < 0 ? true : false);
+            "Show CZL"::"Zero If Positive":
+                exit(Amount > 0 ? true : false);
+        end;
+    end;
+
+    internal procedure PrepareAmountToShow(var Amount: Decimal)
+    begin
+        if ShowAmountAsZero(Amount) then
+            Amount := 0;
+    end;
+
+    internal procedure GetCalculateSign(): Integer
+    begin
+        exit("Calculate with" = "Calculate with"::"Opposite Sign" ? -1 : 1);
+    end;
+
+    internal procedure GetPrintSign(): Integer
+    begin
+        exit("Print with" = "Print with"::"Opposite Sign" ? -1 : 1);
+    end;
 }

@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 page 31112 "VAT Ctrl. Report Subform CZL"
 {
@@ -101,6 +102,18 @@ page 31112 "VAT Ctrl. Report Subform CZL"
                 {
                     ApplicationArea = VAT;
                     ToolTip = 'Specifies the VAT amount of document.';
+                }
+                field("Additional-Currency Base"; Rec."Additional-Currency Base")
+                {
+                    ApplicationArea = VAT;
+                    ToolTip = 'Specifies the VAT additional currency base of document.';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
+                field("Additional-Currency Amount"; Rec."Additional-Currency Amount")
+                {
+                    ApplicationArea = VAT;
+                    ToolTip = 'Specifies the VAT additional currency amount of document.';
+                    Visible = UseAmtsInAddCurrVisible;
                 }
                 field("VAT Rate"; Rec."VAT Rate")
                 {
@@ -202,4 +215,19 @@ page 31112 "VAT Ctrl. Report Subform CZL"
             }
         }
     }
+    var
+        UseAmtsInAddCurrVisible: Boolean;
+
+    trigger OnOpenPage()
+    begin
+        SetUseAmtsInAddCurrVisible()
+    end;
+
+    local procedure SetUseAmtsInAddCurrVisible()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurrVisible := GeneralLedgerSetup."Additional Reporting Currency" <> '';
+    end;
 }

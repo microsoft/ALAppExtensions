@@ -1,17 +1,17 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
-using Microsoft.Sales.History;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
-using System.Threading;
+using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
-using System.Email;
 using Microsoft.Utilities;
+using System.Email;
+using System.Threading;
 
 page 30012 "APIV2 - Sales Invoices"
 {
@@ -26,6 +26,7 @@ page 30012 "APIV2 - Sales Invoices"
     PageType = API;
     SourceTable = "Sales Invoice Entity Aggregate";
     Extensible = false;
+    AboutText = 'Manages sales invoice documents, exposing invoice headers, customer details, billing and shipping addresses, amounts, tax information, due dates, and status. Supports full CRUD operations for automating billing processes, synchronizing invoicing data with external accounting or e-commerce platforms, and enabling accounts receivable integration and financial reporting.';
 
     layout
     {
@@ -1055,6 +1056,7 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     [ServiceEnabled]
+    [Caption('Posts the draft sales invoice to create a finalized posted invoice')]
     [Scope('Cloud')]
     procedure Post(var ActionContext: WebServiceActionContext)
     var
@@ -1068,6 +1070,7 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     [ServiceEnabled]
+    [Caption('Posts the sales invoice and sends it to the customer via email')]
     [Scope('Cloud')]
     procedure PostAndSend(var ActionContext: WebServiceActionContext)
     var
@@ -1083,6 +1086,7 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     [ServiceEnabled]
+    [Caption('Sends the sales invoice document to the customer via email')]
     [Scope('Cloud')]
     procedure Send(var ActionContext: WebServiceActionContext)
     var
@@ -1105,6 +1109,7 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     [ServiceEnabled]
+    [Caption('Cancels the posted sales invoice by creating a corrective credit memo')]
     [Scope('Cloud')]
     procedure Cancel(var ActionContext: WebServiceActionContext)
     var
@@ -1117,6 +1122,7 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     [ServiceEnabled]
+    [Caption('Cancels the posted sales invoice and sends the cancellation to the customer via email')]
     [Scope('Cloud')]
     procedure CancelAndSend(var ActionContext: WebServiceActionContext)
     var
@@ -1130,6 +1136,7 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     [ServiceEnabled]
+    [Caption('Creates a draft corrective credit memo to partially or fully reverse the posted sales invoice')]
     [Scope('Cloud')]
     procedure MakeCorrectiveCreditMemo(var ActionContext: WebServiceActionContext)
     var

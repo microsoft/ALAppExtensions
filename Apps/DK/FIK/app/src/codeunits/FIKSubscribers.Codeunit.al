@@ -281,33 +281,12 @@ codeunit 13657 FIKSubscribers
         Handled := true;
     end;
 
-#if not CLEAN22
-    //rep 393
-    [Obsolete('Replaced by OnBeforeUpdateGnlJnlLineDimensionsFromTempVendorPaymentBuffer.', '22.0')]
-    [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnBeforeUpdateGnlJnlLineDimensionsFromTempBuffer', '', false, false)]
-    procedure OnBeforeUpdateGnlJnlLineDimensionsFromTempBuffer(var GenJournalLine: Record "Gen. Journal Line"; TempPaymentBuffer: Record "Payment Buffer" temporary);
-    begin
-        GenJournalLine.GiroAccNo := TempPaymentBuffer.GiroAccNo;
-        GenJournalLine.UpdateVendorPaymentDetails();
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnBeforeUpdateGnlJnlLineDimensionsFromVendorPaymentBuffer', '', false, false)]
     procedure OnBeforeUpdateGnlJnlLineDimensionsFromTempVendorPaymentBuffer(var GenJournalLine: Record "Gen. Journal Line"; TempVendorPaymentBuffer: Record "Vendor Payment Buffer" temporary);
     begin
         GenJournalLine.GiroAccNo := TempVendorPaymentBuffer.GiroAccNo;
         GenJournalLine.UpdateVendorPaymentDetails();
     end;
-
-#if not CLEAN22
-    //rep 393
-    [Obsolete('Replaced by OnUpdateTempVendorPaymentBufferFromVendorLedgerEntry.', '22.0')]
-    [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnUpdateTempBufferFromVendorLedgerEntry', '', false, false)]
-    procedure OnUpdateTempBufferFromVendorLedgerEntry(var TempPaymentBuffer: Record "Payment Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry");
-    begin
-        TempPaymentBuffer.GiroAccNo := VendorLedgerEntry.GiroAccNo;
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Report, Report::"Suggest Vendor Payments", 'OnUpdateVendorPaymentBufferFromVendorLedgerEntry', '', false, false)]
     procedure OnUpdateTempVendorPaymentBufferFromVendorLedgerEntry(var TempVendorPaymentBuffer: Record "Vendor Payment Buffer" temporary; VendorLedgerEntry: Record "Vendor Ledger Entry");
@@ -323,20 +302,11 @@ codeunit 13657 FIKSubscribers
     end;
 
     //tab38
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Table, DATABASE::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNo', '', false, false)]
-    [Obsolete('Replaced by event OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '22.0')]
-    procedure OnValidatePurchaseHeaderPayToVendorNo(var Sender: Record "Purchase Header"; Vendor: Record Vendor);
-    begin
-        Sender.VALIDATE(GiroAccNo, Vendor.GiroAccNo);
-    end;
-#else
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
     local procedure OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType(Vendor: Record Vendor; var PurchaseHeader: Record "Purchase Header"; var xPurchaseHeader: Record "Purchase Header");
     begin
         PurchaseHeader.Validate(GiroAccNo, Vendor.GiroAccNo)
     end;
-#endif
 
     //table81
     [EventSubscriber(ObjectType::Table, DATABASE::"Gen. Journal Line", 'OnGenJnlLineGetVendorAccount', '', false, false)]

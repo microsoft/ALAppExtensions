@@ -116,6 +116,7 @@ table 31005 "Sales Adv. Letter Line CZZ"
                 AdvanceLetterApplicationCZZ.SetRange("Advance Letter No.", Rec."Document No.");
                 if not AdvanceLetterApplicationCZZ.IsEmpty() then
                     Error(ModifyAmountErr, FieldCaption("Amount Including VAT"));
+                TestJobRelation();
                 UpdateAmounts();
             end;
         }
@@ -189,18 +190,19 @@ table 31005 "Sales Adv. Letter Line CZZ"
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         Currency: Record Currency;
+        JobRelationCheckSuspended: Boolean;
 
     local procedure UpdateAmounts()
     var
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         IsHandled: Boolean;
     begin
-        TestField("VAT Prod. Posting Group");
-
         IsHandled := false;
         OnBeforeUpdateAmounts(Rec, xRec, CurrFieldNo, IsHandled);
         if IsHandled then
             exit;
+
+        TestField("VAT Prod. Posting Group");
 
         GetHeader();
         "Amount Including VAT" := Round("Amount Including VAT", Currency."Amount Rounding Precision");
@@ -268,6 +270,20 @@ table 31005 "Sales Adv. Letter Line CZZ"
         SalesAdvLetterHeaderCZZ.TestField(Status, SalesAdvLetterHeaderCZZ.Status::New);
 
         OnAfterTestStatusOpen(Rec, SalesAdvLetterHeaderCZZ);
+    end;
+
+    procedure TestJobRelation()
+    begin
+        if JobRelationCheckSuspended then
+            exit;
+
+        GetHeader();
+        SalesAdvLetterHeaderCZZ.TestField("Job No.", '');
+    end;
+
+    procedure SuspendJobRelationCheck(Suspend: Boolean)
+    begin
+        JobRelationCheckSuspended := Suspend;
     end;
 
     [IntegrationEvent(false, false)]

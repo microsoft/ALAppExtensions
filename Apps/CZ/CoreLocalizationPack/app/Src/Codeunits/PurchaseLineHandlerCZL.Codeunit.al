@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Purchases.Document;
 
-using Microsoft.Inventory;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Archive;
 
@@ -12,20 +11,8 @@ codeunit 11784 "Purchase Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterAssignItemValues', '', false, false)]
     local procedure CopyFromItemOnAfterAssignItemValues(var PurchLine: Record "Purchase Line"; Item: Record Item)
-#if not CLEAN22
-    var
-        PurchaseHeader: Record "Purchase Header";
-#endif
     begin
         PurchLine."Tariff No. CZL" := Item."Tariff No.";
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
-        PurchLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
-        if PurchaseHeader.Get(PurchLine."Document Type", PurchLine."Document No.") then
-            PurchLine."Physical Transfer CZL" := PurchaseHeader."Physical Transfer CZL";
-#pragma warning restore AL0432
-#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeGetPurchHeader', '', false, false)]
@@ -103,8 +90,6 @@ codeunit 11784 "Purchase Line Handler CZL"
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Prod. Order No.', false, false)]
     local procedure ProdOrderNoOnAfterValidate(var Rec: Record "Purchase Line"; var xRec: Record "Purchase Line"; CurrFieldNo: Integer)
-    var
-        AddOnIntegrManagement: Codeunit AddOnIntegrManagement;
     begin
         if (CurrFieldNo <> 0) and (Rec."Prod. Order No." <> xRec."Prod. Order No.") then begin
             Rec."Routing No." := '';
@@ -114,6 +99,6 @@ codeunit 11784 "Purchase Line Handler CZL"
             Rec."Routing Reference No." := 0;
         end;
 
-        AddOnIntegrManagement.ValidateProdOrderOnPurchLine(Rec);
+        Rec.ValidateProdOrderOnPurchLine();
     end;
 }

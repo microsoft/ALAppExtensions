@@ -145,10 +145,12 @@ table 40105 "GP Company Additional Settings"
             begin
                 if not Rec."Migrate Payables Module" then begin
                     Rec.Validate("Migrate Inactive Vendors", false);
+                    Rec.Validate("Migrate Temporary Vendors", false);
                     Rec.Validate("Migrate Open POs", false);
                     Rec.Validate("Migrate Vendor Classes", false);
                     Rec.Validate("Migrate Only Payables Master", false);
                     Rec.Validate("Migrate Hist. AP Trx.", false);
+                    Rec.Validate("Recurring Purchasing Lines", false);
                 end;
             end;
         }
@@ -164,6 +166,7 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Customer Classes", false);
                     Rec.Validate("Migrate Only Rec. Master", false);
                     Rec.Validate("Migrate Hist. AR Trx.", false);
+                    Rec.Validate("Recurring Sales Lines", false);
                 end;
             end;
         }
@@ -181,6 +184,7 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Inactive Items", false);
                     Rec.Validate("Migrate Discontinued Items", false);
                     Rec.Validate("Migrate Hist. Inv. Trx.", false);
+                    Rec.Validate("Migrate Kit Items", false);
                 end;
             end;
         }
@@ -441,6 +445,48 @@ table 40105 "GP Company Additional Settings"
             FieldClass = FlowField;
             CalcFormula = exist("Hybrid Company" where("Name" = field(Name)));
         }
+        field(43; "Migrate Temporary Vendors"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Temporary Vendors" then
+                    Rec.Validate("Migrate Payables Module", true);
+            end;
+        }
+        field(44; "Migrate Kit Items"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Kit Items" then
+                    Rec.Validate("Migrate Inventory Module", true);
+            end;
+        }
+        field(45; "Recurring Purchasing Lines"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Recurring Purchasing Lines" then
+                    Rec.Validate("Migrate Payables Module", true);
+            end;
+        }
+        field(46; "Recurring Sales Lines"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Recurring Sales Lines" then
+                    Rec.Validate("Migrate Receivables Module", true);
+            end;
+        }
     }
 
     keys
@@ -499,7 +545,7 @@ table 40105 "GP Company Additional Settings"
         exit(Rec."Migrate Inventory Module");
     end;
 
-    // Inactives
+    // Additional records to migrate
     procedure GetMigrateInactiveCheckbooks(): Boolean
     begin
         GetSingleInstance();
@@ -518,6 +564,12 @@ table 40105 "GP Company Additional Settings"
         exit(Rec."Migrate Inactive Vendors");
     end;
 
+    procedure GetMigrateTemporaryVendors(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Temporary Vendors");
+    end;
+
     procedure GetMigrateInactiveItems(): Boolean
     begin
         GetSingleInstance();
@@ -528,6 +580,12 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Discontinued Items");
+    end;
+
+    procedure GetMigrateKitItems(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Kit Items");
     end;
 
     // Classes
@@ -578,6 +636,19 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Only Inventory Master");
+    end;
+
+    // Recurring lines
+    procedure GetRecurringPurchasingLinesEnabled(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Recurring Purchasing Lines");
+    end;
+
+    procedure GetRecurringSalesLinesEnabled(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Recurring Sales Lines");
     end;
 
     // Posting

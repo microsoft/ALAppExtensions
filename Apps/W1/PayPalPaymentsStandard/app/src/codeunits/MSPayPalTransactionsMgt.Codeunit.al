@@ -1,10 +1,10 @@
 namespace Microsoft.Bank.PayPal;
 
-using System.Integration;
-using Microsoft.Sales.History;
-using System.Reflection;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Period;
+using Microsoft.Sales.History;
+using System.Integration;
+using System.Reflection;
 
 codeunit 1075 "MS - PayPal Transactions Mgt."
 {
@@ -106,7 +106,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
             exit(false);
         end;
 
-        MSPayPalStandardAccount.SETRANGE("Account ID", AccountID);
+        MSPayPalStandardAccount.SetFilter("Account ID", '@' + AccountID);
         if MSPayPalStandardAccount.IsEmpty() then begin
             Session.LogMessage('0000166', TelemetryUnexpectedAccountErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedAccountErr, AccountID, TransactionID);
@@ -130,7 +130,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
             ERROR(UnexpectedAmountErr, GrossAmount, TransactionID);
         end;
 
-        MSPayPalTransaction.SETFILTER("Account ID", AccountID);
+        MSPayPalTransaction.SETFILTER("Account ID", '@' + AccountID);
         MSPayPalTransaction.SETFILTER("Transaction ID", TransactionID);
         MSPayPalTransaction.SETFILTER("Transaction Status", TransactionStatus);
         if not MSPayPalTransaction.IsEmpty() then begin
@@ -146,7 +146,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
     var
         MSPayPalTransaction: Record "MS - PayPal Transaction";
     begin
-        MSPayPalTransaction.SETRANGE("Account ID", AccountID);
+        MSPayPalTransaction.SetFilter("Account ID", '@' + AccountID);
         MSPayPalTransaction.SETRANGE("Transaction ID", TransactionID);
         if not MSPayPalTransaction.FINDFIRST() then begin
             Session.LogMessage('00008GZ', InsertTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
@@ -189,7 +189,6 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
         Session.LogMessage('00008H1', GetTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         JObject.ReadFrom(JsonString);
         GetPropertyValueFromJObject(JObject, 'receiver_email', AccountID);
-        AccountID := LOWERCASE(AccountID);
         GetPropertyValueFromJObject(JObject, 'txn_id', TransactionID);
         GetPropertyValueFromJObject(JObject, 'txn_type', PayPalTransactiontype);
         GetPropertyValueFromJObject(JObject, 'payment_date', TransactionDateStr);

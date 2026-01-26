@@ -5093,7 +5093,7 @@ Cstr(Fields!PayToVendNo_PurchInvHeaderCaption.Value)
                               <KeepTogether>true</KeepTogether>
                               <Filters>
                                 <Filter>
-                                  <FilterExpression>=Fields!VATAmtLineVATIdentifier_VATCounterLCY.Value</FilterExpression>
+                                  <FilterExpression>=Fields!VALSpecLCYHeader.Value</FilterExpression>
                                   <Operator>GreaterThan</Operator>
                                   <FilterValues>
                                     <FilterValue>=""</FilterValue>

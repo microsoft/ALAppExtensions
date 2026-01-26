@@ -105,6 +105,12 @@ table 18007 "GST Posting Setup"
             DataClassification = CustomerContent;
             TableRelation = "G/L Account" where(Blocked = const(false), "Account Type" = filter(Posting));
         }
+        field(17; "GST TDS Payable Account"; code[20])
+        {
+            Caption = 'GST TDS Payable Account';
+            DataClassification = CustomerContent;
+            TableRelation = "G/L Account";
+        }
     }
 
     keys

@@ -6,6 +6,7 @@ namespace Microsoft.Finance.GST.Subcontracting;
 
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Posting;
@@ -24,6 +25,7 @@ codeunit 18469 "Subcontracting Subscribers"
     var
         DeliveryChallanExistsErr: Label 'You cannot delete this document. Delivery Challan exist for Subcontracting Order no. %1.', Comment = '%1 = Subcontracting Order No.';
         QutstandingQuantityErr: Label 'Cannot delete Subcontracting order No: %1 as there is remaining quantity pending to be received. Continue with next order?', Comment = '%1 = Document No.';
+        VendorTypeErr: Label 'The field "GST Vendor Type" of Vendor should have a value in Vendor Card, Vendor No: %1', Comment = '%1 = Vendor No.';
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeTestNoSeries', '', false, false)]
     local procedure TestSubcontractingNoSeries(var PurchaseHeader: Record "Purchase Header"; Var Ishandled: boolean)
@@ -308,6 +310,29 @@ codeunit 18469 "Subcontracting Subscribers"
                 PurchaseLine."Outstanding Qty. (Base)" := 0;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Requisition Line", 'OnAfterValidateEvent', 'Vendor No.', false, false)]
+    local procedure OnAfterValidateVendorNo(var Rec: Record "Requisition Line")
+    var
+        Vendor: Record Vendor;
+    begin
+        if (Rec."Vendor No." = '') and (Rec."Prod. Order No." = '') then
+            exit;
+
+        if not Vendor.Get(Rec."Vendor No.") then
+            exit;
+
+        if Vendor.Subcontractor then
+            if Vendor."GST Vendor Type" = Vendor."GST Vendor Type"::" " then
+                Error(VendorTypeErr, Vendor."No.");
+    end;
+
+    [EventSubscriber(ObjectType::Table, database::"Tracking Specification", 'OnAfterIsReclass', '', false, false)]
+    local procedure OnAfterIsReclassSubcon(TrackingSpecification: Record "Tracking Specification"; var Reclass: Boolean)
+    begin
+        if (TrackingSpecification."Source Type" = Database::"Sub Order Component List") and (TrackingSpecification."Source Subtype" = 0) then
+            Reclass := true;
+    end;
+
     local procedure ValidateDeliveryChallanCreatedForOrder(PurchHeader: Record "Purchase Header")
     var
         DeliveryChallanLine: Record "Delivery Challan Line";
@@ -349,5 +374,80 @@ codeunit 18469 "Subcontracting Subscribers"
             exit;
 
         PurchaseLine."Posting Date" := PurchaseHeader."Posting Date";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Profile Offsetting", 'OnAfterSupplyToInvProfile', '', false, false)]
+    local procedure OnAfterSupplyToInvProfiles(var InventoryProfile: Record "Inventory Profile"; var Item: Record Item; var ReservEntry: Record "Reservation Entry"; var ToDate: Date; var NextLineNo: Integer)
+    begin
+        TransSubcontractingLineToProfile(InventoryProfile, Item, ReservEntry, ToDate, NextLineNo);
+    end;
+
+    local procedure TransSubcontractingLineToProfile(var InventoryProfile: Record "Inventory Profile"; var Item: Record Item; var TempItemTrkgEntry: Record "Reservation Entry"; var ToDate: Date; var NextLineNo: Integer)
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        ProdOrderComponent: Record "Prod. Order Component";
+        VendorLocation: Code[10];
+    begin
+        FilterProdOrderComponentLinesWithItemToPlan(ProdOrderComponent, Item, true);
+        if ProdOrderComponent.FindSet() then
+            repeat
+                VendorLocation := GetVendorLocation(ProdOrderComponent);
+
+                if VendorLocation = '' then
+                    exit;
+
+                ItemLedgerEntry.Reset();
+                ItemLedgerEntry.SetRange("Document No.", ProdOrderComponent."Prod. Order No.");
+                ItemLedgerEntry.SetRange("Item No.", Item."No.");
+                ItemLedgerEntry.SetRange(Open, true);
+                ItemLedgerEntry.SetRange("Location Code", VendorLocation);
+                ItemLedgerEntry.SetFilter("Variant Code", Item.GetFilter("Variant Filter"));
+                ItemLedgerEntry.SetFilter("Global Dimension 1 Code", Item.GetFilter("Global Dimension 1 Filter"));
+                ItemLedgerEntry.SetFilter("Global Dimension 2 Code", Item.GetFilter("Global Dimension 2 Filter"));
+                ItemLedgerEntry.SetFilter("Unit of Measure Code", Item.GetFilter("Unit of Measure Filter"));
+                if ItemLedgerEntry.FindSet() then
+                    repeat
+                        InventoryProfile.Init();
+                        NextLineNo += 1;
+                        InventoryProfile."Line No." := NextLineNo;
+                        InventoryProfile.TransferFromItemLedgerEntry(ItemLedgerEntry, TempItemTrkgEntry);
+                        InventoryProfile."Location Code" := ProdOrderComponent."Location Code";
+                        InventoryProfile."Due Date" := 0D;
+                        if not InventoryProfile.IsSupply then
+                            InventoryProfile.ChangeSign();
+                        InventoryProfile.InsertSupplyInvtProfile(ToDate);
+                    until ItemLedgerEntry.Next() = 0;
+
+            until ProdOrderComponent.Next() = 0;
+    end;
+
+    procedure FilterProdOrderComponentLinesWithItemToPlan(var ProdOrderComponent: Record "Prod. Order Component"; var Item: Record Item; IncludeFirmPlanned: Boolean)
+    begin
+        ProdOrderComponent.Reset();
+        ProdOrderComponent.SetCurrentKey("Item No.", "Variant Code", "Location Code", Status, "Due Date");
+        if IncludeFirmPlanned then
+            ProdOrderComponent.SetRange(Status, ProdOrderComponent.Status::Planned, ProdOrderComponent.Status::Released)
+        else
+            ProdOrderComponent.SetFilter(Status, '%1|%2', ProdOrderComponent.Status::Planned, ProdOrderComponent.Status::Released);
+        ProdOrderComponent.SetRange("Item No.", Item."No.");
+        ProdOrderComponent.SetFilter("Variant Code", Item.GetFilter("Variant Filter"));
+        ProdOrderComponent.SetFilter("Location Code", Item.GetFilter("Location Filter"));
+        ProdOrderComponent.SetFilter("Due Date", Item.GetFilter("Date Filter"));
+        ProdOrderComponent.SetFilter("Shortcut Dimension 1 Code", Item.GetFilter("Global Dimension 1 Filter"));
+        ProdOrderComponent.SetFilter("Shortcut Dimension 2 Code", Item.GetFilter("Global Dimension 2 Filter"));
+        ProdOrderComponent.SetFilter("Subcontracting Order No.", '<>%1', '');
+        ProdOrderComponent.SetFilter("Remaining Qty. (Base)", '<>0');
+        ProdOrderComponent.SetFilter("Unit of Measure Code", Item.GetFilter("Unit of Measure Filter"));
+    end;
+
+    local procedure GetVendorLocation(ProdOrderComponent: Record "Prod. Order Component"): Code[10]
+    var
+        SubOrderComponentList: Record "Sub Order Component List";
+    begin
+        SubOrderComponentList.SetRange("Production Order No.", ProdOrderComponent."Prod. Order No.");
+        SubOrderComponentList.SetRange("Production Order Line No.", ProdOrderComponent."Prod. Order Line No.");
+        SubOrderComponentList.SetRange("Item No.", ProdOrderComponent."Item No.");
+        if SubOrderComponentList.FindFirst() then
+            exit(SubOrderComponentList."Vendor Location");
     end;
 }

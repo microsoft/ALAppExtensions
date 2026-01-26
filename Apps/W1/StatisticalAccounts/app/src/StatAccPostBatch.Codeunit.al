@@ -14,7 +14,13 @@ codeunit 2626 "Stat. Acc. Post. Batch"
     end;
 
     local procedure PostJournal(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line")
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforePostJournal(StatisticalAccJournalLine, IsHandled);
+        if IsHandled then
+            exit;
+
         StatisticalAccJournalLine.SetRange("Journal Template Name", StatisticalAccJournalLine."Journal Template Name");
         StatisticalAccJournalLine.SetRange("Journal Batch Name", StatisticalAccJournalLine."Journal Batch Name");
         if StatisticalAccJournalLine.IsEmpty() then
@@ -24,6 +30,8 @@ codeunit 2626 "Stat. Acc. Post. Batch"
         VerifyLines(StatisticalAccJournalLine);
         ProcessLines(StatisticalAccJournalLine);
         StatisticalAccJournalLine.DeleteAll();
+        StatisticalAccJournalLine.SetRange("Journal Template Name");
+        StatisticalAccJournalLine.SetRange("Journal Batch Name");
 
         Commit();
 
@@ -79,6 +87,11 @@ codeunit 2626 "Stat. Acc. Post. Batch"
     internal procedure SetDoNotShowUI(NewDoNotShowUI: Boolean)
     begin
         DoNotShowUI := NewDoNotShowUI;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostJournal(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var IsHandled: Boolean)
+    begin
     end;
 
     var

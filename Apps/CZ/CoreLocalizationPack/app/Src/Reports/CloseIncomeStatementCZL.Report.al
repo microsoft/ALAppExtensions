@@ -12,8 +12,8 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.Inventory.Setup;
 using Microsoft.Foundation.Period;
+using Microsoft.Inventory.Setup;
 using Microsoft.Utilities;
 using System.Globalization;
 using System.Utilities;
@@ -248,7 +248,7 @@ report 11753 "Close Income Statement CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Gen. Journal Template';
-                        TableRelation = "Gen. Journal Template";
+                        TableRelation = "Gen. Journal Template" where(Type = const(General), Recurring = const(false));
                         ToolTip = 'Specifies the general journal template that is used by the batch job.';
 
                         trigger OnValidate()

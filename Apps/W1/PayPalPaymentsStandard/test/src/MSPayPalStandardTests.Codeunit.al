@@ -3,6 +3,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     // version Test,ERM,W1,AT,AU,BE,CA,CH,DE,DK,ES,FI,FR,GB,IS,IT,MX,NL,NO,NZ,SE,US
 
     Subtype = Test;
+    TestType = Uncategorized;
 
     TestPermissions = Disabled;
 
@@ -613,7 +614,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         DummyPaymentMethod: Record "Payment Method";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         TempPaymentReportingArgument: Record "Payment Reporting Argument" temporary;
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
         PostedSalesInvoice: TestPage "Posted Sales Invoice";
     begin
         Initialize();
@@ -626,7 +627,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
         TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);
         PostedSalesInvoice.OPENEDIT();
         PostedSalesInvoice.GOTORECORD(SalesInvoiceHeader);
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // Exercise
         PostedSalesInvoice.Email.INVOKE();
@@ -1290,8 +1291,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
           ExpectedMSPayPalStandardAccount."Always Include on Documents", MSPayPalStandardAccount."Always Include on Documents",
           'Wrong value set for Always Include on Documents');
         Assert.AreEqual(
-          LOWERCASE(ExpectedMSPayPalStandardAccount."Account ID"), LOWERCASE(MSPayPalStandardAccount."Account ID"),
-          'Wrong value set for Account ID');
+            ExpectedMSPayPalStandardAccount."Account ID", MSPayPalStandardAccount."Account ID",
+            'Wrong value set for Account ID');
 
         ExpectedTargetURL := ExpectedMSPayPalStandardAccount.GetTargetURL();
         ActualTargetURL := MSPayPalStandardAccount.GetTargetURL();

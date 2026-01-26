@@ -7,6 +7,7 @@ namespace Microsoft.Purchases.Document;
 using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.GST.Purchase;
 using Microsoft.Finance.GST.Subcontracting;
+using Microsoft.Foundation.UOM;
 using Microsoft.Manufacturing.Document;
 using Microsoft.Purchases.History;
 
@@ -312,8 +313,8 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         SubOrderCompList.SetRange("Document Line No.", "Line No.");
         if SubOrderCompList.FindSet() then
             repeat
-                SubOrderCompList.Validate("Quantity To Send", ("Deliver Comp. For" * SubOrderCompList."Quantity per"));
-                if SubOrderCompList."Scrap %" <> 0 Then
+                SubOrderCompList.Validate("Quantity To Send", GetQuantityToSendForSubOrderCompList(SubOrderCompList, "Deliver Comp. For"));
+                if SubOrderCompList."Scrap %" <> 0 then
                     SubOrderCompList."Quantity To Send" :=
                         SubOrderCompList."Quantity To Send" + (SubOrderCompList."Quantity To Send" / 100) * SubOrderCompList."Scrap %";
 
@@ -327,11 +328,11 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         SubOrderCompListVend.SetRange("Document Line No.", "Line No.");
         if SubOrderCompListVend.FindSet() then
             repeat
-                SubOrderCompListVend.Validate("Qty. to Consume", "Qty. to Receive" * SubOrderCompListVend."Quantity per" * SubOrderCompListVend."Qty. per Unit of Measure");
+                SubOrderCompListVend.Validate("Qty. to Consume", GetQtytoConsumeForSubOrderCompListVend(SubOrderCompListVend, "Qty. to Receive"));
                 SubOrderCompListVend.Validate("Qty. to Return (C.E.)", "Qty. to Reject (C.E.)" * SubOrderCompListVend."Quantity per");
                 SubOrderCompListVend.Validate("Qty. To Return (V.E.)", (SubOrderCompListVend."Quantity per" * "Qty. to Reject (V.E.)"));
                 SubOrderCompListVend.Validate("Posting Date", "Posting Date");
-                if SubOrderCompListVend."Scrap %" <> 0 Then begin
+                if SubOrderCompListVend."Scrap %" <> 0 then begin
                     SubOrderCompListVend."Qty. to Consume" += (SubOrderCompListVend."Qty. to Consume" / 100) * SubOrderCompListVend."Scrap %";
                     SubOrderCompListVend."Qty. to Return (C.E.)" +=
                       (SubOrderCompListVend."Qty. to Return (C.E.)" / 100) * SubOrderCompListVend."Scrap %";
@@ -400,6 +401,68 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         ProdOrder.SetRange("No.", "Prod. Order No.");
         if ProdOrder.IsEmpty() then
             Error(ProdOrdReopenErr, "Prod. Order No.");
+    end;
+
+    procedure GetQuantityToSendForSubOrderCompList(SubOrderCompList: Record "Sub Order Component List"; DeliverCompFor: Decimal): Decimal
+    var
+        ProdOrderComponent: Record "Prod. Order Component";
+        UOMMgt: Codeunit "Unit of Measure Management";
+        CalculatedQuantity: Decimal;
+    begin
+        Clear(CalculatedQuantity);
+        ProdOrderComponent.Get(ProdOrderComponent.Status::Released, SubOrderCompList."Production Order No.", SubOrderCompList."Production Order Line No.", SubOrderCompList."Line No.");
+        case ProdOrderComponent."Calculation Formula" of
+            ProdOrderComponent."Calculation Formula"::" ":
+                CalculatedQuantity := ProdOrderComponent."Quantity per";
+            ProdOrderComponent."Calculation Formula"::Length:
+                CalculatedQuantity := Round(ProdOrderComponent.Length * ProdOrderComponent."Quantity per", UOMMgt.QtyRndPrecision());
+            ProdOrderComponent."Calculation Formula"::"Length * Width":
+                CalculatedQuantity := Round(ProdOrderComponent.Length * ProdOrderComponent.Width * ProdOrderComponent."Quantity per", UOMMgt.QtyRndPrecision());
+            ProdOrderComponent."Calculation Formula"::"Length * Width * Depth":
+                CalculatedQuantity := Round(ProdOrderComponent.Length * ProdOrderComponent.Width * ProdOrderComponent.Depth * ProdOrderComponent."Quantity per", UOMMgt.QtyRndPrecision());
+            ProdOrderComponent."Calculation Formula"::Weight:
+                CalculatedQuantity := Round(ProdOrderComponent.Weight * ProdOrderComponent."Quantity per", UOMMgt.QtyRndPrecision());
+            ProdOrderComponent."Calculation Formula"::"Fixed Quantity":
+                CalculatedQuantity := ProdOrderComponent."Quantity per";
+            else
+                CalculatedQuantity := ProdOrderComponent.Quantity;
+        end;
+
+        if ProdOrderComponent."Calculation Formula" = ProdOrderComponent."Calculation Formula"::"Fixed Quantity" then
+            exit(CalculatedQuantity)
+        else
+            exit(CalculatedQuantity * DeliverCompFor);
+    end;
+
+    procedure GetQtytoConsumeForSubOrderCompListVend(SubOrderCompListVend: Record "Sub Order Comp. List Vend"; QtytoReceive: Decimal): Decimal
+    var
+        ProdOrderComponent: Record "Prod. Order Component";
+        UOMMgt: Codeunit "Unit of Measure Management";
+        CalculatedQuantity: Decimal;
+    begin
+        Clear(CalculatedQuantity);
+        ProdOrderComponent.Get(ProdOrderComponent.Status::Released, SubOrderCompListVend."Production Order No.", SubOrderCompListVend."Production Order Line No.", SubOrderCompListVend."Line No.");
+        case ProdOrderComponent."Calculation Formula" of
+            ProdOrderComponent."Calculation Formula"::" ":
+                CalculatedQuantity := ProdOrderComponent."Quantity per";
+            ProdOrderComponent."Calculation Formula"::Length:
+                CalculatedQuantity := Round(ProdOrderComponent.Length * ProdOrderComponent."Quantity per", UOMMgt.QtyRndPrecision());
+            ProdOrderComponent."Calculation Formula"::"Length * Width":
+                CalculatedQuantity := Round(ProdOrderComponent.Length * ProdOrderComponent.Width * ProdOrderComponent."Quantity per", UOMMgt.QtyRndPrecision());
+            ProdOrderComponent."Calculation Formula"::"Length * Width * Depth":
+                CalculatedQuantity := Round(ProdOrderComponent.Length * ProdOrderComponent.Width * ProdOrderComponent.Depth * ProdOrderComponent."Quantity per", UOMMgt.QtyRndPrecision());
+            ProdOrderComponent."Calculation Formula"::Weight:
+                CalculatedQuantity := Round(ProdOrderComponent.Weight * ProdOrderComponent."Quantity per", UOMMgt.QtyRndPrecision());
+            ProdOrderComponent."Calculation Formula"::"Fixed Quantity":
+                CalculatedQuantity := ProdOrderComponent."Quantity per";
+            else
+                CalculatedQuantity := ProdOrderComponent.Quantity;
+        end;
+
+        if ProdOrderComponent."Calculation Formula" = ProdOrderComponent."Calculation Formula"::"Fixed Quantity" then
+            exit(CalculatedQuantity)
+        else
+            exit(CalculatedQuantity * QtytoReceive * ProdOrderComponent."Qty. per Unit of Measure");
     end;
 
     var

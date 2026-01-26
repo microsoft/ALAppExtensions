@@ -161,17 +161,11 @@ codeunit 11346 IntrastatReportManagementBE
                             SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
                             SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
                             SalesInvoiceLine.SetRange("No.", ItemLedgerEntry."Item No.");
-                            if SalesInvoiceLine.Count() = 1 then begin
-                                VATEntry.SetRange(Type, VATEntry.Type::Sale);
-                                VATEntry.SetRange("Document Type", VATEntry."Document Type"::Invoice);
-                                VATEntry.SetRange("Document No.", ValueEntry."Document No.");
-                                VATEntry.SetRange("Posting Date", ValueEntry."Posting Date");
-                                if VATEntry.Count() = 1 then begin
-                                    VATEntry.FindFirst();
-                                    TotalCostAmt := -VATEntry.Base;
+                            if SalesInvoiceLine.Count() = 1 then
+                                if SalesInvoiceLine.FindFirst() then begin
+                                    TotalCostAmt := -SalesInvoiceLine."VAT Base Amount";
                                     TotalAmt := TotalCostAmt;
                                 end;
-                            end;
                         end;
             end;
     end;
@@ -349,11 +343,7 @@ codeunit 11346 IntrastatReportManagementBE
     local procedure IsIntrastatExport(DataExchDefCode: Code[20]): Boolean
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
-        IntrastatReportMgt: Codeunit IntrastatReportManagement;
     begin
-        if not IntrastatReportMgt.IsFeatureEnabled() then
-            exit(false);
-
         if not IntrastatReportSetup.Get() then
             exit(false);
 

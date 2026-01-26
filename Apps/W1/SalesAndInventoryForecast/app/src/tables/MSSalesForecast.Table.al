@@ -1,7 +1,7 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
-using Microsoft.Inventory.Item;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item;
 using System.AI;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -11,6 +11,7 @@ using System.AI;
 table 1850 "MS - Sales Forecast"
 {
     ReplicateData = false;
+    DataClassification = CustomerContent;
 
     fields
     {

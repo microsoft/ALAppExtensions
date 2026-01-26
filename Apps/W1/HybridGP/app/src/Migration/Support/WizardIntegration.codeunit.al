@@ -1,13 +1,13 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Integration;
-using System.Threading;
 using Microsoft.DataMigration;
-using System.Security.User;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Integration;
+using System.Security.User;
+using System.Threading;
 
 codeunit 4035 "Wizard Integration"
 {
@@ -93,7 +93,11 @@ codeunit 4035 "Wizard Integration"
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
+        if not HybridGPWizard.GetGPMigrationEnabled() then
+            exit;
+
         HelperFunctions.PostGLTransactions();
         HelperFunctions.SetProcessesRunning(false);
 

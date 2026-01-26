@@ -32,55 +32,24 @@ tableextension 11700 "Contact CZL" extends Contact
                     if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
                         LogNotVerified := false;
                         RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Contact);
-                        ResultRecordRef.SetTable(Rec);
+                        if ResultRecordRef.Number <> 0 then
+                            ResultRecordRef.SetTable(Rec);
                     end;
 
                 if LogNotVerified then
                     RegistrationLogMgtCZL.LogContact(Rec);
             end;
         }
+#if not CLEANSCHEMA26
         field(11770; "Registration No. CZL"; Text[20])
         {
             Caption = 'Registration No.';
             DataClassification = CustomerContent;
-#if not CLEAN23
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#endif
             ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-#if not CLEAN23
-
-            trigger OnValidate()
-            var
-                RegistrationLogCZL: Record "Registration Log CZL";
-                RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
-                ResultRecordRef: RecordRef;
-                LogNotVerified: Boolean;
-                IsHandled: Boolean;
-            begin
-                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
-                if IsHandled then
-                    exit;
-
-                if not RegistrationNoMgtCZL.CheckRegistrationNo("Registration No. CZL", "No.", Database::Contact) then
-                    exit;
-
-                LogNotVerified := true;
-                if "Registration No. CZL" <> xRec."Registration No. CZL" then
-                    if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
-                        LogNotVerified := false;
-                        RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Contact);
-                        ResultRecordRef.SetTable(Rec);
-                    end;
-
-                if LogNotVerified then
-                    RegistrationLogMgtCZL.LogContact(Rec);
-            end;
-#endif
         }
+#endif
         field(11771; "Tax Registration No. CZL"; Text[20])
         {
             Caption = 'Tax Registration No.';
@@ -92,6 +61,12 @@ tableextension 11700 "Contact CZL" extends Contact
             end;
         }
     }
+
+    trigger OnDelete()
+    begin
+        RegistrationLogMgtCZL.DeleteContactLog(Rec);
+    end;
+
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
         RegistrationNoMgtCZL: Codeunit "Registration No. Mgt. CZL";

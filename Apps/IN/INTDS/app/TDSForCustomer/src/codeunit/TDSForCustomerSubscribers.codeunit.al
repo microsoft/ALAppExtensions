@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSForCustomer;
 
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Sales.Document;
 using Microsoft.Sales.Posting;
 using Microsoft.Sales.Receivables;
-using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Sales.Document;
 using System.Utilities;
 
 codeunit 18661 "TDS For Customer Subscribers"
@@ -39,18 +39,6 @@ codeunit 18661 "TDS For Customer Subscribers"
                 checkDefaultandAssignTDSSection(GenJournalLine, Section.Code, SetTDSSection);
         end;
     end;
-
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
-    local procedure PostCustEntry(
-        var GenJnlLine: Record "Gen. Journal Line";
-        var SalesHeader: Record "Sales Header";
-        var TotalSalesLine: Record "Sales Line";
-        var TotalSalesLineLCY: Record "Sales Line")
-    begin
-        GenJnlLine."TDS Certificate Receivable" := SalesHeader."TDS Certificate Receivable";
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(

@@ -236,7 +236,7 @@ report 11755 "Open Balance Sheet CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Gen. Journal Template';
-                        TableRelation = "Gen. Journal Template";
+                        TableRelation = "Gen. Journal Template" where(Type = const(General), Recurring = const(false));
                         ToolTip = 'Specifies the journal template. This template will be used as the format for report results.';
 
                         trigger OnValidate()
@@ -506,6 +506,8 @@ report 11755 "Open Balance Sheet CZL"
 
     local procedure HandleGenJnlLine()
     begin
+        OnBeforeHandleGenJnlLine(GenJournalLine);
+
         GenJournalLine."Additional-Currency Posting" :=
           GenJournalLine."Additional-Currency Posting"::None;
         if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
@@ -658,5 +660,10 @@ report 11755 "Open Balance Sheet CZL"
         if ErrorText <> '' then
             ErrorText := CopyStr(ErrorText + SelectPostingDimTxt + DimText, 1, MaxStrLen(ErrorText));
         exit(ErrorText);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeHandleGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
+    begin
     end;
 }

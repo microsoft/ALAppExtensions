@@ -13,19 +13,8 @@ reportextension 11703 "VAT Statement CZL" extends "VAT Statement"
         modify("VAT Statement Line")
         {
             trigger OnAfterAfterGetRecord()
-            var
-                TempTotalAmount: Decimal;
             begin
-                if "Print with" = "Print with"::"Opposite Sign" then
-                    TempTotalAmount := -TotalAmount;
-                case "Show CZL" of
-                    "Show CZL"::"Zero If Negative":
-                        if TempTotalAmount < 0 then
-                            TotalAmount := 0;
-                    "Show CZL"::"Zero If Positive":
-                        if TempTotalAmount > 0 then
-                            TotalAmount := 0;
-                end;
+                PrepareAmountToShow(TotalAmount);
             end;
         }
     }
@@ -80,10 +69,7 @@ reportextension 11703 "VAT Statement CZL" extends "VAT Statement"
         if SettlementNoFilter <> '' then
             Heading2 := Heading2 + ',' + VATEntry.FieldCaption("VAT Settlement No. CZL") + ':' + SettlementNoFilter;
 
-        VATStatementHandler.Initialize(
-            "VAT Statement Name", "VAT Statement Line", Selection, PeriodSelection, PrintInIntegers, UseAmtsInAddCurr,
-            StartDate, EndDate, SettlementNoFilter, RoundingDirection);
-        BindSubscription(VATStatementHandler);
+        InitHandler(GetVATStmtCalcParameters());
     end;
 
     var
@@ -91,8 +77,10 @@ reportextension 11703 "VAT Statement CZL" extends "VAT Statement"
         SettlementNoFilter: Text[50];
         RoundingDirection: Option Nearest,Down,Up;
         RoundingDirectionVisible: Boolean;
-
-    internal procedure GetAmtRoundingDirectionCZL() Direction: Text[1]
+#if not CLEAN28
+#pragma warning disable AL0432
+    [Obsolete('The function is not used anymore. You can use GetRoundingDirection function from "VAT Stmt. Calc. Parameters CZL" table which you will get with the GetVATStmtCalcParameters function.', '28.0')]
+    procedure GetAmtRoundingDirectionCZL() Direction: Text[1]
     begin
         case RoundingDirection of
             RoundingDirection::Nearest:
@@ -104,23 +92,48 @@ reportextension 11703 "VAT Statement CZL" extends "VAT Statement"
         end;
     end;
 
+    [Obsolete('Replaced by InitializeRequestCZL with VAT Stmt. Calc. Parameters CZL record as parameter.', '28.0')]
     procedure InitializeRequestCZL(var NewVATStatementName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewPrintInIntegers: Boolean; NewUseAmtsInAddCurr: Boolean; NewSettlementNoFilter: Text[50]; NewRoundingDirection: Option)
     begin
         InitializeRequestCZL(NewVATStatementName, NewVATStatementLine, NewSelection, NewPeriodSelection, NewPrintInIntegers, NewUseAmtsInAddCurr, NewSettlementNoFilter, NewRoundingDirection, true);
     end;
 
+    [Obsolete('Replaced by InitializeRequestCZL with VAT Stmt. Calc. Parameters CZL record as parameter.', '28.0')]
     procedure InitializeRequestCZL(var NewVATStatementName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewPrintInIntegers: Boolean; NewUseAmtsInAddCurr: Boolean; NewSettlementNoFilter: Text[50]; NewRoundingDirection: Option; WithBinding: Boolean)
     begin
         InitializeRequest(NewVATStatementName, NewVATStatementLine, NewSelection, NewPeriodSelection, NewPrintInIntegers, NewUseAmtsInAddCurr);
         SettlementNoFilter := NewSettlementNoFilter;
         RoundingDirection := NewRoundingDirection;
 
-        if WithBinding then begin
-            Clear(VATStatementHandler);
-            VATStatementHandler.Initialize(
-                NewVATStatementName, NewVATStatementLine, NewSelection, NewPeriodSelection, NewPrintInIntegers, NewUseAmtsInAddCurr,
-                StartDate, EndDate, SettlementNoFilter, RoundingDirection);
-            BindSubscription(VATStatementHandler);
-        end;
+        if WithBinding then
+            InitHandler(GetVATStmtCalcParameters());
+    end;
+#pragma warning restore AL0432
+#endif
+
+    procedure InitializeRequestCZL(var NewVATStatementName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL")
+    begin
+        InitializeRequest(NewVATStatementName, NewVATStatementLine, VATStmtCalcParameters.Selection, VATStmtCalcParameters."Period Selection", VATStmtCalcParameters."Print in Integers", VATStmtCalcParameters."Use Amounts in Add. Currency");
+        SettlementNoFilter := VATStmtCalcParameters."VAT Settlement No. Filter";
+        RoundingDirection := VATStmtCalcParameters.GetRoundingTypeAsInteger();
+        InitHandler(VATStmtCalcParameters);
+    end;
+
+    local procedure InitHandler(VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL")
+    begin
+        VATStatementHandler.Activate();
+        VATStatementHandler.SetParameters(VATStmtCalcParameters);
+    end;
+
+    protected procedure GetVATStmtCalcParameters() VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL"
+    begin
+        VATStmtCalcParameters."Start Date" := StartDate;
+        VATStmtCalcParameters.SetEndDate(EndDate);
+        VATStmtCalcParameters."Selection" := Selection;
+        VATStmtCalcParameters."Period Selection" := PeriodSelection;
+        VATStmtCalcParameters."Print in Integers" := PrintInIntegers;
+        VATStmtCalcParameters."Use Amounts in Add. Currency" := UseAmtsInAddCurr;
+        VATStmtCalcParameters.SetRoundingType(RoundingDirection);
+        VATStmtCalcParameters."VAT Settlement No. Filter" := SettlementNoFilter;
     end;
 }

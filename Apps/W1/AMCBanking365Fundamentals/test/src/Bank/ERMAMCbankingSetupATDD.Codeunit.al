@@ -1,8 +1,12 @@
+#if not CLEAN28
 codeunit 134410 "ERM AMC banking Setup ATDD"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = NonRestrictive;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
         // [FEATURE] [AMC Banking Fundamentals]
@@ -172,7 +176,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
     procedure UserCanChangeTheAMCSetupURL()
     var
         AMCBankingSetup: Record "AMC Banking Setup";
-        PasswordAMC: Text;
+        PasswordAMC: SecretText;
         SignupAMC: Text[250];
     begin
         // [FEATURE] [URL]
@@ -197,7 +201,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
 
         // Validate
         AMCBankingSetup.Get();
-        Assert.AreEqual(PasswordAMC, AMCBankingSetup.GetPassword(), 'Password invalid');
+        AssertPassword(PasswordAMC, 'Password invalid', true);
         Assert.AreEqual(SignupAMC, AMCBankingSetup."Sign-up URL", 'Sign-up invalid');
     end;
 
@@ -207,7 +211,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
     var
         AMCBankingSetup: Record "AMC Banking Setup";
         LibraryRandom: Codeunit "Library - Random";
-        PasswordAMC: Text;
+        PasswordAMC: SecretText;
         ServiceURLAMC: Text[250];
         UserNameAMC: Text[50];
     begin
@@ -238,7 +242,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
 
         // Validate
         AMCBankingSetup.Get();
-        Assert.AreNotEqual(PasswordAMC, AMCBankingSetup.GetPassword(), 'Password must be reset when changing service URL');
+        AssertPassword(PasswordAMC, 'Password must be reset when changing service URL', false);
         Assert.AreNotEqual(UserNameAMC, AMCBankingSetup.GetUserName(), 'Username must be reset when changing service URL');
         Assert.AreEqual(ServiceURLAMC, AMCBankingSetup."Service URL", 'Service URL invalid');
     end;
@@ -326,7 +330,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
     procedure UserCanChangeTheAMCSupportURL()
     var
         AMCBankingSetup: Record "AMC Banking Setup";
-        PasswordAMC: Text;
+        PasswordAMC: SecretText;
         SupportURLAMC: Text[250];
     begin
         // [FEATURE] [URL]
@@ -351,7 +355,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
 
         // Validate
         AMCBankingSetup.Get();
-        Assert.AreEqual(PasswordAMC, AMCBankingSetup.GetPassword(), 'Password invalid');
+        AssertPassword(PasswordAMC, 'Password invalid', true);
         Assert.AreEqual(SupportURLAMC, AMCBankingSetup."Support URL", 'Support URL invalid');
     end;
 
@@ -430,7 +434,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         Assert.IsFalse(EncryptionEnabled(), EncryptionIsActiveErr);
 
         AMCBankingSetupRec.Get();
-        Assert.AreEqual('Random Words', AMCBankingSetupRec.GetPassword(), PasswordDoesNotMatchErr);
+        AssertPassword('Random Words', PasswordDoesNotMatchErr, true);
     end;
 
     [Test]
@@ -463,7 +467,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         // Verify
         AMCBankingSetupRec.Get();
 
-        Assert.AreEqual('Random Words 2', AMCBankingSetupRec.GetPassword(), PasswordDoesNotMatchErr);
+        AssertPassword('Random Words 2', PasswordDoesNotMatchErr, true);
         Assert.IsTrue(EncryptionEnabled(), EncryptionIsNotActiveErr);
 
         // Clean-up
@@ -507,7 +511,7 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         Assert.IsFalse(EncryptionEnabled(), EncryptionIsActiveErr);
 
         AMCBankingSetupRec.Get();
-        Assert.AreEqual('Random Words 3', AMCBankingSetupRec.GetPassword(), PasswordDoesNotMatchErr);
+        AssertPassword('Random Words 3', PasswordDoesNotMatchErr, true);
     end;
 
     [Test]
@@ -612,8 +616,26 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
     begin
         AMCBankingSetup.Get();
         Assert.AreEqual(ExpectedUserName, AMCBankingSetup."User Name", 'User Name invalid');
-        Assert.AreEqual(ExpectedPassword, AMCBankingSetup.GetPassword(), 'Password invalid');
+        AssertPassword(ExpectedPassword, 'Password invalid', true);
         ValidateDefaultURLs(AMCBankingSetup);
+    end;
+
+    [NonDebuggable]
+    local procedure AssertPassword(Expected: SecretText; Message: Text; AreEqual: Boolean)
+    begin
+        AssertPassword(Expected.Unwrap(), Message, AreEqual);
+    end;
+
+    [NonDebuggable]
+    local procedure AssertPassword(Expected: Text; Message: Text; AreEqual: Boolean)
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+    begin
+        AMCBankingSetup.Get();
+        if AreEqual then
+            Assert.AreEqual(Expected, AMCBankingSetup.GetPassword().Unwrap(), Message)
+        else
+            Assert.AreNotEqual(Expected, AMCBankingSetup.GetPassword().Unwrap(), Message);
     end;
 
     local procedure ValidateDefaultURLs(AMCBankingSetup: Record "AMC Banking Setup")
@@ -710,3 +732,4 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         DataEncryptionManagement.Close();
     end;
 }
+#endif

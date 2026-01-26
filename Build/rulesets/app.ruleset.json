@@ -23,6 +23,11 @@
       "action": "Warning"
     },
     {
+      "id": "AL0897",
+      "action": "Error",
+      "justification": "Marking it as error temporarily to ensure subsequent PRs have using statements in sorted order to unblock the merging of BCApps PR (to remove the exception for AL0897). Will be reverted once the exception for AL0897 is removed from BCApps."
+    },
+    {
       "id": "AL0432",
       "action": "Warning",
       "justification": "Element is marked for removal."
@@ -60,10 +65,6 @@
       "action": "Warning"
     },
     {
-      "id": "AL0655",
-      "action": "Warning"
-    },
-    {
       "id": "AL0659",
       "action": "Warning"
     },
@@ -92,15 +93,7 @@
       "action": "Warning"
     },
     {
-      "id": "AL0748",
-      "action": "Warning"
-    },
-    {
       "id": "AL0749",
-      "action": "Warning"
-    },
-    {
-      "id": "AL0755",
       "action": "Warning"
     },
     {
@@ -270,10 +263,6 @@
       "action": "Warning"
     },
     {
-      "id": "AA0228",
-      "action": "Warning"
-    },
-    {
       "id": "AA0232",
       "action": "Warning"
     },
@@ -309,6 +298,26 @@
     {
       "id": "AA0470",
       "action": "Warning"
+    },
+    {
+      "id": "AA0471",
+      "action": "None",
+      "justification": "AutoformatType should be defined for decimal fields in Page objects to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0472",
+      "action": "None",
+      "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0473",
+      "action": "None",
+      "justification": "AutoformatType should be defined for decimal fields in Table objects to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0474",
+      "action": "None",
+      "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
     },
     {
       "id": "PTE0002",

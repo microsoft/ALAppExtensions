@@ -2,11 +2,12 @@ namespace Microsoft.EServices;
 
 using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
+using System.DataAdministration;
+using System.Environment;
 using System.Environment.Configuration;
 using System.Privacy;
-using System.Environment;
-using System.DataAdministration;
 using System.Telemetry;
+using System.Utilities;
 
 codeunit 13628 "Nemhandel Status Mgt."
 {
@@ -15,9 +16,15 @@ codeunit 13628 "Nemhandel Status Mgt."
     var
         HttpClientGlobal: Interface "Http Client Nemhandel Status";
         HttpClientDefined: Boolean;
-        NotificationMsg: Label 'Your accounting software is not registered in Nemhandelsregisteret.';
+        NotRegisteredNotificationMsg: Label 'Your accounting software is not registered in Nemhandelsregisteret.';
+        IncorrectCVRNumberFormatMsg: Label 'The Registration No. must be 8 digits or "A/S" followed by 3-6 digits.';
+        RegisterInNemhandelTxt: Label 'Register in Nemhandelsregisteret', Comment = 'Nemhandelsregisteret word is already in Danish, no need to translate.';
+        OpenRegistrationGuideTxt: Label 'Open registration guide';
         EnableNemhandelNotRegisteredNotificationTxt: Label 'Enable Nemhandel Not Registered Notification';
         EnableNemhandelNotRegisteredNotificationDescrTxt: Label 'Notify me that the company with the given CVR number is not registered in Nemhandelsregisteret. The message is shown on the Company Information page.';
+        EnableIncorrectCVRFormatNotificationTxt: Label 'Enable Incorrect CVR Format Notification';
+        EnableIncorrectCVRFormatNotificationDescrTxt: Label 'Notify me that the CVR number is not in the correct format. The message is shown on the Company Information page.';
+        IncorrectCVRNumberFormatErr: Label 'The CVR number must be 8 digits or "A/S" followed by 3-6 digits.';
         NemhandelsregisteretCategoryTxt: Label 'Nemhandelsregisteret', Locked = true;
         CVRNumberChangedTxt: Label 'CVR number was changed from %1 to %2. Modify trigger: %3.', Locked = true;
         RegisteredStatusChangedTxt: Label 'Registered with Nemhandel was changed from %1 to %2. Modify trigger: %3.', Locked = true;
@@ -62,6 +69,7 @@ codeunit 13628 "Nemhandel Status Mgt."
 
     internal procedure IsSaaSProductionCompany(): Boolean
     var
+        Company: Record Company;
         EnvironmentInformation: Codeunit "Environment Information";
     begin
         if not EnvironmentInformation.IsProduction() then
@@ -72,6 +80,10 @@ codeunit 13628 "Nemhandel Status Mgt."
 
         if EnvironmentInformation.IsSandbox() then
             exit(false);
+
+        if Company.Get(CompanyName()) then
+            if Company."Evaluation Company" then
+                exit(false);
 
         exit(true);
     end;
@@ -100,43 +112,92 @@ codeunit 13628 "Nemhandel Status Mgt."
         CompanyInformation.Modify();
     end;
 
-    internal procedure ManageNotRegisteredNotification(RegisteredWithNemhandel: Enum "Nemhandel Company Status")
+    local procedure IsCVRNumberFormatValid(CVRNumber: Text[20]): Boolean
+    var
+        Regex: Codeunit Regex;
     begin
-        if RegisteredWithNemhandel = Enum::"Nemhandel Company Status"::Registered then
-            RecallNemhandelNotRegisteredNotification()
-        else
-            ShowNemhandelNotRegisteredNotification();
+        exit(Regex.IsMatch(CVRNumber, '^(\d{8}|A/S\d{3,6})$'));
     end;
 
-    internal procedure ShowNemhandelNotRegisteredNotification(): Boolean
+    internal procedure ValidateCVRNumberFormat(CVRNumber: Text[20])
+    var
+        Regex: Codeunit Regex;
+    begin
+        if not Regex.IsMatch(CVRNumber, '^(\d{8}|A/S\d{3,6})$') then
+            Error(IncorrectCVRNumberFormatErr);
+    end;
+
+    internal procedure ManageNotRegisteredNotification(RegisteredWithNemhandel: Enum "Nemhandel Company Status")
+    var
+        NotificationID: Guid;
+    begin
+        if not IsSaaSProductionCompany() then
+            exit;
+
+        NotificationID := GetNemhandelNotRegisteredNotificationID();
+        if RegisteredWithNemhandel = Enum::"Nemhandel Company Status"::Registered then
+            RecallNotification(NotificationID)
+        else
+            ShowNotification(NotificationID);
+    end;
+
+    internal procedure ManageIncorrectCVRFormatNotification(CVRNumber: Text[20])
+    var
+        NotificationID: Guid;
+    begin
+        if not IsSaaSProductionCompany() then
+            exit;
+
+        NotificationID := GetIncorrectCVRFormatNotificationID();
+        if IsCVRNumberFormatValid(CVRNumber) then
+            RecallNotification(NotificationID)
+        else
+            ShowNotification(NotificationID);
+    end;
+
+    internal procedure ShowNotification(NotificationID: Guid): Boolean
     var
         MyNotifications: Record "My Notifications";
     begin
-        if not MyNotifications.Get(UserId, GetNemhandelNotRegisteredNotificationID()) then
-            EnableNemhandelNotRegisteredNotification();
+        if not MyNotifications.Get(UserId, NotificationID) then
+            EnableNotification(NotificationID);
 
-        if not IsNemhandelNotRegisteredNotificationEnabled() then
+        if not IsNotificationEnabled(NotificationID) then
             exit(false);
 
-        SendEnableNemhandelNotRegisteredNotification();
+        SendEnableNotification(NotificationID);
         exit(true);
     end;
 
-    internal procedure RecallNemhandelNotRegisteredNotification()
+    internal procedure RecallNotification(NotificationID: Guid)
     var
-        NemhandelNotRegisteredNotification: Notification;
+        Notification: Notification;
     begin
-        NemhandelNotRegisteredNotification.Id := GetNemhandelNotRegisteredNotificationID();
-        if NemhandelNotRegisteredNotification.Recall() then;
+        Notification.Id := NotificationID;
+        if Notification.Recall() then;
     end;
 
-    local procedure EnableNemhandelNotRegisteredNotification()
+    local procedure EnableNotification(NotificationID: Guid)
     var
         MyNotifications: Record "My Notifications";
+        NotificationName: Text[128];
+        DescriptionText: Text;
     begin
-        if not MyNotifications.SetStatus(GetNemhandelNotRegisteredNotificationID(), true) then
-            MyNotifications.InsertDefault(
-                GetNemhandelNotRegisteredNotificationID(), EnableNemhandelNotRegisteredNotificationTxt, EnableNemhandelNotRegisteredNotificationDescrTxt, true);
+        case NotificationID of
+            GetNemhandelNotRegisteredNotificationID():
+                begin
+                    NotificationName := EnableNemhandelNotRegisteredNotificationTxt;
+                    DescriptionText := EnableNemhandelNotRegisteredNotificationDescrTxt;
+                end;
+            GetIncorrectCVRFormatNotificationID():
+                begin
+                    NotificationName := EnableIncorrectCVRFormatNotificationTxt;
+                    DescriptionText := EnableIncorrectCVRFormatNotificationDescrTxt;
+                end;
+        end;
+
+        if not MyNotifications.SetStatus(NotificationID, true) then
+            MyNotifications.InsertDefault(NotificationID, NotificationName, DescriptionText, true);
     end;
 
     local procedure GetNemhandelNotRegisteredNotificationID(): Guid
@@ -144,25 +205,47 @@ codeunit 13628 "Nemhandel Status Mgt."
         exit('cd142648-4540-447f-bc5f-cfe29b12f71d');
     end;
 
-    local procedure IsNemhandelNotRegisteredNotificationEnabled(): Boolean
+    local procedure GetIncorrectCVRFormatNotificationID(): Guid
+    begin
+        exit('1ff2c627-7c7d-4a79-8729-a081ffb08f62');
+    end;
+
+    local procedure IsNotificationEnabled(NotificationID: Guid): Boolean
     var
         InstructionMgt: Codeunit "Instruction Mgt.";
     begin
-        exit(InstructionMgt.IsMyNotificationEnabled(GetNemhandelNotRegisteredNotificationID()));
+        exit(InstructionMgt.IsMyNotificationEnabled(NotificationID));
     end;
 
-    local procedure SendEnableNemhandelNotRegisteredNotification()
+    local procedure SendEnableNotification(NotificationID: Guid)
     var
-        NemhandelNotRegisteredNotification: Notification;
+        Notification: Notification;
+        NotificationMessage: Text;
+        NotificationActions: Dictionary of [Text, Text];
+        ActionMethodName: Text;
+        ActionCaption: Text;
     begin
-        NemhandelNotRegisteredNotification.Id := GetNemhandelNotRegisteredNotificationID();
-        if NemhandelNotRegisteredNotification.Recall() then;
+        case NotificationID of
+            GetNemhandelNotRegisteredNotificationID():
+                begin
+                    NotificationMessage := NotRegisteredNotificationMsg;
+                    NotificationActions.Add('OpenNemhandelsregisteretLink', RegisterInNemhandelTxt);
+                    NotificationActions.Add('OpenNemhandelsregisteretGuideLink', OpenRegistrationGuideTxt);
+                end;
+            GetIncorrectCVRFormatNotificationID():
+                NotificationMessage := IncorrectCVRNumberFormatMsg;
+        end;
 
-        NemhandelNotRegisteredNotification.Message(NotificationMsg);
-        NemhandelNotRegisteredNotification.Scope(NotificationScope::LocalScope);
-        NemhandelNotRegisteredNotification.AddAction('Register in Nemhandelsregisteret', Codeunit::"Nemhandel Status Mgt.", 'OpenNemhandelsregisteretLink');
-        NemhandelNotRegisteredNotification.AddAction('Open registration guide', Codeunit::"Nemhandel Status Mgt.", 'OpenNemhandelsregisteretGuideLink');
-        NemhandelNotRegisteredNotification.Send();
+        Notification.Id := NotificationID;
+        if Notification.Recall() then;
+
+        Notification.Message(NotificationMessage);
+        Notification.Scope(NotificationScope::LocalScope);
+        foreach ActionMethodName in NotificationActions.Keys do begin
+            ActionCaption := NotificationActions.Get(ActionMethodName);
+            Notification.AddAction(ActionCaption, Codeunit::"Nemhandel Status Mgt.", ActionMethodName);
+        end;
+        Notification.Send();
     end;
 
     internal procedure OpenNemhandelsregisteretLink(Notification: Notification)
@@ -171,7 +254,7 @@ codeunit 13628 "Nemhandel Status Mgt."
     begin
         if CustomerConsentMgt.ConfirmUserConsentToOpenExternalLink() then
             Hyperlink(NemhandelsregisteretUrlLbl);
-        ShowNemhandelNotRegisteredNotification();
+        ShowNotification(GetNemhandelNotRegisteredNotificationID());
     end;
 
     internal procedure OpenNemhandelsregisteretGuideLink(Notification: Notification)
@@ -180,7 +263,7 @@ codeunit 13628 "Nemhandel Status Mgt."
     begin
         if CustomerConsentMgt.ConfirmUserConsentToOpenExternalLink() then
             Hyperlink(NemhandelsregisteretGuidanceUrlLbl);
-        ShowNemhandelNotRegisteredNotification();
+        ShowNotification(GetNemhandelNotRegisteredNotificationID());
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]

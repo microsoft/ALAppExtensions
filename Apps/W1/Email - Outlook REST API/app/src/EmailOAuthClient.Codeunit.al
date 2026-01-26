@@ -5,41 +5,13 @@
 
 namespace System.Email;
 
+using System.Azure.Identity;
 using System.Environment;
 using System.Security.Authentication;
-using System.Azure.Identity;
 using System.Utilities;
 
-#if not CLEAN24
-#pragma warning disable AL0432
-codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client", "Email - OAuth Client v2"
-#pragma warning restore AL0432
-#else
 codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
-#endif
 {
-#if not CLEAN24
-    /// <summary>
-    /// Retrieves the Access token for the current user to connect to Outlook API
-    /// </summary>
-    /// <param name="AccessToken">Out parameter with the Access token of the account</param>
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAccessToken with SecretText data type for AccessToken parameter.', '24.0')]
-    procedure GetAccessToken(var AccessToken: Text)
-    begin
-#pragma warning disable AL0432
-        TryGetAccessTokenInternal(AccessToken);
-#pragma warning restore AL0432
-    end;
-
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAccessToken with SecretText data type for AccessToken parameter.', '24.0')]
-
-    procedure TryGetAccessToken(var AccessToken: Text): Boolean
-    begin
-        exit(TryGetAccessTokenInternal(AccessToken));
-    end;
-#endif
 
     /// <summary>
     /// Retrieves the Access token for the current user to connect to Outlook API
@@ -47,45 +19,58 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
     /// <param name="AccessToken">Out parameter with the Access token of the account</param>
     [NonDebuggable]
     procedure GetAccessToken(var AccessToken: SecretText)
+    var
+        CallerModuleInfo: ModuleInfo;
     begin
-        TryGetAccessTokenInternal(AccessToken);
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+        TryGetAccessTokenInternal(AccessToken, CallerModuleInfo);
     end;
 
     [NonDebuggable]
     procedure TryGetAccessToken(var AccessToken: SecretText): Boolean
-    begin
-        exit(TryGetAccessTokenInternal(AccessToken));
-    end;
-
-#if not CLEAN24
-    // Interfaces do not support properties for the procedures, so using an internal function
-    [TryFunction]
-    [NonDebuggable]
-    local procedure TryGetAccessTokenInternal(var AccessToken: Text)
     var
-        Token: SecretText;
+        CallerModuleInfo: ModuleInfo;
     begin
-        TryGetAccessTokenInternal(Token);
-        if not Token.IsEmpty() then
-            AccessToken := Token.Unwrap();
+        NavApp.GetCallerModuleInfo(CallerModuleInfo);
+        exit(TryGetAccessTokenInternal(AccessToken, CallerModuleInfo));
     end;
-#endif
+
+    local procedure CheckIfThirdParty(CallerModuleInfo: ModuleInfo)
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+        CurrentModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+
+        if EnvironmentInformation.IsSaaSInfrastructure() <> true then
+            exit;
+
+        if CallerModuleInfo.Publisher <> CurrentModuleInfo.Publisher then
+            Error(ThirdPartyExtensionsNotAllowedErr);
+    end;
+
 
     // Interfaces do not support properties for the procedures, so using an internal function
     [TryFunction]
     [NonDebuggable]
-    local procedure TryGetAccessTokenInternal(var AccessToken: SecretText)
+    local procedure TryGetAccessTokenInternal(var AccessToken: SecretText; CallerModuleInfo: ModuleInfo)
     var
         AzureAdMgt: Codeunit "Azure AD Mgt.";
         UrlHelper: Codeunit "Url Helper";
         EnvironmentInformation: Codeunit "Environment Information";
         OAuthErr: Text;
+        IsHandled: Boolean;
     begin
+        OnBeforeGetToken(IsHandled);
+        if IsHandled then
+            exit;
+
+        CheckIfThirdParty(CallerModuleInfo);
         Initialize();
 
         ClearLastError();
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
-            AccessToken := AzureAdMgt.GetAccessToken(UrlHelper.GetGraphUrl(), '', false);
+            AccessToken := AzureAdMgt.GetAccessTokenAsSecretText(UrlHelper.GetGraphUrl(), '', false);
             if AccessToken.IsEmpty() then begin
                 Session.LogMessage('000040Z', CouldNotAcquireAccessTokenErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
                 if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;
@@ -152,12 +137,17 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
         exit(AuthUrl.Replace('/authorize', ''));
     end;
 
+    // This event is ONLY used for testing purposes. This can help us to mock the GetAccessToken function. Never use this event in production code.
+    [InternalEvent(false)]
+    local procedure OnBeforeGetToken(var IsHandled: Boolean)
+    begin
+    end;
+
     var
         OAuth2: Codeunit OAuth2;
         [NonDebuggable]
         ClientId: Text;
-        [NonDebuggable]
-        ClientSecret: Text;
+        ClientSecret: SecretText;
         RedirectURL: Text;
         IsInitialized: Boolean;
         Scopes: List of [Text];
@@ -165,4 +155,5 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
         CouldNotGetAccessTokenErr: Label 'Could not get access token.';
         EmailCategoryLbl: Label 'EmailOAuth', Locked = true;
         CouldNotAcquireAccessTokenErr: Label 'Failed to acquire access token.', Locked = true;
+        ThirdPartyExtensionsNotAllowedErr: Label 'Third-party extensions are restricted from obtaining access tokens. Please contact your system administrator.';
 }

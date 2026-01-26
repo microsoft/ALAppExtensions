@@ -364,11 +364,6 @@ table 31258 "Iss. Payment Order Header CZB"
 
                 GenJournalLine."Posting Date" := "Document Date";
                 GenJournalLine."Document Date" := "Document Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-                GenJournalLine."VAT Date CZL" := "Document Date";
-#pragma warning restore AL0432
-#endif
                 GenJournalLine."VAT Reporting Date" := "Document Date";
 
                 case IssPaymentOrderLineCZB.Type of
@@ -388,6 +383,7 @@ table 31258 "Iss. Payment Order Header CZB"
                 GenJournalLine.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type");
                 GenJournalLine.Validate("Bal. Account No.", GenJournalBatch."Bal. Account No.");
                 GenJournalLine.Validate("Payment Method Code", IssPaymentOrderLineCZB."Payment Method Code");
+                GenJournalLine.Description := IssPaymentOrderLineCZB.Description;
                 GenJournalLine."Variable Symbol CZL" := IssPaymentOrderLineCZB."Variable Symbol";
                 GenJournalLine."Constant Symbol CZL" := IssPaymentOrderLineCZB."Constant Symbol";
                 GenJournalLine."Specific Symbol CZL" := IssPaymentOrderLineCZB."Specific Symbol";
@@ -400,7 +396,8 @@ table 31258 "Iss. Payment Order Header CZB"
             until IssPaymentOrderLineCZB.Next() = 0;
         end;
     end;
-
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the IssPaymentOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ShowStatistics()
     var
         BankingDocStatisticsCZB: Page "Banking Doc. Statistics CZB";
@@ -411,6 +408,7 @@ table 31258 "Iss. Payment Order Header CZB"
         BankingDocStatisticsCZB.SetValues("Bank Account No.", "Document Date", -Amount);
         BankingDocStatisticsCZB.Run();
     end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeExportPmtOrd(var IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB"; var IsHandled: Boolean)

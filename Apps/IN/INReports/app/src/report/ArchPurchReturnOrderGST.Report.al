@@ -1229,8 +1229,8 @@ report 18004 "Arch.Purch. Return Order GST"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.LANGUAGE := Language.GetLanguageID("Language Code");
-                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
+                CurrReport.LANGUAGE := GlobalLanguage.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
                 Vendor.Get("Buy-from Vendor No.");
                 CompanyInformation.Get();
 
@@ -1365,7 +1365,7 @@ report 18004 "Arch.Purch. Return Order GST"
         CurrExchRate: Record "Currency Exchange Rate";
         FormatAddr: Codeunit "Format Address";
         PurchCountPrintedArch: Codeunit "Purch.HeaderArch-Printed";
-        Language: Codeunit "Language";
+        GlobalLanguage: Codeunit "Language";
         VendAddr: array[8] of Text[50];
         ShipToAddr: array[8] of Text[50];
         CompanyAddr: array[8] of Text[50];

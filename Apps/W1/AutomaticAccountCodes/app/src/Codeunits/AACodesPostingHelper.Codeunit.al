@@ -13,11 +13,16 @@ using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.Posting;
 
 codeunit 4850 "AA Codes Posting Helper"
 {
     Access = Internal;
+
+    var
+        IsDeferralPosting: Boolean;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostGLAccOnBeforeDeferralPosting', '', false, false)]
     local procedure OnPostGLAccOnBeforeDeferralPosting(sender: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line")
@@ -69,12 +74,15 @@ codeunit 4850 "AA Codes Posting Helper"
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         NoOfAutoAccounts: Decimal;
         TotalAmount: Decimal;
+        TotalAltAmount: Decimal;
+        TotalAltAmountLCY: Decimal;
         SourceCurrBaseAmount: Decimal;
         AccLine: Integer;
     begin
         GLSetup.Get();
         GenJnlLine.TestField("Account Type", GenJnlLine."Account Type"::"G/L Account");
         Clear(TotalAmount);
+        Clear(TotalAltAmountLCY);
         AccLine := 0;
         TotalAmount := 0;
         AutoAccHeader.Get(GenJnlLine."Automatic Account Group");
@@ -113,9 +121,15 @@ codeunit 4850 "AA Codes Posting Helper"
                 CopyDimensionFromAutoAccLine(GenJnlLine2, AutomaticAccountLine);
                 AccLine := AccLine + 1;
                 TotalAmount := TotalAmount + GenJnlLine2.Amount;
+                TotalAltAmount := TotalAltAmount + GenJnlLine2."Source Currency Amount";
+                TotalAltAmountLCY := TotalAltAmountLCY + GenJnlLine2."Amount (LCY)";
                 if (AccLine = NoOfAutoAccounts) and (TotalAmount <> 0) then
                     GenJnlLine2.Validate(Amount, GenJnlLine2.Amount - TotalAmount);
-
+                if (AccLine = NoOfAutoAccounts) and (TotalAltAmount <> 0) then
+                    GenJnlLine2.Validate("Source Currency Amount", GenJnlLine2."Source Currency Amount" - TotalAltAmount);
+                if (AccLine = NoOfAutoAccounts) and (TotalAltAmountLCY <> 0) and (TotalAmount = 0) then
+                    GenJnlLine2.Validate("Amount (LCY)", GenJnlLine2."Amount (LCY)" - TotalAltAmountLCY);
+                GenJnlCheckLine.CheckDeferralPostingAllowed(IsDeferralPosting);
                 GenJnlCheckLine.RunCheck(GenJnlLine2);
 
                 sender.InitGLEntry(GenJnlLine2, GLEntry,
@@ -172,6 +186,8 @@ codeunit 4850 "AA Codes Posting Helper"
             TempGenJournalLine.Validate("Posting Date", PostingDate);
             TempGenJournalLine.Validate("Amount (LCY)", PostAmount);
             TempGenJournalLine.Validate("VAT Base Amount", PostAmount);
+            if GenJournalLine."Deferral Code" <> '' then
+                IsDeferralPostingAllowed(true);
             if PostingAccountNo <> '' then
                 TempGenJournalLine."Account No." := PostingAccountNo;
             PostAccGroup(sender, TempGenJournalLine);
@@ -187,13 +203,13 @@ codeunit 4850 "AA Codes Posting Helper"
                 GenJournalLine."Automatic Account Group" := '';
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareSales', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure OnAfterInvPostBufferPrepareSales(var SalesLine: Record "Sales Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
     begin
         InvoicePostingBuffer."Automatic Account Group" := SalesLine."Automatic Account Group";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPreparePurchase', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure OnAfterInvPostBufferPreparePurchase(var PurchaseLine: Record "Purchase Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
     begin
         InvoicePostingBuffer."Automatic Account Group" := PurchaseLine."Automatic Account Group";
@@ -228,4 +244,22 @@ codeunit 4850 "AA Codes Posting Helper"
         SalesLine."Automatic Account Group" := GLAccount."Automatic Account Group";
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Posted Gen. Journal Line", 'OnAfterInsertFromGenJournalLine', '', false, false)]
+    local procedure OnAfterInsertFromGenJournalLine(GenJournalLine: Record "Gen. Journal Line"; var PostedGenJournalLine: Record "Posted Gen. Journal Line")
+    begin
+        PostedGenJournalLine."Automatic Account Group" := GenJournalLine."Automatic Account Group";
+        PostedGenJournalLine.Modify();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Gen. Journal Mgt.", 'OnAfterInsertGenJournalLine', '', false, false)]
+    local procedure OnAfterInsertGenJournalLine(PostedGenJournalLine: Record "Posted Gen. Journal Line"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        GenJournalLine."Automatic Account Group" := PostedGenJournalLine."Automatic Account Group";
+        GenJournalLine.Modify();
+    end;
+
+    local procedure IsDeferralPostingAllowed(DeferralPostingAllowed: Boolean)
+    begin
+        IsDeferralPosting := DeferralPostingAllowed;
+    end;
 }

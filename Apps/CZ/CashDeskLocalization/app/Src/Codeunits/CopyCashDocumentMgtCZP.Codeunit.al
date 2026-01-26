@@ -30,6 +30,8 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
     begin
         IncludeHeader := NewIncludeHeader;
         RecalculateLines := NewRecalculateLines;
+
+        OnSetPropertiesOnAfterAssignParameters(NewIncludeHeader, NewRecalculateLines, IncludeHeader, RecalculateLines);
     end;
 
     procedure CopyCashDocument(FromDocType: Option; FromCashDeskNo: Code[20]; FromDocNo: Code[20]; var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP")
@@ -47,8 +49,13 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
         NextLineNo: Integer;
         LinesNotCopied: Integer;
         ReleaseDocument: Boolean;
+        IsHandled: Boolean;
         EnterDocumentNoErr: Label 'Please enter a Document No.';
     begin
+        OnBeforeCopyCashDocument(FromDocType, FromCashDeskNo, FromDocNo, ToCashDocumentHeaderCZP, IncludeHeader, RecalculateLines, IsHandled);
+        if IsHandled then
+            exit;
+
         ToCashDocumentHeaderCZP.TestField(ToCashDocumentHeaderCZP.Status, ToCashDocumentHeaderCZP.Status::Open);
         if FromDocNo = '' then
             Error(EnterDocumentNoErr);
@@ -90,12 +97,15 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
 
         if IncludeHeader then begin
             OldCashDocumentHeaderCZP := ToCashDocumentHeaderCZP;
-            case FromDocType of
-                CashDocType::"Cash Document":
-                    ToCashDocumentHeaderCZP.TransferFields(FromCashDocumentHeaderCZP, false);
-                CashDocType::"Posted Cash Document":
-                    ToCashDocumentHeaderCZP.TransferFields(FromPostedCashDocumentHdrCZP, false);
-            end;
+            IsHandled := false;
+            OnBeforeCopyCashDocumentHeader(ToCashDocumentHeaderCZP, FromCashDocumentHeaderCZP, FromPostedCashDocumentHdrCZP, FromDocType, IsHandled);
+            if not IsHandled then
+                case FromDocType of
+                    CashDocType::"Cash Document":
+                        ToCashDocumentHeaderCZP.TransferFields(FromCashDocumentHeaderCZP, false);
+                    CashDocType::"Posted Cash Document":
+                        ToCashDocumentHeaderCZP.TransferFields(FromPostedCashDocumentHdrCZP, false);
+                end;
 
             if ToCashDocumentHeaderCZP.Status = ToCashDocumentHeaderCZP.Status::Released then begin
                 ToCashDocumentHeaderCZP.Status := ToCashDocumentHeaderCZP.Status::Open;
@@ -113,6 +123,8 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
             end;
             ToCashDocumentHeaderCZP."No. Printed" := 0;
             ToCashDocumentHeaderCZP.Modify();
+
+            OnAfterCopyCashDocumentHeader(ToCashDocumentHeaderCZP, FromCashDocumentHeaderCZP, FromPostedCashDocumentHdrCZP, FromDocType);
         end;
 
         LinesNotCopied := 0;
@@ -152,6 +164,8 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
 
         if ErrorMessageManagement.GetLastErrorID() > 0 then
             ErrorMessageHandler.NotifyAboutErrors();
+
+        OnAfterCopyCashDocument(FromDocType, FromCashDeskNo, FromDocNo, ToCashDocumentHeaderCZP);
     end;
 
     local procedure GetLastToCashDocLineNo(ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"): Decimal
@@ -196,10 +210,16 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
         ToCashDocumentHeaderCZP."Created Date" := OldCashDocumentHeaderCZP."Created Date";
     end;
 
-    local procedure CopyCashDocLine(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var ToCashDocumentLineCZP: Record "Cash Document Line CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentLineCZP: Record "Cash Document Line CZP"; var NextLineNo: Integer; var LinesNotCopied: Integer): Boolean
+    local procedure CopyCashDocLine(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var ToCashDocumentLineCZP: Record "Cash Document Line CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentLineCZP: Record "Cash Document Line CZP"; var NextLineNo: Integer; var LinesNotCopied: Integer) Result: Boolean
     var
         CopyThisLine: Boolean;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCopyCashDocumentLine(ToCashDocumentHeaderCZP, ToCashDocumentLineCZP, FromCashDocumentHeaderCZP, FromCashDocumentLineCZP, NextLineNo, LinesNotCopied, RecalculateLines, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
         CopyThisLine := true;
 
         if CashDeskManagementCZP.IsEntityBlocked(FromCashDocumentLineCZP."Account Type", FromCashDocumentLineCZP."Account No.") then begin
@@ -230,14 +250,23 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
             ToCashDocumentLineCZP.Insert()
         else
             LinesNotCopied += 1;
-        exit(true);
+
+        Result := true;
+        OnAfterCopyCashDocumentLine(ToCashDocumentHeaderCZP, ToCashDocumentLineCZP, FromCashDocumentHeaderCZP, FromCashDocumentLineCZP, NextLineNo, LinesNotCopied, CopyThisLine, Result);
+        exit(Result);
     end;
 
     local procedure UpdateCashDocLine(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var ToCashDocumentLineCZP: Record "Cash Document Line CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentLineCZP: Record "Cash Document Line CZP"; var CopyThisLine: Boolean)
     var
         GLAccount: Record "G/L Account";
         VATPostingSetup: Record "VAT Posting Setup";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeUpdateCashDocumentLine(ToCashDocumentHeaderCZP, ToCashDocumentLineCZP, FromCashDocumentHeaderCZP, FromCashDocumentLineCZP, CopyThisLine, RecalculateLines, IsHandled);
+        if IsHandled then
+            exit;
+
         if RecalculateLines and not FromCashDocumentLineCZP."System-Created Entry" then begin
             if FromCashDocumentLineCZP."Cash Desk Event" <> '' then
                 ToCashDocumentLineCZP.Validate("Cash Desk Event", FromCashDocumentLineCZP."Cash Desk Event")
@@ -268,6 +297,8 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
         end else
             if VATPostingSetup.Get(ToCashDocumentLineCZP."VAT Bus. Posting Group", ToCashDocumentLineCZP."VAT Prod. Posting Group") then
                 ToCashDocumentLineCZP."VAT Identifier" := VATPostingSetup."VAT Identifier";
+
+        OnAfterUpdateCashDocumentLine(ToCashDocumentHeaderCZP, ToCashDocumentLineCZP, FromCashDocumentHeaderCZP, FromCashDocumentLineCZP, CopyThisLine, RecalculateLines);
     end;
 
     local procedure CopyPostedCashDocLinesToDoc(ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromPostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP"; var LinesNotCopied: Integer)
@@ -281,7 +312,13 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
         NextLineNo: Integer;
         ToLineCounter: Integer;
         InsertDocNoLine: Boolean;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCopyPostedCashDocumentLines(ToCashDocumentHeaderCZP, FromPostedCashDocumentLineCZP, LinesNotCopied, IsHandled);
+        if IsHandled then
+            exit;
+
         InitCurrency(ToCashDocumentHeaderCZP."Currency Code");
         Clear(ToLineCounter);
         Clear(OldDocNo);
@@ -310,6 +347,8 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
                 ToLineCounter += 1;
                 CopyCashDocLine(ToCashDocumentHeaderCZP, ToCashDocumentLineCZP, FromCashDocumentHeaderCZP, FromCashDocumentLineCZP, NextLineNo, LinesNotCopied);
             until FromPostedCashDocumentLineCZP.Next() = 0;
+
+        OnAfterCopyPostedCashDocumentLines(ToCashDocumentHeaderCZP, FromPostedCashDocumentLineCZP, LinesNotCopied);
     end;
 
     local procedure InsertOldCashDocNoLine(ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; OldDocNo: Code[20]; OldCashDeskNo: Code[20]; var NextLineNo: Integer)
@@ -334,5 +373,60 @@ codeunit 11712 "Copy Cash Document Mgt. CZP"
             Currency.InitRoundingPrecision();
         Currency.TestField("Unit-Amount Rounding Precision");
         Currency.TestField("Amount Rounding Precision");
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyCashDocument(FromDocType: Option; FromCashDeskNo: Code[20]; FromDocNo: Code[20]; var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; IncludeHeader: Boolean; RecalculateLines: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyCashDocument(FromDocType: Option; FromCashDeskNo: Code[20]; FromDocNo: Code[20]; var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyCashDocumentHeader(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromPostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP"; FromDocType: Option; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyCashDocumentHeader(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromPostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP"; FromDocType: Option)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyCashDocumentLine(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var ToCashDocumentLineCZP: Record "Cash Document Line CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentLineCZP: Record "Cash Document Line CZP"; var NextLineNo: Integer; var LinesNotCopied: Integer; var RecalculateLines: Boolean; var Result: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyCashDocumentLine(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var ToCashDocumentLineCZP: Record "Cash Document Line CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentLineCZP: Record "Cash Document Line CZP"; var NextLineNo: Integer; var LinesNotCopied: Integer; CopyThisLine: Boolean; var Result: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateCashDocumentLine(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var ToCashDocumentLineCZP: Record "Cash Document Line CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentLineCZP: Record "Cash Document Line CZP"; var CopyThisLine: Boolean; RecalculateLines: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateCashDocumentLine(var ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var ToCashDocumentLineCZP: Record "Cash Document Line CZP"; var FromCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromCashDocumentLineCZP: Record "Cash Document Line CZP"; var CopyThisLine: Boolean; RecalculateLines: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyPostedCashDocumentLines(ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromPostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP"; var LinesNotCopied: Integer; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyPostedCashDocumentLines(ToCashDocumentHeaderCZP: Record "Cash Document Header CZP"; var FromPostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP"; var LinesNotCopied: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSetPropertiesOnAfterAssignParameters(NewIncludeHeader: Boolean; NewRecalculateLines: Boolean; var IncludeHeader: Boolean; var RecalculateLines: Boolean)
+    begin
     end;
 }

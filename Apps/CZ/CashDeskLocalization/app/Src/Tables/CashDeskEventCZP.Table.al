@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.CashDesk;
 
 using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.AllocationAccount;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.VAT.Setup;
@@ -91,7 +92,8 @@ table 11746 "Cash Desk Event CZP"
             if ("Account Type" = const(Vendor)) Vendor else
             if ("Account Type" = const(Employee)) Employee else
             if ("Account Type" = const("Bank Account")) "Bank Account" where("Account Type CZP" = const("Bank Account")) else
-            if ("Account Type" = const("Fixed Asset")) "Fixed Asset";
+            if ("Account Type" = const("Fixed Asset")) "Fixed Asset" else
+            if ("Account Type" = const("Allocation Account")) "Allocation Account";
             DataClassification = CustomerContent;
 
             trigger OnValidate()

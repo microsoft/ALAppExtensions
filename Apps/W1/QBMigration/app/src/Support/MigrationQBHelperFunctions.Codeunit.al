@@ -1,4 +1,5 @@
-Codeunit 1917 "MigrationQB Helper Functions"
+#pragma warning disable AA0247
+codeunit 1917 "MigrationQB Helper Functions"
 {
     var
         StartPositionTxt: Label ' STARTPOSITION %1', Locked = true;
@@ -11,7 +12,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
         ImportedEntityTxt: Label 'Imported %1 data file.', Locked = true;
         PulledEntityTxt: Label 'Pulled %1 from source.', Locked = true;
         AuthHeaderErr: Label 'Unable to get Authorization header. ', Locked = true;
-        QBRequest1Txt: Label '/v3/company/%1/query?query=%2&minorversion=4', comment = '%1 = Realm ID, %2 = Encoded SQL query';
+        QBRequest1Txt: Label '/v3/company/%1/query?query=%2&minorversion=75', comment = '%1 = Realm ID, %2 = Encoded SQL query';
         QBRequest2Txt: Label '/v3/company/%1/query?query=%2', comment = '%1 = Realm ID, %2 = Encoded SQL query';
 
 
@@ -439,7 +440,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
         VATPostingSetup: Record "VAT Posting Setup";
     begin
         if ValidateCountry('GB') then
-            if VATPostingSetup.FindSet(true, false) then begin
+            if VATPostingSetup.FindSet(true) then begin
                 repeat
                     VATPostingSetup."Sales VAT Account" := '';
                     VATPostingSetup."Purchase VAT Account" := '';
@@ -513,21 +514,21 @@ Codeunit 1917 "MigrationQB Helper Functions"
 
     [TryFunction]
     [Scope('OnPrem')]
-    procedure GetAuthRequestUrl(ClientId: Text; ClientSecret: Text; Scope: Text; Url: Text; CallBackUrl: Text; State: Text; var AuthRequestUrl: Text)
+    procedure GetAuthRequestUrl(ClientId: SecretText; ClientSecret: SecretText; Scope: Text; Url: Text; CallBackUrl: Text; State: Text; var AuthRequestUrl: Text)
     begin
         GetAuthRequestUrlImp(ClientId, ClientSecret, Scope, Url, CallBackUrl, State, AuthRequestUrl);
     end;
 
     [TryFunction]
     [Scope('OnPrem')]
-    procedure GetAccessToken(Url: Text; Callback: Text; AuthCode: Text; ClientId: Text; ClientSecret: Text; var AccessKey: Text)
+    procedure GetAccessToken(Url: Text; Callback: Text; AuthCode: SecretText; ClientId: SecretText; ClientSecret: SecretText; var AccessKey: SecretText)
     begin
         GetAccessTokenImp(Url, Callback, AuthCode, ClientId, ClientSecret, AccessKey);
     end;
 
     [TryFunction]
     [Scope('OnPrem')]
-    local procedure GetAuthorizationHeader(AccessTokenKey: Text; var AuthorizationHeader: Text)
+    local procedure GetAuthorizationHeader(AccessTokenKey: SecretText; var AuthorizationHeader: SecretText)
     begin
         GetAuthorizationHeaderImp(AccessTokenKey, AuthorizationHeader)
     end;
@@ -552,13 +553,12 @@ Codeunit 1917 "MigrationQB Helper Functions"
             JArray.Add(CurrentJToken);
     end;
 
-    [NonDebuggable]
     local procedure InvokeQuickBooksRESTRequest(Request: Text; EntityName: Text; var JToken: JsonToken): Boolean
     var
         BaseUrlTxt: Label 'https://quickbooks.api.intuit.com', Locked = true;
-        //BaseUrlTxt: Label 'https://sandbox-quickbooks.api.intuit.com', Locked = true;
-        AuthorizationHeader: Text;
-        AccessToken: Text;
+        // BaseUrlTxt: Label 'https://sandbox-quickbooks.api.intuit.com', Locked = true;
+        AuthorizationHeader: SecretText;
+        AccessToken: SecretText;
     begin
         if not IsolatedStorage.Get('Migration QB Access Token', DataScope::Company, AccessToken) then
             exit(false);
@@ -571,7 +571,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
         exit(InvokeRestRequest(BaseUrlTxt, AuthorizationHeader, Request, EntityName, JToken));
     end;
 
-    local procedure InvokeRestRequest(Url: Text; AuthorizationHeader: Text; Request: Text; EntityName: Text; var JToken: JsonToken): Boolean
+    local procedure InvokeRestRequest(Url: Text; AuthorizationHeader: SecretText; Request: Text; EntityName: Text; var JToken: JsonToken): Boolean
     var
         Client: HttpClient;
         ResponseMessage: HttpResponseMessage;
@@ -620,7 +620,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
     end;
 
     [TryFunction]
-    local procedure GetAuthRequestUrlImp(ClientId: Text; ClientSecret: Text; Scope: Text; Url: Text; CallBackUrl: Text; State: Text; var AuthRequestUrl: Text)
+    local procedure GetAuthRequestUrlImp(ClientId: SecretText; ClientSecret: SecretText; Scope: Text; Url: Text; CallBackUrl: Text; State: Text; var AuthRequestUrl: Text)
     var
         OAuthAuthorization: DotNet OAuthAuthorization;
         Consumer: DotNet Consumer;
@@ -633,14 +633,15 @@ Codeunit 1917 "MigrationQB Helper Functions"
     end;
 
     [TryFunction]
-    local procedure GetAccessTokenImp(Url: Text; callback: Text; AuthCode: Text; ClientId: Text; ClientSecret: Text; var AccessKey: Text)
+    [NonDebuggable]
+    local procedure GetAccessTokenImp(Url: Text; callback: Text; AuthCode: SecretText; ClientId: SecretText; ClientSecret: SecretText; var AccessKey: SecretText)
     var
         OAuthAuthorization: DotNet OAuthAuthorization;
         Consumer: DotNet Consumer;
         Token: DotNet Token;
         AccessToken: DotNet Token;
     begin
-        Token := Token.Token(AuthCode, '');
+        Token := Token.Token(AuthCode.Unwrap(), '');
         Consumer := Consumer.Consumer(ClientId, ClientSecret);
         OAuthAuthorization := OAuthAuthorization.OAuthAuthorization(Consumer, Token);
 
@@ -650,11 +651,12 @@ Codeunit 1917 "MigrationQB Helper Functions"
     end;
 
     [TryFunction]
-    local procedure GetAuthorizationHeaderImp(AccessTokenKey: Text; var AuthorizationHeader: Text)
+    local procedure GetAuthorizationHeaderImp(AccessTokenKey: SecretText; var AuthorizationHeader: SecretText)
     begin
-        AuthorizationHeader := 'Bearer ' + AccessTokenKey;
+        AuthorizationHeader := SecretStrSubstNo('Bearer %1', AccessTokenKey);
     end;
 
+    [NonDebuggable]
     local procedure GetJSONTokenValueFromString(ObjectToGet: Text; JsonFormattedString: text): Text
     var
         JObject: JsonObject;

@@ -1,16 +1,20 @@
+#if not CLEAN26
 namespace Microsoft.DataMigration.GP;
 
 page 4026 "GP Posting Accounts"
 {
     Caption = 'GP Posting Accounts';
-    AdditionalSearchTerms = 'staging';
     PageType = Card;
     SourceTable = "GP Posting Accounts";
     DeleteAllowed = false;
     InsertAllowed = false;
     PromotedActionCategories = 'Posting Accounts';
     ApplicationArea = All;
-    UsageCategory = Administration;
+    UsageCategory = None;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Removing the GP staging table pages because they cause confusion and should not be used.';
+    ObsoleteTag = '26.0';
+#pragma warning disable AA0219
 
     layout
     {
@@ -140,3 +144,5 @@ page 4026 "GP Posting Accounts"
         }
     }
 }
+#pragma warning restore AA0219
+#endif

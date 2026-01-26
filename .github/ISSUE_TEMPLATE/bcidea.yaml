@@ -2,6 +2,7 @@ name: Implement a BC Idea
 description: Suggest a BC Idea you would like to implement.
 title: "[BC Idea]: "
 labels: ["bcidea"]
+type: 'Feature'
 body:
   - type: markdown
     attributes:

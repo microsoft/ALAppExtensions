@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -13,11 +13,9 @@ pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
     {
         addlast(factboxes)
         {
-            part("Sales Adv. Usage FactBox CZZ"; "Sales Adv. Usage FactBox CZZ")
+            part(AdvanceUsageFactBoxCZZ; "Advance Usage FactBox CZZ")
             {
                 ApplicationArea = Basic, Suite;
-                Provider = SalesLines;
-                SubPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Line No." = field("Line No.");
             }
         }
     }
@@ -67,4 +65,10 @@ pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        if GuiAllowed() then
+            CurrPage.AdvanceUsageFactBoxCZZ.Page.SetDocument(Rec);
+    end;
 }

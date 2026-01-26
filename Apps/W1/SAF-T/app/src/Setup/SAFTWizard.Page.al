@@ -28,7 +28,7 @@ page 5280 "SAF-T Wizard"
         {
             group(StandardBanner)
             {
-                Caption = '';
+                Caption = '', Locked = true;
                 Editable = false;
                 Visible = TopBannerVisible and not FinishActionEnabled;
                 field(MediaResourcesStandard; MediaResourcesStd."Media Reference")
@@ -40,7 +40,7 @@ page 5280 "SAF-T Wizard"
             }
             group(FinishedBanner)
             {
-                Caption = '';
+                Caption = '', Locked = true;
                 Editable = false;
                 Visible = TopBannerVisible and FinishActionEnabled;
                 field(MediaResourcesDone; MediaResourcesFinished."Media Reference")
@@ -53,6 +53,7 @@ page 5280 "SAF-T Wizard"
 
             group(Start)
             {
+                ShowCaption = false;
                 Visible = WelcomeStepVisible;
                 group(Welcome)
                 {
@@ -60,7 +61,7 @@ page 5280 "SAF-T Wizard"
                     Visible = WelcomeStepVisible;
                     group(SAFTDescription)
                     {
-                        Caption = '';
+                        Caption = '', Locked = true;
                         InstructionalText = 'The SAF-T (Standard Audit File - Tax) is a standard file format for exporting various types of accounting transactional data using the XML format. This guide helps you set up SAF-T for Dynamics 365 Business Central. If you do not have a chart of accounts, this guide helps you to create it based on SAF-T standard chart of accounts. If you do not want to set this up right now, close this page.';
                     }
                 }
@@ -68,6 +69,7 @@ page 5280 "SAF-T Wizard"
 
             group(DataUpgrade)
             {
+                ShowCaption = false;
                 Visible = DataUpgradeStepVisible;
                 group(WhatIsUpdated)
                 {
@@ -119,6 +121,7 @@ page 5280 "SAF-T Wizard"
 
             group(ChooseStandardAccTypeParent)
             {
+                ShowCaption = false;
                 Visible = StandardAccTypeStepVisible;
                 group(MappingSourceNotLoaded)
                 {
@@ -152,6 +155,7 @@ page 5280 "SAF-T Wizard"
 
             group(ChooseMappingRangeParent)
             {
+                ShowCaption = false;
                 Visible = MappingRangeStepVisible;
                 group(ChooseMappingRangeChild)
                 {
@@ -335,7 +339,7 @@ page 5280 "SAF-T Wizard"
                     Visible = FinishActionEnabled;
                     group(FinishDescription)
                     {
-                        Caption = '';
+                        Caption = '', Locked = true;
                         InstructionalText = 'You''re ready to use the SAF-T functionality. Do an additional mapping on the G/L Account Mapping page if needed. Open the Audit File Export Document page to export the data in the SAF-T format.';
                     }
                 }
@@ -441,14 +445,6 @@ page 5280 "SAF-T Wizard"
         AuditMappingHelper: Codeunit "Audit Mapping Helper";
         MappingHelperSAFT: Codeunit "Mapping Helper SAF-T";
     begin
-#if not CLEAN23
-        if not SAFTDataMgt.IsFeatureEnabled() then
-            if not IsRunFromFeatureMgt then begin
-                SAFTDataMgt.ShowNotEnabledMessage(CurrPage.Caption());
-                Error('');
-            end;
-#endif
-
         FeatureTelemetry.LogUptake('0000KTC', SAFTExportTok, Enum::"Feature Uptake Status"::Discovered);
         Commit();
 
@@ -502,9 +498,6 @@ page 5280 "SAF-T Wizard"
         SetupCompleted: Boolean;
         DataUpgradeAgreed: Boolean;
         DataUpgradeRequired: Boolean;
-#if not CLEAN23
-        IsRunFromFeatureMgt: Boolean;
-#endif
         StandardAccTypeNotSpecifiedErr: label 'A standard account type is not specified.';
         SetupNotCompletedQst: label 'Set up SAF-T has not been completed.\\Are you sure that you want to exit?';
         MappingSourceNotLoadedMsg: label 'A source for mapping was not loaded due to the following error: %1.', Comment = '%1 - error text';
@@ -843,12 +836,4 @@ page 5280 "SAF-T Wizard"
     begin
         VATStartingDateSetCount := MappingHelperSAFT.GetVATPostingSetupMappedCount();
     end;
-
-#if not CLEAN23
-    [Obsolete('Feature will be enabled by default.', '23.0')]
-    procedure SetRunFromFeatureMgt()
-    begin
-        IsRunFromFeatureMgt := true;
-    end;
-#endif
 }

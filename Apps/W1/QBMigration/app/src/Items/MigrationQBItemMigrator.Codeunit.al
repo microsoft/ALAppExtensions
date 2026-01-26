@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1920 "MigrationQB Item Migrator"
 {
     TableNo = "MigrationQB Item";
@@ -8,16 +9,8 @@ codeunit 1920 "MigrationQB Item Migrator"
         ItemType: Option Inventory,Service;
         CostingMethod: Option FIFO,LIFO,Specific,Average,Standard;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
-    procedure OnMigrateItem(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
-    local procedure OnMigrateItem(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
+    local procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         MigrationQBItem: Record "MigrationQB Item";
     begin
@@ -40,21 +33,13 @@ codeunit 1920 "MigrationQB Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
-    procedure OnMigrateItemPostingGroups(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
-    local procedure OnMigrateItemPostingGroups(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
+    local procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     begin
         MigrateItemPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
 
-    procedure MigrateItemPostingGroups(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    procedure MigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         MigrationQBItem: Record "MigrationQB Item";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
@@ -75,21 +60,13 @@ codeunit 1920 "MigrationQB Item Migrator"
         Sender.ModifyItem(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
-    procedure OnMigrateInventoryTransactions(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
-    local procedure OnMigrateInventoryTransactions(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
+    local procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     begin
         MigrateInventoryTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
 
-    procedure MigrateInventoryTransactions(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    procedure MigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         Item: Record Item;
         MigrationQBItem: Record "MigrationQB Item";
@@ -169,7 +146,7 @@ codeunit 1920 "MigrationQB Item Migrator"
 
             if not MigrationQBItem.Get(EntityId) then begin
                 MigrationQBItem.Init();
-                MigrationQBItem.VALIDATE(MigrationQBItem.Id, EntityId);
+                MigrationQBItem.Validate(MigrationQBItem.Id, EntityId);
                 MigrationQBItem.Insert(true);
             end;
 
@@ -187,24 +164,24 @@ codeunit 1920 "MigrationQB Item Migrator"
         MigrationQBItem: Record "MigrationQB Item";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
     begin
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(Name), JToken.AsObject(), 'Name');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(Description), JToken.AsObject(), 'Description');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(Type), JToken.AsObject(), 'Type');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(Taxable), JToken.AsObject(), 'Taxable');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(Name), JToken.AsObject(), 'Name');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(Description), JToken.AsObject(), 'Description');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(Type), JToken.AsObject(), 'Type');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(Taxable), JToken.AsObject(), 'Taxable');
 
         if HelperFunctions.IsOnlineData() then begin
-            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(UnitPrice), JToken.AsObject(), 'UnitPrice');
-            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(PurchaseCost), JToken.AsObject(), 'PurchaseCost');
-            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(QtyOnHand), JToken.AsObject(), 'QtyOnHand');
+            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(UnitPrice), JToken.AsObject(), 'UnitPrice');
+            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(PurchaseCost), JToken.AsObject(), 'PurchaseCost');
+            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(QtyOnHand), JToken.AsObject(), 'QtyOnHand');
         end else begin
-            HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBItem.FieldNO(OrType), JToken.AsObject(), 'ORSalesPurchase.Ortype');
-            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(QtyOnHand), JToken.AsObject(), 'QuantityOnHand');
+            HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBItem.FieldNo(OrType), JToken.AsObject(), 'ORSalesPurchase.Ortype');
+            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(QtyOnHand), JToken.AsObject(), 'QuantityOnHand');
             if (IsItemServiceType(RecordVariant)) then begin
-                HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBItem.FieldNO(UnitPrice), JToken.AsObject(), GetSearchPath(RecordVariant, true));
-                HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBItem.FieldNO(PurchaseCost), JToken.AsObject(), GetSearchPath(RecordVariant, false));
+                HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBItem.FieldNo(UnitPrice), JToken.AsObject(), GetSearchPath(RecordVariant, true));
+                HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBItem.FieldNo(PurchaseCost), JToken.AsObject(), GetSearchPath(RecordVariant, false));
             end else begin
-                HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(UnitPrice), JToken.AsObject(), 'SalesPrice');
-                HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNO(PurchaseCost), JToken.AsObject(), 'UnitPrice');
+                HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(UnitPrice), JToken.AsObject(), 'SalesPrice');
+                HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBItem.FieldNo(PurchaseCost), JToken.AsObject(), 'UnitPrice');
             end;
         end;
     end;

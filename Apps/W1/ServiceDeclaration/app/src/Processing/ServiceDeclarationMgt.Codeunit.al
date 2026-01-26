@@ -35,9 +35,6 @@ codeunit 5012 "Service Declaration Mgt."
 
     var
         TransactionTypeCodeNotSpecifiedInLineErr: Label 'A service transaction type code is not specified in the line no. %1 with %2 %3', Comment = '%1 = number of line;%2 = type of the line (item, resource, etc.);%3 = item/resource code';
-#if not CLEAN23
-        FeatureNotEnabledMessageTxt: Label 'The %1 page is part of the new Service Declaration feature, which is not yet enabled in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
-#endif        
         ServDeclLbl: Label 'Service Declaration';
         AssistedSetupTxt: Label 'Set up a service declaration';
         AssistedSetupDescriptionTxt: Label 'The Service Declaration it easy to export the servide declaration in the format that the authorities in your country require.';
@@ -157,14 +154,6 @@ codeunit 5012 "Service Declaration Mgt."
         exit(NoSeriesCode);
     end;
 
-#if not CLEAN23
-    [Obsolete('This function is not used anymore as the feature is enabled by default', '23.0')]
-    procedure ShowNotEnabledMessage(PageCaption: Text)
-    begin
-        Message(FeatureNotEnabledMessageTxt, PageCaption);
-    end;
-#endif
-
     local procedure IsSalesDocApplicableForServDecl(SalesHeader: Record "Sales Header"): Boolean
     var
         ServiceDeclarationSetup: Record "Service Declaration Setup";
@@ -231,11 +220,6 @@ codeunit 5012 "Service Declaration Mgt."
             exit(false);
         CompanyInformation.Get();
         exit(not (Vendor."Country/Region Code" in ['', CompanyInformation."Country/Region Code"]));
-    end;
-
-    local procedure GetServiceDeclarationFeatureKeyId(): Text[50]
-    begin
-        exit('ServiceDeclaration');
     end;
 
     internal procedure ReleaseIntrastatReport(var ServiceDeclHeader: Record "Service Declaration Header")
@@ -629,13 +613,13 @@ codeunit 5012 "Service Declaration Mgt."
         ItemJournalLine."Applicable For Serv. Decl." := PurchaseLine."Applicable For Serv. Decl.";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServLine', '', false, false)]
-    local procedure OnAfterCopyItemJnlLineFromServiceLine(var ItemJnlLine: Record "Item Journal Line"; ServLine: Record "Service Line")
+    [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterCopyToItemJnlLine', '', false, false)]
+    local procedure OnAfterCopyItemJnlLineFromServiceLine(var ItemJournalLine: Record "Item Journal Line"; ServiceLine: Record "Service Line")
     begin
         if not IsFeatureEnabled() then
             exit;
-        ItemJnlLine."Service Transaction Type Code" := ServLine."Service Transaction Type Code";
-        ItemJnlLine."Applicable For Serv. Decl." := ServLine."Applicable For Serv. Decl.";
+        ItemJournalLine."Service Transaction Type Code" := ServiceLine."Service Transaction Type Code";
+        ItemJournalLine."Applicable For Serv. Decl." := ServiceLine."Applicable For Serv. Decl.";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromPurchLine', '', false, false)]

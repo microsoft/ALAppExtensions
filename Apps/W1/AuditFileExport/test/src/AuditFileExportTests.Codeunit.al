@@ -1,6 +1,20 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.Finance.AuditFileExport;
+
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.AuditFileExport;
+using Microsoft.Finance.GeneralLedger.Journal;
+using System.IO;
+using System.Utilities;
+
 codeunit 148035 "Audit File Export Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -15,8 +29,6 @@ codeunit 148035 "Audit File Export Tests"
         LibraryMarketing: Codeunit "Library - Marketing";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
-        AddressMustHaveValueErr: label 'Address must have a value in Contact: No.=%1', Comment = '%1 - Contact No.';
-        CommentMustHaveValueErr: label 'Header Comment must have a value in Audit File Export Header: ID=%1', Comment = 'Audit File Export Header ID';
 
     [Test]
     [HandlerFunctions('ConfirmHandlerYes')]
@@ -148,8 +160,7 @@ codeunit 148035 "Audit File Export Tests"
         asserterror AuditFileExportTestHelper.StartExport(AuditFileExportHeader);
 
         // [THEN] Error "Header Comment must have a value" is shown.
-        Assert.ExpectedError(StrSubstNo(CommentMustHaveValueErr, AuditFileExportHeader.ID));
-        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedTestFieldError(AuditFileExportHeader.FieldCaption("Header Comment"), '');
     end;
 
     [Test]
@@ -204,8 +215,7 @@ codeunit 148035 "Audit File Export Tests"
         asserterror AuditFileExportDocCard.DataCheck.Invoke();
 
         // [THEN] Error "Address must have a value in Contact: No.=A" is shown.
-        Assert.ExpectedError(StrSubstNo(AddressMustHaveValueErr, Contact."No."));
-        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedTestFieldError(Contact.FieldCaption(Address), '');
     end;
 
     [Test]
@@ -297,7 +307,9 @@ codeunit 148035 "Audit File Export Tests"
         BlobOutStream: OutStream;
     begin
         Clear(TempBlob);
+#pragma warning disable AA0210
         AuditFile.SetFilter("File Name", AuditFileName);
+#pragma warning restore AA0210
         AuditFile.FindFirst();
         AuditFile.CalcFields("File Content");
         AuditFile."File Content".CreateInStream(FileInStream);

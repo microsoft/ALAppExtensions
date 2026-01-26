@@ -40,18 +40,5 @@ page 4850 "Automatic Account Header"
     actions
     {
     }
-
-#if not CLEAN22
-    trigger OnInit()
-    var
-        AutoAccCodesPageMgt: Codeunit "Auto. Acc. Codes Page Mgt.";
-        AutoAccCodesFeatureMgt: Codeunit "Auto. Acc. Codes Feature Mgt.";
-    begin
-        if not AutoAccCodesFeatureMgt.IsEnabled() then begin
-            AutoAccCodesPageMgt.OpenAutoAccGroupListPage();
-            Error('');
-        end;
-    end;
-#endif
 }
 

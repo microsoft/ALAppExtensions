@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 1917 "MigrationQB Config"
 {
     ReplicateData = false;
@@ -36,27 +37,6 @@ table 1917 "MigrationQB Config"
         {
             DataClassification = SystemMetadata;
         }
-        field(9; "Realm Id"; Text[250])
-        {
-            DataClassification = CustomerContent;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The suggested way to store the secrets is Isolated Storage, therefore Realm Id will be removed.';
-            ObsoleteTag = '15.4';
-        }
-        field(10; "Token Key"; Text[250])
-        {
-            DataClassification = CustomerContent;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The suggested way to store the secrets is Isolated Storage, therefore Token Key will be removed.';
-            ObsoleteTag = '15.4';
-        }
-        field(11; "Token Secret"; Text[250])
-        {
-            DataClassification = CustomerContent;
-            ObsoleteState = Removed;
-            ObsoleteReason = 'The suggested way to store the secrets is Isolated Storage, therefore Token Secret will be removed.';
-            ObsoleteTag = '15.4';
-        }
     }
 
     keys
@@ -76,8 +56,7 @@ table 1917 "MigrationQB Config"
         end;
     end;
 
-    [NonDebuggable]
-    procedure InitializeOnlineConfig(AccessToken: Text; RealmId: Text)
+    procedure InitializeOnlineConfig(AccessToken: SecretText; RealmId: Text)
     begin
         if not Get() then begin
             Init();
@@ -91,29 +70,6 @@ table 1917 "MigrationQB Config"
         IsolatedStorage.Set('Migration QB Access Token', AccessToken, DataScope::Company);
     end;
 
-    [Obsolete('Do not use. Replaced with InitializeOnlineConfig() for OAuth 2.0 implementation.', '15.4')]
-    procedure InitializeOnlineSetup(TokenKey: Text; TokenSecret: Text; RealmId: Text)
-    var
-        CryptographyManagement: Codeunit "Cryptography Management";
-    begin
-        if not Get() then begin
-            Init();
-            Insert();
-        end;
-
-        Validate(Online, true);
-        Modify();
-
-        if CryptographyManagement.IsEncryptionEnabled() then begin
-            IsolatedStorage.SetEncrypted('Migration QB Realm Id', RealmId, DataScope::Company);
-            IsolatedStorage.SetEncrypted('Migration QB Token Key', TokenKey, DataScope::Company);
-            IsolatedStorage.SetEncrypted('Migration QB Token Secret', TokenSecret, DataScope::Company);
-        end else begin
-            IsolatedStorage.Set('Migration QB Realm Id', RealmId, DataScope::Company);
-            IsolatedStorage.Set('Migration QB Token Key', TokenKey, DataScope::Company);
-            IsolatedStorage.Set('Migration QB Token Secret', TokenSecret, DataScope::Company);
-        end;
-    end;
 
     procedure IsOnlineData(): Boolean
     begin

@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GroupingCategoryCode xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Grouping_Category_Code.xsd">
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1000</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Forskning og utvikling</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1020</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Immaterielle eiendeler, konsesjoner/melkekvote o.l.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1080</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Goodwill</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1105</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Forretningsbygg (saldogruppe i)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1115</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Bygg og anlegg, hotell o.l. (saldogruppe h)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1117</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Elektroteknisk utrustning i kraftforetak mv. (saldogr. g)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1120</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fast teknisk installasjon i bygninger (saldogruppe j)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1130</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Bygg, anlegg, maskiner under bygging - til eget bruk</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1131</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Bygg, anlegg, maskiner under bygging - for salg</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1140</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Jord- og skogverdier</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1150</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Tomter og andre grunnarealer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1160</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Boliger inkl. tomter, hytter mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1205</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Maskiner, personbiler, inventar (saldogruppe d)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1221</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Skip, rigger mv. (saldogruppe e)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1225</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fly, helikopter mv. (saldogruppe f)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1238</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Vare-, lastebiler, busser m.v. (saldogruppe c)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1239</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Varebiler med nullutslipp (saldogruppe c)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1280</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kontormaskiner</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1290</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre driftsmidler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1295</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avskrivbare eiendeler utenom saldosystemet (kostnadsford.)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1296</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Negativ gevinst- og tapskonto</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1298</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Negativ tømmerkonto</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1495</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Varelager</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1500</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kundefordringer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1530</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Opptjente, ikke fakturerte kundefordringer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1577</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fordringer på ansatte</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1578</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fordringer på eiere, styremedlemmer o.l.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1595</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Langsiktige fordringer i utenlandsk valuta</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1599</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre fordringer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1780</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Krav på innbetaling av selskapskapital</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1829</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Aksjer og verdipapir- fondsandeler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1869</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Obligasjoner og sertifikater</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1880</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre finansielle instrumenter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1895</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andel i selskap med deltakerfastsetting</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1900</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kontanter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1920</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Bankinnskudd</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>1950</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Bankinnskudd for skattetrekk</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2015</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Felleseid andelskapital i samvirkeforetak</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2050</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen egenkapital</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2045</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avsatt utbytte</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2080</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Udekket tap</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2095</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Negativ saldo</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2096</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Positiv gevinst- og tapskonto</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2097</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Betinget avsatt gevinst (sktl. §§ 14-70 til 14-73)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2098</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Positiv tømmerkonto</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2220</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Langsiktig foretaksgjeld til kredittinstitusjoner</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2275</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Langsiktig lån i utenlandsk valuta</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2289</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Stille interessentinnskudd og ansvarlig lånekapital</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2380</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Kortsiktig foretaksgjeld til kredittinstitusjoner</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leverandørgjeld</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Skattetrekk og andre trekk</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2740</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Oppgjørskonto merverdiavgift</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2770</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Skyldig arbeidsgiveravgift</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2790</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre offentlige avgifter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2800</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avsatt utbytte</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2900</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Forskudd fra kunder</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2910</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Gjeld til ansatte og eiere</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2949</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Lønn, feriepenger o.l.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2950</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Påløpt rente</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>2995</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen gjeld</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3000</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Salgsinntekt og uttak, avgiftspliktig</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3100</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Salgsinntekt og uttak,avg.fritt innenfor merverdiavgiftsloven</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3200</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Salgsinntekt og uttak,utenfor merverdiavgiftsloven</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3300</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Offentlige avgifter vedrørende salg</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Offentlige tilskudd/refusjon</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leieinntekt fast eiendom</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3605</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leieinntekt fast eiendom, avgiftspliktig</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3650</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leieinntekt av rettigheter - jakt, fiske mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3695</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre utleieinntekter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3700</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Provisjonsinntekt</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3890</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Inntektsføring fra positiv gevinst-/tapskonto (RF-1219)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3895</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Inntektsføring fra saldo</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3900</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre driftsinntekter</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>3910</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Årets inntekts-/kostnadsføring fra tømmerkonto</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>4005</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Varekostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>4295</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Beholdn.endring av varer under tilvirkning og ferdig tilv. varer</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>4500</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fremmedytelse og underentreprise</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>4995</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Beholdn.endring av egen- tilvirkede anleggsmidler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>5000</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Lønn, feriepenger mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>5300</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen opplysningspliktig godtgjørelse</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>5400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Arbeidsgiveravgift</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>5420</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Opplysningspliktig pensjonskostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>5600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Arbeidsgodtgjørelse til eiere i ANS/DA  mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>5900</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen personalkostnad</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>5950</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Egen pensjonsordning</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6000</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Avskrivninger</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6100</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Frakt og transportkostnad vedrørende salg</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6200</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Energi, brensel mv. vedrørende produksjon</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6300</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leie av lokaler</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6310</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Leasingleie av bil</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6340</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Lys, varme</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6395</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Renovasjon, vann, avløp, renhold mv.</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6400</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre leiekostnader</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6500</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Verktøy, inventar mv. som ikke skal aktiveres</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6600</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Reparasjon og vedlikehold av bygninger</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6695</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Reparasjon og vedlikehold - annet</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6700</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Fremmed tjeneste (regnskap/ revisjon/rådgivning o.l.)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>6995</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB"> Kontorkostnader - bl.a. til el. kommunikasjon som inkluderer kostnader til privat bruk</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>8060</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Valutagevinst (agio)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>8099</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Annen kapitalinntekt som ikke er spesifisert i RF-1084 og/ eller RF-1219</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>8160</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Valutatap (disagio)</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+  <Account>
+    <GroupingCategory>RF-1175</GroupingCategory>
+    <CategoryDescription ISOLanguageCode="NOB">Næringsoppgave 1</CategoryDescription>
+    <CategoryDescription ISOLanguageCode="ENG">Income Statement 1</CategoryDescription>
+    <GroupingCode>8199</GroupingCode>
+    <CodeDescription ISOLanguageCode="NOB">Andre kapitalkostnader som ikke er spesifisert i RF-1219</CodeDescription>
+    <CodeDescription ISOLanguageCode="ENG">NA</CodeDescription>
+  </Account>
+</GroupingCategoryCode>

@@ -138,30 +138,29 @@ table 11756 "Registration Log CZL"
         Contact: Record Contact;
         CustContUpdate: Codeunit "CustCont-Update";
         VendContUpdate: Codeunit "VendCont-Update";
-        CustVendBankUpdate: Codeunit "CustVendBank-Update";
         RecordRef: RecordRef;
     begin
         GetAccountRecordRef(RecordRef);
-        if OpenDetailForRecRef(RecordRef) then begin
-            RecordRef.Modify();
+        if OpenDetailForRecRef(RecordRef) then
             case RecordRef.Number of
                 Database::Customer:
                     begin
+                        RecordRef.Modify();
                         RecordRef.SetTable(Customer);
                         CustContUpdate.OnModify(Customer);
                     end;
                 Database::Vendor:
                     begin
+                        RecordRef.Modify();
                         RecordRef.SetTable(Vendor);
                         VendContUpdate.OnModify(Vendor);
                     end;
                 Database::Contact:
                     begin
                         RecordRef.SetTable(Contact);
-                        CustVendBankUpdate.Run(Contact);
+                        Contact.Modify(true);
                     end;
             end;
-        end;
     end;
 
     procedure OpenDetailForRecRef(var RecordRef: RecordRef): Boolean
@@ -222,7 +221,13 @@ table 11756 "Registration Log CZL"
         ConfigValidateManagement: Codeunit "Config. Validate Management";
         DataTypeManagement: Codeunit "Data Type Management";
         FieldRef: FieldRef;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeValidateField(RecordRef, FieldName, Value, Validate, IsHandled);
+        if IsHandled then
+            exit;
+
         if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, FieldName) then
             if Validate then
                 ConfigValidateManagement.EvaluateValueWithValidate(FieldRef, CopyStr(Value, 1, FieldRef.Length()), false)
@@ -265,13 +270,11 @@ table 11756 "Registration Log CZL"
         exit(RecordRef.Number <> 0);
     end;
 
-    local procedure GetFieldValue(var RecordRef: RecordRef; FieldName: Text) Result: Text;
+    local procedure GetFieldByName(var RecordRef: RecordRef; FieldName: Text) FieldRef: FieldRef;
     var
         DataTypeManagement: Codeunit "Data Type Management";
-        FieldRef: FieldRef;
     begin
-        if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, FieldName) then
-            Result := FieldRef.Value();
+        DataTypeManagement.FindFieldByName(RecordRef, FieldRef, FieldName);
     end;
 
     procedure LogDetails(): Boolean
@@ -284,17 +287,17 @@ table 11756 "Registration Log CZL"
         GetAccountRecordRef(RecordRef);
 
         LogDetail(
-          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::Name, GetFieldValue(RecordRef, DummyCustomer.FieldName(Name)), "Verified Name");
+          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::Name, GetFieldByName(RecordRef, DummyCustomer.FieldName(Name)), "Verified Name");
         LogDetail(
-          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::Address, GetFieldValue(RecordRef, DummyCustomer.FieldName(Address)), "Verified Address");
+          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::Address, GetFieldByName(RecordRef, DummyCustomer.FieldName(Address)), "Verified Address");
         LogDetail(
-          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::City, GetFieldValue(RecordRef, DummyCustomer.FieldName(City)), "Verified City");
+          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::City, GetFieldByName(RecordRef, DummyCustomer.FieldName(City)), "Verified City");
         LogDetail(
-          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::"Post Code", GetFieldValue(RecordRef, DummyCustomer.FieldName("Post Code")), "Verified Post Code");
+          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::"Post Code", GetFieldByName(RecordRef, DummyCustomer.FieldName("Post Code")), "Verified Post Code");
         LogDetail(
-          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::"Country/Region Code", GetFieldValue(RecordRef, DummyCustomer.FieldName("Country/Region Code")), "Verified Country/Region Code");
+          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::"Country/Region Code", GetFieldByName(RecordRef, DummyCustomer.FieldName("Country/Region Code")), "Verified Country/Region Code");
         LogDetail(
-          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::"VAT Registration No.", GetFieldValue(RecordRef, DummyCustomer.FieldName("VAT Registration No.")), "Verified VAT Registration No.");
+          TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::"VAT Registration No.", GetFieldByName(RecordRef, DummyCustomer.FieldName("VAT Registration No.")), "Verified VAT Registration No.");
 
         if TotalCount > 0 then
             if TotalCount = ValidCount then
@@ -308,19 +311,14 @@ table 11756 "Registration Log CZL"
         exit(TotalCount > 0);
     end;
 
-    local procedure LogDetail(var TotalCount: Integer; var ValidCount: Integer; FieldName: Enum "Reg. Log Detail Field CZL"; CurrentValue: Text; ResponseValue: Text)
+    local procedure LogDetail(var TotalCount: Integer; var ValidCount: Integer; FieldName: Enum "Reg. Log Detail Field CZL"; CurrentField: FieldRef; ResponseValue: Text)
     var
         RegistrationLogDetail: Record "Registration Log Detail CZL";
     begin
-        if ResponseValue = '' then
-            exit;
-
-        InitRegistrationLogDetailFromRec(RegistrationLogDetail, FieldName, CurrentValue);
+        InitRegistrationLogDetailFromRec(RegistrationLogDetail, FieldName, CurrentField.Value());
         RegistrationLogDetail.Response := CopyStr(ResponseValue, 1, MaxStrLen(RegistrationLogDetail.Response));
 
-        if (RegistrationLogDetail."Current Value" = RegistrationLogDetail.Response) and
-           (RegistrationLogDetail.Response <> '')
-        then
+        if RegistrationLogDetail."Current Value" = CopyStr(RegistrationLogDetail.Response, 1, CurrentField.Length()) then
             RegistrationLogDetail.Status := RegistrationLogDetail.Status::Valid;
         RegistrationLogDetail.Insert();
 
@@ -352,6 +350,11 @@ table 11756 "Registration Log CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterApplyDetailChanges(var RecordRef: RecordRef; var Result: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateField(var RecordRef: RecordRef; FieldName: Text; var Value: Text; var Validate: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

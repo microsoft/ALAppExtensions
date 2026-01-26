@@ -348,6 +348,7 @@
         <DataExchFieldGrouping FieldID="9" />
         <DataExchFieldGrouping FieldID="26" />
         <DataExchFieldGrouping FieldID="27" />
+        <DataExchFieldGrouping FieldID="29" />
       </DataExchMapping>
     </DataExchLineDef>
     <DataExchLineDef LineType="0" Code="8-SHPTDETAIL" ColumnCount="18" DataLineTag="/INSTAT/Envelope/Declaration[flowCode =&quot;D&quot;]" ParentCode="6-SHPTHEADER">
@@ -578,6 +579,7 @@
         <DataExchFieldGrouping FieldID="9" />
         <DataExchFieldGrouping FieldID="26" />
         <DataExchFieldGrouping FieldID="27" />
+        <DataExchFieldGrouping FieldID="29" />
       </DataExchMapping>
     </DataExchLineDef>
   </DataExchDef>

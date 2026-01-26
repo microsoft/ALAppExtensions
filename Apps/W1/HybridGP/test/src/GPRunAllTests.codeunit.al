@@ -7,7 +7,6 @@ codeunit 139669 "GP RunAllTests"
         GPItemTests: Codeunit "GP Item Tests";
         GPDataMigrationTests: Codeunit "GP Data Migration Tests";
         GPTransactionTests: Codeunit "GP Transaction Tests";
-        GPForecastingTests: Codeunit "GP Forecasting Tests";
         GPCheckbookTests: Codeunit "GP Checkbook Tests";
         GPSettingsTests: Codeunit "GP Settings Tests";
     begin
@@ -15,7 +14,6 @@ codeunit 139669 "GP RunAllTests"
         GPDataMigrationTests.Run();
         GPTransactionTests.Run();
         GPItemTests.Run();
-        GPForecastingTests.Run();
         GPCheckbookTests.Run();
         GPSettingsTests.Run();
     end;

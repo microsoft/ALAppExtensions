@@ -227,10 +227,6 @@ report 11716 "Open Vend. Entries to Date CZL"
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        CalcFields("Original Amt. (LCY)", "Remaining Amt. (LCY)");
-                        if PrintCurrency then
-                            CalcFields("Original Amount", "Remaining Amount");
-
                         if not (("Remaining Amt. (LCY)" <> 0) or ("Remaining Amount" <> 0)) then
                             CurrReport.Skip();
 
@@ -285,7 +281,7 @@ report 11716 "Open Vend. Entries to Date CZL"
                             end;
 
                         // buffer for total sumary by G/L account;
-                        UpdateBuffer(TempGLAccountNetChange, "Vendor Ledger Entry".GetPayablesAccNoCZL(), "Remaining Amt. (LCY)", 0);
+                        UpdateBuffer(TempGLAccountNetChange, GetPayablesAccNo("Vendor Ledger Entry"), "Remaining Amt. (LCY)", 0);
                         UpdateBuffer(TempTotalCurrencyGLAccountNetChange, '', "Original Amt. (LCY)", "Remaining Amt. (LCY)");
 
                         if PrintCurrency then begin
@@ -296,10 +292,16 @@ report 11716 "Open Vend. Entries to Date CZL"
 
                     trigger OnPreDataItem()
                     begin
+                        SetLoadFields("Original Amt. (LCY)", "Remaining Amt. (LCY)", "Original Amount", "Remaining Amount", "Currency Code", "Due Date", "Posting Date", "Entry No.", "Document No.", "Document Type", "External Document No.", Description);
                         SetRange("Vendor No.", SecondVendor."No.");
                         SetFilter("Posting Date", Vendor.GetFilter("Date Filter"));
                         SetFilter("Date Filter", Vendor.GetFilter("Date Filter"));
                         Clear(Balance);
+                        if PrintCurrency then
+                            SetAutoCalcFields("Original Amt. (LCY)", "Remaining Amt. (LCY)", "Original Amount", "Remaining Amount")
+                        else
+                            SetAutoCalcFields("Original Amt. (LCY)", "Remaining Amt. (LCY)");
+
                     end;
                 }
                 dataitem(VendorByCurrency; "Integer")
@@ -356,6 +358,7 @@ report 11716 "Open Vend. Entries to Date CZL"
 
                 trigger OnPreDataItem()
                 begin
+                    SecondVendor.SetLoadFields("No.", Name);
                     if not SecondVendor.FindSet() then
                         CurrReport.Break();
 
@@ -686,6 +689,7 @@ report 11716 "Open Vend. Entries to Date CZL"
         TempGLAccountNetChange: Record "G/L Account Net Change" temporary;
         TempCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
         TempTotalCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
+        TempVendorPostingGroupBuffer: Record "Vendor Posting Group" temporary;
 #pragma warning restore AL0432
         GLAccount: Record "G/L Account";
         LimitDate: array[5] of DateFormula;
@@ -741,5 +745,36 @@ report 11716 "Open Vend. Entries to Date CZL"
             TempGLAccountNetChange."Net Change in Jnl." := Amount2;
             TempGLAccountNetChange.Insert();
         end;
+    end;
+
+    local procedure GetPayablesAccNo(VendorLedgerEntry: Record "Vendor Ledger Entry"): Code[20]
+    var
+        VendorPostingGroup: Record "Vendor Posting Group";
+        GLAccountNo: Code[20];
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGetPayablesAccNo(VendorLedgerEntry, GLAccountNo, IsHandled);
+        if IsHandled then
+            exit(GLAccountNo);
+
+        if VendorLedgerEntry."Vendor Posting Group" = '' then
+            exit('');
+
+        if TempVendorPostingGroupBuffer.Get(VendorLedgerEntry."Vendor Posting Group") then
+            exit(TempVendorPostingGroupBuffer."Payables Account")
+        else begin
+            VendorPostingGroup.Get(VendorLedgerEntry."Vendor Posting Group");
+            TempVendorPostingGroupBuffer.Init();
+            TempVendorPostingGroupBuffer.Code := VendorLedgerEntry."Vendor Posting Group";
+            TempVendorPostingGroupBuffer."Payables Account" := VendorPostingGroup."Payables Account";
+            TempVendorPostingGroupBuffer.Insert();
+            exit(VendorPostingGroup."Payables Account");
+        end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetPayablesAccNo(VendorLedgerEntry: Record "Vendor Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
+    begin
     end;
 }

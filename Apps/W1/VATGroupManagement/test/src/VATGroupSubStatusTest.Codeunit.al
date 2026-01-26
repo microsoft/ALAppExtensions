@@ -1,6 +1,7 @@
 codeunit 139741 "VAT Group Sub. Status Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -486,7 +487,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
         asserterror VATGroupSubmissionStatus.UpdateSingleVATReportStatus('VAT_CODE_1');
 
         // [THEN] Error will be thrown about missing setup table
-        Assert.ExpectedError('The VAT Report Setup does not exist. Identification fields and values: Primary key=''''');
+        Assert.ExpectedErrorCannotFind(Database::"VAT Report Setup");
     end;
 
     [Test]
@@ -792,7 +793,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
         VATGroupSubmissionHeader.Insert();
     end;
 
-    local procedure InsertIntoVATReportHeader(VATGroupReturnNo: Code[20]; VATReportConfigCode: Option; Status: Option; VATReportVersion: Code[10]; VATGroupStatus: Text[20])
+    local procedure InsertIntoVATReportHeader(VATGroupReturnNo: Code[20]; VATReportConfigCode: Option; Status: Enum "VAT Report Status"; VATReportVersion: Code[10]; VATGroupStatus: Text[20])
     var
         VATReportHeader: Record "VAT Report Header";
     begin

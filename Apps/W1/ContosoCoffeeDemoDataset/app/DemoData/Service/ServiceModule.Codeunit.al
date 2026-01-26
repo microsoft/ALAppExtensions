@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Service;
+
+using Microsoft.DemoTool;
+
 codeunit 5151 "Service Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;
@@ -20,9 +29,7 @@ codeunit 5151 "Service Module" implements "Contoso Demo Data Module"
         ServiceModuleSetup.InitRecord();
         Codeunit.Run(Codeunit::"Create Svc GL Account");
         Codeunit.Run(Codeunit::"Create Svc No Series");
-        Codeunit.Run(Codeunit::"Create Svc Location");
         Codeunit.Run(Codeunit::"Create Svc Setup");
-        Codeunit.Run(Codeunit::"Create Svc Item Category");
         Codeunit.Run(Codeunit::"Create Svc Item Journal");
     end;
 
@@ -30,7 +37,9 @@ codeunit 5151 "Service Module" implements "Contoso Demo Data Module"
     var
         ServiceModuleSetup: Record "Service Module Setup";
     begin
+        Codeunit.Run(Codeunit::"Create Svc Location");
         ServiceModuleSetup.InitServiceDemoDataSetup();
+        Codeunit.Run(Codeunit::"Create Svc Item Category");
         Codeunit.Run(Codeunit::"Create Svc Contract Template");
         Codeunit.Run(Codeunit::"Create Svc Loaner");
         Codeunit.Run(Codeunit::"Create Svc Item");

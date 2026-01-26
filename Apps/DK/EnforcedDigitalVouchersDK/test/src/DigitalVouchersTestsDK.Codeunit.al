@@ -1,6 +1,7 @@
 codeunit 148016 "Digital Vouchers Tests DK"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     EventSubscriberInstance = Manual;
     TestPermissions = Disabled;
 

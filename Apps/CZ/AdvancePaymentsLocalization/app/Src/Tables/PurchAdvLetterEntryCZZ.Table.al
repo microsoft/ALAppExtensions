@@ -86,6 +86,14 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             DecimalPlaces = 0 : 15;
             MinValue = 0;
         }
+        field(27; "Additional Currency Factor"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 15;
+            Editable = false;
+            MinValue = 0;
+        }
         field(28; "User ID"; Code[50])
         {
             Caption = 'User ID';
@@ -189,6 +197,17 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             Caption = 'External Document No.';
             DataClassification = CustomerContent;
         }
+        field(70; "Non-Deductible VAT %"; Decimal)
+        {
+            Caption = 'Non-Deductible VAT %"';
+            DecimalPlaces = 0 : 5;
+        }
+        field(80; "Auxiliary Entry"; Boolean)
+        {
+            Caption = 'Auxiliary Entry';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -252,9 +271,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
     procedure CalcUsageVATAmountLines(var PurchInvHeader: Record "Purch. Inv. Header"; var VATAmountLine: Record "VAT Amount Line")
     var
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+        VatEntry: Record "VAT Entry";
     begin
         PurchAdvLetterEntryCZZ.SetRange("Document No.", PurchInvHeader."No.");
         PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
+        PurchAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
         if PurchAdvLetterEntryCZZ.FindSet() then
             repeat
@@ -267,6 +288,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
                 VATAmountLine."Amount Including VAT" := PurchAdvLetterEntryCZZ.Amount;
                 VATAmountLine."VAT Base (LCY) CZL" := PurchAdvLetterEntryCZZ."VAT Base Amount (LCY)";
                 VATAmountLine."VAT Amount (LCY) CZL" := PurchAdvLetterEntryCZZ."VAT Amount (LCY)";
+                if PurchAdvLetterEntryCZZ."VAT Entry No." <> 0 then
+                    if VATEntry.Get(PurchAdvLetterEntryCZZ."VAT Entry No.") then begin
+                        VATAmountLine."Additional-Currency Base CZL" := VATEntry."Additional-Currency Base";
+                        VATAmountLine."Additional-Currency Amount CZL" := VATEntry."Additional-Currency Amount";
+                    end;
                 if PurchInvHeader."Prices Including VAT" then
                     VATAmountLine."Line Amount" := VATAmountLine."Amount Including VAT"
                 else
@@ -347,6 +373,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         "VAT Calculation Type" := GenJournalLine."VAT Calculation Type";
         "Currency Code" := GenJournalLine."Currency Code";
         "Currency Factor" := GenJournalLine."Currency Factor";
+        "Additional Currency Factor" := GenJournalLine."Additional Currency Factor CZL";
         Amount := GenJournalLine.Amount;
         "Amount (LCY)" := GenJournalLine."Amount (LCY)";
         "VAT Amount" := GenJournalLine."VAT Amount";
@@ -364,6 +391,12 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         "VAT Identifier" := VATPostingSetup."VAT Identifier";
         "VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
         OnAfterCopyFromVATPostingSetup(VATPostingSetup, Rec);
+    end;
+
+    procedure CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+        "Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
+        OnAfterCopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ, Rec);
     end;
 
     procedure InsertNewEntry(WriteToDatabase: Boolean) EntryNo: Integer
@@ -409,6 +442,30 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
     end;
 
+    internal procedure IsNonDeductibleVATAllowed(): Boolean
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        exit(VATPostingSetup.IsNonDeductibleVATAllowed(
+            "VAT Bus. Posting Group", "VAT Prod. Posting Group"));
+    end;
+
+    internal procedure CheckNonDeductibleVATAllowed()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        VATPostingSetup.CheckNonDeductibleVATAllowed(
+            "VAT Bus. Posting Group", "VAT Prod. Posting Group");
+    end;
+
+    procedure GetAdjustedCurrencyFactor(): Decimal
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        VendorLedgerEntry.Get("Vendor Ledger Entry No.");
+        exit(VendorLedgerEntry."Adjusted Currency Factor");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
     begin
@@ -441,6 +498,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
     begin
     end;
 

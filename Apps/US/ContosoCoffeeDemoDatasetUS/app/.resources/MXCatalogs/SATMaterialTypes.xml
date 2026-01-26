@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set-MaterialTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<MaterialType>
+		<Code>01</Code>
+		<Descripcion>Materia prima</Descripcion>
+	</MaterialType>
+	<MaterialType>
+		<Code>02</Code>
+		<Descripcion>Materia procesada</Descripcion>
+	</MaterialType>
+	<MaterialType>
+		<Code>03</Code>
+		<Descripcion>Materia terminada(producto terminado)</Descripcion>
+	</MaterialType>
+	<MaterialType>
+		<Code>04</Code>
+		<Descripcion>Materia para la industria manufacturera</Descripcion>
+	</MaterialType>
+	<MaterialType>
+		<Code>05</Code>
+		<Descripcion>Otra</Descripcion>
+	</MaterialType>
+</data-set-MaterialTypes>

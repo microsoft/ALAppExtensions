@@ -85,42 +85,41 @@ table 31250 "Search Rule CZB"
     var
         SearchRuleLineCZB: Record "Search Rule Line CZB";
         LineNo: Integer;
-        BankAccountVariableSymbolAmountFirstTxt: Label 'Bank Account No., Variable Symbol, Amount, First';
-        BankAccountVariableSymbolFirstTxt: Label 'Bank Account No., Variable Symbol, First';
-        VariableSymbolFirstTxt: Label 'Variable Symbol, First';
     begin
         SearchRuleLineCZB.SetRange("Search Rule Code", Code);
         if not SearchRuleLineCZB.IsEmpty() then
             exit;
 
-        InsertRuleLine(Code, LineNo, BankAccountVariableSymbolAmountFirstTxt, true, true);
-        InsertRuleLine(Code, LineNo, BankAccountVariableSymbolFirstTxt, true, false);
-        InsertRuleLine(Code, LineNo, VariableSymbolFirstTxt, false, false);
+        InsertRuleLine(Code, LineNo, "Multiple Search Result CZB"::"First Created Entry", true, true, true, false);
+        InsertRuleLine(Code, LineNo, "Multiple Search Result CZB"::"First Created Entry", true, true, false, false);
+        InsertRuleLine(Code, LineNo, "Multiple Search Result CZB"::"First Created Entry", false, true, true, false);
+        InsertRuleLine(Code, LineNo, "Multiple Search Result CZB"::Continue, true, false, true, true);
+        InsertRuleLine(Code, LineNo, "Multiple Search Result CZB"::Continue, false, true, false, true);
+        InsertRuleLine(Code, LineNo, "Multiple Search Result CZB"::Continue, true, false, false, true);
 
         OnAfterCreateDefaultLines(Code, LineNo);
     end;
 
-    local procedure InsertRuleLine(Code: Code[10]; var LineNo: Integer; Description: Text; BankAccountNo: Boolean; Amount: Boolean)
+    local procedure InsertRuleLine(Code: Code[10]; var LineNo: Integer; MultipleSearchResult: Enum "Multiple Search Result CZB"; BankAccountNo: Boolean; VariableSymbol: Boolean; Amount: Boolean; MatchRelatedPartyOnly: Boolean)
     var
         SearchRuleLineCZB: Record "Search Rule Line CZB";
-        DescriptionTxt: Label 'Both, Balance, %1', Comment = '%1 = Line Description';
     begin
         LineNo += 10000;
         SearchRuleLineCZB.Init();
         SearchRuleLineCZB."Search Rule Code" := Code;
         SearchRuleLineCZB."Line No." := LineNo;
-        SearchRuleLineCZB.Validate(Description, CopyStr(StrSubstNo(DescriptionTxt, Description), 1, MaxStrLen(SearchRuleLineCZB.Description)));
         SearchRuleLineCZB.Validate("Banking Transaction Type", SearchRuleLineCZB."Banking Transaction Type"::Both);
         SearchRuleLineCZB.Validate("Search Scope", SearchRuleLineCZB."Search Scope"::Balance);
         SearchRuleLineCZB.Validate("Bank Account No.", BankAccountNo);
-        SearchRuleLineCZB.Validate("Variable Symbol", true);
+        SearchRuleLineCZB.Validate("Variable Symbol", VariableSymbol);
         SearchRuleLineCZB.Validate("Constant Symbol", false);
         SearchRuleLineCZB.Validate("Specific Symbol", false);
         SearchRuleLineCZB.Validate(Amount, Amount);
-        SearchRuleLineCZB.Validate("Multiple Result", SearchRuleLineCZB."Multiple Result"::"First Created Entry");
+        SearchRuleLineCZB.Validate("Multiple Result", MultipleSearchResult);
+        SearchRuleLineCZB.Validate("Match Related Party Only", MatchRelatedPartyOnly);
         SearchRuleLineCZB.Insert(true);
 
-        OnAfterInsertRuleLine(SearchRuleLineCZB, LineNo, Description);
+        OnAfterInsertRuleLine(SearchRuleLineCZB, LineNo, '');
     end;
 
     [IntegrationEvent(false, false)]

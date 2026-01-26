@@ -1,7 +1,8 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 permissionset 11772 "CZ Compensation - Objects CZC"
 {
@@ -25,11 +26,6 @@ permissionset 11772 "CZ Compensation - Objects CZC"
                   Codeunit "Install Application CZC" = X,
                   Codeunit "Navigate Handler CZC" = X,
                   Codeunit "Notification Handler CZC" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  Codeunit "Posting Group Mgt. Handler CZC" = X,
-#pragma warning restore AL0432
-#endif
                   Codeunit "Release Compens. Document CZC" = X,
                   Codeunit "Upgrade Application CZC" = X,
                   Codeunit "Upgrade Tag Definitions CZC" = X,

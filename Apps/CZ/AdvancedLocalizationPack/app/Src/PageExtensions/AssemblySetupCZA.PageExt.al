@@ -10,11 +10,18 @@ pageextension 31252 "Assembly Setup CZA" extends "Assembly Setup"
     {
         addlast(General)
         {
+#if not CLEAN26
             field("Default Gen.Bus.Post. Grp. CZA"; Rec."Default Gen.Bus.Post. Grp. CZA")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the default general bussines posting group.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
+                ObsoleteReason = 'Replaced by "Default Gen. Bus. Post. Group" field in Assembly Setup Name table.';
+                Visible = false;
+                Enabled = false;
             }
+#endif
         }
     }
 }

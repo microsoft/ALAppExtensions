@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -161,13 +161,14 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
 
     procedure CopyFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
+        "Source Currency Code" := SalesAdvLetterHeaderCZZ."Currency Code";
         "Bill-to/Pay-to No." := SalesAdvLetterHeaderCZZ."Bill-to Customer No.";
-        "Country/Region Code" := SalesAdvLetterHeaderCZZ."Bill-to Country/Region Code";
+        "Country/Region Code" := SalesAdvLetterHeaderCZZ."VAT Country/Region Code";
         "VAT Registration No." := SalesAdvLetterHeaderCZZ."VAT Registration No.";
         "Registration No. CZL" := SalesAdvLetterHeaderCZZ."Registration No.";
         "Tax Registration No. CZL" := SalesAdvLetterHeaderCZZ."Tax Registration No.";
         "System-Created Entry" := true;
-        OnAfterCopyGenJnlLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ, Rec);
+        OnAfterCopyGenJournalLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ, Rec);
     end;
 
     procedure CopyFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
@@ -176,13 +177,14 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         "Shortcut Dimension 2 Code" := SalesAdvLetterEntryCZZ."Global Dimension 2 Code";
         "Dimension Set ID" := SalesAdvLetterEntryCZZ."Dimension Set ID";
         "Adv. Letter No. (Entry) CZZ" := SalesAdvLetterEntryCZZ."Sales Adv. Letter No.";
-        OnAfterCopyGenJnlLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ, Rec);
+        OnAfterCopyGenJournalLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ, Rec);
     end;
 
     procedure CopyFromPurchAdvLetterHeaderCZZ(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
     begin
+        "Source Currency Code" := PurchAdvLetterHeaderCZZ."Currency Code";
         "Bill-to/Pay-to No." := PurchAdvLetterHeaderCZZ."Pay-to Vendor No.";
-        "Country/Region Code" := PurchAdvLetterHeaderCZZ."Pay-to Country/Region Code";
+        "Country/Region Code" := PurchAdvLetterHeaderCZZ."VAT Country/Region Code";
         "VAT Registration No." := PurchAdvLetterHeaderCZZ."VAT Registration No.";
         "Registration No. CZL" := PurchAdvLetterHeaderCZZ."Registration No.";
         "Tax Registration No. CZL" := PurchAdvLetterHeaderCZZ."Tax Registration No.";
@@ -217,17 +219,25 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         "VAT Base Amount" := AdvancePostingBufferCZZ."VAT Base Amount";
         "VAT Difference" := "VAT Amount" -
             Round(Amount * "VAT %" / (100 + "VAT %"), Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
-        "Amount (LCY)" := AdvancePostingBufferCZZ."Amount (ACY)";
-        "VAT Amount (LCY)" := AdvancePostingBufferCZZ."VAT Amount (ACY)";
-        "VAT Base Amount (LCY)" := AdvancePostingBufferCZZ."VAT Base Amount (ACY)";
-        "Currency Factor" := Amount / "Amount (LCY)";
+        "Amount (LCY)" := AdvancePostingBufferCZZ."Amount (LCY)";
+        "VAT Amount (LCY)" := AdvancePostingBufferCZZ."VAT Amount (LCY)";
+        "VAT Base Amount (LCY)" := AdvancePostingBufferCZZ."VAT Base Amount (LCY)";
+        "Currency Factor" := 1;
+        if "Amount (LCY)" <> 0 then
+            "Currency Factor" := Amount / "Amount (LCY)";
+        if AdvancePostingBufferCZZ."Amount (ACY)" <> 0 then
+            "Additional Currency Factor CZL" := AdvancePostingBufferCZZ."Amount (ACY)" / "Amount (LCY)";
+        "Source Currency Amount" := Amount;
+        "Source Curr. VAT Base Amount" := "VAT Base Amount";
+        "Source Curr. VAT Amount" := "VAT Amount";
         OnAfterCopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ, Rec);
     end;
 
     procedure CopyFromCustLedgerEntryCZZ(CustLedgerEntry: Record "Cust. Ledger Entry")
     begin
         CopyDocumentFields(
-            "Document Type"::" ", CustLedgerEntry."Document No.", '', CustLedgerEntry."Source Code", '');
+            "Document Type"::" ", CustLedgerEntry."Document No.",
+            CustLedgerEntry."External Document No.", CustLedgerEntry."Source Code", '');
         "Account Type" := "Account Type"::Customer;
         "Account No." := CustLedgerEntry."Customer No.";
         SetCurrencyFactor(CustLedgerEntry."Currency Code", CustLedgerEntry."Original Currency Factor");
@@ -261,18 +271,43 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         OnAfterCopyFromVendorLedgerEntryCZZ(VendorLedgerEntry, Rec);
     end;
 
+    procedure GetAdvanceGLAccountNoCZZ(): Code[20]
+    var
+        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+    begin
+        case "Account Type" of
+            "Account Type"::Customer:
+                begin
+                    SalesAdvLetterHeaderCZZ.Get("Adv. Letter No. (Entry) CZZ");
+                    SalesAdvLetterHeaderCZZ.TestField("Advance Letter Code");
+                    AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
+                end;
+            "Account Type"::Vendor:
+                begin
+                    PurchAdvLetterHeaderCZZ.Get("Adv. Letter No. (Entry) CZZ");
+                    PurchAdvLetterHeaderCZZ.TestField("Advance Letter Code");
+                    AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
+                end;
+        end;
+
+        AdvanceLetterTemplateCZZ.TestField("Advance Letter G/L Account");
+        exit(AdvanceLetterTemplateCZZ."Advance Letter G/L Account");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitNewLineCZZ(var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyGenJnlLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; Rec: Record "Gen. Journal Line")
+    local procedure OnAfterCopyGenJournalLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyGenJnlLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; Rec: Record "Gen. Journal Line")
+    local procedure OnAfterCopyGenJournalLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 

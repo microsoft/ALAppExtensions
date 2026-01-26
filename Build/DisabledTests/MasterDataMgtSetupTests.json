@@ -1,0 +1,17 @@
+[
+    {
+        "codeunitId":  139770,
+        "codeunitName":  "Master Data Mgt. Setup Tests",
+        "method":  "EnableSetup"
+    },
+    {
+        "codeunitId":  139770,
+        "codeunitName":  "Master Data Mgt. Setup Tests",
+        "method":  "ExportImportSetup"
+    },
+    {
+        "codeunitId":  139770,
+        "codeunitName":  "Master Data Mgt. Setup Tests",
+        "method":  "SynchronizeAdditionalTable"
+    }
+]

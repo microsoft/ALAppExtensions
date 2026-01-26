@@ -91,6 +91,11 @@ table 40116 "GP IV00101"
         exit(Rec.ITEMTYPE = DiscontinuedItemTypeId());
     end;
 
+    procedure IsInventoryItem(): Boolean
+    begin
+        exit((Rec.ITEMTYPE = 1) or (Rec.ITEMTYPE = 2));
+    end;
+
     procedure GetRoundingPrecision(GPDecimalPlaceId: Integer): Decimal
     begin
         case GPDecimalPlaceId of

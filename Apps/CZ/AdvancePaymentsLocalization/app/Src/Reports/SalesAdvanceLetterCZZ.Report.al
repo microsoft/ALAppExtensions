@@ -16,16 +16,15 @@ using Microsoft.Utilities;
 using System.EMail;
 using System.Globalization;
 using System.Security.User;
-using System.Utilities;
 using System.Text;
+using System.Utilities;
 
 report 31014 "Sales - Advance Letter CZZ"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesAdvanceLetter.rdl';
     Caption = 'Sales - Advance Letter';
     PreviewMode = PrintLayout;
     UsageCategory = None;
+    DefaultRenderingLayout = "SalesAdvanceLetter.rdl";
     Permissions = tabledata "Sales Adv. Letter Header CZZ" = m;
     WordMergeDataItem = "Sales Advance Letter Header";
 
@@ -193,6 +192,12 @@ report 31014 "Sales - Advance Letter CZZ"
             column(PaymentMethod; PaymentMethod.Description)
             {
             }
+            column(YourReference_SalesAdvanceLetterHeaderCaption; FieldCaption("Your Reference"))
+            {
+            }
+            column(YourReference_SalesAdvanceLetterHeader; "Your Reference")
+            {
+            }
             column(CurrencyCode_SalesAdvanceLetterHeader; "Currency Code")
             {
             }
@@ -227,6 +232,9 @@ report 31014 "Sales - Advance Letter CZZ"
             {
             }
             column(AmountIncludingVAT; AmountIncludingVAT)
+            {
+            }
+            column(Formatted_AmountIncludingVAT; Format(AmountIncludingVAT, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Advance Letter Header"."Currency Code")))
             {
             }
             column(QRPaymentCode; QRPaymentCode)
@@ -277,6 +285,9 @@ report 31014 "Sales - Advance Letter CZZ"
                     {
                     }
                     column(AmountIncludingVAT_SalesAdvanceLetterLine; "Amount Including VAT")
+                    {
+                    }
+                    column(Formatted_AmountIncludingVAT_SalesAdvanceLetterLine; Format("Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Advance Letter Header"."Currency Code")))
                     {
                     }
                 }
@@ -377,11 +388,30 @@ report 31014 "Sales - Advance Letter CZZ"
         }
     }
 
+    rendering
+    {
+        layout("SalesAdvanceLetter.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesAdvanceLetter.rdl';
+            Caption = 'Sales Advance Letter (RDL)';
+            Summary = 'The Sales Advance Letter (RDL) provides a detailed layout.';
+        }
+        layout("SalesAdvanceLetterEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesAdvanceLetterEmail.docx';
+            Caption = 'Sales Advance Letter Email (Word)';
+            Summary = 'The Sales Advance Letter Email (Word) provides an email body layout.';
+        }
+    }
+
     var
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         FormatDocument: Codeunit "Format Document";
+        AutoFormat: Codeunit "Auto Format";
         NoOfLoops: Integer;
         DocumentLbl: Label 'Advance Letter';
         PageLbl: Label 'Page';

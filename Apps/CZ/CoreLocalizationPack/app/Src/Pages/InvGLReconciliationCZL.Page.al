@@ -125,9 +125,6 @@ page 31196 "Inv. G/L Reconciliation CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = '&Show Matrix';
                 Image = ShowMatrix;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'View the data overview according to the selected filters and options.';
 
                 trigger OnAction()
@@ -175,6 +172,15 @@ page 31196 "Inv. G/L Reconciliation CZL"
                       DateFilter, ItemFilter, LocationFilter);
                     MatrixForm.RunModal();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref("&Show Matrix_Promoted"; "&Show Matrix")
+                {
+                }
             }
         }
     }

@@ -50,9 +50,13 @@ table 10036 "IRS 1099 Form Doc. Line"
         field(10; "Calculated Amount"; Decimal)
         {
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
         field(11; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
 
             trigger OnValidate()
             begin
@@ -71,8 +75,22 @@ table 10036 "IRS 1099 Form Doc. Line"
         field(100; "Minimum Reportable Amount"; Decimal)
         {
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
         field(101; "Adjustment Amount"; Decimal)
+        {
+            Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
+        }
+        field(110; "Currency Code"; Code[10])
+        {
+        }
+        field(120; "Process Line"; Boolean)
+        {
+        }
+        field(121; "Line Action"; Enum "IRS 1099 Form Doc. Line Action")
         {
             Editable = false;
         }
@@ -83,6 +101,9 @@ table 10036 "IRS 1099 Form Doc. Line"
         key(PK; "Period No.", "Vendor No.", "Form No.", "Document ID", "Line No.")
         {
             Clustered = true;
+        }
+        key(key2; "Line Action")
+        {
         }
     }
 
@@ -129,6 +150,7 @@ table 10036 "IRS 1099 Form Doc. Line"
             exit;
         IRS1099FormDocLine.SetRange("Document ID", "Document ID");
         IRS1099FormDocLine.SetFilter("Line No.", '<>%1', Rec."Line No.");
+        IRS1099FormDocLine.SetRange("Form Box No.", Rec."Form Box No.");
         if not IRS1099FormDocLine.IsEmpty() then
             Error(CreateCreateFormDocLineSameFormBoxErr);
     end;

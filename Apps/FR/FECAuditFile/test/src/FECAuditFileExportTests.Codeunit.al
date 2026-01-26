@@ -1,6 +1,7 @@
 codeunit 148017 "FEC Audit File Export Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -19,13 +20,10 @@ codeunit 148017 "FEC Audit File Export Tests"
         LibraryJournals: Codeunit "Library - Journals";
         LibraryApplicationArea: Codeunit "Library - Application Area";
         IsInitialized: Boolean;
-        MissingStartingDateErr: Label 'Starting Date must have a value in Audit File Export Header';
-        MissingEndingDateErr: Label 'Ending Date must have a value in Audit File Export Header';
         NoEntriestoExportErr: Label 'There are no entries to export within the defined filter. The file was not created.';
         UnknownFieldErr: Label 'Unknown field No! Fld #%1.', Comment = '%1 - Field No.';
         WrongFieldErr: Label 'Wrong %1. Fld #%2.', Comment = '%1 - Field Name, %2 - Field No.';
         FilterErr: Label 'Filter function does not work.';
-        CompRegNoTestfieldErr: Label 'Registration No. must have a value in Company Information: Primary Key=. It cannot be zero or empty.';
         TwoDocumentNosTxt: Label '%1;%2', Comment = '%1, %2 - Document No.';
 
     [Test]
@@ -172,23 +170,25 @@ codeunit 148017 "FEC Audit File Export Tests"
     [Test]
     procedure MissingStartingDateErrTest()
     var
+        AuditFileExportHeader: Record "Audit File Export Header";
         EndingDate: Date;
     begin
         Initialize();
         EndingDate := GetStartingDate();
         asserterror RunFECExport('', 0D, EndingDate, false);
-        Assert.ExpectedError(MissingStartingDateErr);
+        Assert.ExpectedTestFieldError(AuditFileExportHeader.FieldCaption("Starting Date"), '');
     end;
 
     [Test]
     procedure MissingEndingDateErrTest()
     var
+        AuditFileExportHeader: Record "Audit File Export Header";
         StartingDate: Date;
     begin
         Initialize();
         StartingDate := GetStartingDate();
         asserterror RunFECExport('', StartingDate, 0D, false);
-        Assert.ExpectedError(MissingEndingDateErr);
+        Assert.ExpectedTestFieldError(AuditFileExportHeader.FieldCaption("Ending Date"), '');
     end;
 
     [Test]
@@ -2110,8 +2110,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         asserterror RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
 
         // [THEN] An error is thrown: "Registration No. must have a value in Company Information: Primary Key=. It cannot be zero or empty."
-        Assert.ExpectedErrorCode('TestField');
-        Assert.ExpectedError(CompRegNoTestfieldErr);
+        Assert.ExpectedTestFieldError(CompanyInformation.FieldCaption("Registration No."), '');
     end;
 
     [Test]
@@ -2175,11 +2174,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         CreateAndPostBankGenJnlLines(BankAccount, "Gen. Journal Account Type"::"Bank Account", StartingDate);
 
         // [WHEN] Export Tax Audit report with "Use Transaction No." = true
-#if CLEAN23
         RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
-#else
-        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
-#endif
 
         // [THEN] "Transaction No." of the G/L entry is used in the exported file
         GLRegister.FindLast();
@@ -2204,11 +2199,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         CreateAndPostCustomGenJnlLines(Customer, "Gen. Journal Account Type"::Customer, StartingDate);
 
         // [WHEN] Export Tax Audit report with "Use Transaction No." = true
-#if CLEAN23
         RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
-#else
-        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
-#endif
 
         // [THEN] "Transaction No." of the G/L entry is used in the exported file
         GLRegister.FindLast();
@@ -2233,15 +2224,101 @@ codeunit 148017 "FEC Audit File Export Tests"
         CreateAndPostVendorGenJnlLines(Vendor, "Gen. Journal Document Type"::Invoice, StartingDate);
 
         // [WHEN] Export Tax Audit report with "Use Transaction No." = true
-#if CLEAN23
         RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
-#else
-        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
-#endif
 
         // [THEN] "Transaction No." of the G/L entry is used in the exported file
         GLRegister.FindLast();
         VerifyExportGLEntriesByTransNoReport(GLRegister, AuditFile, '', Vendor."No.", Vendor.Name);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure CheckCompAuxNumAndCompAuxLibForMultiplePostingGroups()
+    var
+        AuditFile: Record "Audit File";
+        Customer: Record Customer;
+        CustomerPostingGroup: array[3] of Record "Customer Posting Group";
+        GenJournalLine: Record "Gen. Journal Line";
+        GLRegister: Record "G/L Register";
+        VATPostingSetup: Record "VAT Posting Setup";
+        StartingDate: Date;
+        VATCalculationType: Enum "Tax Calculation Type";
+    begin
+        // [SCENARIO 579514] CompAuxNum and CompAuxLib are not informed in the Audit File export when using Multiple Posting Groups in the French version.
+        Initialize();
+
+        // [GIVEN] Get Starting Date.
+        StartingDate := GetStartingDate();
+
+        // [GIVEN] Set Allow Multiple Posting Groups in Sales & Receivables Setup.
+        SetSalesAllowMultiplePostingGroups(true);
+
+        // [GIVEN] Create Customer Posting Group One And 2 Alternative Customer Posting Group.
+        LibrarySales.CreateCustomerPostingGroup(CustomerPostingGroup[1]);
+        LibrarySales.CreateCustomerPostingGroup(CustomerPostingGroup[2]);
+        LibrarySales.CreateCustomerPostingGroup(CustomerPostingGroup[3]);
+        LibrarySales.CreateAltCustomerPostingGroup(CustomerPostingGroup[1].Code, CustomerPostingGroup[2].Code);
+        LibrarySales.CreateAltCustomerPostingGroup(CustomerPostingGroup[1].Code, CustomerPostingGroup[3].Code);
+
+        // [GIVEN] Create VAT Posting Setup.
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, VATCalculationType::"Normal VAT", 25);
+
+        // [GIVEN Create Customer With Allow Multiple Posting Groups.
+        CreateCustomerWithAllowMultiplePostingGroups(Customer, CustomerPostingGroup[1].Code, VATPostingSetup."VAT Bus. Posting Group");
+
+        // [GIVEN] Multiple general journal lines are posted for the customer with Alternative Customer Posting Groups.
+        CreateTwoGenJournalLineWithBatchAndPost(GenJournalLine, 0, "Gen. Journal Account Type"::Customer, Customer."No.",
+            LibraryRandom.RandDecInRange(100, 200, 2), StartingDate, CustomerPostingGroup);
+
+        // [WHEN] Export Tax Audit report
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
+
+        // [THEN] Fields 7 CompAuxNume and 8 CompAuxLib are exported as Customer's number and name respectively for Customer Receivables Account
+        // [THEN] All non-posting accounts have fields 7 CompAuxNume and 8 CompAuxLib with blank values
+        GLRegister.FindLast();
+        VerifyExportGLEntriesReport(GLRegister, AuditFile, '', Customer."No.", Customer.Name);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure DateletFieldShowsLetteringDateForVendor()
+    var
+        AuditFile: Record "Audit File";
+        GenJournalLine: Record "Gen. Journal Line";
+        GLRegister: Record "G/L Register";
+        Vendor: Record Vendor;
+        VendorPostingGroup: Record "Vendor Posting Group";
+        InvoiceDate: Date;
+        PaymentDate: Date;
+        InvoiceDocNo: Code[20];
+    begin
+        // [SCENARIO 603700] Datelet field in FEC export should show the lettering date (SystemCreatedAt) instead of posting date for vendor entries.
+        Initialize();
+
+        // [GIVEN] Create Vendor with posting group.
+        LibraryPurchase.CreateVendor(Vendor);
+        VendorPostingGroup.Get(Vendor."Vendor Posting Group");
+        InvoiceDate := GetStartingDate();
+        PaymentDate := InvoiceDate + 14; // Payment 14 days after invoice
+
+        // [GIVEN] Invoice posted on InvoiceDate.
+        LibraryJournals.CreateGenJournalLineWithBatch(
+            GenJournalLine, "Gen. Journal Document Type"::Invoice,
+            "Gen. Journal Account Type"::Vendor, Vendor."No.", -LibraryRandom.RandDecInRange(1000, 2000, 2));
+        GenJournalLine.Validate("Posting Date", InvoiceDate);
+        GenJournalLine.Modify(true);
+        InvoiceDocNo := GenJournalLine."Document No.";
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [GIVEN] Payment posted on PaymentDate and applied to Invoice.
+        CreateApplyVendorPayment(Vendor."No.", PaymentDate, 1);
+
+        // [WHEN] Export FEC file
+        RunFECExport(AuditFile, VendorPostingGroup."Payables Account", InvoiceDate, PaymentDate, false);
+
+        // [THEN] Datelet field (field 15) for payment entry shows the application date (Today), not the payment posting date.
+        GLRegister.FindLast();
+        VerifyDateLetFieldReport(GLRegister, AuditFile, VendorPostingGroup."Payables Account", InvoiceDocNo, "Gen. Journal Document Type"::Payment, Today);
     end;
 
     local procedure Initialize()
@@ -2280,22 +2357,6 @@ codeunit 148017 "FEC Audit File Export Tests"
         AuditFileExportHeader.Insert(true);
     end;
 
-#if not CLEAN23
-    local procedure CreateAuditFileExportDoc(var AuditFileExportHeader: Record "Audit File Export Header"; StartingDate: Date; EndingDate: Date; IncludeOpeningBalances: Boolean; UseTransactionNo: Boolean; DefaultSourceCode: Code[10]; GLAccountViewString: Text[2048])
-    begin
-        AuditFileExportHeader.Init();
-        AuditFileExportHeader.Validate("Audit File Export Format", "Audit File Export Format"::FEC);
-        AuditFileExportHeader.Validate("Starting Date", StartingDate);
-        AuditFileExportHeader.Validate("Ending Date", EndingDate);
-        AuditFileExportHeader.Validate("Include Opening Balances", IncludeOpeningBalances);
-        AuditFileExportHeader.Validate("Use Transaction No.", UseTransactionNo);
-        AuditFileExportHeader.Validate("Default Source Code", DefaultSourceCode);
-        AuditFileExportHeader.Validate("G/L Account View String", GLAccountViewString);
-        AuditFileExportHeader.Validate("Parallel Processing", false);
-        AuditFileExportHeader.Insert(true);
-    end;
-#endif
-
     local procedure CreateReadStream(var FileInStream: InStream; var AuditFile: Record "Audit File")
     begin
         AuditFile.CalcFields("File Content");
@@ -2315,22 +2376,6 @@ codeunit 148017 "FEC Audit File Export Tests"
         AuditFile.SetRange("Export ID", AuditFileExportHeader.ID);
         AuditFile.FindFirst();
     end;
-
-#if not CLEAN23
-    local procedure RunFECExport(var AuditFile: Record "Audit File"; GLAccountNoFilter: Text; StartDate: Date; EndDate: Date; IncludeOpeningBalances: Boolean; UseTransactionNo: Boolean)
-    var
-        AuditFileExportHeader: Record "Audit File Export Header";
-        GLAccount: Record "G/L Account";
-        AuditFileExportMgt: Codeunit "Audit File Export Mgt.";
-    begin
-        GLAccount.SetFilter("No.", GLAccountNoFilter);
-        CreateAuditFileExportDoc(
-            AuditFileExportHeader, StartDate, EndDate, IncludeOpeningBalances, UseTransactionNo, '', CopyStr(GLAccount.GetView(), 1, 2048));
-        AuditFileExportMgt.StartExport(AuditFileExportHeader);
-        AuditFile.SetRange("Export ID", AuditFileExportHeader.ID);
-        AuditFile.FindFirst();
-    end;
-#endif
 
     local procedure RunFECExport(GLAccountNoFilter: Text; StartDate: Date; EndDate: Date; IncludeOpeningBalances: Boolean) AuditFileExportHeaderID: Integer
     var
@@ -3308,8 +3353,8 @@ codeunit 148017 "FEC Audit File Export Tests"
         GLEntry.FindSet();
         repeat
             PopulateFieldsArray(iStream, FieldsValueArray);
-            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister.SystemCreatedAt);
-            if GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry) then
+            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister.SystemCreatedAt);
+            if (GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry)) or GetGLAccountFromAllowMultiplePosting(PartyNo, PartyName, GLEntry) then
                 VerifyLedgerFieldValues(FieldsValueArray, PartyNo, PartyName)
             else
                 VerifyLedgerFieldValues(FieldsValueArray, '', '');
@@ -3331,7 +3376,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         GLEntry.FindSet();
         repeat
             PopulateFieldsArray(iStream, FieldsValueArray);
-            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLEntry."Transaction No.", GLRegister.SystemCreatedAt);
+            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister.SystemCreatedAt);
             if GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry) then
                 VerifyLedgerFieldValues(FieldsValueArray, PartyNo, PartyName)
             else
@@ -3353,7 +3398,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         GLEntry.SetFilter("G/L Account No.", GLAccountNo);
         GLEntry.FindFirst();
         PopulateFieldsArray(iStream, FieldsValueArray);
-        VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister.SystemCreatedAt);
+        VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister.SystemCreatedAt);
         iStream.ReadText(LineToRead);
         Assert.AreEqual('', LineToRead, FilterErr); // Read the next line, empty string means there are no other entries and filter function work correctly.
     end;
@@ -3392,18 +3437,18 @@ codeunit 148017 "FEC Audit File Export Tests"
         if GLEntry.FindSet() then
             repeat
                 PopulateFieldsArray(iStream, FieldsValueArray);
-                VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister.SystemCreatedAt);
+                VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister.SystemCreatedAt);
                 Assert.AreEqual(AppliedEntries, FieldsValueArray[14], GetErrorTextForAssertStmnt(14));
                 Assert.AreEqual(GetFormattedDate(AppliedDate), FieldsValueArray[15], GetErrorTextForAssertStmnt(15));
             until GLEntry.Next() = 0;
     end;
 
-    local procedure VerifyGLEntryFieldValues(FieldsValueArray: array[18] of Text[50]; GLEntry: Record "G/L Entry"; GLRegisterNo: Integer; GLRegisterCreationDate: DateTime)
+    local procedure VerifyGLEntryFieldValues(FieldsValueArray: array[18] of Text[50]; GLEntry: Record "G/L Entry"; GLRegisterCreationDate: DateTime)
     begin
         GLEntry.CalcFields("G/L Account Name");
         Assert.AreEqual(GLEntry."Source Code", FieldsValueArray[1], GetErrorTextForAssertStmnt(1));
         Assert.AreEqual(GetSourceCodeDesc(GLEntry."Source Code"), FieldsValueArray[2], GetErrorTextForAssertStmnt(2));
-        Assert.AreEqual(Format(GLRegisterNo), FieldsValueArray[3], GetErrorTextForAssertStmnt(3));
+        Assert.AreEqual(Format(GLEntry."Transaction No."), FieldsValueArray[3], GetErrorTextForAssertStmnt(3));
         Assert.AreEqual(GetFormattedDate(GLEntry."Posting Date"), FieldsValueArray[4], GetErrorTextForAssertStmnt(4));
         Assert.AreEqual(GLEntry."G/L Account No.", FieldsValueArray[5], GetErrorTextForAssertStmnt(5));
         Assert.AreEqual(GLEntry."G/L Account Name", FieldsValueArray[6], GetErrorTextForAssertStmnt(6));
@@ -3503,6 +3548,92 @@ codeunit 148017 "FEC Audit File Export Tests"
         ActivityLog."Detailed Info".CreateInStream(ErrorTextInStream);
         ErrorTextInStream.ReadText(ErrorText);
         Assert.AreEqual(ExpectedError, ErrorText, '');
+    end;
+
+    local procedure CreateTwoGenJournalLineWithBatchAndPost(var GenJournalLine: Record "Gen. Journal Line"; DocumentType: Enum "Gen. Journal Document Type"; AccountType: Enum "Gen. Journal Account Type";
+        AccountNo: Code[20]; LineAmount: Decimal; PostingDate: Date; CustomerPostingGroup: array[3] of Record "Customer Posting Group")
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+        DocumentNo: Code[20];
+    begin
+        CreateGenJournalBatch(GenJournalBatch);
+        LibraryJournals.CreateGenJournalLine(GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, DocumentType, AccountType::Customer,
+            AccountNo, GenJournalLine."Bal. Account Type"::"Bank Account", '', -LineAmount);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        GenJournalLine.Validate("Posting Group", CustomerPostingGroup[2].Code);
+        GenJournalLine.Modify(true);
+        DocumentNo := GenJournalLine."Document No.";
+        LibraryJournals.CreateGenJournalLine(GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, DocumentType, AccountType::Customer,
+            AccountNo, GenJournalLine."Bal. Account Type"::"Bank Account", '', LineAmount);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        GenJournalLine.Validate("Document No.", DocumentNo);
+        GenJournalLine.Validate("Posting Group", CustomerPostingGroup[3].Code);
+        GenJournalLine.Modify(true);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+    end;
+
+    local procedure CreateCustomerWithAllowMultiplePostingGroups(var Customer: Record Customer; CustomerPostingGroupCode: Code[20]; VATBusPostGroupCode: Code[20])
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Validate("Allow Multiple Posting Groups", true);
+        Customer.Validate("VAT Bus. Posting Group", VATBusPostGroupCode);
+        Customer.Validate("Customer Posting Group", CustomerPostingGroupCode);
+        Customer.Modify(true);
+    end;
+
+    local procedure SetSalesAllowMultiplePostingGroups(AllowMultiplePostingGroups: Boolean)
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup."Allow Multiple Posting Groups" := AllowMultiplePostingGroups;
+        SalesReceivablesSetup.Modify();
+    end;
+
+    local procedure GetGLAccountFromAllowMultiplePosting(var PartyNo: Code[20]; var PartyName: Text[100]; GLEntry: Record "G/L Entry"): Boolean
+    var
+        AltCustPostGroup: Record "Alt. Customer Posting Group";
+        Customer: Record Customer;
+        CustPostGroup1, CustPostGroup2 : Record "Customer Posting Group";
+        SalesSetup: Record "Sales & Receivables Setup";
+    begin
+        if (GLEntry."Source Type" = GLEntry."Source Type"::Customer) and (Customer.Get(GLEntry."Source No.")) then
+            if (SalesSetup.Get()) and (SalesSetup."Allow Multiple Posting Groups") then
+                if CustPostGroup1.Get(Customer."Customer Posting Group") then begin
+                    AltCustPostGroup.SetRange("Customer Posting Group", CustPostGroup1.Code);
+                    if AltCustPostGroup.FindSet() then
+                        repeat
+                            if CustPostGroup2.Get(AltCustPostGroup."Alt. Customer Posting Group") then
+                                if CustPostGroup2."Receivables Account" = GLEntry."G/L Account No." then begin
+                                    PartyNo := Customer."No.";
+                                    PartyName := Customer.Name;
+                                    exit(true);
+                                end;
+                        until AltCustPostGroup.Next() = 0;
+                end;
+        exit(false);
+    end;
+
+    local procedure VerifyDateLetFieldReport(GLRegister: Record "G/L Register"; AuditFile: Record "Audit File"; GLAccountNo: Code[250]; AppliedEntries: Text; DocumentType: Enum "Gen. Journal Document Type"; AppliedDate: Date)
+    var
+        GLEntry: Record "G/L Entry";
+        IStream: InStream;
+        LineToRead: Text;
+        FieldsValueArray: array[18] of Text[50];
+    begin
+        CreateReadStream(IStream, AuditFile);
+        IStream.ReadText(LineToRead); // headers
+        IStream.ReadText(LineToRead);
+
+        GLEntry.SetFilter("Entry No.", '%1..%2', GLRegister."From Entry No.", GLRegister."To Entry No.");
+        GLEntry.SetRange("G/L Account No.", GLAccountNo);
+        GLEntry.SetRange("Document Type", DocumentType);
+        if GLEntry.FindSet() then
+            repeat
+                PopulateFieldsArray(iStream, FieldsValueArray);
+                Assert.AreEqual(AppliedEntries, FieldsValueArray[14], GetErrorTextForAssertStmnt(14));
+                Assert.AreEqual(GetFormattedDate(AppliedDate), FieldsValueArray[15], GetErrorTextForAssertStmnt(15));
+            until GLEntry.Next() = 0;
     end;
 
     [ConfirmHandler]

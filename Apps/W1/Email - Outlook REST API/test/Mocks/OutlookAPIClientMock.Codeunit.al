@@ -3,41 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-#if not CLEAN24
-#pragma warning disable AL0432
-codeunit 139754 "Outlook API Client Mock" implements "Email - Outlook API Client", "Email - Outlook API Client v2"
-#pragma warning restore AL0432
-#else
-codeunit 139754 "Outlook API Client Mock" implements "Email - Outlook API Client v2"
-#endif
+codeunit 139754 "Outlook API Client Mock" implements "Email - Outlook API Client v5"
 {
     SingleInstance = true;
-#if not CLEAN24
-    ObsoleteReason = 'Email - OAuth API Client interface is obsolete and being removed.';
-    ObsoleteState = Pending;
-    ObsoleteTag = '24.0';
-#endif
 
     var
         Message: JsonObject;
         EmailAddress: Text[250];
         AccountName: Text[250];
 
-#if not CLEAN24
-    [Obsolete('Replaced by GetAccountInformation with SecretText data type for AccessToken parameter.', '24.0')]
-    internal procedure GetAccountInformation(AccessToken: Text; var Email: Text[250]; var Name: Text[250]): Boolean
-    begin
-        Email := EmailAddress;
-        Name := AccountName;
-        exit(true);
-    end;
-
-    [Obsolete('Replaced by SendEmail with SecretText data type for AccessToken parameter.', '24.0')]
-    internal procedure SendEmail(AccessToken: Text; MessageJson: JsonObject)
-    begin
-        Message := MessageJson;
-    end;
-#endif
 
     internal procedure GetAccountInformation(AccessToken: SecretText; var Email: Text[250]; var Name: Text[250]): Boolean
     begin
@@ -60,5 +34,40 @@ codeunit 139754 "Outlook API Client Mock" implements "Email - Outlook API Client
     begin
         EmailAddress := Email;
         AccountName := Name;
+    end;
+
+    procedure RetrieveEmails(AccessToken: SecretText; OutlookAccount: Record "Email - Outlook Account"; var Filters: Record "Email Retrieval Filters" temporary): JsonArray
+    begin
+        Error('Not implemented in mock');
+    end;
+
+    procedure RetrieveEmail(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text; var Filters: Record "Email Retrieval Filters" temporary): JsonObject
+    begin
+        Error('Not implemented in mock');
+    end;
+
+    procedure CreateDraftReply(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text): Text
+    begin
+        Error('Not implemented in mock');
+    end;
+
+    procedure ReplyEmail(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text; MessageJsonText: Text)
+    begin
+        Error('Not implemented in mock');
+    end;
+
+    procedure MarkEmailAsRead(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text)
+    begin
+        Error('Not implemented in mock');
+    end;
+
+    procedure GetMailboxFolders(AccessToken: SecretText; OutlookAccount: Record "Email - Outlook Account"): JsonArray
+    begin
+        Error('Not implemented in mock');
+    end;
+
+    procedure GetChildMailboxFolders(AccessToken: SecretText; OutlookAccount: Record "Email - Outlook Account"; ParentFolderId: Text): JsonArray
+    begin
+        Error('Not implemented in mock');
     end;
 }

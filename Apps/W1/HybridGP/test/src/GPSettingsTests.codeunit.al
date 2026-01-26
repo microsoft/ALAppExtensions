@@ -40,6 +40,7 @@ codeunit 139681 "GP Settings Tests"
         Assert.AreEqual('', GPCompanyAdditionalSettings."Global Dimension 2", 'Global Dimension 2 - Incorrect value');
         Assert.AreEqual(0, GPCompanyAdditionalSettings."Oldest GL Year To Migrate", 'Migrate  GL Year To Migrate - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Open POs", 'Migrate Open POs - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Kit Items", 'Migrate Kit Items - Incorrect value.');
     end;
 
     [Test]
@@ -60,6 +61,7 @@ codeunit 139681 "GP Settings Tests"
         Assert.AreEqual('Company 2', GPCompanyAdditionalSettings.Name, 'Incorrect company settings found');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Customers", 'Migrate Inactive Customers - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Temporary Vendors", 'Migrate Temporary Vendors - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Checkbooks", 'Migrate Inactive Checkbooks - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Customer Classes", 'Migrate Customer Classes - Incorrect value');
@@ -168,6 +170,7 @@ codeunit 139681 "GP Settings Tests"
         // [THEN] These settings should all be correct
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Payables Module", 'Migrate Payables Module - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Temporary Vendors", 'Migrate Temporary Vendors - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Open POs", 'Migrate Open POs - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
 
@@ -241,6 +244,14 @@ codeunit 139681 "GP Settings Tests"
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Open POs", 'Migrate Open POs - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
+
+        // [WHEN] Open POs is enabled, then the Payables module must be enabled
+        GPCompanyAdditionalSettings.Validate("Migrate Payables Module", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Temporary Vendors", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [THEN] Payables Module should be reactivated
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Payables Module", 'Migrate Payables Module - Incorrect value');
     end;
 
     [Test]
@@ -387,6 +398,7 @@ codeunit 139681 "GP Settings Tests"
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inventory Module", 'Migrate Inventory Module - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Item Classes", 'Migrate Item Classes - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Open POs", 'Migrate Open POs - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Kit Items", 'Migrate Kit Items - Incorrect value');
 
         // [WHEN] Item Classes is enabled, then the Inventory module must be enabled
         GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", false);
@@ -408,7 +420,7 @@ codeunit 139681 "GP Settings Tests"
         Assert.AreEqual(0, GPCompanyAdditionalSettings."Oldest GL Year To Migrate", 'Migrate  GL Year To Migrate - Incorrect value');
 
         // These settings should all be correct
-        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inventory Module", 'Migrate Inventory Module - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inventory Module", 'Migrate Inventory Module - Incorrect value (from enabling Item Classes)');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Item Classes", 'Migrate Item Classes - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Open POs", 'Migrate Open POs - Incorrect value');
 
@@ -437,6 +449,18 @@ codeunit 139681 "GP Settings Tests"
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
         Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Customer Classes", 'Migrate Customer Classes - Incorrect value');
+
+        // [WHEN] Inactive Items is enabled, then the Inventory module must be enabled
+        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", true);
+        GPCompanyAdditionalSettings.Modify();
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inventory Module", 'Migrate Inventory Module - Incorrect value (from enabling Inactive items).');
+
+        // [WHEN] Kit Items is enabled, then the Inventory module must be enabled
+        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Kit Items", true);
+        GPCompanyAdditionalSettings.Modify();
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inventory Module", 'Migrate Inventory Module - Incorrect value (from enabling Kit items).');
     end;
 
     [Test]

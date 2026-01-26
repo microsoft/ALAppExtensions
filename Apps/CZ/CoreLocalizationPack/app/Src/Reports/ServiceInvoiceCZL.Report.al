@@ -5,6 +5,7 @@
 namespace Microsoft.Service.History;
 
 using Microsoft.Bank.BankAccount;
+using Microsoft.CRM.Team;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
@@ -17,15 +18,14 @@ using Microsoft.HumanResources.Employee;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Reminder;
-using Microsoft.Service.Setup;
 using Microsoft.Sales.Setup;
+using Microsoft.Service.Setup;
+using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
-using System.Utilities;
-using Microsoft.CRM.Team;
-using Microsoft.Utilities;
 using System.Text;
+using System.Utilities;
 
 report 31197 "Service Invoice CZL"
 {
@@ -511,7 +511,11 @@ report 31197 "Service Invoice CZL"
 
                 trigger OnPreDataItem()
                 begin
+#if not CLEAN27
                     NoOfLoops := Abs(NoOfCopies) + Customer."Invoice Copies" + 1;
+#else
+                    NoOfLoops := Abs(NoOfCopies) + 1;
+#endif
                     if NoOfLoops <= 0 then
                         NoOfLoops := 1;
 
@@ -545,12 +549,6 @@ report 31197 "Service Invoice CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 Clear(QRPaymentCode);
                 if SalesReceivablesSetup."Print QR Payment CZL" and PaymentMethod."Print QR Payment CZL" then
                     GenerateQRPaymentCode();
@@ -594,11 +592,7 @@ report 31197 "Service Invoice CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
+        ServiceFormatAddress: Codeunit "Service Format Address";
         DocumentLbl: Label 'Invoice';
         OrderNoLbl: Label 'Order No.';
         ExchRateLbl: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate, %2 = LCY Code, %3 = Exchange Rate, %4 = Currency Code';
@@ -694,8 +688,8 @@ report 31197 "Service Invoice CZL"
 
     local procedure FormatAddressFields(ServiceInvoiceHeader: Record "Service Invoice Header")
     begin
-        FormatAddress.ServiceInvBillTo(CustAddr, ServiceInvoiceHeader);
-        FormatAddress.ServiceInvShipTo(ShipToAddr, CustAddr, ServiceInvoiceHeader);
+        ServiceFormatAddress.ServiceInvBillTo(CustAddr, ServiceInvoiceHeader);
+        ServiceFormatAddress.ServiceInvShipTo(ShipToAddr, CustAddr, ServiceInvoiceHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -13,11 +13,9 @@ pageextension 31039 "Purchase Invoice CZZ" extends "Purchase Invoice"
     {
         addlast(factboxes)
         {
-            part("Purch. Adv. Usage FactBox CZZ"; "Purch. Adv. Usage FactBox CZZ")
+            part(AdvanceUsageFactBoxCZZ; "Advance Usage FactBox CZZ")
             {
                 ApplicationArea = Basic, Suite;
-                Provider = PurchLines;
-                SubPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Line No." = field("Line No.");
             }
         }
     }
@@ -68,4 +66,10 @@ pageextension 31039 "Purchase Invoice CZZ" extends "Purchase Invoice"
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        if GuiAllowed() then
+            CurrPage.AdvanceUsageFactBoxCZZ.Page.SetDocument(Rec);
+    end;
 }

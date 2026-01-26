@@ -5,9 +5,9 @@
 
 namespace System.Email;
 
+using System.DataAdministration;
 using System.Security.AccessControl;
 using System.Utilities;
-using System.DataAdministration;
 
 codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 {
@@ -39,11 +39,15 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         ObfuscateLbl: Label '%1*%2@%3', Comment = '%1 = First character of username , %2 = Last character of username, %3 = Host', Locked = true;
         UserHasNoContactEmailErr: Label 'The user specified for SMTP emailing does not have a contact email set. Please update the user''s contact email to use Current User type for SMTP.';
         ServerCannotBeEmptyErr: Label 'Server URL field cannot be empty.';
+        ErrorWithStatusCodeErr: Label '%1%2Status code: %3', Comment = '%1 = error message, %2 = new line, %3 = status code', Locked = true;
         CouldNotRecogniseTheServerErr: Label 'The provided SMTP Server URL %1 is not valid.', Comment = '%1 = server URL';
         NoResponseOnConnectErr: Label 'The SMTP server %1 did not respond to the connection request.', Comment = '%1 = server URL';
         CouldNotConnectErr: Label 'Could not connect to the SMTP server.\\%1', Comment = '%1 = the error message returned by the SMTP server.';
         CouldNotAuthenticateErr: Label 'Could not authenticate on the SMTP server.\\%1', Comment = '%1 = the error message returned by the SMTP server.';
         CouldNotSendErr: Label 'Could not send the email.\\%1', Comment = '%1 = the error message returned by the SMTP server.';
+        UrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2340938', Locked = true;
+        LearnMoreAboutSMTPBasicAuthObsoletionTxt: Label 'Learn more';
+        SMTPBasicOAuthObsoletionNotificationTxt: Label 'Update email accounts to OAuth 2.0 as Exchange SMTP Basic authentication is being deprecated.';
 
     /// <summary>
     /// Gets the registered accounts for the SMTP connector.
@@ -141,7 +145,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
                     SMTPErrorCode,
                     GetLastErrorText(true)), Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-            ThrowSmtpConnectionError(GetLastErrorText());
+            ThrowSmtpConnectionError(GetLastErrorText(), SMTPErrorCode);
         end;
 
         Session.LogMessage('00009UV', StrSubstNo(SmtpConnectedTelemetryMsg,
@@ -151,7 +155,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 
         if SMTPAccount."Authentication Type" <> SMTPAccount."Authentication Type"::Anonymous then begin
             ClearLastError();
-            SMTPAuthentication.SetBasicAuthInfo(Account."User Name", Account.GetPassword(Account."Password Key"));
+            SMTPAuthentication.SetBasicAuthInfo(Account."User Name", Account.GetPassword(Account."Password Key"), AccountId);
             SMTPAuthentication.SetServer(Account.Server);
             Result := SMTPClient.Authenticate(Account."Authentication Type", SMTPAuthentication);
 
@@ -167,7 +171,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
                         SMTPErrorCode,
                         GetLastErrorText(true)), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-                ThrowSmtpAuthenticationError(GetLastErrorText());
+                ThrowSmtpAuthenticationError(GetLastErrorText(), SMTPErrorCode);
             end;
 
             Session.LogMessage('00009XF', StrSubstNo(SmtpAuthenticateTelemetryMsg,
@@ -191,7 +195,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
                     SMTPErrorCode,
                     GetLastErrorText(true)), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
 
-            ThrowSmtpSendError(GetLastErrorText());
+            ThrowSmtpSendError(GetLastErrorText(), SMTPErrorCode);
         end;
 
         Session.LogMessage('00009UX', SmtpSendTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
@@ -299,44 +303,76 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
         SMTPAccountConfig."Secure Connection" := true;
     end;
 
-    local procedure ThrowSmtpConnectionError(ErrorResponse: Text): Text
+    local procedure ThrowSmtpConnectionError(ErrorResponse: Text; ErrorCode: Text): Text
+    var
+        NewLine: Char;
     begin
+        NewLine := 10;
         if ErrorResponse.Contains('The host name cannot be empty') then
-            Error(ServerCannotBeEmptyErr);
+            Error(ErrorWithStatusCodeErr, ServerCannotBeEmptyErr, NewLine, ErrorCode);
 
         if ErrorResponse.Contains('No such host is known') then
-            Error(CouldNotRecogniseTheServerErr, SMTPAccount.Server);
+            Error(ErrorWithStatusCodeErr, StrSubstNo(CouldNotRecogniseTheServerErr, SMTPAccount.Server), NewLine, ErrorCode);
 
         if ErrorResponse.Contains('A connection attempt failed because the connected party did not properly respond after a period of time') then
-            Error(NoResponseOnConnectErr, SMTPAccount.Server);
+            Error(ErrorWithStatusCodeErr, StrSubstNo(NoResponseOnConnectErr, SMTPAccount.Server), NewLine, ErrorCode);
 
-        Error(CouldNotConnectErr, GetErrorContent(ErrorResponse));
+        Error(ErrorWithStatusCodeErr, StrSubstNo(CouldNotConnectErr, GetErrorContent(ErrorResponse)), NewLine, ErrorCode);
     end;
 
-    local procedure ThrowSmtpAuthenticationError(ErrorResponse: Text): Text
+    local procedure ThrowSmtpAuthenticationError(ErrorResponse: Text; ErrorCode: Text): Text
+    var
+        NewLine: Char;
     begin
+        NewLine := 10;
         if ErrorResponse.Contains('535:') then
-            Error(IncorrectAuthenticationDataErr, SMTPAccount."Authentication Type");
+            Error(ErrorWithStatusCodeErr, StrSubstNo(IncorrectAuthenticationDataErr, SMTPAccount."Authentication Type"), NewLine, ErrorCode);
 
-        Error(CouldNotAuthenticateErr, GetErrorContent(ErrorResponse));
+        Error(ErrorWithStatusCodeErr, StrSubstNo(CouldNotAuthenticateErr, GetErrorContent(ErrorResponse)), NewLine, ErrorCode);
     end;
 
-    local procedure ThrowSmtpSendError(ErrorResponse: Text): Text
+    local procedure ThrowSmtpSendError(ErrorResponse: Text; ErrorCode: Text): Text
     var
         FromName, FromAddress : Text;
+        NewLine: Char;
     begin
+        NewLine := 10;
         if ErrorResponse.Contains('No recipients have been specified') then
-            Error(NoRecipientsErr);
+            Error(ErrorWithStatusCodeErr, NoRecipientsErr, NewLine, ErrorCode);
 
         if ErrorResponse.Contains('No sender has been specified') then
-            Error(NoSenderErr);
+            Error(ErrorWithStatusCodeErr, NoSenderErr, NewLine, ErrorCode);
 
         if ErrorResponse.Contains('5.2.252') then begin
             GetFrom(FromName, FromAddress);
-            Error(SendAsDeniedErr, FromAddress, SMTPAccount."User Name")
+            Error(ErrorWithStatusCodeErr, StrSubstNo(SendAsDeniedErr, FromAddress, SMTPAccount."User Name"), NewLine, ErrorCode);
         end;
 
-        Error(CouldNotSendErr, GetErrorContent(ErrorResponse));
+        Error(ErrorWithStatusCodeErr, StrSubstNo(CouldNotSendErr, GetErrorContent(ErrorResponse)), NewLine, ErrorCode);
+    end;
+
+    internal procedure SMTPBasicOAuthIsUsed(): Boolean
+    var
+        SMTPEmailAccount: Record "SMTP Account";
+    begin
+        SMTPEmailAccount.SetRange("Authentication Type", SMTPEmailAccount."Authentication Type"::Basic);
+        SMTPEmailAccount.SetRange(Server, GetO365SmtpServer());
+        exit(not SMTPEmailAccount.IsEmpty());
+    end;
+
+    internal procedure SendSMTPBasicOAuthObsoletionNotification()
+    var
+        Notif: Notification;
+    begin
+        Notif.AddAction(LearnMoreAboutSMTPBasicAuthObsoletionTxt, Codeunit::"SMTP Connector Impl.", 'LearnMoreAboutSMTPBasicAuthObsoletion');
+        Notif.Message(SMTPBasicOAuthObsoletionNotificationTxt);
+        Notif.Scope := NotificationScope::LocalScope;
+        Notif.Send();
+    end;
+
+    internal procedure LearnMoreAboutSMTPBasicAuthObsoletion(Notification: Notification)
+    begin
+        Hyperlink(UrlTxt);
     end;
 
     procedure GetSmtpErrorCodeFromResponse(ErrorResponse: Text): Text
@@ -443,6 +479,17 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
     internal procedure GetO365SmtpServer(): Text
     begin
         exit('smtp.office365.com');
+    end;
+
+    internal procedure CheckIfCustomizedSMTPOAuth(AccoutId: Guid; var SMTPAccounts: Record "SMTP Account"): Boolean
+    var
+        EmptyGuid: Guid;
+    begin
+        SMTPAccounts.SetRange(Id, AccoutId);
+        SMTPAccounts.SetRange("Authentication Type", Enum::"SMTP Authentication Types"::"OAuth 2.0");
+        SMTPAccounts.SetFilter("Client Id Storage Id", '<>%1', EmptyGuid);
+        SMTPAccounts.SetFilter("Client Secret Storage Id", '<>%1', EmptyGuid);
+        exit(SMTPAccounts.FindFirst());
     end;
 
     internal procedure ObsfuscateEmailAddress(Email: Text) ObfuscatedEmail: Text

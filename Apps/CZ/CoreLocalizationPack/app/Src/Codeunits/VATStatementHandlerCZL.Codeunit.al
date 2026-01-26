@@ -15,70 +15,74 @@ codeunit 31140 "VAT Statement Handler CZL"
 
     var
         GlobalGLAccount: Record "G/L Account";
-        VATStatement: Report "VAT Statement";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgt: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
-        SettlementNoFilter: Text[50];
-        StartDate: Date;
-        EndDate: Date;
-        PeriodSelection: Enum "VAT Statement Report Period Selection";
-        CircularRefErr: Label 'Formula cannot be calculated due to circular references.';
-        DivideByZeroErr: Label 'Dividing by zero is not possible.';
-        InvalidValueErr: Label 'You have entered an invalid value or a nonexistent row number.';
+        GlobalVATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL";
+        VATStatementCalculationCZL: Codeunit "VAT Statement Calculation CZL";
+
+    procedure Activate()
+    begin
+        if IsActivated() then
+            exit;
+        ClearAll();
+        BindSubscription(this);
+    end;
+
+    procedure IsActivated() IsActive: Boolean
+    begin
+        OnIsActivated(IsActive);
+    end;
+
+    procedure SetParameters(VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL")
+    begin
+        OnSetParameters(VATStmtCalcParameters);
+    end;
+
+    local procedure ConditionalAdd(Amount: Decimal; AmountToAdd: Decimal; AddCurrAmountToAdd: Decimal; UseAmtsInAddCurr: Boolean): Decimal
+    begin
+        if UseAmtsInAddCurr then
+            exit(Amount + AddCurrAmountToAdd);
+        exit(Amount + AmountToAdd);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnIsActivated(var IsActive: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSetParameters(VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL")
+    begin
+    end;
 
     [EventSubscriber(ObjectType::Report, Report::"VAT Statement", 'OnAfterGetAmtRoundingDirection', '', false, false)]
     local procedure GetRoundingDirectionOnAfterGetAmtRoundingDirection(Direction: Text[1])
     begin
-        Direction := VATStatement.GetAmtRoundingDirectionCZL();
+        Direction := GlobalVATStmtCalcParametersCZL.GetRoundingDirection();
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"VAT Statement", 'OnBeforeCalcLineTotalWithBase', '', false, false)]
+    local procedure CalcOnBeforeCalcLineTotalWithBase(VATStmtLine2: Record "VAT Statement Line"; var TotalAmount: Decimal; var TotalBase: Decimal; var IsHandled: Boolean)
+    begin
+        if (VATStmtLine2.Type <> VATStmtLine2.Type::"VAT Entry Totaling") or (GlobalVATStmtCalcParametersCZL."VAT Report No. Filter" = '') then
+            exit;
+        VATStatementCalculationCZL.CalcVATEntryTotalForVATReport(VATStmtLine2, GlobalVATStmtCalcParametersCZL, TotalAmount, TotalBase);
+        IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"VAT Statement", 'OnCalcLineTotalWithBaseOnCaseElse', '', false, false)]
-    local procedure CalcFormulaOnCalcLineTotalWithBaseOnCaseElse(var VATStmtLine2: Record "VAT Statement Line"; var Amount: Decimal; var TotalAmount: Decimal; PrintInIntegers: Boolean)
+    local procedure CalcFormulaOnCalcLineTotalWithBaseOnCaseElse(var VATStmtLine2: Record "VAT Statement Line"; var Amount: Decimal; var TotalAmount: Decimal; var TotalBase: Decimal; PrintInIntegers: Boolean)
+    var
+        Base: Decimal;
     begin
         if VATStmtLine2.Type <> VATStmtLine2.Type::"Formula CZL" then
             exit;
-        Amount := EvaluateExpression(VATStmtLine2."Row Totaling", VATStmtLine2);
-        if VATStmtLine2."Calculate with" = 1 then
-            Amount := -Amount;
-        if PrintInIntegers and VATStmtLine2.Print then
-            Amount := Round(Amount, 1, VATStatement.GetAmtRoundingDirectionCZL());
+        VATStatementCalculationCZL.CalcFormulaLineTotal(VATStmtLine2, GlobalVATStmtCalcParametersCZL, Amount, Base);
         TotalAmount := TotalAmount + Amount;
+        TotalBase := TotalBase + Base;
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"VAT Statement", 'OnCalcLineTotalOnBeforeCalcTotalAmountAccountTotaling', '', false, false)]
     local procedure CalcLineTotalOnCalcLineTotalOnBeforeCalcTotalAmountAccountTotaling(VATStmtLine: Record "VAT Statement Line"; var Amount: Decimal; UseAmtsInAddCurr: Boolean)
     begin
-#if not CLEAN22
-        if not ReplaceVATDateMgt.IsEnabled() then begin
-            Amount := 0;
-            GlobalGLAccount.CopyFilter("VAT Reporting Date Filter", GlobalGLAccount."Date Filter");
-            GlobalGLAccount.SetRange("VAT Reporting Date Filter");
-            if GlobalGLAccount.FindSet() and (VATStmtLine."Account Totaling" <> '') then
-                repeat
-                    case VATStmtLine."G/L Amount Type CZL" of
-                        VATStmtLine."G/L Amount Type CZL"::"Net Change":
-                            begin
-                                GlobalGLAccount.CalcFields("Net Change (VAT Date) CZL", "Net Change ACY (VAT Date) CZL");
-                                Amount := ConditionalAdd(Amount, GlobalGLAccount."Net Change (VAT Date) CZL", GlobalGLAccount."Net Change ACY (VAT Date) CZL", UseAmtsInAddCurr);
-                            end;
-                        VATStmtLine."G/L Amount Type CZL"::Debit:
-                            begin
-                                GlobalGLAccount.CalcFields("Debit Amount (VAT Date) CZL", "Debit Amt. ACY (VAT Date) CZL");
-                                Amount := ConditionalAdd(Amount, GlobalGLAccount."Debit Amount (VAT Date) CZL", GlobalGLAccount."Debit Amt. ACY (VAT Date) CZL", UseAmtsInAddCurr);
-                            end;
-                        VATStmtLine."G/L Amount Type CZL"::Credit:
-                            begin
-                                GlobalGLAccount.CalcFields("Credit Amount (VAT Date) CZL", "Credit Amt. ACY (VAT Date) CZL");
-                                Amount := ConditionalAdd(Amount, GlobalGLAccount."Credit Amount (VAT Date) CZL", GlobalGLAccount."Credit Amt. ACY (VAT Date) CZL", UseAmtsInAddCurr);
-                            end;
-                    end;
-                until GlobalGLAccount.Next() = 0;
-            exit;
-        end;
-#endif
         if VATStmtLine."G/L Amount Type CZL" = VATStmtLine."G/L Amount Type CZL"::"Net Change" then
             exit;
 
@@ -112,153 +116,23 @@ codeunit 31140 "VAT Statement Handler CZL"
     var
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
     begin
-#if not CLEAN22
-        if not ReplaceVATDateMgt.IsEnabled() then
-            VATEntry.SetRange("VAT Reporting Date");
-#endif
         VATEntry.SetVATStatementLineFiltersCZL(VATStmtLine);
         VATEntry.SetPeriodFilterCZL(
-            PeriodSelection, StartDate, EndDate, VATReportingDateMgt.IsVATDateEnabled());
+            GlobalVATStmtCalcParametersCZL."Period Selection", GlobalVATStmtCalcParametersCZL."Start Date", GlobalVATStmtCalcParametersCZL."End Date", VATReportingDateMgt.IsVATDateEnabled());
         VATEntry.SetClosedFilterCZL(Selection);
-        if SettlementNoFilter <> '' then
-            VATEntry.SetFilter("VAT Settlement No. CZL", SettlementNoFilter);
+        if GlobalVATStmtCalcParametersCZL."VAT Settlement No. Filter" <> '' then
+            VATEntry.SetFilter("VAT Settlement No. CZL", GlobalVATStmtCalcParametersCZL."VAT Settlement No. Filter");
     end;
 
-    local procedure ConditionalAdd(Amount: Decimal; AmountToAdd: Decimal; AddCurrAmountToAdd: Decimal; UseAmtsInAddCurr: Boolean): Decimal
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"VAT Statement Handler CZL", 'OnIsActivated', '', false, false)]
+    local procedure HandleOnIsActivated(var IsActive: Boolean)
     begin
-        if UseAmtsInAddCurr then
-            exit(Amount + AddCurrAmountToAdd);
-        exit(Amount + AmountToAdd);
+        IsActive := true;
     end;
 
-    local procedure EvaluateExpression(Expression: Text; VATStatementLine: Record "VAT Statement Line"): Decimal
-    var
-        CallLevel: Integer;
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"VAT Statement Handler CZL", 'OnSetParameters', '', false, false)]
+    local procedure HandleOnSetParameters(VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL")
     begin
-        CallLevel := 0;
-        exit(EvaluateExpression(Expression, VATStatementLine, CallLevel));
-    end;
-
-    local procedure EvaluateExpression(Expression: Text; VATStatementLine: Record "VAT Statement Line"; CallLevel: Integer): Decimal
-    var
-        Result: Decimal;
-        Parantheses: Integer;
-        Operator: Char;
-        LeftOperand: Text;
-        RightOperand: Text;
-        LeftResult: Decimal;
-        RightResult: Decimal;
-        i: Integer;
-        IsExpression: Boolean;
-        IsFilter: Boolean;
-        Operators: Text[8];
-        OperatorNo: Integer;
-        VATStmtLineID: Integer;
-        LineTotalAmount: Decimal;
-    begin
-        Result := 0;
-
-        CallLevel := CallLevel + 1;
-        if CallLevel > 25 then
-            Error(CircularRefErr);
-
-        Expression := DelChr(Expression, '<>', '');
-        if StrLen(Expression) > 0 then begin
-            Parantheses := 0;
-            IsExpression := false;
-            Operators := '+-*/^';
-            OperatorNo := 1;
-            repeat
-                i := StrLen(Expression);
-                repeat
-                    if Expression[i] = '(' then
-                        Parantheses := Parantheses + 1
-                    else
-                        if Expression[i] = ')' then
-                            Parantheses := Parantheses - 1;
-                    if (Parantheses = 0) and (Expression[i] = Operators[OperatorNo]) then
-                        IsExpression := true
-                    else
-                        i := i - 1;
-                until IsExpression or (i <= 0);
-                if not IsExpression then
-                    OperatorNo := OperatorNo + 1;
-            until (OperatorNo > StrLen(Operators)) or IsExpression;
-            if IsExpression then begin
-                if i > 1 then
-                    LeftOperand := CopyStr(Expression, 1, i - 1)
-                else
-                    LeftOperand := '';
-                if i < StrLen(Expression) then
-                    RightOperand := CopyStr(Expression, i + 1)
-                else
-                    RightOperand := '';
-                Operator := Expression[i];
-                LeftResult :=
-                  EvaluateExpression(LeftOperand, VATStatementLine, CallLevel);
-                RightResult :=
-                  EvaluateExpression(RightOperand, VATStatementLine, CallLevel);
-                case Operator of
-                    '^':
-                        Result := Power(LeftResult, RightResult);
-                    '*':
-                        Result := LeftResult * RightResult;
-                    '/':
-                        if RightResult = 0 then begin
-                            Result := 0;
-                            Error(DivideByZeroErr);
-                        end else
-                            Result := LeftResult / RightResult;
-                    '+':
-                        Result := LeftResult + RightResult;
-                    '-':
-                        Result := LeftResult - RightResult;
-                end;
-            end else
-                if (Expression[1] = '(') and (Expression[StrLen(Expression)] = ')') then
-                    Result :=
-                      EvaluateExpression(
-                        CopyStr(Expression, 2, StrLen(Expression) - 2),
-                        VATStatementLine, CallLevel)
-                else begin
-                    IsFilter :=
-                      (StrPos(Expression, '..') +
-                       StrPos(Expression, '|') +
-                       StrPos(Expression, '<') +
-                       StrPos(Expression, '>') +
-                       StrPos(Expression, '&') +
-                       StrPos(Expression, '=') > 0);
-                    if (StrLen(Expression) > 10) and (not IsFilter) then
-                        Evaluate(Result, Expression)
-                    else begin
-                        VATStatementLine.SetRange("Statement Template Name", VATStatementLine."Statement Template Name");
-                        VATStatementLine.SetRange("Statement Name", VATStatementLine."Statement Name");
-                        VATStatementLine.SetFilter("Row No.", Expression);
-
-                        VATStmtLineID := VATStatementLine."Line No.";
-                        if VATStatementLine.Find('-') then
-                            repeat
-                                if VATStatementLine."Line No." <> VATStmtLineID then begin
-                                    VATStatement.CalcLineTotal(VATStatementLine, LineTotalAmount, 0);
-                                    Result := Result + LineTotalAmount;
-                                end
-                            until VATStatementLine.Next() = 0
-                        else
-                            if IsFilter or (not Evaluate(Result, Expression)) then
-                                Error(InvalidValueErr);
-                    end
-                end;
-        end;
-        CallLevel := CallLevel - 1;
-        exit(Result);
-    end;
-
-    procedure Initialize(var NewVATStatementName: Record "VAT Statement Name"; var NewVATStatementLine: Record "VAT Statement Line"; NewSelection: Enum "VAT Statement Report Selection"; NewPeriodSelection: Enum "VAT Statement Report Period Selection"; NewPrintInIntegers: Boolean; NewUseAmtsInAddCurr: Boolean; NewStartDate: Date; NewEndDate: Date; NewSettlementNoFilter: Text[50]; NewRoundingDirection: Option)
-    begin
-        VATStatement.InitializeRequestCZL(NewVATStatementName, NewVATStatementLine, NewSelection, NewPeriodSelection, NewPrintInIntegers, NewUseAmtsInAddCurr, NewSettlementNoFilter, NewRoundingDirection, false);
-        StartDate := NewStartDate;
-        EndDate := NewEndDate;
-        PeriodSelection := NewPeriodSelection;
-        SettlementNoFilter := NewSettlementNoFilter;
+        GlobalVATStmtCalcParametersCZL := VATStmtCalcParameters;
     end;
 }

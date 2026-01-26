@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSOnSales;
 
-using Microsoft.Sales.Document;
 using Microsoft.Finance.TaxBase;
-using Microsoft.Finance.TCS.TCSBase;
-using Microsoft.Sales.History;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TCS.TCSBase;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
 
 codeunit 18841 "TCS Sales Management"
 {

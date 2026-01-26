@@ -83,6 +83,13 @@ table 31014 "Advance Posting Parameters CZZ"
             DecimalPlaces = 0 : 15;
             MinValue = 0;
         }
+        field(22; "Additional Currency Factor"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 15;
+            MinValue = 0;
+        }
         field(25; "Temporary Entries Only"; Boolean)
         {
             Caption = 'Temporary Entries Only';
@@ -137,6 +144,7 @@ table 31014 "Advance Posting Parameters CZZ"
         "VAT Date" := SalesAdvLetterEntryCZZ."VAT Date";
         "Currency Code" := SalesAdvLetterEntryCZZ."Currency Code";
         "Currency Factor" := SalesAdvLetterEntryCZZ."Currency Factor";
+        "Additional Currency Factor" := SalesAdvLetterEntryCZZ."Additional Currency Factor";
         OnAfterCopyFromSalesAdvLetterEntry(SalesAdvLetterEntryCZZ, Rec);
     end;
 
@@ -152,6 +160,7 @@ table 31014 "Advance Posting Parameters CZZ"
             "Original Document VAT Date" := PurchAdvLetterEntryCZZ."VAT Date";
         "Currency Code" := PurchAdvLetterEntryCZZ."Currency Code";
         "Currency Factor" := PurchAdvLetterEntryCZZ."Currency Factor";
+        "Additional Currency Factor" := PurchAdvLetterEntryCZZ."Additional Currency Factor";
         OnAfterCopyFromPurchAdvLetterEntry(PurchAdvLetterEntryCZZ, Rec);
     end;
 

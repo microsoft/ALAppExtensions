@@ -1,9 +1,11 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
-using System.Threading;
 using System.AI;
 using System.Privacy;
 using System.Security.User;
+using System.Telemetry;
+using System.Threading;
+
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -28,33 +30,38 @@ page 1853 "Sales Forecast Setup Card"
             group(General)
             {
                 Caption = 'General';
-                field(Enabled; Enabled)
+                field(Enabled; Rec.Enabled)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if the forecasting feature is enabled.';
                     trigger OnValidate();
                     var
+                        AuditLog: Codeunit "Audit Log";
                         CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                         UserPermissions: Codeunit "User Permissions";
+                        SalesInvForceastConsentProvidedLbl: Label 'Sales and Inventory Forecast application - consent provided by UserSecurityId %1.', Locked = true;
                     begin
                         if (Rec.Enabled <> xRec.Enabled) and not UserPermissions.IsSuper(UserSecurityId()) then
                             Error(NotAdminErr);
 
                         if not xRec.Enabled and Rec.Enabled then
                             Rec.Enabled := CustomerConsentMgt.ConsentToMicrosoftServiceWithAI();
+
+                        if Rec.Enabled then
+                            AuditLog.LogAuditMessage(StrSubstNo(SalesInvForceastConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                     end;
                 }
-                field("Period Type"; "Period Type")
+                field("Period Type"; Rec."Period Type")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the type of period that you want to see the forecast by.';
                 }
-                field(Horizon; Horizon)
+                field(Horizon; Rec.Horizon)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies how many periods you want the forecast to cover.';
                 }
-                field("Stockout Warning Horizon"; "Stockout Warning Horizon")
+                field("Stockout Warning Horizon"; Rec."Stockout Warning Horizon")
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
@@ -78,33 +85,33 @@ page 1853 "Sales Forecast Setup Card"
                             Rec.SetUserDefinedAPIKey(APIKeyValue);
                     end;
                 }
-                field("Timeout (seconds)"; "Timeout (seconds)")
+                field("Timeout (seconds)"; Rec."Timeout (seconds)")
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
                     ToolTip = 'Specifies the number of seconds to wait before the call to Azure Machine Learning times out.';
                     Visible = false;
                 }
-                field("Variance %"; "Variance %")
+                field("Variance %"; Rec."Variance %")
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
                     ToolTip = 'Specifies the range of deviation, plus or minus, that you''ll accept in the forecast. Lower percentages represent more accurate forecasts, and are typically between 20 and 40. Forecasts outside the range are considered inaccurate, and do not display.';
                 }
-                field("Expiration Period (Days)"; "Expiration Period (Days)")
+                field("Expiration Period (Days)"; Rec."Expiration Period (Days)")
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
                     ToolTip = 'Specifies the number of days until the forecast expires.';
                 }
-                field("Historical Periods"; "Historical Periods")
+                field("Historical Periods"; Rec."Historical Periods")
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
                     ToolTip = 'Specifies the number of historical periods from which to get data for the forecast. The length of the period is specified in the Period Type field.';
                 }
 
-                field("Timeseries Model"; "Timeseries Model")
+                field("Timeseries Model"; Rec."Timeseries Model")
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
@@ -114,7 +121,7 @@ page 1853 "Sales Forecast Setup Card"
             group(Statistics)
             {
                 Caption = 'Statistics';
-                field("Last Run Completed"; "Last Run Completed")
+                field("Last Run Completed"; Rec."Last Run Completed")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the date and time of the last completed forecast update. You cannot change this value.';
@@ -176,22 +183,28 @@ page 1853 "Sales Forecast Setup Card"
                     Message(UpdatingForecastsMsg);
                 end;
             }
+#if not CLEAN26
             action("Open Cortana Intelligence Gallery")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Open Azure AI Gallery';
                 Gesture = None;
                 Image = LinkWeb;
+                ObsoleteReason = 'Webpage does not exist';
+                ObsoleteState = Pending;
+                ObsoleteTag = '26.0';
                 Promoted = true;
                 PromotedOnly = true;
                 PromotedCategory = Process;
                 ToolTip = 'Explore models for Azure Machine Learning, and use Azure Machine Learning Studio to build, test, and deploy the Forecasting Model for Microsoft Dynamics 365.';
+                Visible = false;
 
                 trigger OnAction()
                 begin
                     Hyperlink('https://go.microsoft.com/fwlink/?linkid=828352');
                 end;
             }
+#endif
         }
     }
 

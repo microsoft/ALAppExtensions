@@ -311,15 +311,8 @@ report 31253 "FA Physical Inventory List CZF"
     var
         CompanyOfficialCZL: Record "Company Official CZL";
         FADepreciationBook: Record "FA Depreciation Book";
-        PrintFAValues, PrintZeroBookValue : Boolean;
-        DocumentNo, DeprBookCode : Code[10];
         LineNo: Integer;
         Qty: Decimal;
-        Totals: array[3] of Decimal;
-        GroupBy: Option "None","FA Location Code Only","Responsible Employee Only","FA Location and Responsible","Responsible and Location";
-        Member: array[3] of Text;
-        DocumentDate: Date;
-        NewPagePerGroup: Boolean;
         GroupExpression: Code[30];
         EmptyDeprBookErr: Label 'Depreciation book code must not be empty.';
         TotalTxt: Label 'Totals for';
@@ -327,6 +320,15 @@ report 31253 "FA Physical Inventory List CZF"
         ThreePlaceholdersTok: Label '%1 %2: %3', Locked = true;
         FourPlaceholdersTok: Label '%1: %2, %3: %4', Locked = true;
         FivePlaceholdersTok: Label '%1 %2: %3, %4: %5', Locked = true;
+
+    protected var
+        DocumentNo, DeprBookCode : Code[10];
+        DocumentDate: Date;
+        PrintFAValues, PrintZeroBookValue : Boolean;
+        GroupBy: Option "None","FA Location Code Only","Responsible Employee Only","FA Location and Responsible","Responsible and Location";
+        NewPagePerGroup: Boolean;
+        Member: array[3] of Text;
+        Totals: array[3] of Decimal;
 
     procedure GetGroupHeader(): Text
     begin

@@ -98,6 +98,11 @@ page 5021 "Serv. Decl. Setup Wizard"
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies whether the VAT Registration No. is enabled for the service declaration.';
                     }
+                    field("Enable Serv. Trans. Types"; Rec."Enable Serv. Trans. Types")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies whether the service transaction types are enabled for the service declaration.';
+                    }
                     field("Vend. VAT Reg. No. Type"; Rec."Vend. VAT Reg. No. Type")
                     {
                         ApplicationArea = Basic, Suite;
@@ -145,9 +150,6 @@ page 5021 "Serv. Decl. Setup Wizard"
                         var
                             ServiceTransactionTypesPage: Page "Service Transaction Types";
                         begin
-#if not CLEAN23
-                            ServiceTransactionTypesPage.SetSetupMode();
-#endif
                             ServiceTransactionTypesPage.RunModal();
                             UpdateServTransTypesCount();
                         end;
@@ -322,10 +324,10 @@ page 5021 "Serv. Decl. Setup Wizard"
     var
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-        if (Not Backwards) and Step2Visible and (Rec."Declaration No. Series" = '') then
+        if (not Backwards) and Step2Visible and (Rec."Declaration No. Series" = '') then
             exit(ConfirmManagement.GetResponse(
                 StrSubstNo(FieldValueIsNotSpecifiedQst, Rec.FieldCaption("Declaration No. Series"), Rec.TableCaption()), false));
-        if (Not Backwards) and Step2Visible and (Rec."Data Exch. Def. Code" = '') then
+        if (not Backwards) and Step2Visible and (Rec."Data Exch. Def. Code" = '') then
             exit(ConfirmManagement.GetResponse(
                 StrSubstNo(FieldValueIsNotSpecifiedQst, Rec.FieldCaption("Data Exch. Def. Code"), Rec.TableCaption()), false));
         exit(true);

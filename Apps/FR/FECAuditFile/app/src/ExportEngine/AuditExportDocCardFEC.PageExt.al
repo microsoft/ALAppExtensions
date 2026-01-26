@@ -36,16 +36,6 @@ pageextension 10826 "Audit Export Doc. Card FEC" extends "Audit File Export Doc.
                         Rec.SetTableFilter();
                     end;
                 }
-#if not CLEAN23
-                field(UseTransactionNo; Rec."Use Transaction No.")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies whether the transaction number is used as the progressive number in the audit file. If you select the option, the transaction number is used as the progressive number. If you do not select the option, the general ledger register number is used as the progressive number.';
-                    ObsoleteReason = 'The transaction number will be used as the progressive number by default. This field is no longer needed.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-                }
-#endif
             }
         }
 

@@ -10,6 +10,7 @@ using Microsoft.Bank.Ledger;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.TaxBase;
 
 codeunit 18931 "Gen. Jnl. Post Line Subscriber"
 {
@@ -132,5 +133,21 @@ codeunit 18931 "Gen. Jnl. Post Line Subscriber"
         GenJnlLine."Document No." := PreviousDocumentNo;
         GenJnlLine."Cheque No." := CopyStr(ChequeNo, 1, 10);
         GenJnlLine."Cheque Date" := GenJnlLine."Posting Date";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Library", 'OnGetChequeNoAndDate', '', false, false)]
+    local procedure OnGetChequeNoAndDate(var GenJnlLine: Record "Gen. Journal Line"; var CheckNo: Code[10]; var CheckDate: Date)
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        if not GeneralLedgerSetup.Get() then
+            exit;
+
+        if GeneralLedgerSetup."Activate Cheque No." then
+            if (CheckNo = '') and (CheckDate = 0D) then
+                Error('Bank Reference No. and Bank Reference Date must have value in GST Settlement');
+
+        GenJnlLine."Cheque No." := CheckNo;
+        GenJnlLine."Cheque Date" := CheckDate;
     end;
 }

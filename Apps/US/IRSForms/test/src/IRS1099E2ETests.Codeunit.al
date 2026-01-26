@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -10,6 +10,7 @@ using Microsoft.Purchases.Payables;
 codeunit 148015 "IRS 1099 E2E Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -21,6 +22,8 @@ codeunit 148015 "IRS 1099 E2E Tests"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryERM: Codeunit "Library - ERM";
         Assert: Codeunit Assert;
+        LibraryRandom: Codeunit "Library - Random";
+        LibraryInventory: Codeunit "Library - Inventory";
         IsInitialized: Boolean;
 
     trigger OnRun()
@@ -33,17 +36,13 @@ codeunit 148015 "IRS 1099 E2E Tests"
     procedure MultipleFormsMultipleVendors()
     var
         PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         IRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail";
         IRS1099CreateFormDocsReport: Report "IRS 1099 Create Form Docs";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        PeriodNo: Code[20];
+PeriodNo: Code[20];
         FormNo: array[2] of Code[20];
         FormBoxNo: array[2, 2, 2] of Code[20];
         VendNo: array[2] of Code[20];
@@ -54,10 +53,7 @@ codeunit 148015 "IRS 1099 E2E Tests"
         // [SCENARIO 495389] Stan can report a single form for a single vendor
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         // [GIVEN] Forms MISC and NEC with two boxes each (MISC-01, MISC-02, NEC-01, NEC-02)
         for i := 1 to ArrayLen(FormNo) do
             FormNo[i] := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
@@ -75,11 +71,16 @@ codeunit 148015 "IRS 1099 E2E Tests"
                     // [GIVEN] Purchase invoice is posted for the vendor "Y" and MISC-02
                     // [GIVEN] Purchase invoice is posted for the vendor "Y" and NEC-01
                     // [GIVEN] Purchase invoice is posted for the vendor "Y" and NEC-02
-                    LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, VendNo[i]);
+
+                    LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo[i]);
                     PurchaseHeader.Validate("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(WorkDate()));
                     PurchaseHeader.Validate("IRS 1099 Form No.", FormNo[j]);
                     PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo[i, j, k]);
                     PurchaseHeader.Modify(true);
+                    LibraryPurchase.CreatePurchaseLine(
+                        PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(100));
+                    PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(1, 100, 2));
+                    PurchaseLine.Modify(true);
 
                     LibraryERM.FindVendorLedgerEntry(
                         VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
@@ -117,10 +118,7 @@ codeunit 148015 "IRS 1099 E2E Tests"
                 end;
             end;
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     local procedure Initialize()
     begin

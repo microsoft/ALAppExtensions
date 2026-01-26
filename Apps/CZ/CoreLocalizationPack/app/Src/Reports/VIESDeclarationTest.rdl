@@ -24,7 +24,7 @@
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>11.66235cm</Height>
+                  <Height>12.12096cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1870,7 +1870,151 @@
                                       <TablixCell />
                                       <TablixCell>
                                         <CellContents>
-                                          <Textbox Name="Textbox58">
+                                          <Textbox Name="Textbox43">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Parameters!VIESDeclarationHeader_Additional_Currency_AmountCaption.Value</Value>
+                                                    <Style>
+                                                      <FontSize>7pt</FontSize>
+                                                      <FontWeight>Bold</FontWeight>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox43</rd:DefaultName>
+                                            <Visibility>
+                                              <Hidden>=IIf(Fields!Show_AmtInAddCurrency.Value, false, true)</Hidden>
+                                            </Visibility>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <VerticalAlign>Bottom</VerticalAlign>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>0.075cm</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="VIESDeclarationHeader_Additional_Currency_Amount">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!VIESDeclarationHeader_Additional_Currency_Amount.Value</Value>
+                                                    <Style>
+                                                      <FontSize>7pt</FontSize>
+                                                      <Format>=Fields!VIESDeclarationHeader_Additional_Currency_AmountFormat.Value</Format>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>VIESDeclarationHeader_Additional_Currency_Amount</rd:DefaultName>
+                                            <Visibility>
+                                              <Hidden>=IIf(Fields!Show_AmtInAddCurrency.Value, false, true)</Hidden>
+                                            </Visibility>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <VerticalAlign>Middle</VerticalAlign>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                          <rd:Selected>true</rd:Selected>
+                                        </CellContents>
+                                      </TablixCell>
+                                    </TablixCells>
+                                  </TablixRow>
+                                  <TablixRow>
+                                    <Height>0.42301cm</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox10">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value />
+                                                    <Style>
+                                                      <FontSize>7pt</FontSize>
+                                                      <FontWeight>Bold</FontWeight>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox10</rd:DefaultName>
+                                            <Style>
+                                              <VerticalAlign>Bottom</VerticalAlign>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>0.075cm</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox36">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value />
+                                                    <Style>
+                                                      <FontSize>7pt</FontSize>
+                                                      <FontWeight>Bold</FontWeight>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox36</rd:DefaultName>
+                                            <Style>
+                                              <VerticalAlign>Bottom</VerticalAlign>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>0.075cm</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox59">
                                             <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
@@ -1902,7 +2046,7 @@
                                       </TablixCell>
                                       <TablixCell>
                                         <CellContents>
-                                          <Textbox Name="TextBox1182">
+                                          <Textbox Name="TextBox1183">
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
                                               <Paragraph>
@@ -1991,10 +2135,11 @@
                                   <TablixMember>
                                     <KeepTogether>true</KeepTogether>
                                   </TablixMember>
+                                  <TablixMember />
                                 </TablixMembers>
                               </TablixRowHierarchy>
                               <DataSetName>DataSet_Result</DataSetName>
-                              <Height>6.76816cm</Height>
+                              <Height>7.19117cm</Height>
                               <Width>18cm</Width>
                               <Style />
                             </Tablix>
@@ -2354,7 +2499,7 @@
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>9.63921cm</Top>
+                              <Top>10.02727cm</Top>
                               <Left>0cm</Left>
                               <Height>1.35cm</Height>
                               <Width>10.2cm</Width>
@@ -2703,7 +2848,7 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!VIESDeclarationLine_AmountLCYCaption.Value</Value>
+                                                    <Value>=Fields!VIESDeclarationHeader_LineAmountCaption.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                       <FontWeight>Bold</FontWeight>
@@ -3008,10 +3153,10 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!VIESDeclarationLine_AmountLCY.Value</Value>
+                                                    <Value>=Fields!VIESDeclarationLine_LineAmount.Value</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
-                                                      <Format>=Fields!VIESDeclarationLine_AmountLCYFormat.Value</Format>
+                                                      <Format>=Fields!VIESDeclarationLine_LineAmountFormat.Value</Format>
                                                     </Style>
                                                   </TextRun>
                                                 </TextRuns>
@@ -3139,7 +3284,7 @@
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>3.09535in</Top>
+                              <Top>3.24813in</Top>
                               <Height>1.32301cm</Height>
                               <Width>18cm</Width>
                               <ZIndex>2</ZIndex>
@@ -3211,7 +3356,7 @@
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>7.00925cm</Top>
+                              <Top>7.39731cm</Top>
                               <Left>0cm</Left>
                               <Height>0.42301cm</Height>
                               <Width>18cm</Width>
@@ -3288,7 +3433,7 @@
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>11.23934cm</Top>
+                              <Top>11.6274cm</Top>
                               <Left>0cm</Left>
                               <Height>0.42301cm</Height>
                               <Width>18cm</Width>
@@ -3344,7 +3489,7 @@
             </Filters>
             <Top>0cm</Top>
             <Left>0cm</Left>
-            <Height>11.66235cm</Height>
+            <Height>12.12096cm</Height>
             <Width>18cm</Width>
             <Style>
               <Border>
@@ -3353,7 +3498,7 @@
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>11.66235cm</Height>
+        <Height>12.12096cm</Height>
         <Style />
       </Body>
       <Width>18cm</Width>
@@ -3809,6 +3954,15 @@
       </DefaultValue>
       <Prompt>VIESDeclarationHeader_AmountLCYCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="VIESDeclarationHeader_Additional_Currency_AmountCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>VIESDeclarationHeader_Additional_Currency_AmountCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>VIESDeclarationHeader_Additional_Currency_AmountCaption</Prompt>
+    </ReportParameter>
     <ReportParameter Name="VIESDeclarationHeader_NumberOfSuppliesCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -3917,6 +4071,15 @@
       </DefaultValue>
       <Prompt>VIESDeclarationLine_AmountLCYCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="VIESDeclarationLine_AdditionalCurrencyAmountCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>VIESDeclarationLine_AdditionalCurrencyAmountCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>VIESDeclarationLine_AdditionalCurrencyAmountCaption</Prompt>
+    </ReportParameter>
     <ReportParameter Name="VIESDeclarationLine_CorrectedRegNoCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -3957,7 +4120,7 @@
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>46</NumberOfRows>
+      <NumberOfRows>48</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -4112,81 +4275,91 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>30</RowIndex>
-          <ParameterName>VIESDeclarationHeader_NumberOfSuppliesCaption</ParameterName>
+          <ParameterName>VIESDeclarationHeader_Additional_Currency_AmountCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>31</RowIndex>
-          <ParameterName>VIESDeclarationHeader_EU_Goods_ServicesCaption</ParameterName>
+          <ParameterName>VIESDeclarationHeader_NumberOfSuppliesCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>32</RowIndex>
-          <ParameterName>VIESDeclarationHeader_DeclarationPeriodCaption</ParameterName>
+          <ParameterName>VIESDeclarationHeader_EU_Goods_ServicesCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>33</RowIndex>
-          <ParameterName>VIESDeclarationLine_TradeTypeCaption</ParameterName>
+          <ParameterName>VIESDeclarationHeader_DeclarationPeriodCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>34</RowIndex>
-          <ParameterName>VIESDeclarationLine_LineTypeCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_TradeTypeCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>35</RowIndex>
-          <ParameterName>VIESDeclarationLine_CountryRegionCodeCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_LineTypeCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>36</RowIndex>
-          <ParameterName>VIESDeclarationLine_VATRegistrationNoCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_CountryRegionCodeCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>37</RowIndex>
-          <ParameterName>VIESDeclarationLine_RegistrationNoCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_VATRegistrationNoCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>38</RowIndex>
-          <ParameterName>VIESDeclarationLine_EU3PartyTradeCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_RegistrationNoCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>39</RowIndex>
-          <ParameterName>VIESDeclarationLine_EU3PartyIntermediateRoleCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_EU3PartyTradeCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>40</RowIndex>
-          <ParameterName>VIESDeclarationLine_TradeRoleTypeCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_EU3PartyIntermediateRoleCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>41</RowIndex>
-          <ParameterName>VIESDeclarationLine_AmountLCYCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_TradeRoleTypeCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>42</RowIndex>
-          <ParameterName>VIESDeclarationLine_CorrectedRegNoCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_AmountLCYCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>43</RowIndex>
-          <ParameterName>VIESDeclarationLine_CorectedAmountCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_AdditionalCurrencyAmountCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>44</RowIndex>
-          <ParameterName>VIESDeclarationLine_RecordCodeCaption</ParameterName>
+          <ParameterName>VIESDeclarationLine_CorrectedRegNoCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>45</RowIndex>
+          <ParameterName>VIESDeclarationLine_CorectedAmountCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>46</RowIndex>
+          <ParameterName>VIESDeclarationLine_RecordCodeCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>47</RowIndex>
           <ParameterName>VIESDeclarationLine_VATRegNoOfOriginalCustCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>
@@ -4324,6 +4497,12 @@ End Function
         <Field Name="VIESDeclarationHeader_AmountLCYFormat">
           <DataField>VIESDeclarationHeader_AmountLCYFormat</DataField>
         </Field>
+        <Field Name="VIESDeclarationHeader_Additional_Currency_Amount">
+          <DataField>VIESDeclarationHeader_Additional_Currency_Amount</DataField>
+        </Field>
+        <Field Name="VIESDeclarationHeader_Additional_Currency_AmountFormat">
+          <DataField>VIESDeclarationHeader_Additional_Currency_AmountFormat</DataField>
+        </Field>
         <Field Name="VIESDeclarationHeader_NumberOfSupplies">
           <DataField>VIESDeclarationHeader_NumberOfSupplies</DataField>
         </Field>
@@ -4335,6 +4514,12 @@ End Function
         </Field>
         <Field Name="VIESDeclarationHeader_DeclarationPeriod">
           <DataField>VIESDeclarationHeader_DeclarationPeriod</DataField>
+        </Field>
+        <Field Name="VIESDeclarationHeader_LineAmountCaption">
+          <DataField>VIESDeclarationHeader_LineAmountCaption</DataField>
+        </Field>
+        <Field Name="Show_AmtInAddCurrency">
+          <DataField>Show_AmtInAddCurrency</DataField>
         </Field>
         <Field Name="HeaderError">
           <DataField>HeaderError</DataField>
@@ -4369,6 +4554,12 @@ End Function
         <Field Name="VIESDeclarationLine_AmountLCYFormat">
           <DataField>VIESDeclarationLine_AmountLCYFormat</DataField>
         </Field>
+        <Field Name="VIESDeclarationLine_AdditionalCurrencyAmount">
+          <DataField>VIESDeclarationLine_AdditionalCurrencyAmount</DataField>
+        </Field>
+        <Field Name="VIESDeclarationLine_AdditionalCurrencyAmountFormat">
+          <DataField>VIESDeclarationLine_AdditionalCurrencyAmountFormat</DataField>
+        </Field>
         <Field Name="VIESDeclarationLine_CorrectedRegNo">
           <DataField>VIESDeclarationLine_CorrectedRegNo</DataField>
         </Field>
@@ -4380,6 +4571,12 @@ End Function
         </Field>
         <Field Name="VIESDeclarationLine_VATRegNoOfOriginalCust">
           <DataField>VIESDeclarationLine_VATRegNoOfOriginalCust</DataField>
+        </Field>
+        <Field Name="VIESDeclarationLine_LineAmount">
+          <DataField>VIESDeclarationLine_LineAmount</DataField>
+        </Field>
+        <Field Name="VIESDeclarationLine_LineAmountFormat">
+          <DataField>VIESDeclarationLine_LineAmountFormat</DataField>
         </Field>
         <Field Name="LineError">
           <DataField>LineError</DataField>

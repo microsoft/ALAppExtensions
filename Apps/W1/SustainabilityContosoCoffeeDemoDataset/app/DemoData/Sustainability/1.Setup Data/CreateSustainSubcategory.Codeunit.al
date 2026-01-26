@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5214 "Create Sustain. Subcategory"
 {
     InherentEntitlements = X;
@@ -67,6 +68,23 @@ codeunit 5214 "Create Sustain. Subcategory"
         ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Waste(), WasteLandFillOrganic(), WasteLandfillOrganicLbl, 0.47681, 0.05002, 0, false);
         ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Waste(), WasteLandFillPlastic(), WasteLandfillPlasticLbl, 1.80842, 0.07126, 0, false);
         ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Waste(), WasteRecycled(), WasteRecycledLbl, 0.28906, 0.02209, 0, false);
+
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Credit1(), Credit(), CreditLbl, 0, 0, 0, true);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Credit2(), Credit(), CreditLbl, 0, 0, 0, true);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Credit3(), Credit(), CreditLbl, 0, 0, 0, true);
+
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.WasteM(), WasteCompostableTok, WasteCompostableLbl, 0, 0, 0, 0, 0.12, 0, false);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.WasteM(), WasteFoodTok, WasteFoodLbl, 0, 0, 0, 0, 0.14, 0, false);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.WasteM(), WastePlasticTok, WastePlasticLbl, 0, 0, 0, 0, 0.99, 0, false);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.WasteM(), WasteRecyclableTok, WasteRecyclableLbl, 0, 0, 0, 0, 0.18, 0, false);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.WasteM(), WasteSteelTok, WasteSteelLbl, 0, 0, 0, 0, 0.34, 0, false);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.WasteM(), WasteWoodTok, WasteWoodLbl, 0, 0, 0, 0, 0.48, 0, false);
+
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Water(), WaterBlueTok, WaterBlueLbl, 0, 0, 0, 0.35, 0, 0, false);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Water(), WaterGreenTok, WaterGreenLbl, 0, 0, 0, 0.8, 0, 0, false);
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.Water(), WaterGreyTok, WaterGreyLbl, 0, 0, 0, 0.92, 0, 0, false);
+
+        ContosoSustainability.InsertAccountSubcategory(SustainabilityCategory.DischargedWater(), DischargedWaterTok, DischargedWaterLbl, 0, 0, 0, 0, 0, 0.63, false);
     end;
 
     procedure CompanyCarMedium(): Code[20]
@@ -295,6 +313,61 @@ codeunit 5214 "Create Sustain. Subcategory"
         exit(WasteRecycledTok);
     end;
 
+    procedure Credit(): Code[20]
+    begin
+        exit(CreditTok);
+    end;
+
+    procedure WasteCompostable(): Code[20]
+    begin
+        exit(WasteCompostableTok);
+    end;
+
+    procedure WasteFood(): Code[20]
+    begin
+        exit(WasteFoodTok);
+    end;
+
+    procedure WastePlastic(): Code[20]
+    begin
+        exit(WastePlasticTok);
+    end;
+
+    procedure WasteRecyclable(): Code[20]
+    begin
+        exit(WasteRecyclableTok);
+    end;
+
+    procedure WasteSteel(): Code[20]
+    begin
+        exit(WasteSteelTok);
+    end;
+
+    procedure WasteWood(): Code[20]
+    begin
+        exit(WasteWoodTok);
+    end;
+
+    procedure WaterBlue(): Code[20]
+    begin
+        exit(WaterBlueTok);
+    end;
+
+    procedure WaterGreen(): Code[20]
+    begin
+        exit(WaterGreenTok);
+    end;
+
+    procedure WaterGrey(): Code[20]
+    begin
+        exit(WaterGreyTok);
+    end;
+
+    procedure DischargedWater(): Code[20]
+    begin
+        exit(DischargedWaterTok);
+    end;
+
     var
         CompanyCarMediumTok: Label 'COMPCAR-M', MaxLength = 20;
         CompanyCarMediumLbl: Label 'Company Car - Medium', MaxLength = 100;
@@ -386,4 +459,26 @@ codeunit 5214 "Create Sustain. Subcategory"
         WasteLandfillPlasticLbl: Label 'Landfill Plastic Waste', MaxLength = 100;
         WasteRecycledTok: Label 'WASTE-RC', MaxLength = 20;
         WasteRecycledLbl: Label 'Recycled Waste', MaxLength = 100;
+        CreditTok: Label 'CREDIT', MaxLength = 20;
+        CreditLbl: Label 'Carbon Credit', MaxLength = 100;
+        WasteCompostableTok: Label 'WASTE COMP', MaxLength = 20;
+        WasteCompostableLbl: Label 'Waste Compostable', MaxLength = 100;
+        WasteFoodTok: Label 'WASTE FOOD', MaxLength = 20;
+        WasteFoodLbl: Label 'Waste Food', MaxLength = 100;
+        WastePlasticTok: Label 'WASTE PLAST', MaxLength = 20;
+        WastePlasticLbl: Label 'Waste Plastic', MaxLength = 100;
+        WasteRecyclableTok: Label 'WASTE RECYC', MaxLength = 20;
+        WasteRecyclableLbl: Label 'Waste Recyclable', MaxLength = 100;
+        WasteSteelTok: Label 'WASTE STEEL', MaxLength = 20;
+        WasteSteelLbl: Label 'Waste Steel', MaxLength = 100;
+        WasteWoodTok: Label 'WASTE WOOD', MaxLength = 20;
+        WasteWoodLbl: Label 'Waste Wood', MaxLength = 100;
+        WaterBlueTok: Label 'WATER BLUE', MaxLength = 20;
+        WaterBlueLbl: Label 'Water Blue', MaxLength = 100;
+        WaterGreenTok: Label 'WATER GREEN', MaxLength = 20;
+        WaterGreenLbl: Label 'Water Green', MaxLength = 100;
+        WaterGreyTok: Label 'WATER GREY', MaxLength = 20;
+        WaterGreyLbl: Label 'Water Grey', MaxLength = 100;
+        DischargedWaterTok: Label 'WAT-DISCH', MaxLength = 20;
+        DischargedWaterLbl: Label 'Discharged Water', MaxLength = 100;
 }

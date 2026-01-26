@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Warehousing;
+
+using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Setup;
+
 codeunit 5148 "Create Whse Inventory Setup"
 {
     InherentEntitlements = X;
@@ -42,7 +53,7 @@ codeunit 5148 "Create Whse Inventory Setup"
         InventorySetup.Modify(true);
     end;
 
-    local procedure CreateInventoryPostingSetup()
+    internal procedure CreateInventoryPostingSetup()
     var
         WhseDemoDataSetup: Record "Warehouse Module Setup";
         ContosoPostingSetup: Codeunit "Contoso Posting Setup";

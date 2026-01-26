@@ -3,6 +3,7 @@ codeunit 139865 "APIV2 - Purch. Cr. Memos E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -141,6 +142,45 @@ codeunit 139865 "APIV2 - Purch. Cr. Memos E2E"
         // [THEN] the credit memo should exist in the tables
         GetPurchaseCreditMemoHeaderByVendorAndNumber(VendorNo, CreditMemoNumber, PurchaseHeader, 'The unposted credit memo should exist');
         Assert.AreEqual(CurrencyCode, PurchaseHeader."Currency Code", 'The credit memo should have the correct currency code');
+    end;
+
+    [Test]
+    procedure TestPostCreditMemoWithVendorCreditMemoNo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        Vendor: Record Vendor;
+        VendorNo: Text;
+        ResponseText: Text;
+        CreditMemoNumber: Text;
+        TargetURL: Text;
+        CreditMemoJSON: Text;
+        VendorCreditMemoNumber: Text;
+    begin
+        // [SCENARIO] Create posted and unposted with specific vendor credit memo number set and use HTTP POST to create them
+
+        // [GIVEN] A credit memo with vendor credit memo number set
+        LibraryPurchase.CreateVendor(Vendor);
+        VendorNo := Vendor."No.";
+        VendorCreditMemoNumber := LibraryRandom.RandText(15).ToUpper();
+
+        CreditMemoJSON := LibraryGraphMgt.AddPropertytoJSON('', 'vendorNumber', VendorNo);
+        CreditMemoJSON := LibraryGraphMgt.AddPropertytoJSON(CreditMemoJSON, 'vendorCreditMemoNumber', VendorCreditMemoNumber);
+        Commit();
+
+        // [WHEN] we POST the JSON to the web service
+        TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"APIV2 - Purchase Credit Memos", CreditMemoServiceNameTxt);
+        LibraryGraphMgt.PostToWebService(TargetURL, CreditMemoJSON, ResponseText);
+
+        // [THEN] the response text should contain the credit memo ID
+        Assert.AreNotEqual('', ResponseText, 'response JSON should not be blank');
+        Assert.IsTrue(
+          LibraryGraphMgt.GetObjectIDFromJSON(ResponseText, 'number', CreditMemoNumber),
+          'Could not find purchase credit memo number');
+        LibraryGraphMgt.VerifyIDInJson(ResponseText);
+
+        // [THEN] the credit memo should exist in the tables
+        GetPurchaseCreditMemoHeaderByVendorAndNumber(VendorNo, CreditMemoNumber, PurchaseHeader, 'The unposted credit memo should exist');
+        Assert.AreEqual(VendorCreditMemoNumber, PurchaseHeader."Vendor Cr. Memo No.", 'The credit memo should have the correct vendor credit memo number');
     end;
 
     [Test]

@@ -46,12 +46,12 @@ pageextension 1959 "LP Activities" extends "O365 Activities"
     procedure SetSalesInvoicePredictedToBeLateFilters(var CustLedgerEntry: Record "Cust. Ledger Entry")
     begin
         CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Invoice);
-        CustLedgerEntry.SetRange(Open, TRUE);
+        CustLedgerEntry.SetRange(Open, true);
         CustLedgerEntry.SetFilter("Due Date", '>%1', WORKDATE());
         CustLedgerEntry.SetFilter("Remaining Amt. (LCY)", '<>0');
         CustLedgerEntry.SetCurrentKey("Remaining Amt. (LCY)");
         CustLedgerEntry.SetRange("Payment Prediction", CustLedgerEntry."Payment Prediction"::Late);
-        CustLedgerEntry.Ascending := FALSE;
+        CustLedgerEntry.Ascending := false;
     end;
 
 }

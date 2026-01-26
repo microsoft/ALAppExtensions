@@ -1,7 +1,7 @@
 {
-    "projectName": "1st Party Apps Tests (W1)",
-    "testFolders":  [
-        "..\\..\\..\\Apps\\W1\\*\\test",
-        "..\\..\\..\\Apps\\W1\\*\\test library"
-    ]
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/32e66d69cfd2c1e3eca39e416e27c6aa58de6df3/Actions/.Modules/settings.schema.json",
+  "projectName": "1st Party Apps Tests (W1)",
+  "testFolders": [
+  ],
+  "doNotRunTests": false
 }

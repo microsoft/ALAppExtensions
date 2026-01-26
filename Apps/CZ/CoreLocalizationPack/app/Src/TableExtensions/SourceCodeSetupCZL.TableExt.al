@@ -54,6 +54,12 @@ tableextension 11752 "Source Code Setup CZL" extends "Source Code Setup"
                 ThrowErrorIfUsedCZL(FieldNo("Open Balance Sheet CZL"), FieldNo("Close Balance Sheet CZL"));
             end;
         }
+        field(11776; "VAT Coeff. Correction CZL"; Code[10])
+        {
+            Caption = 'VAT Coeff. Correction';
+            DataClassification = CustomerContent;
+            TableRelation = "Source Code";
+        }
     }
 
     procedure ThrowErrorIfUsedCZL(CurrentFieldNo: Integer; ComparedFieldNo: Integer)

@@ -11,25 +11,18 @@ using System.Utilities;
 
 report 11756 "VAT Documents List CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/VATDocumentsList.rdl';
     ApplicationArea = Basic, Suite;
     Caption = 'VAT Documents';
     UsageCategory = ReportsAndAnalysis;
     PreviewMode = PrintLayout;
+    DefaultRenderingLayout = "VATDocumentsList.rdl";
 
     dataset
     {
         dataitem(Request; "VAT Entry")
         {
             DataItemTableView = sorting(Type, Closed, "VAT Bus. Posting Group", "VAT Prod. Posting Group", "Posting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-            RequestFilterFields = "VAT Date CZL", "VAT Bus. Posting Group", "VAT Prod. Posting Group", "VAT Settlement No. CZL", "Source Code";
-#pragma warning restore AL0432
-#else
             RequestFilterFields = "VAT Reporting Date", "VAT Bus. Posting Group", "VAT Prod. Posting Group", "VAT Settlement No. CZL", "Source Code";
-#endif
 
             trigger OnPreDataItem()
             var
@@ -41,13 +34,6 @@ report 11756 "VAT Documents List CZL"
                 if VATEntry.FindSet() then
                     repeat
                         TempVATEntry.SetRange("Document No.", VATEntry."Document No.");
-#if not CLEAN22
-#pragma warning disable AL0432
-                        if not TempVATEntry.IsReplaceVATDateEnabled() then
-                            TempVATEntry.SetRange("VAT Date CZL", VATEntry."VAT Date CZL")
-                        else
-#pragma warning restore AL0432
-#endif
                         TempVATEntry.SetRange("VAT Reporting Date", VATEntry."VAT Reporting Date");
                         if not TempVATEntry.FindFirst() then begin
                             TempVATEntry := VATEntry;
@@ -93,6 +79,14 @@ report 11756 "VAT Documents List CZL"
                     IncludeCaption = true;
                 }
                 column(VATEntry_Base; Base)
+                {
+                    IncludeCaption = true;
+                }
+                column(VATEntry_OriginalVATAmount; "Original VAT Amount CZL")
+                {
+                    IncludeCaption = true;
+                }
+                column(VATEntry_OriginalVATBase; "Original VAT Base CZL")
                 {
                     IncludeCaption = true;
                 }
@@ -156,6 +150,8 @@ report 11756 "VAT Documents List CZL"
                     TempDocVATAmountLine."VAT %" := VATPostingSetup."VAT %";
                     TempDocVATAmountLine."VAT Base" := Base;
                     TempDocVATAmountLine."Amount Including VAT" := Amount + Base;
+                    TempDocVATAmountLine."Non-Deductible VAT Base" := "Original VAT Base CZL";
+                    TempDocVATAmountLine."Non-Deductible VAT Amount" := "Original VAT Amount CZL";
                     TempDocVATAmountLine.InsertLine();
 
                     TempTotVATAmountLine.Init();
@@ -165,6 +161,8 @@ report 11756 "VAT Documents List CZL"
                     TempTotVATAmountLine."VAT %" := VATPostingSetup."VAT %";
                     TempTotVATAmountLine."VAT Base" := Base;
                     TempTotVATAmountLine."Amount Including VAT" := Amount + Base;
+                    TempTotVATAmountLine."Non-Deductible VAT Base" := "Original VAT Base CZL";
+                    TempTotVATAmountLine."Non-Deductible VAT Amount" := "Original VAT Amount CZL";
                     TempTotVATAmountLine.InsertLine();
 
                     Advance := IsAdvanceEntryCZL();
@@ -175,12 +173,6 @@ report 11756 "VAT Documents List CZL"
                     HiddenTotalForReverseChargeVAT :=
                       ("VAT Calculation Type" <> "VAT Calculation Type"::"Reverse Charge VAT") or
                       (Type <> Type::Purchase);
-#if not CLEAN22
-#pragma warning disable AL0432
-                    if not IsReplaceVATDateEnabled() then
-                        "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 end;
 
                 trigger OnPreDataItem()
@@ -191,13 +183,6 @@ report 11756 "VAT Documents List CZL"
 
                     CopyFilters(FilterVATEntry);
                     SetRange("Document No.", TempVATEntry."Document No.");
-#if not CLEAN22
-#pragma warning disable AL0432
-                    if not IsReplaceVATDateEnabled() then
-                        SetRange("VAT Date CZL", TempVATEntry."VAT Date CZL")
-                    else
-#pragma warning restore AL0432
-#endif
                     SetRange("VAT Reporting Date", TempVATEntry."VAT Reporting Date");
                 end;
             }
@@ -208,6 +193,12 @@ report 11756 "VAT Documents List CZL"
                 {
                 }
                 column(DocSummary_VAT_Amount; TempDocVATAmountLine."VAT Amount")
+                {
+                }
+                column(DocSummary_OriginalVATBase; TempDocVATAmountLine."Non-Deductible VAT Base")
+                {
+                }
+                column(DocSummary_OriginalVATAmount; TempDocVATAmountLine."Non-Deductible VAT Amount")
                 {
                 }
                 column(DocSummary_TaxRate; StrSubstNo(TaxRateTxt, Format(TempDocVATAmountLine."VAT Identifier")))
@@ -241,6 +232,8 @@ report 11756 "VAT Documents List CZL"
                             if TempVATAmountLine1.FindFirst() then begin
                                 TempVATAmountLine1."VAT Base" += TempDocVATAmountLine."VAT Base";
                                 TempVATAmountLine1."VAT Amount" += TempDocVATAmountLine."VAT Amount";
+                                TempVATAmountLine1."Non-Deductible VAT Base" += TempDocVATAmountLine."Non-Deductible VAT Base";
+                                TempVATAmountLine1."Non-Deductible VAT Amount" += TempDocVATAmountLine."Non-Deductible VAT Amount";
                                 TempVATAmountLine1.Modify();
                             end;
                             TempVATAmountLine1 := TempDocVATAmountLine;
@@ -295,6 +288,12 @@ report 11756 "VAT Documents List CZL"
             column(Total_VAT_Amount; TempTotVATAmountLine."VAT Amount")
             {
             }
+            column(Total_OriginalVATBase; TempTotVATAmountLine."Non-Deductible VAT Base")
+            {
+            }
+            column(Total_OriginalVATAmount; TempTotVATAmountLine."Non-Deductible VAT Amount")
+            {
+            }
             column(Total_Number; Number)
             {
             }
@@ -324,6 +323,8 @@ report 11756 "VAT Documents List CZL"
                         if TempVATAmountLine1.FindSet() then begin
                             TempVATAmountLine1."VAT Base" += TempTotVATAmountLine."VAT Base";
                             TempVATAmountLine1."VAT Amount" += TempTotVATAmountLine."VAT Amount";
+                            TempVATAmountLine1."Non-Deductible VAT Base" += TempTotVATAmountLine."Non-Deductible VAT Base";
+                            TempVATAmountLine1."Non-Deductible VAT Amount" += TempTotVATAmountLine."Non-Deductible VAT Amount";
                             TempVATAmountLine1.Modify();
                         end;
                         TempVATAmountLine1 := TempTotVATAmountLine;
@@ -389,6 +390,25 @@ report 11756 "VAT Documents List CZL"
             }
         }
     }
+
+    rendering
+    {
+        layout("VATDocumentsList.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/VATDocumentsList.rdl';
+            Caption = 'VAT Documents (RDL)';
+            Summary = 'The VAT Documents (RDL) provides a detailed layout.';
+        }
+        layout("VATDocumentsListWithNonDeductVAT.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/VATDocumentsListWithNonDeductVAT.rdl';
+            Caption = 'VAT Documents with Non-Deductible VAT (RDL)';
+            Summary = 'The VAT Documents with Non-Deductible VAT (RDL) provides a detailed layout.';
+        }
+    }
+
     labels
     {
         ReportCaptionLbl = 'VAT Document List';
@@ -424,14 +444,6 @@ report 11756 "VAT Documents List CZL"
         end;
         if Request.GetFilters() <> '' then
             VATEntryFilters += '; ' + Request.TableCaption() + ': ' + Request.GetFilters();
-#if not CLEAN22
-#pragma warning disable AL0432
-        if Request.IsReplaceVATDateEnabled() then begin
-            Request.CopyFilter("VAT Date CZL", Request."VAT Reporting Date");
-            Request.SetRange("VAT Date CZL");
-        end;
-#pragma warning restore AL0432
-#endif
         FilterVATEntry.Copy(Request);
     end;
 

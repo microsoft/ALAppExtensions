@@ -6,6 +6,7 @@
 codeunit 148023 "Bank Statement Import Sunshine"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

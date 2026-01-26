@@ -130,34 +130,7 @@ codeunit 13625 "OIOUBL-Document Encode"
             ERROR(NonDanishCustomerErr);
     end;
 
-    [Obsolete('Kept for testing and potentially dealing with dependency issues', '16.0')]
-    procedure GetCompanyVATRegNoOld(VATRegNo: Text[20]): Text[20];
-    begin
-        ReadCompanyInfo();
-        if COPYSTR(VATRegNo, 1, 2) <> CompanyInfo."Country/Region Code" then
-            exit(Format(CompanyInfo."Country/Region Code" + VATRegNo));
-        exit(VATRegNo);
-    end;
-
-    [Obsolete('Kept for testing and potentially dealing with dependency issues', '16.0')]
-    procedure GetCustomerVATRegNoOld(VATRegNo: Text[20]): Text[20];
-    begin
-        ReadCompanyInfo();
-        if COPYSTR(VATRegNo, 1, 2) <> CompanyInfo."Country/Region Code" then
-            exit(Format(CompanyInfo."Country/Region Code" + VATRegNo));
-        exit(VATRegNo);
-    end;
-
     procedure GetCompanyVATRegNo(VATRegNo: Text[20]): Text[30];
-    begin
-        ReadCompanyInfo();
-        if COPYSTR(VATRegNo, 1, 2) <> CompanyInfo."Country/Region Code" then
-            exit(CompanyInfo."Country/Region Code" + VATRegNo);
-        exit(VATRegNo);
-    end;
-
-    [Obsolete('GetCustomerVATRegNoIncCustomerCountryCode is the new correct version of the function', '16.0')]
-    procedure GetCustomerVATRegNo(VATRegNo: Text[20]): Text[30];
     begin
         ReadCompanyInfo();
         if COPYSTR(VATRegNo, 1, 2) <> CompanyInfo."Country/Region Code" then

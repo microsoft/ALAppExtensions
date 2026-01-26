@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -161,11 +161,11 @@ page 31254 "Bank Statement CZB"
         }
         area(FactBoxes)
         {
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(31252), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Bank Statement Header CZB"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -184,6 +184,7 @@ page 31254 "Bank Statement CZB"
     {
         area(Navigation)
         {
+#if not CLEAN27
             action(Statistics)
             {
                 ApplicationArea = Basic, Suite;
@@ -191,11 +192,31 @@ page 31254 "Bank Statement CZB"
                 Image = Statistics;
                 ShortCutKey = 'F7';
                 ToolTip = 'View the statistics on the selected bank statement.';
+                ObsoleteReason = 'The statistics action will be replaced with the BankStatementStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
 
                 trigger OnAction()
                 begin
                     Rec.ShowStatistics();
                 end;
+            }
+#endif
+            action(BankStatementStatistics)
+            {
+                ApplicationArea = VAT;
+                Caption = 'Statistics';
+                Image = Statistics;
+                ShortcutKey = 'F7';
+                Enabled = Rec."No." <> '';
+                ToolTip = 'View statistical information for the record.';
+#if CLEAN27
+                Visible = true;
+#else
+                Visible = false;
+#endif
+                RunObject = Page "Bank Statement Statistics CZB";
+                RunPageOnRec = true;
             }
             action(DocAttach)
             {
@@ -361,9 +382,18 @@ page 31254 "Bank Statement CZB"
             {
                 Caption = 'Bank Statement';
 
+#if not CLEAN27
                 actionref(Statistics_Promoted; Statistics)
                 {
+                    ObsoleteReason = 'The statistics action will be replaced with the BankStatementStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
                 }
+#else
+                actionref(BankStatementStatistics_Promoted; BankStatementStatistics)
+                {
+                }
+#endif
             }
         }
     }

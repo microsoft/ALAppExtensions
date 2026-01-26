@@ -1,10 +1,16 @@
-﻿permissionset 11742 "CZ Advance Pack - Objects CZA"
+#pragma warning disable AA0247
+permissionset 11742 "CZ Advance Pack - Objects CZA"
 {
     Access = Public;
     Assignable = false;
     Caption = 'CZ Advance Pack - Objects';
 
-    Permissions = codeunit "Assembly Handler CZA" = X,
+    Permissions =
+#if not CLEAN26
+#pragma warning disable AL0432
+    codeunit "Assembly Handler CZA" = X,
+#pragma warning restore AL0432
+#endif
                   codeunit "Calculate Invent. Handler CZA" = X,
                   codeunit "Cancel FA Ldg.Ent. Handler CZA" = X,
                   codeunit "Data Class. Eval. Handler CZA" = X,
@@ -15,7 +21,12 @@
                   codeunit "Gen. Jnl.-Apply Handler CZA" = X,
                   codeunit "Gen. Jnl.Post Line Handler CZA" = X,
                   codeunit "Gen. Journal Line Handler CZA" = X,
+#if not CLEAN26
+#pragma warning disable AL0432
                   codeunit "G/L Entry - Edit CZA" = X,
+#pragma warning restore AL0432
+#endif
+                  codeunit "G/L Entry Edit Handler CZA" = X,
                   codeunit "G/L Entry Post Application CZA" = X,
                   codeunit "Install Application CZA" = X,
                   codeunit "ItemJnl-Check Line Handler CZA" = X,
@@ -23,13 +34,12 @@
                   codeunit "Item Journal Line Handler CZA" = X,
                   codeunit "Item Tracking Line Handler CZA" = X,
                   codeunit "Job Journal Line Handler CZA" = X,
-#if not CLEAN22
+                  codeunit "Process Data Exch. Handler CZA" = X,
+#if not CLEAN26
 #pragma warning disable AL0432
-                  codeunit "Nonstock Item Handler CZA" = X,
+                  codeunit "Production Order Handler CZA" = X,
 #pragma warning restore AL0432
 #endif
-                  codeunit "Process Data Exch. Handler CZA" = X,
-                  codeunit "Production Order Handler CZA" = X,
                   codeunit "Purchase Line Handler CZA" = X,
                   codeunit "Reversal Entry Handler CZA" = X,
                   codeunit "Req.Wksh.Make Ord. Handler CZA" = X,
@@ -41,15 +51,15 @@
                   codeunit "Transfer Line Handler CZA" = X,
                   codeunit "TransferOrder-Post Handler CZA" = X,
                   codeunit "Undo Shipment Line Handler CZA" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  codeunit "Undo Transfer Ship. Line CZA" = X,
-#pragma warning restore AL0432
-#endif
                   codeunit "Upgrade Application CZA" = X,
                   codeunit "Upgrade Tag Definitions CZA" = X,
                   page "Applied G/L Entries CZA" = X,
+#if not CLEAN26
+#pragma warning disable AL0432
                   page "Apply G/L Entries CZA" = X,
+#pragma warning restore AL0432
+#endif
+                  page "Apply Gen. Ledger Entries CZA" = X,
                   page "Detailed G/L Entries CZA" = X,
                   page "Unapply G/L Entries CZA" = X,
                   report "G/L Entry Applying CZA" = X,

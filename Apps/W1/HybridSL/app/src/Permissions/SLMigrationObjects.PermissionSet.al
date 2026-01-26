@@ -1,0 +1,155 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration.SL;
+
+permissionset 47005 "SL Migration-Objects"
+{
+    Assignable = false;
+    Access = Public;
+    Caption = 'SL Migration - Objects';
+
+    Permissions = table "SL Account" = X,
+                  table "SL Account Staging" = X,
+                  table "SL Account Staging Setup" = X,
+                  table "SL AccountTransactions" = X,
+                  table "SL AcctHist" = X,
+                  table "SL APAdjust" = X,
+                  table "SL APDoc Buffer" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  table "SL APDoc" = X,
+                  table "SL APTran" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL APTran Buffer" = X,
+                  table "SL APSetup" = X,
+                  table "SL AP_Balances" = X,
+                  table "SL ARAdjust" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  table "SL ARDoc" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL ARDoc Buffer" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  table "SL ARTran" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL ARTran Buffer" = X,
+                  table "SL ARSetup" = X,
+                  table "SL AR_Balances" = X,
+                  table "SL Batch" = X,
+                  table "SL Codes" = X,
+                  table "SL Company Additional Settings" = X,
+                  table "SL Company Migration Settings" = X,
+                  table "SL CustClass" = X,
+                  table "SL Customer" = X,
+                  table "SL Fiscal Periods" = X,
+                  table "SL FlexDef" = X,
+                  table "SL GLSetup" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  table "SL GLTran" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL GLTran Buffer" = X,
+                  table "SL Hist. Source Error" = X,
+                  table "SL Hist. Source Progress" = X,
+                  table "SL INSetup" = X,
+                  table "SL ItemCost Buffer" = X,
+                  table "SL INTran Buffer" = X,
+                  table "SL Inventory Buffer" = X,
+                  table "SL InventoryADG" = X,
+                  table "SL ItemSite Buffer" = X,
+                  table "SL LotSerMst Buffer" = X,
+                  table "SL LotSerT Buffer" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  table "SL INTran" = X,
+                  table "SL Inventory" = X,
+                  table "SL ItemCost" = X,
+                  table "SL ItemSite" = X,
+                  table "SL LotSerMst" = X,
+                  table "SL LotSerT" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL Migration Config" = X,
+                  table "SL Migration Error Overview" = X,
+                  table "SL Migration Errors" = X,
+                  table "SL Migration Warnings" = X,
+                  table "SL Payment Terms" = X,
+                  table "SL Period List Work Table" = X,
+                  table "SL PJAddr" = X,
+                  table "SL PJCode" = X,
+                  table "SL PJEmploy Buffer" = X,
+                  table "SL PJEmpPjt Buffer" = X,
+                  table "SL PJEQRate Buffer" = X,
+                  table "SL PJEquip Buffer" = X,
+                  table "SL PJPent Buffer" = X,
+                  table "SL PJProj Buffer" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  table "SL PJEmploy" = X,
+                  table "SL PJEmpPjt" = X,
+                  table "SL PJEQRate" = X,
+                  table "SL PJEquip" = X,
+                  table "SL PJPent" = X,
+                  table "SL PJProj" = X,
+#pragma warning restore AL0432
+#endif                  
+                  table "SL POAddress" = X,
+                  table "SL POReceipt" = X,
+                  table "SL POSetup" = X,
+                  table "SL POTran" = X,
+                  table "SL ProductClass" = X,
+                  table "SL PurchOrd" = X,
+                  table "SL PurOrdDet" = X,
+                  table "SL SalesTax" = X,
+                  table "SL SegDef" = X,
+                  table "SL Segment Name" = X,
+                  table "SL Segments" = X,
+                  table "SL Site" = X,
+                  table "SL SOAddress" = X,
+                  table "SL SOHeader" = X,
+                  table "SL SOLine" = X,
+                  table "SL SOSetup" = X,
+                  table "SL SOShipHeader" = X,
+                  table "SL SOShipLine" = X,
+                  table "SL SOShipLot" = X,
+                  table "SL SOType" = X,
+                  table "SL Terms" = X,
+                  table "SL Upgrade Settings" = X,
+                  table "SL VendClass" = X,
+                  table "SL Vendor" = X,
+                  table SLGLAcctBalByPeriod = X,
+                  codeunit "SL Account Migrator" = X,
+                  codeunit "SL Cloud Migration" = X,
+                  codeunit "SL Customer Migrator" = X,
+                  codeunit "SL Dimensions" = X,
+                  codeunit "SL Helper Functions" = X,
+                  codeunit "SL Hybrid Handle Upgrade Error" = X,
+                  codeunit "SL Hybrid Management" = X,
+                  codeunit "SL Hybrid Wizard" = X,
+                  codeunit "SL Item Migrator" = X,
+                  codeunit "SL Migration Error Handler" = X,
+                  codeunit "SL Populate Account History" = X,
+                  codeunit "SL Populate Accounts" = X,
+                  codeunit "SL Populate Fiscal Periods" = X,
+                  codeunit "SL Populate Hist. Tables" = X,
+                  codeunit "SL Project Migrator" = X,
+                  codeunit "SL Wizard Integration" = X,
+                  codeunit "SL Vendor Migrator" = X,
+                  page "SL Company Add. Settings List" = X,
+                  page "SL Company Migration Settings" = X,
+                  page "SL Hybrid Failed Companies" = X,
+                  page "SL Migration Configuration" = X,
+                  page "SL Migration Error Overview" = X,
+                  page "SL Migration Warnings" = X,
+                  page "SL Set All Dimensions Dialog" = X,
+                  query "SL AcctHist Active Accounts" = X,
+                  query "SL Inventory QtyOnHand All" = X;
+}

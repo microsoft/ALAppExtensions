@@ -196,6 +196,8 @@ codeunit 18001 "GST Base Validation"
             SignFactor := Getsign(DocTypeEnum, TransTypeEnum);
         end;
 
+        OnAfterUpdateGSTLedgerEntrySignFactor(Rec, SignFactor, DocTypeEnum, TransTypeEnum);
+
         if Rec."Transaction Type" = Rec."Transaction Type"::Sales then begin
             Rec."GST Base Amount" := (Rec."GST Base Amount") * SignFactor;
             Rec."GST Amount" := (Rec."GST Amount") * SignFactor;
@@ -294,13 +296,27 @@ codeunit 18001 "GST Base Validation"
             SignFactor := Getsign(DocTypeEnum, TransTypeEnum);
         end;
 
+        OnAfterUpdateDetailedGSTLedgerEntrySignFactor(Rec, SignFactor, DocTypeEnum, TransTypeEnum);
+
         if Rec."Transaction Type" = Rec."Transaction Type"::Sales then begin
             Rec."GST Base Amount" := (Rec."GST Base Amount") * SignFactor;
             Rec."GST Amount" := (Rec."GST Amount") * SignFactor;
-        end else begin
-            Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
-            Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
-        end;
+        end else
+            if (Rec."GST Base Amount" > 0) or (Rec."Journal Entry") then begin
+                Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
+                Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
+            end
+            else
+                case Rec."Document Type" of
+                    Rec."Document Type"::"Credit Memo":
+                        begin
+                            Rec."GST Base Amount" := Abs(Rec."GST Base Amount");
+                            Rec."GST Amount" := Abs(Rec."GST Amount");
+                        end
+                    else
+                        Rec."GST Base Amount" := Rec."GST Base Amount";
+                        Rec."GST Amount" := Rec."GST Amount";
+                end;
 
         if Rec."Document Type" = Rec."Document Type"::"Credit Memo" then
             Rec.Quantity := Abs(Rec.Quantity)
@@ -308,7 +324,10 @@ codeunit 18001 "GST Base Validation"
             if ((Rec."Transaction Type" = Rec."Transaction Type"::Sales) and (Rec."Document Type" = Rec."Document Type"::Refund)) then
                 Rec.Quantity := Abs(Rec.Quantity) * (-1)
             else
-                Rec.Quantity := Abs(Rec.Quantity) * SignFactor;
+                if Rec.Quantity > 0 then
+                    Rec.Quantity := Abs(Rec.Quantity) * SignFactor
+                else
+                    Rec.Quantity := Abs(Rec.Quantity);
 
         Rec."Remaining Base Amount" := Rec."GST Base Amount";
         Rec."Remaining GST Amount" := Rec."GST Amount";
@@ -321,6 +340,8 @@ codeunit 18001 "GST Base Validation"
         if (Rec."Amount Loaded on Item" <> Rec."GST Amount") and (Rec."Amount Loaded on Item" <> 0) and (Rec."GST Credit" = Rec."GST Credit"::"Non-Availment") then
             Rec."Amount Loaded on Item" := Rec."GST Amount";
 
+        OnAfterUpdateDetailedGstLedgerEntryAmountsField(Rec, SignFactor);
+
         if (Rec."Transaction Type" = Rec."Transaction Type"::Sales) and (Rec."GST Place of Supply" = Rec."GST Place of Supply"::" ") then
             Rec."GST Place of Supply" := SalesReceivablesSetup."GST Dependency Type";
 
@@ -332,8 +353,9 @@ codeunit 18001 "GST Base Validation"
 
         Rec."Executed Use Case ID" := GSTPostingManagement.GetUseCaseID();
         if Rec."Source Type" = Rec."Source Type"::Vendor then
-            if GSTPostingManagement.GetPaytoVendorNo() <> '' then
-                Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
+            if Rec."Source No." = '' then
+                if GSTPostingManagement.GetPaytoVendorNo() <> '' then
+                    Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
 
         if GSTPostingManagement.GetBuyerSellerRegNo() <> '' then
             Rec."Buyer/Seller Reg. No." := GSTPostingManagement.GetBuyerSellerRegNo();
@@ -659,8 +681,13 @@ codeunit 18001 "GST Base Validation"
     var
         TaxTransactionValue: Record "Tax Transaction Value";
     begin
+        if (GenJnlLine."TDS Section Code" = '') or (not GenJnlLine."Provisional Entry") then
+            exit;
+
+        TaxTransactionValue.SetLoadFields("Tax Record ID", "Tax Type");
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", GenJnlLine.RecordId);
-        if (GenJnlLine."TDS Section Code" = '') or (not GenJnlLine."Provisional Entry") or (TaxTransactionValue.IsEmpty) then
+        if TaxTransactionValue.IsEmpty then
             exit;
 
         GenJnlLine.TestField("GST Group Code", '');
@@ -1227,7 +1254,12 @@ codeunit 18001 "GST Base Validation"
     var
         PurchaseLine: Record "Purchase Line";
         CalculateTax: Codeunit "Calculate Tax";
+        IsHandled: Boolean;
     begin
+        OnBeforeCallTaxEngineOnPurchHeader(PurchaseHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
         if PurchaseLine.FindSet() then
@@ -1419,6 +1451,26 @@ codeunit 18001 "GST Base Validation"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateDetailedGstLedgerEntryOnafterInsertEventOnBeforeModify(var DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; GSTRegistrationNos: Record "GST Registration Nos."; var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateDetailedGstLedgerEntryAmountsField(var DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; SignFactor: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateDetailedGSTLedgerEntrySignFactor(var DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; var SignFactor: Integer; DocTypeEnum: Enum Microsoft.Finance.GST.Base."Document Type Enum"; TransTypeEnum: Enum Microsoft.Finance.GST.Base."Transaction Type Enum")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateGSTLedgerEntrySignFactor(var GSTLedgerEntry: Record "GST Ledger Entry"; var SignFactor: Integer; DocTypeEnum: Enum Microsoft.Finance.GST.Base."Document Type Enum"; TransTypeEnum: Enum Microsoft.Finance.GST.Base."Transaction Type Enum")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCallTaxEngineOnPurchHeader(PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
     begin
     end;
 }

@@ -70,15 +70,21 @@ page 31144 "EET Cash Registers CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'EET Entries';
                     Image = LedgerEntries;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     RunObject = page "EET Entries CZL";
                     RunPageLink = "Business Premises Code" = field("Business Premises Code"),
                                   "Cash Register Code" = field(Code);
                     RunPageView = sorting("Business Premises Code", "Cash Register Code");
                     ShortcutKey = 'Ctrl+F7';
                     ToolTip = 'Displays a list of EET entries for the selected cash register.';
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref("EET Entries_Promoted"; "EET Entries")
+                {
                 }
             }
         }

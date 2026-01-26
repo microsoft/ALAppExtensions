@@ -1,0 +1,22 @@
+[
+    {
+        "codeunitId": 139778,
+        "CodeunitName": "Bank Rec. With AI Prompt Tests",
+        "Method": "TestPromptInjectionLedgerEntryMatching"
+    },
+    {
+        "codeunitId": 139778,
+        "CodeunitName": "Bank Rec. With AI Prompt Tests",
+        "Method": "TestPromptInjectionPostToGLAccount"
+    },
+    {
+        "codeunitId": 139778,
+        "CodeunitName": "Bank Rec. With AI Prompt Tests",
+        "Method": "TestAccuracyPostToGLAccount"
+    },
+    {
+        "codeunitId": 139778,
+        "CodeunitName": "Bank Rec. With AI Prompt Tests",
+        "Method": "TestAccuracyMatchLedgerEntries"
+    }
+]

@@ -1,12 +1,12 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.Currency;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
 using System.Reflection;
 
@@ -23,6 +23,7 @@ page 30042 "APIV2 - Purchase Invoices"
     PageType = API;
     SourceTable = "Purch. Inv. Entity Aggregate";
     Extensible = false;
+    AboutText = 'Manages purchase invoice documents including vendor details, invoice amounts, due dates, payment terms, addresses, and status. Supports full CRUD operations for automating accounts payable, integrating procurement workflows, and enabling financial reporting between Business Central and external systems. Ideal for synchronizing invoice lifecycle data with ERP, procurement, and financial platforms.';
 
     layout
     {
@@ -715,6 +716,7 @@ page 30042 "APIV2 - Purchase Invoices"
     end;
 
     [ServiceEnabled]
+    [Caption('Posts the draft purchase invoice to create a finalized posted invoice')]
     [Scope('Cloud')]
     procedure Post(var ActionContext: WebServiceActionContext)
     var

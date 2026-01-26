@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
 
-using Microsoft.Finance.TCS.TCSBase;
-using System.Utilities;
-using Microsoft.Finance.GeneralLedger.Reversal;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Reversal;
+using Microsoft.Finance.TCS.TCSBase;
+using System.Utilities;
 
 codeunit 18869 "TCS Validation and Settlement"
 {
@@ -129,6 +129,9 @@ codeunit 18869 "TCS Validation and Settlement"
                 TCSEntry."Reversed by Entry No." := NewTCSEntry."Entry No.";
                 TCSEntry.Reversed := true;
                 TCSEntry.Modify();
+
+                if TCSEntry.Reversed then
+                    NewTCSEntry."Payment Amount" := -TCSEntry."Payment Amount";
 
                 NewTCSEntry.Insert();
             until TCSEntry.Next() = 0;

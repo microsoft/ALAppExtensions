@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -80,11 +80,11 @@ page 31167 "Posted Cash Document List CZP"
         }
         area(FactBoxes)
         {
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(11737), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Posted Cash Document Hdr. CZP"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -191,7 +191,7 @@ page 31167 "Posted Cash Document List CZP"
                 {
                 }
             }
-#if not CLEANT22
+#if not CLEAN26
             group(Category_Report)
             {
                 Caption = 'Report';
@@ -202,9 +202,15 @@ page 31167 "Posted Cash Document List CZP"
 
                 actionref(PrinttoAttachmentPromoted; PrintToAttachment)
                 {
+                    ObsoleteTag = '26.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This action has been removed.';
                 }
                 actionref(PrintPromoted; "&Print")
                 {
+                    ObsoleteTag = '26.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This action has been removed.';
                 }
             }
 #endif
@@ -234,16 +240,9 @@ page 31167 "Posted Cash Document List CZP"
     }
 
     trigger OnOpenPage()
-    var
-        CashDeskFilter: Text;
     begin
         CashDeskManagementCZP.CheckCashDesks();
-        CashDeskFilter := CashDeskManagementCZP.GetCashDesksFilter();
-
-        Rec.FilterGroup(2);
-        if CashDeskFilter <> '' then
-            Rec.SetFilter("Cash Desk No.", CashDeskFilter);
-        Rec.FilterGroup(0);
+        CashDeskManagementCZP.SetCashDeskFilter(Rec);
     end;
 
     var

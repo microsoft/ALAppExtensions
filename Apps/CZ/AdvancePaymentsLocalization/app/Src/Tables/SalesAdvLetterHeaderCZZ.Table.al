@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -20,10 +20,12 @@ using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.BatchProcessing;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Inventory.Location;
+using Microsoft.Projects.Project.Job;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Setup;
@@ -33,7 +35,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Security.User;
 using System.Utilities;
-using Microsoft.Foundation.Company;
 
 table 31004 "Sales Adv. Letter Header CZZ"
 {
@@ -88,9 +89,10 @@ table 31004 "Sales Adv. Letter Header CZZ"
                             Confirmed := true
                         else
                             Confirmed := Confirm(ConfirmChangeQst, false, FieldCaption("Bill-to Customer No."));
-                        if Confirmed then
-                            OnValidateBillToCustomerNoOnAfterConfirmed(Rec)
-                        else
+                        if Confirmed then begin
+                            OnValidateBillToCustomerNoOnAfterConfirmed(Rec);
+                            AltCustVATRegFacadeCZZ.Init(Rec, xRec);
+                        end else
                             "Bill-to Customer No." := xRec."Bill-to Customer No.";
                     end;
 
@@ -103,6 +105,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
                 Validate("Payment Terms Code");
                 Validate("Payment Method Code");
+                Validate("VAT Bus. Posting Group");
                 Validate("Currency Code");
 
                 if not SkipBillToContact then
@@ -315,6 +318,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 UpdateBillToCust("Bill-to Contact No.");
             end;
         }
+        field(22; "Your Reference"; Text[35])
+        {
+            Caption = 'Your Reference';
+            ToolTip = 'Specifies the customer''s reference. The contents will be printed on the Sales Advance Invoice report.';
+        }
         field(23; "Salesperson Code"; Code[20])
         {
             Caption = 'Salesperson Code';
@@ -379,19 +387,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
                     ValidateDocumentDateWithPostingDate();
 
                 GetSetup();
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
-                    if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date" then
-                        Validate("VAT Date", "Posting Date");
-                end else begin
-#pragma warning restore AL0432
-#endif
-                    GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
-                    Validate("VAT Date");
-#if not CLEAN22
-                end;
-#endif
+                GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
+                Validate("VAT Date");
 
                 if "Currency Code" <> '' then begin
                     UpdateCurrencyFactor();
@@ -415,16 +412,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 Validate("Payment Terms Code");
 
                 GetSetup();
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
-                    if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Document Date" then
-                        Validate("VAT Date", "Document Date");
-                end else
-#pragma warning restore AL0432
-#endif
-                    if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
-                        Validate("VAT Date", "Document Date");
+                if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
+                    Validate("VAT Date", "Document Date");
             end;
         }
         field(36; "VAT Date"; Date)
@@ -501,8 +490,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 ResultRecRef: RecordRef;
                 ApplicableCountryCode: Code[10];
                 IsHandled: Boolean;
-                ValidVATNoMsg: Label 'The VAT registration number is valid.';
-                InvalidVatRegNoMsg: Label 'The VAT registration number is not valid. Try entering the number again.';
+                ValidVATRegNoMsg: Label 'The VAT registration number is valid.';
+                InvalidVATRegNoMsg: Label 'The VAT registration number is not valid. Try entering the number again.';
             begin
                 IsHandled := false;
                 OnBeforeValidateVATRegistrationNo(Rec, IsHandled);
@@ -519,27 +508,35 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 if "VAT Registration No." = Customer."VAT Registration No." then
                     exit;
 
-                if not VATRegistrationNoFormat.Test("VAT Registration No.", Customer."Country/Region Code", Customer."No.", Database::Customer) then
+                ApplicableCountryCode := Rec."VAT Country/Region Code";
+                if ApplicableCountryCode = '' then
+                    ApplicableCountryCode := Customer."Country/Region Code";
+                if not VATRegistrationNoFormat.Test("VAT Registration No.", ApplicableCountryCode, Customer."No.", Database::Customer) then
                     exit;
 
-                Customer."VAT Registration No." := "VAT Registration No.";
                 ApplicableCountryCode := Customer."Country/Region Code";
                 if ApplicableCountryCode = '' then
                     ApplicableCountryCode := VATRegistrationNoFormat."Country/Region Code";
 
                 if not VATRegNoSrvConfig.VATRegNoSrvIsEnabled() then begin
-                    Customer.Modify(true);
+                    if UpdateVATRegNoInCust(Customer) then begin
+                        Customer."VAT Registration No." := "VAT Registration No.";
+                        Customer.Modify(true);
+                    end;
                     exit;
                 end;
 
-                VATRegistrationLogMgt.CheckVIESForVATNo(ResultRecRef, VATRegistrationLog, Customer, Customer."No.",
+                VATRegistrationLogMgt.CheckVIESForVATNo(ResultRecRef, VATRegistrationLog, Rec, Customer."No.",
                   ApplicableCountryCode, VATRegistrationLog."Account Type"::Customer.AsInteger());
 
                 if VATRegistrationLog.Status = VATRegistrationLog.Status::Valid then begin
-                    Message(ValidVATNoMsg);
-                    Customer.Modify(true);
+                    Message(ValidVATRegNoMsg);
+                    if UpdateVATRegNoInCust(Customer) then begin
+                        Customer."VAT Registration No." := "VAT Registration No.";
+                        Customer.Modify(true);
+                    end;
                 end else
-                    Message(InvalidVatRegNoMsg);
+                    Message(InvalidVATRegNoMsg);
             end;
         }
         field(48; "No. Printed"; Integer)
@@ -553,6 +550,32 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Caption = 'Order No.';
             DataClassification = CustomerContent;
             TableRelation = "Sales Header"."No." where("Document Type" = const(Order));
+        }
+        field(51; "Job No."; Code[20])
+        {
+            Caption = 'Project No.';
+            DataClassification = CustomerContent;
+            TableRelation = Job."No.";
+            ToolTip = 'Specifies the project number for the sales advance document.';
+            Editable = false;
+
+            trigger OnValidate()
+            begin
+                CreateDimFromDefaultDim(Rec.FieldNo("Job No."));
+            end;
+        }
+        field(52; "Job Task No."; Code[20])
+        {
+            Caption = 'Project Task No.';
+            DataClassification = CustomerContent;
+            TableRelation = "Job Task"."Job Task No." where("Job No." = field("Job No."));
+            ToolTip = 'Specifies the project task number of the sales advance document.';
+            Editable = false;
+
+            trigger OnValidate()
+            begin
+                UpdateDimensionsFromJobTask();
+            end;
         }
         field(53; "No. Series"; Code[20])
         {
@@ -707,6 +730,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Caption = 'VAT Country/Region Code';
             DataClassification = CustomerContent;
             TableRelation = "Country/Region";
+
+            trigger OnValidate()
+            begin
+                AltCustVATRegFacadeCZZ.UpdateSetupOnVATCountryChangeInSalesAdvLetterHeader(Rec, xRec);
+            end;
         }
         field(80; Status; Enum "Advance Letter Doc. Status CZZ")
         {
@@ -724,6 +752,16 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Caption = 'Format Region';
             TableRelation = "Language Selection"."Language Tag";
             DataClassification = CustomerContent;
+        }
+        field(100; "Alt. VAT Registration No."; Boolean)
+        {
+            Caption = 'Alternative VAT Registration No.';
+            Editable = false;
+        }
+        field(101; "Alt. VAT Bus Posting Group"; Boolean)
+        {
+            Caption = 'Alternative VAT Bus. Posting Group';
+            Editable = false;
         }
 #pragma warning disable AA0232
         field(200; "Amount Including VAT"; Decimal)
@@ -818,6 +856,9 @@ table 31004 "Sales Adv. Letter Header CZZ"
         key(SK2; "Order No.")
         {
         }
+        key(SK3; "Job No.")
+        {
+        }
     }
 
     trigger OnInsert()
@@ -840,10 +881,16 @@ table 31004 "Sales Adv. Letter Header CZZ"
               DocumentDeleteErr,
               ResponsibilityCenter.TableCaption(), UserSetupManagement.GetSalesFilter());
 
+        SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", "No.");
+        SalesAdvLetterEntryCZZ.SetFilter("Entry Type", '<>%1', SalesAdvLetterEntryCZZ."Entry Type"::"Initial Entry");
+        if not SalesAdvLetterEntryCZZ.IsEmpty() then
+            Error(PostedEntriesExistErr);
+
         SalesAdvLetterLineCZZ.SetRange("Document No.", "No.");
         if not SalesAdvLetterLineCZZ.IsEmpty() then
             SalesAdvLetterLineCZZ.DeleteAll(true);
 
+        SalesAdvLetterEntryCZZ.Reset();
         SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", "No.");
         if not SalesAdvLetterEntryCZZ.IsEmpty() then
             SalesAdvLetterEntryCZZ.DeleteAll();
@@ -870,16 +917,9 @@ table 31004 "Sales Adv. Letter Header CZZ"
         Customer: Record Customer;
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         ResponsibilityCenter: Record "Responsibility Center";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
+        AltCustVATRegFacadeCZZ: Codeunit "Alt. Cust. VAT Reg. Facade CZZ";
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         HideValidationDialog: Boolean;
         SkipBillToContact: Boolean;
@@ -887,6 +927,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         ConfirmChangeQst: Label 'Do you want to change %1?', Comment = '%1 = a Field Caption like Currency Code';
         DocumentResetErr: Label 'You cannot reset %1 because the document still has one or more lines.', Comment = '%1 = a Field Caption like Bill-to Contact No.';
         DocumentDeleteErr: Label 'You cannot delete this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = table caption of responsibility center, %2 = code of responsibility center';
+        PostedEntriesExistErr: Label 'You cannot delete this document because there are posted entries.';
 
     procedure AssistEdit(): Boolean
     var
@@ -911,19 +952,10 @@ table 31004 "Sales Adv. Letter Header CZZ"
             if "No." = '' then begin
                 GetSetup();
                 AdvanceLetterTemplateCZZ.TestField("Advance Letter Document Nos.");
-#if not CLEAN24
-                IsHandled := false;
-                NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "Posting Date", "No.", "No. Series", IsHandled);
-                if not IsHandled then begin
-#endif
-                    "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
-                    if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                        "No. Series" := xRec."No. Series";
-                    "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
-#if not CLEAN24
-                    NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", "Posting Date", "No.");
-                end;
-#endif
+                "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
             end;
 
         OnInitInsertOnBeforeInitRecord(Rec, xRec);
@@ -945,24 +977,12 @@ table 31004 "Sales Adv. Letter Header CZZ"
             "Posting Date" := 0D;
 
         "Document Date" := WorkDate();
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            case SalesReceivablesSetup."Default VAT Date CZL" of
-                SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
-                    "VAT Date" := "Posting Date";
-                SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
-                    "VAT Date" := "Document Date";
-                SalesReceivablesSetup."Default VAT Date CZL"::Blank:
-                    "VAT Date" := 0D;
-            end
-        else
-#pragma warning restore AL0432
-#endif
         "VAT Date" := GeneralLedgerSetup.GetVATDate("Posting Date", "Document Date");
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";
         "Responsibility Center" := UserSetupManagement.GetRespCenter(0, "Responsibility Center");
+
+        AltCustVATRegFacadeCZZ.Init(Rec, xRec);
 
         OnAfterInitRecord(Rec);
     end;
@@ -1094,6 +1114,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
     procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
     begin
         HideValidationDialog := NewHideValidationDialog;
+    end;
+
+    procedure GetHideValidationDialog(): Boolean
+    begin
+        exit(HideValidationDialog);
     end;
 
     local procedure UpdateBankInfo(BankAccountCode: Code[20]; BankAccountNo: Text[30]; BankBranchNo: Text[20]; BankName: Text[100]; TransitNo: Text[20]; IBANCode: Code[50]; SWIFTCode: Code[20])
@@ -1333,7 +1358,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Modify();
 
         if OldDimSetID <> "Dimension Set ID" then
-            Modify();
+            if not IsNullGuid(Rec.SystemId) then
+                Modify();
 
         OnAfterValidateShortcutDimCode(Rec, xRec, FieldNumber, ShortcutDimCode);
     end;
@@ -1417,6 +1443,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 SalesAdvLetterLineCZZ.Init();
                 SalesAdvLetterLineCZZ."Document No." := "No.";
                 SalesAdvLetterLineCZZ."Line No." += 10000;
+                SalesAdvLetterLineCZZ."VAT Bus. Posting Group" := "VAT Bus. Posting Group";
                 SalesAdvLetterLineCZZ.Validate("VAT Prod. Posting Group", TempSalesAdvLetterLineCZZ."VAT Prod. Posting Group");
                 SalesAdvLetterLineCZZ.Description := TempSalesAdvLetterLineCZZ.Description;
                 SalesAdvLetterLineCZZ.Validate("Amount Including VAT", TempSalesAdvLetterLineCZZ."Amount Including VAT");
@@ -1488,6 +1515,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         DimensionManagement.AddDimSource(DefaultDimSource, Database::Customer, Rec."Bill-to Customer No.", FieldNo = Rec.FieldNo("Bill-to Customer No."));
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Salesperson Code", FieldNo = Rec.FieldNo("Salesperson Code"));
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
+        DimensionManagement.AddDimSource(DefaultDimSource, Database::Job, Rec."Job No.", FieldNo = Rec.FieldNo("Job No."));
 
         OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
     end;
@@ -1512,6 +1540,26 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
         if (OldDimSetID <> "Dimension Set ID") and LinesExist() then
             Modify();
+    end;
+
+    local procedure UpdateDimensionsFromJobTask()
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        DimSetArrID: array[10] of Integer;
+        DimValue1: Code[20];
+        DimValue2: Code[20];
+    begin
+        SourceCodeSetup.Get();
+        DimSetArrID[1] := "Dimension Set ID";
+        DimSetArrID[2] :=
+            DimensionManagement.CreateDimSetFromJobTaskDim("Job No.", "Job Task No.", DimValue1, DimValue2);
+
+        "Dimension Set ID" :=
+            DimensionManagement.GetCombinedDimensionSetID(
+            DimSetArrID, DimValue1, DimValue2);
+
+        "Shortcut Dimension 1 Code" := DimValue1;
+        "Shortcut Dimension 2 Code" := DimValue2;
     end;
 
     procedure SetSecurityFilterOnRespCenter()
@@ -1545,6 +1593,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
     begin
         SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", "No.");
         SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
+        SalesAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         SalesAdvLetterEntryCZZ.SetFilter("Entry Type", '<>%1', SalesAdvLetterEntryCZZ."Entry Type"::"Initial Entry");
         SalesAdvLetterEntryCZZ.CalcSums("VAT Base Amount", "VAT Amount", "VAT Base Amount (LCY)", "VAT Amount (LCY)");
         VATBaseAmount := SalesAdvLetterEntryCZZ."VAT Base Amount";
@@ -1696,6 +1745,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
             if "SWIFT Code" <> '' then
                 SWIFT := "SWIFT Code";
         end;
+        if IBANCode <> '' then
+            IBANCode := DelChr(IBANCode, '=', ' ');
 
         CalcFields("Amount Including VAT");
 
@@ -1795,6 +1846,28 @@ table 31004 "Sales Adv. Letter Header CZZ"
         SalesAdvLetterManagementCZZ: Codeunit "SalesAdvLetterManagement CZZ";
     begin
         SalesAdvLetterManagementCZZ.UpdateStatus(Rec, AdvanceLetterDocStatus);
+    end;
+
+    procedure CopyDocument()
+    var
+        CopyAdvLetterDocumentCZZ: Report "Copy Adv. Letter Document CZZ";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCopyDocument(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        CopyAdvLetterDocumentCZZ.SetSalesAdvLetterHeader(Rec);
+        CopyAdvLetterDocumentCZZ.RunModal();
+    end;
+
+    procedure UpdateVATRegNoInCust(Customer: Record Customer) ShouldUpdate: Boolean
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeUpdateVATRegNoInCust(Rec, Customer, ShouldUpdate, IsHandled);
+        exit(AltCustVATRegFacadeCZZ.UpdateVATRegNoInCustFromSalesAdvLetterHeader(Rec, Customer));
     end;
 
     [IntegrationEvent(false, false)]
@@ -2039,6 +2112,16 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnIsConfirmDialogAllowed(var IsAllowed: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCopyDocument(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateVATRegNoInCust(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; Customer: Record Customer; var ShouldUpdate: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

@@ -19,6 +19,8 @@ codeunit 4620 "SMTP Authentication"
         AccessToken: SecretText;
         [NonDebuggable]
         Server: Text[250];
+        [NonDebuggable]
+        AccountId: Guid;
 
     /// <summary>
     /// Set the server url.
@@ -30,44 +32,16 @@ codeunit 4620 "SMTP Authentication"
         Server := CopyStr(Url, 1, MaxStrLen(Server));
     end;
 
-#if not CLEAN24
-    /// <summary>
-    /// Set the username and password for authentication
-    /// </summary>
-    /// <param name="User">Username</param>
-    /// <param name="Pass">Password</param>
-    [NonDebuggable]
-    [Obsolete('Replaced by SetBasicAuthInfo with SecretText data type for Pass parameter.', '24.0')]
-    procedure SetBasicAuthInfo(User: Text; Pass: Text)
-    begin
-        Username := CopyStr(User, 1, MaxStrLen(Username));
-        Password := Pass;
-    end;
-
-    /// <summary>
-    /// Set the OAuth information for authentication
-    /// </summary>
-    /// <param name="User">User</param>
-    /// <param name="Token">Token</param>
-    [NonDebuggable]
-    [Obsolete('Replaced by SetOAuth2AuthInfo with SecretText data type for Token parameter.', '24.0')]
-    procedure SetOAuth2AuthInfo(User: Text[250]; Token: Text)
-    begin
-        // Telemetry
-        Username := CopyStr(User, 1, MaxStrLen(Username));
-        AccessToken := Token;
-    end;
-#endif
-
     /// <summary>
     /// Set the username and password for authentication
     /// </summary>
     /// <param name="User">Username</param>
     /// <param name="Pass">Password</param>
     procedure SetBasicAuthInfo(User: Text; Pass: SecretText)
+    var
+        EmptyGuid: Guid;
     begin
-        Username := CopyStr(User, 1, MaxStrLen(Username));
-        Password := Pass;
+        SetBasicAuthInfo(User, Pass, EmptyGuid);
     end;
 
     /// <summary>
@@ -76,10 +50,37 @@ codeunit 4620 "SMTP Authentication"
     /// <param name="User">User</param>
     /// <param name="Token">Token</param>
     procedure SetOAuth2AuthInfo(User: Text[250]; Token: SecretText)
+    var
+        EmptyGuid: Guid;
+    begin
+        SetOAuth2AuthInfo(User, Token, EmptyGuid);
+    end;
+
+    /// <summary>
+    /// Set the username and password for authentication
+    /// </summary>
+    /// <param name="User">Username</param>
+    /// <param name="Pass">Password</param>
+    /// <param name="UserAccountId">THe email account Id for this user</param>
+    procedure SetBasicAuthInfo(User: Text; Pass: SecretText; UserAccountId: Guid)
+    begin
+        Username := CopyStr(User, 1, MaxStrLen(Username));
+        Password := Pass;
+        AccountId := UserAccountId;
+    end;
+
+    /// <summary>
+    /// Set the OAuth information for authentication
+    /// </summary>
+    /// <param name="User">User</param>
+    /// <param name="Token">Token</param>
+    /// <param name="UserAccountId">THe email account Id for this user</param>
+    procedure SetOAuth2AuthInfo(User: Text[250]; Token: SecretText; UserAccountId: Guid)
     begin
         // Telemetry
         Username := CopyStr(User, 1, MaxStrLen(Username));
         AccessToken := Token;
+        AccountId := UserAccountId;
     end;
 
     [NonDebuggable]
@@ -104,6 +105,12 @@ codeunit 4620 "SMTP Authentication"
     internal procedure GetAccessToken(): SecretText
     begin
         exit(AccessToken);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetAccountId(): Guid
+    begin
+        exit(AccountId);
     end;
 
     /// <summary>

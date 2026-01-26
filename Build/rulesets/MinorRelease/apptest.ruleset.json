@@ -1,0 +1,16 @@
+{
+  "name": "Ruleset for first-party extension tests in Minor Releases",
+  "includedRuleSets": [
+    {
+      "action": "Default",
+      "path": "./../app.ruleset.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "AA0217",
+      "action": "None",
+      "justification": "Rule AA0217 Use a text constant or label for format string in StrSubstNo. Is not relevant to test as they arn't translated."
+    }
+  ]
+}

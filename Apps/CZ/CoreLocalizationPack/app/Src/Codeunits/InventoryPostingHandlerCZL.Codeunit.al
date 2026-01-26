@@ -10,6 +10,8 @@ using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Setup;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Manufacturing.Setup;
 
 codeunit 31073 "Inventory Posting Handler CZL"
 {
@@ -84,6 +86,19 @@ codeunit 31073 "Inventory Posting Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferOutputPosting', '', false, false)]
     local procedure InitInvtPostBufOnBeforeBufferOutputPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; ExpCostToPost: Decimal; ExpCostToPostACY: Decimal; var IsHandled: Boolean)
     begin
+        case ValueEntry."Entry Type" of
+            ValueEntry."Entry Type"::Rounding:
+                begin
+                    Sender.InitInvtPostBuf(
+                      ValueEntry,
+                      GlobalInvtPostBuf."Account Type"::Inventory,
+                      GlobalInvtPostBuf."Account Type"::"InvRoundingAdj CZL",
+                      CostToPost, CostToPostACY, false);
+                    IsHandled := true;
+                    exit;
+                end;
+        end;
+
         InventorySetup.Get();
         if InventorySetup."Post Exp.Cost Conv.As Corr.CZL" then
             exit;
@@ -114,15 +129,6 @@ codeunit 31073 "Inventory Posting Handler CZL"
                           GlobalInvtPostBuf."Account Type"::"WIP Inventory",
                           CostToPost, CostToPostACY, false);
                     end;
-                    IsHandled := true;
-                end;
-            ValueEntry."Entry Type"::Rounding:
-                begin
-                    Sender.InitInvtPostBuf(
-                      ValueEntry,
-                      GlobalInvtPostBuf."Account Type"::Inventory,
-                      GlobalInvtPostBuf."Account Type"::"InvRoundingAdj CZL",
-                      CostToPost, CostToPostACY, false);
                     IsHandled := true;
                 end;
         end;
@@ -164,6 +170,8 @@ codeunit 31073 "Inventory Posting Handler CZL"
                       GlobalInvtPostBuf."Account Type"::"AccWIPChange CZL",
                       GlobalInvtPostBuf."Account Type"::"WIP Inventory",
                       CostToPost, CostToPostACY, false);
+
+                    AdjustWIPForProduction(Sender, ValueEntry, CostToPost, CostToPostACY);
                     IsHandled := true;
                 end;
             ValueEntry."Entry Type"::Revaluation,
@@ -176,6 +184,42 @@ codeunit 31073 "Inventory Posting Handler CZL"
                       CostToPost, CostToPostACY, false);
                     IsHandled := true;
                 end;
+        end;
+    end;
+
+    local procedure AdjustWIPForProduction(var InventoryPostingToGL: Codeunit "Inventory Posting To G/L"; ValueEntry: Record "Value Entry"; CostToPost: Decimal; CostToPostACY: Decimal)
+    var
+        ProdOrderLine: Record "Prod. Order Line";
+        ManufacturingSetup: Record "Manufacturing Setup";
+    begin
+        ManufacturingSetup.GetRecordOnce();
+        if not (ManufacturingSetup."Finish Order Without Output") then
+            exit;
+
+        if ValueEntry."Expected Cost" then
+            exit;
+
+        ProdOrderLine.SetLoadFields(Status, "Prod. Order No.", "Line No.", "Finished Qty. (Base)");
+        ProdOrderLine.SetRange(Status, ProdOrderLine.Status::Finished);
+        ProdOrderLine.SetRange("Prod. Order No.", ValueEntry."Order No.");
+        ProdOrderLine.SetRange("Line No.", ValueEntry."Order Line No.");
+        ProdOrderLine.SetRange("Finished Qty. (Base)", 0);
+        if ProdOrderLine.IsEmpty() then
+            exit;
+
+        case ValueEntry."Item Ledger Entry Type" of
+            ValueEntry."Item Ledger Entry Type"::Consumption:
+                InventoryPostingToGL.InitInvtPostBuf(
+                    ValueEntry,
+                    "Invt. Posting Buffer Account Type"::"WIP Inventory",
+                    "Invt. Posting Buffer Account Type"::"Inventory Adjmt.",
+                    CostToPost, CostToPostACY, false);
+            ValueEntry."Item Ledger Entry Type"::" ":
+                InventoryPostingToGL.InitInvtPostBuf(
+                    ValueEntry,
+                    "Invt. Posting Buffer Account Type"::"Inventory Adjmt.",
+                    "Invt. Posting Buffer Account Type"::"WIP Inventory",
+                    CostToPost, CostToPostACY, false);
         end;
     end;
 

@@ -1,7 +1,7 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Graph;
 using Microsoft.Integration.Entity;
+using Microsoft.Integration.Graph;
 
 page 30033 "APIV2 - Balance Sheet"
 {
@@ -20,6 +20,7 @@ page 30033 "APIV2 - Balance Sheet"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = Id;
+    AboutText = 'Provides access to balance sheet reports, detailing assets, liabilities, and equity with account-level breakdowns and date filters. Supports GET operations for retrieving financial position data at specific points in time, enabling automated financial reporting, compliance, and integration with external accounting or consolidation systems.';
 
     layout
     {

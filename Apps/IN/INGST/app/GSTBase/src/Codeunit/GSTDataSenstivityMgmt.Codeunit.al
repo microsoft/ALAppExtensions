@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -37,9 +37,6 @@ using Microsoft.Sales.Archive;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
-#if not CLEAN23
-using Microsoft.Sales.Pricing;
-#endif
 using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Setup;
 using Microsoft.Service.Contract;
@@ -65,9 +62,6 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"Detailed GST Entry Buffer");
         SetTableFieldsToNormal(Database::"Detailed GST Ledger Entry");
         SetTableFieldsToNormal(Database::"Detailed GST Ledger Entry Info");
-#if not CLEAN23
-        SetTableFieldsToNormal(Database::"E-Commerce Merchant");
-#endif
         SetTableFieldsToNormal(Database::"E-Comm. Merchant");
         SetTableFieldsToNormal(Database::"GST Claim Setoff");
         SetTableFieldsToNormal(Database::"GST Group");
@@ -146,9 +140,6 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"Sales Header");
         SetTableFieldsToNormal(Database::"Sales Invoice Line");
         SetTableFieldsToNormal(Database::"Sales Line");
-#if not CLEAN23
-        SetTableFieldsToNormal(Database::"Sales Price");
-#endif
         SetTableFieldsToNormal(Database::"Sales Shipment Header");
         SetTableFieldsToNormal(Database::"Sales Shipment Line");
         SetTableFieldsToNormal(Database::"Shipping Agent");
@@ -201,9 +192,6 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"GST Journal Batch");
         SetTableFieldsToNormal(Database::"GST Journal Line");
         SetTableFieldsToNormal(Database::"GST Adjustment Buffer");
-#if not CLEAN23
-        SetTableFieldsToNormal(Database::"Invoice Post. Buffer");
-#endif
         SetTableFieldsToNormal(Database::"Invoice Posting Buffer");
     end;
 

@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Warehouse.GateEntry;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Sales.History;
 using Microsoft.Inventory.Transfer;
-using Microsoft.Sales.Document;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
 
 table 18604 "Gate Entry Line"
 {

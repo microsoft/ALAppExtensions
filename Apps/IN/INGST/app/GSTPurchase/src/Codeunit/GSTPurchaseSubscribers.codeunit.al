@@ -942,9 +942,27 @@ codeunit 18080 "GST Purchase Subscribers"
             PurchaseLine.Reset();
             PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
             PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+            PurchaseLine.SetFilter("No.", '<>%1', '');
             PurchaseLine.SetFilter(PurchaseLine.Type, '<>%1', PurchaseLine.Type::"G/L Account");
             if not PurchaseLine.IsEmpty() then
                 Error(TypeErr, PurchaseLine.Type);
+
+            UpdateGSTJurisdictionForPosAsVendor(PurchaseHeader);
+        end;
+    end;
+
+    local procedure UpdateGSTJurisdictionForPosAsVendor(var PurchaseHeader: Record "Purchase Header")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        if PurchaseHeader."POS as Vendor State" then begin
+            PurchaseLine.Reset();
+            PurchaseLine.LoadFields("Document Type", "Document No.", Type);
+            PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+            PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+            PurchaseLine.SetRange(PurchaseLine.Type, PurchaseLine.Type::"G/L Account");
+            if PurchaseLine.FindSet() then
+                PurchaseLine.ModifyAll("GST Jurisdiction Type", "GST Jurisdiction Type"::Intrastate);
         end;
     end;
 
@@ -1018,8 +1036,9 @@ codeunit 18080 "GST Purchase Subscribers"
         if GSTGroup.Get(PurchaseLine."GST Group Code") then begin
             PurchaseLine."GST Group Type" := GSTGroup."GST Group Type";
             GetPurcasehHeader(PurchaseHeader, PurchaseLine);
-            if PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::Import then
-                PurchaseLine."GST Reverse Charge" := true;
+            if (GSTGroup."Reverse Charge" = true) or (PurchaseLine."GST Group Type" = PurchaseLine."GST Group Type"::Service) then
+                if PurchaseHeader."GST Vendor Type" = PurchaseHeader."GST Vendor Type"::Import then
+                    PurchaseLine."GST Reverse Charge" := true;
 
             if PurchaseHeader."GST Vendor Type" in [
                 PurchaseHeader."GST Vendor Type"::Registered,
@@ -1226,8 +1245,10 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine."HSN/SAC Code" := HSNSACCode;
 
         UpdateGSTJurisdictionType(PurchaseLine);
+        if GSTGroup.Get(PurchaseLine."GST Group Code") then
+            if (GSTGroup."Reverse Charge") or (PurchaseLine."GST Group Type" = PurchaseLine."GST Group Type"::Service) then
+                PurchaseLine."GST Reverse Charge" := PurchaseHeader."GST Vendor Type" in [PurchaseHeader."GST Vendor Type"::Import];
 
-        PurchaseLine."GST Reverse Charge" := PurchaseHeader."GST Vendor Type" in [PurchaseHeader."GST Vendor Type"::Import];
         if GSTGroup.Get(PurchaseLine."GST Group Code") and
            (PurchaseHeader."GST Vendor Type" in [
                PurchaseHeader."GST Vendor Type"::Registered,
@@ -1459,6 +1480,7 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine.SetFilter(Type, '<>%1', PurchaseLine.Type::" ");
         if PurchaseLine.FindSet() then
             repeat
+                TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
                 TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
                 TaxTransactionValue.SetRange("Tax Record ID", PurchaseLine.RecordId);
                 TaxTransactionValue.SetFilter(Percent, '<>%1', 0);

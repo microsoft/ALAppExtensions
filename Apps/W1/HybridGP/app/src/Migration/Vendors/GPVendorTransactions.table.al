@@ -62,6 +62,11 @@ table 4097 "GP Vendor Transactions"
             Caption = 'Payment Terms ID';
             DataClassification = CustomerContent;
         }
+        field(12; VCHRNMBR; Text[22])
+        {
+            Caption = 'Voucher Number';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

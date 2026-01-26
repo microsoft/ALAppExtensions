@@ -24,27 +24,6 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
         }
         addafter("VAT Registration No.")
         {
-#if not CLEAN23
-            field("Registration No. CZL"; Rec."Registration No. CZL")
-            {
-                Caption = 'Registration No. (Obsolete)';
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of vendor.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-
-                trigger OnDrillDown()
-                var
-                    RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
-                begin
-                    CurrPage.SaveRecord();
-                    RegistrationLogMgtCZL.AssistEditVendorRegNo(Rec);
-                    CurrPage.Update(false);
-                end;
-            }
-#endif
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -54,35 +33,6 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
         }
         addlast(Invoicing)
         {
-#if not CLEAN22
-            field("Transaction Type CZL"; Rec."Transaction Type CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Transaction Type (Obsolete)';
-                ToolTip = 'Specifies the default Transaction type for Intrastat reporting purposes.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-            }
-            field("Transaction Specification CZL"; Rec."Transaction Specification CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Transaction Specification (Obsolete)';
-                ToolTip = 'Specifies the default Transaction specification for Intrastat reporting purposes.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field will not be used anymore.';
-            }
-            field("Transport Method CZL"; Rec."Transport Method CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Transport Method (Obsolete)';
-                ToolTip = 'Specifies the default Transport Method for Intrastat reporting purposes.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-            }
-#endif
             field("Last Unreliab. Check Date CZL"; Rec."Last Unreliab. Check Date CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -150,8 +100,6 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Balance Reconciliation';
                 Image = Balance;
-                Promoted = true;
-                PromotedCategory = "Report";
                 ToolTip = 'Open the report for vendor''s balance reconciliation.';
 
                 trigger OnAction()
@@ -161,6 +109,12 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
                     Vendor.SetRange("No.", Rec."No.");
                     Report.RunModal(Report::"Vendor-Bal. Reconciliation CZL", true, true, Vendor);
                 end;
+            }
+        }
+        addlast(Category_Report)
+        {
+            actionref("Balance Reconciliation CZL_Promoted"; "Balance Reconciliation CZL")
+            {
             }
         }
     }

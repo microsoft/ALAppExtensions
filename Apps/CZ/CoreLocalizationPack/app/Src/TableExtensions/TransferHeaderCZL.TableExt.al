@@ -4,58 +4,33 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Transfer;
 
+#if not CLEAN26
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Item;
-#if not CLEAN22
-using System.Environment.Configuration;
-#endif
 
+#endif
 tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
 {
+#if not CLEANSCHEMA25
     fields
     {
         field(31069; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
     }
-
+#endif
+#if not CLEAN26
     var
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;
-#if not CLEAN22
 
-    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
-    procedure CheckIntrastatMandatoryFieldsCZL()
-    var
-        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        FeatureMgtFacade: Codeunit "Feature Management Facade";
-        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
-    begin
-        if FeatureMgtFacade.IsEnabled(IntrastatFeatureKeyIdTok) then
-            exit;
-        StatutoryReportingSetupCZL.Get();
-        if StatutoryReportingSetupCZL."Transaction Type Mandatory" then
-            TestField("Transaction Type");
-        if StatutoryReportingSetupCZL."Transaction Spec. Mandatory" then
-            TestField("Transaction Specification");
-        if StatutoryReportingSetupCZL."Transport Method Mandatory" then
-            TestField("Transport Method");
-        if StatutoryReportingSetupCZL."Shipment Method Mandatory" then
-            TestField("Shipment Method Code");
-    end;
-#endif
-
+    [Obsolete('Pending removal. Use IsIntrastatTransaction from Intrastat Core extension instead.', '26.0')]
     procedure IsIntrastatTransactionCZL() IsIntrastat: Boolean
     begin
         if ("No." <> GlobalDocumentNo) or ("No." = '') then begin
@@ -76,12 +51,6 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
         if IsHandled then
             exit(Result);
 
-#if not CLEAN22
-#pragma warning disable AL0432
-        if "Intrastat Exclude CZL" then
-            exit(false);
-#pragma warning restore AL0432
-#endif
         if "Trsf.-from Country/Region Code" = "Trsf.-to Country/Region Code" then
             exit(false);
 
@@ -93,6 +62,7 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
         exit(false);
     end;
 
+    [Obsolete('Pending removal. Replaced by internal ShipOrReceiveInventoriableTypeItems function from Intrastat Core extension. ', '26.0')]
     procedure ShipOrReceiveInventoriableTypeItemsCZL(): Boolean
     var
         TransferLine: Record "Transfer Line";
@@ -108,8 +78,10 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
             until TransferLine.Next() = 0;
     end;
 
+    [Obsolete('Pending removal. Use OnBeforeCheckIsIntrastatTransaction from Intrastat Core extension instead.', '26.0')]
     [IntegrationEvent(true, false)]
     local procedure OnBeforeUpdateGlobalIsIntrastatTransactionCZL(TransferHeader: Record "Transfer Header"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
+#endif
 }

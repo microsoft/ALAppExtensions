@@ -1,8 +1,8 @@
 namespace Microsoft.Bank.PayPal;
 
-using System.Integration;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Payment;
+using System.Integration;
 using System.Telemetry;
 
 codeunit 1073 "MS - PayPal Webhook Management"
@@ -56,8 +56,8 @@ codeunit 1073 "MS - PayPal Webhook Management"
         Session.LogMessage('00008IP', ProcessingWebhookNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
         FeatureTelemetry.LogUsage('0000LHW', MSPayPalStandardMgt.GetFeatureTelemetryName(), ProcessingWebhookNotificationTxt);
 
-        AccountID := LOWERCASE(Rec."Subscription ID");
-        WebhookSubscription.SetRange("Subscription ID", AccountID);
+        AccountID := Rec."Subscription ID";
+        WebhookSubscription.SetFilter("Subscription ID", '@' + AccountID);
         WebhookSubscription.SetFilter("Created By", GetCreatedByFilterForWebhooks());
         if WebhookSubscription.IsEmpty() then begin
             Session.LogMessage('00008GK', WebhookSubscriptionNotFoundTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);

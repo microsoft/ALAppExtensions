@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardTaxCodes xsi:noNamespaceSchemaLocation="Standard_Tax_Codes.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<TaxCode>
+		<ID>0</ID>
+		<Description ISOLanguageCode="NOB">Ingen merverdiavgiftsbehandling (anskaffelser)</Description>
+		<Description ISOLanguageCode="ENG">No VAT treatment</Description>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>1</ID>
+		<Description ISOLanguageCode="NOB">Fradragsberettiget innenlands inngående merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Input VAT deductible (domestic)</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>11</ID>
+		<Description ISOLanguageCode="NOB">Fradragsberettiget innenlands inngående merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Input VAT deductible (domestic)</Description>
+		<TaxRate>Reduced rate, middle</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>12</ID>
+		<Description ISOLanguageCode="NOB">Fradragsberettiget innenlands inngående merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Input VAT deductible (domestic)</Description>
+		<TaxRate>Reduced rate, raw fish</TaxRate>
+	</TaxCode>
+	<TaxCode>
+		<ID>13</ID>
+		<Description ISOLanguageCode="NOB">Fradragsberettiget innenlands inngående merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Input VAT deductible (domestic)</Description>
+		<TaxRate>Reduced rate, low</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>14</ID>
+		<Description ISOLanguageCode="NOB">Fradragsberettiget innførselsmerverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Input VAT deductible (payed on import)</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>15</ID>
+		<Description ISOLanguageCode="NOB">Fradragsberettiget innførselsmerverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Input VAT deductible (payed on import)</Description>
+		<TaxRate>Reduced rate, middle</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>20</ID>
+		<Description ISOLanguageCode="NOB">Kostnad ved innførsel av varer, ingen merverdiavgiftsbehandling</Description>
+		<Description ISOLanguageCode="ENG">No VAT treatment</Description>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>21</ID>
+		<Description ISOLanguageCode="NOB">Kostnad ved innførsel av varer</Description>
+		<Description ISOLanguageCode="ENG">Basis on import of goods</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>22</ID>
+		<Description ISOLanguageCode="NOB">Kostnad ved innførsel av varer</Description>
+		<Description ISOLanguageCode="ENG">Basis on import of goods</Description>
+		<TaxRate>Reduced rate, middle</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>3</ID>
+		<Description ISOLanguageCode="NOB">Utgående merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Output VAT</Description>
+		<TaxRate>Regular rate</TaxRate>
+	</TaxCode>
+	<TaxCode>
+		<ID>31</ID>
+		<Description ISOLanguageCode="NOB">Utgående merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Output VAT</Description>
+		<TaxRate>Reduced rate, middle</TaxRate>
+	</TaxCode>
+	<TaxCode>
+		<ID>32</ID>
+		<Description ISOLanguageCode="NOB">Utgående merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Output VAT</Description>
+		<TaxRate>Reduced rate, raw fish</TaxRate>
+	</TaxCode>
+	<TaxCode>
+		<ID>33</ID>
+		<Description ISOLanguageCode="NOB">Utgående merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Output VAT</Description>
+		<TaxRate>Reduced rate, low</TaxRate>
+	</TaxCode>
+	<TaxCode>
+		<ID>5</ID>
+		<Description ISOLanguageCode="NOB">Innenlands omsetning og uttak fritatt for merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">No output VAT</Description>
+		<TaxRate>Zero rate</TaxRate>
+	</TaxCode>
+	<TaxCode>
+		<ID>51</ID>
+		<Description ISOLanguageCode="NOB">Innenlandsk omsetning med omvendt avgiftplikt</Description>
+		<Description ISOLanguageCode="ENG">Domestic sales of reverce charge /VAT obligation</Description>
+		<TaxRate>Zero rate</TaxRate>
+	</TaxCode>
+	<TaxCode>
+		<ID>52</ID>
+		<Description ISOLanguageCode="NOB">Utførsel av varer og tjenester</Description>
+		<Description ISOLanguageCode="ENG">Export of goods and services</Description>
+		<TaxRate>Zero rate</TaxRate>
+	</TaxCode>
+	<TaxCode>
+		<ID>6</ID>
+		<Description ISOLanguageCode="NOB">Omsetning utenfor merverdiavgiftsloven</Description>
+		<Description ISOLanguageCode="ENG">Not liable to VAT treatment, turnover outside the scope of the VAT legislation</Description>
+	</TaxCode>
+	<TaxCode>
+		<ID>7</ID>
+		<Description ISOLanguageCode="NOB">Ingen merverdiavgiftsbehandling (inntekter)</Description>
+		<Description ISOLanguageCode="ENG">No VAT treatment - no turnover according to the VAT legislation</Description>
+	</TaxCode>
+	<TaxCode>
+		<ID>81</ID>
+		<Description ISOLanguageCode="NOB">Grunnlag innførsel av varer med fradragsrett for innførselsmerverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Importation of goods, VAT deductible</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>82</ID>
+		<Description ISOLanguageCode="NOB">Grunnlag innførsel av varer uten fradragsrett for innførselsmerverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Importation of goods, without deduction of VAT</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>83</ID>
+		<Description ISOLanguageCode="NOB">Grunnlag innførsel av varer med fradragsrett for innførselsmerverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Importation of goods, VAT deductible</Description>
+		<TaxRate>Reduced rate, middle</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>84</ID>
+		<Description ISOLanguageCode="NOB">Grunnlag innførsel av varer uten fradragsrett for innførselsmerverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Importation of goods, without deduction of VAT</Description>
+		<TaxRate>Reduced rate, middle</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>85</ID>
+		<Description ISOLanguageCode="NOB">Grunnlag innførsel av varer som det ikke skal beregnes merverdiavgift av</Description>
+		<Description ISOLanguageCode="ENG">Importation of goods, not applicable for VAT</Description>
+		<TaxRate>Zero rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>86</ID>
+		<Description ISOLanguageCode="NOB">Tjenester kjøpt fra utlandet med fradragsrett for merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Services purchased from abroad, VAT deductible</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>87</ID>
+		<Description ISOLanguageCode="NOB">Tjenester kjøpt fra utlandet uten fradragsrett for merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Services purchased from abroad, without deduction of VAT</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>88</ID>
+		<Description ISOLanguageCode="NOB">Tjenester kjøpt fra utlandet med fradragsrett for merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Services purchased from abroad, VAT deductible</Description>
+		<TaxRate>Reduced rate, low</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>89</ID>
+		<Description ISOLanguageCode="NOB">Tjenester kjøpt fra utlandet uten fradragsrett for merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Services purchased from abroad, without deduction of VAT</Description>
+		<TaxRate>Reduced rate, low</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>91</ID>
+		<Description ISOLanguageCode="NOB">Kjøp av klimakvoter eller gull med fradragsrett for merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Purchase of emissions trading or gold, VAT deductible</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+	<TaxCode>
+		<ID>92</ID>
+		<Description ISOLanguageCode="NOB">Kjøp av klimakvoter eller gull uten fradragsrett for merverdiavgift</Description>
+		<Description ISOLanguageCode="ENG">Purchase of emissions trading or gold, without deduction of VAT</Description>
+		<TaxRate>Regular rate</TaxRate>
+		<Compensation>true</Compensation>
+	</TaxCode>
+</StandardTaxCodes>

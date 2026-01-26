@@ -9,9 +9,6 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.FixedAssets.Insurance;
 using Microsoft.FixedAssets.Journal;
-#if not CLEAN22
-using Microsoft.Inventory.Intrastat;
-#endif
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Requisition;
@@ -22,7 +19,7 @@ using Microsoft.Warehouse.Worksheet;
 
 table 11797 "User Setup Line CZL"
 {
-    Caption = 'User Setup Line (Obsolete)';
+    Caption = 'User Setup Line';
     DataCaptionFields = "User ID", Type;
 
     fields
@@ -66,12 +63,6 @@ table 11797 "User Setup Line CZL"
             else
             if (Type = const("Job Journal")) "Job Journal Template"
             else
-#if not CLEAN22
-#pragma warning disable AL0432
-            if (Type = const("Intrastat Journal")) "Intrastat Jnl. Template"
-            else
-#pragma warning restore AL0432
-#endif
             if (Type = const("FA Journal")) "FA Journal Template"
             else
             if (Type = const("Insurance Journal")) "Insurance Journal Template"

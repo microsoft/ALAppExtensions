@@ -10,17 +10,12 @@ permissionset 4029 "HybridGP - Objects"
                     codeunit "Hybrid Handle GP Upgrade Error" = X,
                     codeunit "Hybrid GP Management" = X,
                     codeunit "Hybrid GP Wizard" = X,
-                    page "GP Account" = X,
                     table "GP Account" = X,
                     codeunit "GP Account Migrator" = X,
-                    page "GP Fiscal Periods" = X,
                     table "GP Fiscal Periods" = X,
-                    page "GP GLTransactions" = X,
                     table "GP GLTransactions" = X,
-                    page "GP Customer" = X,
                     table "GP Customer" = X,
                     codeunit "GP Customer Migrator" = X,
-                    page "GP Customer Transactions" = X,
                     table "GP Customer Transactions" = X,
                     table "GPIVBinQtyTransferHist" = X,
                     table "GPIVDistributionHist" = X,
@@ -58,18 +53,9 @@ permissionset 4029 "HybridGP - Objects"
                     table "GPSOPTrxHist" = X,
                     table "GPSOPUserDefinedWorkHist" = X,
                     table "GPSOPWorkflowWorkHist" = X,
-                    codeunit "GPForecastHandler" = X,
                     codeunit "GP PO Migrator" = X,
                     codeunit "GP Populate Hist. Tables" = X,
-                    table "GPForecastTemp" = X,
                     codeunit "Install GP SmartLists" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                    table "GP POPPOHeader" = X,
-                    table "GP POPPOLine" = X,
-#pragma warning restore AL0432
-#endif
-                    page "GP Item" = X,
                     table "GP Item" = X,
                     table "GP Item Location" = X,
                     codeunit "GP Item Migrator" = X,
@@ -80,7 +66,6 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP Codes" = X,
                     table "GP Configuration" = X,
                     table "GP Payment Terms" = X,
-                    page "GP Posting Accounts" = X,
                     table "GP Posting Accounts" = X,
                     table "GP Segments" = X,
                     Codeunit "Helper Functions" = X,
@@ -89,10 +74,8 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP Checkbook MSTR" = X,
                     table "GP Checkbook Transactions" = X,
                     codeunit "GP Intelligent Cloud Upgrade" = X,
-                    page "GP Vendor" = X,
                     table "GP Vendor" = X,
                     codeunit "GP Vendor Migrator" = X,
-                    page "GP Vendor Transactions" = X,
                     table "GP Vendor Transactions" = X,
                     page "GP Migration Settings List" = X,
                     page "Hybrid GP Errors Factbox" = X,
@@ -146,8 +129,21 @@ permissionset 4029 "HybridGP - Objects"
                     query "GP Item Aggregate" = X,
                     codeunit "GP Migration Error Handler" = X,
                     page "GP Migration Error Overview" = X,
-#if not CLEAN24
-                    page "Hybrid GP Errors Overview Fb" = X,
+
+#if not CLEAN26
+#pragma warning disable AL0432
+                    page "GP Account" = X,
+                    page "GP Fiscal Periods" = X,
+                    page "GP GLTransactions" = X,
+                    page "GP Customer" = X,
+                    page "GP Customer Transactions" = X,
+                    codeunit "GPForecastHandler" = X,
+                    table "GPForecastTemp" = X,
+                    page "GP Item" = X,
+                    page "GP Posting Accounts" = X,
+                    page "GP Vendor" = X,
+                    page "GP Vendor Transactions" = X,
+#pragma warning restore AL0432
 #endif
                     table "GP Migration Error Overview" = X,
                     table "GP Upgrade Settings" = X,
@@ -158,5 +154,8 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP RM30201" = X,
                     table "GP Migration Warnings" = X,
                     page "GP Migration Warnings" = X,
-                    page "GP Payment Terms" = X;
+                    page "GP Payment Terms" = X,
+                    table "GP IV00104" = X,
+                    table "GP PM00101" = X,
+                    table "GP PM00203" = X;
 }

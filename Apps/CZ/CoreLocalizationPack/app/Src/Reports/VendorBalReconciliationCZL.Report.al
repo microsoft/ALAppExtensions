@@ -20,6 +20,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
     ApplicationArea = Basic, Suite;
     Caption = 'Vendor - Bal. Reconciliation';
     UsageCategory = ReportsAndAnalysis;
+    EnableExternalImages = true;
 
     dataset
     {
@@ -189,6 +190,9 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             column(ResponsibleEmployee; ResponsibleEmployee)
             {
             }
+            column(PrintAmountsInCurrency; PrintAmountsInCurrency)
+            {
+            }
             dataitem(TotalInCurrency; "Integer")
             {
                 DataItemTableView = sorting(Number) where(Number = filter(1 ..));
@@ -242,132 +246,169 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                 {
                 }
             }
-            dataitem(Currencies; "Integer")
+            dataitem(CustomerVendor; Integer)
             {
-                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
-                column(OpenDocumentsCaption; StrSubstNo(OpenDocumentsTxt, GetCurrencyCode(TempCurrency.Code)))
+                DataItemTableView = sorting(Number) where(Number = filter(1 .. 2));
+                column(CustomerVendorNumber; Number)
                 {
                 }
-                column(AmountCaption; AmountCaptionLbl)
+                column(OpenCustVendDocumentsCaption; OpenDocumentsTxt)
                 {
                 }
-                column(CurrencyCodeCaption; CurrencyCodeCaptionLbl)
-                {
-                }
-                column(DocumentNoCaption; DocumentNoCaptionLbl)
-                {
-                }
-                column(DocumentTypeCaption; DocumentTypeCaptionLbl)
-                {
-                }
-                column(DocumentDateCaption; DocumentDateCaptionLbl)
-                {
-                }
-                column(RemainingAmountCaption; RemainingAmountCaptionLbl)
-                {
-                }
-                column(DueDateCaption; DueDateCaptionLbl)
-                {
-                }
-                column(RemainingAmtLCYCaption; StrSubstNo(RemainingAmtLCYLbl, GeneralLedgerSetup."LCY Code"))
-                {
-                }
-                column(CurrenciesNumber; Number)
-                {
-                }
-                column(ExtDocNoCaption; TempCVLedgerEntryBuffer.FieldCaption("External Document No."))
-                {
-                }
-                dataitem(CVLedgEntryBuf; "Integer")
+                dataitem(Currencies; "Integer")
                 {
                     DataItemTableView = sorting(Number) where(Number = filter(1 ..));
-                    column(CVLedgEntryDocumentDate; Format(TempCVLedgerEntryBuffer."Document Date"))
+                    column(OpenDocumentsCaption; GetCurrencyCode(TempCurrency.Code))
                     {
                     }
-                    column(FORMATCVLedgEntryDocumentType; Format(TempCVLedgerEntryBuffer."Document Type"))
+                    column(AmountCaption; AmountCaptionLbl)
                     {
                     }
-                    column(CVLedgEntryCurrencyCode; TempCVLedgerEntryBuffer."Currency Code")
+                    column(CurrencyCodeCaption; CurrencyCodeCaptionLbl)
                     {
                     }
-                    column(CVLedgEntryDueDate; Format(TempCVLedgerEntryBuffer."Due Date"))
+                    column(DocumentNoCaption; DocumentNoCaptionLbl)
                     {
                     }
-                    column(CVLedgEntryAmount; TempCVLedgerEntryBuffer.Amount)
+                    column(DocumentTypeCaption; DocumentTypeCaptionLbl)
                     {
                     }
-                    column(CVLedgEntryRemainingAmount; TempCVLedgerEntryBuffer."Remaining Amount")
+                    column(DocumentDateCaption; DocumentDateCaptionLbl)
                     {
                     }
-                    column(CVLedgEntryRemainingAmtLCY; TempCVLedgerEntryBuffer."Remaining Amt. (LCY)")
+                    column(RemainingAmountCaption; RemainingAmountCaptionLbl)
                     {
                     }
-                    column(CVLedgEntryDocumentNo; TempCVLedgerEntryBuffer."Document No.")
+                    column(DueDateCaption; DueDateCaptionLbl)
                     {
                     }
-                    column(CVLedgEntryBufNumber; Number)
+                    column(RemainingAmtLCYCaption; StrSubstNo(RemainingAmtLCYLbl, GeneralLedgerSetup."LCY Code"))
                     {
                     }
-                    column(CVLedgEntryExtDocNo; TempCVLedgerEntryBuffer."External Document No.")
+                    column(CurrenciesNumber; Number)
                     {
+                    }
+                    column(ExtDocNoCaption; TempCVLedgerEntryBuffer.FieldCaption("External Document No."))
+                    {
+                    }
+                    dataitem(CVLedgEntryBuf; "Integer")
+                    {
+                        DataItemTableView = sorting(Number) where(Number = filter(1 ..));
+                        column(CVLedgEntryDocumentDate; Format(TempCVLedgerEntryBuffer."Document Date"))
+                        {
+                        }
+                        column(FORMATCVLedgEntryDocumentType; Format(TempCVLedgerEntryBuffer."Document Type"))
+                        {
+                        }
+                        column(CVLedgEntryCurrencyCode; TempCVLedgerEntryBuffer."Currency Code")
+                        {
+                        }
+                        column(CVLedgEntryDueDate; Format(TempCVLedgerEntryBuffer."Due Date"))
+                        {
+                        }
+                        column(CVLedgEntryAmount; TempCVLedgerEntryBuffer.Amount)
+                        {
+                        }
+                        column(CVLedgEntryRemainingAmount; TempCVLedgerEntryBuffer."Remaining Amount")
+                        {
+                        }
+                        column(CVLedgEntryRemainingAmtLCY; TempCVLedgerEntryBuffer."Remaining Amt. (LCY)")
+                        {
+                        }
+                        column(CVLedgEntryDocumentNo; TempCVLedgerEntryBuffer."Document No.")
+                        {
+                        }
+                        column(CVLedgEntryBufNumber; Number)
+                        {
+                        }
+                        column(CVLedgEntryExtDocNo; TempCVLedgerEntryBuffer."External Document No.")
+                        {
+                        }
+                        trigger OnAfterGetRecord()
+                        begin
+                            if CustomerVendor.Number = 1 then begin
+                                if Number = 1 then
+                                    TempVendLedgerEntryBuffer.Findset()
+                                else
+                                    TempVendLedgerEntryBuffer.Next();
+                                TempCVLedgerEntryBuffer := TempVendLedgerEntryBuffer;
+                            end else begin
+                                if Number = 1 then
+                                    TempCustLedgerEntryBuffer.Findset()
+                                else
+                                    TempCustLedgerEntryBuffer.Next();
+                                TempCVLedgerEntryBuffer := TempCustLedgerEntryBuffer;
+                            end;
+                        end;
+
+                        trigger OnPreDataItem()
+                        begin
+                            if CustomerVendor.Number = 1 then begin
+                                TempVendLedgerEntryBuffer.SetCurrentKey("Document Date");
+                                if PrintAmountsInCurrency then
+                                    TempVendLedgerEntryBuffer.SetRange("Currency Code", TempCurrency.Code);
+
+                                SetRange(Number, 1, TempVendLedgerEntryBuffer.Count());
+                            end else begin
+                                TempCustLedgerEntryBuffer.SetCurrentKey("Document Date");
+                                if PrintAmountsInCurrency then
+                                    TempCustLedgerEntryBuffer.SetRange("Currency Code", TempCurrency.Code);
+
+                                SetRange(Number, 1, TempCustLedgerEntryBuffer.Count());
+                            end;
+                        end;
+                    }
+                    dataitem(Total; "Integer")
+                    {
+                        DataItemTableView = sorting(Number) where(Number = const(1));
+                        column(TotalCaption; StrSubstNo(TotalTxt, GetCurrencyCode(TempCurrency.Code)))
+                        {
+                        }
+                        column(TotalAmount; TotalAmount)
+                        {
+                        }
+                        trigger OnPreDataItem()
+                        begin
+                            if not PrintAmountsInCurrency or LCYEntriesOnly then
+                                CurrReport.Break();
+                        end;
                     }
                     trigger OnAfterGetRecord()
                     begin
                         if Number = 1 then
-                            TempCVLedgerEntryBuffer.FindSet()
+                            TempCurrency.FindSet()
                         else
-                            TempCVLedgerEntryBuffer.Next();
+                            TempCurrency.Next();
+
+                        LCYEntriesOnly := (TempCurrency.Code = '') and (TempCurrency.Count() = 1);
+                        if CustomerVendor.Number = 1 then begin
+                            if PrintAmountsInCurrency then begin
+                                TempVendLedgerEntryBuffer.SetRange("Currency Code", TempCurrency.Code);
+                                TotalAmount := CustomerVendorBalanceCZL.CalcVendorBalance(Vendor."No.", TempCurrency.Code, ReconcileDate, false);
+                            end else
+                                TotalAmount := CustomerVendorBalanceCZL.CalcVendorBalance(Vendor."No.", '', ReconcileDate, true);
+
+                            if (TotalAmount = 0) and TempVendLedgerEntryBuffer.IsEmpty() then
+                                CurrReport.Skip();
+                            OpenDocumentsTxt := OpenVendorDocumentsTxt;
+                        end else begin
+                            if PrintAmountsInCurrency then begin
+                                TempCustLedgerEntryBuffer.SetRange("Currency Code", TempCurrency.Code);
+                                TotalAmount := CustomerVendorBalanceCZL.CalcCustomerBalance(CustomerNo, TempCurrency.Code, ReconcileDate, false);
+                            end else
+                                TotalAmount := CustomerVendorBalanceCZL.CalcCustomerBalance(CustomerNo, '', ReconcileDate, true);
+
+                            if (TotalAmount = 0) and TempCustLedgerEntryBuffer.IsEmpty() then
+                                CurrReport.Skip();
+                            OpenDocumentsTxt := OpenCustomerDocumentsTxt;
+                        end;
                     end;
 
                     trigger OnPreDataItem()
                     begin
-                        TempCVLedgerEntryBuffer.SetCurrentKey("Document Date");
-                        if PrintAmountsInCurrency then
-                            TempCVLedgerEntryBuffer.SetRange("Currency Code", TempCurrency.Code);
-
-                        SetRange(Number, 1, TempCVLedgerEntryBuffer.Count());
+                        SetRange(Number, 1, TempCurrency.Count());
                     end;
                 }
-                dataitem(Total; "Integer")
-                {
-                    DataItemTableView = sorting(Number) where(Number = const(1));
-                    column(TotalCaption; StrSubstNo(TotalTxt, GetCurrencyCode(TempCurrency.Code)))
-                    {
-                    }
-                    column(TotalAmount; TotalAmount)
-                    {
-                    }
-                    trigger OnPreDataItem()
-                    begin
-                        if not PrintAmountsInCurrency or LCYEntriesOnly then
-                            CurrReport.Break();
-                    end;
-                }
-                trigger OnAfterGetRecord()
-                begin
-                    if Number = 1 then
-                        TempCurrency.FindSet()
-                    else
-                        TempCurrency.Next();
-
-                    LCYEntriesOnly := (TempCurrency.Code = '') and (TempCurrency.Count() = 1);
-                    if PrintAmountsInCurrency then begin
-                        TotalAmount := CustomerVendorBalanceCZL.CalcCustomerVendorBalance(CustomerNo, Vendor."No.", TempCurrency.Code, ReconcileDate, false);
-                        if PrintAmountsInCurrency then
-                            TempCVLedgerEntryBuffer.SetRange("Currency Code", TempCurrency.Code);
-                        if (TotalAmount = 0) and TempCVLedgerEntryBuffer.IsEmpty() then
-                            CurrReport.Skip();
-                    end else
-                        TotalAmount := TotalAmountLCY;
-                end;
-
-                trigger OnPreDataItem()
-                begin
-                    if (TotalAmountLCY = 0) and TempCVLedgerEntryBuffer.IsEmpty() or (not PrintDetails) then
-                        CurrReport.Break();
-
-                    SetRange(Number, 1, TempCurrency.Count());
-                end;
             }
             dataitem(TotalLCY; "Integer")
             {
@@ -403,8 +444,20 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
                     CurrReport.Skip();
 
                 CalcDebitCredit(TotalAmountLCY);
-                CustomerVendorBalanceCZL.FillCustomerVendorBuffer(TempCurrency, TempCVLedgerEntryBuffer,
-                                                                    CustomerNo, "No.", ReconcileDate, PrintAmountsInCurrency);
+
+                DeleteCustomerVendorBuffer();
+                DeleteCurrencyBuffer();
+
+                CustomerVendorBalanceCZL.FillVendorBuffer("No.", ReconcileDate, TempVendLedgerEntryBuffer);
+                CustomerVendorBalanceCZL.FillCustomerBuffer(CustomerNo, ReconcileDate, TempCustLedgerEntryBuffer);
+                TempCVLedgerEntryBuffer.InsertFrom(TempVendLedgerEntryBuffer);
+                TempCVLedgerEntryBuffer.InsertFrom(TempCustLedgerEntryBuffer);
+                if PrintAmountsInCurrency then
+                    CustomerVendorBalanceCZL.FillCurrencyBuffer(TempCVLedgerEntryBuffer, TempCurrency)
+                else begin
+                    TempCurrency.Code := '';
+                    TempCurrency.Insert();
+                end;
                 ResponsibleEmployee := GetFormattedResponsibleEmployee();
             end;
         }
@@ -491,8 +544,6 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
         LanguageMgt: Codeunit Language;
         CustomerVendorBalanceCZL: Codeunit "Customer Vendor Balance CZL";
-        ReturnDate: Date;
-        ReconcileDate: Date;
         PrintOnlyNotZero: Boolean;
         PrintAmountsInCurrency: Boolean;
         CustomerNo: Code[20];
@@ -504,13 +555,14 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         LCYEntriesOnly: Boolean;
         IncludeCustBalance: Boolean;
         PrintDetails: Boolean;
-        EmployeeNo: Code[20];
         ResponsibleEmployee: Text;
+        OpenDocumentsTxt: Text;
         EmptyReturnDateErr: Label 'You must specify return date.';
         EmptyReconcileDateErr: Label 'You must specify reconcile date.';
         FinalBalanceAmountTxt: Label 'Final balance amount in %1', Comment = '%1 = Currency Code';
         TotalTxt: Label 'Total %1', Comment = '%1 = Currency Code';
-        OpenDocumentsTxt: Label 'Open documents in details %1', Comment = '%1 = Currency Code';
+        OpenCustomerDocumentsTxt: Label 'Open customer documents in details';
+        OpenVendorDocumentsTxt: Label 'Open vendor documents in details';
         PAGENOCaptionLbl: Label 'Page';
         andCaptionLbl: Label 'and';
         CompanyInfoPhoneNoCaptionLbl: Label 'Phone No.';
@@ -549,6 +601,11 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
 
     protected var
         TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
+        TempCustLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
+        TempVendLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
+        EmployeeNo: Code[20];
+        ReturnDate: Date;
+        ReconcileDate: Date;
 
     procedure CalcDebitCredit(TotalAmt: Decimal)
     begin
@@ -602,5 +659,17 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
             CommaSeparatedText := StrSubstNo(CommaSeparated1Tok, CommaSeparatedText, FieldCaption, FieldValue)
         else
             CommaSeparatedText := StrSubstNo(CommaSepareted2Tok, FieldCaption, FieldValue);
+    end;
+
+    local procedure DeleteCurrencyBuffer()
+    begin
+        TempCurrency.Reset();
+        TempCurrency.DeleteAll();
+    end;
+
+    local procedure DeleteCustomerVendorBuffer()
+    begin
+        TempCVLedgerEntryBuffer.Reset();
+        TempCVLedgerEntryBuffer.DeleteAll();
     end;
 }

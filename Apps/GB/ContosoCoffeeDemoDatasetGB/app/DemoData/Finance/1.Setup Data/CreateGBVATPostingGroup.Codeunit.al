@@ -1,0 +1,79 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
+
+codeunit 10513 "Create GB VAT Posting Group"
+{
+    SingleInstance = true;
+    EventSubscriberInstance = Manual;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
+    [EventSubscriber(ObjectType::Table, Database::"VAT Product Posting Group", 'OnBeforeInsertEvent', '', false, false)]
+    local procedure OnInsertRecord(var Rec: Record "VAT Product Posting Group"; RunTrigger: Boolean)
+    var
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
+    begin
+        case Rec.Code of
+            CreateVATPostingGroups.FullNormal():
+                ValidateRecordFields(Rec, StrSubstNo(VATOnlyInvoicesDescriptionLbl, '20'));
+            CreateVATPostingGroups.FullRed():
+                ValidateRecordFields(Rec, StrSubstNo(VATOnlyInvoicesDescriptionLbl, '5'));
+            CreateVATPostingGroups.Reduced():
+                ValidateRecordFields(Rec, StrSubstNo(ReducedVatDescriptionLbl, '5'));
+            CreateVATPostingGroups.ServNormal():
+                ValidateRecordFields(Rec, StrSubstNo(MiscellaneousVATDescriptionLbl, '20'));
+            CreateVATPostingGroups.ServRed():
+                ValidateRecordFields(Rec, StrSubstNo(MiscellaneousVATDescriptionLbl, '5'));
+            CreateVATPostingGroups.Standard():
+                ValidateRecordFields(Rec, StrSubstNo(NormalVatDescriptionLbl, '20'));
+        end;
+    end;
+
+    local procedure ValidateRecordFields(var VATProductPostingGroup: Record "VAT Product Posting Group"; Description: Text[100])
+    begin
+        VATProductPostingGroup.Validate(Description, Description);
+    end;
+
+    procedure UpdateVATPostingSetup()
+    var
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+        CreateGBGLAccounts: Codeunit "Create GB GL Accounts";
+    begin
+        ContosoPostingSetup.SetOverwriteData(true);
+        ContosoPostingSetup.InsertVATPostingSetup('', CreateVATPostingGroups.Reduced(), CreateGBGLAccounts.SalesVATReduced(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.Reduced(), 0, Enum::"Tax Calculation Type"::"Normal VAT", ETaxCategoryLbl, '', CreateVATPostingGroups.Reduced(), false);
+        ContosoPostingSetup.InsertVATPostingSetup('', CreateVATPostingGroups.Standard(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.Standard(), 0, Enum::"Tax Calculation Type"::"Normal VAT", ETaxCategoryLbl, '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', CreateVATPostingGroups.NoVAT(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.NoVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", ETaxCategoryLbl, '', CreateVATPostingGroups.NoVAT(), false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.Reduced(), CreateGBGLAccounts.SalesVATReduced(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.Reduced(), 5, Enum::"Tax Calculation Type"::"Normal VAT", STaxCategoryLbl, '', CreateVATPostingGroups.Reduced(), false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.Standard(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.Standard(), 20, Enum::"Tax Calculation Type"::"Normal VAT", STaxCategoryLbl, '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.NoVAT(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.NoVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", ETaxCategoryLbl, '', CreateVATPostingGroups.NoVAT(), false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Reduced(), CreateGBGLAccounts.SalesVATReduced(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.Reduced(), 0, Enum::"Tax Calculation Type"::"Reverse Charge VAT", STaxCategoryLbl, '', CreateVATPostingGroups.Reduced(), true);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Standard(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.Standard(), 20, Enum::"Tax Calculation Type"::"Reverse Charge VAT", STaxCategoryLbl, CreateGBGLAccounts.PurchaseVATNormal(), '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.NoVAT(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.NoVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", ETaxCategoryLbl, '', CreateVATPostingGroups.NoVAT(), false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Reduced(), CreateGBGLAccounts.SalesVATReduced(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.Reduced(), 0, Enum::"Tax Calculation Type"::"Normal VAT", ETaxCategoryLbl, '', CreateVATPostingGroups.Reduced(), false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Standard(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.Standard(), 0, Enum::"Tax Calculation Type"::"Normal VAT", ETaxCategoryLbl, '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.NoVAT(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.NoVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", ETaxCategoryLbl, '', CreateVATPostingGroups.NoVAT(), false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.FullNormal(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.FullNormal(), 100, Enum::"Tax Calculation Type"::"Full VAT", STaxCategoryLbl, '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.FullRed(), CreateGBGLAccounts.SalesVATReduced(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.FullRed(), 100, Enum::"Tax Calculation Type"::"Full VAT", STaxCategoryLbl, '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.ServRed(), CreateGBGLAccounts.SalesVATReduced(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.ServRed(), 5, Enum::"Tax Calculation Type"::"Normal VAT", STaxCategoryLbl, '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.ServNormal(), CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.ServNormal(), 20, Enum::"Tax Calculation Type"::"Reverse Charge VAT", STaxCategoryLbl, CreateGBGLAccounts.PurchaseVATNormal(), '', true);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.ServRed(), CreateGBGLAccounts.SalesVATReduced(), CreateGBGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.ServRed(), 5, Enum::"Tax Calculation Type"::"Reverse Charge VAT", STaxCategoryLbl, CreateGBGLAccounts.PurchaseVATReduced(), '', true);
+        ContosoPostingSetup.SetOverwriteData(false);
+    end;
+
+    var
+        MiscellaneousVATDescriptionLbl: Label 'Miscellaneous %1 VAT', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
+        VATOnlyInvoicesDescriptionLbl: Label 'VAT Only Invoices %1%', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
+        NormalVatDescriptionLbl: Label 'Standard VAT (%1%)', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
+        ReducedVatDescriptionLbl: Label 'Reduced VAT (%1%)', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
+        STaxCategoryLbl: Label 'S', Locked = true;
+        ETaxCategoryLbl: Label 'E', Locked = true;
+}

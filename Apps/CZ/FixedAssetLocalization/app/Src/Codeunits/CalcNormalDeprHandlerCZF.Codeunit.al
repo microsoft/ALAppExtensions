@@ -67,7 +67,7 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
         DateLastAppr, DateLastDepr, TempFromDate, TempToDate, DeprStartingDate, FirstDeprDate : Date;
         TempNoDays, CounterDepr : Integer;
         TaxDeprAmount, TempFaktor, TempDepBasis, TempBookValue, RemainingLife, DepreciatedDays, Denominator : Decimal;
-        Year365Days, UseDeprStartingDate : Boolean;
+        Year365Days, UseDeprStartingDate, UseRounding : Boolean;
     begin
         if BookValue = 0 then
             exit(0);
@@ -211,7 +211,10 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
             else
                 if TempFaktor < 1 then
                     TaxDeprAmount := TaxDeprAmount * TempFaktor;
-        if DepreciationBook."Use Rounding in Periodic Depr." then
+
+        UseRounding := DepreciationBook."Use Rounding in Periodic Depr.";
+        OnCalcTaxAmountOnBeforeCalcRounding(DepreciationBook, TaxDeprAmount, TaxDeprAmount, UseRounding);
+        if UseRounding then
             TaxDeprAmount := Round(Round(TaxDeprAmount), 1, '>');
 
         exit(-TaxDeprAmount);
@@ -349,8 +352,14 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
     end;
     #endregion Use FA Ledger Check
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnCalcSLAmountOnAfterCalcFromSLPercent', '', false, false)]
+    local procedure RoundOnCalcSLAmountOnAfterCalcFromSLPercent(var Result: Decimal)
+    begin
+        Result := Round(Result, 0.0001);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Depreciation Calculation", 'OnBeforeCalcRounding', '', false, false)]
-    local procedure RoundUpOnBeforeCalcRounding(DeprBook: Record "Depreciation Book"; var DeprAmount: Decimal; var IsHandled: Boolean)
+    local procedure RoundUpOnBeforeCalcRounding(DeprBook: Record "Depreciation Book"; OrigDeprAmount: Decimal; var DeprAmount: Decimal; var IsHandled: Boolean)
     begin
         if DeprBook."Use Rounding in Periodic Depr." then begin
             DeprAmount := Round(DeprAmount, 1, '>');
@@ -363,5 +372,10 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
     begin
         if Type = Type::IncludeInGainLoss then
             FAPostingTypeSetup.TestField("Include in Gain/Loss Calc.", true);
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnCalcTaxAmountOnBeforeCalcRounding(DepreciationBook: Record "Depreciation Book"; OrigTaxDeprAmount: Decimal; var TaxDeprAmount: Decimal; var UseRounding: Boolean)
+    begin
     end;
 }

@@ -7,13 +7,7 @@ namespace Microsoft.Inventory.Intrastat;
 enum 11724 "Intrastat Statement Type CZL"
 {
     Extensible = true;
-#if not CLEAN22
-    ObsoleteState = Pending;
-    ObsoleteTag = '22.0';
-    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-#else
     Access = Internal;
-#endif
 
     value(0; Primary)
     {

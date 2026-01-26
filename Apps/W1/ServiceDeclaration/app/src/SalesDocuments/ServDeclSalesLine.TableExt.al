@@ -35,7 +35,7 @@ tableextension 5020 "Serv. Decl. Sales Line" extends "Sales Line"
             var
                 SalesHeader: Record "Sales Header";
             begin
-                SalesHeader.Get("Document Type", "Document No.");
+                SalesHeader := Rec.GetSalesHeader();
                 if "Applicable For Serv. Decl." then
                     SalesHeader.TestField("Applicable For Serv. Decl.");
             end;

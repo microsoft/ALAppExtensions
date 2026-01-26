@@ -4,10 +4,21 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
+using Microsoft.Finance.VAT.Calculation;
+
 pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
 {
     layout
     {
+        modify("Non-Deductible VAT% ")
+        {
+            Visible = NonDeductibleVATPerVisible;
+            Enabled = NonDeductibleVATPerVisible;
+        }
+        modify("Allow Non-Deductible VAT")
+        {
+            ToolTip = 'Specifies whether the Non-Deductible VAT is considered for this particular combination of VAT business posting group and VAT product posting group. If the ''Allow'' value is used then the input VAT is reduced by the coefficient from ''Non-Deductible VAT Setup''. If the ''Do not apply'' value is used then the input VAT is not applied.';
+        }
         addafter("EU Service")
         {
             field("Intrastat Service CZL"; Rec."Intrastat Service CZL")
@@ -39,7 +50,13 @@ pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             field("VAT LCY Corr. Rounding Acc.CZL"; Rec."VAT LCY Corr. Rounding Acc.CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on documents in foreign currency, eg use an account for document rounding';
+                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on purchase documents in foreign currency, eg use an account for document rounding';
+                Visible = false;
+            }
+            field("VAT LCY Corr. Rnd. Acc. S. CZL"; Rec."VAT LCY Corr. Rnd. Acc. S. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on sales documents in foreign currency, eg use an account for document rounding';
                 Visible = false;
             }
             field("VIES Sales CZL"; Rec."VIES Sales CZL")
@@ -78,4 +95,14 @@ pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        NonDeductibleVATPerVisible := NonDeductibleVAT.IsNonDeductibleVATEnabled() and not NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
+    end;
+
+    var
+        NonDeductibleVAT: Codeunit "Non-Deductible VAT";
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        NonDeductibleVATPerVisible: Boolean;
 }

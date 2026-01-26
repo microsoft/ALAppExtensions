@@ -1,9 +1,10 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Foundation.Company;
@@ -508,6 +509,34 @@ table 31075 "VIES Declaration Header CZL"
             Caption = 'Tax Office Region Number';
             DataClassification = CustomerContent;
         }
+        field(111; "Purchase Add.-Currency Amount"; Decimal)
+        {
+            CalcFormula = sum("VIES Declaration Line CZL"."Additional-Currency Amount" where("VIES Declaration No." = field("No."),
+                                                                            "Trade Type" = const(Purchase)));
+            Caption = 'Purchase Additional-Currency Amount';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(112; "Sales Add.-Currency Amount"; Decimal)
+        {
+            CalcFormula = sum("VIES Declaration Line CZL"."Additional-Currency Amount" where("VIES Declaration No." = field("No."),
+                                                                            "Trade Type" = const(Sales)));
+            Caption = 'Sales Additional-Currency Amount';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(113; "Additional-Currency Amount"; Decimal)
+        {
+            CalcFormula = sum("VIES Declaration Line CZL"."Additional-Currency Amount" where("VIES Declaration No." = field("No.")));
+            Caption = 'Additional-Currency Amount';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(120; "Export Amt.inAdd.-CurrencyAmt."; Boolean)
+        {
+            Caption = 'Export Amounts in Add. Reporting Currency';
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {
@@ -539,18 +568,10 @@ table 31075 "VIES Declaration Header CZL"
     var
         VIESDeclarationHeader: Record "VIES Declaration Header CZL";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
         NoSeriesCode: Code[20];
     begin
         if "No." = '' then begin
             NoSeriesCode := GetNoSeriesCode();
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", WorkDate(), "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := NoSeriesCode;
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
@@ -559,10 +580,6 @@ table 31075 "VIES Declaration Header CZL"
                 VIESDeclarationHeader.SetLoadFields("No.");
                 while VIESDeclarationHeader.Get("No.") do
                     "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, WorkDate(), "No.");
-            end;
-#endif
         end;
         InitRecord();
     end;
@@ -577,6 +594,7 @@ table 31075 "VIES Declaration Header CZL"
         PostCode: Record "Post Code";
         CountryRegion: Record "Country/Region";
         CompanyInformation: Record "Company Information";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         FileManagement: Codeunit "File Management";
         PeriodExistsErr: Label 'Period from %1 till %2 already exists on %3 %4.', Comment = '%1 = start date; %2 = end date; %3 = VIES declaration tablecaption; %4 = VIES declaration number';
         EarlierDateErr: Label '%1 should be earlier than %2.', Comment = '%1 = starting date fieldcaption; %2 = end date fieldcaption';
@@ -589,7 +607,9 @@ table 31075 "VIES Declaration Header CZL"
     begin
         CompanyInformation.Get();
         StatutoryReportingSetupCZL.Get();
+        GeneralLedgerSetup.Get();
         "VAT Registration No." := CompanyInformation."VAT Registration No.";
+        "Export Amt.inAdd.-CurrencyAmt." := GeneralLedgerSetup."Additional Reporting Currency" <> '';
         "Document Date" := WorkDate();
         Name := StatutoryReportingSetupCZL."Company Trade Name";
         "Name 2" := '';
@@ -746,6 +766,7 @@ table 31075 "VIES Declaration Header CZL"
         TempBlob.CreateOutStream(OutStream);
         VIESDeclarationCZL.SetHeader(VIESDeclarationHeaderCZL);
         VIESDeclarationCZL.SetLines(TempVIESDeclarationLineCZL);
+        VIESDeclarationCZL.SetShowAmtInAddCurrency("Export Amt.inAdd.-CurrencyAmt.");
         VIESDeclarationCZL.SetDestination(OutStream);
         VIESDeclarationCZL.Export();
         FileManagement.BLOBExport(TempBlob, StrSubstNo(FileNameTok, "No."), true);

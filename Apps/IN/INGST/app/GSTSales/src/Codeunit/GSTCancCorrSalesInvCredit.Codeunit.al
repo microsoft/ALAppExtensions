@@ -6,8 +6,10 @@ namespace Microsoft.Finance.GST.Sales;
 
 using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Pricing.PriceList;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Pricing;
 using Microsoft.Utilities;
 
 codeunit 18152 "GST Canc Corr Sales Inv Credit"
@@ -45,6 +47,24 @@ codeunit 18152 "GST Canc Corr Sales Inv Credit"
             repeat
                 CalculateTax.CallTaxEngineOnSalesLine(SalesLine, SalesLine);
             until SalesLine.Next() = 0;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Line - Price", 'OnAfterSetPrice', '', false, false)]
+    local procedure OnAfterSetPrice(var SalesLine: Record "Sales Line"; AmountType: Enum "Price Amount Type"; PriceListLine: Record "Price List Line")
+    begin
+        if PriceListLine.IsEmpty() then
+            exit;
+
+        if AmountType <> AmountType::Price then
+            exit;
+
+        SalesLine."Price Inclusive of Tax" := PriceListLine."Price Inclusive of Tax";
+        SalesLine."Unit Price Incl. of Tax" := 0;
+        SalesLine."Total UPIT Amount" := 0;
+        if SalesLine."Price Inclusive of Tax" then begin
+            SalesLine."Unit Price Incl. of Tax" := PriceListLine."Unit Price";
+            SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
+        end;
     end;
 
     local procedure TestGSTTDSTCSSalesInvoiceIsPaid(var SalesInvoiceHeader: Record "Sales Invoice Header"; var IsHandled: Boolean)

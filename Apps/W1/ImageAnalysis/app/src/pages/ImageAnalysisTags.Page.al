@@ -19,6 +19,24 @@ page 2026 "Image Analysis Tags"
     {
         area(content)
         {
+            group(Disclaimer)
+            {
+                Caption = '';
+                Editable = false;
+                ShowCaption = false;
+
+                field(DisclaimerText; DisclaimerValueMsg)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Enabled = true;
+                    Visible = true;
+                    MultiLine = true;
+                    Style = AttentionAccent;
+                    StyleExpr = true;
+                    ToolTip = 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
+                    ShowCaption = false;
+                }
+            }
             repeater(TagsTable)
             {
                 field(TagName; "Tag Name")
@@ -219,6 +237,7 @@ page 2026 "Image Analysis Tags"
         Emphasize: Boolean;
         FilterOn: Boolean;
         TagAppendedDescriptionTxt: Label '%1 %2', Locked = true;
+        DisclaimerValueMsg: Label 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
 
     procedure ToggleConfidenceTagFilter()
     begin

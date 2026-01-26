@@ -3,6 +3,7 @@ codeunit 139812 "APIV2 - UofM E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

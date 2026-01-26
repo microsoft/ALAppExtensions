@@ -17,12 +17,6 @@ codeunit 31132 "Cust. Ledger Entry Handler CZL"
         CustLedgerEntry."Transit No. CZL" := GenJournalLine."Transit No. CZL";
         CustLedgerEntry."IBAN CZL" := GenJournalLine."IBAN CZL";
         CustLedgerEntry."SWIFT Code CZL" := GenJournalLine."SWIFT Code CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not GenJournalLine.IsReplaceVATDateEnabled() then
-            GenJournalLine."VAT Reporting Date" := GenJournalLine."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         CustLedgerEntry."VAT Date CZL" := GenJournalLine."VAT Reporting Date";
     end;
 }

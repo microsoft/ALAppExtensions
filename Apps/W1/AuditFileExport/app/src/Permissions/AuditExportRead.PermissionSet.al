@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AuditFileExport;
 
 permissionset 5260 "Audit Export - Read"
 {
+    Caption = 'Audit Export - Read', MaxLength = 30;
     Access = Public;
     Assignable = true;
     IncludedPermissionSets = "Audit Export - Objects";

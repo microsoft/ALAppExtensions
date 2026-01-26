@@ -32,7 +32,7 @@ codeunit 18470 "Subcontracting Validations"
         SubOrderComponents.SetRange("Document Line No.", PurchaseLine."Line No.");
         SubOrderComponents.FindSet();
         repeat
-            SubOrderComponents.Validate("Quantity To Send", (PurchaseLine."Deliver Comp. For" * SubOrderComponents."Quantity per"));
+            SubOrderComponents.Validate("Quantity To Send", PurchaseLine.GetQuantityToSendForSubOrderCompList(SubOrderComponents, PurchaseLine."Deliver Comp. For"));
 
             if SubOrderComponents."Scrap %" <> 0 then
                 SubOrderComponents."Quantity To Send" := SubOrderComponents."Quantity To Send" +
@@ -48,7 +48,7 @@ codeunit 18470 "Subcontracting Validations"
         SubOrderCompListVend.SetRange("Document Line No.", PurchaseLine."Line No.");
         SubOrderCompListVend.FindSet();
         repeat
-            SubOrderCompListVend.Validate("Qty. to Consume", PurchaseLine."Qty. to Receive" * SubOrderCompListVend."Quantity per" * SubOrderCompListVend."Qty. per Unit of Measure");
+            SubOrderCompListVend.Validate("Qty. to Consume", PurchaseLine.GetQtytoConsumeForSubOrderCompListVend(SubOrderCompListVend, PurchaseLine."Qty. to Receive"));
             SubOrderCompListVend.Validate("Qty. to Return (C.E.)", PurchaseLine."Qty. to Reject (C.E.)" * SubOrderCompListVend."Quantity per");
             SubOrderCompListVend.Validate("Qty. To Return (V.E.)", (SubOrderCompListVend."Quantity per" * PurchaseLine."Qty. to Reject (V.E.)"));
             SubOrderCompListVend.Validate("Posting Date", PurchaseLine."Posting Date");

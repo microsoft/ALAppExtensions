@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSBase;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Account;
-using System.Security.AccessControl;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
+using System.Security.AccessControl;
 
 table 18689 "TDS Entry"
 {
@@ -425,6 +425,11 @@ table 18689 "TDS Entry"
             Editable = false;
         }
         field(91; "Over & Above Threshold Opening"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(92; "Original Invoice Amount"; Decimal)
         {
             DataClassification = CustomerContent;
             Editable = false;

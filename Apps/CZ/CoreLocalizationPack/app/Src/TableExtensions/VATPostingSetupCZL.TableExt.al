@@ -6,12 +6,28 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Reporting;
 
 tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
 {
     fields
     {
+        modify("Non-Deductible VAT %")
+        {
+            trigger OnAfterValidate()
+            begin
+                AssertThatNonDeductibleVATPctIsNotUsed();
+            end;
+        }
+        modify("Allow Non-Deductible VAT")
+        {
+            trigger OnBeforeValidate()
+            begin
+                if "Allow Non-Deductible VAT" = "Allow Non-Deductible VAT"::"Do not apply CZL" then
+                    NonDeductibleVATCZL.CheckNonDeductibleVATEnabled();
+            end;
+        }
         field(11770; "Reverse Charge Check CZL"; Enum "Reverse Charge Check CZL")
         {
             Caption = 'Reverse Charge Check';
@@ -37,6 +53,17 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             trigger OnValidate()
             begin
                 CheckGLAcc("Sales VAT Curr. Exch. Acc CZL");
+            end;
+        }
+        field(11785; "VAT Coeff. Corr. Account CZL"; Code[20])
+        {
+            Caption = 'VAT Coefficient Correction Account';
+            DataClassification = CustomerContent;
+            TableRelation = "G/L Account";
+
+            trigger OnValidate()
+            begin
+                CheckGLAcc("VAT Coeff. Corr. Account CZL");
             end;
         }
         field(31050; "VIES Purchase CZL"; Boolean)
@@ -76,19 +103,49 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
         }
         field(31115; "VAT LCY Corr. Rounding Acc.CZL"; Code[20])
         {
-            Caption = 'VAT LCY Correction Rounding Account';
+            Caption = 'Purch. VAT LCY Corr. Rounding Account';
+            TableRelation = "G/L Account"."No." where("Account Type" = const(Posting));
+            DataClassification = CustomerContent;
+        }
+        field(31116; "VAT LCY Corr. Rnd. Acc. S. CZL"; Code[20])
+        {
+            Caption = 'Sales VAT LCY Corr. Rounding Account';
             TableRelation = "G/L Account"."No." where("Account Type" = const(Posting));
             DataClassification = CustomerContent;
         }
     }
 
+    var
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        NotUsedNonDeductibleVATPctErr: Label 'The "Non-Deductible VAT %" field should not be used. Use the "Non-Deductible VAT Setup" page instead.';
+
+    trigger OnAfterInsert()
+    begin
+        AssertThatNonDeductibleVATPctIsNotUsed();
+    end;
+
+    trigger OnAfterModify()
+    begin
+        AssertThatNonDeductibleVATPctIsNotUsed();
+    end;
+#if not CLEAN28
+    [Obsolete('Use GetPurchaseLCYCorrRoundingAccCZL function instead.', '28.0')]
     procedure GetLCYCorrRoundingAccCZL(): Code[20]
+    begin
+        exit(GetPurchaseLCYCorrRoundingAccCZL());
+    end;
+#endif
+
+    procedure GetPurchaseLCYCorrRoundingAccCZL(): Code[20]
     var
         PostingSetupManagement: Codeunit PostingSetupManagement;
         VATLCYCorrRoundingAccNo: Code[20];
         IsHandled: Boolean;
     begin
+#if not CLEAN28
         OnBeforeGetLCYCorrRoundingAccCZL(Rec, VATLCYCorrRoundingAccNo, IsHandled);
+#endif
+        OnBeforeGetPurchaseLCYCorrRoundingAccCZL(Rec, VATLCYCorrRoundingAccNo, IsHandled);
         if IsHandled then
             exit(VATLCYCorrRoundingAccNo);
 
@@ -98,8 +155,69 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
         exit("VAT LCY Corr. Rounding Acc.CZL");
     end;
 
+    procedure GetSalesLCYCorrRoundingAccCZL(): Code[20]
+    var
+        PostingSetupManagement: Codeunit PostingSetupManagement;
+        VATLCYCorrRoundingAccNo: Code[20];
+        IsHandled: Boolean;
+    begin
+        OnBeforeGetSalesLCYCorrRoundingAccCZL(Rec, VATLCYCorrRoundingAccNo, IsHandled);
+        if IsHandled then
+            exit(VATLCYCorrRoundingAccNo);
+
+        if "VAT LCY Corr. Rnd. Acc. S. CZL" = '' then
+            PostingSetupManagement.SendVATPostingSetupNotification(Rec, FieldCaption("VAT LCY Corr. Rnd. Acc. S. CZL"));
+        TestField("VAT LCY Corr. Rnd. Acc. S. CZL");
+        exit("VAT LCY Corr. Rnd. Acc. S. CZL");
+    end;
+
+    local procedure AssertThatNonDeductibleVATPctIsNotUsed()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeAssertThatNonDeductibleVATPctIsNotUsedCZL(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not NonDeductibleVATCZL.IsNonDeductibleVATEnabled() then
+            exit;
+
+        if "Non-Deductible VAT %" <> 0 then
+            Error(NotUsedNonDeductibleVATPctErr);
+    end;
+
+    internal procedure UpdateAllowNonDeductibleVAT()
+    begin
+        case true of
+            "Non-Deductible VAT %" = 0:
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Do Not Allow";
+            "Non-Deductible VAT %" = 100:
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Do not apply CZL";
+            else
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Allow";
+        end;
+    end;
+#if not CLEAN28
+    [Obsolete('Use OnBeforeGetPurchaseLCYCorrRoundingAccCZL integration event instead.', '28.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetLCYCorrRoundingAccCZL(var VATPostingSetup: Record "VAT Posting Setup"; var VATLCYCorrRoundingAccNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+#endif
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAssertThatNonDeductibleVATPctIsNotUsedCZL(var VATPostingSetup: Record "VAT Posting Setup"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetPurchaseLCYCorrRoundingAccCZL(var VATPostingSetup: Record "VAT Posting Setup"; var VATLCYCorrRoundingAccNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetSalesLCYCorrRoundingAccCZL(var VATPostingSetup: Record "VAT Posting Setup"; var VATLCYCorrRoundingAccNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

@@ -3,10 +3,9 @@ namespace Microsoft.Bank.StatementImport.Yodlee;
 using Microsoft.Bank.Setup;
 using Microsoft.Foundation.Company;
 using System.Integration;
-using System.Telemetry;
-using System.Security.Encryption;
 using System.Privacy;
-
+using System.Security.Encryption;
+using System.Telemetry;
 table 1450 "MS - Yodlee Bank Service Setup"
 {
     ReplicateData = false;
@@ -55,6 +54,15 @@ table 1450 "MS - Yodlee Bank Service Setup"
         field(12; "Cobrand Environment Name"; Guid)
         {
         }
+        field(13; "Admin Login Name"; Guid)
+        {
+        }
+        field(14; "Client Id"; Guid)
+        {
+        }
+        field(15; "Client Secret"; Guid)
+        {
+        }
         field(8; "Cobrand Name"; Guid)
         {
         }
@@ -72,8 +80,10 @@ table 1450 "MS - Yodlee Bank Service Setup"
 
             trigger OnValidate();
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 FeatureTelemetry: Codeunit "Feature Telemetry";
+                MSYodleeBankServiceConsentProvidedLbl: Label 'MS Yodlee Bank Service - consent provided by UserSecurityId %1.', Locked = true;
             begin
                 if not xRec."Enabled" and Rec."Enabled" then
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
@@ -82,6 +92,9 @@ table 1450 "MS - Yodlee Bank Service Setup"
                     TESTFIELD("Bank Feed Import Format");
                     if not MSYodleeServiceMgt.HasCustomCredentialsInAzureKeyVault() then begin
                         HasCobrandEnvironmentName("Cobrand Environment Name");
+                        HasAdminLoginName("Admin Login Name");
+                        HasClientSecret("Client Secret");
+                        HasClientId("Client Id");
                         HasCobrandName("Cobrand Name");
                         HasCobrandPassword("Cobrand Password");
                         TESTFIELD("Service URL");
@@ -89,6 +102,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
                     end;
                     TESTFIELD("User Profile Email Address");
                     FeatureTelemetry.LogUptake('0000GY2', 'Yodlee', Enum::"Feature Uptake Status"::"Set up");
+                    AuditLog.LogAuditMessage(StrSubstNo(MSYodleeBankServiceConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                 end;
             end;
         }
@@ -98,32 +112,6 @@ table 1450 "MS - Yodlee Bank Service Setup"
         field(30; "Bank Feed Import Format"; Code[20])
         {
             TableRelation = "Bank Export/Import Setup".Code where(Direction = const(Import));
-        }
-        field(40; "Cobrand Session Token"; BLOB)
-        {
-            ObsoleteReason = 'This field is no longer used after refactoring.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '18.0';
-        }
-        field(41; "Cob. Token Last Date Updated"; DateTime)
-        {
-            Editable = false;
-            ObsoleteReason = 'This field is no longer used after refactoring.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '18.0';
-        }
-        field(42; "Consumer Session Token"; BLOB)
-        {
-            ObsoleteReason = 'This field is no longer used after refactoring.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '18.0';
-        }
-        field(43; "Cons. Token Last Date Updated"; DateTime)
-        {
-            Editable = false;
-            ObsoleteReason = 'This field is no longer used after refactoring.';
-            ObsoleteState = Removed;
-            ObsoleteTag = '18.0';
         }
         field(50; "Accept Terms of Use"; Boolean)
         {
@@ -167,10 +155,14 @@ table 1450 "MS - Yodlee Bank Service Setup"
     var
         CompanyInformationMgt: Codeunit "Company Information Mgt.";
         CryptographyManagement: Codeunit "Cryptography Management";
+        MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
         YodleeServiceUrlValue: Text;
         YodleeNameValue: Text;
         CobrandValue: Text;
     begin
+        if MSYodleeServiceMgt.ClientCredentialsAuthEnabled() then
+            exit('');
+
         // do not return Cobrand name if Encryption is disabled
         if not CryptographyManagement.IsEncryptionEnabled() then
             exit('');
@@ -232,6 +224,36 @@ table 1450 "MS - Yodlee Bank Service Setup"
         exit('');
     end;
 
+    procedure GetAdminLoginName(NameKey: Guid): Text;
+    var
+        CompanyInformationMgt: Codeunit "Company Information Mgt.";
+        CryptographyManagement: Codeunit "Cryptography Management";
+        YodleeServiceUrlValue: Text;
+        AdminLoginValue: Text;
+    begin
+        if not CryptographyManagement.IsEncryptionEnabled() then
+            exit('');
+
+        if not ISNULLGUID(NameKey) then
+            if IsolatedStorage.Get(NameKey, DataScope::Company, AdminLoginValue) then
+                exit(AdminLoginValue);
+
+        if CompanyInformationMgt.IsDemoCompany() then
+            exit('');
+
+        if "Service URL" <> '' then begin
+            if not MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceUrlValue) then
+                exit('');
+            if "Service URL" <> YodleeServiceUrlValue then
+                exit('');
+        end;
+
+        if MSYodleeServiceMgt.GetYodleeAdminLoginNameFromAzureKeyVault(AdminLoginValue) then
+            exit(AdminLoginValue);
+
+        exit('');
+    end;
+
     [NonDebuggable]
     procedure GetCobrandPassword(PasswordKey: Guid): Text;
     var
@@ -264,6 +286,70 @@ table 1450 "MS - Yodlee Bank Service Setup"
         if MSYodleeServiceMgt.GetYodleeCobrandPassFromAzureKeyVault(YodleePasswordValue) then
             if not HasPassword("Cobrand Name") then
                 exit(YodleePasswordValue);
+
+        exit('');
+    end;
+
+    [NonDebuggable]
+    procedure GetClientId(ClientIdKey: Guid): Text;
+    var
+        CompanyInformationMgt: Codeunit "Company Information Mgt.";
+        CryptographyManagement: Codeunit "Cryptography Management";
+        YodleeServiceURL: Text;
+        ClientId: Text;
+    begin
+        if not CryptographyManagement.IsEncryptionEnabled() then
+            exit('');
+
+        if not ISNULLGUID(ClientIdKey) then
+            if IsolatedStorage.Get(ClientIdKey, DataScope::Company, ClientId) then
+                if ClientId <> '' then
+                    exit(ClientId);
+
+        if CompanyInformationMgt.IsDemoCompany() then
+            exit('');
+
+        if "Service URL" <> '' then begin
+            if not MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceURL) then
+                exit('');
+            if "Service URL" <> YodleeServiceURL then
+                exit('');
+        end;
+
+        if MSYodleeServiceMgt.GetYodleeClientIdFromAzureKeyVault(ClientId) then
+            exit(ClientId);
+
+        exit('');
+    end;
+
+    [NonDebuggable]
+    procedure GetClientSecret(ClientSecretKey: Guid): Text;
+    var
+        CompanyInformationMgt: Codeunit "Company Information Mgt.";
+        CryptographyManagement: Codeunit "Cryptography Management";
+        YodleeServiceURL: Text;
+        ClientSecret: Text;
+    begin
+        if not CryptographyManagement.IsEncryptionEnabled() then
+            exit('');
+
+        if not ISNULLGUID(ClientSecretKey) then
+            if IsolatedStorage.Get(ClientSecretKey, DataScope::Company, ClientSecret) then
+                if ClientSecret <> '' then
+                    exit(ClientSecret);
+
+        if CompanyInformationMgt.IsDemoCompany() then
+            exit('');
+
+        if "Service URL" <> '' then begin
+            if not MSYodleeServiceMgt.GetYodleeServiceURLFromAzureKeyVault(YodleeServiceURL) then
+                exit('');
+            if "Service URL" <> YodleeServiceURL then
+                exit('');
+        end;
+
+        if MSYodleeServiceMgt.GetYodleeClientSecretFromAzureKeyVault(ClientSecret) then
+            exit(ClientSecret);
 
         exit('');
     end;
@@ -307,10 +393,27 @@ table 1450 "MS - Yodlee Bank Service Setup"
         exit(GetCobrandName(NameKey) <> '');
     end;
 
+    procedure HasAdminLoginName(NameKey: Guid): Boolean;
+    begin
+        exit(GetAdminLoginName(NameKey) <> '');
+    end;
+
     [NonDebuggable]
     procedure HasCobrandPassword(PasswordKey: Guid): Boolean;
     begin
         exit(GetCobrandPassword(PasswordKey) <> '');
+    end;
+
+    [NonDebuggable]
+    procedure HasClientId(ClientIdKey: Guid): Boolean;
+    begin
+        exit(GetClientId(ClientIdKey) <> '');
+    end;
+
+    [NonDebuggable]
+    procedure HasClientSecret(ClientSecretKey: Guid): Boolean;
+    begin
+        exit(GetClientSecret(ClientSecretKey) <> '');
     end;
 
     procedure HasDefaultCredentials(): Boolean;
@@ -322,8 +425,10 @@ table 1450 "MS - Yodlee Bank Service Setup"
         if MSYodleeServiceMgt.HasCustomCredentialsInAzureKeyVault() then
             exit(true);
 
-        HasNoCustomCredentials := ISNULLGUID("Cobrand Environment Name") and ISNULLGUID("Cobrand Name") and ISNULLGUID("Cobrand Password");
+        HasNoCustomCredentials := ISNULLGUID("Cobrand Environment Name") and ISNULLGUID("Cobrand Name") and ISNULLGUID("Cobrand Password") and IsNullGuid("Admin Login Name");
         HasCredentials := HasCobrandName("Cobrand Name") and HasCobrandPassword("Cobrand Password");
+        if not HasCredentials then
+            HasCredentials := HasAdminLoginName("Admin Login Name") and HasClientId("Client Id") and HasClientSecret("Client Secret");
         HasCobrandEnvName := HasCobrandEnvironmentName("Cobrand Environment Name");
 
         if GetServiceURL().Contains('ysl') then
@@ -408,6 +513,21 @@ table 1450 "MS - Yodlee Bank Service Setup"
     end;
 
     [Scope('OnPrem')]
+    procedure SaveAdminLoginName(var AdminLoginNameKey: Guid; AdminLoginNameValue: Text);
+    begin
+        AdminLoginNameValue := DELCHR(AdminLoginNameValue, '=', ' ');
+
+        if ISNULLGUID(AdminLoginNameKey) or not IsolatedStorage.Contains(AdminLoginNameKey, DataScope::Company) then
+            AdminLoginNameKey := FORMAT(CreateGuid());
+
+        SetSecretIntoIsolatedStorage(AdminLoginNameKey, AdminLoginNameValue);
+
+        if AdminLoginNameValue <> '' then
+            CheckEncryption();
+    end;
+
+    [NonDebuggable]
+    [Scope('OnPrem')]
     procedure SaveCobrandPassword(var CobrandPasswordKey: Guid; CobrandPasswordValue: Text);
     begin
         CobrandPasswordValue := DELCHR(CobrandPasswordValue, '=', ' ');
@@ -420,9 +540,37 @@ table 1450 "MS - Yodlee Bank Service Setup"
             CheckEncryption();
     end;
 
+    [Scope('OnPrem')]
+    procedure SaveClientId(var ClientIdKey: Guid; ClientIdValue: Text);
+    begin
+        ClientIdValue := DELCHR(ClientIdValue, '=', ' ');
+
+        if ISNULLGUID(ClientIdKey) or not IsolatedStorage.Contains(ClientIdKey, DataScope::Company) then
+            ClientIdKey := FORMAT(CreateGuid());
+        SetSecretIntoIsolatedStorage(ClientIdKey, ClientIdValue);
+
+        if ClientIdValue <> '' then
+            CheckEncryption();
+    end;
+
+    [NonDebuggable]
+    [Scope('OnPrem')]
+    procedure SaveClientSecret(var ClientSecretKey: Guid; ClientSecretValue: Text);
+    begin
+        ClientSecretValue := DELCHR(ClientSecretValue, '=', ' ');
+
+        if ISNULLGUID(ClientSecretKey) or not IsolatedStorage.Contains(ClientSecretKey, DataScope::Company) then
+            ClientSecretKey := FORMAT(CreateGuid());
+        SetSecretIntoIsolatedStorage(ClientSecretKey, ClientSecretValue);
+
+        if ClientSecretValue <> '' then
+            CheckEncryption();
+    end;
+
     [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveConsumerPassword(var ConsumerPasswordKey: Guid; ConsumerPasswordValue: Text);
+    var
     begin
         ConsumerPasswordValue := DELCHR(ConsumerPasswordValue, '=', ' ');
 
@@ -462,4 +610,3 @@ table 1450 "MS - Yodlee Bank Service Setup"
         exit(DELCHR("Service URL", '>', ' '));
     end;
 }
-

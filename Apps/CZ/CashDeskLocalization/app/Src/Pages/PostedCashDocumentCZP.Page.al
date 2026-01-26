@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -204,11 +204,11 @@ page 31165 "Posted Cash Document CZP"
         }
         area(FactBoxes)
         {
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(11737), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(database::"Posted Cash Document Hdr. CZP"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -226,6 +226,21 @@ page 31165 "Posted Cash Document CZP"
     {
         area(navigation)
         {
+            action(PostedCashDocumentStatistics)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Statistics';
+                Image = Statistics;
+                ShortCutKey = 'F7';
+                ToolTip = 'View the statistics on the selected cash document.';
+#if CLEAN27
+                Visible = true;
+#else
+                Visible = false;
+#endif
+                RunObject = Page "Posted Cash Doc. Stat. CZP";
+                RunPageLink = "Cash Desk No." = field("Cash Desk No."), "No." = field("No.");
+            }
             action(Dimensions)
             {
                 ApplicationArea = Basic, Suite;
@@ -315,31 +330,6 @@ page 31165 "Posted Cash Document CZP"
                 {
                 }
             }
-#if not CLEAN22
-#pragma warning disable AS0072
-            group(Category_Report)
-            {
-                Caption = 'Report';
-                ObsoleteTag = '22.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This group has been removed.';
-                Visible = false;
-
-                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-                actionref(PrintPromoted; "&Print")
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-            }
-#pragma warning restore AS0072
-#endif
             group(Category_Category8)
             {
                 Caption = 'Print';

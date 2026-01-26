@@ -1,5 +1,4 @@
-﻿#if not CLEAN24
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -9,33 +8,32 @@ using Microsoft.Finance.VAT.Calculation;
 
 pageextension 31230 "VAT Setup CZL" extends "VAT Setup"
 {
-    ObsoleteState = Pending;
-    ObsoleteTag = '24.0';
-    ObsoleteReason = 'The page extension is no longer needed.';
-#if not CLEAN22
-
     layout
     {
-        modify(VATDate)
+        addafter("Enable Non-Deductible VAT")
         {
-            Visible = IsVATDateEnabled and ReplaceVATDateEnabled;
+            field("Enable Non-Deductible VAT CZL"; Rec."Enable Non-Deductible VAT CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if the Non-Deductible VAT CZ feature is enabled.';
+                Editable = Rec."Enable Non-Deductible VAT" and not Rec."Enable Non-Deductible VAT CZL";
+            }
         }
     }
-    trigger OnOpenPage()
-    var
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-    begin
-        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
-        IsVATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
-    end;
 
-    var
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        ReplaceVATDateEnabled: Boolean;
-        IsVATDateEnabled: Boolean;
-#endif
+    actions
+    {
+        addlast(VATReporting)
+        {
+            action("Non-Deductible VAT Setup CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Non-Deductible VAT Setup';
+                Image = VATPostingSetup;
+                RunObject = Page "Non-Deductible VAT Setup CZL";
+                ToolTip = 'Set up VAT coefficient correction.';
+                Visible = Rec."Enable Non-Deductible VAT CZL";
+            }
+        }
+    }
 }
-
-#endif

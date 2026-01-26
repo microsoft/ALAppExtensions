@@ -8,6 +8,14 @@ pageextension 11784 "Source Code Setup CZL" extends "Source Code Setup"
 {
     layout
     {
+        addlast(General)
+        {
+            field("VAT Coeff. Correction CZL"; Rec."VAT Coeff. Correction CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the source code for end-of-period VAT coefficient entry of recalculation.';
+            }
+        }
         addafter("Compress Cust. Ledger")
         {
             field("Sales VAT Delay CZL"; Rec."Sales VAT Delay CZL")

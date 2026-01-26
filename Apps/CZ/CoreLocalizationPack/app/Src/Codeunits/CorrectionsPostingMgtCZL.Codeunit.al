@@ -23,6 +23,7 @@ using Microsoft.Projects.Project.Journal;
 using Microsoft.Purchases.Document;
 using Microsoft.Sales.Document;
 using Microsoft.Service.Document;
+using Microsoft.Service.Posting;
 
 codeunit 11796 "Corrections Posting Mgt. CZL"
 {
@@ -379,37 +380,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
             ServiceLine."Negative CZL" := (ServiceLine.Quantity < 0);
     end;
 
-#if not CLEAN23
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPrepareSales', '', false, false)]
-    local procedure InvPostBufferSetCorrectionOnAfterInvPostBufferPrepareSales(var SalesLine: Record "Sales Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
-        InvoicePostBuffer."Correction CZL" := SalesHeader.Correction xor SalesLine."Negative CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPreparePurchase', '', false, false)]
-    local procedure InvPostBufferSetCorrectionOnAfterInvPostBufferPreparePurchase(var PurchaseLine: Record "Purchase Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-    var
-        PurchaseHeader: Record "Purchase Header";
-    begin
-        PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
-        InvoicePostBuffer."Correction CZL" := PurchaseHeader.Correction xor PurchaseLine."Negative CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPrepareService', '', false, false)]
-    local procedure InvPostBufferSetCorrectionOnAfterInvPostBufferPrepareService(var ServiceLine: Record "Service Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer")
-    var
-        ServiceHeader: Record "Service Header";
-    begin
-        ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.");
-        InvoicePostBuffer."Correction CZL" := ServiceHeader.Correction xor ServiceLine."Negative CZL";
-    end;
-#pragma warning restore AL0432
-#endif
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareSales', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Microsoft.Sales.Posting."Sales Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure SetCorrectionOnAfterPrepareSales(var SalesLine: Record "Sales Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
     var
         SalesHeader: Record "Sales Header";
@@ -418,7 +389,7 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
         InvoicePostingBuffer."Correction CZL" := SalesHeader.Correction xor SalesLine."Negative CZL";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPreparePurchase', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Microsoft.Purchases.Posting."Purch. Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure SetCorrectionOnAfterPreparePurchase(var PurchaseLine: Record "Purchase Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
     var
         PurchaseHeader: Record "Purchase Header";
@@ -427,8 +398,8 @@ codeunit 11796 "Corrections Posting Mgt. CZL"
         InvoicePostingBuffer."Correction CZL" := PurchaseHeader.Correction xor PurchaseLine."Negative CZL";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareService', '', false, false)]
-    local procedure SetCorrectionOnAfterPrepareService(var ServiceLine: Record "Service Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
+    local procedure SetCorrectionOnAfterPrepareService(ServiceLine: Record "Service Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
     var
         ServiceHeader: Record "Service Header";
     begin

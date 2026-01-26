@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Manufacturing.Capacity;
+
 codeunit 5129 "Contoso Unit of Measure"
 {
     InherentEntitlements = X;
@@ -5,6 +15,7 @@ codeunit 5129 "Contoso Unit of Measure"
     Permissions =
         tabledata "Unit of Measure" = rim,
         tabledata "Item Unit of Measure" = rim,
+        tabledata "Unit of Measure Translation" = rim,
         tabledata "Capacity Unit of Measure" = rim;
 
     var
@@ -15,7 +26,7 @@ codeunit 5129 "Contoso Unit of Measure"
         OverwriteData := Overwrite;
     end;
 
-    procedure InsertUnitOfMeasure(UnitOfMeasureCode: Code[10]; Description: Text[10]; InternationalStandardCode: Code[10])
+    procedure InsertUnitOfMeasure(UnitOfMeasureCode: Code[10]; Description: Text[50]; InternationalStandardCode: Code[10])
     var
         UnitOfMeasure: Record "Unit of Measure";
         Exists: Boolean;
@@ -35,6 +46,28 @@ codeunit 5129 "Contoso Unit of Measure"
             UnitOfMeasure.Modify(true)
         else
             UnitOfMeasure.Insert(true);
+    end;
+
+    procedure InsertUnitOfMeasureTranslation(UnitOfMeasureCode: Code[10]; Description: Text[10]; LanguageCode: Code[10])
+    var
+        UnitOfMeasureTranslation: Record "Unit of Measure Translation";
+        Exists: Boolean;
+    begin
+        if UnitOfMeasureTranslation.Get(UnitOfMeasureCode, LanguageCode) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        UnitOfMeasureTranslation.Validate(Code, UnitOfMeasureCode);
+        UnitOfMeasureTranslation.Validate(Description, Description);
+        UnitOfMeasureTranslation.Validate("Language Code", LanguageCode);
+
+        if Exists then
+            UnitOfMeasureTranslation.Modify(true)
+        else
+            UnitOfMeasureTranslation.Insert(true);
     end;
 
     procedure InsertItemUnitOfMeasure(ItemNo: Code[20]; Code: Code[10]; QtyPerUnitOfMeasure: Decimal; QtyRoundingPrecision: Decimal; Length: Decimal; Width: Decimal; Height: Decimal)

@@ -5,9 +5,7 @@ using Microsoft.Sustainability.Setup;
 
 report 6212 "Total Emissions"
 {
-    DefaultLayout = Excel;
-    ExcelLayout = './src/Reports/TotalEmissions.xlsx';
-    RDLCLayout = './src/Reports/TotalEmissions.rdlc';
+    DefaultRenderingLayout = TotalEmissionsExcel;
     ApplicationArea = Basic, Suite;
     Caption = 'Total Emissions';
     UsageCategory = ReportsAndAnalysis;
@@ -20,6 +18,9 @@ report 6212 "Total Emissions"
             DataItemTableView = sorting("Entry No.");
             RequestFilterFields = "Posting Date", "Emission Scope", "Account No.";
             column(PeriodFilter; StrSubstNo(PeriodLbl, SustLedgDateFilter))
+            {
+            }
+            column(SustLedgDateFilter; SustLedgDateFilter)
             {
             }
             column(CompanyName; CompanyProperty.DisplayName())
@@ -86,6 +87,8 @@ report 6212 "Total Emissions"
 
     requestpage
     {
+        AboutText = 'This report provides information on the cumulative greenhouse gas (GHG) emissions across the chosen Sustainability Accounts and periods.';
+        AboutTitle = 'About Total Emissions';
         SaveValues = true;
 
         layout
@@ -105,15 +108,33 @@ report 6212 "Total Emissions"
             }
         }
     }
+    rendering
+    {
+        layout(TotalEmissionsExcel)
+        {
+            Type = Excel;
+            Caption = 'Total Emissions Excel Layout';
+            LayoutFile = './src/Reports/TotalEmissions.xlsx';
+            Summary = 'Built in layout for the Total Emissions excel report. This report provides information on the cumulative greenhouse gas (GHG) emissions across the chosen Sustainability Accounts and periods.';
+        }
+        layout(TotalEmissionsRDLC)
+        {
+            Type = RDLC;
+            Caption = 'Total Emissions RDLC Layout';
+            LayoutFile = './src/Reports/TotalEmissions.rdlc';
+            Summary = 'Built in layout for the Total Emissions RDLC report. This report provides information on the cumulative greenhouse gas (GHG) emissions across the chosen Sustainability Accounts and periods.';
+        }
+    }
     labels
     {
         TotalEmissionsCaption = 'Total Emissions';
+        TotalEmissionsPrint = 'Total Emissions (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
         PageCaption = 'Page';
         CompName = 'Company Name';
         PostingDate = 'Posting Date';
-        EmissionsPerScopes = 'Emissions Per Scopes';
-        EmissionsThroughPeriod = 'Emissions Through Period';
-        EmissionsSplit = 'Emissions Split';
+        EmissionsPerScopes = 'Emissions Per Scopes', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EmissionsThroughPeriod = 'Emissions Through Period', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EmissionsSplit = 'Emissions Split', MaxLength = 31, Comment = 'Excel worksheet name.';
         SumOfEmission_CO2 = 'Sum of Emission CO2';
         SumOfEmission_CH4 = 'Sum of Emission CH4';
         SumOfEmission_N2O = 'Sum of Emission N2O';
@@ -123,6 +144,18 @@ report 6212 "Total Emissions"
         TotalEmissionOfCO2 = 'Total Emission of CO2';
         TotalEmissionOfCH4 = 'Total Emission of CH4';
         TotalEmissionOfN2O = 'Total Emission of N2O';
+        TotalEmissionsLabel = 'Total Emissions';
+        UnitofMeasureLabel = 'Unit of Measure';
+        DataRetrieved = 'Data retrieved:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        CompanyNameLabel = 'Company Name';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
     }
 
     trigger OnPreReport()

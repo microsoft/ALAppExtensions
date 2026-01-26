@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using System.Telemetry;
+
 page 5194 "Contoso Demo Tool"
 {
     PageType = List;
@@ -11,6 +20,7 @@ page 5194 "Contoso Demo Tool"
     DeleteAllowed = false;
     Editable = false;
     RefreshOnActivate = true;
+    AnalysisModeEnabled = false;
 
     layout
     {
@@ -24,7 +34,7 @@ page 5194 "Contoso Demo Tool"
                 }
                 field("Data Level"; Rec."Data Level")
                 {
-                    ToolTip = 'Specifies the demo data module installation level';
+                    ToolTip = 'Specifies the demo data module installation level. It indicates which data was included and can vary between "Setup Data," meaning that only settings and configurations were installed, or "All," in which case setup, master data, transactions, and history were installed.';
                 }
             }
         }
@@ -114,31 +124,8 @@ page 5194 "Contoso Demo Tool"
     begin
         FeatureTelemetry.LogUptake('0000KZY', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::Discovered);
         ContosoDemoTool.RefreshModules();
-        FilterModulesWithApplicationAreas();
+        ContosoDemoTool.FilterModulesWithApplicationAreas(Rec);
         FeatureTelemetry.LogUptake('0000KZZ', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::"Set up");
-    end;
-
-    local procedure FilterModulesWithApplicationAreas()
-    var
-        ApplicationAreaMgt: Codeunit "Application Area Mgmt. Facade";
-    begin
-        if not ApplicationAreaMgt.IsServiceEnabled() then
-            FilterOutModule(Enum::"Contoso Demo Data Module"::"Service Module");
-
-        if not ApplicationAreaMgt.IsManufacturingEnabled() then
-            FilterOutModule(Enum::"Contoso Demo Data Module"::"Manufacturing Module");
-    end;
-
-    local procedure FilterOutModule(Module: Enum "Contoso Demo Data Module")
-    var
-        ModuleFilter: Text;
-    begin
-        ModuleFilter := Rec.GetFilter(Module);
-
-        if ModuleFilter = '' then
-            Rec.SetFilter(Module, '<>%1', Module)
-        else
-            Rec.SetFilter(Module, ModuleFilter + '&<>%1', Module);
     end;
 
     var

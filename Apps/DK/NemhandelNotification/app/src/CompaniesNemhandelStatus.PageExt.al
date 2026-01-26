@@ -1,5 +1,6 @@
 namespace Microsoft.EServices;
 
+using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Foundation.Company;
 
 pageextension 13609 "Companies Nemhandel Status" extends Companies
@@ -10,6 +11,7 @@ pageextension 13609 "Companies Nemhandel Status" extends Companies
     trigger OnDeleteRecord(): Boolean
     var
         CompanyInformation: Record "Company Information";
+        GLEntry: Record "G/L Entry";
         NemhandelStatusMgt: Codeunit "Nemhandel Status Mgt.";
     begin
         if not NemhandelStatusMgt.IsSaaSProductionCompany() then
@@ -18,6 +20,13 @@ pageextension 13609 "Companies Nemhandel Status" extends Companies
         CompanyInformation.ChangeCompany(Rec.Name);
         if not CompanyInformation.Get() then
             exit(true);
+
+        if GLEntry.ReadPermission() then begin
+            GLEntry.Reset();
+            GLEntry.ChangeCompany(Rec.Name);
+            if GLEntry.IsEmpty() then
+                exit(true);
+        end;
 
         if CompanyInformation."Registered with Nemhandel" = "Nemhandel Company Status"::Registered then begin
             Message(DeleteNemhandelRegisteredCompanyErr);

@@ -450,8 +450,8 @@ report 31193 "Service Quote CZL"
                 CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
                 CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
-                FormatAddress.ServiceOrderSellto(CustAddr, "Service Header");
-                FormatAddress.ServiceHeaderShipTo(ShipToAddr, "Service Header");
+                ServiceFormatAddress.ServiceOrderSellto(CustAddr, "Service Header");
+                ServiceFormatAddress.ServiceHeaderShipTo(ShipToAddr, "Service Header");
                 FormatDocument.SetPaymentTerms(PaymentTerms, "Payment Terms Code", "Language Code");
                 FormatDocument.SetShipmentMethod(ShipmentMethod, "Shipment Method Code", "Language Code");
                 FormatDocument.SetPaymentMethod(PaymentMethod, "Payment Method Code", "Language Code");
@@ -516,6 +516,7 @@ report 31193 "Service Quote CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
+        ServiceFormatAddress: Codeunit "Service Format Address";
         SegManagement: Codeunit SegManagement;
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Service Quote';

@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Service;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Service.Setup;
+
 codeunit 5103 "Create Svc Setup"
 {
     InherentEntitlements = X;
@@ -5,7 +15,6 @@ codeunit 5103 "Create Svc Setup"
     Permissions = tabledata "Service Mgt. Setup" = rim;
 
     var
-        SvcDemoDataSetup: Record "Service Module Setup";
         ContosoService: Codeunit "Contoso Service";
         SkillElectricalTok: Label 'ELECTR', MaxLength = 10;
         SkillElectricalLbl: Label 'Electrical', MaxLength = 100;
@@ -28,15 +37,12 @@ codeunit 5103 "Create Svc Setup"
     var
         SvcGLAccount: Codeunit "Create Svc GL Account";
     begin
-        SvcDemoDataSetup.Get();
-
         ContosoService.InsertBaseCalendar(DefaultBaseCalendar(), DefaultBaseCalendar());
 
         CreateServiceSetup();
-
         CreateSkillCodes();
         CreateServiceOrderTypes();
-        CreateFaultReasonCodes(); //TODO: move to fault reason code ?
+        CreateFaultReasonCodes();
 
         ContosoService.InsertServiceItemGroup(DefaultServiceItemGroup(), DefaultServiceItemGroup(), true);
 
@@ -55,6 +61,8 @@ codeunit 5103 "Create Svc Setup"
 
         if ServiceMgtSetup."Service Item Nos." = '' then
             ServiceMgtSetup.Validate("Service Item Nos.", SevNoSeries.ServiceItem());
+        if ServiceMgtSetup."Loaner Nos." = '' then
+            ServiceMgtSetup.Validate("Loaner Nos.", SevNoSeries.ServiceLoaner());
         if ServiceMgtSetup."Service Order Nos." = '' then
             ServiceMgtSetup.Validate("Service Order Nos.", SevNoSeries.ServiceOrder());
         if ServiceMgtSetup."Service Invoice Nos." = '' then
@@ -73,6 +81,8 @@ codeunit 5103 "Create Svc Setup"
             ServiceMgtSetup.Validate("Service Credit Memo Nos.", SevNoSeries.ServiceCreditMemo());
         if ServiceMgtSetup."Posted Serv. Credit Memo Nos." = '' then
             ServiceMgtSetup.Validate("Posted Serv. Credit Memo Nos.", SevNoSeries.PostedServiceCreditMemo());
+        if ServiceMgtSetup."Troubleshooting Nos." = '' then
+            ServiceMgtSetup.Validate("Troubleshooting Nos.", SevNoSeries.ServiceTroubleShooting());
 
         ServiceMgtSetup.Validate("Base Calendar Code", DefaultBaseCalendar());
 
@@ -80,6 +90,7 @@ codeunit 5103 "Create Svc Setup"
         Evaluate(ServiceMgtSetup."Default Warranty Duration", '<2Y>');
         ServiceMgtSetup.Modify(true);
     end;
+
 
     local procedure CreateSkillCodes()
     begin

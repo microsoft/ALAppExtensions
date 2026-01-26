@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionsetextension 3998 "D365 BUS FULL ACCESSQuickBooks Data Migration" extends "D365 BUS FULL ACCESS"
 {
     Permissions = tabledata "MigrationQB Account" = RIMD,

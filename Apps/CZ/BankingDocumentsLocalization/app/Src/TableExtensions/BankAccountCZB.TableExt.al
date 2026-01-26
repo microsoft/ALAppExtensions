@@ -85,6 +85,13 @@ tableextension 31286 "Bank Account CZB" extends "Bank Account"
             InitValue = true;
             DataClassification = CustomerContent;
         }
+        field(11760; "Keep Description CZB"; Boolean)
+        {
+            Caption = 'Keep Description';
+            InitValue = true;
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies that when the Account No. on a payment journal line is changed, the line Description remains unchanged.';
+        }
         field(11071; "Payment Partial Suggestion CZB"; Boolean)
         {
             Caption = 'Payment Partial Suggestion';
@@ -210,6 +217,15 @@ tableextension 31286 "Bank Account CZB" extends "Bank Account"
         Testfield("Foreign Payment Ex. Format CZB");
         BankExportImportSetup.Get("Foreign Payment Ex. Format CZB");
         exit(BankExportImportSetup."Processing Codeunit ID");
+    end;
+
+    procedure GetForeignPaymentExportXMLPortIdCZB(): Integer
+    var
+        BankExportImportSetup: Record "Bank Export/Import Setup";
+    begin
+        Testfield("Foreign Payment Ex. Format CZB");
+        BankExportImportSetup.Get("Foreign Payment Ex. Format CZB");
+        exit(BankExportImportSetup."Processing XMLport ID");
     end;
 
     procedure GetPaymentImportCodeunitIdCZB(): Integer

@@ -221,10 +221,6 @@ report 11715 "Open Cust. Entries to Date CZL"
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        CalcFields("Original Amt. (LCY)", "Remaining Amt. (LCY)");
-                        if PrintCurrency then
-                            CalcFields("Original Amount", "Remaining Amount");
-
                         if not (("Remaining Amt. (LCY)" <> 0) or ("Remaining Amount" <> 0)) then
                             CurrReport.Skip();
 
@@ -279,7 +275,7 @@ report 11715 "Open Cust. Entries to Date CZL"
                             end;
 
                         // buffer for total sumary by G/L account;
-                        UpdateBuffer(TempGLAccountNetChange, "Cust. Ledger Entry".GetReceivablesAccNoCZL(), "Remaining Amt. (LCY)", 0);
+                        UpdateBuffer(TempGLAccountNetChange, GetReceivablesAccNo("Cust. Ledger Entry"), "Remaining Amt. (LCY)", 0);
                         UpdateBuffer(TempTotalCurrencyGLAccountNetChange, '', "Original Amt. (LCY)", "Remaining Amt. (LCY)");
 
                         if PrintCurrency then begin
@@ -290,10 +286,15 @@ report 11715 "Open Cust. Entries to Date CZL"
 
                     trigger OnPreDataItem()
                     begin
+                        SetLoadFields("Customer No.", "Original Amt. (LCY)", "Remaining Amt. (LCY)", "Original Amount", "Remaining Amount", "Currency Code", "Due Date", "Description", "Document No.", "Document Type", "Posting Date", "Entry No.");
                         SetRange("Customer No.", SecondCustomer."No.");
                         SetFilter("Posting Date", CustDateFilter);
                         SetFilter("Date Filter", CustDateFilter);
                         Clear(Balance);
+                        if PrintCurrency then
+                            SetAutoCalcFields("Original Amt. (LCY)", "Remaining Amt. (LCY)", "Original Amount", "Remaining Amount")
+                        else
+                            SetAutoCalcFields("Original Amt. (LCY)", "Remaining Amt. (LCY)");
                     end;
                 }
                 dataitem(CustomerByCurrency; "Integer")
@@ -350,6 +351,7 @@ report 11715 "Open Cust. Entries to Date CZL"
 
                 trigger OnPreDataItem()
                 begin
+                    SecondCustomer.LoadFields("No.", "Name");
                     if not SecondCustomer.FindSet() then
                         CurrReport.Break();
 
@@ -671,6 +673,7 @@ report 11715 "Open Cust. Entries to Date CZL"
         TempGLAccountNetChange: Record "G/L Account Net Change" temporary;
         TempCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
         TempTotalCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
+        TempCustomerPostingGroupBuffer: Record "Customer Posting Group" temporary;
 #pragma warning restore AL0432        
         GLAccount: Record "G/L Account";
         LimitDate: array[5] of DateFormula;
@@ -726,5 +729,36 @@ report 11715 "Open Cust. Entries to Date CZL"
             TempGLAccountNetChange."Net Change in Jnl." := Amount2;
             TempGLAccountNetChange.Insert();
         end;
+    end;
+
+    local procedure GetReceivablesAccNo(CustLedgerEntry: Record "Cust. Ledger Entry"): Code[20]
+    var
+        CustomerPostingGroup: Record "Customer Posting Group";
+        GLAccountNo: Code[20];
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGetReceivablesAccountNo(CustLedgerEntry, GLAccountNo, IsHandled);
+        if IsHandled then
+            exit(GLAccountNo);
+
+        if CustLedgerEntry."Customer Posting Group" = '' then
+            exit('');
+
+        if TempCustomerPostingGroupBuffer.Get(CustLedgerEntry."Customer Posting Group") then
+            exit(TempCustomerPostingGroupBuffer."Receivables Account")
+        else begin
+            CustomerPostingGroup.Get(CustLedgerEntry."Customer Posting Group");
+            TempCustomerPostingGroupBuffer.Init();
+            TempCustomerPostingGroupBuffer.Code := CustLedgerEntry."Customer Posting Group";
+            TempCustomerPostingGroupBuffer."Receivables Account" := CustomerPostingGroup."Receivables Account";
+            TempCustomerPostingGroupBuffer.Insert();
+            exit(CustomerPostingGroup."Receivables Account");
+        end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetReceivablesAccountNo(CustLedgerEntry: Record "Cust. Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
+    begin
     end;
 }

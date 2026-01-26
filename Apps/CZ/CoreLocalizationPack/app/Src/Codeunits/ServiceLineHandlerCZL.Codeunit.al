@@ -11,20 +11,8 @@ codeunit 11785 "Service Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterAssignItemValues', '', false, false)]
     local procedure CopyFieldsOnAfterAssignItemValues(var ServiceLine: Record "Service Line"; Item: Record Item)
-#if not CLEAN22
-    var
-        ServiceHeader: Record "Service Header";
-#endif
     begin
         ServiceLine."Tariff No. CZL" := Item."Tariff No.";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ServiceLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
-        ServiceLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
-        if ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.") then
-            ServiceLine."Physical Transfer CZL" := ServiceHeader."Physical Transfer CZL";
-#pragma warning restore AL0432
-#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterAssignResourceValues', '', false, false)]

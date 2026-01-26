@@ -2175,46 +2175,6 @@ report 11722 "General Journal - Test CZL"
         ICGLAccount: Record "IC G/L Account";
         ICBankAccount: Record "IC Bank Account";
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        if (CurrentICPartner <> '') and ("Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Outgoing) then begin
-            if ("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-               ("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-               ("Gen. Journal Line"."Account No." <> '') and
-               ("Gen. Journal Line"."Bal. Account No." <> '')
-            then
-                AddError(StrSubstNo(CannotEnterGLBankAccErr, "Gen. Journal Line".FieldCaption("Account No."), "Gen. Journal Line".FieldCaption("Bal. Account No.")))
-            else
-                if (("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and ("Gen. Journal Line"."Account No." <> '')) xor
-                   (("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
-                    ("Gen. Journal Line"."Bal. Account No." <> ''))
-                then
-                    if "Gen. Journal Line"."IC Partner G/L Acc. No." = '' then
-                        AddError(StrSubstNo(FieldMustBeSpecifiedErr, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No.")))
-                    else begin
-                        if ICGLAccount.Get("Gen. Journal Line"."IC Partner G/L Acc. No.") then
-                            if ICGLAccount.Blocked then
-                                AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
-                                    "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No."), "Gen. Journal Line"."IC Partner G/L Acc. No."));
-
-                        if "Gen. Journal Line"."IC Account Type" = "IC Journal Account Type"::"Bank Account" then
-                            if ICBankAccount.Get("Gen. Journal Line"."IC Account No.", CurrentICPartner) then
-                                if ICBankAccount.Blocked then
-                                    AddError(StrSubstNo(MustBeForErr, ICGLAccount.FieldCaption(Blocked), false,
-                                        "Gen. Journal Line".FieldCaption("IC Account No."), "Gen. Journal Line"."IC Account No."));
-                    end
-                else
-                    if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then
-                        AddError(StrSubstNo(CannotBeSpecifiedErr, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No.")));
-        end else
-            if "Gen. Journal Line"."IC Partner G/L Acc. No." <> '' then begin
-                if "Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Incoming then
-                    AddError(StrSubstNo(MustNotBeSpecifiedWhenIsErr, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No."), "Gen. Journal Line".FieldCaption("IC Direction"), Format("Gen. Journal Line"."IC Direction")));
-                if CurrentICPartner = '' then
-                    AddError(StrSubstNo(MustNotBeSpecifiedWhenInterDocErr, "Gen. Journal Line".FieldCaption("IC Partner G/L Acc. No.")));
-            end;
-#pragma warning restore AL0432
-#else
         if (CurrentICPartner <> '') and ("Gen. Journal Line"."IC Direction" = "Gen. Journal Line"."IC Direction"::Outgoing) then begin
             if ("Gen. Journal Line"."Account Type" in ["Gen. Journal Line"."Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
                ("Gen. Journal Line"."Bal. Account Type" in ["Gen. Journal Line"."Bal. Account Type"::"G/L Account", "Gen. Journal Line"."Account Type"::"Bank Account"]) and
@@ -2252,7 +2212,6 @@ report 11722 "General Journal - Test CZL"
                 if CurrentICPartner = '' then
                     AddError(StrSubstNo(MustNotBeSpecifiedWhenInterDocErr, "Gen. Journal Line".FieldCaption("IC Account No.")));
             end;
-#endif
     end;
 
     [IntegrationEvent(false, false)]

@@ -47,16 +47,35 @@ page 7251 "Bank Acc. Rec. AI Proposal Sub"
                 {
                     ApplicationArea = All;
                     Tooltip = 'Specifies the action proposed by the AI';
+                    CaptionClass = ProposalFieldCaption;
 
                     trigger OnDrillDown()
                     begin
                         OpenProposedRecord();
                     end;
                 }
+                field(DimensionSet; Rec."Dimension Set Text")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Dimensions';
+                    ToolTip = 'Specifies a drill-down to a page on which you can dimensions for the corresponding journal line';
+                    Visible = MapTextToAccountVisible;
+
+                    trigger OnDrillDown()
+                    var
+
+                    begin
+                        if Rec.EditDimensions() then begin
+                            Rec.Modify();
+                            CurrPage.Update();
+                        end;
+                    end;
+
+                }
                 field("Map Text to Account"; MapTextToAccountTxt)
                 {
                     ApplicationArea = All;
-                    Caption = ' ';
+                    Caption = 'Text-to-account mapping';
                     ToolTip = 'Specifies a drill-down to save this proposal and reuse it next time';
                     Visible = MapTextToAccountVisible;
 
@@ -118,8 +137,10 @@ page 7251 "Bank Acc. Rec. AI Proposal Sub"
             TempInitialBankAccRecAIProposal.SetFilter("Bank Account Ledger Entry No.", '<>0');
             if TempInitialBankAccRecAIProposal.FindSet() then
                 repeat
-                    if BankAccountLedgerEntry.Get(TempInitialBankAccRecAIProposal."Bank Account Ledger Entry No.") then
+                    if BankAccountLedgerEntry.Get(TempInitialBankAccRecAIProposal."Bank Account Ledger Entry No.") then begin
+                        OnBeforeOpenProposedRecordOnBeforeCopyFromBankAccLedgerEntry(TempBankAccountLedgerEntry, BankAccountLedgerEntry);
                         TempBankAccountLedgerEntry.CopyFromBankAccLedgerEntry(BankAccountLedgerEntry, '');
+                    end;
                 until TempInitialBankAccRecAIProposal.Next() = 0;
 
             Page.Run(Page::"Bank Account Ledger Entries", TempBankAccountLedgerEntry);
@@ -159,6 +180,11 @@ page 7251 "Bank Acc. Rec. AI Proposal Sub"
                     Rec."G/L Account No." := TempBankAccRecAIProposal."G/L Account No.";
                     Rec."Transaction Date" := TempBankAccRecAIProposal."Transaction Date";
                     Rec."AI Proposal" := TempBankAccRecAIProposal."AI Proposal";
+                    Rec."Dimension Set ID" := TempBankAccRecAIProposal."Dimension Set ID";
+                    if Rec."Dimension Set ID" = 0 then
+                        Rec."Dimension Set Text" := SetDimensionsLbl
+                    else
+                        Rec."Dimension Set Text" := Rec.GetDimensionSetText(Rec."Dimension Set ID");
                     Rec.Difference := TempBankAccRecAIProposal.Difference;
                     Rec.Description := TempBankAccRecAIProposal.Description;
                     Rec.Insert();
@@ -207,16 +233,31 @@ page 7251 "Bank Acc. Rec. AI Proposal Sub"
                         if Rec."G/L Account No." <> '' then
                             if Rec."G/L Account No." <> TempBankAccRecAIProposal."G/L Account No." then
                                 TempBankAccRecAIProposal."G/L Account No." := Rec."G/L Account No.";
+                        if Rec."Dimension Set ID" <> 0 then
+                            if Rec."Dimension Set ID" <> TempBankAccRecAIProposal."Dimension Set ID" then
+                                TempBankAccRecAIProposal."Dimension Set ID" := Rec."Dimension Set ID";
                         TempBankAccRecAIProposal.Insert();
                     until TempInitialBankAccRecAIProposal.Next() = 0;
             until Rec.Next() = 0;
     end;
 
+    internal procedure SetProposalFieldCaption(PropFldCap: Text)
+    begin
+        ProposalFieldCaption := PropFldCap;
+    end;
+
     var
         TempInitialBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary;
         MapTextToAccountVisible: Boolean;
-        MapTextToAccountTxt: label 'Save...';
-        ApplyToMultipleLedgerEntriesTxt: label 'Apply to multiple entries. Drill down to see more.';
+        ProposalFieldCaption: Text;
+        MapTextToAccountTxt: label 'Add...';
+        SetDimensionsLbl: label 'Set...';
+        ApplyToMultipleLedgerEntriesTxt: label 'Match multiple entries. Drill down to see more.';
         TelemetryUserSavingProposalTxt: label 'User saving Copilot proposal in Text-toAccount Mapping table', Locked = true;
         TelemetryUserChangedProposalTxt: label 'User changed Copilot proposal for transfering to G/L Account', Locked = true;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOpenProposedRecordOnBeforeCopyFromBankAccLedgerEntry(var TempBankAccountLedgerEntry: Record "Bank Account Ledger Entry" temporary; var BankAccountLedgerEntry: Record "Bank Account Ledger Entry")
+    begin
+    end;
 }

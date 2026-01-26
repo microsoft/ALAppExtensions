@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -10,6 +10,7 @@ using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Setup;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
 using System.Automation;
@@ -63,6 +64,14 @@ page 31181 "Purch. Advance Letter CZZ"
                     ApplicationArea = Basic, Suite;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the name of the vendor sending the invoice.';
+                }
+                field("Pay-to Name 2"; Rec."Pay-to Name 2")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                    QuickEntry = false;
+                    Visible = false;
+                    ToolTip = 'Specifies the name 2 of the vendor sending the invoice.';
                 }
                 group("Pay-to")
                 {
@@ -214,17 +223,6 @@ page 31181 "Purch. Advance Letter CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if post VAT usage automatically.';
                 }
-#if not CLEAN25
-                field("Amount on Iss. Payment Order"; "Amount on Iss. Payment Order")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies amount on issued payment order.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This field is obsolete and will be removed in a future release. The CalcSuggestedAmountToApply function should be used instead.';
-                    ObsoleteTag = '25.0';
-                }
-#endif
                 field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApply())
                 {
                     Caption = 'Suggested Amount to Apply (LCY)';
@@ -236,6 +234,22 @@ page 31181 "Purch. Advance Letter CZZ"
                     begin
                         Rec.DrillDownSuggestedAmountToApply();
                     end;
+                }
+                field("Doc. Amount Incl. VAT"; Rec."Doc. Amount Incl. VAT")
+                {
+                    ApplicationArea = Basic, Suite;
+                    BlankZero = true;
+                    Enabled = DocAmountsEnable;
+                    Visible = DocAmountsEnable;
+                    Editable = DocAmountsEditable;
+                    ShowMandatory = true;
+                }
+                field("Doc. Amount VAT"; Rec."Doc. Amount VAT")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Enabled = DocAmountsEnable;
+                    Visible = DocAmountsEnable;
+                    Editable = DocAmountsEditable;
                 }
             }
             part(AdvLetterLines; "Purch. Advance Letter Line CZZ")
@@ -396,16 +410,16 @@ page 31181 "Purch. Advance Letter CZZ"
                 ApplicationArea = Basic, Suite;
                 SubPageLink = "No." = field("Pay-to Vendor No.");
             }
-            part("Attached Documents"; "Document Attachment Factbox")
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(31008), "No." = field("No.");
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Purch. Adv. Letter Header CZZ"), "No." = field("No.");
             }
             part(PendingApprovalFactBox; "Pending Approval FactBox")
             {
                 ApplicationArea = All;
-                SubPageLink = "Table ID" = const(31008), "Document No." = field("No.");
+                SubPageLink = "Table ID" = const(Database::"Purch. Adv. Letter Header CZZ"), "Document No." = field("No.");
                 Visible = OpenApprovalEntriesExistForCurrUser;
             }
             part(ApprovalFactBox; "Approval FactBox")
@@ -585,6 +599,7 @@ page 31181 "Purch. Advance Letter CZZ"
                         RelPurchAdvLetterDoc: Codeunit "Rel. Purch.Adv.Letter Doc. CZZ";
                     begin
                         RelPurchAdvLetterDoc.PerformManualRelease(Rec);
+                        ActivateFields();
                     end;
                 }
                 action(Reopen)
@@ -600,6 +615,7 @@ page 31181 "Purch. Advance Letter CZZ"
                         RelPurchAdvLetterDoc: Codeunit "Rel. Purch.Adv.Letter Doc. CZZ";
                     begin
                         RelPurchAdvLetterDoc.PerformManualReopen(Rec);
+                        ActivateFields();
                     end;
                 }
             }
@@ -622,6 +638,22 @@ page 31181 "Purch. Advance Letter CZZ"
                         PurchAdvLetterManagement: Codeunit "PurchAdvLetterManagement CZZ";
                     begin
                         PurchAdvLetterManagement.CloseAdvanceLetter(Rec);
+                    end;
+                }
+                action(CopyDocument)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Copy Document';
+                    Ellipsis = true;
+                    Enabled = Rec."No." <> '';
+                    Image = CopyDocument;
+                    ToolTip = 'Copy document lines and header information from another purchase advance letter to this document. You can copy a purchase advance letter into a new purchase advance letter to quickly create a similar document.';
+
+                    trigger OnAction()
+                    begin
+                        Rec.CopyDocument();
+                        if Rec.Get(Rec."No.") then;
+                        CurrPage.Update();
                     end;
                 }
             }
@@ -821,80 +853,6 @@ page 31181 "Purch. Advance Letter CZZ"
                 {
                 }
             }
-#if not CLEAN22
-#pragma warning disable AS0072
-            group(Category_Report)
-            {
-                Caption = 'Report';
-                ObsoleteTag = '22.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This group has been removed.';
-                Visible = false;
-
-                actionref(Print_Promoted; Print)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-                actionref(PrintToAttachment_Promoted; PrintToAttachment)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-            }
-
-            group(Category_History)
-            {
-                Caption = 'History';
-                ObsoleteTag = '22.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This group has been removed.';
-                Visible = false;
-
-                actionref(Entries_Promoted; Entries)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-            }
-            group(Category_Approve)
-            {
-                Caption = 'Approve';
-                ObsoleteTag = '22.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This group has been removed.';
-                Visible = false;
-
-                actionref(Approve_Promoted; Approve)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-                actionref(Reject_Promoted; Reject)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-                actionref(Delegate_Promoted; Delegate)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-                actionref(Comment_Promoted; Comment)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-            }
-#pragma warning restore AS0072
-#endif
             group(Category_Category7)
             {
                 Caption = 'Purchase Advance Letter';
@@ -948,6 +906,7 @@ page 31181 "Purch. Advance Letter CZZ"
     var
         FormatAddress: Codeunit "Format Address";
         DocNoVisible, IsBillToCountyVisible, DynamicEditable, OpenApprovalEntriesExistForCurrUser, OpenApprovalEntriesExist, HasIncomingDocument : Boolean;
+        DocAmountsEnable, DocAmountsEditable : Boolean;
 
     local procedure SetDocNoVisible()
     var
@@ -960,8 +919,13 @@ page 31181 "Purch. Advance Letter CZZ"
     end;
 
     local procedure ActivateFields()
+    var
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
+        PurchasesPayablesSetup.Get();
         IsBillToCountyVisible := FormatAddress.UseCounty(Rec."Pay-to Country/Region Code");
+        DocAmountsEnable := PurchasesPayablesSetup.IsDocumentTotalAmountsAllowedCZZ(Rec);
+        DocAmountsEditable := PurchasesPayablesSetup.IsDocumentTotalAmountsEditableCZZ(Rec);
     end;
 
     local procedure SetControlVisibility()

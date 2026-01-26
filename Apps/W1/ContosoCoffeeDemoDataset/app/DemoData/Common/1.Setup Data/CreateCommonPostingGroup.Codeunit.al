@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Common;
+
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5134 "Create Common Posting Group"
 {
     InherentEntitlements = X;
@@ -11,24 +23,8 @@ codeunit 5134 "Create Common Posting Group"
     begin
         ContosoCoffeeDemoDataSetup.Get();
 
-        if ContosoCoffeeDemoDataSetup."Company Type" = ContosoCoffeeDemoDataSetup."Company Type"::VAT then begin
-            ContosoPostingGroup.InsertVATBusinessPostingGroup(Domestic(), DomesticCustomerVendorLbl);
-            ContosoPostingGroup.InsertVATBusinessPostingGroup(EU(), EUCustomerVendorLbl);
-            ContosoPostingGroup.InsertVATBusinessPostingGroup(Export(), ExportCustomerVendorLbl);
-
-            ContosoPostingGroup.InsertVATProductPostingGroup(ZeroVAT(), ZeroVATDescriptionLbl);
-            ContosoPostingGroup.InsertVATProductPostingGroup(ReducedVAT(), ReducedVATDescriptionLbl);
-            ContosoPostingGroup.InsertVATProductPostingGroup(StandardVAT(), StandardVATDescriptionLbl);
-        end else
+        if ContosoCoffeeDemoDataSetup."Company Type" <> ContosoCoffeeDemoDataSetup."Company Type"::VAT then
             ContosoPostingGroup.InsertTaxGroup(NonTaxable(), NoTaxableLbl);
-
-        ContosoPostingGroup.InsertGenBusinessPostingGroup(Domestic(), DomesticCustomerVendorLbl, Domestic());
-        ContosoPostingGroup.InsertGenBusinessPostingGroup(EU(), EUCustomerVendorLbl, EU());
-        ContosoPostingGroup.InsertGenBusinessPostingGroup(Export(), ExportCustomerVendorLbl, Export());
-
-        ContosoPostingGroup.InsertGenProductPostingGroup(Retail(), RetailLbl, StandardVAT());
-        ContosoPostingGroup.InsertGenProductPostingGroup(RawMaterial(), RawMaterialsLbl, StandardVAT());
-        ContosoPostingGroup.InsertGenProductPostingGroup(Service(), ServiceLbl, StandardVAT());
 
         ContosoPostingGroup.InsertInventoryPostingGroup(Resale(), ResaleLbl);
         ContosoPostingGroup.InsertInventoryPostingGroup(RawMaterial(), RawMaterialsLbl);
@@ -40,77 +36,73 @@ codeunit 5134 "Create Common Posting Group"
 
 
     var
-        DomesticTok: Label 'DOMESTIC', MaxLength = 20;
-        EUTok: Label 'EU', MaxLength = 20;
-        ExportTok: Label 'EXPORT', MaxLength = 20;
+        CreatePostingGroup: Codeunit "Create Posting Groups";
+#if not CLEAN27
+        CreateVATPostingGroup: Codeunit "Create VAT Posting Groups";
+#endif
         DomesticCustomerVendorLbl: Label 'Domestic customers and vendors', MaxLength = 100;
-        EUCustomerVendorLbl: Label 'Customers and vendors in EU', MaxLength = 100;
-        ExportCustomerVendorLbl: Label 'Other customers and vendors (not EU)', MaxLength = 100;
-        ZeroVATCodeLbl: Label 'No VAT', MaxLength = 20;
-        ReducedVATCodeLbl: Label 'VAT Reduced', MaxLength = 20;
-        StandardVATCodeLbl: Label 'VAT Standard', MaxLength = 20;
-        ZeroVATDescriptionLbl: Label 'No VAT', MaxLength = 100;
-        ReducedVATDescriptionLbl: Label 'Reduced VAT', MaxLength = 100;
-        StandardVATDescriptionLbl: Label 'Standard VAT', MaxLength = 100;
-        RetailTok: Label 'RETAIL', MaxLength = 20;
-        RetailLbl: Label 'Retail';
-        RawMaterialTok: Label 'RAW MAT', MaxLength = 20;
         RawMaterialsLbl: Label 'Raw Materials', MaxLength = 100;
-        ServiceTok: Label 'SERVICES', MaxLength = 20;
-        ServiceLbl: Label 'Services', MaxLength = 100;
-        ResaleTok: Label 'RESALE', MaxLength = 20;
         ResaleLbl: Label 'Resale', MaxLength = 100;
         NoTaxableTok: Label 'NONTAXABLE', MaxLength = 20;
         NoTaxableLbl: Label 'Nontaxable', MaxLength = 100;
 
     procedure Service(): Code[20]
     begin
-        exit(ServiceTok);
+        exit(CreatePostingGroup.ServicesPostingGroup());
     end;
 
     procedure Resale(): Code[20]
+    var
+        CreateInventoryPostingGroup: Codeunit "Create Inventory Posting Group";
     begin
-        exit(ResaleTok);
+        exit(CreateInventoryPostingGroup.Resale());
     end;
 
     procedure RawMaterial(): Code[20]
     begin
-        exit(RawMaterialTok);
+        exit(CreatePostingGroup.RawMatPostingGroup());
     end;
 
     procedure Domestic(): Code[20]
     begin
-        exit(DomesticTok);
+        exit(CreatePostingGroup.DomesticPostingGroup());
     end;
 
+#if not CLEAN27
+    [Obsolete('procedure is moved to codeunit 5252 "Create Posting Groups"', '27.0')]
     procedure EU(): Code[20]
     begin
-        exit(EUTok);
+        exit(CreatePostingGroup.EUPostingGroup());
     end;
 
+    [Obsolete('procedure is moved to codeunit 5252 "Create Posting Groups"', '27.0')]
     procedure Export(): Code[20]
     begin
-        exit(ExportTok);
+        exit(CreatePostingGroup.ExportPostingGroup());
     end;
 
+    [Obsolete('procedure is moved to codeunit 5473 "Create VAT Posting Groups"', '27.0')]
     procedure ZeroVAT(): Code[20]
     begin
-        exit(ZeroVATCodeLbl);
+        exit(CreateVATPostingGroup.NoVAT());
     end;
 
+    [Obsolete('procedure is moved to codeunit 5473 "Create VAT Posting Groups"', '27.0')]
     procedure ReducedVAT(): Code[20]
     begin
-        exit(ReducedVATCodeLbl);
+        exit(CreateVATPostingGroup.Reduced());
     end;
 
+    [Obsolete('procedure is moved to codeunit 5473 "Create VAT Posting Groups"', '27.0')]
     procedure StandardVAT(): Code[20]
     begin
-        exit(StandardVATCodeLbl);
+        exit(CreateVATPostingGroup.Standard());
     end;
+#endif
 
     procedure Retail(): Code[20]
     begin
-        exit(RetailTok);
+        exit(CreatePostingGroup.RetailPostingGroup());
     end;
 
     procedure NonTaxable(): Code[20]

@@ -30,7 +30,9 @@ page 2633 "Statistical Accounts Journal"
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
+                        CurrPage.SaveRecord();
                         Rec.LookupBatchName(CurrentJnlBatchName, Rec);
+                        CurrPage.Update(false)
                     end;
 
                     trigger OnValidate()

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -11,8 +11,8 @@ using Microsoft.FixedAssets.Ledger;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.UOM;
-using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Transfer;
@@ -30,7 +30,6 @@ using System.Utilities;
 
 codeunit 148121 "Intrastat Report Management IT"
 {
-    Access = Internal;
     SingleInstance = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeInitSetup', '', true, true)]
@@ -175,7 +174,7 @@ codeunit 148121 "Intrastat Report Management IT"
                 DataExchangeDefinitionCode := IntrastatReportSetup."Data Exch. Def. Code CSQ";
         end;
 
-        IntrastatReportMgt.ExportOneDataExchangeDef(IntrastatReportHeader, DataExchangeDefinitionCode, IntrastatReportHeader.Type.AsInteger() + 1, DataExch);
+        IntrastatReportMgt.ExportOneDataExchangeDef(IntrastatReportHeader, DataExchangeDefinitionCode, IntrastatReportHeader.Type.AsInteger() + 1, DataExch, IntrastatReportSetup."Max. No. of Lines in File");
         DataExch.CalcFields("File Content");
         IntrastatReportHeader.Validate("Dispatches Reported", true);
         IntrastatReportHeader.Validate("Arrivals Reported", true);
@@ -258,29 +257,6 @@ codeunit 148121 "Intrastat Report Management IT"
         IsHandled := true;
     end;
 
-#if not CLEAN24
-    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
-    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnAfterValueEntryOnPreDataItem', '', true, true)]
-    local procedure OnAfterValueEntryOnPreDataItem(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry")
-    begin
-        if not IntrastatReportHeader."Corrective Entry" then
-            ValueEntry.SetFilter("Document Type", '<>%1&<>%2&<>%3&<>%4&<>%5',
-                ValueEntry."Document Type"::"Sales Return Receipt", ValueEntry."Document Type"::"Sales Credit Memo",
-                ValueEntry."Document Type"::"Purchase Return Shipment", ValueEntry."Document Type"::"Purchase Credit Memo",
-                ValueEntry."Document Type"::"Service Credit Memo")
-        else
-            ValueEntry.SetFilter("Document Type", '<>%1&<>%2&<>%3&<>%4&<>%5&<>%6&<>%7&<>%8',
-                ValueEntry."Document Type"::"Sales Shipment", ValueEntry."Document Type"::"Sales Invoice",
-                ValueEntry."Document Type"::"Purchase Receipt", ValueEntry."Document Type"::"Purchase Invoice",
-                ValueEntry."Document Type"::"Transfer Shipment", ValueEntry."Document Type"::"Transfer Receipt",
-                ValueEntry."Document Type"::"Service Shipment", ValueEntry."Document Type"::"Service Invoice");
-
-        if IntrastatReportHeader.Type = IntrastatReportHeader.Type::Purchases then
-            ValueEntry.SetFilter("Item Ledger Entry Type", '%1|%2', "Item Ledger Entry Type"::Purchase, "Item Ledger Entry Type"::Transfer)
-        else
-            ValueEntry.SetRange("Item Ledger Entry Type", "Item Ledger Entry Type"::Sale);
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeCheckDropShipment', '', true, true)]
     local procedure OnBeforeCheckDropShipment(IntrastatReportHeader: Record "Intrastat Report Header"; ItemLedgerEntry: Record "Item Ledger Entry"; Country: Record "Country/Region"; var Result: Boolean; var IsHandled: Boolean)
@@ -289,11 +265,13 @@ codeunit 148121 "Intrastat Report Management IT"
         ItemLedgEntry2: Record "Item Ledger Entry";
     begin
         IsHandled := true;
-        Result := false;
+        Result := IntrastatReportHeader."Include Community Entries";
 
         CompanyInfo.Get();
-        if Country.Code in [CompanyInfo."Country/Region Code", ''] then
-            Result := IntrastatReportHeader."Include Community Entries";
+        if Country.Code in [CompanyInfo."Country/Region Code", ''] then begin
+            Result := false;
+            exit;
+        end;
 
         if ItemLedgerEntry."Applies-to Entry" = 0 then begin
             ItemLedgEntry2.SetCurrentKey("Item No.", "Posting Date");
@@ -305,7 +283,7 @@ codeunit 148121 "Intrastat Report Management IT"
             ItemLedgEntry2.Get(ItemLedgerEntry."Applies-to Entry");
 
         if not (IntrastatReportMgt.GetIntrastatBaseCountryCode(ItemLedgEntry2) in [CompanyInfo."Country/Region Code", '']) then
-            Result := IntrastatReportHeader."Include Community Entries";
+            Result := false;
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnAfterCheckItemLedgerEntry', '', true, true)]
@@ -315,14 +293,19 @@ codeunit 148121 "Intrastat Report Management IT"
         CompanyInfo: Record "Company Information";
     begin
         CompanyInfo.Get();
-        CurrReportSkip := (ItemLedgerEntry."Entry Type" = ItemLedgerEntry."Entry Type"::Sale) and
-            SalesShipmentHeader.Get(ItemLedgerEntry."Document No.") and
-            (CompanyInfo."Country/Region Code" = SalesShipmentHeader."Bill-to Country/Region Code");
+        case ItemLedgerEntry."Entry Type" of
+            ItemLedgerEntry."Entry Type"::Sale:
+                CurrReportSkip := SalesShipmentHeader.Get(ItemLedgerEntry."Document No.") and (CompanyInfo."Country/Region Code" = SalesShipmentHeader."Bill-to Country/Region Code");
+            ItemLedgerEntry."Entry Type"::Transfer:
+                CurrReportSkip :=
+                    ((IntrastatReportHeader.Type = IntrastatReportHeader.Type::Purchases) and (ItemLedgerEntry."Document Type" = ItemLedgerEntry."Document Type"::"Transfer Receipt") or
+                     (IntrastatReportHeader.Type = IntrastatReportHeader.Type::Sales) and (ItemLedgerEntry."Document Type" = ItemLedgerEntry."Document Type"::"Transfer Shipment"));
+        end;
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeCalculateTotalsCall', '', true, true)]
     local procedure OnBeforeCalculateTotalsCall(IntrastatReportHeader: Record "Intrastat Report Header"; var IntrastatReportLine: Record "Intrastat Report Line"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry";
-        StartDate: Date; EndDate: Date; SkipZeroAmounts: Boolean; AddCurrencyFactor: Decimal; IndirectCostPctReq: Decimal; var CurrReportSkip: Boolean; var IsHandled: Boolean)
+        StartDate: Date; EndDate: Date; SkipZeroAmounts: Boolean; AddCurrencyFactor: Decimal; IndirectCostPctReq: Decimal; var CurrReportSkip: Boolean; var IsHandled: Boolean; AmountInclItemCharges: Boolean)
     var
         IntrastatReportLine2: Record "Intrastat Report Line";
     begin
@@ -330,7 +313,7 @@ codeunit 148121 "Intrastat Report Management IT"
         ValueEntry.SetRange("Item Ledger Entry No.", ItemLedgerEntry."Entry No.");
         if ValueEntry.FindSet() then
             repeat
-                CalculateTotals(IntrastatReportHeader, ValueEntry, ItemLedgerEntry, StartDate, EndDate, AddCurrencyFactor, CurrReportSkip);
+                CalculateTotals(IntrastatReportHeader, ValueEntry, ItemLedgerEntry, StartDate, EndDate, AddCurrencyFactor, CurrReportSkip, AmountInclItemCharges);
 
                 if not CurrReportSkip then
                     if (TotalAmt <> 0) or (not SkipZeroAmounts) then
@@ -400,7 +383,14 @@ codeunit 148121 "Intrastat Report Management IT"
         IsHandled := true;
     end;
 
-    local procedure CalculateTotals(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; AddCurrencyFactor: Decimal; var CurrReportSkip: Boolean)
+    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeInsertFALedgerLine', '', true, true)]
+    local procedure OnBeforeInsertFALedgerLine(var IntrastatReportLine: Record "Intrastat Report Line"; FALedgerEntry: Record "FA Ledger Entry"; var IsHandled: Boolean)
+    begin
+        if IntrastatReportLine."Source Entry No." = 0 then
+            IntrastatReportLine."Source Entry No." := FALedgerEntry."Entry No.";
+    end;
+
+    local procedure CalculateTotals(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; AddCurrencyFactor: Decimal; var CurrReportSkip: Boolean; AmountInclItemCharges: Boolean)
     var
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchInvLine: Record "Purch. Inv. Line";
@@ -499,7 +489,7 @@ codeunit 148121 "Intrastat Report Management IT"
                             if SalesInvoiceLine.FindSet() then begin
                                 SalesInvoiceHeader.Get(ValueEntry."Document No.");
                                 repeat
-                                    TotalInvoicedQty -= SalesInvoiceLine.Quantity;
+                                    TotalInvoicedQty -= SalesInvoiceLine."Quantity (Base)";
                                     if SalesInvoiceHeader."Currency Factor" <> 0 then
                                         TotalAmt -= SalesInvoiceLine.Amount / SalesInvoiceHeader."Currency Factor"
                                     else
@@ -527,7 +517,7 @@ codeunit 148121 "Intrastat Report Management IT"
                                 if SalesCrMemoLine.FindSet() then begin
                                     SalesCrMemoHeader.Get(ValueEntry."Document No.");
                                     repeat
-                                        TotalInvoicedQty += SalesCrMemoLine.Quantity;
+                                        TotalInvoicedQty += SalesCrMemoLine."Quantity (Base)";
                                         if SalesCrMemoHeader."Currency Factor" <> 0 then
                                             TotalAmt += SalesCrMemoLine.Amount / SalesCrMemoHeader."Currency Factor"
                                         else
@@ -625,7 +615,8 @@ codeunit 148121 "Intrastat Report Management IT"
             end;
         OnCalculateTotalsOnAfterSumTotals(ItemLedgerEntry, IntrastatReportHeader, TotalAmt, TotalCostAmt);
 
-        CalcTotalItemChargeAmt(IntrastatReportHeader, ValueEntry, AddCurrencyFactor);
+        if AmountInclItemCharges then
+            CalcTotalItemChargeAmt(IntrastatReportHeader, ValueEntry, AddCurrencyFactor);
 
         OnAfterCalculateTotals(ItemLedgerEntry, IntrastatReportHeader, TotalAmt, TotalCostAmt);
     end;
@@ -704,7 +695,7 @@ codeunit 148121 "Intrastat Report Management IT"
             IntrastatReportLine.Validate(Quantity, Round(-IntrastatReportLine.Quantity, 0.00001));
         end else begin
             if ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Transfer then begin
-                if TotalInvoicedQty < 0 then
+                if TotalInvoicedQty > 0 then
                     IntrastatReportLine.Type := IntrastatReportLine.Type::Receipt
                 else
                     IntrastatReportLine.Type := IntrastatReportLine.Type::Shipment

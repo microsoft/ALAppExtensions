@@ -1,6 +1,7 @@
 codeunit 148012 "Nemhandel Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -12,8 +13,12 @@ codeunit 148012 "Nemhandel Tests"
     var
         Assert: Codeunit Assert;
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         CompanyStatusGlobal: Enum "Nemhandel Company Status";
         IsInitialized: Boolean;
+        IncorrectCVRNumberFormatErr: Label 'The CVR number must be 8 digits or "A/S" followed by 3-6 digits.';
+        NemhandelNotRegisteredTxt: Label 'Your accounting software is not registered in Nemhandelsregisteret';
+        IncorrectCVRNumberFormatTxt: Label 'The Registration No. must be 8 digits or "A/S" followed by 3-6 digits';
 
     [Test]
     [HandlerFunctions('NotificationHandler')]
@@ -60,7 +65,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -87,7 +92,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -115,7 +120,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -142,7 +147,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -169,7 +174,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -196,7 +201,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -223,7 +228,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -245,8 +250,9 @@ codeunit 148012 "Nemhandel Tests"
         BindSubscription(NemhandelTests);
         Commit();
 
-        // [GIVEN] Opened Company Information page.
+        // [GIVEN] Opened Company Information page. Notification non-registered company is shown.
         CompanyInformationPage.OpenEdit();
+        LibraryVariableStorage.Clear();
 
         // [WHEN] Set Registration No. to CVR number which is not registered in Nemhandelsregisteret.
         NemhandelTests.MockCompanyStatusInPageBackgroundTask(Enum::"Nemhandel Company Status"::NotRegistered);
@@ -254,19 +260,18 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
-    [HandlerFunctions('NotificationHandler')]
     procedure NotificationNotShownWhenChangeCVRNumberFromRegToNotReg()
     var
         NemhandelTests: Codeunit "Nemhandel Tests";
         CompanyInformationPage: TestPage "Company Information";
     begin
-        // [SCENARIO 464206] Notification about Nemhandel registration when change Registration No. from registered in Nemhandelsregisteret to not registered.
+        // [SCENARIO 464206] Change Registration No. from registered in Nemhandelsregisteret to not registered.
         Initialize();
 
         // [GIVEN] Company Information with CVR number which is registered in Nemhandelsregisteret.
@@ -278,11 +283,13 @@ codeunit 148012 "Nemhandel Tests"
         // [GIVEN] Opened Company Information page.
         CompanyInformationPage.OpenEdit();
 
-        // [WHEN] Set Registration No. to CVR number which is not registered in Nemhandelsregisteret.
-        NemhandelTests.MockCompanyStatusInPageBackgroundTask(Enum::"Nemhandel Company Status"::NotRegistered);
-        CompanyInformationPage."Registration No.".SetValue('87654321');
+        // [WHEN] Update Registration No. to another CVR number.
+        asserterror CompanyInformationPage."Registration No.".SetValue('87654321');
 
-        // [THEN] No notifications were shown on Company Information page.
+        // [THEN] Error "Registration No. cannot be changed when CVR number is registered in Nemhandelsregistret" is shown.
+        Assert.ExpectedError('Registration No. cannot be changed when CVR number is registered in Nemhandelsregisteret');
+        Assert.ExpectedErrorCode('TestValidation');
+
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -488,12 +495,282 @@ codeunit 148012 "Nemhandel Tests"
         Assert.AreEqual(Enum::"Nemhandel Company Status"::Unknown, CompanyStatus, '');
     end;
 
+    [Test]
+    procedure NotificationNotShownWhenEvaluationCompanyStatusUnknown()
+    var
+        NemhandelTests: Codeunit "Nemhandel Tests";
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 504365] Notification about Nemhandel registration when company registration in Nemhandelsregisteret has not been checked for Evaluation company.
+        Initialize();
+
+        // [GIVEN] Current company is evaluation company
+        UpdateEvaluationOnCompany(true);
+
+        // [GIVEN] Company Information with CVR number for which check if company is registered in Nemhandelsregisteret has not been made.
+        NemhandelTests.MockCompanyStatusInPageBackgroundTask(Enum::"Nemhandel Company Status"::Unknown);
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::Unknown);
+        BindSubscription(NemhandelTests);
+        Commit();
+
+        // [WHEN] Open Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] No notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+
+        // restore evaluation state
+        UpdateEvaluationOnCompany(false);
+    end;
+
+    [Test]
+    procedure NotificationNotShownWhenEvaluationCompanyStatusNotRegistered()
+    var
+        NemhandelTests: Codeunit "Nemhandel Tests";
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 504365] Notification about Nemhandel registration when Evaluation company is not registered in Nemhandelsregisteret.
+        Initialize();
+
+        // [GIVEN] Current company is evaluation company
+        UpdateEvaluationOnCompany(true);
+
+        // [GIVEN] Company Information with CVR number which is not registered in Nemhandelsregisteret.
+        NemhandelTests.MockCompanyStatusInPageBackgroundTask(Enum::"Nemhandel Company Status"::NotRegistered);
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::NotRegistered);
+        BindSubscription(NemhandelTests);
+        Commit();
+
+        // [WHEN] Open Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] No notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+
+        // restore evaluation state
+        UpdateEvaluationOnCompany(false);
+    end;
+
+    [Test]
+    procedure NotificationNotShownWhenOnPremCompanyStatusUnknown()
+    var
+        NemhandelTests: Codeunit "Nemhandel Tests";
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 504365] Notification about Nemhandel registration when company registration in Nemhandelsregisteret has not been checked for OnPrem environment.
+        Initialize();
+
+        // [GIVEN] OnPrem environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+
+        // [GIVEN] Company Information with CVR number for which check if company is registered in Nemhandelsregisteret has not been made.
+        NemhandelTests.MockCompanyStatusInPageBackgroundTask(Enum::"Nemhandel Company Status"::Unknown);
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::Unknown);
+        BindSubscription(NemhandelTests);
+        Commit();
+
+        // [WHEN] Open Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] No notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+
+        // restore to SaaS environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+    end;
+
+    [Test]
+    procedure NotificationNotShownWhenSandboxCompanyStatusUnknown()
+    var
+        NemhandelTests: Codeunit "Nemhandel Tests";
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 504365] Notification about Nemhandel registration when company registration in Nemhandelsregisteret has not been checked for Sandbox environment.
+        Initialize();
+
+        // [GIVEN] Sandbox environment
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
+
+        // [GIVEN] Company Information with CVR number for which check if company is registered in Nemhandelsregisteret has not been made.
+        NemhandelTests.MockCompanyStatusInPageBackgroundTask(Enum::"Nemhandel Company Status"::Unknown);
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::Unknown);
+        BindSubscription(NemhandelTests);
+        Commit();
+
+        // [WHEN] Open Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] No notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+
+        // restore to production environment
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+    end;
+
+    [Test]
+    procedure CVRNumberValidFormat()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 523681] Enter CVR number to Registration No. field when it is 8 digits or "A/S" followed by 3-6 digits.
+        Initialize();
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::NotRegistered);
+
+        // [GIVEN] Opened Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [WHEN] Fill Registration No. with 8 digits.
+        // [THEN] The value was set.
+        CompanyInformationPage."Registration No.".SetValue('87654321');
+        Assert.AreEqual('87654321', CompanyInformationPage."Registration No.".Value(), '');
+
+        // [WHEN] Fill Registration No. with A/S followed by 4 digits.
+        // [THEN] The value was set.
+        CompanyInformationPage."Registration No.".SetValue('A/S1234');
+        Assert.AreEqual('A/S1234', CompanyInformationPage."Registration No.".Value(), '');
+    end;
+
+    [Test]
+    procedure CVRNumberNotValidFormat()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 523681] Enter CVR number to Registration No. field when it is not 8 digits and not "A/S" followed by 3-6 digits.
+        Initialize();
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::NotRegistered);
+
+        // [GIVEN] Opened Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [WHEN] Fill Registration No. with letters.
+        // [THEN] Error "The CVR number must be 8 digits or "A/S" followed by 3-6 digits" is thrown.
+        asserterror CompanyInformationPage."Registration No.".SetValue('ABC12345');
+        Assert.ExpectedError(IncorrectCVRNumberFormatErr);
+
+        // [WHEN] Fill Registration No. with digits and spaces.
+        // [THEN] Error "The CVR number must be 8 digits or "A/S" followed by 3-6 digits" is thrown.
+        asserterror CompanyInformationPage."Registration No.".SetValue('12345 678');
+        Assert.ExpectedError(IncorrectCVRNumberFormatErr);
+
+        // [WHEN] Fill Registration No. with 5 digits.
+        // [THEN] Error "The CVR number must be 8 digits or "A/S" followed by 3-6 digits" is thrown.
+        asserterror CompanyInformationPage."Registration No.".SetValue('12345');
+        Assert.ExpectedError(IncorrectCVRNumberFormatErr);
+
+        // [WHEN] Fill Registration No. with special chars.
+        // [THEN] Error "The CVR number must be 8 digits or "A/S" followed by 3-6 digits" is thrown.
+        asserterror CompanyInformationPage."Registration No.".SetValue('123-45$%67');
+        Assert.ExpectedError(IncorrectCVRNumberFormatErr);
+
+        // [WHEN] Fill Registration No. with spaces only.
+        // [THEN] Error "The CVR number must be 8 digits or "A/S" followed by 3-6 digits" is thrown.
+        asserterror CompanyInformationPage."Registration No.".SetValue('   ');
+        Assert.ExpectedError(IncorrectCVRNumberFormatErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('NotificationHandler')]
+    procedure CVRFormatNotificationShownWhenNotValidCVRNumberFormat()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+        NotificationText: Text;
+    begin
+        // [SCENARIO 524541] Notification about CVR number format when CVR number is not 8 digits and not "A/S" followed by 3-6 digits.
+        Initialize();
+
+        // [GIVEN] Company Information with CVR number containing letters.
+        UpdateCompanyCVRNumber('ABC12345');
+
+        // [WHEN] Open Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] Notification "The Registration No. must be 8 digits or "A/S" followed by 3-6 digits" was shown on Company Information page.
+        NotificationText := LibraryVariableStorage.DequeueText();
+        Assert.ExpectedMessage(IncorrectCVRNumberFormatTxt, NotificationText);
+
+        // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was also shown on Company Information page.
+        NotificationText := LibraryVariableStorage.DequeueText();
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('NotificationHandler')]
+    procedure CVRFormatNotificationNotShownWhenBlankCVRNumber()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+        NotificationText: Text;
+    begin
+        // [SCENARIO 524541] Notification about CVR number format when CVR number is blank.
+        Initialize();
+
+        // [GIVEN] Company Information with blank CVR number.
+        UpdateCompanyCVRNumber('');
+
+        // [WHEN] Open Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] Only notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
+        NotificationText := LibraryVariableStorage.DequeueText();
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
+
+        // [THEN] No more notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    procedure CVRFormatNotificationNotShownWhenValidNewCVRNumberFormat()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 524541] Notification about CVR number format when CVR number has 8 digits.
+        Initialize();
+
+        // [GIVEN] Company Information with CVR number containing 8 digits.
+        UpdateCompanyCVRNumber('87654321');
+
+        // [GIVEN] Nemhandel registration status is set to "Registered" to avoid Nemhandel registration notification.
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::Registered);
+
+        // [GIVEN] Opened Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] No notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    procedure CVRFormatNotificationNotShownWhenValidOldCVRNumberFormat()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 524541] Notification about CVR number format when CVR number has "A/S" followed by 4 digits.
+        Initialize();
+
+        // [GIVEN] Company Information with CVR number A/S followed by 4 digits.
+        UpdateCompanyCVRNumber('A/S1234');
+
+        // [GIVEN] Nemhandel registration status is set to "Registered" to avoid Nemhandel registration notification.
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::Registered);
+
+        // [GIVEN] Opened Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] No notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     local procedure Initialize()
     begin
+        UpdateCompanyCVRNumber('12345678');
+
         if IsInitialized then
             exit;
 
-        UpdateCompanyCVRNumber('12345678');
+        // Set SaaS production environment.
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
 
         IsInitialized := true;
     end;
@@ -540,6 +817,15 @@ codeunit 148012 "Nemhandel Tests"
         CompanyInformation.Get();
         CompanyInformation."Registration No." := CVRNumber;
         CompanyInformation.Modify();
+    end;
+
+    local procedure UpdateEvaluationOnCompany(IsEvaluation: Boolean)
+    var
+        Company: Record Company;
+    begin
+        Company.Get(CompanyName());
+        Company."Evaluation Company" := IsEvaluation;
+        Company.Modify();
     end;
 
     procedure MockCompanyStatusInPageBackgroundTask(NewStatus: Enum "Nemhandel Company Status")

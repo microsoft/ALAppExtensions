@@ -5,25 +5,29 @@
 namespace Microsoft.Sales.Document;
 
 using Microsoft.Finance.Currency;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
+using Microsoft.Finance.GeneralLedger.Setup;
 
 pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
 {
     layout
     {
-#if not CLEAN22
-        modify("VAT Reporting Date")
-        {
-            Visible = ReplaceVATDateEnabled and VATDateEnabled;
-        }
-#endif
-        movelast(General; "Posting Description")
         modify("Reason Code")
         {
             Visible = false;
         }
+        modify("VAT Registration No.")
+        {
+            Importance = Standard;
+        }
+        modify("Registration Number")
+        {
+            Editable = true;
+            Visible = true;
+            Importance = Standard;
+        }
+        movelast(General; "Posting Description")
+        movelast("Invoice Details"; "VAT Registration No.")
+        movelast("Invoice Details"; "Registration Number")
         addbefore("Location Code")
         {
             field("Reason Code CZL"; Rec."Reason Code")
@@ -35,18 +39,6 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
         }
         addafter("Posting Date")
         {
-#if not CLEAN22
-            field("VAT Date CZL"; Rec."VAT Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'VAT Date (Obsolete)';
-                ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by VAT Reporting Date.';
-                Visible = not ReplaceVATDateEnabled;
-            }
-#endif
             field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -54,34 +46,28 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                 Visible = false;
             }
         }
-#if not CLEAN22
-        addafter("Customer Posting Group")
-        {
-            field("Customer Posting Group CZL"; Rec."Customer Posting Group")
-            {
-                ApplicationArea = Basic, Suite;
-                Editable = false;
-                Visible = false;
-                Importance = Additional;
-                ToolTip = 'Specifies the customer''s market type to link business transactions to.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by Customer Posting Group field.';
-            }
-        }
-#endif
         addlast("Invoice Details")
         {
+#if not CLEAN27
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+                ObsoleteReason = 'Replaced by standard "VAT Registration No." field.';
             }
             field("Registration No. CZL"; Rec."Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the registration number of customer.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
             }
+#endif
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -91,6 +77,24 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
         }
         addafter("Currency Code")
         {
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
+            {
+                ApplicationArea = Suite;
+                Caption = 'Additional Currency Code';
+                ToolTip = 'Specifies the exchange rate to be used if you post in an additional currency.';
+                Visible = AddCurrencyVisible;
+
+                trigger OnAssistEdit()
+                begin
+                    Clear(ChangeExchangeRate);
+                    if Rec."Additional Currency Factor CZL" = 0 then
+                        Rec.UpdateAddCurrencyFactorCZL();
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    if ChangeExchangeRate.RunModal() = Action::OK then
+                        Rec."Additional Currency Factor CZL" := ChangeExchangeRate.GetParameter();
+                    Clear(ChangeExchangeRate);
+                end;
+            }
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
             {
                 ApplicationArea = Suite;
@@ -98,15 +102,8 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                 ToolTip = 'Specifies the currency of VAT on the sales invoice.';
 
                 trigger OnAssistEdit()
-                var
-                    ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-#if not CLEAN22
-#pragma warning disable AL0432
-                    if not ReplaceVATDateEnabled then
-                        Rec."VAT Reporting Date" := Rec."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
+                    Clear(ChangeExchangeRate);
                     if Rec."VAT Reporting Date" <> 0D then
                         ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date")
                     else
@@ -115,6 +112,7 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                         Rec.Validate("VAT Currency Factor CZL", ChangeExchangeRate.GetParameter());
                         CurrPage.Update();
                     end;
+                    Clear(ChangeExchangeRate);
                 end;
 
                 trigger OnValidate()
@@ -135,22 +133,17 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
+#if not CLEAN26
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
-            }
-#if not CLEAN22
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude (Obsolete)';
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                Visible = false;
                 ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
+                ObsoleteReason = 'The declaration of the field is moved to Intrastat CZ extension.';
+                ObsoleteTag = '26.0';
             }
 #endif
         }
@@ -219,20 +212,14 @@ pageextension 11728 "Sales Invoice CZL" extends "Sales Invoice"
             }
         }
     }
-#if not CLEAN22
 
     trigger OnOpenPage()
     begin
-        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
-        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
     end;
 
     var
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        ReplaceVATDateEnabled: Boolean;
-        VATDateEnabled: Boolean;
-#endif
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        ChangeExchangeRate: Page "Change Exchange Rate";
+        AddCurrencyVisible: Boolean;
 }

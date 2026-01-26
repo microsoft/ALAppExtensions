@@ -86,10 +86,15 @@ codeunit 18472 "Apply Delivery Challan Mgt."
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reservation Management", 'OnBeforeDeleteReservEntries', '', false, false)]
-    local procedure OnBeforeDeleteReservEntries(var CalcReservEntry2: Record "Reservation Entry")
+    local procedure OnBeforeDeleteReservEntries(var CalcReservEntry2: Record "Reservation Entry"; var ReservationEntry: Record "Reservation Entry")
     begin
-        if CalcReservEntry2."Source Type" = 0 then
+        if CalcReservEntry2."Source Type" = 0 then begin
             CalcReservEntry2 := CalcReservEntry3;
+            if CalcReservEntry3.GetFilter("Source Type") = Format(Database::"Applied Delivery Challan Entry") then begin
+                CalcReservEntry2.CopyFilters(CalcReservEntry3);
+                ReservationEntry.CopyFilters(CalcReservEntry3);
+            end;
+        end;
     end;
 
     procedure SetAppDelChallan(FromAppDelChallanFrom: Boolean; DeliveryChallanNoFrom: Code[20])

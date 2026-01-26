@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Account;
 
-using Microsoft.Sustainability.Ledger;
 using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Comment;
+using Microsoft.Sustainability.Ledger;
 using System.Text;
 
 page 6212 "Sustainability Account List"
@@ -130,5 +130,10 @@ page 6212 "Sustainability Account List"
         CurrPage.SetSelectionFilter(SustainAccount);
         RecRef.GetTable(SustainAccount);
         exit(SelectionFilterManagement.GetSelectionFilter(RecRef, SustainAccount.FieldNo("No.")));
+    end;
+
+    procedure SetSelection(var SustainAccount: Record "Sustainability Account")
+    begin
+        CurrPage.SetSelectionFilter(SustainAccount);
     end;
 }

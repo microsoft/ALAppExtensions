@@ -3,9 +3,6 @@ codeunit 148104 "Test Initialize Handler CZL"
     SingleInstance = true;
 
     var
-#if not CLEAN22
-        ReplaceVATDateHandlerCZL: Codeunit "Replace VAT Date Handler CZL";
-#endif
         SuppConfVATEntUpdate: Codeunit "Supp.Conf. VAT Ent. Update CZL";
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Library - Test Initialize", 'OnTestInitialize', '', false, false)]
@@ -14,8 +11,6 @@ codeunit 148104 "Test Initialize Handler CZL"
         case CallerCodeunitID of
             137462: // "Phys. Invt. Order Subform UT":
                 UpdateInventorySetup();
-            135300: // "O365 Purch Item Charge Tests"
-                UpdateGeneralLedgerSetup();
         end;
     end;
 
@@ -29,36 +24,29 @@ codeunit 148104 "Test Initialize Handler CZL"
                 UpdateReportSelections();
             134475, // "ERM Dimension Sales"
             137460, // "Phys. Invt. Item Tracking",
+            137007, // "SCM Inventory Costing",
             137153, // "SCM Warehouse - Journal",
+            137275, // "SCM Inventory Journals"
             137294, // "SCM Inventory Miscellaneous II",
             137295, // "SCM Inventory Misc. III",
             137400, // "SCM Inventory - Orders",
-            137007, // "SCM Inventory Costing",
+            137408, // "SCM Warehouse VI"
             137611: // "SCM Costing Rollup Sev 1":
                 UpdateInventorySetup();
-#if not CLEAN22
-            134982: // ERM Financial Reports
-                TryBindReplaceVATDateHandlerCZL();
-#endif
             134008, // ERM VAT Settlement with Apply
             134045, // ERM VAT Sales/Purchase
             134088, // ERM Pmt Disc for Cust/Vendor
             134992: // ERM Financial Reports IV
                 begin
-#if not CLEAN22
-                    TryBindReplaceVATDateHandlerCZL();
-#endif
                     TryBindSuppConfVATEntUpdate();
-                    UpdateGeneralLedgerSetup();
                     UpdateUserSetup();
                 end;
+            137161, // SCM Warehouse Orders
+            139989: // Sub. Subcontracting Test
+                DisableVATDateUsage();
         end;
-#if not CLEAN22
 
-        if not (CallerCodeunitID in [134992, 134982, 134045, 134008]) then
-            TryUnbindReplaceVATDateHandler();
-#endif
-        if not (CallerCodeunitID = 134045) then
+        if not (CallerCodeunitID in [134008, 134045, 134088, 134992]) then
             TryUnbindSuppConfVATEntUpdate();
     end;
 
@@ -94,15 +82,6 @@ codeunit 148104 "Test Initialize Handler CZL"
         end;
     end;
 
-    local procedure UpdateGeneralLedgerSetup()
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-    begin
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date";
-        GeneralLedgerSetup.Modify();
-    end;
-
     local procedure UpdateUserSetup()
     var
         UserSetup: Record "User Setup";
@@ -117,6 +96,15 @@ codeunit 148104 "Test Initialize Handler CZL"
         UserSetup.Modify();
     end;
 
+    local procedure DisableVATDateUsage()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
+        GeneralLedgerSetup.Modify();
+    end;
+
     local procedure TryBindSuppConfVATEntUpdate(): Boolean
     begin
         exit(BindSubscription(SuppConfVATEntUpdate));
@@ -126,15 +114,4 @@ codeunit 148104 "Test Initialize Handler CZL"
     begin
         exit(UnbindSubscription(SuppConfVATEntUpdate));
     end;
-#if not CLEAN22
-    local procedure TryBindReplaceVATDateHandlerCZL(): Boolean
-    begin
-        exit(BindSubscription(ReplaceVATDateHandlerCZL));
-    end;
-
-    local procedure TryUnbindReplaceVATDateHandler(): Boolean
-    begin
-        exit(UnbindSubscription(ReplaceVATDateHandlerCZL));
-    end;
-#endif
 }

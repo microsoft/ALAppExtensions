@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Jobs;
+
+using Microsoft.Projects.Project.Setup;
+
 codeunit 5210 "Create Job Setup"
 {
     InherentEntitlements = X;
@@ -19,6 +28,9 @@ codeunit 5210 "Create Job Setup"
 
         if JobsSetup."Job Nos." = '' then
             JobsSetup.Validate("Job Nos.", JobNoSeries.Job());
+
+        if JobsSetup."Job WIP Nos." = '' then
+            JobsSetup.Validate("Job WIP Nos.", JobNoSeries.JobWIP());
 
         JobsSetup.Validate("Apply Usage Link by Default", true);
         JobsSetup.Validate("Allow Sched/Contract Lines Def", true);

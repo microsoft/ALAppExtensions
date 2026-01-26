@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using System.Utilities;
 
@@ -50,9 +51,40 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Starting Date';
                         ToolTip = 'Specifies the first date in the period for which VAT statement were exported.';
+                        Visible = ExportType = ExportType::VATStatement;
+                        Enabled = ExportType = ExportType::VATStatement;
 
                         trigger OnValidate()
                         begin
+                            StartDateOnAfterValidate();
+                        end;
+
+                        trigger OnLookup(var Text: Text): Boolean
+                        var
+                            VATReturnPeriod: Record "VAT Return Period";
+#if not CLEAN28
+#pragma warning disable AL0432
+                            VATPeriodCZL: Record "VAT Period CZL";
+                            ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#pragma warning restore AL0432
+#endif
+                        begin
+#if not CLEAN28
+#pragma warning disable AL0432
+                            if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+                                if not RunVATPeriods(VATPeriodCZL) then
+                                    exit(false);
+                                StartDate := VATPeriodCZL."Starting Date";
+                                EndDate := GetVATPeriodEndDate();
+                                StartDateOnAfterValidate();
+                                exit;
+                            end;
+#pragma warning restore AL0432
+#endif
+                            if not RunVATReturnPeriodList(VATReturnPeriod) then
+                                exit(false);
+                            StartDate := VATReturnPeriod."Start Date";
+                            EndDate := VATReturnPeriod."End Date";
                             StartDateOnAfterValidate();
                         end;
                     }
@@ -61,6 +93,8 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Ending Date';
                         ToolTip = 'Specifies the last date in the period for which VAT statement were exported.';
+                        Visible = ExportType = ExportType::VATStatement;
+                        Enabled = ExportType = ExportType::VATStatement;
 
                         trigger OnValidate()
                         begin
@@ -72,6 +106,8 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Month';
                         ToolTip = 'Specifies the month number for VAT statement reporting.';
+                        Visible = ExportType = ExportType::VATStatement;
+                        Enabled = ExportType = ExportType::VATStatement;
 
                         trigger OnValidate()
                         begin
@@ -85,6 +121,8 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Quarter';
                         ToolTip = 'Specifies the quarter number for VAT statement reporting.';
+                        Visible = ExportType = ExportType::VATStatement;
+                        Enabled = ExportType = ExportType::VATStatement;
 
                         trigger OnValidate()
                         begin
@@ -98,24 +136,32 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Year';
                         ToolTip = 'Specifies year of vat statement';
+                        Visible = ExportType = ExportType::VATStatement;
+                        Enabled = ExportType = ExportType::VATStatement;
                     }
                     field(SelectionField; Selection)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Entries Selection';
                         ToolTip = 'Specifies that VAT entries are included in the VAT Statement Preview window.';
+                        Visible = ExportType = ExportType::VATStatement;
+                        Enabled = ExportType = ExportType::VATStatement;
                     }
                     field(PeriodSelectionField; PeriodSelection)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Period Selection';
                         ToolTip = 'Specifies the filtr of VAT entries.';
+                        Visible = ExportType = ExportType::VATStatement;
+                        Enabled = ExportType = ExportType::VATStatement;
                     }
                     field(PrintInIntegersField; PrintInIntegers)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Round to Integer';
                         ToolTip = 'Specifies if the vat statement will be rounded to integer';
+                        Visible = ExportType = ExportType::VATStatement;
+                        Enabled = ExportType = ExportType::VATStatement;
 
                         trigger OnValidate()
                         begin
@@ -202,7 +248,6 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Amounts in Add. Reporting Currency';
-                        Visible = false;
                         ToolTip = 'Specifies whether to show the reported amounts in the additional reporting currency.';
                     }
                 }
@@ -211,31 +256,23 @@ report 31003 "Export VAT Stmt. Dialog CZL"
 
         trigger OnOpenPage()
         begin
-            GetStatementNameRec();
-            RequestOptionsPage.Caption := StrSubstNo(PageCaptionLbl, RequestOptionsPage.Caption(), VATStatementTemplateName, VATStatementName);
+            XMLFormat := GetXmlFormat();
+            Attachments := CalcAttachmentsCount();
+            Comments := CalcCommentsCount();
+            RequestOptionsPage.Caption := StrSubstNo(PageCaptionLbl, RequestOptionsPage.Caption(), VATStatementTemplateName, VATStmtName);
             UpdateControls();
             UpdateDateParameters();
+            UpdateFilledByEmployeeNo();
         end;
     }
 
+    trigger OnInitReport()
+    begin
+        SetUseAmtsInAddCurr();
+    end;
+
     var
-        RecordVATStatementName: Record "VAT Statement Name";
-        VATStatementTemplate: Record "VAT Statement Template";
-        NoTax: Boolean;
-        PrintInIntegers: Boolean;
-        UseAmtsInAddCurr: Boolean;
-        ReasonsObservedOnCtrlEditable: Boolean;
-        RoundingDirectionCtrlVisible: Boolean;
-        FilledByEmployeeNo: Code[20];
-        VATStatementTemplateName: Code[10];
-        VATStatementName: Code[10];
-        NextYearVATPeriodCode: Code[3];
-        StartDate: Date;
-        EndDate: Date;
-        ReasonsObservedOn: Date;
-        Month: Integer;
-        Quarter: Integer;
-        Year: Integer;
+        VATStmtName: Record "VAT Statement Name";
         Comments: Integer;
         Attachments: Integer;
         Selection: Enum "VAT Statement Report Selection";
@@ -248,15 +285,48 @@ report 31003 "Export VAT Stmt. Dialog CZL"
         MonthZeroIfQuarterErr: Label 'Month must be 0 if Quarter is filled in.';
         PageCaptionLbl: Label '%1: %2, %3', Comment = '%1=report caption, %2=VAT statement template name, %3=VAT statement name', Locked = true;
 
-    local procedure GetStatementNameRec()
-    begin
-        RecordVATStatementName.Get(VATStatementTemplateName, VATStatementName);
-        VATStatementTemplate.Get(VATStatementTemplateName);
-        XMLFormat := VATStatementTemplate."XML Format CZL";
+    protected var
+        ExportType: Option VATStatement,VATReport;
+        FilledByEmployeeNo: Code[20];
+        NextYearVATPeriodCode: Code[3];
+        VATStatementTemplateName: Code[10];
+        VATStatementName: Code[10];
+        StartDate: Date;
+        EndDate: Date;
+        ReasonsObservedOn: Date;
+        NoTax: Boolean;
+        PrintInIntegers: Boolean;
+        ReasonsObservedOnCtrlEditable: Boolean;
+        RoundingDirectionCtrlVisible: Boolean;
+        UseAmtsInAddCurr: Boolean;
+        Month: Integer;
+        Quarter: Integer;
+        Year: Integer;
 
-        RecordVATStatementName.CalcFields("Comments CZL", "Attachments CZL");
-        Comments := RecordVATStatementName."Comments CZL";
-        Attachments := RecordVATStatementName."Attachments CZL";
+    local procedure GetXmlFormat(): Enum "VAT Statement XML Format CZL"
+    begin
+        VATStmtName.Get(VATStatementTemplateName, VATStatementName);
+        exit(VATStmtName."XML Format CZL");
+    end;
+
+    local procedure CalcAttachmentsCount(): Integer
+    var
+        VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL";
+    begin
+        VATStatementAttachmentCZL.SetRange("VAT Statement Template Name", VATStatementTemplateName);
+        VATStatementAttachmentCZL.SetRange("VAT Statement Name", VATStatementName);
+        VATStatementAttachmentCZL.SetRange("Date", StartDate, EndDate);
+        exit(VATStatementAttachmentCZL.Count());
+    end;
+
+    local procedure CalcCommentsCount(): Integer
+    var
+        VATStatementCommentLineCZL: Record "VAT Statement Comment Line CZL";
+    begin
+        VATStatementCommentLineCZL.SetRange("VAT Statement Template Name", VATStatementTemplateName);
+        VATStatementCommentLineCZL.SetRange("VAT Statement Name", VATStatementName);
+        VATStatementCommentLineCZL.SetRange("Date", StartDate, EndDate);
+        exit(VATStatementCommentLineCZL.Count());
     end;
 
     local procedure UpdateControls()
@@ -286,6 +356,14 @@ report 31003 "Export VAT Stmt. Dialog CZL"
         end;
     end;
 
+    local procedure UpdateFilledByEmployeeNo()
+    var
+        StatutoryReportingSetup: Record "Statutory Reporting Setup CZL";
+    begin
+        StatutoryReportingSetup.Get();
+        FilledByEmployeeNo := StatutoryReportingSetup."VAT Stat. Filled Employee No.";
+    end;
+
     local procedure DeclarationIsSupplementary(): Boolean
     begin
         exit(DeclarationType in [DeclarationType::Supplementary, DeclarationType::"Supplementary/Corrective"])
@@ -308,6 +386,86 @@ report 31003 "Export VAT Stmt. Dialog CZL"
 
     local procedure StartDateOnAfterValidate()
     begin
+        if StartDate <> 0D then
+            StartDate := GetVATPeriodEndDate();
+
         UpdateDateParameters();
+        Attachments := CalcAttachmentsCount();
+        Comments := CalcCommentsCount();
+    end;
+
+    local procedure GetVATPeriodEndDate(): Date
+    var
+        VATReturnPeriod: Record "VAT Return Period";
+#if not CLEAN28
+#pragma warning disable AL0432
+        VATPeriodCZL: Record "VAT Period CZL";
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#pragma warning restore AL0432
+#endif
+    begin
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+            VATPeriodCZL.Get(StartDate);
+            if VATPeriodCZL.Next() > 0 then
+                exit(CalcDate('<-1D>', VATPeriodCZL."Starting Date"));
+            exit(0D);
+        end;
+#pragma warning restore AL0432
+#endif
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.SetRange("Start Date", StartDate);
+        VATReturnPeriod.FindLast();
+        exit(VATReturnPeriod."End Date");
+    end;
+#if not CLEAN28
+#pragma warning disable AL0432
+
+    local procedure RunVATPeriods(var OutVATPeriodCZL: Record "VAT Period CZL"): Boolean
+    var
+        VATPeriodsCZL: Page "VAT Periods CZL";
+    begin
+        VATPeriodsCZL.LookupMode := true;
+        if VATPeriodsCZL.RunModal() <> Action::LookupOK then
+            exit(false);
+        VATPeriodsCZL.GetRecord(OutVATPeriodCZL);
+        exit(true);
+    end;
+#pragma warning restore AL0432
+#endif
+
+    local procedure RunVATReturnPeriodList(var OutVATReturnPeriod: Record "VAT Return Period"): Boolean
+    var
+        VATReturnPeriodList: Page "VAT Return Period List";
+    begin
+        VATReturnPeriodList.LookupMode := true;
+        if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+            exit(false);
+        VATReturnPeriodList.GetRecord(OutVATReturnPeriod);
+        exit(true);
+    end;
+
+    local procedure SetUseAmtsInAddCurr()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurr := GeneralLedgerSetup."Additional Reporting Currency" <> '';
+    end;
+
+    internal procedure Initialize(VATReportHeader: Record "VAT Report Header")
+    begin
+        VATStatementTemplateName := VATReportHeader."Statement Template Name";
+        VATStatementName := VATReportHeader."Statement Name";
+        StartDate := VATReportHeader."Start Date";
+        EndDate := VATReportHeader."End Date";
+        Month := VATReportHeader.GetMonth();
+        Quarter := VATReportHeader.GetQuarter();
+        Year := VATReportHeader."Period Year";
+        UseAmtsInAddCurr := VATReportHeader."Amounts in Add. Rep. Currency";
+        ExportType := ExportType::VATReport;
+        DeclarationType := VATReportHeader.ConvertVATReportTypeToVATStmtDeclarationType();
+        ReasonsObservedOn := 0D;
     end;
 }

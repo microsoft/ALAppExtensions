@@ -1,0 +1,42 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.DemoData.Localization;
+using Microsoft.DemoTool.Helpers;
+
+codeunit 11535 "Create VAT Setup PostingGrp NL"
+{
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
+    trigger OnRun()
+    var
+        FinanceModuleSetup: Record "Finance Module Setup";
+        ContosoVATStatement: Codeunit "Contoso VAT Statement";
+        CreateVatPostingGroup: Codeunit "Create VAT Posting Groups";
+        CreateNLGLAccounts: Codeunit "Create NL GL Accounts";
+    begin
+        FinanceModuleSetup.Get();
+
+        ContosoVATStatement.SetOverwriteData(true);
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.FullNormal(), true, 0, '', '', true, 1, StrSubstNo(VATOnlyInvoicesDescriptionLbl, '21'));
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.FullRed(), true, 0, '', '', true, 1, StrSubstNo(VATOnlyInvoicesDescriptionLbl, '9'));
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Reduced", true, 9, CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), true, 1, ReducedVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.ServNormal(), true, 0, '', '', true, 1, StrSubstNo(MiscellaneousVATDescriptionLbl, '21'));
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.ServRed(), true, 0, '', '', true, 1, StrSubstNo(MiscellaneousVATDescriptionLbl, '9'));
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Standard", true, 21, CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), true, 1, NormalVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", true, 0, CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), true, 1, NoVatDescriptionLbl);
+        ContosoVATStatement.SetOverwriteData(false);
+    end;
+
+    var
+        VATOnlyInvoicesDescriptionLbl: Label 'VAT Only Invoices %1%', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
+        MiscellaneousVATDescriptionLbl: Label 'Miscellaneous %1 VAT', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
+        ReducedVatDescriptionLbl: Label 'Setup for EXPORT / REDUCED', MaxLength = 100;
+        NormalVatDescriptionLbl: Label 'Setup for EXPORT / STANDARD', MaxLength = 100;
+        NoVatDescriptionLbl: Label 'Setup for EXPORT / ZERO', MaxLength = 100;
+}

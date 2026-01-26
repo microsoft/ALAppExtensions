@@ -515,6 +515,35 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
             VATStatementReportLine.Base + VATStatementReportLine."Non-Deductible Base", VATStatementReportLine.Amount + VATStatementReportLine."Non-Deductible Amount");
     end;
 
+    [Test]
+    procedure VATCode81NegativeValueWithNote()
+    var
+        VATReportHeader: Record "VAT Report Header";
+        VATStatementReportLine: Record "VAT Statement Report Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VATReportMediator: Codeunit "VAT Report Mediator";
+    begin
+        // [SCENARIO 544346] Stan can report the negative VAT for code 81 with a note in the electronic VAT declaration
+
+        Initialize();
+        SetVATRegNoInCompanyInfo(GetVATRegNoWithLetters());
+        // [GIVEN] VAT return with "VAT %" = 25, Base = -150, Amount = -35 and Note = "This is correction"
+        InsertMonthlyElecVATReportHeader(VATReportHeader);
+        // [GIVEN] VAT Code is 81 
+        LibraryElecVATSubmission.InsertVATStatementReportLineWithBoxNo(VATStatementReportLine, VATReportHeader, GetReverseChargeVATCode());
+        VATStatementReportLine.Base := -VATStatementReportLine.Base;
+        VATStatementReportLine.Amount := -VATStatementReportLine.Amount;
+        VATStatementReportLine.Note := LibraryUtility.GenerateGUID();
+        VATStatementReportLine.Modify();
+
+        // [WHEN] Generate Electronic VAT declaration message
+        VATReportMediator.Generate(VATReportHeader);
+
+        // [THEN] XML message is generated with two mvaSpesifikasjonslinje/merknad/beskrivelse = "This is correction"
+        LoadFromVATReportSubmissionArchive(TempXMLBuffer, VATReportHeader);
+        VerifyVATNotesValueInSubmissionMessage(VATReportHeader, VATStatementReportLine.Note);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"Elec. VAT Submission XML Tests");
@@ -660,7 +689,6 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'merverdiavgift', LibraryElecVATSubmission.GetAmountTextRounded(Amount));
     end;
 
-#if CLEAN23
     local procedure VerifyVATCodeWithSpecAndNoteXmlBlock(var TempXMLBuffer: Record "XML Buffer" temporary; BoxNo: Text; Description: Text; Amount: Decimal)
     var
         VATReportingCode: Record "VAT Reporting Code";
@@ -691,38 +719,6 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'sats', Format(VATReportingCode."VAT Rate For Reporting", 0, '<Integer><Decimals><Comma,,>'));
         LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'merverdiavgift', LibraryElecVATSubmission.GetAmountTextRounded(Amount));
     end;
-#else
-    local procedure VerifyVATCodeWithSpecAndNoteXmlBlock(var TempXMLBuffer: Record "XML Buffer" temporary; BoxNo: Text; Description: Text; Amount: Decimal)
-    var
-        VATCode: Record "VAT Code";
-        VATSpecification: Record "VAT Specification";
-        VATNote: Record "VAT Note";
-    begin
-        VATCode.Get(CopyStr(BoxNo, 1, MaxStrLen(VATCode.Code)));
-        LibraryElecVATSubmission.AssertElementName(TempXMLBuffer, 'mvaSpesifikasjonslinje');
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'mvaKode', BoxNo);
-        VATSpecification.Get(VATCode."VAT Specification Code");
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'spesifikasjon', VATSpecification."VAT Report Value");
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'mvaKodeRegnskapsystem', Description);
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'merverdiavgift', LibraryElecVATSubmission.GetAmountTextRounded(Amount));
-        VATNote.Get(VATCode."VAT Note Code");
-        LibraryElecVATSubmission.AssertElementName(TempXMLBuffer, 'merknad');
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'utvalgtMerknad', VATNote."VAT Report Value");
-    end;
-
-    local procedure VerifyVATCodeComplexXmlBlock(var TempXMLBuffer: Record "XML Buffer" temporary; BoxNo: Text; Description: Text; Base: Decimal; Amount: Decimal)
-    var
-        VATCode: Record "VAT Code";
-    begin
-        LibraryElecVATSubmission.AssertElementName(TempXMLBuffer, 'mvaSpesifikasjonslinje');
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'mvaKode', BoxNo);
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'mvaKodeRegnskapsystem', Description);
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'grunnlag', LibraryElecVATSubmission.GetAmountTextRounded(Base));
-        VATCode.Get(CopyStr(BoxNo, 1, MaxStrLen(VATCode.Code)));
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'sats', Format(VATCode."VAT Rate For Reporting", 0, '<Integer><Decimals><Comma,,>'));
-        LibraryElecVATSubmission.AssertElementValue(TempXMLBuffer, 'merverdiavgift', LibraryElecVATSubmission.GetAmountTextRounded(Amount));
-    end;
-#endif
 
     local procedure VerifyPeriodXMLNodesInSubmissionMessage(VATReportHeader: Record "VAT Report Header"; PeriodType: Text; PeriodText: Text)
     var
@@ -748,5 +744,20 @@ codeunit 148131 "Elec. VAT Submission XML Tests"
         TempXMLBuffer.FindNodesByXPath(
             TempXMLBuffer, 'mvaMeldingDto/skattegrunnlagOgBeregnetSkatt/mvaSpesifikasjonslinje/merknad/utvalgtMerknad');
         Assert.RecordCount(TempXMLBuffer, 0);
+    end;
+
+    local procedure VerifyVATNotesValueInSubmissionMessage(VATReportHeader: Record "VAT Report Header"; VATNoteValue: Text)
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VATReportMediator: Codeunit "VAT Report Mediator";
+    begin
+        VATReportMediator.Generate(VATReportHeader);
+        LoadFromVATReportSubmissionArchive(TempXMLBuffer, VATReportHeader);
+        TempXMLBuffer.FindNodesByXPath(
+            TempXMLBuffer, 'mvaMeldingDto/skattegrunnlagOgBeregnetSkatt/mvaSpesifikasjonslinje/merknad/beskrivelse');
+        Assert.RecordCount(TempXMLBuffer, 2);
+        TempXMLBuffer.TestField(Value, VATNoteValue);
+        TempXMLBuffer.Next();
+        TempXMLBuffer.TestField(Value, VATNoteValue);
     end;
 }

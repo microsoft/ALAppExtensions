@@ -51,4 +51,24 @@ codeunit 31011 "VAT Entry Handler CZZ"
         VATAmountLine."VAT Base (LCY) CZL" += FromVATAmountLine."VAT Base (LCY) CZL";
         VATAmountLine."VAT Amount (LCY) CZL" += FromVATAmountLine."VAT Amount (LCY) CZL";
     end;
+
+    [EventSubscriber(ObjectType::Page, Page::"VAT LCY Correction CZL", OnAfterGetDocumentVATEntries, '', false, false)]
+    local procedure FindVATEntriesOfPurchAdvLettersOnAfterGetDocumentVATEntries(var VATLCYCorrectionBufferCZL: Record "VAT LCY Correction Buffer CZL" temporary; DocumentNo: Code[20]; PostingDate: Date; DimensionSetID: Integer)
+    var
+        VATEntry: Record "VAT Entry";
+    begin
+        VATEntry.Reset();
+        VATEntry.SetCurrentKey("Document No.", "Posting Date");
+        VATEntry.SetRange("Document No.", DocumentNo);
+        VATEntry.SetRange("Posting Date", PostingDate);
+        VATEntry.SetFilter("Advance Letter No. CZZ", '<>%1', '');
+        if VATEntry.FindSet() then
+            repeat
+                if not VATLCYCorrectionBufferCZL.Get(VATEntry."Entry No.") then begin
+                    VATLCYCorrectionBufferCZL.InsertFromVATEntry(VATEntry);
+                    VATLCYCorrectionBufferCZL."Dimension Set ID" := DimensionSetID;
+                    VATLCYCorrectionBufferCZL.Modify();
+                end;
+            until VATEntry.Next() = 0;
+    end;
 }

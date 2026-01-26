@@ -59,6 +59,14 @@ page 6220 "Sustainability Ledger Entries"
                 {
                     ToolTip = 'Specifies the scope of the emission.';
                 }
+                field("Water/Waste Intensity Type"; Rec."Water/Waste Intensity Type")
+                {
+                    ToolTip = 'Specifies the Water/Waste Intensity Type of the entry.';
+                }
+                field("Water Type"; Rec."Water Type")
+                {
+                    ToolTip = 'Specifies the Water Type of the entry.';
+                }
                 field("Account Category"; Rec."Account Category")
                 {
                     ToolTip = 'Specifies the sustainability account category.';
@@ -70,6 +78,10 @@ page 6220 "Sustainability Ledger Entries"
                 field(Description; Rec.Description)
                 {
                     ToolTip = 'Specifies the description of the entry.';
+                }
+                field("Energy Source Code"; Rec."Energy Source Code")
+                {
+                    ToolTip = 'Specifies the Energy Source Code of the entry.';
                 }
                 field("Manual Input"; Rec."Manual Input")
                 {
@@ -122,6 +134,32 @@ page 6220 "Sustainability Ledger Entries"
                 field("Emission N2O"; Rec."Emission N2O")
                 {
                     ToolTip = 'Specifies the emission N2O of the entry.';
+                }
+                field("CO2e Emission"; Rec."CO2e Emission")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies total carbon dioxide and other equivalents emission expressing different greenhouse gases impact in terms of the amount of CO2 that would create the same effect.';
+                }
+                field("Carbon Fee"; Rec."Carbon Fee")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies internal carbon fee that a company charges itself for each unit of CO2 equivalent that it emits.';
+                }
+                field("Water Intensity"; Rec."Water Intensity")
+                {
+                    ToolTip = 'Specifies the Water Intensity of the entry.';
+                }
+                field("Discharged Into Water"; Rec."Discharged Into Water")
+                {
+                    ToolTip = 'Specifies the Discharged Into Water of the entry.';
+                }
+                field("Waste Intensity"; Rec."Waste Intensity")
+                {
+                    ToolTip = 'Specifies the Waste Intensity of the entry.';
+                }
+                field("Energy Consumption"; Rec."Energy Consumption")
+                {
+                    ToolTip = 'Specifies the Energy Consumption.';
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {

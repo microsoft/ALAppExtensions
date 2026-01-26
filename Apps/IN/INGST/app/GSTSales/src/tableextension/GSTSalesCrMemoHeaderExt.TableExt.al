@@ -56,6 +56,7 @@ tableextension 18144 "GST Sales Cr.Memo Header Ext" extends "Sales Cr.Memo Heade
             TableRelation = Customer where("e-Commerce Operator" = const(true));
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA26
         field(18149; "E-Commerce Merchant Id"; code[30])
         {
             caption = 'E-Commerce Merchant Id';
@@ -64,14 +65,10 @@ tableextension 18144 "GST Sales Cr.Memo Header Ext" extends "Sales Cr.Memo Heade
                     "Customer No." = field("e-Commerce Customer"));
             DataClassification = CustomerContent;
             ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#endif
         }
+#endif
         field(18150; "GST Bill-to State Code"; Code[10])
         {
             Caption = 'GST Bill-to State Code';

@@ -46,6 +46,11 @@ page 1697 "Posted Bank Deposit Subform"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the number of the document (usually a check) that was deposited.';
                 }
+                field("External Document No."; Rec."External Document No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the external document number for this line, such as a check number.';
+                }
                 field(Amount; Rec.Amount)
                 {
                     ApplicationArea = Basic, Suite;

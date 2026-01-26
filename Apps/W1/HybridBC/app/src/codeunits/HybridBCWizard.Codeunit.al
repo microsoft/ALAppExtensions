@@ -175,5 +175,4 @@ codeunit 4005 "Hybrid BC Wizard"
         exit(ProductId = ProductIdTxt);
     end;
 #pragma warning restore AA0245
-
 }

@@ -1,14 +1,18 @@
+#if not CLEAN26
 namespace Microsoft.DataMigration.GP;
 
 page 4094 "GP Customer Transactions"
 {
     Caption = 'GP Customer Transactions';
-    AdditionalSearchTerms = 'staging';
     PageType = List;
     SourceTable = "GP Customer Transactions";
     ApplicationArea = All;
-    UsageCategory = Lists;
+    UsageCategory = None;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Removing the GP staging table pages because they cause confusion and should not be used.';
+    ObsoleteTag = '26.0';
 
+#pragma warning disable AA0219
     layout
     {
         area(content)
@@ -98,3 +102,5 @@ page 4094 "GP Customer Transactions"
         }
     }
 }
+#pragma warning restore AA0219
+#endif

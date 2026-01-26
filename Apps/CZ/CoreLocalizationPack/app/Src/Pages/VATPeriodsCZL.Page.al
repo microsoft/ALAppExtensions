@@ -1,17 +1,23 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.VAT.Calculation;
+
 page 11769 "VAT Periods CZL"
 {
     ApplicationArea = Basic, Suite;
-    Caption = 'VAT Periods';
+    Caption = 'VAT Periods (Obsolete)';
     PageType = List;
     RefreshOnActivate = true;
     SourceTable = "VAT Period CZL";
     UsageCategory = Administration;
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+    ObsoleteReason = 'Replaced by standard VAT Return Period table.';
 
     layout
     {
@@ -84,6 +90,15 @@ page 11769 "VAT Periods CZL"
                 RunObject = page "VAT Ctrl. Report List CZL";
                 ToolTip = 'Show the VAT Control Reports.';
             }
+            action("Non-Deductible VAT Setup CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Non-Deductible VAT Setup';
+                Image = VATPostingSetup;
+                RunObject = Page "Non-Deductible VAT Setup CZL";
+                ToolTip = 'Set up VAT coefficient correction.';
+                Visible = NonDeductibleVATVisible;
+            }
         }
         area(Creation)
         {
@@ -93,9 +108,6 @@ page 11769 "VAT Periods CZL"
                 Caption = '&Create Periods';
                 Ellipsis = true;
                 Image = Period;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 RunObject = report "Create VAT Period CZL";
                 ToolTip = 'This batch job automatically creates VAT periods.';
             }
@@ -111,5 +123,39 @@ page 11769 "VAT Periods CZL"
                 ToolTip = 'This report compares general ledger entries by filtering data either by the posting date or the VAT date.';
             }
         }
+        area(Processing)
+        {
+            action("VAT Coeff. Correction CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'VAT Coefficient Correction';
+                Image = AdjustVATExemption;
+                RunObject = report "VAT Coeff. Correction CZL";
+                ToolTip = 'The report recalculate the value of non-deductible VAT according to settlement coeffiecient on VAT entries.';
+                Visible = NonDeductibleVATVisible;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref("Create Periods_Promoted"; "Create Periods")
+                {
+                }
+            }
+        }
     }
+
+    trigger OnOpenPage()
+    begin
+        ReplaceVATPeriodMgt.TestIsNotEnabled();
+        NonDeductibleVATVisible := NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
+    end;
+
+    var
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        ReplaceVATPeriodMgt: Codeunit "Replace VAT Period Mgt. CZL";
+        NonDeductibleVATVisible: Boolean;
 }
+
+#endif

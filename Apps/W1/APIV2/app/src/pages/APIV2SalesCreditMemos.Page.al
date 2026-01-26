@@ -1,14 +1,14 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Sales.History;
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
 using Microsoft.Utilities;
 using System.Reflection;
@@ -26,6 +26,7 @@ page 30038 "APIV2 - Sales Credit Memos"
     PageType = API;
     SourceTable = "Sales Cr. Memo Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages sales credit memo documents, exposing customer details, billing and shipping addresses, financial amounts, tax information, status, and related invoice references. Supports full lifecycle operations (GET, POST, PATCH, DELETE) for automating returns, customer refunds, and integration with external financial or ERP systems to ensure accurate accounts receivable and credit processing.';
 
     layout
     {
@@ -885,6 +886,7 @@ page 30038 "APIV2 - Sales Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Posts the draft sales credit memo to create a finalized posted credit memo')]
     [Scope('Cloud')]
     procedure Post(var ActionContext: WebServiceActionContext)
     var
@@ -897,6 +899,7 @@ page 30038 "APIV2 - Sales Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Posts the sales credit memo and sends it to the customer via email')]
     [Scope('Cloud')]
     procedure PostAndSend(var ActionContext: WebServiceActionContext)
     var
@@ -912,6 +915,7 @@ page 30038 "APIV2 - Sales Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Sends the posted sales credit memo document to the customer via email')]
     [Scope('Cloud')]
     procedure Send(var ActionContext: WebServiceActionContext)
     var
@@ -925,6 +929,7 @@ page 30038 "APIV2 - Sales Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Cancels the posted sales credit memo by creating a corrective invoice')]
     [Scope('Cloud')]
     procedure Cancel(var ActionContext: WebServiceActionContext)
     var
@@ -936,6 +941,7 @@ page 30038 "APIV2 - Sales Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Cancels the posted sales credit memo and sends the cancellation to the customer via email')]
     [Scope('Cloud')]
     procedure CancelAndSend(var ActionContext: WebServiceActionContext)
     var

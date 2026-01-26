@@ -41,6 +41,7 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         CustomerBankAccount: Record "Customer Bank Account";
     begin
+        OnBeforeFillMatchBankPaymentBufferSalesAdvance(SalesAdvLetterHeaderCZZ, SearchRuleLineCZB, TempMatchBankPaymentBufferCZB, GenJournalLine);
         SalesAdvLetterHeaderCZZ.SetRange(Status, SalesAdvLetterHeaderCZZ.Status::"To Pay");
         if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) and
             (GenJournalLine."Account No." <> '')
@@ -96,6 +97,7 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
         VendorBankAccount: Record "Vendor Bank Account";
     begin
+        OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(PurchAdvLetterHeaderCZZ, SearchRuleLineCZB, TempMatchBankPaymentBufferCZB, GenJournalLine);
         PurchAdvLetterHeaderCZZ.SetRange(Status, PurchAdvLetterHeaderCZZ.Status::"To Pay");
         if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and
             (GenJournalLine."Account No." <> '')
@@ -163,10 +165,9 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Search Rule CZB", 'OnAfterInsertRuleLine', '', false, false)]
-    local procedure AddAdvanceRuleLineOnAfterInsertRuleLine(SearchRuleLineCZB: Record "Search Rule Line CZB"; var LineNo: Integer; Description: Text)
+    local procedure AddAdvanceRuleLineOnAfterInsertRuleLine(SearchRuleLineCZB: Record "Search Rule Line CZB"; var LineNo: Integer)
     var
         AdvanceSearchRuleLineCZB: Record "Search Rule Line CZB";
-        DescriptionTxt: Label 'Both, Advance, %1', Comment = '%1 = Line Description';
     begin
         if SearchRuleLineCZB."Banking Transaction Type" <> SearchRuleLineCZB."Banking Transaction Type"::Both then
             exit;
@@ -176,9 +177,19 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         LineNo += 10000;
         AdvanceSearchRuleLineCZB := SearchRuleLineCZB;
         AdvanceSearchRuleLineCZB."Line No." := LineNo;
-        AdvanceSearchRuleLineCZB.Validate(Description, CopyStr(StrSubstNo(DescriptionTxt, Description), 1, MaxStrLen(SearchRuleLineCZB.Description)));
-        AdvanceSearchRuleLineCZB.Validate("Banking Transaction Type", AdvanceSearchRuleLineCZB."Banking Transaction Type"::Both);
+        AdvanceSearchRuleLineCZB.Description := '';
         AdvanceSearchRuleLineCZB.Validate("Search Scope", AdvanceSearchRuleLineCZB."Search Scope"::"Advance CZZ");
         AdvanceSearchRuleLineCZB.Insert(true);
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; SearchRuleLineCZB: Record "Search Rule Line CZB"; TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFillMatchBankPaymentBufferSalesAdvance(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; SearchRuleLineCZB: Record "Search Rule Line CZB"; TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
 }

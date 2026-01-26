@@ -1,10 +1,10 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
-using System.Threading;
-using System.Security.User;
-using System.Environment.Configuration;
-using System.Environment;
 using Microsoft.Inventory.Item;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Security.User;
+using System.Threading;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -175,14 +175,10 @@ codeunit 1852 "Sales Forecast Scheduler"
     var
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        with JobQueueEntry do begin
-            SetRange("Object Type to Run", "Object Type to Run"::Codeunit);
-            SetRange("Object ID to Run", Codeunit::"Sales Forecast Update");
-            SetRange(Status, Status::"In Process");
-            if FindFirst() then
-                exit(true);
-            exit(false);
-        end;
+        JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
+        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Sales Forecast Update");
+        JobQueueEntry.SetRange(Status, JobQueueEntry.Status::"In Process");
+        exit(not JobQueueEntry.IsEmpty());
     end;
 }
 

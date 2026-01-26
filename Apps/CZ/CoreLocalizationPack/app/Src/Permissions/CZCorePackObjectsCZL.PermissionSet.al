@@ -1,4 +1,5 @@
-﻿permissionset 11732 "CZ Core Pack - Objects CZL"
+#pragma warning disable AA0247
+permissionset 11732 "CZ Core Pack - Objects CZL"
 {
     Access = Public;
     Assignable = false;
@@ -36,6 +37,8 @@
                   codeunit "EET Text Sign. Provider CZL" = X,
                   codeunit "EET Xml Sign. Provider CZL" = X,
                   codeunit "Employee Handler CZL" = X,
+                  codeunit "EPO API Submission CZL" = X,
+                  codeunit "Exch. Rate Adjmt. Mgt. CZL" = X,
                   codeunit "FA Jnl. Check Line Handler CZL" = X,
                   codeunit "FA Recl. Jnl. Line Handler CZL" = X,
                   codeunit "Fin. Charge Memo Handler CZL" = X,
@@ -53,27 +56,13 @@
                   codeunit "Install Application CZL" = X,
                   codeunit "Install Applications Mgt. CZL" = X,
                   codeunit "Instruction Mgt. CZL" = X,
-#if not CLEAN22   
-#pragma warning disable AL0432               
-                  codeunit "Intrastat Jnl. Bch Handler CZL" = X,
-                  codeunit "Intrastat Jnl.Line Handler CZL" = X,
-#pragma warning restore AL0432               
-#endif
                   codeunit "Inventory Posting Handler CZL" = X,
                   codeunit "Invt. Document Handler CZL" = X,
                   codeunit "Invt. Document-Printed CZL" = X,
-#if not CLEAN22   
-#pragma warning disable AL0432               
-                  codeunit "Item Charge Assgnt Handler CZL" = X,
-#pragma warning restore AL0432               
-#endif
                   codeunit "Item Handler CZL" = X,
+                  codeunit "Item Charge Assgnt Handler CZL" = X,
+                  codeunit "Item Charge Assgnt. Purch. CZL" = X,
                   codeunit "Item Jnl.CheckLine Handler CZL" = X,
-#if not CLEAN22   
-#pragma warning disable AL0432               
-                  codeunit "Item Jnl-Post Line Handler CZL" = X,
-#pragma warning restore AL0432               
-#endif
                   codeunit "Item Jnl. Template Handler CZL" = X,
                   codeunit "Item Journal Line Handler CZL" = X,
                   codeunit "Item Tracking Doc. Handler CZL" = X,
@@ -82,14 +71,11 @@
                   codeunit "Job Journal Line Handler CZL" = X,
                   codeunit "Job Transfer Line Handler CZL" = X,
                   codeunit "Navigate Handler CZL" = X,
+                  codeunit "Non-Deductible VAT CZL" = X,
+                  codeunit "Non-Deductible VAT Handler CZL" = X,
                   codeunit "Phys.In.Order Line Handler CZL" = X,
                   codeunit "Posted Invt. Rcpt.-Printed CZL" = X,
                   codeunit "Posted Invt. Shpt.-Printed CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  codeunit "Posting Group Management CZL" = X,
-#pragma warning restore AL0432
-#endif
                   codeunit "Post. Prev. Event Handler CZL" = X,
                   codeunit "Post. Prev. Handler CZL" = X,
                   codeunit "Post. Prev. Table Handler CZL" = X,
@@ -116,17 +102,10 @@
                   codeunit "SOAP WS Request Management CZL" = X,
                   codeunit "Source Code Setup Handler CZL" = X,
                   codeunit "Substitute Report Handler CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  codeunit "Tariff Number Handler CZL" = X,
-#pragma warning restore AL0432
+#if not CLEAN27
+                  codeunit "Sync.Dep.Fld-SalesHeader CZL" = X,
 #endif
                   codeunit "Transfer Line Handler CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  codeunit "TransferOrder-Post Handler CZL" = X,
-#pragma warning restore AL0432
-#endif
                   codeunit "Transformation Rule Mgt. CZL" = X,
                   codeunit "Unreliable Payer Mgt. CZL" = X,
                   codeunit "Unreliable Payer WS CZL" = X,
@@ -146,10 +125,22 @@
                   codeunit "VAT Entry Handler CZL" = X,
                   codeunit "VAT LCY Correction-Post CZL" = X,
                   codeunit "VAT LCY Corr.-Post(Yes/No) CZL" = X,
+                  codeunit "VAT Orig.Doc.VAT Date Mgt. CZL" = X,
                   codeunit "VAT Reg. Log Suppression CZL" = X,
+                  codeunit "VAT Report Archive Mgt CZL" = X,
+                  codeunit "VAT Report Export CZL" = X,
+                  codeunit "VAT Report Handler CZL" = X,
+                  codeunit "VAT Report Submit CZL" = X,
+                  codeunit "VAT Report Suggest Lines CZL" = X,
+                  codeunit "VAT Report Validate CZL" = X,
                   codeunit "VAT Statement DPHDP3 CZL" = X,
+                  codeunit "VAT Statement DPHDP3v3 CZL" = X,
                   codeunit "VAT Statement Line Handler CZL" = X,
+#if not CLEAN26
+#pragma warning disable AL0432
                   codeunit "VAT Stmt. Template Handler CZL" = X,
+#pragma warning restore AL0432
+#endif
                   codeunit "VAT Stmt XML Export Helper CZL" = X,
                   codeunit "VAT Stmt XML Export Runner CZL" = X,
                   codeunit "Vendor Bank Acc. Handler CZL" = X,
@@ -189,34 +180,17 @@
                   page "File Mapping CZL" = X,
                   page "Get Document No. and Date CZL" = X,
                   page "Get Vend. Bank Acc. Code CZL" = X,
-#if not CLEAN22   
-#pragma warning disable AL0432    
-                  page "Intrastat Delivery Groups CZL" = X,
-                  page "Intrastat Journal Lines CZL" = X,
-#pragma warning restore AL0432    
-#endif
                   page "Inv. G/L Reconciliation CZL" = X,
                   page "Inv. - G/L Recon. Matrix CZL" = X,
                   page "Invt. Movement Templates CZL" = X,
+                  page "Non-Deductible VAT Setup CZL" = X,
                   page "Registration Log CZL" = X,
                   page "Registration Log Details CZL" = X,
                   page "Registration No. Check CZL" = X,
                   page "Reg. No. Service Config CZL" = X,
                   page "Save Acc. Schedule Result CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  page "Specific Movements CZL" = X,
-                  page "Statistic Indications CZL" = X,
-#pragma warning restore AL0432
-#endif
                   page "Statutory Reporting Setup CZL" = X,
                   page "Stockkeeping Unit Templ. CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  page "Subst. Cust. Post. Groups CZL" = X,
-                  page "Subst. Vend. Post. Groups CZL" = X,
-#pragma warning restore AL0432
-#endif
                   page "Unreliable Payer Entries CZL" = X,
                   page "Unrel. Payer Service Setup CZL" = X,
                   page "User Setup Card CZL" = X,
@@ -232,13 +206,20 @@
                   page "VAT Ctrl. Report St. Subf. CZL" = X,
                   page "VAT Ctrl. Report Subform CZL" = X,
                   page "VAT LCY Correction CZL" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   page "VAT Periods CZL" = X,
+#pragma warning restore AL0432
+#endif
                   page "VAT Statement Attachments CZL" = X,
                   page "VAT Statement Comments CZL" = X,
                   page "VAT Statement Preview CZL" = X,
                   page "VAT Statement Preview Line CZL" = X,
                   page "VAT Stmt. Attachment Sheet CZL" = X,
+                  page "VAT Stmt. Attach. Factbox CZL" = X,
+                  page "VAT Stmt. Comment Factbox CZL" = X,
                   page "VAT Stmt. Comment Sheet CZL" = X,
+                  page "VAT Stmt. Report Line Data CZL" = X,
                   page "VIES Declaration CZL" = X,
                   page "VIES Declaration Lines CZL" = X,
                   page "VIES Declarations CZL" = X,
@@ -249,25 +230,17 @@
                   report "Adjust Exchange Rates CZL" = X,
                   report "All Payments on Hold CZL" = X,
                   report "Balance Sheet CZL" = X,
-#if not CLEAN24
-#pragma warning disable AL0432
-                  report "Batch Post Purchase Inv. CZL" = X,
-                  report "Batch Post Purchase Orders CZL" = X,
-                  report "Batch Post Purch. Cr.Memos CZL" = X,
-                  report "Batch Post Purch. Ret.Ord. CZL" = X,
-                  report "Batch Post Sales Cr. Memos CZL" = X,
-                  report "Batch Post Sales Invoices CZL" = X,
-                  report "Batch Post Sales Orders CZL" = X,
-                  report "Batch Post Sales Ret. Ord. CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "Calc. and Post VAT Settl. CZL" = X,
                   report "Cash Flow Date List CZL" = X,
                   report "Close Balance Sheet CZL" = X,
                   report "Close Income Statement CZL" = X,
                   report "Copy User Setup CZL" = X,
                   report "Create Stockkeeping Unit CZL" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   report "Create VAT Period CZL" = X,
+#pragma warning restore AL0432
+#endif
                   report "Cust.- Bal. Reconciliation CZL" = X,
                   report "Documentation for VAT CZL" = X,
                   report "EET Confirmation CZL" = X,
@@ -279,22 +252,10 @@
                   report "General Journal - Test CZL" = X,
                   report "General Ledger CZL" = X,
                   report "General Ledger Document CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  report "Get Item Ldg. Entries Test CZL" = X,
-                  report "Get Item Ledger Entries CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "G/L Acc. Group Post. Check CZL" = X,
                   report "G/L VAT Reconciliation CZL" = X,
                   report "Import Tariff Numbers XML CZL" = X,
                   report "Income Statement CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  report "Intrastat Declaration Exp. CZL" = X,
-                  report "Intrastat - Invoice Check CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "Inventory Document CZL" = X,
                   report "Joining Bank. Acc. Adj. CZL" = X,
                   report "Joining G/L Account Adj. CZL" = X,
@@ -333,16 +294,13 @@
                   report "Unreliable Payer Get All CZL" = X,
                   report "Unreliable Payer List CZL" = X,
                   report "User Setup List CZL" = X,
+                  report "VAT Coeff. Correction CZL" = X,
                   report "VAT Ctrl. Report Get Ent. CZL" = X,
                   report "VAT Ctrl. Report - Test CZL" = X,
                   report "VAT Documents List CZL" = X,
                   report "VAT Exceptions CZL" = X,
                   report "VAT Register CZL" = X,
-#if not CLEAN24
-#pragma warning disable AL0432
-                  report "VAT Statement CZL" = X,
-#pragma warning restore AL0432
-#endif
+                  report "VAT Report Request Page CZL" = X,
                   report "Vendor-Bal. Reconciliation CZL" = X,
                   report "VIES Declaration CZL" = X,
                   report "VIES Declaration - Test CZL" = X,
@@ -371,29 +329,13 @@
                   table "Enhanced Currency Buffer CZL" = X,
                   table "Excel Template CZL" = X,
                   table "G/L Account Adjust. Buffer CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  table "Intrastat Delivery Group CZL" = X,
-#pragma warning restore AL0432
-#endif
                   table "Invt. Movement Template CZL" = X,
+                  table "Non-Deductible VAT Setup CZL" = X,
                   table "Registration Log CZL" = X,
                   table "Registration Log Detail CZL" = X,
                   table "Reg. No. Service Config CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  table "Specific Movement CZL" = X,
-                  table "Statistic Indication CZL" = X,
-#pragma warning restore AL0432
-#endif
                   table "Statutory Reporting Setup CZL" = X,
                   table "Stockkeeping Unit Template CZL" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  table "Subst. Cust. Posting Group CZL" = X,
-                  table "Subst. Vend. Posting Group CZL" = X,
-#pragma warning restore AL0432
-#endif
                   table "Unreliable Payer Entry CZL" = X,
                   table "Unrel. Payer Service Setup CZL" = X,
                   table "User Setup Line CZL" = X,
@@ -404,7 +346,13 @@
                   table "VAT Ctrl. Report Line CZL" = X,
                   table "VAT Ctrl. Report Section CZL" = X,
                   table "VAT LCY Correction Buffer CZL" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "VAT Period CZL" = X,
+#pragma warning restore AL0432
+#endif
+                  table "VAT Report Entry Link CZL" = X,
+                  table "VAT Stmt. Report Line Data CZL" = X,
                   table "VAT Statement Attachment CZL" = X,
                   table "VAT Statement Comment Line CZL" = X,
                   table "VIES Declaration Header CZL" = X,

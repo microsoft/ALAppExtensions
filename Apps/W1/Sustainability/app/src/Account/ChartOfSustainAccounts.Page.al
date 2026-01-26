@@ -1,10 +1,11 @@
 namespace Microsoft.Sustainability.Account;
 
 using Microsoft.Finance.Dimension;
-using Microsoft.Sustainability.Journal;
+using Microsoft.Finance.FinancialReports;
 using Microsoft.Foundation.Comment;
-using Microsoft.Sustainability.Reports;
+using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Reports;
 
 page 6210 "Chart of Sustain. Accounts"
 {
@@ -92,6 +93,45 @@ page 6210 "Chart of Sustain. Accounts"
                 field("Balance (N2O)"; Rec."Balance (N2O)")
                 {
                     ToolTip = 'Specifies the balance of N2O on the account.';
+                }
+                field("Net Change (Water)"; Rec."Net Change (Water)")
+                {
+                    ToolTip = 'Specifies the Water net change on this account.';
+                }
+                field("Balance at Date (Water)"; Rec."Balance at Date (Water)")
+                {
+                    ToolTip = 'Specifies the Water balance at date on this account.';
+                    Visible = false;
+                }
+                field("Balance (Water)"; Rec."Balance (Water)")
+                {
+                    ToolTip = 'Specifies the Water balance on this account.';
+                }
+                field("Net Change (Disch. Water)"; Rec."Net Change (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water net change on this account.';
+                }
+                field("Balance at Date (Disch. Water)"; Rec."Balance at Date (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water balance at date on this account.';
+                    Visible = false;
+                }
+                field("Balance (Disch. Water)"; Rec."Balance (Disch. Water)")
+                {
+                    ToolTip = 'Specifies the Disch. Water balance on this account.';
+                }
+                field("Net Change (Waste)"; Rec."Net Change (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste net change on this account.';
+                }
+                field("Balance at Date (Waste)"; Rec."Balance at Date (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste balance at date on this account.';
+                    Visible = false;
+                }
+                field("Balance (Waste)"; Rec."Balance (Waste)")
+                {
+                    ToolTip = 'Specifies the Waste balance on this account.';
                 }
                 field(Category; Rec.Category)
                 {
@@ -230,6 +270,14 @@ page 6210 "Chart of Sustain. Accounts"
                         SustainabilityAccountMgt.IndentChartOfSustainabilityAccounts(false);
                     end;
                 }
+                action(FinancialReporting)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Financial Reporting';
+                    Image = CalculateBalanceAccount;
+                    RunObject = page "Financial Reports";
+                    Tooltip = 'Open the Financial Reporting page.';
+                }
             }
             group("Periodic Activities")
             {
@@ -274,6 +322,7 @@ page 6210 "Chart of Sustain. Accounts"
             {
                 Caption = 'Process';
                 actionref(IndentChartOfSustainAccounts_Promoted; IndentChartOfSustainAccounts) { }
+                actionref(FinancialReporting_Promoted; FinancialReporting) { }
             }
             group(Category_Category5)
             {

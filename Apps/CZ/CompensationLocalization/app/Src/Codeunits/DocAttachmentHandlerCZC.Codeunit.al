@@ -20,8 +20,8 @@ codeunit 31267 "Doc. Attachment Handler CZC"
         InitDocumentAttachmentFields(DocumentAttachment, RecRef);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Document Attachment Factbox", 'OnBeforeDrillDown', '', false, false)]
-    local procedure GetTableOnBeforeDrillDown(DocumentAttachment: Record "Document Attachment"; var RecRef: RecordRef)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", 'OnAfterGetRefTable', '', false, false)]
+    local procedure GetTableOnAfterGetRefTable(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment")
     begin
         GetDocumentAttachmentTable(DocumentAttachment, RecRef);
     end;
@@ -101,15 +101,13 @@ codeunit 31267 "Doc. Attachment Handler CZC"
             Database::"Compensation Header CZC":
                 begin
                     DocumentRecordRef.Open(Database::"Compensation Header CZC");
-                    CompensationHeaderCZC.SetRange("No.", DocumentAttachment."No.");
-                    if CompensationHeaderCZC.FindFirst() then
+                    if CompensationHeaderCZC.Get(DocumentAttachment."No.") then
                         DocumentRecordRef.GetTable(CompensationHeaderCZC);
                 end;
             Database::"Posted Compensation Header CZC":
                 begin
                     DocumentRecordRef.Open(Database::"Posted Compensation Header CZC");
-                    PostedCompensationHeaderCZC.SetRange("No.", DocumentAttachment."No.");
-                    if PostedCompensationHeaderCZC.FindFirst() then
+                    if PostedCompensationHeaderCZC.Get(DocumentAttachment."No.") then
                         DocumentRecordRef.GetTable(PostedCompensationHeaderCZC);
                 end;
         end;

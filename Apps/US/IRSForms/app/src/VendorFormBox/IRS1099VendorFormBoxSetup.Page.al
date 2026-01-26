@@ -83,9 +83,11 @@ page 10035 "IRS 1099 Vendor Form Box Setup"
 
                 trigger OnAction()
                 var
+                    IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
                     IRS1099VendorFormBox: Codeunit "IRS 1099 Vendor Form Box";
                 begin
-                    IRS1099VendorFormBox.PropagateVendorFormBoxSetupToExistingEntries(Rec);
+                    CurrPage.SetSelectionFilter(IRS1099VendorFormBoxSetup);
+                    IRS1099VendorFormBox.PropagateVendorsFormBoxSetupToExistingEntries(IRS1099VendorFormBoxSetup);
                 end;
             }
         }
@@ -108,14 +110,8 @@ page 10035 "IRS 1099 Vendor Form Box Setup"
 
     trigger OnOpenPage()
     var
-#if not CLEAN25
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-#endif
     begin
         PeriodIsVisible := Rec.GetFilter("Period No.") = '';
         VendorIsVisible := Rec.GetFilter("Vendor No.") = '';
-#if not CLEAN25
-        CurrPage.Editable := IRSFormsFeature.FeatureCanBeUsed();
-#endif
     end;
 }

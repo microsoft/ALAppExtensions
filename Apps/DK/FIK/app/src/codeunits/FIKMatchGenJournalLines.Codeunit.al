@@ -73,6 +73,7 @@ Codeunit 13652 FIK_MatchGenJournalLines
                 CustLedgerEntry.RESET();
                 CustLedgerEntry.SETRANGE("Applies-to ID", '');
                 CustLedgerEntry.SETRANGE("Document No.", TempGenJournalLine."Payment Reference");
+                OnAfterFilterCustLedgerEntries(CustLedgerEntry, TempBankStatementMatchingBuffer, TempGenJournalLine);
                 CustLedgerEntry.SETAUTOCALCFIELDS("Remaining Amt. (LCY)");
                 IF CustLedgerEntry.FINDFIRST() AND
                    (CustLedgerEntry.COUNT() = 1) AND (TempGenJournalLine."Posting Date" >= CustLedgerEntry."Posting Date")
@@ -270,6 +271,9 @@ Codeunit 13652 FIK_MatchGenJournalLines
             UNTIL TempBankStatementMatchingBuffer.NEXT() = 0;
     END;
 
-
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterFilterCustLedgerEntries(var CustLedgerEntry: Record "Cust. Ledger Entry"; VAR TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; VAR TempGenJournalLine: Record "Gen. Journal Line" temporary)
+    begin
+    end;
 }
 

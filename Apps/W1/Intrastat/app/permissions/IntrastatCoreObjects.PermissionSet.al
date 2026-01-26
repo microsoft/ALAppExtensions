@@ -16,6 +16,7 @@ permissionset 4810 "Intrastat Core - Objects"
         table "Intrastat Report Checklist" = X,
 
         codeunit IntrastatReportManagement = X,
+        codeunit IntrastatReportItemTracking = X,
 
         page "Intrastat Report Setup" = X,
         page "Intrastat Report List" = X,

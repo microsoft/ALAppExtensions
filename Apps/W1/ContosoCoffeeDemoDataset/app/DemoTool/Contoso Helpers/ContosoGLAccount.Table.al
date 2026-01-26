@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 4769 "Contoso GL Account"
 {
     TableType = Temporary;
@@ -5,6 +6,7 @@ table 4769 "Contoso GL Account"
     DataClassification = CustomerContent;
     InherentEntitlements = RIMD;
     InherentPermissions = RIMD;
+    ReplicateData = false;
 
     fields
     {

@@ -35,4 +35,8 @@ enum 11731 "Cash Document Account Type CZP"
     {
         Caption = 'Employee';
     }
+    value(7; "Allocation Account")
+    {
+        Caption = 'Allocation Account';
+    }
 }

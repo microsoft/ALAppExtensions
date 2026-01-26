@@ -6,12 +6,13 @@
 namespace Microsoft.Finance.Core;
 
 using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using System.Environment;
-using Microsoft.Finance.GeneralLedger.Posting;
-using Microsoft.Foundation.Company;
 using System.Environment.Configuration;
 using System.IO;
 using System.Security.AccessControl;
@@ -39,11 +40,19 @@ codeunit 13601 "DK Core Event Subscribers"
 
     [EventSubscriber(ObjectType::Table, Database::"Bank Account", 'OnGetBankAccount', '', false, false)]
     local procedure GetBankAccountNo(var Handled: Boolean; BankAccount: Record "Bank Account"; var ResultBankAccountNo: Text);
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        DomesticCurrency: Boolean;
     begin
         if not Handled then begin
             Handled := true;
 
-            GetBankAccNo(BankAccount."Bank Account No.", BankAccount."Bank Branch No.", BankAccount.IBAN, ResultBankAccountNo);
+            GeneralLedgerSetup.Get();
+
+            if (BankAccount."Currency Code" = '') or (GeneralLedgerSetup."LCY Code" = BankAccount."Currency Code") then
+                DomesticCurrency := true;
+
+            GetBankAccNo(BankAccount."Bank Account No.", BankAccount."Bank Branch No.", BankAccount.IBAN, ResultBankAccountNo, DomesticCurrency);
         end;
     end;
 
@@ -59,7 +68,7 @@ codeunit 13601 "DK Core Event Subscribers"
         if not Handled then begin
             Handled := true;
 
-            GetBankAccNo(CustomerBankAccount."Bank Account No.", CustomerBankAccount."Bank Branch No.", CustomerBankAccount.IBAN, ResultBankAccountNo);
+            GetSenderRecipientBankAccNo(CustomerBankAccount."Bank Account No.", CustomerBankAccount."Bank Branch No.", CustomerBankAccount.IBAN, ResultBankAccountNo);
         end;
     end;
 
@@ -75,7 +84,7 @@ codeunit 13601 "DK Core Event Subscribers"
         if not Handled then begin
             Handled := true;
 
-            GetBankAccNo(VendorBankAccount."Bank Account No.", VendorBankAccount."Bank Branch No.", VendorBankAccount.IBAN, ResultBankAccountNo);
+            GetSenderRecipientBankAccNo(VendorBankAccount."Bank Account No.", VendorBankAccount."Bank Branch No.", VendorBankAccount.IBAN, ResultBankAccountNo);
         end;
     end;
 
@@ -113,6 +122,7 @@ codeunit 13601 "DK Core Event Subscribers"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeStartOrContinuePosting', '', false, false)]
     local procedure CheckCVRNumberOnBeforeStartOrContinuePosting()
     var
+        Company: Record Company;
         CompanyInformation: Record "Company Information";
         EnvironmentInformation: Codeunit "Environment Information";
     begin
@@ -120,6 +130,9 @@ codeunit 13601 "DK Core Event Subscribers"
             exit;
         if EnvironmentInformation.IsSandbox() then
             exit;
+        if Company.Get(CompanyName()) then
+            if Company."Evaluation Company" then
+                exit;
 
         CompanyInformation.Get();
         if CompanyInformation."Registration No." = '' then
@@ -138,9 +151,17 @@ codeunit 13601 "DK Core Event Subscribers"
         end;
     end;
 
-    local procedure GetBankAccNo(BankAccountNo: Text[30]; BankBranchNo: Text[20]; IBAN: Code[50]; var ResultAccountNo: Text)
+    local procedure GetBankAccNo(BankAccountNo: Text[30]; BankBranchNo: Text[20]; IBAN: Code[50]; var ResultAccountNo: Text; DomesticCurrency: Boolean)
     begin
-        if (BankBranchNo = '') or (BankAccountNo = '') then
+        if (BankAccountNo = '') or (BankBranchNo = '') or ((IBAN <> '') and not DomesticCurrency) then
+            ResultAccountNo := DelChr(IBAN, '=<>')
+        else
+            ResultAccountNo := BankBranchNo + BankAccountNo;
+    end;
+
+    local procedure GetSenderRecipientBankAccNo(BankAccountNo: Text[30]; BankBranchNo: Text[20]; IBAN: Code[50]; var ResultAccountNo: Text)
+    begin
+        if (BankAccountNo = '') or (BankBranchNo = '') or (IBAN <> '') then
             ResultAccountNo := DelChr(IBAN, '=<>')
         else
             ResultAccountNo := BankBranchNo + BankAccountNo;

@@ -68,6 +68,15 @@ tableextension 31008 "Purchase Header CZZ" extends "Purchase Header"
         OnAfterGetAdvLetterUsageDocTypeCZZ(Rec, AdvLetterUsageDocType);
     end;
 
+    procedure HasAdvanceLetterLinkedCZZ(): Boolean
+    var
+        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
+    begin
+        AdvanceLetterApplicationCZZ.SetRange("Document Type", GetAdvLetterUsageDocTypeCZZ());
+        AdvanceLetterApplicationCZZ.SetRange("Document No.", "No.");
+        exit(not AdvanceLetterApplicationCZZ.IsEmpty());
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterIsAdvanceLetterDocTypeCZZ(Rec: Record "Purchase Header"; var AdvanceLetterDocType: Boolean)
     begin

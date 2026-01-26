@@ -6,6 +6,6 @@ enumextension 7250 "Bank Rec. Copilot Capability" extends "Copilot Capability"
 {
     value(7250; "Bank Account Reconciliation")
     {
-        Caption = 'Bank Account Reconciliation';
+        Caption = 'Bank account reconciliation';
     }
 }

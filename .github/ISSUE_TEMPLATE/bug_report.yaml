@@ -1,7 +1,7 @@
 name: Fix a bug
 description: Create a bug report for a product defect you would like to address yourself
 title: "[Bug]: "
-labels: ["bug"]
+type: 'Bug'
 body:
   - type: markdown
     attributes:

@@ -4,37 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Posting;
 
-#if not CLEAN22
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Journal;
-#endif
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Setup;
 
 #pragma warning disable AL0432
 codeunit 31047 "Item Jnl-Post Line Handler CZL"
 {
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitItemLedgEntry', '', false, false)]
-    local procedure CopyFieldsOnAfterInitItemLedgEntry(var NewItemLedgEntry: Record "Item Ledger Entry"; ItemJournalLine: Record "Item Journal Line"; var ItemLedgEntryNo: Integer)
-    begin
-        ItemJournalLine.CheckIntrastatCZL();
-        NewItemLedgEntry."Statistic Indication CZL" := ItemJournalLine."Statistic Indication CZL";
-        NewItemLedgEntry."Intrastat Transaction CZL" := ItemJournalLine."Intrastat Transaction CZL";
-        NewItemLedgEntry."Physical Transfer CZL" := ItemJournalLine."Physical Transfer CZL";
-        NewItemLedgEntry."Tariff No. CZL" := ItemJournalLine."Tariff No. CZL";
-        NewItemLedgEntry."Net Weight CZL" := ItemJournalLine."Net Weight CZL";
-        NewItemLedgEntry."Country/Reg. of Orig. Code CZL" := ItemJournalLine."Country/Reg. of Orig. Code CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitValueEntry', '', false, false)]
-    local procedure CopyFieldsOnAfterInitValueEntry(var ValueEntry: Record "Value Entry"; ItemJournalLine: Record "Item Journal Line")
-    begin
-        ValueEntry."Incl. in Intrastat Amount CZL" := ItemJournalLine."Incl. in Intrastat Amount CZL";
-        ValueEntry."Incl. in Intrastat S.Value CZL" := ItemJournalLine."Incl. in Intrastat S.Value CZL";
-    end;
-
-#pragma warning restore AL0432
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertApplEntry', '', false, false)]
     local procedure DateOrderInvtCZLChangeOnBeforeInsertApplEntry(Quantity: Decimal; InboundItemEntry: Integer; OutboundItemEntry: Integer; PostingDate: Date);
     var
@@ -59,5 +37,40 @@ codeunit 31047 "Item Jnl-Post Line Handler CZL"
                   OutboundItemEntry, PostingDate, InboundItemEntry, DateOrderItemLedgerEntry.FieldCaption("Entry No."));
         end;
 
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnInitValueEntryOnBeforeRoundAmtValueEntry', '', false, false)]
+    local procedure OnInitValueEntryOnBeforeRoundAmtValueEntry(ItemJnlLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry");
+    var
+        CurrExchRate: Record "Currency Exchange Rate";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        AdditionalCurrencyManagement: Codeunit "Additional-Currency Management";
+        AdditionalCurrencyFactor: Decimal;
+        Factor: Decimal;
+        OldCostPerUnitACY: Decimal;
+    begin
+        if ItemJnlLine."Additional Currency Factor CZL" = 0 then
+            exit;
+
+        GeneralLedgerSetup.Get();
+        AdditionalCurrencyFactor := CurrExchRate.ExchangeRate(ValueEntry."Posting Date", GeneralLedgerSetup."Additional Reporting Currency");
+        if ItemJnlLine."Additional Currency Factor CZL" = AdditionalCurrencyFactor then
+            exit;
+
+        OldCostPerUnitACY := ValueEntry."Cost per Unit (ACY)";
+        ValueEntry."Cost per Unit (ACY)" := AdditionalCurrencyManagement.RoundACYAmt(ValueEntry."Cost per Unit" * ItemJnlLine."Additional Currency Factor CZL", false);
+
+        if ValueEntry."Cost per Unit (ACY)" = 0 then
+            exit;
+
+        Factor := OldCostPerUnitACY / ValueEntry."Cost per Unit (ACY)";
+
+        if Factor = 0 then
+            exit;
+
+        ValueEntry."Cost Amount (Actual) (ACY)" := AdditionalCurrencyManagement.RoundACYAmt(ValueEntry."Cost Amount (Actual) (ACY)" / Factor, false);
+        ValueEntry."Cost Amount (Expected) (ACY)" := AdditionalCurrencyManagement.RoundACYAmt(ValueEntry."Cost Amount (Expected) (ACY)" / Factor, false);
+        ValueEntry."Cost Amount (Non-Invtbl.)(ACY)" := AdditionalCurrencyManagement.RoundACYAmt(ValueEntry."Cost Amount (Non-Invtbl.)(ACY)" / Factor, false);
+        ValueEntry."Cost Posted to G/L (ACY)" := AdditionalCurrencyManagement.RoundACYAmt(ValueEntry."Cost Posted to G/L (ACY)" / Factor, false);
     end;
 }

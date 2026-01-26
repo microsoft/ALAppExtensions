@@ -216,26 +216,4 @@ codeunit 139512 "SAF-T Tests Helper"
         DetailedVendorLedgEntry."Amount (LCY)" := AmountLCY;
         DetailedVendorLedgEntry.Insert();
     end;
-
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnInitializeFeatureDataUpdateStatus', '', false, false)]
-    local procedure EnableSIEFeatureOnInitializeFeatureDataUpdateStatus(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; var InitializeHandled: Boolean)
-    var
-        FeatureKey: Record "Feature Key";
-        SAFTDataMgt: Codeunit "SAF-T Data Mgt.";
-    begin
-        if FeatureDataUpdateStatus."Feature Key" <> SAFTDataMgt.GetSAFTAuditFileExportFeatureKeyId() then
-            exit;
-
-        if FeatureDataUpdateStatus."Company Name" <> CopyStr(CompanyName(), 1, MaxStrLen(FeatureDataUpdateStatus."Company Name")) then
-            exit;
-
-        FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
-
-        FeatureKey.Get(FeatureDataUpdateStatus."Feature Key");
-        FeatureKey.Enabled := FeatureKey.Enabled::"All Users";
-        FeatureKey.Modify();
-        InitializeHandled := true;
-    end;
-#endif
 }
