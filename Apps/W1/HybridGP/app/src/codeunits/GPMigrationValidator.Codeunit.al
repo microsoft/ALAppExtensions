@@ -21,19 +21,19 @@ codeunit 40903 "GP Migration Validator"
         if not GPCompanyAdditionalSettings.Get(CompanyName()) then
             exit;
 
-        ValidatorCodeLbl := GetValidatorCode();
+        ValidatorCodeTxt := GetValidatorCode();
         CompanyNameTxt := CompanyName();
         DefaultCurrency.InitRoundingPrecision();
 
         GetUnpostedBatchCounts();
 
-        RunGLAccountMigrationValidation(GPCompanyAdditionalSettings);
-        RunStatisticalAccountMigrationValidation(GPCompanyAdditionalSettings);
-        RunBankAccountMigrationValidation(GPCompanyAdditionalSettings);
-        RunCustomerMigrationValidation(GPCompanyAdditionalSettings);
-        RunItemMigrationValidation(GPCompanyAdditionalSettings);
-        RunPurchaseOrderMigrationValidation(GPCompanyAdditionalSettings);
-        RunVendorMigrationValidation(GPCompanyAdditionalSettings);
+        RunGLAccountMigrationValidationAssert(GPCompanyAdditionalSettings);
+        RunStatisticalAccountMigrationValidationAssert(GPCompanyAdditionalSettings);
+        RunBankAccountMigrationValidationAssert(GPCompanyAdditionalSettings);
+        RunCustomerMigrationValidationAssert(GPCompanyAdditionalSettings);
+        RunItemMigrationValidationAssert(GPCompanyAdditionalSettings);
+        RunPurchaseOrderMigrationValidationAssert(GPCompanyAdditionalSettings);
+        RunVendorMigrationValidationAssert(GPCompanyAdditionalSettings);
     end;
 
     local procedure GetUnpostedBatchCounts()
@@ -50,7 +50,7 @@ codeunit 40903 "GP Migration Validator"
         HelperFunctions.GetUnpostedBatchCountForCompany(CompanyName(), TotalUnpostedGLBatchCount, TotalUnpostedStatisticalBatchCount, TotalUnpostedBankBatchCount, TotalUnpostedCustomerBatchCount, TotalUnpostedItemBatchCount, TotalUnpostedVendorBatchCount);
     end;
 
-    local procedure RunGLAccountMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
+    local procedure RunGLAccountMigrationValidationAssert(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
     var
         GLAccount: Record "G/L Account";
         GPAccount: Record "GP Account";
@@ -86,10 +86,10 @@ codeunit 40903 "GP Migration Validator"
 
                     ValidatedAccountNos.Add(GPAccountNo);
 
-                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPGL00100) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPGL00100) then
                         continue;
 
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPAccountNo);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, GPAccountNo);
 
                     GPSY00300.SetRange(MNSEGIND, true);
                     if GPSY00300.FindFirst() then begin
@@ -153,25 +153,25 @@ codeunit 40903 "GP Migration Validator"
 
                     Clear(GLAccount);
                     GLAccount.SetLoadFields("No.", Name, "Account Type", "Account Category", "Debit/Credit", "Account Subcategory Entry No.", "Income/Balance", Balance);
-                    if not MigrationValidation.ValidateRecordExists(Test_ACCOUNTEXISTS_Tok, GLAccount.Get(GPAccount.AcctNum), StrSubstNo(MissingEntityTok, EntityType)) then
+                    if not MigrationValidationAssert.ValidateRecordExists(Test_ACCOUNTEXISTS_Tok, GLAccount.Get(GPAccount.AcctNum), StrSubstNo(MissingEntityTok, EntityType)) then
                         continue;
 
                     GLAccount.CalcFields(Balance);
 
-                    MigrationValidation.ValidateAreEqual(Test_ACCOUNTNAME_Tok, GPAccount.Name, GLAccount.Name, AccountNameLbl, true);
-                    MigrationValidation.ValidateAreEqual(Test_ACCOUNTTYPE_Tok, Format(GLAccount."Account Type"::Posting), Format(GLAccount."Account Type"), AccountTypeLbl);
-                    MigrationValidation.ValidateAreEqual(Test_ACCOUNTCATEGORY_Tok, HelperFunctions.ConvertAccountCategory(GPAccount), GLAccount."Account Category".AsInteger(), AccountCategoryLbl);
-                    MigrationValidation.ValidateAreEqual(Test_ACCOUNTDEBCRED_Tok, HelperFunctions.ConvertDebitCreditType(GPAccount), GLAccount."Debit/Credit", AccountDebitCreditLbl);
-                    MigrationValidation.ValidateAreEqual(Test_ACCOUNTSUBCATEGORY_Tok, HelperFunctions.AssignSubAccountCategory(GPAccount), GLAccount."Account Subcategory Entry No.", AccountSubcategoryLbl);
-                    MigrationValidation.ValidateAreEqual(Test_ACCOUNTINCBAL_Tok, HelperFunctions.ConvertIncomeBalanceType(GPAccount), GLAccount."Income/Balance".AsInteger(), AccountIncomeBalanceLbl);
-                    MigrationValidation.ValidateAreEqual(Test_ACCOUNTBALANCE_Tok, GPAccountBeginningBalance, GLAccount.Balance, BeginningBalanceLbl, BalanceFailureShouldBeWarning);
+                    MigrationValidationAssert.ValidateAreEqual(Test_ACCOUNTNAME_Tok, GPAccount.Name, GLAccount.Name, AccountNameLbl, true);
+                    MigrationValidationAssert.ValidateAreEqual(Test_ACCOUNTTYPE_Tok, Format(GLAccount."Account Type"::Posting), Format(GLAccount."Account Type"), AccountTypeLbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_ACCOUNTCATEGORY_Tok, HelperFunctions.ConvertAccountCategory(GPAccount), GLAccount."Account Category".AsInteger(), AccountCategoryLbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_ACCOUNTDEBCRED_Tok, HelperFunctions.ConvertDebitCreditType(GPAccount), GLAccount."Debit/Credit", AccountDebitCreditLbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_ACCOUNTSUBCATEGORY_Tok, HelperFunctions.AssignSubAccountCategory(GPAccount), GLAccount."Account Subcategory Entry No.", AccountSubcategoryLbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_ACCOUNTINCBAL_Tok, HelperFunctions.ConvertIncomeBalanceType(GPAccount), GLAccount."Income/Balance".AsInteger(), AccountIncomeBalanceLbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_ACCOUNTBALANCE_Tok, GPAccountBeginningBalance, GLAccount.Balance, BeginningBalanceLbl, BalanceFailureShouldBeWarning);
 
-                    MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPGL00100);
+                    MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPGL00100);
                 until GPGL00100.Next() = 0;
         end;
     end;
 
-    local procedure RunStatisticalAccountMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
+    local procedure RunStatisticalAccountMigrationValidationAssert(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         FirstAccount: Record "GP GL00100";
@@ -212,10 +212,10 @@ codeunit 40903 "GP Migration Validator"
 
                     ValidatedAccountNos.Add(GPAccountNo);
 
-                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPGL00100) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPGL00100) then
                         continue;
 
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPAccountNo);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, GPAccountNo);
 
                     GPSY00300.SetRange(MNSEGIND, true);
                     if GPSY00300.FindFirst() then begin
@@ -266,22 +266,22 @@ codeunit 40903 "GP Migration Validator"
 
                     Clear(StatisticalAccount);
                     StatisticalAccount.SetLoadFields("No.", Name, "Global Dimension 1 Code", "Global Dimension 2 Code", Balance);
-                    if not MigrationValidation.ValidateRecordExists(Test_STATACCOUNTEXISTS_Tok, StatisticalAccount.Get(GPAccountNo), StrSubstNo(MissingEntityTok, EntityType)) then
+                    if not MigrationValidationAssert.ValidateRecordExists(Test_STATACCOUNTEXISTS_Tok, StatisticalAccount.Get(GPAccountNo), StrSubstNo(MissingEntityTok, EntityType)) then
                         continue;
 
                     StatisticalAccount.CalcFields(Balance);
 
-                    MigrationValidation.ValidateAreEqual(Test_STATACCOUNTNAME_Tok, GPAccountDescription, StatisticalAccount.Name, AccountNameLbl, true);
-                    MigrationValidation.ValidateAreEqual(Test_STATACCOUNTDIM1_Tok, DimensionCode1, StatisticalAccount."Global Dimension 1 Code", Dimension1Lbl);
-                    MigrationValidation.ValidateAreEqual(Test_STATACCOUNTDIM2_Tok, DimensionCode2, StatisticalAccount."Global Dimension 2 Code", Dimension2Lbl);
-                    MigrationValidation.ValidateAreEqual(Test_STATACCOUNTBALANCE_Tok, GPAccountBeginningBalance, StatisticalAccount.Balance, BeginningBalanceLbl, BalanceFailureShouldBeWarning);
+                    MigrationValidationAssert.ValidateAreEqual(Test_STATACCOUNTNAME_Tok, GPAccountDescription, StatisticalAccount.Name, AccountNameLbl, true);
+                    MigrationValidationAssert.ValidateAreEqual(Test_STATACCOUNTDIM1_Tok, DimensionCode1, StatisticalAccount."Global Dimension 1 Code", Dimension1Lbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_STATACCOUNTDIM2_Tok, DimensionCode2, StatisticalAccount."Global Dimension 2 Code", Dimension2Lbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_STATACCOUNTBALANCE_Tok, GPAccountBeginningBalance, StatisticalAccount.Balance, BeginningBalanceLbl, BalanceFailureShouldBeWarning);
 
-                    MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPGL00100);
+                    MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPGL00100);
                 until GPGL00100.Next() = 0;
         end;
     end;
 
-    local procedure RunBankAccountMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
+    local procedure RunBankAccountMigrationValidationAssert(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
     var
         BankAccount: Record "Bank Account";
         GPBankMSTR: Record "GP Bank MSTR";
@@ -301,11 +301,11 @@ codeunit 40903 "GP Migration Validator"
         if GPCompanyAdditionalSettings.GetBankModuleEnabled() then
             if GPCheckbookMSTR.FindSet() then
                 repeat
-                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPCheckbookMSTR) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPCheckbookMSTR) then
                         continue;
 
                     GPAccountNo := CopyStr(GPCheckbookMSTR.CHEKBKID.TrimEnd(), 1, MaxStrLen(GPAccountNo));
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPAccountNo);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, GPAccountNo);
                     ShouldInclude := true;
                     GPAccountBalance := 0;
 
@@ -347,30 +347,30 @@ codeunit 40903 "GP Migration Validator"
 
                         Clear(BankAccount);
                         BankAccount.SetLoadFields("No.", Name, "Bank Account No.", Balance, Address, "Address 2", City, "Phone No.", "Transit No.", "Fax No.", County, "Post Code", "Bank Branch No.");
-                        if not MigrationValidation.ValidateRecordExists(Test_BANKACCOUNTEXISTS_Tok, BankAccount.Get(GPAccountNo), StrSubstNo(MissingEntityTok, EntityType)) then
+                        if not MigrationValidationAssert.ValidateRecordExists(Test_BANKACCOUNTEXISTS_Tok, BankAccount.Get(GPAccountNo), StrSubstNo(MissingEntityTok, EntityType)) then
                             continue;
 
                         BankAccount.CalcFields(Balance);
 
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTNAME_Tok, CopyStr(GPCheckbookMSTR.DSCRIPTN.TrimEnd(), 1, MaxStrLen(BankAccount.Name)), BankAccount.Name, NameLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTNO_Tok, CopyStr(GPCheckbookMSTR.BNKACTNM.TrimEnd(), 1, MaxStrLen(BankAccount."Bank Account No.")), BankAccount."Bank Account No.", BankAccountNumberLbl, false, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTADDR_Tok, CopyStr(GPBankMSTR.ADDRESS1.TrimEnd(), 1, MaxStrLen(BankAccount.Address)), BankAccount.Address, AddressLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTADDR2_Tok, CopyStr(GPBankMSTR.ADDRESS2.TrimEnd(), 1, MaxStrLen(BankAccount."Address 2")), BankAccount."Address 2", Address2Lbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTCITY_Tok, CopyStr(GPBankMSTR.CITY.TrimEnd(), 1, MaxStrLen(BankAccount.City)), BankAccount.City, CityLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTCOUNTY_Tok, CopyStr(GPBankMSTR.STATE.TrimEnd(), 1, MaxStrLen(BankAccount.County)), BankAccount.County, CountyLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTPOSTCODE_Tok, CopyStr(GPBankMSTR.ZIPCODE.TrimEnd(), 1, MaxStrLen(BankAccount."Post Code")), BankAccount."Post Code", PostCodeLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTPHN_Tok, CopyStr(GPBankMSTR.PHNUMBR1.TrimEnd(), 1, MaxStrLen(BankAccount."Phone No.")), BankAccount."Phone No.", PhoneLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTFAX_Tok, CopyStr(GPBankMSTR.FAXNUMBR.TrimEnd(), 1, MaxStrLen(BankAccount."Fax No.")), BankAccount."Fax No.", FaxLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTTRANSITNO_Tok, CopyStr(GPBankMSTR.TRNSTNBR.TrimEnd(), 1, MaxStrLen(BankAccount."Transit No.")), BankAccount."Transit No.", TransitNoLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTBRANCHNO_Tok, CopyStr(GPBankMSTR.BNKBRNCH.TrimEnd(), 1, MaxStrLen(BankAccount."Bank Branch No.")), BankAccount."Bank Branch No.", BankBranchNoLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTBALANCE_Tok, GPAccountBalance, BankAccount.Balance, BalanceLbl, BalanceFailureShouldBeWarning);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTNAME_Tok, CopyStr(GPCheckbookMSTR.DSCRIPTN.TrimEnd(), 1, MaxStrLen(BankAccount.Name)), BankAccount.Name, NameLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTNO_Tok, CopyStr(GPCheckbookMSTR.BNKACTNM.TrimEnd(), 1, MaxStrLen(BankAccount."Bank Account No.")), BankAccount."Bank Account No.", BankAccountNumberLbl, false, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTADDR_Tok, CopyStr(GPBankMSTR.ADDRESS1.TrimEnd(), 1, MaxStrLen(BankAccount.Address)), BankAccount.Address, AddressLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTADDR2_Tok, CopyStr(GPBankMSTR.ADDRESS2.TrimEnd(), 1, MaxStrLen(BankAccount."Address 2")), BankAccount."Address 2", Address2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTCITY_Tok, CopyStr(GPBankMSTR.CITY.TrimEnd(), 1, MaxStrLen(BankAccount.City)), BankAccount.City, CityLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTCOUNTY_Tok, CopyStr(GPBankMSTR.STATE.TrimEnd(), 1, MaxStrLen(BankAccount.County)), BankAccount.County, CountyLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTPOSTCODE_Tok, CopyStr(GPBankMSTR.ZIPCODE.TrimEnd(), 1, MaxStrLen(BankAccount."Post Code")), BankAccount."Post Code", PostCodeLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTPHN_Tok, CopyStr(GPBankMSTR.PHNUMBR1.TrimEnd(), 1, MaxStrLen(BankAccount."Phone No.")), BankAccount."Phone No.", PhoneLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTFAX_Tok, CopyStr(GPBankMSTR.FAXNUMBR.TrimEnd(), 1, MaxStrLen(BankAccount."Fax No.")), BankAccount."Fax No.", FaxLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTTRANSITNO_Tok, CopyStr(GPBankMSTR.TRNSTNBR.TrimEnd(), 1, MaxStrLen(BankAccount."Transit No.")), BankAccount."Transit No.", TransitNoLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTBRANCHNO_Tok, CopyStr(GPBankMSTR.BNKBRNCH.TrimEnd(), 1, MaxStrLen(BankAccount."Bank Branch No.")), BankAccount."Bank Branch No.", BankBranchNoLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_BANKACCOUNTBALANCE_Tok, GPAccountBalance, BankAccount.Balance, BalanceLbl, BalanceFailureShouldBeWarning);
 
-                        MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPCheckbookMSTR);
+                        MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPCheckbookMSTR);
                     end;
                 until GPCheckbookMSTR.Next() = 0;
     end;
 
-    local procedure RunCustomerMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
+    local procedure RunCustomerMigrationValidationAssert(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
     var
         Customer: Record Customer;
         GPCustomer: Record "GP Customer";
@@ -397,11 +397,11 @@ codeunit 40903 "GP Migration Validator"
             GPRM00101.SetFilter(CUSTNMBR, '<>%1', '');
             if GPRM00101.FindSet() then
                 repeat
-                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPRM00101) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPRM00101) then
                         continue;
 
                     CustomerNo := CopyStr(GPRM00101.CUSTNMBR.TrimEnd(), 1, MaxStrLen(CustomerNo));
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, CustomerNo);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, CustomerNo);
                     GPCustomerBalance := 0;
                     ShouldInclude := true;
 
@@ -437,27 +437,27 @@ codeunit 40903 "GP Migration Validator"
                                     until GPRM20101.Next() = 0;
                             end;
 
-                        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerNo), StrSubstNo(MissingEntityTok, EntityType)) then
+                        if not MigrationValidationAssert.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerNo), StrSubstNo(MissingEntityTok, EntityType)) then
                             continue;
 
                         Customer.CalcFields(Balance);
 
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME_Tok, CopyStr(GPRM00101.CUSTNAME.TrimEnd(), 1, MaxStrLen(Customer.Name)), Customer.Name, NameLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERPOSTINGGROUP_Tok, ClassName, Customer."Customer Posting Group", CustomerPostingGroupLbl);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERADDR_Tok, CopyStr(GPCustomer.ADDRESS1, 1, MaxStrLen(Customer.Address)), Customer.Address, AddressLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERADDR2_Tok, CopyStr(GPCustomer.ADDRESS2, 1, MaxStrLen(Customer."Address 2")), Customer."Address 2", Address2Lbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERCITY_Tok, CopyStr(GPCustomer.CITY, 1, MaxStrLen(Customer.City)), Customer.City, CityLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, CopyStr(GPCustomer.STMTNAME, 1, MaxStrLen(Customer."Name 2")), Customer."Name 2", Name2Lbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERCREDITLMT_Tok, GPCustomer.CRLMTAMT, Customer."Credit Limit (LCY)", CreditLimitLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERCONTACT_Tok, CopyStr(GPCustomer.CNTCPRSN, 1, MaxStrLen(Customer.Contact)), Customer.Contact, ContactLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERSALESPERSON_Tok, UpperCase(GPCustomer.SLPRSNID.TrimEnd()), Customer."Salesperson Code", SalesPersonLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERSHIPMETHOD_Tok, UpperCase(CopyStr(GPCustomer.SHIPMTHD, 1, MaxStrLen(Customer."Shipment Method Code")).TrimEnd()), Customer."Shipment Method Code", ShipmentMethodLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERTERRITORY_Tok, UpperCase(CopyStr(GPCustomer.SALSTERR, 1, MaxStrLen(Customer."Territory Code")).TrimEnd()), Customer."Territory Code", TerritoryLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERTAXAREA_Tok, UpperCase(GPCustomer.TAXSCHID.TrimEnd()), Customer."Tax Area Code", TaxAreaLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERBALANCE_Tok, GPCustomerBalance, Customer.Balance, BalanceLbl, BalanceFailureShouldBeWarning);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERNAME_Tok, CopyStr(GPRM00101.CUSTNAME.TrimEnd(), 1, MaxStrLen(Customer.Name)), Customer.Name, NameLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERPOSTINGGROUP_Tok, ClassName, Customer."Customer Posting Group", CustomerPostingGroupLbl);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERADDR_Tok, CopyStr(GPCustomer.ADDRESS1, 1, MaxStrLen(Customer.Address)), Customer.Address, AddressLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERADDR2_Tok, CopyStr(GPCustomer.ADDRESS2, 1, MaxStrLen(Customer."Address 2")), Customer."Address 2", Address2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERCITY_Tok, CopyStr(GPCustomer.CITY, 1, MaxStrLen(Customer.City)), Customer.City, CityLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, CopyStr(GPCustomer.STMTNAME, 1, MaxStrLen(Customer."Name 2")), Customer."Name 2", Name2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERCREDITLMT_Tok, GPCustomer.CRLMTAMT, Customer."Credit Limit (LCY)", CreditLimitLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERCONTACT_Tok, CopyStr(GPCustomer.CNTCPRSN, 1, MaxStrLen(Customer.Contact)), Customer.Contact, ContactLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERSALESPERSON_Tok, UpperCase(GPCustomer.SLPRSNID.TrimEnd()), Customer."Salesperson Code", SalesPersonLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERSHIPMETHOD_Tok, UpperCase(CopyStr(GPCustomer.SHIPMTHD, 1, MaxStrLen(Customer."Shipment Method Code")).TrimEnd()), Customer."Shipment Method Code", ShipmentMethodLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERTERRITORY_Tok, UpperCase(CopyStr(GPCustomer.SALSTERR, 1, MaxStrLen(Customer."Territory Code")).TrimEnd()), Customer."Territory Code", TerritoryLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERTAXAREA_Tok, UpperCase(GPCustomer.TAXSCHID.TrimEnd()), Customer."Tax Area Code", TaxAreaLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERBALANCE_Tok, GPCustomerBalance, Customer.Balance, BalanceLbl, BalanceFailureShouldBeWarning);
 
                         TaxLiable := (GPCustomer.TAXSCHID <> '');
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERTAXLIABLE_Tok, TaxLiable, Customer."Tax Liable", TaxLiableLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERTAXLIABLE_Tok, TaxLiable, Customer."Tax Liable", TaxLiableLbl, true);
 
                         PhoneNo := '';
                         if GPCustomer.PHONE1 <> '' then
@@ -469,8 +469,8 @@ codeunit 40903 "GP Migration Validator"
                             if not HelperFunctions.ContainsAlphaChars(GPCustomer.FAX) then
                                 FaxNo := GPCustomer.FAX;
 
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERPHN_Tok, PhoneNo, Customer."Phone No.", PhoneLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERFAX_Tok, FaxNo, Customer."Fax No.", FaxLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERPHN_Tok, PhoneNo, Customer."Phone No.", PhoneLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERFAX_Tok, FaxNo, Customer."Fax No.", FaxLbl, true);
 
                         PaymentTerms := '';
                         if GPCustomer.PYMTRMID <> '' then
@@ -480,11 +480,11 @@ codeunit 40903 "GP Migration Validator"
                                     PaymentTerms := GPPaymentTerms.PYMTRMID_New;
                             end;
 
-                        MigrationValidation.ValidateAreEqual(Test_CUSTOMERPMTTERMS_Tok, PaymentTerms, Customer."Payment Terms Code", PaymentTermsLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERPMTTERMS_Tok, PaymentTerms, Customer."Payment Terms Code", PaymentTermsLbl, true);
 
                         ValidateCustomerShipToAddresses(Customer);
 
-                        MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPRM00101);
+                        MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPRM00101);
                     end;
                 until GPRM00101.Next() = 0;
         end;
@@ -503,15 +503,15 @@ codeunit 40903 "GP Migration Validator"
         GPCustomerAddress.SetRange(CUSTNMBR, Customer."No.");
         if GPCustomerAddress.FindSet() then
             repeat
-                if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPCustomerAddress) then
+                if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPCustomerAddress) then
                     continue;
 
                 AddressCode := CopyStr(GPCustomerAddress.ADRSCODE, 1, MaxStrLen(AddressCode));
                 ContextCode := Customer."No." + '-' + AddressCode;
 
-                MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, ContextCode);
+                MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, ContextCode);
 
-                if not MigrationValidation.ValidateRecordExists(Test_SHIPADDREXISTS_Tok, ShipToAddress.Get(Customer."No.", AddressCode), StrSubstNo(MissingEntityTok, EntityType)) then
+                if not MigrationValidationAssert.ValidateRecordExists(Test_SHIPADDREXISTS_Tok, ShipToAddress.Get(Customer."No.", AddressCode), StrSubstNo(MissingEntityTok, EntityType)) then
                     continue;
 
                 if (CopyStr(GPCustomerAddress.PHONE1, 1, 14) = '00000000000000') then
@@ -520,23 +520,23 @@ codeunit 40903 "GP Migration Validator"
                 if (CopyStr(GPCustomerAddress.FAX, 1, 14) = '00000000000000') then
                     GPCustomerAddress.FAX := '';
 
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRNAME_Tok, Customer.Name, ShipToAddress.Name, NameLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRADDR_Tok, GPCustomerAddress.ADDRESS1.TrimEnd(), ShipToAddress.Address, AddressLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRADDR2_Tok, CopyStr(GPCustomerAddress.ADDRESS2.TrimEnd(), 1, MaxStrLen(ShipToAddress."Address 2")), ShipToAddress."Address 2", Address2Lbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRCITY_Tok, CopyStr(GPCustomerAddress.CITY.TrimEnd(), 1, MaxStrLen(ShipToAddress.City)), ShipToAddress.City, CityLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRPOSTCODE_Tok, UpperCase(GPCustomerAddress.ZIP.TrimEnd()), ShipToAddress."Post Code", PostCodeLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRPHN_Tok, GPCustomerAddress.PHONE1.TrimEnd(), ShipToAddress."Phone No.", PhoneLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRFAX_Tok, GPCustomerAddress.FAX.TrimEnd(), ShipToAddress."Fax No.", FaxLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRCONTACT_Tok, GPCustomerAddress.CNTCPRSN.TrimEnd(), ShipToAddress.Contact, ContactLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRSHIPMETHOD_Tok, CopyStr(GPCustomerAddress.SHIPMTHD.TrimEnd(), 1, MaxStrLen(ShipToAddress."Shipment Method Code")), ShipToAddress."Shipment Method Code", ShipmentMethodLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRCOUNTY_Tok, GPCustomerAddress.STATE.TrimEnd(), ShipToAddress.County, CountyLbl, true);
-                MigrationValidation.ValidateAreEqual(Test_SHIPADDRTAXAREA_Tok, GPCustomerAddress.TAXSCHID.TrimEnd(), ShipToAddress."Tax Area Code", TaxAreaLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRNAME_Tok, Customer.Name, ShipToAddress.Name, NameLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRADDR_Tok, GPCustomerAddress.ADDRESS1.TrimEnd(), ShipToAddress.Address, AddressLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRADDR2_Tok, CopyStr(GPCustomerAddress.ADDRESS2.TrimEnd(), 1, MaxStrLen(ShipToAddress."Address 2")), ShipToAddress."Address 2", Address2Lbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRCITY_Tok, CopyStr(GPCustomerAddress.CITY.TrimEnd(), 1, MaxStrLen(ShipToAddress.City)), ShipToAddress.City, CityLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRPOSTCODE_Tok, UpperCase(GPCustomerAddress.ZIP.TrimEnd()), ShipToAddress."Post Code", PostCodeLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRPHN_Tok, GPCustomerAddress.PHONE1.TrimEnd(), ShipToAddress."Phone No.", PhoneLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRFAX_Tok, GPCustomerAddress.FAX.TrimEnd(), ShipToAddress."Fax No.", FaxLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRCONTACT_Tok, GPCustomerAddress.CNTCPRSN.TrimEnd(), ShipToAddress.Contact, ContactLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRSHIPMETHOD_Tok, CopyStr(GPCustomerAddress.SHIPMTHD.TrimEnd(), 1, MaxStrLen(ShipToAddress."Shipment Method Code")), ShipToAddress."Shipment Method Code", ShipmentMethodLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRCOUNTY_Tok, GPCustomerAddress.STATE.TrimEnd(), ShipToAddress.County, CountyLbl, true);
+                MigrationValidationAssert.ValidateAreEqual(Test_SHIPADDRTAXAREA_Tok, GPCustomerAddress.TAXSCHID.TrimEnd(), ShipToAddress."Tax Area Code", TaxAreaLbl, true);
 
-                MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPCustomerAddress);
+                MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPCustomerAddress);
             until GPCustomerAddress.Next() = 0;
     end;
 
-    local procedure RunItemMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
+    local procedure RunItemMigrationValidationAssert(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
     var
         GPItem: Record "GP Item";
         GPIV00101: Record "GP IV00101";
@@ -578,11 +578,11 @@ codeunit 40903 "GP Migration Validator"
 
             if GPIV00101.FindSet() then
                 repeat
-                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPIV00101) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPIV00101) then
                         continue;
 
                     ItemNo := CopyStr(GPIV00101.ITEMNMBR.TrimEnd(), 1, MaxStrLen(ItemNo));
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, ItemNo);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, ItemNo);
 
                     Quantity := 0;
                     ClassName := '';
@@ -648,20 +648,20 @@ codeunit 40903 "GP Migration Validator"
                         Clear(GPItem);
                         GPPopulateCombinedTables.SetGPItemFields(GPItem, GPIV00101);
 
-                        if not MigrationValidation.ValidateRecordExists(Test_ITEMEXISTS_Tok, Item.Get(ItemNo), StrSubstNo(MissingEntityTok, EntityType)) then
+                        if not MigrationValidationAssert.ValidateRecordExists(Test_ITEMEXISTS_Tok, Item.Get(ItemNo), StrSubstNo(MissingEntityTok, EntityType)) then
                             continue;
 
                         Item.CalcFields(Inventory);
 
-                        MigrationValidation.ValidateAreEqual(Test_ITEMDESC_Tok, GPItem.Description, Item.Description, DescriptionLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMDESC2_Tok, GPItem.ShortName, Item."Description 2", Description2Lbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMSEARCHDESC_Tok, GPItem.SearchDescription, Item."Search Description", SearchDescription2Lbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMPOSTINGGROUP_Tok, ClassName, Item."Inventory Posting Group", ItemPostingGroupLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMUNITLISTPRICE_Tok, GPItem.UnitListPrice, Item."Unit List Price", UnitListPriceLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMBASEUOFM_Tok, GPItem.BaseUnitOfMeasure, Item."Base Unit of Measure", BaseUofMLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMPURCHUOFM_Tok, GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", PurchUofMLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMTRACKINGCODE_Tok, GPItem.ItemTrackingCode, Item."Item Tracking Code", ItemTrackingCodeLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMINVENTORY_Tok, Quantity, Item.Inventory, QuantityLbl, QuantityFailureShouldBeWarning);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMDESC_Tok, GPItem.Description, Item.Description, DescriptionLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMDESC2_Tok, GPItem.ShortName, Item."Description 2", Description2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMSEARCHDESC_Tok, GPItem.SearchDescription, Item."Search Description", SearchDescription2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMPOSTINGGROUP_Tok, ClassName, Item."Inventory Posting Group", ItemPostingGroupLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMUNITLISTPRICE_Tok, GPItem.UnitListPrice, Item."Unit List Price", UnitListPriceLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMBASEUOFM_Tok, GPItem.BaseUnitOfMeasure, Item."Base Unit of Measure", BaseUofMLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMPURCHUOFM_Tok, GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", PurchUofMLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMTRACKINGCODE_Tok, GPItem.ItemTrackingCode, Item."Item Tracking Code", ItemTrackingCodeLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMINVENTORY_Tok, Quantity, Item.Inventory, QuantityLbl, QuantityFailureShouldBeWarning);
 
                         if (GPItem.ItemType in [0, 2]) then
                             ItemType := ItemType::Inventory
@@ -687,16 +687,16 @@ codeunit 40903 "GP Migration Validator"
                                     CostingMethod := CostingMethod::Standard;
                             end;
 
-                        MigrationValidation.ValidateAreEqual(Test_ITEMTYPE_Tok, ItemType, Item.Type, TypeLbl);
-                        MigrationValidation.ValidateAreEqual(Test_ITEMCOSTMETHOD_Tok, CostingMethod, Item."Costing Method", CostingMethodLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMTYPE_Tok, ItemType, Item.Type, TypeLbl);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ITEMCOSTMETHOD_Tok, CostingMethod, Item."Costing Method", CostingMethodLbl, true);
 
-                        MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPIV00101);
+                        MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPIV00101);
                     end;
                 until GPIV00101.Next() = 0;
         end;
     end;
 
-    local procedure RunPurchaseOrderMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
+    local procedure RunPurchaseOrderMigrationValidationAssert(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
     var
         GPPOP10100: Record "GP POP10100";
         PurchaseHeader: Record "Purchase Header";
@@ -718,7 +718,7 @@ codeunit 40903 "GP Migration Validator"
             GPPOP10100.SetFilter(VENDORID, '<>%1', '');
             if GPPOP10100.FindSet() then
                 repeat
-                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPPOP10100) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPPOP10100) then
                         continue;
 
                     PONumber := CopyStr(GPPOP10100.PONUMBER.TrimEnd(), 1, MaxStrLen(PurchaseHeader."No."));
@@ -733,37 +733,37 @@ codeunit 40903 "GP Migration Validator"
                                 GPPOHeaderValidationBuffer.Delete();
                         end;
 
-                    MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPPOP10100);
+                    MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPPOP10100);
                 until GPPOP10100.Next() = 0;
         end;
 
         // Validate - Purchase Orders
         if GPPOHeaderValidationBuffer.FindSet() then
             repeat
-                MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPPOHeaderValidationBuffer."No.");
+                MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, GPPOHeaderValidationBuffer."No.");
 
-                if not MigrationValidation.ValidateRecordExists(Test_POEXISTS_Tok, PurchaseHeader.Get("Purchase Document Type"::Order, GPPOHeaderValidationBuffer."No."), StrSubstNo(MissingEntityTok, EntityType)) then
+                if not MigrationValidationAssert.ValidateRecordExists(Test_POEXISTS_Tok, PurchaseHeader.Get("Purchase Document Type"::Order, GPPOHeaderValidationBuffer."No."), StrSubstNo(MissingEntityTok, EntityType)) then
                     continue;
 
-                MigrationValidation.ValidateAreEqual(Test_POBUYFROMVEND_Tok, GPPOHeaderValidationBuffer."Text 1", PurchaseHeader."Buy-from Vendor No.", PurchaseOrderBuyFromVendorNoLbl);
-                MigrationValidation.ValidateAreEqual(Test_POPAYTOVEND_Tok, GPPOHeaderValidationBuffer."Text 1", PurchaseHeader."Pay-to Vendor No.", PurchaseOrderPayToVendorNoLbl);
-                MigrationValidation.ValidateAreEqual(Test_PODOCDATE_Tok, GPPOHeaderValidationBuffer."Date 1", PurchaseHeader."Document Date", DocumentDateLbl);
+                MigrationValidationAssert.ValidateAreEqual(Test_POBUYFROMVEND_Tok, GPPOHeaderValidationBuffer."Text 1", PurchaseHeader."Buy-from Vendor No.", PurchaseOrderBuyFromVendorNoLbl);
+                MigrationValidationAssert.ValidateAreEqual(Test_POPAYTOVEND_Tok, GPPOHeaderValidationBuffer."Text 1", PurchaseHeader."Pay-to Vendor No.", PurchaseOrderPayToVendorNoLbl);
+                MigrationValidationAssert.ValidateAreEqual(Test_PODOCDATE_Tok, GPPOHeaderValidationBuffer."Date 1", PurchaseHeader."Document Date", DocumentDateLbl);
 
                 // Lines
                 GPPOLineValidationBuffer.Reset();
                 GPPOLineValidationBuffer.SetRange("Parent No.", GPPOHeaderValidationBuffer."No.");
                 if GPPOLineValidationBuffer.FindSet() then
                     repeat
-                        MigrationValidation.SetContext(ValidatorCodeLbl, LineEntityType, GPPOLineValidationBuffer."No.");
+                        MigrationValidationAssert.SetContext(ValidatorCodeTxt, LineEntityType, GPPOLineValidationBuffer."No.");
 
                         PurchaseLine.SetRange("Document Type", "Purchase Document Type"::Order);
                         PurchaseLine.SetRange("Document No.", GPPOHeaderValidationBuffer."No.");
                         PurchaseLine.SetRange("No.", GPPOLineValidationBuffer."Text 1");
-                        if not MigrationValidation.ValidateRecordExists(Test_POLINEEXISTS_Tok, PurchaseLine.FindFirst(), StrSubstNo(MissingEntityTok, LineEntityType)) then
+                        if not MigrationValidationAssert.ValidateRecordExists(Test_POLINEEXISTS_Tok, PurchaseLine.FindFirst(), StrSubstNo(MissingEntityTok, LineEntityType)) then
                             continue;
 
-                        MigrationValidation.ValidateAreEqual(Test_POLINEQTY_Tok, GPPOLineValidationBuffer."Decimal 1", PurchaseLine.Quantity, QuantityLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_POLINEQTYRECV_Tok, GPPOLineValidationBuffer."Decimal 2", PurchaseLine."Quantity Received", QuantityRecLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_POLINEQTY_Tok, GPPOLineValidationBuffer."Decimal 1", PurchaseLine.Quantity, QuantityLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_POLINEQTYRECV_Tok, GPPOLineValidationBuffer."Decimal 2", PurchaseLine."Quantity Received", QuantityRecLbl, true);
                     until GPPOLineValidationBuffer.Next() = 0;
             until GPPOHeaderValidationBuffer.Next() = 0;
     end;
@@ -892,7 +892,7 @@ codeunit 40903 "GP Migration Validator"
         exit(Difference);
     end;
 
-    local procedure RunVendorMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
+    local procedure RunVendorMigrationValidationAssert(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
     var
         GPPM00200: Record "GP PM00200";
         GPPM20000: Record "GP PM20000";
@@ -921,11 +921,11 @@ codeunit 40903 "GP Migration Validator"
             GPPM00200.SetFilter(VENDORID, '<>%1', '');
             if GPPM00200.FindSet() then
                 repeat
-                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPPM00200) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPPM00200) then
                         continue;
 
                     VendorNo := CopyStr(GPPM00200.VENDORID.TrimEnd(), 1, MaxStrLen(VendorNo));
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, VendorNo);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, VendorNo);
 
                     Balance := 0;
                     ShouldInclude := true;
@@ -966,30 +966,30 @@ codeunit 40903 "GP Migration Validator"
                                     until GPPM20000.Next() = 0;
                             end;
 
-                        if not MigrationValidation.ValidateRecordExists(Test_VENDOREXISTS_Tok, Vendor.Get(VendorNo), StrSubstNo(MissingEntityTok, EntityType)) then
+                        if not MigrationValidationAssert.ValidateRecordExists(Test_VENDOREXISTS_Tok, Vendor.Get(VendorNo), StrSubstNo(MissingEntityTok, EntityType)) then
                             continue;
 
                         Vendor.CalcFields(Balance);
 
-                        MigrationValidation.ValidateAreEqual(Test_VENDORNAME_Tok, CopyStr(GPVendor.VENDNAME.TrimEnd(), 1, MaxStrLen(Vendor.Name)), Vendor.Name, NameLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORPOSTINGGROUP_Tok, ClassName, Vendor."Vendor Posting Group", VendorPostingGroupLbl);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORPREFBANKACCT_Tok, GetPreferredGPVendorBankCode(VendorNo), Vendor."Preferred Bank Account Code", PreferredBankAccountLbl);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORADDR_Tok, CopyStr(GPVendor.ADDRESS1, 1, MaxStrLen(Vendor.Address)), Vendor.Address, AddressLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORADDR2_Tok, CopyStr(GPVendor.ADDRESS2, 1, MaxStrLen(Vendor."Address 2")), Vendor."Address 2", Address2Lbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORCITY_Tok, CopyStr(GPVendor.CITY, 1, MaxStrLen(Vendor.City)), Vendor.City, CityLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORCONTACT_Tok, CopyStr(GPVendor.VNDCNTCT, 1, MaxStrLen(Vendor.Contact)), Vendor.Contact, ContactLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORSHIPMETHOD_Tok, UpperCase(CopyStr(GPVendor.SHIPMTHD, 1, MaxStrLen(Vendor."Shipment Method Code")).TrimEnd()), Vendor."Shipment Method Code", ShipmentMethodLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORTAXAREA_Tok, UpperCase(GPVendor.TAXSCHID.TrimEnd()), Vendor."Tax Area Code", TaxAreaLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORBALANCE_Tok, Balance, Vendor.Balance, BalanceLbl, BalanceFailureShouldBeWarning);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORNAME_Tok, CopyStr(GPVendor.VENDNAME.TrimEnd(), 1, MaxStrLen(Vendor.Name)), Vendor.Name, NameLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORPOSTINGGROUP_Tok, ClassName, Vendor."Vendor Posting Group", VendorPostingGroupLbl);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORPREFBANKACCT_Tok, GetPreferredGPVendorBankCode(VendorNo), Vendor."Preferred Bank Account Code", PreferredBankAccountLbl);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORADDR_Tok, CopyStr(GPVendor.ADDRESS1, 1, MaxStrLen(Vendor.Address)), Vendor.Address, AddressLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORADDR2_Tok, CopyStr(GPVendor.ADDRESS2, 1, MaxStrLen(Vendor."Address 2")), Vendor."Address 2", Address2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORCITY_Tok, CopyStr(GPVendor.CITY, 1, MaxStrLen(Vendor.City)), Vendor.City, CityLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORCONTACT_Tok, CopyStr(GPVendor.VNDCNTCT, 1, MaxStrLen(Vendor.Contact)), Vendor.Contact, ContactLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORSHIPMETHOD_Tok, UpperCase(CopyStr(GPVendor.SHIPMTHD, 1, MaxStrLen(Vendor."Shipment Method Code")).TrimEnd()), Vendor."Shipment Method Code", ShipmentMethodLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORTAXAREA_Tok, UpperCase(GPVendor.TAXSCHID.TrimEnd()), Vendor."Tax Area Code", TaxAreaLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORBALANCE_Tok, Balance, Vendor.Balance, BalanceLbl, BalanceFailureShouldBeWarning);
 
                         TaxLiable := (GPVendor.TAXSCHID <> '');
-                        MigrationValidation.ValidateAreEqual(Test_VENDORTAXLIABLE_Tok, TaxLiable, Vendor."Tax Liable", TaxLiableLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORTAXLIABLE_Tok, TaxLiable, Vendor."Tax Liable", TaxLiableLbl, true);
 
                         VendorName2 := CopyStr(GPVendor.VNDCHKNM.TrimEnd(), 1, MaxStrLen(Vendor."Name 2"));
                         if HelperFunctions.StringEqualsCaseInsensitive(VendorName2, Vendor.Name) then
                             VendorName2 := '';
 
-                        MigrationValidation.ValidateAreEqual(Test_VENDORNAME2_Tok, VendorName2, Vendor."Name 2", Name2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORNAME2_Tok, VendorName2, Vendor."Name 2", Name2Lbl, true);
 
                         PhoneNo := '';
                         if GPVendor.PHNUMBR1 <> '' then
@@ -1001,8 +1001,8 @@ codeunit 40903 "GP Migration Validator"
                             if not HelperFunctions.ContainsAlphaChars(GPVendor.FAXNUMBR) then
                                 FaxNo := GPVendor.FAXNUMBR;
 
-                        MigrationValidation.ValidateAreEqual(Test_VENDORPHN_Tok, PhoneNo, Vendor."Phone No.", PhoneLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_VENDORFAX_Tok, FaxNo, Vendor."Fax No.", FaxLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORPHN_Tok, PhoneNo, Vendor."Phone No.", PhoneLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORFAX_Tok, FaxNo, Vendor."Fax No.", FaxLbl, true);
 
                         PaymentTerms := '';
                         if GPVendor.PYMTRMID <> '' then
@@ -1012,11 +1012,11 @@ codeunit 40903 "GP Migration Validator"
                                     PaymentTerms := GPPaymentTerms.PYMTRMID_New;
                             end;
 
-                        MigrationValidation.ValidateAreEqual(Test_VENDORPMTTERMS_Tok, PaymentTerms, Vendor."Payment Terms Code", PaymentTermsLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_VENDORPMTTERMS_Tok, PaymentTerms, Vendor."Payment Terms Code", PaymentTermsLbl, true);
 
                         ValidateVendorAddresses(GPVendor);
 
-                        MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPPM00200);
+                        MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPPM00200);
                     end;
                 until GPPM00200.Next() = 0;
         end;
@@ -1047,7 +1047,7 @@ codeunit 40903 "GP Migration Validator"
         GPVendorAddress.SetRange(VENDORID, Vendor."No.");
         if GPVendorAddress.FindSet() then
             repeat
-                if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPVendorAddress) then
+                if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPVendorAddress) then
                     continue;
 
                 AddressCode := CopyStr(GPVendorAddress.ADRSCODE.Trim(), 1, MaxStrLen(AddressCode));
@@ -1055,39 +1055,39 @@ codeunit 40903 "GP Migration Validator"
 
                 if AddressCode = AssignedRemitToAddressCode then begin
                     EntityType := VendorRemitAddressEntityCaptionLbl;
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, ContextCode);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, ContextCode);
 
-                    if MigrationValidation.ValidateRecordExists(Test_REMITADDREXISTS_Tok, RemitAddress.Get(AddressCode, Vendor."No."), StrSubstNo(MissingEntityTok, EntityType)) then begin
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRNAME_Tok, Vendor.Name, RemitAddress.Name, NameLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRADDR_Tok, GPVendorAddress.ADDRESS1.TrimEnd(), RemitAddress.Address, AddressLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRADDR2_Tok, CopyStr(GPVendorAddress.ADDRESS2.TrimEnd(), 1, MaxStrLen(RemitAddress."Address 2")), RemitAddress."Address 2", Address2Lbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRCITY_Tok, CopyStr(GPVendorAddress.CITY.TrimEnd(), 1, MaxStrLen(RemitAddress.City)), RemitAddress.City, CityLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRPOSTCODE_Tok, UpperCase(GPVendorAddress.ZIPCODE.TrimEnd()), RemitAddress."Post Code", PostCodeLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRPHN_Tok, HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.PHNUMBR1), RemitAddress."Phone No.", PhoneLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRFAX_Tok, HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR), RemitAddress."Fax No.", FaxLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRCOUNTY_Tok, GPVendorAddress.STATE.TrimEnd(), RemitAddress.County, CountyLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_REMITADDRCONTACT_Tok, GPVendorAddress.VNDCNTCT.TrimEnd(), RemitAddress.Contact, ContactLbl, true);
+                    if MigrationValidationAssert.ValidateRecordExists(Test_REMITADDREXISTS_Tok, RemitAddress.Get(AddressCode, Vendor."No."), StrSubstNo(MissingEntityTok, EntityType)) then begin
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRNAME_Tok, Vendor.Name, RemitAddress.Name, NameLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRADDR_Tok, GPVendorAddress.ADDRESS1.TrimEnd(), RemitAddress.Address, AddressLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRADDR2_Tok, CopyStr(GPVendorAddress.ADDRESS2.TrimEnd(), 1, MaxStrLen(RemitAddress."Address 2")), RemitAddress."Address 2", Address2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRCITY_Tok, CopyStr(GPVendorAddress.CITY.TrimEnd(), 1, MaxStrLen(RemitAddress.City)), RemitAddress.City, CityLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRPOSTCODE_Tok, UpperCase(GPVendorAddress.ZIPCODE.TrimEnd()), RemitAddress."Post Code", PostCodeLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRPHN_Tok, HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.PHNUMBR1), RemitAddress."Phone No.", PhoneLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRFAX_Tok, HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR), RemitAddress."Fax No.", FaxLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRCOUNTY_Tok, GPVendorAddress.STATE.TrimEnd(), RemitAddress.County, CountyLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_REMITADDRCONTACT_Tok, GPVendorAddress.VNDCNTCT.TrimEnd(), RemitAddress.Contact, ContactLbl, true);
                     end;
                 end;
 
                 if (AddressCode = AssignedPrimaryAddressCode) or (AddressCode <> AssignedRemitToAddressCode) then begin
                     EntityType := VendorOrderAddressEntityCaptionLbl;
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, ContextCode);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, ContextCode);
 
-                    if MigrationValidation.ValidateRecordExists(Test_ORDERADDREXISTS_Tok, OrderAddress.Get(Vendor."No.", AddressCode), StrSubstNo(MissingEntityTok, EntityType)) then begin
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRNAME_Tok, Vendor.Name, OrderAddress.Name, NameLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRADDR_Tok, GPVendorAddress.ADDRESS1.TrimEnd(), OrderAddress.Address, AddressLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRADDR2_Tok, CopyStr(GPVendorAddress.ADDRESS2.TrimEnd(), 1, MaxStrLen(OrderAddress."Address 2")), OrderAddress."Address 2", Address2Lbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRCITY_Tok, CopyStr(GPVendorAddress.CITY.TrimEnd(), 1, MaxStrLen(OrderAddress.City)), OrderAddress.City, CityLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRPOSTCODE_Tok, UpperCase(GPVendorAddress.ZIPCODE.TrimEnd()), OrderAddress."Post Code", PostCodeLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRPHN_Tok, HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.PHNUMBR1), OrderAddress."Phone No.", PhoneLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRFAX_Tok, HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR), OrderAddress."Fax No.", FaxLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRCOUNTY_Tok, GPVendorAddress.STATE.TrimEnd(), OrderAddress.County, CountyLbl, true);
-                        MigrationValidation.ValidateAreEqual(Test_ORDERADDRCONTACT_Tok, GPVendorAddress.VNDCNTCT.TrimEnd(), OrderAddress.Contact, ContactLbl, true);
+                    if MigrationValidationAssert.ValidateRecordExists(Test_ORDERADDREXISTS_Tok, OrderAddress.Get(Vendor."No.", AddressCode), StrSubstNo(MissingEntityTok, EntityType)) then begin
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRNAME_Tok, Vendor.Name, OrderAddress.Name, NameLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRADDR_Tok, GPVendorAddress.ADDRESS1.TrimEnd(), OrderAddress.Address, AddressLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRADDR2_Tok, CopyStr(GPVendorAddress.ADDRESS2.TrimEnd(), 1, MaxStrLen(OrderAddress."Address 2")), OrderAddress."Address 2", Address2Lbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRCITY_Tok, CopyStr(GPVendorAddress.CITY.TrimEnd(), 1, MaxStrLen(OrderAddress.City)), OrderAddress.City, CityLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRPOSTCODE_Tok, UpperCase(GPVendorAddress.ZIPCODE.TrimEnd()), OrderAddress."Post Code", PostCodeLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRPHN_Tok, HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.PHNUMBR1), OrderAddress."Phone No.", PhoneLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRFAX_Tok, HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendorAddress.FAXNUMBR), OrderAddress."Fax No.", FaxLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRCOUNTY_Tok, GPVendorAddress.STATE.TrimEnd(), OrderAddress.County, CountyLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_ORDERADDRCONTACT_Tok, GPVendorAddress.VNDCNTCT.TrimEnd(), OrderAddress.Contact, ContactLbl, true);
                     end;
                 end;
 
-                MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPVendorAddress);
+                MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPVendorAddress);
             until GPVendorAddress.Next() = 0;
     end;
 
@@ -1224,8 +1224,8 @@ codeunit 40903 "GP Migration Validator"
         exit('GP');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnPrepareMigrationValidation, '', false, false)]
-    local procedure OnPrepareMigrationValidation(ProductID: Text[250])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Migration Validation", OnPrepareValidation, '', false, false)]
+    local procedure OnPrepareValidation(ProductID: Text[250])
     var
         HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
@@ -1372,22 +1372,22 @@ codeunit 40903 "GP Migration Validator"
 
     local procedure AddTest(Code: Code[30]; Entity: Text[50]; Description: Text)
     var
-        MigrationValidationTest: Record "Migration Validation Test";
+        MigrationValidationAssertTest: Record "Migration Validation Test";
         GPMigrationValidator: Codeunit "GP Migration Validator";
     begin
-        if not MigrationValidationTest.Get(Code, GPMigrationValidator.GetValidatorCode()) then begin
-            MigrationValidationTest.Validate(Code, Code);
-            MigrationValidationTest.Validate("Validator Code", GPMigrationValidator.GetValidatorCode());
-            MigrationValidationTest.Validate(Entity, Entity);
-            MigrationValidationTest.Validate("Test Description", Description);
-            MigrationValidationTest.Insert(true);
+        if not MigrationValidationAssertTest.Get(Code, GPMigrationValidator.GetValidatorCode()) then begin
+            MigrationValidationAssertTest.Validate(Code, Code);
+            MigrationValidationAssertTest.Validate("Validator Code", GPMigrationValidator.GetValidatorCode());
+            MigrationValidationAssertTest.Validate(Entity, Entity);
+            MigrationValidationAssertTest.Validate("Test Description", Description);
+            MigrationValidationAssertTest.Insert(true);
         end;
     end;
 
     var
         DefaultCurrency: Record Currency;
-        MigrationValidation: Codeunit "Migration Validation";
-        ValidatorCodeLbl: Code[20];
+        MigrationValidationAssert: Codeunit "Migration Validation Assert";
+        ValidatorCodeTxt: Code[20];
         CompanyNameTxt: Text;
         TotalUnpostedBankBatchCount: Integer;
         TotalUnpostedCustomerBatchCount: Integer;

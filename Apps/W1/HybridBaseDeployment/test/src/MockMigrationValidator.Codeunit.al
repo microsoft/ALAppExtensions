@@ -14,38 +14,38 @@ codeunit 139501 "Mock Migration Validator"
         // [Customer: Test 1]
 
         // Set the context of this set of tests
-        MigrationValidation.SetContext(GetValidatorCode(), 'Customer', CustomerId1);
+        MigrationValidationAssert.SetContext(GetValidatorCode(), 'Customer', CustomerId1);
 
         // Check for the entity record by the key
-        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId1), 'Missing TEST-1') then
+        if not MigrationValidationAssert.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId1), 'Missing TEST-1') then
             exit;
 
         // This is a test that is not a warning, and would fail the migration
-        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME_Tok, 'Test 1', Customer.Name, 'Name');
+        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERNAME_Tok, 'Test 1', Customer.Name, 'Name');
 
         // This is a test that would be just a warning
-        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
+        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
 
         // The source table will normally be the staging table, but for testing the Customer table is sufficient
-        MigrationValidation.SetSourceRowValidated(GetValidatorCode(), Customer);
+        MigrationValidationAssert.SetSourceRowValidated(GetValidatorCode(), Customer);
 
         // [Customer: Test 2]
 
         // Set the context of this set of tests
-        MigrationValidation.SetContext(GetValidatorCode(), 'Customer', CustomerId2);
+        MigrationValidationAssert.SetContext(GetValidatorCode(), 'Customer', CustomerId2);
 
         // Check for the entity record by the key
-        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId2), 'Missing TEST-2') then
+        if not MigrationValidationAssert.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId2), 'Missing TEST-2') then
             exit;
 
         // This is a test that is not a warning, and would fail the migration
-        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME_Tok, 'Test 2', Customer.Name, 'Name');
+        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERNAME_Tok, 'Test 2', Customer.Name, 'Name');
 
         // This is a test that would be just a warning
-        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
+        MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
 
         // The source table will normally be the staging table, but for testing the Customer table is sufficient
-        MigrationValidation.SetSourceRowValidated(GetValidatorCode(), Customer);
+        MigrationValidationAssert.SetSourceRowValidated(GetValidatorCode(), Customer);
     end;
 
     internal procedure GetValidatorCode(): Code[20]
@@ -95,7 +95,7 @@ codeunit 139501 "Mock Migration Validator"
     end;
 
     var
-        MigrationValidation: Codeunit "Migration Validation";
+        MigrationValidationAssert: Codeunit "Migration Validation Assert";
         ValidatorDescriptionLbl: Label 'Mock Migration Validator', MaxLength = 250;
         Test_CUSTOMEREXISTS_Tok: Label 'CUSTOMEREXISTS', Locked = true;
         Test_CUSTOMERNAME_Tok: Label 'CUSTOMERNAME', Locked = true;

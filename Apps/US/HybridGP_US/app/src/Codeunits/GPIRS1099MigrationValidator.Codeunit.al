@@ -14,7 +14,7 @@ codeunit 42006 "GP IRS1099 Migration Validator"
         if not GPCompanyAdditionalSettings.GetMigrateVendor1099Enabled() then
             exit;
 
-        ValidatorCodeLbl := GetValidatorCode();
+        ValidatorCodeTxt := GetValidatorCode();
         CompanyNameTxt := CompanyName();
 
         RunVendor1099MigrationValidation(GPCompanyAdditionalSettings);
@@ -41,7 +41,7 @@ codeunit 42006 "GP IRS1099 Migration Validator"
             GPPM00200.SetFilter(VENDORID, '<>%1', '');
             if GPPM00200.FindSet() then
                 repeat
-                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPPM00200) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPPM00200) then
                         continue;
 
                     VendorNo := CopyStr(GPPM00200.VENDORID.TrimEnd(), 1, MaxStrLen(VendorNo));
@@ -49,15 +49,15 @@ codeunit 42006 "GP IRS1099 Migration Validator"
                     if not Vendor.Get(VendorNo) then
                         continue;
 
-                    MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, VendorNo);
+                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, VendorNo);
                     IRS1099Code := GPVendor1099MappingHelpers.GetIRS1099BoxCode(System.Date2DMY(System.Today(), 3), GPPM00200.TEN99TYPE, GPPM00200.TEN99BOXNUMBER);
 
                     Clear(ActualIRS1099Code);
                     if IRS1099VendorFormBoxSetup.Get(Format(GPCompanyAdditionalSettings.Get1099TaxYear()), VendorNo) then
                         ActualIRS1099Code := IRS1099VendorFormBoxSetup."Form Box No.";
 
-                    MigrationValidation.ValidateAreEqual(Test_VEND1099IRS1099CODE_Tok, IRS1099Code, ActualIRS1099Code, IRS1099CodeLbl);
-                    MigrationValidation.ValidateAreEqual(Test_VEND1099FEDIDNO_Tok, CopyStr(GPPM00200.TXIDNMBR.TrimEnd(), 1, MaxStrLen(Vendor."Federal ID No.")), Vendor."Federal ID No.", FederalIdNoLbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_VEND1099IRS1099CODE_Tok, IRS1099Code, ActualIRS1099Code, IRS1099CodeLbl);
+                    MigrationValidationAssert.ValidateAreEqual(Test_VEND1099FEDIDNO_Tok, CopyStr(GPPM00200.TXIDNMBR.TrimEnd(), 1, MaxStrLen(Vendor."Federal ID No.")), Vendor."Federal ID No.", FederalIdNoLbl);
 
                     Clear(VendorYear1099AmountDictionary);
                     BuildVendor1099Entries(VendorNo, VendorYear1099AmountDictionary);
@@ -71,17 +71,17 @@ codeunit 42006 "GP IRS1099 Migration Validator"
                             VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Payment);
                             VendorLedgerEntry.SetRange(Description, IRS1099Code);
 
-                            if not MigrationValidation.ValidateRecordExists(Test_VEND1099TRXEXISTS_Tok, VendorLedgerEntry.FindFirst(), StrSubstNo(MissingBoxAndAmountLbl, IRS1099Code, TaxAmount)) then
+                            if not MigrationValidationAssert.ValidateRecordExists(Test_VEND1099TRXEXISTS_Tok, VendorLedgerEntry.FindFirst(), StrSubstNo(MissingBoxAndAmountLbl, IRS1099Code, TaxAmount)) then
                                 continue;
 
                             VendorLedgerEntry.CalcFields(Amount);
 
-                            MigrationValidation.ValidateAreEqual(Test_VEND1099TEN99BOX_Tok, IRS1099Code, VendorLedgerEntry.Description, Vendor1099BoxLbl);
-                            MigrationValidation.ValidateAreEqual(Test_VEND1099TEN99TRXAMT_Tok, TaxAmount, VendorLedgerEntry.Amount, Vendor1099BoxAmountLbl);
+                            MigrationValidationAssert.ValidateAreEqual(Test_VEND1099TEN99BOX_Tok, IRS1099Code, VendorLedgerEntry.Description, Vendor1099BoxLbl);
+                            MigrationValidationAssert.ValidateAreEqual(Test_VEND1099TEN99TRXAMT_Tok, TaxAmount, VendorLedgerEntry.Amount, Vendor1099BoxAmountLbl);
                         end;
                     end;
 
-                    MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPPM00200);
+                    MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPPM00200);
                 until GPPM00200.Next() = 0;
         end;
         Commit();
@@ -116,8 +116,8 @@ codeunit 42006 "GP IRS1099 Migration Validator"
         exit('GP-US');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnPrepareMigrationValidation, '', false, false)]
-    local procedure OnPrepareMigrationValidation(ProductID: Text[250])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Migration Validation", OnPrepareValidation, '', false, false)]
+    local procedure OnPrepareValidation(ProductID: Text[250])
     var
         HybridGPWizard: Codeunit "Hybrid GP Wizard";
     begin
@@ -169,8 +169,8 @@ codeunit 42006 "GP IRS1099 Migration Validator"
     end;
 
     var
-        MigrationValidation: Codeunit "Migration Validation";
-        ValidatorCodeLbl: Code[20];
+        MigrationValidationAssert: Codeunit "Migration Validation Assert";
+        ValidatorCodeTxt: Code[20];
         CompanyNameTxt: Text;
         FederalIdNoLbl: Label 'Federal ID No.';
         IRS1099CodeLbl: Label 'IRS 1099 Code';

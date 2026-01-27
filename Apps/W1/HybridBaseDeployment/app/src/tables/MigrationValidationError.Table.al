@@ -86,5 +86,11 @@ table 40043 "Migration Validation Error"
         {
             Clustered = true;
         }
+        key(Key2; "Company Name", "Migration Type", "Is Warning")
+        {
+        }
+        key(Key3; "Validator Code", "Test Code")
+        {
+        }
     }
 }

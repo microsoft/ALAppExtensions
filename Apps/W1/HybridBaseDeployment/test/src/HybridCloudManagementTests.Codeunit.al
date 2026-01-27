@@ -724,7 +724,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         DataCreationFailed := false;
 
         // [WHEN] No customers were migrated, but were expected
-        HybridCloudManagement.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
 
         // [THEN] The migration will fail, and there will be corresponding validation error entries
         HybridCompanyStatus.Get(CompanyName());
@@ -742,7 +742,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         // [WHEN] Some of the customers were created
         // Create Customer TEST-1
         InitMigrationValidationTest_CustomerTest1();
-        HybridCloudManagement.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
 
         // [THEN] The migration will fail, and there will be corresponding validation error entries
         Assert.IsTrue(DataCreationFailed, 'The migration should be in a failed state.');
@@ -764,7 +764,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.IsFalse(CustomerHasNotBeenValidated(CustomerId1Tok), 'Customer 1 should not have validation progress recorded.');
         Assert.IsFalse(CustomerHasNotBeenValidated(CustomerId2Tok), 'Customer 2 should not have validation progress recorded.');
 
-        HybridCloudManagement.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
 
         // [THEN] The migration will be successful, and there won't be any validation error entries
         Assert.IsFalse(DataCreationFailed, 'The migration should be in a failed state.');
@@ -785,7 +785,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Customer."Name 2" := 'Wrong name 2';
         Customer.Modify();
 
-        HybridCloudManagement.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
 
         // [TEST] The correct validation error records will be added
         // The migration will be in a failed state because there is an entry that isn't a warning
@@ -815,7 +815,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Customer.Modify();
 
         // [THEN] The migration should NOT be in a failed state
-        HybridCloudManagement.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
         Assert.RecordCount(MigrationValidationError, 1);
         Assert.IsFalse(DataCreationFailed, 'The migration should NOT be in a failed state.');
     end;
@@ -823,12 +823,12 @@ codeunit 139656 "Hybrid Cloud Management Tests"
     local procedure CustomerHasNotBeenValidated(CustomerNo: Code[20]): Boolean
     var
         Customer: Record Customer;
-        MigrationValidation: Codeunit "Migration Validation";
+        MigrationValidationAssert: Codeunit "Migration Validation Assert";
         MockMigrationValidator: Codeunit "Mock Migration Validator";
     begin
         // The source table will normally be the staging table, but for testing the Customer table is sufficient
         if Customer.Get(CustomerNo) then
-            exit(MigrationValidation.IsSourceRowValidated(MockMigrationValidator.GetValidatorCode(), Customer));
+            exit(MigrationValidationAssert.IsSourceRowValidated(MockMigrationValidator.GetValidatorCode(), Customer));
     end;
 
     local procedure InitMigrationValidationTests()

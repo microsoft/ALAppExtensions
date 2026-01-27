@@ -641,6 +641,7 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridCompany: Record "Hybrid Company";
         GuidedExperience: Codeunit "Guided Experience";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        MigrationValidation: Codeunit "Migration Validation";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('TotalNumberOfOnPremCompanies', Format(HybridCompany.Count(), 0, 9));
@@ -649,7 +650,7 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudSetup.Validate("Replication User", UserId());
         IntelligentCloudSetup.Modify();
         RestoreDefaultMigrationTableMappings(false);
-        PrepareMigrationValidation();
+        MigrationValidation.PrepareValidation();
         RefreshIntelligentCloudStatusTable();
         CreateCompanies();
 
@@ -940,14 +941,6 @@ codeunit 4001 "Hybrid Cloud Management"
         if IntelligentCloudSetup.Get() then;
 
         OnInsertDefaultTableMappings(IntelligentCloudSetup."Product ID", DeleteExisting);
-    end;
-
-    procedure PrepareMigrationValidation()
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-    begin
-        IntelligentCloudSetup.Get();
-
-        OnPrepareMigrationValidation(IntelligentCloudSetup."Product ID");
     end;
 
     procedure CompleteCloudMigration()
@@ -2232,23 +2225,6 @@ codeunit 4001 "Hybrid Cloud Management"
         RecordLink.SetRange("To User ID", OldUserName);
         RecordLink.ModifyAll("To User ID", NewUserName);
     end;
-    
-    local procedure ClearCompanyMigrationValidation(MigrationType: Text[250])
-    var
-        MigrationValidationError: Record "Migration Validation Error";
-        ValidationProgress: Record "Validation Progress";
-    begin
-        if MigrationType <> '' then
-            MigrationValidationError.SetRange("Migration Type", MigrationType);
-
-        MigrationValidationError.SetRange("Company Name", CompanyName());
-        if not MigrationValidationError.IsEmpty() then
-            MigrationValidationError.DeleteAll();
-
-        ValidationProgress.SetRange("Company Name", CompanyName());
-        if not ValidationProgress.IsEmpty() then
-            ValidationProgress.DeleteAll();
-    end;
 
     [EventSubscriber(ObjectType::Page, Page::Companies, 'OnOpenPageEvent', '', false, false)]
     local procedure WarnNotToManageCompaniesManually(var Rec: Record Company)
@@ -2270,49 +2246,6 @@ codeunit 4001 "Hybrid Cloud Management"
         SendSetupWebhooksNotification.AddAction(LearnMoreMsg, Codeunit::"Hybrid Cloud Management", 'CompaniesWarningNotificationLearnMore');
         SendSetupWebhooksNotification.AddAction(DontShowAgainMsg, Codeunit::"Hybrid Cloud Management", 'DontShowCompaniesWarningNotification');
         SendSetupWebhooksNotification.Send();
-    end;
-    
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnBeforeMigrationStarted, '', false, false)]
-    local procedure BeforeMigrationStarted(var DataMigrationStatus: Record "Data Migration Status"; Retry: Boolean)
-    begin
-        ClearCompanyMigrationValidation(DataMigrationStatus."Migration Type");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnValidateMigration, '', false, false)]
-    local procedure StartMigrationValidation(var DataCreationFailed: Boolean)
-    begin
-        StartMigrationValidationImp(DataCreationFailed);
-    end;
-
-    internal procedure StartMigrationValidationImp(var DataCreationFailed: Boolean)
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        MigrationValidationError: Record "Migration Validation Error";
-        MigrationValidation: Codeunit "Migration Validation";
-    begin
-        if DataCreationFailed then
-            exit;
-
-        if not IntelligentCloudSetup.Get() then
-            exit;
-
-        MigrationValidation.StartValidation(IntelligentCloudSetup."Product ID", true);
-
-        MigrationValidationError.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
-        MigrationValidationError.SetRange("Company Name", CompanyName());
-        MigrationValidationError.SetRange("Is Warning", false);
-        MigrationValidationError.SetRange("Errors should fail migration", true);
-        if not MigrationValidationError.IsEmpty() then
-            DataCreationFailed := true;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Company", OnAfterDeleteEvent, '', false, false)]
-    local procedure CleanupAfterCompanyDelete(var Rec: Record Company; RunTrigger: Boolean)
-    begin
-        if Rec.IsTemporary() then
-            exit;
-
-        ClearCompanyMigrationValidation('');
     end;
 
     [IntegrationEvent(false, false)]
@@ -2337,11 +2270,6 @@ codeunit 4001 "Hybrid Cloud Management"
 
     [IntegrationEvent(false, false)]
     local procedure OnInsertDefaultTableMappings(ProductID: Text[250]; DeleteExisting: Boolean)
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnPrepareMigrationValidation(ProductID: Text[250])
     begin
     end;
 

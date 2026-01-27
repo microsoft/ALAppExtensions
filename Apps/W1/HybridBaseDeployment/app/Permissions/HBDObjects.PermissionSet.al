@@ -12,6 +12,7 @@ permissionset 4006 "HBD - Objects"
                   table "Hybrid DA Approval" = X,
                   table "Migration Validation Error" = X,
                   page "Migration Validation Errors" = X,
+                  codeunit "Migration Validation Assert" = X,
                   codeunit "Migration Validation" = X,
                   table "Migration Validation Test" = X,
                   page "Migration Validation Results" = X,
