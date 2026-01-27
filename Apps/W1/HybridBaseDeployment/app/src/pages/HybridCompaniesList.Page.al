@@ -205,7 +205,7 @@ page 40015 "Hybrid Companies List"
     trigger OnAfterGetRecord()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         HybridCompanyStatus: Record "Hybrid Company Status";
     begin
         if Rec."Company Initialization Status" = Rec."Company Initialization Status"::"Initialization Failed" then
@@ -220,8 +220,8 @@ page 40015 "Hybrid Companies List"
 
         CompanyValidated := false;
         if IntelligentCloudSetup.Get() then begin
-            MigrationValidatorRegistry.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
-            NumberOfRegisteredValidators := MigrationValidatorRegistry.Count();
+            ValidationSuite.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
+            NumberOfRegisteredValidators := ValidationSuite.Count();
 
             if HybridCompanyStatus.Get(Rec.Name) then
                 CompanyValidated := HybridCompanyStatus.Validated;

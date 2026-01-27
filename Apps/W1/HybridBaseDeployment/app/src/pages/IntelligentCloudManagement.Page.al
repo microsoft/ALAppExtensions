@@ -443,7 +443,7 @@ page 4003 "Intelligent Cloud Management"
     trigger OnOpenPage()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
         EnvironmentInformation: Codeunit "Environment Information";
@@ -478,8 +478,8 @@ page 4003 "Intelligent Cloud Management"
         if IntelligentCloudSetup.Get() then begin
             HybridDeployment.Initialize(IntelligentCloudSetup."Product ID");
 
-            MigrationValidatorRegistry.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
-            NumberOfRegisteredValidators := MigrationValidatorRegistry.Count();
+            ValidationSuite.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
+            NumberOfRegisteredValidators := ValidationSuite.Count();
         end;
 
         IntelligentCloudNotifier.ShowICUpdateNotification();

@@ -42,24 +42,24 @@ pageextension 41105 "GP Upgrade Settings Ext" extends "GP Upgrade Settings"
 
     trigger OnOpenPage()
     var
-        MigrationValidationRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         GPIRS1099MigrtionValidator: Codeunit "GP IRS1099 Migration Validator";
     begin
-        if MigrationValidationRegistry.Get(GPIRS1099MigrtionValidator.GetValidatorCode()) then begin
-            GPIRS1099AutoValidation := MigrationValidationRegistry.Automatic;
-            GPIRS1099ValidationErrorsShouldFailMigration := MigrationValidationRegistry."Errors should fail migration";
+        if ValidationSuite.Get(GPIRS1099MigrtionValidator.GetValidationSuiteId()) then begin
+            GPIRS1099AutoValidation := ValidationSuite.Automatic;
+            GPIRS1099ValidationErrorsShouldFailMigration := ValidationSuite."Errors should fail migration";
         end;
     end;
 
     local procedure UpdateValidatorConfig()
     var
-        MigrationValidationRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         GPIRS1099MigrtionValidator: Codeunit "GP IRS1099 Migration Validator";
     begin
-        if MigrationValidationRegistry.Get(GPIRS1099MigrtionValidator.GetValidatorCode()) then begin
-            MigrationValidationRegistry.Validate(Automatic, GPIRS1099AutoValidation);
-            MigrationValidationRegistry.Validate("Errors should fail migration", GPIRS1099ValidationErrorsShouldFailMigration);
-            MigrationValidationRegistry.Modify(true);
+        if ValidationSuite.Get(GPIRS1099MigrtionValidator.GetValidationSuiteId()) then begin
+            ValidationSuite.Validate(Automatic, GPIRS1099AutoValidation);
+            ValidationSuite.Validate("Errors should fail migration", GPIRS1099ValidationErrorsShouldFailMigration);
+            ValidationSuite.Modify(true);
         end;
     end;
 

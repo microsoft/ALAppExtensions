@@ -715,16 +715,12 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Customer: Record Customer;
         HybridCompanyStatus: Record "Hybrid Company Status";
         MigrationValidation: Codeunit "Migration Validation";
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        DataCreationFailed: Boolean;
     begin
         // [GIVEN] A company migration is being validated
         InitMigrationValidationTests();
 
-        DataCreationFailed := false;
-
         // [WHEN] No customers were migrated, but were expected
-        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.RunTests(false);
 
         // [THEN] The migration will fail, and there will be corresponding validation error entries
         HybridCompanyStatus.Get(CompanyName());
@@ -733,26 +729,24 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         MigrationValidationError.FindFirst();
         Assert.AreEqual('Missing TEST-1', MigrationValidationError."Test Description", 'Incorrect test description');
         Assert.AreEqual(false, MigrationValidationError."Is Warning", 'Incorrect value for Is Warning');
-        Assert.IsTrue(DataCreationFailed, 'The migration should be in a failed state.');
+        Assert.IsTrue(GetDidValiationErrorFailTheMigration(), 'The migration should be in a failed state.');
 
         // Reset
-        DataCreationFailed := false;
         MigrationValidation.DeleteMigrationValidationEntriesForCompany();
 
         // [WHEN] Some of the customers were created
         // Create Customer TEST-1
         InitMigrationValidationTest_CustomerTest1();
-        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.RunTests(false);
 
         // [THEN] The migration will fail, and there will be corresponding validation error entries
-        Assert.IsTrue(DataCreationFailed, 'The migration should be in a failed state.');
+        Assert.IsTrue(GetDidValiationErrorFailTheMigration(), 'The migration should be in a failed state.');
         Assert.RecordCount(MigrationValidationError, 1);
         MigrationValidationError.FindFirst();
         Assert.AreEqual('Missing TEST-2', MigrationValidationError."Test Description", 'Incorrect test description');
         Assert.AreEqual(false, MigrationValidationError."Is Warning", 'Incorrect value for Is Warning');
 
         // Reset
-        DataCreationFailed := false;
         MigrationValidation.DeleteMigrationValidationEntriesForCompany();
 
         // [WHEN] All the customers were created and correct
@@ -764,10 +758,10 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.IsFalse(CustomerHasNotBeenValidated(CustomerId1Tok), 'Customer 1 should not have validation progress recorded.');
         Assert.IsFalse(CustomerHasNotBeenValidated(CustomerId2Tok), 'Customer 2 should not have validation progress recorded.');
 
-        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.RunTests(false);
 
         // [THEN] The migration will be successful, and there won't be any validation error entries
-        Assert.IsFalse(DataCreationFailed, 'The migration should be in a failed state.');
+        Assert.IsFalse(GetDidValiationErrorFailTheMigration(), 'The migration should be in a failed state.');
         Assert.RecordCount(MigrationValidationError, 0);
 
         // [THEN] Validation progress will be recorded for both Customers.
@@ -776,7 +770,6 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.IsTrue(CustomerHasNotBeenValidated(CustomerId2Tok), 'Customer 2 should have validation progress recorded.');
 
         // Reset
-        DataCreationFailed := false;
         MigrationValidation.DeleteMigrationValidationEntriesForCompany();
 
         // [WHEN] Some values are unexpected
@@ -785,12 +778,12 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Customer."Name 2" := 'Wrong name 2';
         Customer.Modify();
 
-        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.RunTests(false);
 
         // [TEST] The correct validation error records will be added
         // The migration will be in a failed state because there is an entry that isn't a warning
         Assert.RecordCount(MigrationValidationError, 2);
-        Assert.IsTrue(DataCreationFailed, 'The migration should be in a failed state.');
+        Assert.IsTrue(GetDidValiationErrorFailTheMigration(), 'The migration should be in a failed state.');
 
         MigrationValidationError.FindSet();
         Assert.AreEqual('Name', MigrationValidationError."Test Description", 'Incorrect test description');
@@ -805,7 +798,6 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.AreEqual(true, MigrationValidationError."Is Warning", 'Incorrect value for Is Warning');
 
         // Reset
-        DataCreationFailed := false;
         MigrationValidation.DeleteMigrationValidationEntriesForCompany();
 
         // [WHEN] Some values are unexpected, but nothing considered major
@@ -815,9 +807,23 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Customer.Modify();
 
         // [THEN] The migration should NOT be in a failed state
-        MigrationValidation.StartMigrationValidationImp(DataCreationFailed);
+        MigrationValidation.RunTests(false);
         Assert.RecordCount(MigrationValidationError, 1);
-        Assert.IsFalse(DataCreationFailed, 'The migration should NOT be in a failed state.');
+        Assert.IsFalse(GetDidValiationErrorFailTheMigration(), 'The migration should NOT be in a failed state.');
+    end;
+
+    local procedure GetDidValiationErrorFailTheMigration(): Boolean
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        MigrationValidationError: Record "Migration Validation Error";
+    begin
+        IntelligentCloudSetup.Get();
+
+        MigrationValidationError.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
+        MigrationValidationError.SetRange("Company Name", CompanyName());
+        MigrationValidationError.SetRange("Is Warning", false);
+        MigrationValidationError.SetRange("Errors should fail migration", true);
+        exit(not MigrationValidationError.IsEmpty())
     end;
 
     local procedure CustomerHasNotBeenValidated(CustomerNo: Code[20]): Boolean
@@ -828,12 +834,12 @@ codeunit 139656 "Hybrid Cloud Management Tests"
     begin
         // The source table will normally be the staging table, but for testing the Customer table is sufficient
         if Customer.Get(CustomerNo) then
-            exit(MigrationValidationAssert.IsSourceRowValidated(MockMigrationValidator.GetValidatorCode(), Customer));
+            exit(MigrationValidationAssert.IsSourceRowValidated(MockMigrationValidator.GetValidationSuiteId(), Customer));
     end;
 
     local procedure InitMigrationValidationTests()
     var
-        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         MigrationValidationError: Record "Migration Validation Error";
         DataMigrationStatus: Record "Data Migration Status";
         HybridCompany: Record "Hybrid Company";
@@ -844,7 +850,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         MigrationType: Text[250];
         ValidatorCodeunitId: Integer;
     begin
-        ValidatorCode := MockMigrationValidator.GetValidatorCode();
+        ValidatorCode := MockMigrationValidator.GetValidationSuiteId();
         ValidatorCodeunitId := Codeunit::"Mock Migration Validator";
 
         if not IntelligentCloudSetup.Get() then begin
@@ -860,14 +866,14 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         if not MigrationValidationError.IsEmpty() then
             MigrationValidationError.DeleteAll();
 
-        if not MigrationValidatorRegistry.IsEmpty() then
-            MigrationValidatorRegistry.DeleteAll();
+        if not ValidationSuite.IsEmpty() then
+            ValidationSuite.DeleteAll();
 
-        if not MigrationValidatorRegistry.Get(ValidatorCode) then begin
-            MigrationValidatorRegistry.Validate("Validator Code", ValidatorCode);
-            MigrationValidatorRegistry.Validate("Migration Type", MigrationType);
-            MigrationValidatorRegistry.Validate("Codeunit Id", ValidatorCodeunitId);
-            MigrationValidatorRegistry.Insert();
+        if not ValidationSuite.Get(ValidatorCode) then begin
+            ValidationSuite.Validate(Id, ValidatorCode);
+            ValidationSuite.Validate("Migration Type", MigrationType);
+            ValidationSuite.Validate("Codeunit Id", ValidatorCodeunitId);
+            ValidationSuite.Insert();
         end;
 
         if not HybridCompany.Get(CompanyName()) then begin

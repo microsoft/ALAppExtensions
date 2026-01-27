@@ -1,8 +1,8 @@
 namespace Microsoft.DataMigration;
 
-table 40044 "Migration Validation Test"
+table 40044 "Validation Suite Line"
 {
-    Caption = 'Migration Validation Test';
+    Caption = 'Validation Suite Line';
     DataClassification = SystemMetadata;
     DataPerCompany = false;
 
@@ -13,10 +13,10 @@ table 40044 "Migration Validation Test"
             Caption = 'Code';
             ToolTip = 'Specifies the identification code of this test.';
         }
-        field(2; "Validator Code"; Code[20])
+        field(2; "Validation Suite Id"; Code[20])
         {
-            Caption = 'Validator Code';
-            ToolTip = 'Specifies the Validator used during this test.';
+            Caption = 'Validation Suite Id';
+            ToolTip = 'Specifies the Validation Suite used during this test.';
         }
         field(3; Entity; Text[50])
         {
@@ -33,7 +33,7 @@ table 40044 "Migration Validation Test"
             Caption = 'Fail Count';
             ToolTip = 'Specifies the total number of validation errors related to this test.';
             FieldClass = FlowField;
-            CalcFormula = count("Migration Validation Error" where("Validator Code" = field("Validator Code"), "Test Code" = field(Code)));
+            CalcFormula = count("Migration Validation Error" where("Validation Suite Id" = field("Validation Suite Id"), "Test Code" = field(Code)));
         }
         field(6; Ignore; Boolean)
         {
@@ -43,7 +43,7 @@ table 40044 "Migration Validation Test"
     }
     keys
     {
-        key(PK; "Code", "Validator Code")
+        key(PK; "Code", "Validation Suite Id")
         {
             Clustered = true;
         }

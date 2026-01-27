@@ -1,16 +1,16 @@
 namespace Microsoft.DataMigration;
 
-table 40042 "Migration Validator Registry"
+table 40042 "Validation Suite"
 {
-    Caption = 'Migration Validator Registry';
+    Caption = 'Validation Suite';
     DataClassification = SystemMetadata;
     DataPerCompany = false;
 
     fields
     {
-        field(1; "Validator Code"; Code[20])
+        field(1; Id; Code[20])
         {
-            Caption = 'Validator Code';
+            Caption = 'Id';
             ToolTip = 'Specifies the identification code for this Validator.';
         }
         field(2; "Migration Type"; Text[250])
@@ -43,7 +43,7 @@ table 40042 "Migration Validator Registry"
     }
     keys
     {
-        key(PK; "Validator Code")
+        key(PK; Id)
         {
             Clustered = true;
         }

@@ -20,8 +20,8 @@ permissionsetextension 4001 "D365 BASIC ISV - HBD" extends "D365 BASIC ISV"
                   tabledata "Replication Record Link Buffer" = RIMD,
                   tabledata "Record Link Mapping" = RIMD,
                   tabledata "Cloud Migration Warning" = RIMD,
-                  tabledata "Migration Validator Registry" = RIMD,
+                  tabledata "Validation Suite" = RIMD,
                   tabledata "Migration Validation Error" = RIMD,
-                  tabledata "Migration Validation Test" = RIMD,
+                  tabledata "Validation Suite Line" = RIMD,
                   tabledata "Validation Progress" = RIMD;
 }

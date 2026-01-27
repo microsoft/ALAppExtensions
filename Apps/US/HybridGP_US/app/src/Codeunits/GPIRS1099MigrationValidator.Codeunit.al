@@ -14,7 +14,7 @@ codeunit 42006 "GP IRS1099 Migration Validator"
         if not GPCompanyAdditionalSettings.GetMigrateVendor1099Enabled() then
             exit;
 
-        ValidatorCodeTxt := GetValidatorCode();
+        ValidationSuiteIdTxt := GetValidationSuiteId();
         CompanyNameTxt := CompanyName();
 
         RunVendor1099MigrationValidation(GPCompanyAdditionalSettings);
@@ -41,7 +41,7 @@ codeunit 42006 "GP IRS1099 Migration Validator"
             GPPM00200.SetFilter(VENDORID, '<>%1', '');
             if GPPM00200.FindSet() then
                 repeat
-                    if MigrationValidationAssert.IsSourceRowValidated(ValidatorCodeTxt, GPPM00200) then
+                    if MigrationValidationAssert.IsSourceRowValidated(ValidationSuiteIdTxt, GPPM00200) then
                         continue;
 
                     VendorNo := CopyStr(GPPM00200.VENDORID.TrimEnd(), 1, MaxStrLen(VendorNo));
@@ -49,7 +49,7 @@ codeunit 42006 "GP IRS1099 Migration Validator"
                     if not Vendor.Get(VendorNo) then
                         continue;
 
-                    MigrationValidationAssert.SetContext(ValidatorCodeTxt, EntityType, VendorNo);
+                    MigrationValidationAssert.SetContext(ValidationSuiteIdTxt, EntityType, VendorNo);
                     IRS1099Code := GPVendor1099MappingHelpers.GetIRS1099BoxCode(System.Date2DMY(System.Today(), 3), GPPM00200.TEN99TYPE, GPPM00200.TEN99BOXNUMBER);
 
                     Clear(ActualIRS1099Code);
@@ -81,7 +81,7 @@ codeunit 42006 "GP IRS1099 Migration Validator"
                         end;
                     end;
 
-                    MigrationValidationAssert.SetSourceRowValidated(ValidatorCodeTxt, GPPM00200);
+                    MigrationValidationAssert.SetSourceRowValidated(ValidationSuiteIdTxt, GPPM00200);
                 until GPPM00200.Next() = 0;
         end;
         Commit();
@@ -111,7 +111,7 @@ codeunit 42006 "GP IRS1099 Migration Validator"
             until GPPM00204.Next() = 0;
     end;
 
-    internal procedure GetValidatorCode(): Code[20]
+    internal procedure GetValidationSuiteId(): Code[20]
     begin
         exit('GP-US');
     end;
@@ -135,42 +135,42 @@ codeunit 42006 "GP IRS1099 Migration Validator"
 
     local procedure RegisterValidator()
     var
-        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         HybridGPWizard: Codeunit "Hybrid GP Wizard";
-        ValidatorCode: Code[20];
+        ValidationSuiteId: Code[20];
         MigrationType: Text[250];
         ValidatorCodeunitId: Integer;
     begin
-        ValidatorCode := GetValidatorCode();
+        ValidationSuiteId := GetValidationSuiteId();
         MigrationType := HybridGPWizard.ProductId();
         ValidatorCodeunitId := Codeunit::"GP IRS1099 Migration Validator";
-        if not MigrationValidatorRegistry.Get(ValidatorCode) then begin
-            MigrationValidatorRegistry.Validate("Validator Code", ValidatorCode);
-            MigrationValidatorRegistry.Validate("Migration Type", MigrationType);
-            MigrationValidatorRegistry.Validate(Description, ValidatorDescriptionLbl);
-            MigrationValidatorRegistry.Validate("Codeunit Id", ValidatorCodeunitId);
-            MigrationValidatorRegistry.Validate(Automatic, true);
-            MigrationValidatorRegistry.Validate("Errors should fail migration", false);
-            MigrationValidatorRegistry.Insert(true);
+        if not ValidationSuite.Get(ValidationSuiteId) then begin
+            ValidationSuite.Validate(Id, ValidationSuiteId);
+            ValidationSuite.Validate("Migration Type", MigrationType);
+            ValidationSuite.Validate(Description, ValidatorDescriptionLbl);
+            ValidationSuite.Validate("Codeunit Id", ValidatorCodeunitId);
+            ValidationSuite.Validate(Automatic, true);
+            ValidationSuite.Validate("Errors should fail migration", false);
+            ValidationSuite.Insert(true);
         end;
     end;
 
     local procedure AddTest(Code: Code[30]; Entity: Text[50]; Description: Text)
     var
-        MigrationValidationTest: Record "Migration Validation Test";
+        ValidationSuiteLine: Record "Validation Suite Line";
     begin
-        if not MigrationValidationTest.Get(Code, GetValidatorCode()) then begin
-            MigrationValidationTest.Validate(Code, Code);
-            MigrationValidationTest.Validate("Validator Code", GetValidatorCode());
-            MigrationValidationTest.Validate(Entity, Entity);
-            MigrationValidationTest.Validate("Test Description", Description);
-            MigrationValidationTest.Insert(true);
+        if not ValidationSuiteLine.Get(Code, GetValidationSuiteId()) then begin
+            ValidationSuiteLine.Validate(Code, Code);
+            ValidationSuiteLine.Validate("Validation Suite Id", GetValidationSuiteId());
+            ValidationSuiteLine.Validate(Entity, Entity);
+            ValidationSuiteLine.Validate("Test Description", Description);
+            ValidationSuiteLine.Insert(true);
         end;
     end;
 
     var
         MigrationValidationAssert: Codeunit "Migration Validation Assert";
-        ValidatorCodeTxt: Code[20];
+        ValidationSuiteIdTxt: Code[20];
         CompanyNameTxt: Text;
         FederalIdNoLbl: Label 'Federal ID No.';
         IRS1099CodeLbl: Label 'IRS 1099 Code';

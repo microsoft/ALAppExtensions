@@ -641,7 +641,6 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridCompany: Record "Hybrid Company";
         GuidedExperience: Codeunit "Guided Experience";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        MigrationValidation: Codeunit "Migration Validation";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('TotalNumberOfOnPremCompanies', Format(HybridCompany.Count(), 0, 9));
@@ -650,7 +649,6 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudSetup.Validate("Replication User", UserId());
         IntelligentCloudSetup.Modify();
         RestoreDefaultMigrationTableMappings(false);
-        MigrationValidation.PrepareValidation();
         RefreshIntelligentCloudStatusTable();
         CreateCompanies();
 

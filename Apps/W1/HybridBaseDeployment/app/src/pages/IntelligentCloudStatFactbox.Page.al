@@ -207,23 +207,23 @@ page 4008 "Intelligent Cloud Stat Factbox"
 
                         trigger OnDrillDown()
                         var
-                            MigrationValidationRegistery: Record "Migration Validator Registry";
-                            MigrationValidationTest: Record "Migration Validation Test";
+                            ValidationSuite: Record "Validation Suite";
+                            ValidationSuiteLine: Record "Validation Suite Line";
                             MigrationValidationResults: Page "Migration Validation Results";
                             ValidatorFilter: Text;
                             SeparatorChar: Text;
                         begin
-                            MigrationValidationRegistery.SetRange("Migration Type", MigrationType);
-                            if MigrationValidationRegistery.FindSet() then
+                            ValidationSuite.SetRange("Migration Type", MigrationType);
+                            if ValidationSuite.FindSet() then
                                 repeat
                                     if ValidatorFilter <> '' then
                                         SeparatorChar := '|';
 
                                     ValidatorFilter := SeparatorChar + ValidatorFilter;
-                                until MigrationValidationRegistery.Next() = 0;
+                                until ValidationSuite.Next() = 0;
 
-                            MigrationValidationTest.SetFilter("Validator Code", ValidatorFilter);
-                            MigrationValidationResults.SetTableView(MigrationValidationTest);
+                            ValidationSuiteLine.SetFilter("Validation Suite Id", ValidatorFilter);
+                            MigrationValidationResults.SetTableView(ValidationSuiteLine);
                             MigrationValidationResults.RunModal();
                             RefreshStats();
                         end;
@@ -250,7 +250,7 @@ page 4008 "Intelligent Cloud Stat Factbox"
     procedure RefreshStats()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        MigrationValidationSuite: Record "Validation Suite";
         MigrationValidationError: Record "Migration Validation Error";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
@@ -273,8 +273,8 @@ page 4008 "Intelligent Cloud Stat Factbox"
 
         UpdateWarningCounts();
 
-        MigrationValidatorRegistry.SetRange("Migration Type", MigrationType);
-        NumberOfRegisteredValidators := MigrationValidatorRegistry.Count();
+        MigrationValidationSuite.SetRange("Migration Type", MigrationType);
+        NumberOfRegisteredValidators := MigrationValidationSuite.Count();
 
         MigrationValidationError.SetRange("Migration Type", MigrationType);
         ValidationErrors := MigrationValidationError.Count();

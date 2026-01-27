@@ -24,15 +24,15 @@ table 40043 "Migration Validation Error"
         {
             Caption = 'Test Code';
             NotBlank = true;
-            TableRelation = "Migration Validation Test";
+            TableRelation = "Validation Suite Line";
             ToolTip = 'Specifies the identification code of this test.';
         }
-        field(4; "Validator Code"; Code[20])
+        field(4; "Validation Suite Id"; Code[20])
         {
-            Caption = 'Validator Code';
+            Caption = 'Validation Suite Id';
             NotBlank = true;
-            TableRelation = "Migration Validator Registry";
-            ToolTip = 'Specifies the Validator used for this test.';
+            TableRelation = "Validation Suite";
+            ToolTip = 'Specifies the Validation Suite used for this test.';
         }
         field(5; "Migration Type"; Text[250])
         {
@@ -45,22 +45,22 @@ table 40043 "Migration Validation Error"
             NotBlank = true;
             ToolTip = 'Specifies the type of entity that was tested.';
         }
-        field(7; Context; Text[250])
+        field(7; "Entity Display Name"; Text[2048])
         {
-            Caption = 'Context';
-            ToolTip = 'Specifies the identifying context of the record being tested.';
+            Caption = 'Entity Display Name';
+            ToolTip = 'Specifies the identifying name of the entity record being tested.';
         }
-        field(8; "Test Description"; Text[250])
+        field(8; "Test Description"; Text[2048])
         {
             Caption = 'Test Description';
             ToolTip = 'Specifies the description of the test.';
         }
-        field(9; Expected; Text[250])
+        field(9; Expected; Text[2048])
         {
             Caption = 'Expected';
             ToolTip = 'Specifies the expected value of the tested field.';
         }
-        field(10; Actual; Text[250])
+        field(10; Actual; Text[2048])
         {
             Caption = 'Actual';
             ToolTip = 'Specifies the actual value of the tested field.';
@@ -75,7 +75,7 @@ table 40043 "Migration Validation Error"
             Caption = 'Indicates if validation errors should fail the migration';
             ToolTip = 'Specifies whether validation errors should fail the migration or not. Only applies to automatic validation.';
             FieldClass = FlowField;
-            CalcFormula = exist("Migration Validator Registry" where("Validator Code" = field("Validator Code"),
+            CalcFormula = exist("Validation Suite" where(Id = field("Validation Suite Id"),
                                                                      "Migration Type" = field("Migration Type"),
                                                                      "Errors should fail migration" = const(true)));
         }
@@ -89,7 +89,7 @@ table 40043 "Migration Validation Error"
         key(Key2; "Company Name", "Migration Type", "Is Warning")
         {
         }
-        key(Key3; "Validator Code", "Test Code")
+        key(Key3; "Validation Suite Id", "Test Code")
         {
         }
     }

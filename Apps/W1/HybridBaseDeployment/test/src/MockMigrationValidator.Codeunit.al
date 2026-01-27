@@ -8,16 +8,16 @@ codeunit 139501 "Mock Migration Validator"
     local procedure RunCustomerMigrationValidation()
     var
         Customer: Record Customer;
-        CustomerId1: Label 'TEST-1', MaxLength = 20, Locked = true;
-        CustomerId2: Label 'TEST-2', MaxLength = 20, Locked = true;
+        CustomerId1Tok: Label 'TEST-1', MaxLength = 20, Locked = true;
+        CustomerId2Tok: Label 'TEST-2', MaxLength = 20, Locked = true;
     begin
         // [Customer: Test 1]
 
         // Set the context of this set of tests
-        MigrationValidationAssert.SetContext(GetValidatorCode(), 'Customer', CustomerId1);
+        MigrationValidationAssert.SetContext(GetValidationSuiteId(), 'Customer', CustomerId1Tok);
 
         // Check for the entity record by the key
-        if not MigrationValidationAssert.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId1), 'Missing TEST-1') then
+        if not MigrationValidationAssert.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId1Tok), 'Missing TEST-1') then
             exit;
 
         // This is a test that is not a warning, and would fail the migration
@@ -27,15 +27,15 @@ codeunit 139501 "Mock Migration Validator"
         MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
 
         // The source table will normally be the staging table, but for testing the Customer table is sufficient
-        MigrationValidationAssert.SetSourceRowValidated(GetValidatorCode(), Customer);
+        MigrationValidationAssert.SetSourceRowValidated(GetValidationSuiteId(), Customer);
 
         // [Customer: Test 2]
 
         // Set the context of this set of tests
-        MigrationValidationAssert.SetContext(GetValidatorCode(), 'Customer', CustomerId2);
+        MigrationValidationAssert.SetContext(GetValidationSuiteId(), 'Customer', CustomerId2Tok);
 
         // Check for the entity record by the key
-        if not MigrationValidationAssert.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId2), 'Missing TEST-2') then
+        if not MigrationValidationAssert.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId2Tok), 'Missing TEST-2') then
             exit;
 
         // This is a test that is not a warning, and would fail the migration
@@ -45,10 +45,10 @@ codeunit 139501 "Mock Migration Validator"
         MigrationValidationAssert.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
 
         // The source table will normally be the staging table, but for testing the Customer table is sufficient
-        MigrationValidationAssert.SetSourceRowValidated(GetValidatorCode(), Customer);
+        MigrationValidationAssert.SetSourceRowValidated(GetValidationSuiteId(), Customer);
     end;
 
-    internal procedure GetValidatorCode(): Code[20]
+    internal procedure GetValidationSuiteId(): Code[20]
     begin
         exit('TEST');
     end;
@@ -66,31 +66,31 @@ codeunit 139501 "Mock Migration Validator"
 
     local procedure RegisterValidator(ProductID: Text[250])
     var
-        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         ValidatorCodeunitId: Integer;
     begin
         ValidatorCodeunitId := Codeunit::"Mock Migration Validator";
-        if not MigrationValidatorRegistry.Get(GetValidatorCode()) then begin
-            MigrationValidatorRegistry.Validate("Validator Code", GetValidatorCode());
-            MigrationValidatorRegistry.Validate("Migration Type", ProductID);
-            MigrationValidatorRegistry.Validate(Description, ValidatorDescriptionLbl);
-            MigrationValidatorRegistry.Validate("Codeunit Id", ValidatorCodeunitId);
-            MigrationValidatorRegistry.Validate(Automatic, true);
-            MigrationValidatorRegistry.Validate("Errors should fail migration", true);
-            MigrationValidatorRegistry.Insert(true);
+        if not ValidationSuite.Get(GetValidationSuiteId()) then begin
+            ValidationSuite.Validate(Id, GetValidationSuiteId());
+            ValidationSuite.Validate("Migration Type", ProductID);
+            ValidationSuite.Validate(Description, ValidatorDescriptionLbl);
+            ValidationSuite.Validate("Codeunit Id", ValidatorCodeunitId);
+            ValidationSuite.Validate(Automatic, true);
+            ValidationSuite.Validate("Errors should fail migration", true);
+            ValidationSuite.Insert(true);
         end;
     end;
 
     local procedure AddTest(Code: Code[30]; Entity: Text[50]; Description: Text)
     var
-        MigrationValidationTest: Record "Migration Validation Test";
+        ValidationSuiteLine: Record "Validation Suite Line";
     begin
-        if not MigrationValidationTest.Get(Code, GetValidatorCode()) then begin
-            MigrationValidationTest.Validate(Code, Code);
-            MigrationValidationTest.Validate("Validator Code", GetValidatorCode());
-            MigrationValidationTest.Validate(Entity, Entity);
-            MigrationValidationTest.Validate("Test Description", Description);
-            MigrationValidationTest.Insert(true);
+        if not ValidationSuiteLine.Get(Code, GetValidationSuiteId()) then begin
+            ValidationSuiteLine.Validate(Code, Code);
+            ValidationSuiteLine.Validate("Validation Suite Id", GetValidationSuiteId());
+            ValidationSuiteLine.Validate(Entity, Entity);
+            ValidationSuiteLine.Validate("Test Description", Description);
+            ValidationSuiteLine.Insert(true);
         end;
     end;
 

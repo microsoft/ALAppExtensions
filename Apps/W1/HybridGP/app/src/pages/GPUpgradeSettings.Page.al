@@ -88,12 +88,12 @@ page 40043 "GP Upgrade Settings"
 
     trigger OnOpenPage()
     var
-        MigrationValidationRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         GPMigrtionValidator: Codeunit "GP Migration Validator";
     begin
-        if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then begin
-            GPAutoValidation := MigrationValidationRegistry.Automatic;
-            GPValidationErrorsShouldFailMigration := MigrationValidationRegistry."Errors should fail migration";
+        if ValidationSuite.Get(GPMigrtionValidator.GetValidationSuiteId()) then begin
+            GPAutoValidation := ValidationSuite.Automatic;
+            GPValidationErrorsShouldFailMigration := ValidationSuite."Errors should fail migration";
         end;
 
         Rec.GetonInsertGPUpgradeSettings(Rec);
@@ -101,13 +101,13 @@ page 40043 "GP Upgrade Settings"
 
     local procedure UpdateValidatorConfig()
     var
-        MigrationValidationRegistry: Record "Migration Validator Registry";
+        ValidationSuite: Record "Validation Suite";
         GPMigrtionValidator: Codeunit "GP Migration Validator";
     begin
-        if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then begin
-            MigrationValidationRegistry.Validate(Automatic, GPAutoValidation);
-            MigrationValidationRegistry.Validate("Errors should fail migration", GPValidationErrorsShouldFailMigration);
-            MigrationValidationRegistry.Modify(true);
+        if ValidationSuite.Get(GPMigrtionValidator.GetValidationSuiteId()) then begin
+            ValidationSuite.Validate(Automatic, GPAutoValidation);
+            ValidationSuite.Validate("Errors should fail migration", GPValidationErrorsShouldFailMigration);
+            ValidationSuite.Modify(true);
         end;
     end;
 

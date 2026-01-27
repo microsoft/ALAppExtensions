@@ -1,57 +1,55 @@
 namespace Microsoft.DataMigration;
 
+using System.Environment;
+using System.Integration;
 using System.Security.User;
 using System.Threading;
-using System.Integration;
-using System.Environment;
 
 codeunit 40032 "Migration Validation"
 {
     trigger OnRun()
+    begin
+        RunTests(false);
+    end;
+
+    /// <summary>
+    /// Run the configured Validation Suites for the current company
+    /// </summary>
+    /// <param name="RunOnlyAutomatic">Should only run validation suites that are set to run automatically</param>
+    procedure RunTests(RunOnlyAutomatic: Boolean)
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        ValidationSuite: Record "Validation Suite";
+        CloudMigrationWarning: Record "Cloud Migration Warning";
     begin
         if not IntelligentCloudSetup.Get() then
             exit;
 
-        StartValidation(IntelligentCloudSetup."Product ID", false);
-    end;
-
-    /// <summary>
-    /// Start migration validation for the current company
-    /// </summary>
-    /// <param name="MigrationType">The type of migration</param>
-    /// <param name="RunOnlyAutomatic">Should only run validators that are set to run automatically</param>
-    procedure StartValidation(MigrationType: Text[250]; RunOnlyAutomatic: Boolean)
-    var
-        MigrationValidatorRegistry: Record "Migration Validator Registry";
-        CloudMigrationWarning: Record "Cloud Migration Warning";
-    begin
         CommitAfterXValidatedRecordCount := GetDefaultCommitAfterXValidatedRecordCount();
-        OnBeforeStartValidation(MigrationType, CommitAfterXValidatedRecordCount);
+        OnBeforeStartValidation(IntelligentCloudSetup."Product ID", CommitAfterXValidatedRecordCount);
 
-        MigrationValidatorRegistry.SetRange("Migration Type", MigrationType);
+        ValidationSuite.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
 
         if RunOnlyAutomatic then
-            MigrationValidatorRegistry.SetRange(Automatic, true);
+            ValidationSuite.SetRange(Automatic, true);
 
-        if not MigrationValidatorRegistry.FindSet() then
+        if not ValidationSuite.FindSet() then
             exit;
 
         repeat
             Commit();
-            if not Codeunit.Run(MigrationValidatorRegistry."Codeunit Id") then begin
+            if not Codeunit.Run(ValidationSuite."Codeunit Id") then begin
                 Clear(CloudMigrationWarning);
                 CloudMigrationWarning."Entry No." := 0;
                 CloudMigrationWarning."Warning Type" := CloudMigrationWarning."Warning Type"::"Migration Validator";
-                CloudMigrationWarning.Message := CopyStr(StrSubstNo(CloudMigrationWarningErr, MigrationValidatorRegistry."Validator Code", GetLastErrorText()), 1, MaxStrLen(CloudMigrationWarning.Message));
+                CloudMigrationWarning.Message := CopyStr(StrSubstNo(CloudMigrationWarningErr, ValidationSuite.Id, GetLastErrorText()), 1, MaxStrLen(CloudMigrationWarning.Message));
                 CloudMigrationWarning.Insert();
             end;
-        until MigrationValidatorRegistry.Next() = 0;
+        until ValidationSuite.Next() = 0;
 
         SetCompanyValidated();
         Commit();
-        OnMigrationValidated(MigrationType, CompanyName());
+        OnMigrationValidated(IntelligentCloudSetup."Product ID", CompanyName());
     end;
 
     /// <summary>
@@ -105,7 +103,7 @@ codeunit 40032 "Migration Validation"
         FailoverToSession := not CanStartBackgroundJob();
 
         if not FailoverToSession then begin
-            SendStartValidationResultMessage('', StrSubstNo(TelemetryValidationToBeScheduledMsg, JobQueueLbl), false, false);
+            SendStartValidationResultMessage(StrSubstNo(TelemetryValidationToBeScheduledMsg, JobQueueLbl), false, false);
 
             StartDateTime := CurrentDateTime();
             if ScheduledEntryNumber > 1 then
@@ -119,16 +117,16 @@ codeunit 40032 "Migration Validation"
                     MigrationValidationJobDescriptionTxt,
                     StartDateTime);
 
-            SendStartValidationResultMessage('', StrSubstNo(TelemetryValidationScheduledMsg, JobQueueLbl), false, true);
+            SendStartValidationResultMessage(StrSubstNo(TelemetryValidationScheduledMsg, JobQueueLbl), false, true);
         end;
 
         if FailoverToSession then begin
-            SendStartValidationResultMessage('', StrSubstNo(TelemetryValidationToBeScheduledMsg, SessionLbl), false, false);
+            SendStartValidationResultMessage(StrSubstNo(TelemetryValidationToBeScheduledMsg, SessionLbl), false, false);
 
             if Session.StartSession(SessionId, Codeunit::"Migration Validation", Company) then
-                SendStartValidationResultMessage('', StrSubstNo(TelemetryValidationScheduledMsg, SessionLbl), false, true)
+                SendStartValidationResultMessage(StrSubstNo(TelemetryValidationScheduledMsg, SessionLbl), false, true)
             else
-                SendStartValidationResultMessage('', TelemetryValidationFailedToStartSessionMsg, true, true);
+                SendStartValidationResultMessage(TelemetryValidationFailedToStartSessionMsg, true, true);
         end;
     end;
 
@@ -196,12 +194,12 @@ codeunit 40032 "Migration Validation"
         exit(true);
     end;
 
-    local procedure SendStartValidationResultMessage(TelemetryEventId: Text; MessageText: Text; IsError: Boolean; ShouldShowMessage: Boolean)
+    local procedure SendStartValidationResultMessage(MessageText: Text; IsError: Boolean; ShouldShowMessage: Boolean)
     begin
         if IsError then
-            Session.LogMessage(TelemetryEventId, MessageText, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok)
+            Session.LogMessage('', MessageText, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok)
         else
-            Session.LogMessage(TelemetryEventId, MessageText, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
+            Session.LogMessage('', MessageText, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
 
         if ShouldShowMessage and GuiAllowed() then
             Message(MessageText);
@@ -284,32 +282,6 @@ codeunit 40032 "Migration Validation"
             exit;
 
         DeleteMigrationValidationEntriesForCompany(Rec.Name);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnValidateMigration, '', false, false)]
-    local procedure StartMigrationValidation(var DataCreationFailed: Boolean)
-    begin
-        StartMigrationValidationImp(DataCreationFailed);
-    end;
-
-    internal procedure StartMigrationValidationImp(var DataCreationFailed: Boolean)
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        MigrationValidationError: Record "Migration Validation Error";
-        MigrationValidation: Codeunit "Migration Validation";
-    begin
-        if DataCreationFailed then
-            exit;
-
-        IntelligentCloudSetup.Get();
-        MigrationValidation.StartValidation(IntelligentCloudSetup."Product ID", true);
-
-        MigrationValidationError.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
-        MigrationValidationError.SetRange("Company Name", CompanyName());
-        MigrationValidationError.SetRange("Is Warning", false);
-        MigrationValidationError.SetRange("Errors should fail migration", true);
-        if not MigrationValidationError.IsEmpty() then
-            DataCreationFailed := true;
     end;
 
     [IntegrationEvent(false, false)]

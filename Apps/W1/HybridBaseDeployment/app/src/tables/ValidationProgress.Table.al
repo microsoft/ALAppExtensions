@@ -13,11 +13,11 @@ table 40045 "Validation Progress"
             Caption = 'Company Name';
             NotBlank = true;
         }
-        field(2; "Validator Code"; Code[20])
+        field(2; "Validation Suite Id"; Code[20])
         {
-            Caption = 'Validator Code';
+            Caption = 'Validation Suite Id';
             NotBlank = true;
-            TableRelation = "Migration Validator Registry";
+            TableRelation = "Validation Suite";
         }
         field(3; "Source Table Id"; Integer)
         {
@@ -32,7 +32,7 @@ table 40045 "Validation Progress"
     }
     keys
     {
-        key(PK; "Company Name", "Validator Code", "Source Table Id", "Validated Row System Id")
+        key(PK; "Company Name", "Validation Suite Id", "Source Table Id", "Validated Row System Id")
         {
             Clustered = true;
         }

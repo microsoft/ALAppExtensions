@@ -23,7 +23,7 @@ page 40065 "Migration Validation Errors"
                 field("Entity Type"; Rec."Entity Type")
                 {
                 }
-                field(Context; Rec.Context)
+                field(Context; Rec."Entity Display Name")
                 {
                 }
                 field("Test Description"; Rec."Test Description")
@@ -42,7 +42,7 @@ page 40065 "Migration Validation Errors"
                 {
                     Visible = false;
                 }
-                field("Validator Code"; Rec."Validator Code")
+                field("Validation Suite Id"; Rec."Validation Suite Id")
                 {
                     Visible = false;
                 }

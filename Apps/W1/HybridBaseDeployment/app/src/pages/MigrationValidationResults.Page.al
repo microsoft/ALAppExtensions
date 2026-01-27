@@ -5,7 +5,7 @@ page 40067 "Migration Validation Results"
     ApplicationArea = All;
     Caption = 'Migration Validation Results';
     PageType = Worksheet;
-    SourceTable = "Migration Validation Test";
+    SourceTable = "Validation Suite Line";
     UsageCategory = Lists;
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -47,15 +47,12 @@ page 40067 "Migration Validation Results"
             {
                 field(FailCount; Rec."Fail Count")
                 {
-                    Caption = 'Failed';
-                    ToolTip = 'Specifies the number of failures within the filter criteria.';
-
                     trigger OnDrillDown()
                     var
                         MigrationValidationError: Record "Migration Validation Error";
                         MigrationValidationErrors: Page "Migration Validation Errors";
                     begin
-                        MigrationValidationError.SetRange("Validator Code", Rec."Validator Code");
+                        MigrationValidationError.SetRange("Validation Suite Id", Rec."Validation Suite Id");
                         MigrationValidationError.SetRange("Test Code", Rec.Code);
 
                         MigrationValidationErrors.SetTableView(MigrationValidationError);
@@ -64,31 +61,22 @@ page 40067 "Migration Validation Results"
                 }
                 field(Entity; Rec.Entity)
                 {
-                    Caption = 'Entity';
                     Editable = false;
-                    ToolTip = 'Specifies the value of the Test Description field.';
                 }
                 field("Test Description"; Rec."Test Description")
                 {
-                    Caption = 'Test Description';
                     Editable = false;
-                    ToolTip = 'Specifies the value of the Test Description field.';
                 }
                 field("Code"; Rec."Code")
                 {
-                    Caption = 'Code';
                     Editable = false;
-                    ToolTip = 'Specifies the value of the Code field.';
                 }
-                field("Validator Code"; Rec."Validator Code")
+                field("Validation Suite Id"; Rec."Validation Suite Id")
                 {
-                    Caption = 'Validator';
                     Editable = false;
-                    ToolTip = 'Specifies the value of the Validator Code field.';
                 }
                 field(Ignore; Rec.Ignore)
                 {
-                    ToolTip = 'Specifies the value of the Ignore field.';
                 }
             }
         }
