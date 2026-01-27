@@ -27,11 +27,7 @@ codeunit 40032 "Migration Validation"
         CloudMigrationWarning: Record "Cloud Migration Warning";
     begin
         CommitAfterXValidatedRecordCount := GetDefaultCommitAfterXValidatedRecordCount();
-        OverrideCommitAfterXValidatedRecordCount := CommitAfterXValidatedRecordCount;
-
-        OnBeforeStartValidation(MigrationType, OverrideCommitAfterXValidatedRecordCount);
-        if OverrideCommitAfterXValidatedRecordCount > 0 then
-            CommitAfterXValidatedRecordCount := OverrideCommitAfterXValidatedRecordCount;
+        OnBeforeStartValidation(MigrationType, CommitAfterXValidatedRecordCount);
 
         MigrationValidatorRegistry.SetRange("Migration Type", MigrationType);
 
@@ -551,7 +547,6 @@ codeunit 40032 "Migration Validation"
         JobQueueCategoryTok: Label 'VALIDATION', Locked = true;
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         CommitAfterXValidatedRecordCount: Integer;
-        OverrideCommitAfterXValidatedRecordCount: Integer;
         CurrentValidatedRecordCount: Integer;
 
     [IntegrationEvent(false, false)]
