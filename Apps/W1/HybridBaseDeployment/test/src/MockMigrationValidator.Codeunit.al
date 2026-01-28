@@ -53,8 +53,6 @@ codeunit 139501 "Mock Migration Validator"
         exit('TEST');
     end;
 
-    // Normally initialized by this event, but called directly for testing.
-    //[EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnPrepareMigrationValidation, '', false, false)]
     internal procedure OnPrepareMigrationValidation(ProductID: Text[250])
     begin
         RegisterValidator(ProductID);

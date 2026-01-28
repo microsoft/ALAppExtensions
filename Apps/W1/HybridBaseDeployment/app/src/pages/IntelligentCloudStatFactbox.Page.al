@@ -242,16 +242,9 @@ page 4008 "Intelligent Cloud Stat Factbox"
         }
     }
 
-    trigger OnAfterGetRecord()
-    begin
-        RefreshStats();
-    end;
-
-    procedure RefreshStats()
+    trigger OnOpenPage()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        MigrationValidationSuite: Record "Validation Suite";
-        MigrationValidationError: Record "Migration Validation Error";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         CanShowTablesNotMigrated(TablesNotMigratedEnabled);
@@ -265,6 +258,20 @@ page 4008 "Intelligent Cloud Stat Factbox"
 
         ShowNextScheduled := NextScheduledRun <> 0DT;
 
+        RefreshStats();
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        RefreshStats();
+    end;
+
+    procedure RefreshStats()
+    var
+        MigrationValidationSuite: Record "Validation Suite";
+        MigrationValidationError: Record "Migration Validation Error";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
         if Rec."Run ID" <> '' then begin
             TotalSuccessfulTables := HybridCloudManagement.GetTotalSuccessfulTables();
             TotalTablesNotMigrated := HybridCloudManagement.GetTotalTablesNotMigrated();
