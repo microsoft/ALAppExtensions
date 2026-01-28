@@ -28,6 +28,7 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
+        OnBeforeCheck(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         CheckCompanyInfoMandatory();
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
         BindSubscription(EDocPEPPOLValidationDE);
@@ -184,7 +185,13 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
     end;
 
     [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheck(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum Microsoft.eServices.EDocument."E-Document Processing Phase")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCheck(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
     end;
+
 }
