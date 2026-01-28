@@ -3,11 +3,7 @@ namespace Microsoft.DataMigration.GP;
 using Microsoft.DataMigration;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Inventory.Item;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Sales.Customer;
-using System.Integration;
-using System.Security.User;
-using System.Threading;
+using Microsoft.Finance.FinancialReports;
 
 codeunit 4035 "Wizard Integration"
 {
@@ -55,8 +51,7 @@ codeunit 4035 "Wizard Integration"
         Handled := true;
     end;
 
-    // This is after OnMigrationCompleted. OnMigrationCompleted fires when opening the Data Migration Overview page so removed that subscriber
-    [EventSubscriber(ObjectType::Codeunit, 1798, 'OnCreatePostMigrationData', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnCreatePostMigrationData, '', true, true)]
     local procedure OnCreatePostMigrationDataSubscriber(var DataMigrationStatus: Record "Data Migration Status"; var DataCreationFailed: Boolean)
     var
         GPConfiguration: Record "GP Configuration";
@@ -80,16 +75,17 @@ codeunit 4035 "Wizard Integration"
         if DataMigrationStatus.Status = DataMigrationStatus.Status::Completed then
             UnRegisterGPDataMigrator();
 
-        Codeunit.Run(571);
+        Codeunit.Run(Codeunit::"Categ. Generate Acc. Schedules");
         if GPConfiguration.Get() then
             if GPConfiguration."Updated GL Setup" then begin
                 Flag := true;
                 HelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
             end;
+
+        HelperFunctions.PostGLTransactions();
     end;
 
-    // This is after OnMigrationCompleted. OnMigrationCompleted fires when opening the Data Migration Overview page so removed that subscriber
-    [EventSubscriber(ObjectType::Codeunit, 1798, 'OnAfterMigrationFinished', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnAfterMigrationFinished, '', true, true)]
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
@@ -98,7 +94,6 @@ codeunit 4035 "Wizard Integration"
         if not HybridGPWizard.GetGPMigrationEnabled() then
             exit;
 
-        HelperFunctions.PostGLTransactions();
         HelperFunctions.SetProcessesRunning(false);
 
         if GPCompanyAdditionalSettings.GetMigrateHistory() then

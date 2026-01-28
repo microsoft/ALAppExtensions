@@ -187,6 +187,24 @@ page 40063 "Cloud Migration Management"
                                 end;
                             }
                         }
+                        group(MigrationValidationErrors)
+                        {
+                            ShowCaption = false;
+
+                            field("Validation Errors"; ValidationErrors)
+                            {
+                                ApplicationArea = All;
+                                Caption = 'Validation Errors';
+                                Style = Unfavorable;
+                                StyleExpr = (ValidationErrors > 0);
+                                ToolTip = 'Indicates the total number of failed post migration validation tests, for all migrated companies.';
+
+                                trigger OnDrillDown()
+                                begin
+                                    Page.Run(Page::"Migration Validation Errors");
+                                end;
+                            }
+                        }
                     }
                 }
             }
@@ -733,6 +751,7 @@ page 40063 "Cloud Migration Management"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        MigrationValidationError: Record "Migration Validation Error";
         TempHybridReplicationDetail: Record "Hybrid Replication Detail" temporary;
         HybridReplicationStatistics: Codeunit "Hybrid Replication Statistics";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
@@ -756,6 +775,8 @@ page 40063 "Cloud Migration Management"
             HybridReplicationSummary.CalcFields("Companies Not Initialized");
             NotInitializedCompaniesCount := HybridReplicationSummary."Companies Not Initialized";
         end;
+
+        ValidationErrors := MigrationValidationError.Count();
     end;
 
     local procedure UpdateControlProperties()
@@ -987,4 +1008,5 @@ page 40063 "Cloud Migration Management"
         CustomTablesEnabled: Boolean;
         LastRefresh: DateTime;
         RecordLinkBufferNotEmpty: Boolean;
+        ValidationErrors: Integer;
 }

@@ -1,4 +1,5 @@
 namespace Microsoft.DataMigration.GP;
+using Microsoft.DataMigration;
 
 page 40043 "GP Upgrade Settings"
 {
@@ -12,6 +13,43 @@ page 40043 "GP Upgrade Settings"
     {
         area(Content)
         {
+            group(AutomaticValidation)
+            {
+                Caption = 'Automatic Validation';
+
+                field(GPAutomaticValidation; GPAutoValidation)
+                {
+                    ApplicationArea = All;
+                    Caption = 'GP';
+                    ToolTip = 'Specifies whether automatic validation is enabled for the primary GP migration.';
+
+                    trigger OnValidate()
+                    begin
+                        if not GPAutoValidation then
+                            GPValidationErrorsShouldFailMigration := false;
+
+                        UpdateValidatorConfig();
+                    end;
+                }
+            }
+            group(ValidationErrorHandling)
+            {
+                Caption = 'Validation Errors Should Fail Migration';
+
+                field(GPValidationErrorHandling; GPValidationErrorsShouldFailMigration)
+                {
+                    ApplicationArea = All;
+                    Caption = 'GP';
+                    ToolTip = 'Specifies whether GP validation errors should fail the migration. Only applies when automatic validation is enabled.';
+
+                    trigger OnValidate()
+                    begin
+                        GPAutoValidation := GPValidationErrorsShouldFailMigration;
+                        UpdateValidatorConfig();
+                    end;
+                }
+            }
+
             group(ErrorHandling)
             {
                 Caption = 'Error Handling';
@@ -49,7 +87,31 @@ page 40043 "GP Upgrade Settings"
     }
 
     trigger OnOpenPage()
+    var
+        ValidationSuite: Record "Validation Suite";
+        GPMigrtionValidator: Codeunit "GP Migration Validator";
     begin
+        if ValidationSuite.Get(GPMigrtionValidator.GetValidationSuiteId()) then begin
+            GPAutoValidation := ValidationSuite.Automatic;
+            GPValidationErrorsShouldFailMigration := ValidationSuite."Errors should fail migration";
+        end;
+
         Rec.GetonInsertGPUpgradeSettings(Rec);
     end;
+
+    local procedure UpdateValidatorConfig()
+    var
+        ValidationSuite: Record "Validation Suite";
+        GPMigrtionValidator: Codeunit "GP Migration Validator";
+    begin
+        if ValidationSuite.Get(GPMigrtionValidator.GetValidationSuiteId()) then begin
+            ValidationSuite.Validate(Automatic, GPAutoValidation);
+            ValidationSuite.Validate("Errors should fail migration", GPValidationErrorsShouldFailMigration);
+            ValidationSuite.Modify(true);
+        end;
+    end;
+
+    var
+        GPAutoValidation: Boolean;
+        GPValidationErrorsShouldFailMigration: Boolean;
 }
