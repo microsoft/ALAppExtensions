@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Purchases.Vendor;
 
 codeunit 10516 "Create Vendor Template US"
 {

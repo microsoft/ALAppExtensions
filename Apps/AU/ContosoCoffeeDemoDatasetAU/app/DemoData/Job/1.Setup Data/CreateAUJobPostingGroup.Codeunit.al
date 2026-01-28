@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Job;
 
-using Microsoft.Projects.Project.Job;
-using Microsoft.DemoData.Jobs;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Jobs;
+using Microsoft.Projects.Project.Job;
 
 codeunit 17157 "Create AU Job Posting Group"
 {

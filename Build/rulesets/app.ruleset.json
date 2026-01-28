@@ -23,6 +23,11 @@
       "action": "Warning"
     },
     {
+      "id": "AL0897",
+      "action": "Error",
+      "justification": "Marking it as error temporarily to ensure subsequent PRs have using statements in sorted order to unblock the merging of BCApps PR (to remove the exception for AL0897). Will be reverted once the exception for AL0897 is removed from BCApps."
+    },
+    {
       "id": "AL0432",
       "action": "Warning",
       "justification": "Element is marked for removal."

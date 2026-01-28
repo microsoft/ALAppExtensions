@@ -28,8 +28,8 @@ using Microsoft.Utilities;
 using System.EMail;
 using System.Globalization;
 using System.Security.User;
-using System.Utilities;
 using System.Text;
+using System.Utilities;
 
 report 31018 "Sales - Invoice with Adv. CZZ"
 {

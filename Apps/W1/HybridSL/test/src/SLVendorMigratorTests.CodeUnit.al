@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-using System.Integration;
 using Microsoft.Foundation.Address;
-using System.TestLibraries.Utilities;
 using Microsoft.Purchases.Vendor;
+using System.Integration;
+using System.TestLibraries.Utilities;
 
 codeunit 147603 "SL Vendor Migrator Tests"
 {

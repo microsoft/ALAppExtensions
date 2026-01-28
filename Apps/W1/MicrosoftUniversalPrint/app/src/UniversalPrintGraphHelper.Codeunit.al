@@ -5,8 +5,8 @@
 namespace System.Device.UniversalPrint;
 
 using System;
-using System.Device;
 using System.Azure.Identity;
+using System.Device;
 using System.Integration;
 using System.Utilities;
 

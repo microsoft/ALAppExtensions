@@ -367,10 +367,9 @@ table 4065 "GPRMHist"
         {
             Clustered = false;
         }
+        key(Key3; DEX_ROW_ID)
+        {
+            Clustered = false;
+        }
     }
-
-    fieldgroups
-    {
-    }
-
 }

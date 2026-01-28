@@ -302,7 +302,7 @@ codeunit 18001 "GST Base Validation"
             Rec."GST Base Amount" := (Rec."GST Base Amount") * SignFactor;
             Rec."GST Amount" := (Rec."GST Amount") * SignFactor;
         end else
-            if Rec."GST Base Amount" > 0 then begin
+            if (Rec."GST Base Amount" > 0) or (Rec."Journal Entry") then begin
                 Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
                 Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
             end
@@ -353,8 +353,9 @@ codeunit 18001 "GST Base Validation"
 
         Rec."Executed Use Case ID" := GSTPostingManagement.GetUseCaseID();
         if Rec."Source Type" = Rec."Source Type"::Vendor then
-            if GSTPostingManagement.GetPaytoVendorNo() <> '' then
-                Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
+            if Rec."Source No." = '' then
+                if GSTPostingManagement.GetPaytoVendorNo() <> '' then
+                    Rec."Source No." := GSTPostingManagement.GetPaytoVendorNo();
 
         if GSTPostingManagement.GetBuyerSellerRegNo() <> '' then
             Rec."Buyer/Seller Reg. No." := GSTPostingManagement.GetBuyerSellerRegNo();

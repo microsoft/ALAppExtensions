@@ -7,12 +7,12 @@ namespace Microsoft.Finance.GST.Subcontracting;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Item;
-using Microsoft.Warehouse.Structure;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Manufacturing.Document;
 using Microsoft.Purchases.Document;
+using Microsoft.Warehouse.Structure;
 
 table 18479 "Sub Order Component List"
 {

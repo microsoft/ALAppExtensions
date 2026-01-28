@@ -1,7 +1,7 @@
 namespace Microsoft.API.V1;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
 
 query 20001 "APIV1 - Vendor Purchases"
 {

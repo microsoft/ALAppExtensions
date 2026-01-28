@@ -310,6 +310,14 @@ codeunit 18201 "GST Distribution Subcsribers"
             repeat
                 GSTDistributionLine.Init();
                 GSTDistributionLine.TransferFields(PostedGSTDistributionLine);
+
+                if GSTDistributionHeader."ISD Document Type" = GSTDistributionHeader."ISD Document Type"::"Credit Memo" then begin
+                    GSTDistributionLine."From Location Code" := GSTDistributionLine."To Location Code";
+                    GSTDistributionLine."From GSTIN No." := GSTDistributionLine."To GSTIN No.";
+                    GSTDistributionLine."To Location Code" := GSTDistributionHeader."From Location Code";
+                    GSTDistributionLine."To GSTIN No." := GSTDistributionHeader."From GSTIN No.";
+                end;
+
                 GSTDistributionLine."Distribution No." := GSTDistributionHeader."No.";
                 GSTDistributionLine."Posting Date" := GSTDistributionHeader2."Posting Date";
                 GSTDistributionLine."Distribution Amount" := 0;

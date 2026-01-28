@@ -30,7 +30,8 @@ page 31175 "Advance Letter Appl. Edit CZZ"
                         if Rec."Advance Letter No." <> '' then begin
                             TempAdvanceLetterApplication.Get(Rec."Advance Letter Type", Rec."Advance Letter No.", Rec."Document Type", Rec."Document No.");
                             Rec.CopyFrom(TempAdvanceLetterApplication);
-                        end
+                            Rec.CheckVATRegistrationNoDifference();
+                        end;
                     end;
 
                     trigger OnLookup(var Text: Text): Boolean
@@ -39,6 +40,7 @@ page 31175 "Advance Letter Appl. Edit CZZ"
 
                         if Page.RunModal(Page::"Advance Letter Application CZZ", TempAdvanceLetterApplication) = Action::LookupOK then begin
                             Rec.CopyFrom(TempAdvanceLetterApplication);
+                            Rec.CheckVATRegistrationNoDifference();
                             OnAfterOnLookupAdvanceLetterNo(Rec);
                         end;
                     end;

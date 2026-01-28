@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Documents;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using System.Security.User;
 
 pageextension 31283 "User Setup CZB" extends "User Setup"
@@ -16,12 +17,24 @@ pageextension 31283 "User Setup CZB" extends "User Setup"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies whether the payment order processing is allowed only for bank accounts setted up in the lines.';
+                Visible = IsUserChecksAllowed;
             }
             field("Check Bank Statements CZB"; Rec."Check Bank Statements CZB")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies whether the bank statements processing is allowed only for bank accounts setted up in the lines.';
+                Visible = IsUserChecksAllowed;
             }
         }
     }
+
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        IsUserChecksAllowed: Boolean;
+
+    trigger OnOpenPage()
+    begin
+        GeneralLedgerSetup.Get();
+        IsUserChecksAllowed := GeneralLedgerSetup."User Checks Allowed CZL";
+    end;
 }

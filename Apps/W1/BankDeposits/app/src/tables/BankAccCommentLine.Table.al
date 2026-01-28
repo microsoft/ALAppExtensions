@@ -1,7 +1,7 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Bank.Reconciliation;
 using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
 using Microsoft.Bank.Statement;
 
 table 1693 "Bank Acc. Comment Line"

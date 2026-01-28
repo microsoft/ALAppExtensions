@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Setup;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Sales.Setup;
 
 codeunit 12211 "Create Sales Recv. Setup IT"
 {

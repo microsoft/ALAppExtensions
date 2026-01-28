@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Foundation;
 
 using Microsoft.DemoTool.Helpers;
-using Microsoft.Foundation.NoSeries;
 using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 19020 "Create IN No. Series"
 {

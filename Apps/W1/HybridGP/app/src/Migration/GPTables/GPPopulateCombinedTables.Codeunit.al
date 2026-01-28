@@ -1,9 +1,9 @@
 namespace Microsoft.DataMigration.GP;
 
 using Microsoft.CRM.Outlook;
-using Microsoft.Inventory.Item;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.DataMigration;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item;
 
 codeunit 40125 "GP Populate Combined Tables"
 {

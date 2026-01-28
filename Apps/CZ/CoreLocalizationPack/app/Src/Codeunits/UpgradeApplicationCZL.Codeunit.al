@@ -183,7 +183,10 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeVATReport();
         UpgradeSetEnableNonDeductibleVATCZ();
         UpgradeUseW1RegistrationNumberFromSalesDoc();
+#if CLEAN28        
         UpgradeUseVATReturnPeriodInsteadOfVATPeriod();
+#endif
+        UpgradeOriginalVATAmountsACYInVATEntries();
     end;
 
     local procedure UpgradeReplaceVATDateCZL()
@@ -642,6 +645,25 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag());
     end;
 
+    local procedure UpgradeOriginalVATAmountsACYInVATEntries()
+    var
+        VATEntry: Record "VAT Entry";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsACYInVATEntriesUpgradeTag()) then
+            exit;
+
+        VATEntry.SetFilter("Non-Deductible VAT %", '<>%1', 0);
+        VATEntry.SetLoadFields("Entry No.", "Additional-Currency Base", "Additional-Currency Amount", "Non-Deductible VAT Base ACY", "Non-Deductible VAT Amount ACY");
+        if VATEntry.FindSet() then
+            repeat
+                VATEntry."Original VAT Base ACY CZL" := VATEntry.CalcOriginalVATBaseACYCZL();
+                VATEntry."Original VAT Amount ACY CZL" := VATEntry.CalcOriginalVATAmountACYCZL();
+                if VATEntry.Modify() then;
+            until VATEntry.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsACYInVATEntriesUpgradeTag());
+    end;
+
     local procedure UpgradeEnableNonDeductibleVATCZ()
     var
         VATEntry: Record "VAT Entry";
@@ -762,6 +784,7 @@ codeunit 31017 "Upgrade Application CZL"
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberFromSalesDocUpgradeTag());
     end;
+#if CLEAN28
 
     local procedure UpgradeUseVATReturnPeriodInsteadOfVATPeriod()
     var
@@ -821,6 +844,7 @@ codeunit 31017 "Upgrade Application CZL"
             exit(0D);
         exit(CalcDate('<+25D>', EndDate));
     end;
+#endif
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10];
                                                         ReportID: Integer)

@@ -6,5 +6,6 @@ namespace Microsoft.Finance.AuditFileExport;
 
 enumextension 13695 "Standard Account Type SAF-T DK" extends "Standard Account Type"
 {
+    value(13689; "Standard Account 2025") { }
     value(13695; "Four Digit Standard Account") { }
 }

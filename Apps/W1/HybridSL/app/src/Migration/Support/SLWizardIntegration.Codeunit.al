@@ -5,15 +5,15 @@
 
 namespace Microsoft.DataMigration.SL;
 
-using System.Integration;
 using Microsoft.DataMigration;
-using System.Threading;
-using Microsoft.Inventory.Item;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
-using System.Security.User;
 using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Integration;
+using System.Security.User;
+using System.Threading;
 
 codeunit 47005 "SL Wizard Integration"
 {

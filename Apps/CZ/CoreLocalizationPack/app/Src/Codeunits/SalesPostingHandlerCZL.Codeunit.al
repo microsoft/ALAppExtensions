@@ -37,7 +37,7 @@ codeunit 31038 "Sales Posting Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLinesOnAfterGenJnlLinePost', '', false, false)]
     local procedure SalesPostVATDelayOnPostLinesOnAfterGenJnlLinePost(var GenJnlLine: Record "Gen. Journal Line"; TempInvoicePostingBuffer: Record "Invoice Posting Buffer"; SalesHeader: Record "Sales Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
-        VATCurrFactor: Decimal;
+        RecalcFactor: Decimal;
     begin
         if (SalesHeader."Currency Code" <> '') and (SalesHeader."Currency Factor" <> SalesHeader."VAT Currency Factor CZL") and
            ((TempInvoicePostingBuffer."VAT Calculation Type" = TempInvoicePostingBuffer."VAT Calculation Type"::"Reverse Charge VAT") or
@@ -51,42 +51,38 @@ codeunit 31038 "Sales Posting Handler CZL"
             GenJnlLineDocNo := GenJnlLine."Document No.";
             GenJnlLineExtDocNo := GenJnlLine."External Document No.";
 
-            VATCurrFactor := 1;
+            RecalcFactor := 1;
             if SalesHeader."VAT Currency Factor CZL" <> 0 then
-                VATCurrFactor := SalesHeader."Currency Factor" / SalesHeader."VAT Currency Factor CZL";
+                RecalcFactor := SalesHeader."Currency Factor" / SalesHeader."VAT Currency Factor CZL";
 
-            PostVATDelay(SalesHeader, TempInvoicePostingBuffer, -1, 1, true, GenJnlPostLine);
-            PostVATDelay(SalesHeader, TempInvoicePostingBuffer, 1, VATCurrFactor, false, GenJnlPostLine);
+            PostVATDelay(SalesHeader, TempInvoicePostingBuffer, -1, 1, SalesHeader."Currency Factor", true, GenJnlPostLine);
+            PostVATDelay(SalesHeader, TempInvoicePostingBuffer, 1, RecalcFactor, SalesHeader."VAT Currency Factor CZL", false, GenJnlPostLine);
             if TempInvoicePostingBuffer."VAT Calculation Type" = TempInvoicePostingBuffer."VAT Calculation Type"::"Normal VAT" then begin
-                PostVATDelayDifference(SalesHeader, TempInvoicePostingBuffer, GlobalAmountType::Base, VATCurrFactor, GenJnlPostLine);
-                PostVATDelayDifference(SalesHeader, TempInvoicePostingBuffer, GlobalAmountType::VAT, VATCurrFactor, GenJnlPostLine);
+                PostVATDelayDifference(SalesHeader, TempInvoicePostingBuffer, GlobalAmountType::Base, RecalcFactor, GenJnlPostLine);
+                PostVATDelayDifference(SalesHeader, TempInvoicePostingBuffer, GlobalAmountType::VAT, RecalcFactor, GenJnlPostLine);
             end;
         end;
     end;
 
-    local procedure PostVATDelay(SalesHeader: Record "Sales Header"; TempInvoicePostingBuffer: Record "Invoice Posting Buffer"; Sign: Integer; CurrFactor: Decimal; IsCorrection: Boolean; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    local procedure PostVATDelay(SalesHeader: Record "Sales Header"; TempInvoicePostingBuffer: Record "Invoice Posting Buffer"; Sign: Integer; RecalcFactor: Decimal; CurrFactor: Decimal; IsCorrection: Boolean; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
         GenJournalLine: Record "Gen. Journal Line";
     begin
         GetCurrency(SalesHeader."Currency Code");
-        if CurrFactor = 0 then
-            CurrFactor := 1;
+        if RecalcFactor = 0 then
+            RecalcFactor := 1;
 
         InitGenJournalLine(SalesHeader, TempInvoicePostingBuffer, GenJournalLine);
 
+        GenJournalLine."Currency Factor" := CurrFactor;
         GenJournalLine.Quantity := Sign * GenJournalLine.Quantity;
         GenJournalLine.Amount :=
-            Sign * Round(TempInvoicePostingBuffer.Amount * CurrFactor, Currency."Amount Rounding Precision");
+            Sign * Round(TempInvoicePostingBuffer.Amount * RecalcFactor, Currency."Amount Rounding Precision");
         GenJournalLine."VAT Amount" :=
-            Sign * Round(TempInvoicePostingBuffer."VAT Amount" * CurrFactor, Currency."Amount Rounding Precision");
+            Sign * Round(TempInvoicePostingBuffer."VAT Amount" * RecalcFactor, Currency."Amount Rounding Precision");
         GenJournalLine."VAT Base Amount" := GenJournalLine.Amount;
-        GenJournalLine."Source Currency Amount" :=
-            Sign * Round(TempInvoicePostingBuffer."Amount (ACY)" * CurrFactor, Currency."Amount Rounding Precision");
-        GenJournalLine."Source Curr. VAT Amount" :=
-            Sign * Round(TempInvoicePostingBuffer."VAT Amount (ACY)" * CurrFactor, Currency."Amount Rounding Precision");
-        GenJournalLine."Source Curr. VAT Base Amount" := GenJournalLine."Source Currency Amount";
         GenJournalLine."VAT Difference" :=
-            Sign * Round(TempInvoicePostingBuffer."VAT Difference" * CurrFactor, Currency."Amount Rounding Precision");
+            Sign * Round(TempInvoicePostingBuffer."VAT Difference" * RecalcFactor, Currency."Amount Rounding Precision");
 
         GenJournalLine.Correction := TempInvoicePostingBuffer."Correction CZL" xor IsCorrection;
         GenJournalLine."VAT Bus. Posting Group" := TempInvoicePostingBuffer."VAT Bus. Posting Group";
@@ -97,26 +93,26 @@ codeunit 31038 "Sales Posting Handler CZL"
         GenJnlPostLine.RunWithCheck(GenJournalLine);
     end;
 
-    local procedure PostVATDelayDifference(SalesHeader: Record "Sales Header"; TempInvoicePostingBuffer: Record "Invoice Posting Buffer"; AmountType: Option Base,VAT; CurrFactor: Decimal; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    local procedure PostVATDelayDifference(SalesHeader: Record "Sales Header"; TempInvoicePostingBuffer: Record "Invoice Posting Buffer"; AmountType: Option Base,VAT; RecalcFactor: Decimal; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
         GenJournalLine: Record "Gen. Journal Line";
         Amount: Decimal;
         AccountNo: Code[20];
     begin
         GetCurrency(SalesHeader."Currency Code");
-        if CurrFactor = 0 then
-            CurrFactor := 1;
+        if RecalcFactor = 0 then
+            RecalcFactor := 1;
 
         case AmountType of
             AmountType::Base:
                 Amount :=
                     TempInvoicePostingBuffer.Amount -
-                    Round(TempInvoicePostingBuffer.Amount * CurrFactor, Currency."Amount Rounding Precision");
+                    Round(TempInvoicePostingBuffer.Amount * RecalcFactor, Currency."Amount Rounding Precision");
             AmountType::VAT:
                 begin
                     Amount :=
                         TempInvoicePostingBuffer."VAT Amount" -
-                        Round(TempInvoicePostingBuffer."VAT Amount" * CurrFactor, Currency."Amount Rounding Precision");
+                        Round(TempInvoicePostingBuffer."VAT Amount" * RecalcFactor, Currency."Amount Rounding Precision");
                     if Amount < 0 then
                         AccountNo := Currency."Realized Gains Acc."
                     else

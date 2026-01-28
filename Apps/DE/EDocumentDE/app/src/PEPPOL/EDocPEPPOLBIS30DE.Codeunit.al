@@ -1,13 +1,15 @@
 namespace Microsoft.eServices.EDocument.IO.Peppol;
 
 using Microsoft.eServices.EDocument;
-using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
-using System.Utilities;
-using Microsoft.Sales.Peppol;
 using Microsoft.eServices.EDocument.Formats;
-using Microsoft.Sales.Document;
 using Microsoft.Purchases.Document;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Peppol;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using System.Utilities;
 
 codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 {
@@ -143,6 +145,16 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
             exit;
 
         if not EDocumentService."Buyer Reference Mandatory" then
+            exit;
+
+        if not (SourceDocumentHeader.Number in
+            [Database::"Sales Header",
+            Database::"Sales Invoice Header",
+            Database::"Sales Cr.Memo Header",
+            Database::"Service Header",
+            Database::"Service Invoice Header",
+            Database::"Service Cr.Memo Header"])
+        then
             exit;
 
         case EDocumentService."Buyer Reference" of

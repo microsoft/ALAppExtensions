@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.Company;
 using Microsoft.DemoTool;
+using Microsoft.Foundation.Company;
 
 codeunit 27018 "Create CA Company Information"
 {

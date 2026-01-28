@@ -5,6 +5,7 @@
 namespace Microsoft.Service.History;
 
 using Microsoft.Bank.BankAccount;
+using Microsoft.CRM.Team;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
@@ -17,15 +18,14 @@ using Microsoft.HumanResources.Employee;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Reminder;
-using Microsoft.Service.Setup;
 using Microsoft.Sales.Setup;
+using Microsoft.Service.Setup;
+using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
-using System.Utilities;
-using Microsoft.CRM.Team;
-using Microsoft.Utilities;
 using System.Text;
+using System.Utilities;
 
 report 31197 "Service Invoice CZL"
 {

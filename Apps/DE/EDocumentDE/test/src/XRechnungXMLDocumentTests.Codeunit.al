@@ -3,21 +3,23 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
-using Microsoft.Foundation.Company;
-using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Document;
-using System.Utilities;
-using System.IO;
-using Microsoft.Foundation.UOM;
-using Microsoft.Foundation.Address;
+
 using Microsoft.eServices.EDocument;
-using Microsoft.Sales.Document;
-using Microsoft.Finance.Currency;
 using Microsoft.eServices.EDocument.Integration;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using System.IO;
+using System.Utilities;
 
 codeunit 13918 "XRechnung XML Document Tests"
 {
@@ -110,6 +112,28 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         // [THEN] XRechnung Electronic Document is created with buyer reference XX
         VerifyBuyerReference(SalesInvoiceHeader."Your Reference", TempXMLBuffer, '/ubl:Invoice');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales invoice for XRechnung format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLine("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
     end;
 
     [Test]
@@ -302,6 +326,51 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
         VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
     end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyPDFEmbeddedToXML()
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice creates electronic document in XRechnung format with embedded PDF
+        Initialize();
+
+        // [GIVEN] Enable Embedding of PDF in export
+        SetEdocumentServiceEmbedPDFInExport(true);
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] PDF is embedded in the XML
+        VerifyInvoicePDFEmbeddedToXML(TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifySellerAddressFromRespCenter();
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice creates electronic document in XRechnung format with seller info from responsibility center
+        Initialize();
+
+        // [GIVEN] Responsibility Center
+        CreateResponsibilityCenter(ResponsibilityCenter);
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithRespCenter("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, ResponsibilityCenter.Code));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
+        VerifyAccountingSupplierParty(TempXMLBuffer, '/ubl:Invoice/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
+    end;
     #endregion
 
     #region SalesCreditMemo
@@ -368,6 +437,28 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         // [THEN] XRechnung Electronic Document is created with buyer reference XX
         VerifyBuyerReference(SalesCrMemoHeader."Your Reference", TempXMLBuffer, '/ns0:CreditNote');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales credit memo for XRechnung format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLine("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
     end;
 
     [Test]
@@ -541,6 +632,51 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyCrMemoWithInvDiscount(SalesCrMemoHeader, TempXMLBuffer);
         VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader, TempXMLBuffer);
     end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyPDFEmbeddedToXML()
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales cr. memo creates electronic document in XRechnung format with embedded PDF
+        Initialize();
+
+        // [GIVEN] Enable Embedding of PDF in export
+        SetEdocumentServiceEmbedPDFInExport(true);
+
+        // [GIVEN] Create and Post Sales Cr. Memo.
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] PDF is embedded in the XML
+        VerifyCrMemoPDFEmbeddedToXML(TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifySellerAddressFromRespCenter();
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales credit memo creates electronic document in XRechnung format with seller info from responsibility center
+        Initialize();
+
+        // [GIVEN] Responsibility Center
+        CreateResponsibilityCenter(ResponsibilityCenter);
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithRespCenter("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, ResponsibilityCenter.Code));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
+        VerifyAccountingSupplierParty(TempXMLBuffer, '/ns0:CreditNote/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
+    end;
     #endregion
 
     #region PurchaseInvoice
@@ -607,6 +743,14 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostSalesDocumentWithRespCenter(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; RespCenterCode: Code[10]): Code[20];
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithLine(DocumentType, LineType, false, RespCenterCode));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
     local procedure CreatePurchDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
     var
         PurchaseLine: Record "Purchase Line";
@@ -628,11 +772,20 @@ codeunit 13918 "XRechnung XML Document Tests"
         PurchaseHeader.Modify(true);
     end;
 
-    local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
+    local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20]
+    begin
+        exit(CreateSalesDocumentWithLine(DocumentType, LineType, InvoiceDiscount, ''));
+    end;
+
+    local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean; RespCenterCode: Code[20]): Code[20]
     var
         SalesHeader: Record "Sales Header";
     begin
         CreateSalesHeader(SalesHeader, DocumentType);
+        if RespCenterCode <> '' then begin
+            SalesHeader.Validate("Responsibility Center", RespCenterCode);
+            SalesHeader.Modify(true);
+        end;
         CreateSalesLine(SalesHeader, LineType, false);
 
         if InvoiceDiscount then
@@ -708,6 +861,20 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(Customer."No.")
     end;
 
+    local procedure CreateResponsibilityCenter(var ResponsibilityCenter: Record "Responsibility Center")
+    begin
+        ResponsibilityCenter.Init();
+        ResponsibilityCenter.Validate(Code, LibraryUtility.GenerateRandomCode(ResponsibilityCenter.FieldNo(Code), DATABASE::"Responsibility Center"));
+        ResponsibilityCenter.Validate(Name, ResponsibilityCenter.Code);  // Validating Code as Name because value is not important.
+        ResponsibilityCenter.Insert(true);
+        ResponsibilityCenter.Address := CopyStr(LibraryUtility.GenerateRandomText(10), 1, MaxStrLen(ResponsibilityCenter.Address));
+        ResponsibilityCenter."Address 2" := CopyStr(LibraryUtility.GenerateRandomText(10), 1, MaxStrLen(ResponsibilityCenter."Address 2"));
+        ResponsibilityCenter."Post Code" := CopyStr(LibraryUtility.GenerateRandomText(10), 1, MaxStrLen(ResponsibilityCenter."Post Code"));
+        ResponsibilityCenter.City := CopyStr(LibraryUtility.GenerateRandomText(10), 1, MaxStrLen(ResponsibilityCenter.City));
+        ResponsibilityCenter."Country/Region Code" := CompanyInformation."Country/Region Code";
+        ResponsibilityCenter.Modify(true);
+    end;
+
     local procedure CreateSalesLine(SalesHeader: Record "Sales Header"; LineType: Enum "Sales Line Type"; LineDiscount: Boolean);
     var
         SalesLine: Record "Sales Line";
@@ -724,6 +891,14 @@ codeunit 13918 "XRechnung XML Document Tests"
         if LineDiscount then
             SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 5));
         SalesLine.Modify(true);
+    end;
+
+    local procedure CheckSalesHeader(SalesHeader: Record "Sales Header")
+    var
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(SalesHeader);
+        ExportXRechnungFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
     end;
 
     local procedure ExportInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -796,16 +971,26 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.AreEqual(BuyerReference, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
-    local procedure VerifyAccountingSupplierParty(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
+    local procedure VerifyAccountingSupplierParty(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
+    begin
+        VerifyAccountingSupplierParty(TempXMLBuffer, DocumentTok, CompanyInformation.Address, CompanyInformation."Post Code", CompanyInformation.City);
+    end;
+
+    local procedure VerifyAccountingSupplierParty(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text; ResponsibilityCenter: Record "Responsibility Center")
+    begin
+        VerifyAccountingSupplierParty(TempXMLBuffer, DocumentTok, ResponsibilityCenter.Address, ResponsibilityCenter."Post Code", ResponsibilityCenter.City);
+    end;
+
+    local procedure VerifyAccountingSupplierParty(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text; Address: Text; PostCode: Code[20]; City: Text[30])
     var
         Path: Text;
     begin
         Path := DocumentTok + '/cac:PostalAddress/cbc:StreetName';
-        Assert.AreEqual(CompanyInformation.Address, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(Address, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:PostalAddress/cbc:CityName';
-        Assert.AreEqual(CompanyInformation.City, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(City, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:PostalAddress/cbc:PostalZone';
-        Assert.AreEqual(CompanyInformation."Post Code", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(PostCode, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
 
         Path := DocumentTok + '/cac:PartyTaxScheme/cbc:CompanyID';
         Assert.AreEqual(GetVATRegistrationNo(CompanyInformation."VAT Registration No.", CompanyInformation."Country/Region Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
@@ -1079,6 +1264,18 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.AreEqual(FormatDecimal(SalesCrMemoHeader."Invoice Discount Amount" + SalesCrMemoHeader.Amount), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
+    local procedure VerifyInvoicePDFEmbeddedToXML(var TempXMLBuffer: Record "XML Buffer" temporary)
+    begin
+        TempXMLBuffer.SetRange(Path, '/ubl:Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject');
+        Assert.RecordIsNotEmpty(TempXMLBuffer, '');
+    end;
+
+    local procedure VerifyCrMemoPDFEmbeddedToXML(var TempXMLBuffer: Record "XML Buffer" temporary)
+    begin
+        TempXMLBuffer.SetRange(Path, '/ns0:CreditNote/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject');
+        Assert.RecordIsNotEmpty(TempXMLBuffer, '');
+    end;
+
     local procedure GetCurrencyCode(CurrencyCode: Code[10]): Code[10];
     begin
         if CurrencyCode <> '' then
@@ -1087,8 +1284,15 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(GeneralLedgerSetup."LCY Code");
     end;
 
+    local procedure SetEdocumentServiceEmbedPDFInExport(NewEmbedPDFInExport: Boolean);
+    begin
+        EDocumentService."Embed PDF in export" := NewEmbedPDFInExport;
+        EDocumentService.Modify();
+    end;
+
     local procedure SetEdocumentServiceBuyerReference(EInvoiceBuyerReference: Enum "E-Document Buyer Reference");
     begin
+        EDocumentService."Buyer Reference Mandatory" := true;
         EDocumentService."Buyer Reference" := EInvoiceBuyerReference;
         EDocumentService.Modify();
     end;
@@ -1253,4 +1457,3 @@ codeunit 13918 "XRechnung XML Document Tests"
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"XRechnung XML Document Tests");
     end;
 }
-

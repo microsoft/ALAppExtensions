@@ -98,7 +98,11 @@ codeunit 139500 "Test UK Postcode"
     [Scope('OnPrem')]
     procedure TestFieldsAreRetrievedFromPostcodeSearchPage()
     var
+#if not CLEAN28
         PostcodeSearch: Page "Postcode Search";
+#else
+        PostcodeSearch: Page "Postcode Search GB";
+#endif
         Postcode: Text;
         DeliveryPoint: Text;
     begin
@@ -125,7 +129,11 @@ codeunit 139500 "Test UK Postcode"
     [Scope('OnPrem')]
     procedure TestPostcodeValuesAreSetForPostcodeSearchPageWhenOpened()
     var
+#if not CLEAN28
         PostcodeSearch: Page "Postcode Search";
+#else
+        PostcodeSearch: Page "Postcode Search GB";
+#endif
     begin
         // Check that values are correctly passed into a page
         // [GIVEN]
@@ -166,7 +174,11 @@ codeunit 139500 "Test UK Postcode"
     [Scope('OnPrem')]
     procedure TestNotificationDontShowAgain()
     var
+#if not CLEAN28
         PostcodeNotificationMemory: Record "Postcode Notification Memory";
+#else
+        PostcodeNotificationMemory: Record "Postcode Notif. Memory";
+#endif
         PostcodeBusinessLogic: Codeunit "Postcode Business Logic GB";
         DummyNotification: Notification;
     begin
@@ -188,7 +200,11 @@ codeunit 139500 "Test UK Postcode"
     [Scope('OnPrem')]
     procedure TestNotificationConfigure()
     var
+#if not CLEAN28
         PostcodeNotificationMemory: Record "Postcode Notification Memory";
+#else
+        PostcodeNotificationMemory: Record "Postcode Notif. Memory";
+#endif
         PostcodeBusinessLogic: Codeunit "Postcode Business Logic GB";
         DummyNotification: Notification;
     begin
@@ -263,14 +279,22 @@ codeunit 139500 "Test UK Postcode"
 
     [ModalPageHandler]
     [Scope('OnPrem')]
+#if not CLEAN28
     procedure PostcodeSearchInputCancelPageHandler(var PostcodeSearchPage: TestPage "Postcode Search")
+#else
+    procedure PostcodeSearchInputCancelPageHandler(var PostcodeSearchPage: TestPage "Postcode Search GB")
+#endif
     begin
         PostcodeSearchPage.Cancel().Invoke();
     end;
 
     [ModalPageHandler]
     [Scope('OnPrem')]
+#if not CLEAN28
     procedure PostcodeSearchInputEnterPostcodeAndOKPageHandler(var PostcodeSearchPage: TestPage "Postcode Search")
+#else
+    procedure PostcodeSearchInputEnterPostcodeAndOKPageHandler(var PostcodeSearchPage: TestPage "Postcode Search GB")
+#endif
     begin
         PostcodeSearchPage.PostcodeField.Value(LibraryVariableStorage.DequeueText());
         PostcodeSearchPage.DeliveryPoint.Value(LibraryVariableStorage.DequeueText());
@@ -288,7 +312,11 @@ codeunit 139500 "Test UK Postcode"
 
     [ModalPageHandler]
     [Scope('OnPrem')]
+#if not CLEAN28
     procedure PostcodeIsAutocompletedOnPostcodeSearchIfProvided(var PostcodeSearch: TestPage "Postcode Search")
+#else
+    procedure PostcodeIsAutocompletedOnPostcodeSearchIfProvided(var PostcodeSearch: TestPage "Postcode Search GB")
+#endif
     begin
         Assert.AreEqual('POSTCODE', PostcodeSearch.PostcodeField.Value, 'Postcode is not correctly passed into a page.');
         Assert.AreEqual('DELIVERYPOINT', PostcodeSearch.DeliveryPoint.Value, 'Delivery point is not correctly passed into a page.');
@@ -296,7 +324,11 @@ codeunit 139500 "Test UK Postcode"
 
     [PageHandler]
     [Scope('OnPrem')]
+#if not CLEAN28
     procedure PostcodeConfigurationPageHandler(var PostcodeConfigurationPage: TestPage "Postcode Configuration Page")
+#else
+    procedure PostcodeConfigurationPageHandler(var PostcodeConfigurationPage: TestPage "Postcode Configuration Page GB")
+#endif
     begin
         PostcodeConfigurationPage.Cancel().Invoke();
     end;

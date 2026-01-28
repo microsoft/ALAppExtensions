@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 10827 "Create ES General Ledger Setup"
 {

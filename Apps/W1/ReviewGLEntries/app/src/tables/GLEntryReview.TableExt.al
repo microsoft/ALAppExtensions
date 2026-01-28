@@ -1,7 +1,7 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
 
-using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
 
 tableextension 22211 "G/L Entry Review" extends "G/L Entry"
 {
@@ -46,8 +46,9 @@ tableextension 22211 "G/L Entry Review" extends "G/L Entry"
         field(22218; "Amount to Review"; Decimal)
         {
             Caption = 'Amount to Review';
+            BlankZero = true;
             DataClassification = CustomerContent;
-            ToolTip = 'Specifies the amount that will be reviewed.';
+            ToolTip = 'Specifies the amount that you want to review for the entry. Leaving this field blank or setting it to zero indicates that the entire amount is to be reviewed.';
         }
         field(22219; "Review Policy"; Enum "Review Policy Type")
         {

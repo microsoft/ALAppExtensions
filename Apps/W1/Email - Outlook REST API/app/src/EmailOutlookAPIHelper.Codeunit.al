@@ -5,8 +5,8 @@
 
 namespace System.Email;
 
-using System.Environment;
 using System.DataAdministration;
+using System.Environment;
 
 codeunit 4509 "Email - Outlook API Helper"
 {
@@ -195,17 +195,6 @@ codeunit 4509 "Email - Outlook API Helper"
         exit(RecipientsJson);
     end;
 
-#if not CLEAN25
-    [NonDebuggable]
-    [Obsolete('Replaced by an overload that takes in SecretText data type for ClientSecret', '25.0')]
-    procedure GetClientIDAndSecret(var ClientId: Text; var ClientSecret: Text)
-    var
-        Secret: SecretText;
-    begin
-        GetClientIDAndSecret(ClientId, Secret);
-        ClientSecret := Secret.Unwrap();
-    end;
-#endif
 
     procedure GetClientIDAndSecret(var ClientId: Text; var ClientSecret: SecretText)
     var

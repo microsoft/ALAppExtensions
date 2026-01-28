@@ -1,13 +1,16 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.Reports;
 
-using Microsoft.FixedAssets.Ledger;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Ledger;
 
+#pragma warning disable AL0432
 reportextension 10583 "Fixed Asset - Projected Value" extends "Fixed Asset - Projected Value"
+#pragma warning restore AL0432
 {
 #if CLEAN27
     RDLCLayout = './src/ReportExtensions/FixedAssetProjectedValue.rdlc';
@@ -190,3 +193,4 @@ reportextension 10583 "Fixed Asset - Projected Value" extends "Fixed Asset - Pro
         TotalBookValue[1] := Total_BookValue[1];
     end;
 }
+#endif

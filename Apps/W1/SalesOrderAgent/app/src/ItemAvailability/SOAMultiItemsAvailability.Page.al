@@ -983,6 +983,7 @@ page 4410 "SOA Multi Items Availability"
 
         if Customer.Get(CustNo) and (Customer."Language Code" <> '') then
             exit(Customer."Language Code");
+            
         exit('');
     end;
 

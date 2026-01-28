@@ -1,9 +1,9 @@
 namespace Microsoft.DataMigration.GP;
 
 using Microsoft.DataMigration;
+using System.Environment;
 using System.Integration;
 using System.Text;
-using System.Environment;
 
 codeunit 4016 "Hybrid GP Management"
 {

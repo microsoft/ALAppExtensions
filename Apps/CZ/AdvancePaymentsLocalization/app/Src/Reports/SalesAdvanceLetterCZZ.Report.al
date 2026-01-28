@@ -16,8 +16,8 @@ using Microsoft.Utilities;
 using System.EMail;
 using System.Globalization;
 using System.Security.User;
-using System.Utilities;
 using System.Text;
+using System.Utilities;
 
 report 31014 "Sales - Advance Letter CZZ"
 {
@@ -190,6 +190,12 @@ report 31014 "Sales - Advance Letter CZZ"
             {
             }
             column(PaymentMethod; PaymentMethod.Description)
+            {
+            }
+            column(YourReference_SalesAdvanceLetterHeaderCaption; FieldCaption("Your Reference"))
+            {
+            }
+            column(YourReference_SalesAdvanceLetterHeader; "Your Reference")
             {
             }
             column(CurrencyCode_SalesAdvanceLetterHeader; "Currency Code")

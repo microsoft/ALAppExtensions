@@ -4,16 +4,16 @@
 namespace Microsoft.EServices.EDocumentConnector.B2BRouter;
 
 using Microsoft.eServices.EDocument;
-using System.Utilities;
-using Microsoft.Sales.Customer;
-using System.TestLibraries.Utilities;
-using Microsoft.Purchases.Document;
-using Microsoft.Foundation.Company;
-using Microsoft.Purchases.Vendor;
-using System.Threading;
-using Microsoft.Foundation.UOM;
-using System.Automation;
 using Microsoft.eServices.EDocument.Integration;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.UOM;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Automation;
+using System.TestLibraries.Utilities;
+using System.Threading;
+using System.Utilities;
 
 codeunit 148199 "Integration Tests"
 {

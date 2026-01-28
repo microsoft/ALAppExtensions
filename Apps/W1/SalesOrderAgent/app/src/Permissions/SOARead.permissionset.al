@@ -8,13 +8,13 @@
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using Microsoft.Inventory.Planning;
-using System.Agents;
 using Microsoft.Inventory.Transfer;
 using Microsoft.Service.Document;
 using Microsoft.Service.Item;
 using Microsoft.Warehouse.Activity;
 using Microsoft.Warehouse.Document;
 using Microsoft.Warehouse.Structure;
+using System.Agents;
 
 permissionset 4407 "SOA - Read"
 {

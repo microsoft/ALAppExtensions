@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoData.Warehousing;
+using Microsoft.Bank.DirectDebit;
+using Microsoft.Bank.Reconciliation;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Localization;
-using Microsoft.Bank.Reconciliation;
-using Microsoft.Bank.DirectDebit;
+using Microsoft.DemoData.Warehousing;
 
 codeunit 11539 "Create Imp./Exp. Protocol NL"
 {

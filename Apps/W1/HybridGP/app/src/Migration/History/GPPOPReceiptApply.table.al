@@ -272,6 +272,9 @@ table 4060 "GPPOPReceiptApply"
         key(Key2; POPRCTNM, RCPTLNNM)
         {
         }
+        key(Key3; TRXLOCTN, PCHRPTCT)
+        {
+        }
     }
 
     fieldgroups

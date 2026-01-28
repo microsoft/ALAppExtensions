@@ -7,10 +7,10 @@ namespace Microsoft.Bank.VoucherInterface;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Check;
 using Microsoft.Bank.Ledger;
-using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.TaxBase;
 
 codeunit 18931 "Gen. Jnl. Post Line Subscriber"
 {

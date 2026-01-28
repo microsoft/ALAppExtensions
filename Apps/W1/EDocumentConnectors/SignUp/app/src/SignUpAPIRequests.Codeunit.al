@@ -7,11 +7,11 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using Microsoft.EServices.EDocument;
 using Microsoft.EServices.EDocument.Service.Participant;
 using Microsoft.Foundation.Company;
+using System.Environment;
 using System.Security.Authentication;
 using System.Text;
 using System.Utilities;
 using System.Xml;
-using System.Environment;
 
 codeunit 6441 "SignUp API Requests"
 {

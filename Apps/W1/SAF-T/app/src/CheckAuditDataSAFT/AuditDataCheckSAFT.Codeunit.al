@@ -53,6 +53,7 @@ codeunit 5285 "Audit Data Check SAF-T" implements "Audit File Export Data Check"
         AuditFileExportHeader.TestField("Starting Date");
         AuditFileExportHeader.TestField("Ending Date");
         GLAccountMappingHeader.VerifyMappingIsDone(AuditFileExportHeader."G/L Account Mapping Code");
+        CheckExtendedCategoryNoLengthNotExceed256Chars(AuditFileExportHeader."G/L Account Mapping Code");
         DataCheckMgtSAFT.VerifyDimensionsHaveAnalysisCode();
         DataCheckMgtSAFT.VerifySourceCodesHasSAFTCodes();
         CompanyInformation.Get();
@@ -71,6 +72,23 @@ codeunit 5285 "Audit Data Check SAF-T" implements "Audit File Export Data Check"
             exit(Enum::"Audit Data Check Status"::Failed);
 
         DataCheckStatus := Enum::"Audit Data Check Status"::Passed;
+    end;
+
+    local procedure CheckExtendedCategoryNoLengthNotExceed256Chars(GLAccountMappingCode: Code[20])
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        StandardAccountCategory: Record "Standard Account Category";
+        ExtendedNoMaxLengthErr: Label 'The Extended No. field cannot exceed 256 characters as per the SAF-T specification.';
+    begin
+        GLAccountMappingLine.SetRange("G/L Account Mapping Code", GLAccountMappingCode);
+        GLAccountMappingLine.SetFilter("Standard Account Category No.", '<>%1', '');
+        if not GLAccountMappingLine.FindSet() then
+            exit;
+        repeat
+            StandardAccountCategory.Get(GLAccountMappingLine."Standard Account Type", GLAccountMappingLine."Standard Account Category No.");
+            if StrLen(StandardAccountCategory."Extended No.") > 256 then
+                Error(ExtendedNoMaxLengthErr);
+        until GLAccountMappingLine.Next() = 0;
     end;
 
     procedure TestRequiredFields(var RecRef: RecordRef): enum "Audit Data Check status"

@@ -1,8 +1,8 @@
 namespace Microsoft.API.V2;
 
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Integration.Graph;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Integration.Graph;
 
 page 30016 "APIV2 - Journals"
 {
@@ -17,7 +17,7 @@ page 30016 "APIV2 - Journals"
     PageType = API;
     SourceTable = "Gen. Journal Batch";
     Extensible = false;
-    AboutText = 'Exposes general journal batch data including template type, balancing account details, approval status, and VAT settings, supporting full CRUD operations for automating financial postings, accruals, and adjustments. Enables integration with payroll, expense management, and external accounting systems to streamline financial data entry and ensure accurate bookkeeping.';
+    AboutText = 'Exposes general journal batch data including template type, balancing account details, approval status, and VAT settings. Supports full CRUD operations for automating financial postings, accruals, and adjustments, enabling integration with payroll, expense management, and external accounting systems to streamline financial data entry and ensure accurate bookkeeping.';
 
     layout
     {
@@ -98,6 +98,7 @@ page 30016 "APIV2 - Journals"
         CannotFindBatchErr: Label 'The General Journal Batch with ID %1 cannot be found.', Comment = '%1 - the System ID of the general journal batch';
 
     [ServiceEnabled]
+    [Caption('Posts all journal lines in the batch to the general ledger')]
     [Scope('Cloud')]
     procedure post(var ActionContext: WebServiceActionContext)
     var

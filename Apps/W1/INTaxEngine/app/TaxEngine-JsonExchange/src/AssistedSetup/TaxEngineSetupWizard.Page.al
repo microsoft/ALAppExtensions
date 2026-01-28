@@ -120,7 +120,7 @@ page 20364 "Tax Engine Setup Wizard"
         {
             action(ActionBack)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Back';
                 Enabled = BackActionEnabled;
                 Image = PreviousRecord;
@@ -133,7 +133,7 @@ page 20364 "Tax Engine Setup Wizard"
             }
             action(ActionNext)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Next';
                 Enabled = NextActionEnabled;
                 Image = NextRecord;
@@ -146,7 +146,7 @@ page 20364 "Tax Engine Setup Wizard"
             }
             action(ExportModified)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Export Modified Use Cases';
                 Enabled = FinishActionEnabled;
                 Image = ExportFile;
@@ -157,13 +157,13 @@ page 20364 "Tax Engine Setup Wizard"
                     i: Integer;
                 begin
                     i := 0;
-                    //blank OnAction created as we have a subscriber of this action in Use Case Archival mgmt codeunit 
+                    //blank OnAction created as we have a subscriber of this action in Use Case Archival mgmt codeunit
                     //and ruleset doesn't allow  to create a action without the OnAction trigger
                 end;
             }
             action(ActionFinish)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Finish';
                 Enabled = FinishActionEnabled;
                 Image = Approve;

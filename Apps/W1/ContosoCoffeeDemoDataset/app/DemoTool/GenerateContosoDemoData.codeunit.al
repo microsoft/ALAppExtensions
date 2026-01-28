@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoTool;
 
-using System.Threading;
 using Microsoft.Utilities;
+using System.Threading;
 
 codeunit 5279 "Generate Contoso Demo Data"
 {

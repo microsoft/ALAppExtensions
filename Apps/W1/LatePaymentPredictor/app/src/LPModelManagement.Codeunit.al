@@ -1,8 +1,8 @@
 namespace Microsoft.Finance.Latepayment;
 
 using Microsoft.Sales.History;
-using System.Azure.KeyVault;
 using System.AI;
+using System.Azure.KeyVault;
 using System.Threading;
 codeunit 1951 "LP Model Management"
 {

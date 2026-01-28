@@ -4,9 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Utilities;
 using System.Environment.Configuration;
 using System.Utilities;
-using Microsoft.Utilities;
 
 tableextension 31060 "VAT Report Header CZL" extends "VAT Report Header"
 {
@@ -67,6 +68,11 @@ tableextension 31060 "VAT Report Header CZL" extends "VAT Report Header"
     trigger OnAfterInsert()
     begin
         CheckOnlyStandardVATReportInPeriod(false);
+    end;
+
+    trigger OnAfterDelete()
+    begin
+        UnlinkVATEntries();
     end;
 
     var
@@ -207,5 +213,41 @@ tableextension 31060 "VAT Report Header CZL" extends "VAT Report Header"
 
         OnlyStandardVATReportInPeriodNotification.Id := GetOnlyStandardVATReportInPeriodNotificationIdCZL();
         OnlyStandardVATReportInPeriodNotification.Recall();
+    end;
+
+    internal procedure GetVATStmtCalcParameters() VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL"
+    begin
+        VATStmtCalcParameters."Start Date" := "Start Date";
+        VATStmtCalcParameters.SetEndDate("End Date");
+        VATStmtCalcParameters."Selection" := VATStmtCalcParameters.Selection::"Open and Closed";
+        VATStmtCalcParameters."Period Selection" := VATStmtCalcParameters."Period Selection"::"Within Period";
+        VATStmtCalcParameters."Print in Integers" := "Round to Integer CZL";
+        VATStmtCalcParameters."Use Amounts in Add. Currency" := "Amounts in Add. Rep. Currency";
+        VATStmtCalcParameters.SetRoundingType("Rounding Direction CZL");
+        VATStmtCalcParameters."VAT Report No. Filter" := "No.";
+    end;
+
+    [InherentPermissions(PermissionObjectType::TableData, Database::"VAT Report Entry Link CZL", 'd', InherentPermissionsScope::Both)]
+    internal procedure UnlinkVATEntries()
+    var
+        VATReportEntryLink: Record "VAT Report Entry Link CZL";
+    begin
+        VATReportEntryLink.SetRange("VAT Report No.", "No.");
+        VATReportEntryLink.DeleteAll();
+    end;
+
+    [InherentPermissions(PermissionObjectType::TableData, Database::"VAT Report Entry Link CZL", 'i', InherentPermissionsScope::Both)]
+    internal procedure LinkVATEntries(var TempVATEntry: Record "VAT Entry" temporary)
+    var
+        VATReportEntryLinkCZL: Record "VAT Report Entry Link CZL";
+    begin
+        TempVATEntry.Reset();
+        if TempVATEntry.FindSet() then
+            repeat
+                VATReportEntryLinkCZL.Init();
+                VATReportEntryLinkCZL."VAT Report No." := "No.";
+                VATReportEntryLinkCZL."VAT Entry No." := TempVATEntry."Entry No.";
+                VATReportEntryLinkCZL.Insert();
+            until TempVATEntry.Next() = 0;
     end;
 }

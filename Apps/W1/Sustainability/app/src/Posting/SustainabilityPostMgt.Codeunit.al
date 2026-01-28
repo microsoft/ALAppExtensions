@@ -1,8 +1,10 @@
 namespace Microsoft.Sustainability.Posting;
 
+using Microsoft.FixedAssets.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Projects.Project.Ledger;
+using Microsoft.Projects.Resources.Ledger;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
@@ -50,7 +52,8 @@ codeunit 6212 "Sustainability Post Mgt"
     begin
         SkipUpdateCarbonEmissionValue :=
             (ValueEntry."Item Ledger Entry Type" <> ValueEntry."Item Ledger Entry Type"::Purchase) or
-            ((ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Purchase) and (ValueEntry."Item Charge No." <> ''));
+            ((ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Purchase) and (ValueEntry."Item Charge No." <> '')) or
+            ((ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Purchase) and (ValueEntry."Document Type" = ValueEntry."Document Type"::" "));
         SustainabilityValueEntry.Init();
 
         FeatureTelemetry.LogUsage('0000PH6', SustainabilityLbl, SustainabilityValueEntryAddedLbl);
@@ -86,6 +89,9 @@ codeunit 6212 "Sustainability Post Mgt"
                 SustainabilityValueEntry."CO2e Amount (Expected)",
                 ItemLedgerEntry.Quantity = ItemLedgerEntry."Invoiced Quantity");
 
+        if (SustainabilityJnlLine.Correction) and (not SustainabilityValueEntry."Expected Emission") then
+            SustainabilityValueEntry.Validate("CO2e Amount (Actual)", -SustainabilityValueEntry."CO2e Amount (Expected)");
+
         SustainabilityValueEntry.Insert(true);
 
         UpdateCO2ePerUnit(SustainabilityValueEntry);
@@ -102,6 +108,48 @@ codeunit 6212 "Sustainability Post Mgt"
 
         SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
         SustainabilityValueEntry.CopyFromJobLedgerEntry(JobLedgerEntry);
+        SustainabilityValueEntry.CopyFromSustainabilityJnlLine(SustainabilityJnlLine);
+        SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
+
+        SkipUpdateCarbonEmissionValue := true;
+        UpdateCarbonFeeEmissionForValueEntry(SustainabilityValueEntry, SustainabilityJnlLine);
+        SustainabilityValueEntry.Insert(true);
+
+        UpdateCO2ePerUnit(SustainabilityValueEntry);
+    end;
+
+    procedure InsertValueEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; ResourceLedgerEntry: Record "Res. Ledger Entry")
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        SustainabilityValueEntry.Init();
+        FeatureTelemetry.LogUsage('0000QOZ', SustainabilityLbl, SustainabilityValueEntryAddedLbl);
+        FeatureTelemetry.LogUptake('0000QOY', SustainabilityLbl, Enum::"Feature Uptake Status"::"Used");
+
+        SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
+        SustainabilityValueEntry.CopyFromResourceLedgerEntry(ResourceLedgerEntry);
+        SustainabilityValueEntry.CopyFromSustainabilityJnlLine(SustainabilityJnlLine);
+        SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
+
+        SkipUpdateCarbonEmissionValue := true;
+        UpdateCarbonFeeEmissionForValueEntry(SustainabilityValueEntry, SustainabilityJnlLine);
+        SustainabilityValueEntry.Insert(true);
+
+        UpdateCO2ePerUnit(SustainabilityValueEntry);
+    end;
+
+    procedure InsertValueEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; FALedgerEntry: Record "FA Ledger Entry")
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        SustainabilityValueEntry.Init();
+        FeatureTelemetry.LogUsage('0000QRO', SustainabilityLbl, SustainabilityValueEntryAddedLbl);
+        FeatureTelemetry.LogUptake('0000QRN', SustainabilityLbl, Enum::"Feature Uptake Status"::"Used");
+
+        SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
+        SustainabilityValueEntry.CopyFromFALedgerEntry(FALedgerEntry);
         SustainabilityValueEntry.CopyFromSustainabilityJnlLine(SustainabilityJnlLine);
         SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
 
@@ -248,6 +296,11 @@ codeunit 6212 "Sustainability Post Mgt"
     internal procedure GetPostConfirmMessage(): Text
     begin
         exit(PostConfirmLbl);
+    end;
+
+    internal procedure SetSkipUpdateCarbonEmissionValue(NewSkipUpdateCarbonEmissionValue: Boolean)
+    begin
+        SkipUpdateCarbonEmissionValue := NewSkipUpdateCarbonEmissionValue;
     end;
 
     local procedure CopyDataFromAccountCategory(var SustainabilityLedgerEntry: Record "Sustainability Ledger Entry"; CategoryCode: Code[20])

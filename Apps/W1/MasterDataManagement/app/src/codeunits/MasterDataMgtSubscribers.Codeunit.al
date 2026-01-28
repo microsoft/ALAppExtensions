@@ -1,22 +1,22 @@
 namespace Microsoft.Integration.MDM;
 
-using System.Threading;
-using System.Telemetry;
-using System.Environment;
-using Microsoft.Finance.GeneralLedger.Account;
-using System.Reflection;
-using System.IO;
-using System.Environment.Configuration;
-using Microsoft.Integration.Dataverse;
-using Microsoft.CRM.Contact;
-using Microsoft.Sales.Customer;
-using Microsoft.CRM.BusinessRelation;
-using Microsoft.Purchases.Vendor;
-using Microsoft.CRM.Setup;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Inventory.Item;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.SyncEngine;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Utilities;
+using System.Environment;
+using System.Environment.Configuration;
+using System.IO;
+using System.Reflection;
+using System.Telemetry;
+using System.Threading;
 
 codeunit 7237 "Master Data Mgt. Subscribers"
 {
@@ -83,7 +83,6 @@ codeunit 7237 "Master Data Mgt. Subscribers"
             end else
                 JobQueueEntry.Status := JobQueueEntry.Status::Ready;
             FeatureTelemetry.LogUptake('0000OUA', MasterDataManagement.GetFeatureName(), Enum::"Feature Uptake Status"::Used);
-            FeatureTelemetry.LogUsage('0000JIR', MasterDataManagement.GetFeatureName(), 'Synch job finished');
             if IntegrationTableMapping.IsFullSynch() then begin
                 Session.LogMessage('0000JIS', StrSubstNo(RunningFullSynchTelemetryTxt, IntegrationTableMapping.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
                 OriginalIntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
@@ -301,9 +300,6 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                         if IntegrationFieldMapping."Overwrite Local Change" or IntegrationTableMapping."Overwrite Local Change" or (IntegrationFieldMapping.Status = IntegrationFieldMapping.Status::Disabled) then
                             ThrowError := false;
                 end;
-
-                Session.LogMessage('0000JIT', DestinationRecordRef.Caption(), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
-                Session.LogMessage('0000JIU', DestinationRecordRef.Caption() + '.' + DestinationFieldRef.Caption(), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
             end;
             if ThrowError then
                 Error(ValueWillBeOverwrittenErr, DestinationFieldRef.Caption(), Format(DestinationFieldRef.Record().RecordId()), Format(SourceFieldRef.Value()), Format(DestinationFieldRef.Record().Caption()));

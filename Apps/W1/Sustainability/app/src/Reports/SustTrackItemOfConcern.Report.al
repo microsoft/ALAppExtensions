@@ -151,10 +151,11 @@ report 6219 "Sust. Track Item of Concern"
         SustainabilityValueEntry.SetRange(Type, SustainabilityValueEntry.Type::Item);
         SustainabilityValueEntry.SetRange("No.", Item."No.");
         SustainabilityValueEntry.SetRange("Expected Emission", false);
-        SustainabilityValueEntry.SetFilter("Item Ledger Entry Type", '<>%1&<>%2', SustainabilityValueEntry."Item Ledger Entry Type"::Purchase, SustainabilityValueEntry."Item Ledger Entry Type"::Transfer);
+        SustainabilityValueEntry.SetFilter("Item Ledger Entry Type", '<>%1', SustainabilityValueEntry."Item Ledger Entry Type"::Transfer);
         if SustainabilityValueEntry.FindSet() then
             repeat
-                InsertItemEmissionBuffer(SustainabilityValueEntry);
+                if ShouldInsertItemEmissionBufferFromSustValueEntry(SustainabilityValueEntry) then
+                    InsertItemEmissionBuffer(SustainabilityValueEntry);
             until SustainabilityValueEntry.Next() = 0;
     end;
 
@@ -369,7 +370,7 @@ report 6219 "Sust. Track Item of Concern"
     local procedure GetDirection(EntryType: Enum "Item Ledger Entry Type") Direction: Option Inbound,Outbound
     begin
         case EntryType of
-            EntryType::Purchase, EntryType::Output, EntryType::"Assembly Output":
+            EntryType::Purchase, EntryType::Output, EntryType::"Assembly Output", EntryType::"Positive Adjmt.":
                 exit(Direction::Inbound);
             EntryType::Sale, EntryType::Consumption, EntryType::"Negative Adjmt.", EntryType::"Assembly Consumption":
                 exit(Direction::Outbound);
@@ -435,5 +436,15 @@ report 6219 "Sust. Track Item of Concern"
         ItemEmissionBuffer.Reset();
         if ItemEmissionBuffer.FindLast() then
             exit(ItemEmissionBuffer."Entry No.");
+    end;
+
+    local procedure ShouldInsertItemEmissionBufferFromSustValueEntry(SustainabilityValueEntry: Record "Sustainability Value Entry"): Boolean
+    begin
+        if (SustainabilityValueEntry."Item Ledger Entry Type" = SustainabilityValueEntry."Item Ledger Entry Type"::Purchase) and
+           (SustainabilityValueEntry."Document Type" <> SustainabilityValueEntry."Document Type"::" ")
+        then
+            exit(false);
+
+        exit(true);
     end;
 }

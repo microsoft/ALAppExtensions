@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Enums;
-using Microsoft.DemoTool.Helpers;
 
 codeunit 11119 "Create DE GL Acc."
 {
@@ -25,6 +25,7 @@ codeunit 11119 "Create DE GL Acc."
         CreateVATPostingGroup: Codeunit "Create VAT Posting Groups";
         CreatePostingGroup: Codeunit "Create Posting Groups";
         CreateGLAccount: Codeunit "Create G/L Account";
+        CreateDEVATPostingGroups: Codeunit "Create DE VAT Posting Groups";
     begin
         ContosoGLAccount.SetOverwriteData(true);
         ContosoGLAccount.InsertGLAccount(CreateGLAccount.RawMaterials(), CreateGLAccount.RawMaterialsName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
@@ -180,7 +181,7 @@ codeunit 11119 "Create DE GL Acc."
         ContosoGLAccount.InsertGLAccount(PassengerCarCosts(), PassengerCarCostsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(TruckCosts(), TruckCostsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(Othervehicleexpenses(), OthervehicleexpensesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(Freightfeesforgoods(), FreightfeesforgoodsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
+        ContosoGLAccount.InsertGLAccount(Freightfeesforgoods(), FreightfeesforgoodsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', CreatePostingGroup.RetailPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", '', CreateDEVATPostingGroups.VAT7(), true, false, false);
         ContosoGLAccount.InsertGLAccount(Customsandforwarding(), CustomsandforwardingName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(Freightfeesprojects(), FreightfeesprojectsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(TravelExpenses(), TravelExpensesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::"Begin-Total", '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', false, false, false);
@@ -202,13 +203,13 @@ codeunit 11119 "Create DE GL Acc."
         ContosoGLAccount.InsertGLAccount(Dataservices(), DataservicesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(Postalfees(), PostalfeesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(ConsumableExpensiblehardware(), ConsumableExpensiblehardwareName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(Softwareandsubscriptionfees(), SoftwareandsubscriptionfeesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
+        ContosoGLAccount.InsertGLAccount(Softwareandsubscriptionfees(), SoftwareandsubscriptionfeesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', CreatePostingGroup.ServicesPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", '', CreateDEVATPostingGroups.VAT19(), true, false, false);
         ContosoGLAccount.InsertGLAccount(CorporateInsurance(), CorporateInsuranceName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(BadDebtLosses(), BadDebtLossesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(AnnualinterrimReports(), AnnualinterrimReportsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(PayableInvoiceRounding(), PayableInvoiceRoundingName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, CreatePostingGroup.DomesticPostingGroup(), CreatePostingGroup.RetailPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(AccountingServices(), AccountingServicesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(LegalFeesandAttorneyServices(), LegalFeesandAttorneyServicesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
+        ContosoGLAccount.InsertGLAccount(LegalFeesandAttorneyServices(), LegalFeesandAttorneyServicesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', CreatePostingGroup.ServicesPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", '', CreateDEVATPostingGroups.VAT19(), true, false, false);
         ContosoGLAccount.InsertGLAccount(OtherExternalServices(), OtherExternalServicesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(Miscexternalexpenses(), MiscexternalexpensesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::"Purchase", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(PurchaseDiscounts(), PurchaseDiscountsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Expense", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);

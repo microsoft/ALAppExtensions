@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.HumanResources;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5162 "Create Human Resources UoM"
 {

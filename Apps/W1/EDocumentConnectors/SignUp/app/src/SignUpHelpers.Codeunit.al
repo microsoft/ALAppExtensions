@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
+using Microsoft.eServices.EDocument;
 using Microsoft.Utilities;
 using System.DateTime;
 using System.Integration;
-using Microsoft.eServices.EDocument;
 
 codeunit 6444 "SignUp Helpers"
 {

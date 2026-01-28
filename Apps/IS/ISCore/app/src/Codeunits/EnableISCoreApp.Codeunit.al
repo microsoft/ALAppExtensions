@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance;
 
-using System.Reflection;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.IRS;
 using Microsoft.FixedAssets.Depreciation;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Sales.Setup;
+using System.Reflection;
 
 codeunit 14611 "Enable IS Core App"
 {
@@ -64,7 +64,7 @@ codeunit 14611 "Enable IS Core App"
                     TargetFieldRef := TargetRecRef.Field(SourceFieldRefNo);
                     TargetFieldRef.VALUE := SourceFieldRef.VALUE;
                 until SourceField.Next() = 0;
-            TargetRecRef.Insert();
+            if TargetRecRef.Insert() then;
         until SourceRecRef.Next() = 0;
         SourceRecRef.Close();
         TargetRecRef.Close();

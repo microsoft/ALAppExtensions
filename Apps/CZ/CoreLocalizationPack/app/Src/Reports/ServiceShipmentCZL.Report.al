@@ -4,18 +4,18 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Service.History;
 
+using Microsoft.CRM.Team;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Service.Setup;
+using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
 using System.Utilities;
-using Microsoft.CRM.Team;
-using Microsoft.Utilities;
 
 report 31199 "Service Shipment CZL"
 {

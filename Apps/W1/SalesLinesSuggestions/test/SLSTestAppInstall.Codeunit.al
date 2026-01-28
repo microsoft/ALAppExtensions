@@ -1,7 +1,7 @@
 namespace Microsoft.Sales.Document.Test;
 
-using System.TestTools.AITestToolkit;
 using System;
+using System.TestTools.AITestToolkit;
 
 codeunit 139784 "SLS Test App Install"
 {

@@ -5,12 +5,12 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.DemoTool;
-using Microsoft.DemoTool.Helpers;
+using Microsoft.CRM.Contact;
+using Microsoft.DemoData.Bank;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.Bank;
-using Microsoft.CRM.Contact;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5562 "Create Customer Template"
 {

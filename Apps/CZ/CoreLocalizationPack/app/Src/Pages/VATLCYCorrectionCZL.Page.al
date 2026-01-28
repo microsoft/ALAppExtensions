@@ -9,6 +9,8 @@ using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
 
 page 31025 "VAT LCY Correction CZL"
 {
@@ -295,8 +297,11 @@ page 31025 "VAT LCY Correction CZL"
 
     procedure InitGlobals(Variant: Variant)
     var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         DocRecordRef: RecordRef;
         IsHandled: Boolean;
@@ -323,6 +328,26 @@ page 31025 "VAT LCY Correction CZL"
                         PurchCrMemoHdr."Posting Date",
                         VendorLedgerEntry.GetTransactionNoCZL(PurchCrMemoHdr."Vendor Ledger Entry No."),
                         PurchCrMemoHdr."Dimension Set ID");
+                end;
+            Database::"Sales Invoice Header":
+                begin
+                    DocRecordRef.SetTable(SalesInvoiceHeader);
+                    if not SalesInvoiceHeader.IsVATLCYCorrectionAllowedCZL() then
+                        Error(NotAllowedCorrectErr, SalesInvoiceHeader.TableCaption(), SalesInvoiceHeader."No.");
+                    SetDocumentGlobals(SalesInvoiceHeader."No.",
+                        SalesInvoiceHeader."Posting Date",
+                        CustLedgerEntry.GetTransactionNoCZL(SalesInvoiceHeader."Cust. Ledger Entry No."),
+                        SalesInvoiceHeader."Dimension Set ID");
+                end;
+            Database::"Sales Cr.Memo Header":
+                begin
+                    DocRecordRef.SetTable(SalesCrMemoHeader);
+                    if not SalesCrMemoHeader.IsVATLCYCorrectionAllowedCZL() then
+                        Error(NotAllowedCorrectErr, SalesCrMemoHeader.TableCaption(), SalesCrMemoHeader."No.");
+                    SetDocumentGlobals(SalesCrMemoHeader."No.",
+                        SalesCrMemoHeader."Posting Date",
+                        CustLedgerEntry.GetTransactionNoCZL(SalesCrMemoHeader."Cust. Ledger Entry No."),
+                        SalesCrMemoHeader."Dimension Set ID");
                 end;
             else begin
                 IsHandled := false;

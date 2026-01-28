@@ -1,8 +1,8 @@
 namespace Microsoft.Bank.PayPal;
 
-using System.Integration;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Payment;
+using System.Integration;
 using System.Telemetry;
 
 codeunit 1073 "MS - PayPal Webhook Management"

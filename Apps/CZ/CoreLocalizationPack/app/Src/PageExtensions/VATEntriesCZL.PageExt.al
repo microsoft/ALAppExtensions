@@ -16,6 +16,7 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT entry''s Original Document VAT Date.';
+                Editable = IsVATDateEditable;
             }
         }
         addafter("Posting Date")
@@ -95,6 +96,18 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
                 ToolTip = 'Specifies the VAT amount of the entry before the deduction by the coefficient.';
                 Visible = NonDeductibleVATVisible;
             }
+            field("Original VAT Base ACY CZL"; Rec."Original VAT Base ACY CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the additional-currency VAT base of the entry before the deduction by the coefficient.';
+                Visible = NonDeductibleVATVisible;
+            }
+            field("Original VAT Amount ACY CZL"; Rec."Original VAT Amount ACY CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the additional-currency VAT amount of the entry before the deduction by the coefficient.';
+                Visible = NonDeductibleVATVisible;
+            }
             field("Non-Deductible VAT % CZL"; Rec."Non-Deductible VAT %")
             {
                 ApplicationArea = Basic, Suite;
@@ -110,11 +123,15 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
         }
     }
     trigger OnOpenPage()
+    var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
     begin
         NonDeductibleVATVisible := NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
+        IsVATDateEditable := VATReportingDateMgt.IsVATDateModifiable();
     end;
 
     var
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        IsVATDateEditable: Boolean;
         NonDeductibleVATVisible: Boolean;
 }

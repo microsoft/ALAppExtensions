@@ -3,9 +3,9 @@ namespace Microsoft.Bank.StatementImport.Yodlee;
 using Microsoft.Bank.Setup;
 using Microsoft.Foundation.Company;
 using System.Integration;
-using System.Telemetry;
-using System.Security.Encryption;
 using System.Privacy;
+using System.Security.Encryption;
+using System.Telemetry;
 table 1450 "MS - Yodlee Bank Service Setup"
 {
     ReplicateData = false;
@@ -570,6 +570,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
     [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveConsumerPassword(var ConsumerPasswordKey: Guid; ConsumerPasswordValue: Text);
+    var
     begin
         ConsumerPasswordValue := DELCHR(ConsumerPasswordValue, '=', ' ');
 

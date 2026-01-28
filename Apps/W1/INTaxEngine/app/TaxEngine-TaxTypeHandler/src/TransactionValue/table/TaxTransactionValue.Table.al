@@ -11,9 +11,9 @@ using Microsoft.Inventory.Transfer;
 using Microsoft.Purchases.Archive;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Sales.Archive;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
-using Microsoft.Sales.Archive;
 
 table 20261 "Tax Transaction Value"
 {

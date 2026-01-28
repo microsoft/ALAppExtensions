@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
-using System.AI;
-using System.Telemetry;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item;
+using System.AI;
+using System.Telemetry;
 using System.Text;
 
 codeunit 7291 "Search Items With Filters Func" implements "AOAI Function"

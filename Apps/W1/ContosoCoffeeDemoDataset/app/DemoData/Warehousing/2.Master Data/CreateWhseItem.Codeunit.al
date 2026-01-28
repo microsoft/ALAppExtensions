@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Warehousing;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Catalog;
 

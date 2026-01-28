@@ -22,8 +22,8 @@ using Microsoft.Sales.Posting;
 using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
 using System.Globalization;
-using System.Utilities;
 using System.Telemetry;
+using System.Utilities;
 
 report 10603 "Order Confirmation"
 {
@@ -865,13 +865,7 @@ report 10603 "Order Confirmation"
         CompanyInfo3: Record "Company Information";
         CompanyInfo2: Record "Company Information";
         SalesSetup: Record "Sales & Receivables Setup";
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
         TempSalesLine: Record "Sales Line" temporary;
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
@@ -951,4 +945,3 @@ report 10603 "Order Confirmation"
         FeatureNameTok: Label 'Order Confirmation GB', Locked = true;
         EventNameTok: Label 'Order ConfirmationGB report has been used', Locked = true;
 }
-

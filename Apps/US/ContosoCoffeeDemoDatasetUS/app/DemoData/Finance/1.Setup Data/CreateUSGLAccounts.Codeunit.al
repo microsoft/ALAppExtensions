@@ -5,16 +5,16 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.Inventory.Setup;
 using Microsoft.DemoData.Common;
-using Microsoft.DemoData.Service;
-using Microsoft.DemoData.Manufacturing;
 using Microsoft.DemoData.FixedAsset;
 using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoData.Jobs;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Enums;
+using Microsoft.Inventory.Setup;
 
 codeunit 10499 "Create US GL Accounts"
 {
@@ -635,6 +635,7 @@ codeunit 10499 "Create US GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(WIPAccruedCostsName(), '14240');
         ContosoGLAccount.AddAccountForLocalization(WIPInvoicedSalesName(), '14250');
         ContosoGLAccount.AddAccountForLocalization(TotalWorkinProgressName(), '14299');
+        ContosoGLAccount.AddAccountForLocalization(TotalInventoriesProductsandWorkinProgressName(), '14999');
         ContosoGLAccount.AddAccountForLocalization(ReceivablesName(), '15000');
         ContosoGLAccount.AddAccountForLocalization(AccountsReceivablesName(), '15100');
         ContosoGLAccount.AddAccountForLocalization(AccountReceivableDomesticName(), '15110');
@@ -814,6 +815,7 @@ codeunit 10499 "Create US GL Accounts"
         ContosoGLAccount.InsertGLAccount(WIPAccruedCosts(), WIPAccruedCostsName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(WIPInvoicedSales(), WIPInvoicedSalesName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(TotalWorkinProgress(), TotalWorkinProgressName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, WorkinProgress() + '..' + TotalWorkinProgress(), Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(TotalInventoriesProductsandWorkinProgress(), TotalInventoriesProductsandWorkinProgressName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::"End-Total", '', '', 0, InventoriesProductsandWorkinProgress() + '..' + TotalInventoriesProductsandWorkinProgress(), Enum::"General Posting Type"::" ", '', '', false, false, false);
         ContosoGLAccount.InsertGLAccount(CreateGlAccount.FinishedGoods(), CreateGlAccount.FinishedGoodsName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(CreateGlAccount.WIPJobSales(), CreateGlAccount.WIPJobSalesName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(CreateGlAccount.WIPJobCosts(), CreateGlAccount.WIPJobCostsName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
@@ -3430,6 +3432,16 @@ codeunit 10499 "Create US GL Accounts"
         exit(InventoriesProductsandWorkinProgressTok);
     end;
 
+    procedure TotalInventoriesProductsandWorkinProgress(): Code[20]
+    begin
+        exit(ContosoGLAccount.GetAccountNo(TotalInventoriesProductsandWorkinProgressName()));
+    end;
+
+    procedure TotalInventoriesProductsandWorkinProgressName(): Text[100]
+    begin
+        exit(TotalInventoriesProductsandWorkinProgressTok);
+    end;
+
     procedure SuppliesandConsumables(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(SuppliesandConsumablesName()));
@@ -4655,6 +4667,7 @@ codeunit 10499 "Create US GL Accounts"
         OtherLongTermReceivablesTok: Label 'Other Long-term Receivables', MaxLength = 100;
         TotalFinancialandFixedAssetsTok: Label 'Total, Financial and Fixed Assets', MaxLength = 100;
         InventoriesProductsandWorkinProgressTok: Label 'Inventories, Products and work in Progress', MaxLength = 100;
+        TotalInventoriesProductsandWorkinProgressTok: Label 'Total, Inventories, Products and work in Progress', MaxLength = 100;
         SuppliesandConsumablesTok: Label 'Supplies and Consumables', MaxLength = 100;
         ProductsinProgressTok: Label 'Products in Progress', MaxLength = 100;
         FinishedGoodsTok: Label 'Finished Goods', MaxLength = 100;

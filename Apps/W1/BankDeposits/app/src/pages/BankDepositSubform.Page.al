@@ -1,14 +1,14 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Intercompany.Partner;
-using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
 
 page 1693 "Bank Deposit Subform"
@@ -518,7 +518,20 @@ page 1693 "Bank Deposit Subform"
             if CustLedgerEntry."Applies-to ID" = '' then
                 exit;
         end;
-        Rec."Applies-to ID" := BankDepositPost.GetAppliesToIDForLine(BankDepositHeader."No.", Rec."Line No.");
+        if CheckCustomerApplicationMethod() then
+            Rec."Applies-to ID" := BankDepositPost.GetAppliesToIDForLine(BankDepositHeader."No.", Rec."Line No.");
+    end;
+
+    local procedure CheckCustomerApplicationMethod(): Boolean
+    var
+        Customer: Record Customer;
+    begin
+        if Rec."Account Type" <> Rec."Account Type"::Customer then
+            exit(true);
+
+        if Customer.Get(Rec."Account No.") then
+            if Customer."Application Method" <> Customer."Application Method"::"Apply to Oldest" then
+                exit(true);
     end;
 
     [IntegrationEvent(true, false)]

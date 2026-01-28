@@ -9,13 +9,14 @@ namespace Microsoft.Agent.SalesOrderAgent;
 
 using Microsoft.Assembly.Document;
 using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Attachment;
 using Microsoft.Integration.Entity;
-using Microsoft.Inventory.Requisition;
 using Microsoft.Inventory.Availability;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Attribute;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Planning;
+using Microsoft.Inventory.Requisition;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Comment;
 using Microsoft.Sales.Customer;
@@ -27,7 +28,6 @@ using System.Diagnostics;
 using System.Environment.Configuration;
 using System.Security.AccessControl;
 using System.Utilities;
-using Microsoft.Foundation.Attachment;
 
 permissionset 4405 "SOA - Edit"
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Setup;
 using Microsoft.DemoData.Finance;
+using Microsoft.Inventory.Setup;
 
 codeunit 11374 "Create Inv. Setup BE"
 {

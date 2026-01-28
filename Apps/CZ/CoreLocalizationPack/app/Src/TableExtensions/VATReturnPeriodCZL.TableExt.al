@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Environment.Configuration;
 using Microsoft.Utilities;
+using System.Environment.Configuration;
 
 tableextension 31066 "VAT Return Period CZL" extends "VAT Return Period"
 {
@@ -30,7 +30,14 @@ tableextension 31066 "VAT Return Period CZL" extends "VAT Return Period"
     internal procedure IsDuplicatePeriod(): Boolean
     var
         VATReturnPeriod: Record "VAT Return Period";
+#if not CLEAN28
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
     begin
+#if not CLEAN28
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then
+            exit(false);
+#endif
         VATReturnPeriod.SetRange("Start Date", "Start Date");
         exit(not VATReturnPeriod.IsEmpty());
     end;

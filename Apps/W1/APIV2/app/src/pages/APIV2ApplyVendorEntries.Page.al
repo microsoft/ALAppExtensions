@@ -1,8 +1,8 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Purchases.Payables;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Purchases.Payables;
 
 page 30073 "APIV2 - Apply Vendor Entries"
 {
@@ -19,7 +19,7 @@ page 30073 "APIV2 - Apply Vendor Entries"
     Extensible = false;
     InsertAllowed = false;
     DeleteAllowed = false;
-    AboutText = 'Exposes open vendor ledger entries with key details such as posting date, document type, vendor information, and remaining amount, enabling external systems to retrieve and update application status via GET and PATCH operations. Facilitates automated accounts payable reconciliation by allowing integrations to programmatically match and apply payments or credit memos to outstanding vendor invoices, supporting AP automation and bank transaction import scenarios. Designed for seamless settlement processing and accurate maintenance of vendor balances within Business Central.';
+    AboutText = 'Exposes open vendor ledger entries with key details such as posting date, document type, vendor information, and remaining amount. Enables external systems to retrieve and update application status, facilitating automated accounts payable reconciliation by allowing integrations to programmatically match and apply payments or credit memos to outstanding vendor invoices, supporting AP automation and bank transaction import scenarios. Designed for seamless settlement processing and accurate maintenance of vendor balances within Business Central.';
 
     layout
     {

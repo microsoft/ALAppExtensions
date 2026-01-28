@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Purchases.Document;
 using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Document;
 
 tableextension 10055 "IRS 1099 Purch. Line" extends "Purchase Line"
 {
@@ -15,6 +15,15 @@ tableextension 10055 "IRS 1099 Purch. Line" extends "Purchase Line"
         {
             DataClassification = CustomerContent;
             ToolTip = 'Specifies if the amount is to be a 1099 amount.';
+
+            trigger OnValidate()
+            var
+                PurchHeader: Record "Purchase Header";
+            begin
+                Rec.GetPurchHeader(PurchHeader, Currency);
+                if PurchHeader."IRS 1099 Form Box No." = '' then
+                    Error('You cannot set the "1099 Liable" field because the "IRS 1099 Form Box No." field on the purchase header is blank.');
+            end;
         }
     }
 

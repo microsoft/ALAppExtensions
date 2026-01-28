@@ -654,18 +654,18 @@ table 11732 "Cash Document Header CZP"
                 "Document Type"::Receipt:
                     begin
                         CashDeskCZP.TestField("Cash Document Receipt Nos.");
-                            "No. Series" := CashDeskCZP."Cash Document Receipt Nos.";
-                            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                                "No. Series" := xRec."No. Series";
-                            "No." := NoSeries.GetNextNo("No. Series");
+                        "No. Series" := CashDeskCZP."Cash Document Receipt Nos.";
+                        if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                            "No. Series" := xRec."No. Series";
+                        "No." := NoSeries.GetNextNo("No. Series");
                     end;
                 "Document Type"::Withdrawal:
                     begin
                         CashDeskCZP.TestField("Cash Document Withdrawal Nos.");
-                            "No. Series" := CashDeskCZP."Cash Document Withdrawal Nos.";
-                            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                                "No. Series" := xRec."No. Series";
-                            "No." := NoSeries.GetNextNo("No. Series");
+                        "No. Series" := CashDeskCZP."Cash Document Withdrawal Nos.";
+                        if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                            "No. Series" := xRec."No. Series";
+                        "No." := NoSeries.GetNextNo("No. Series");
                     end;
             end;
 
@@ -724,8 +724,10 @@ table 11732 "Cash Document Header CZP"
         DeleteQst: Label 'Deleting this document will cause a gap in the number series for posted cash documents. An empty posted cash document %1 will be created to fill this gap in the number series.\\Do you want to continue?', Comment = '%1 = Document No.';
         PostedDocsToPrintCreatedMsg: Label 'One or more related posted documents have been generated during deletion to fill gaps in the number series. You can view or print the documents from the respective document archive.';
         CurrencyDate: Date;
-        SkipLineNo: Integer;
         HideValidationDialog: Boolean;
+
+    protected var
+        SkipLineNo: Integer;
 
     procedure AssistEdit(OldCashDocumentHeaderCZP: Record "Cash Document Header CZP"): Boolean
     var

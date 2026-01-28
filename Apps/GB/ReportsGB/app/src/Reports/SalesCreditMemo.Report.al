@@ -19,8 +19,8 @@ using Microsoft.Inventory.Location;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Setup;
 using System.Globalization;
-using System.Utilities;
 using System.Telemetry;
+using System.Utilities;
 
 report 10582 "Sales - Credit Memo"
 {
@@ -894,13 +894,7 @@ report 10582 "Sales - Credit Memo"
         SalesPurchPerson: Record "Salesperson/Purchaser";
         CompanyBankAccount: Record "Bank Account";
         CompanyInfo: Record "Company Information";
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
         TempSalesShipmentBuffer: Record "Sales Shipment Buffer" temporary;
@@ -1122,4 +1116,3 @@ report 10582 "Sales - Credit Memo"
         NextEntryNo := NextEntryNo + 1
     end;
 }
-

@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Posting;
 
 using Microsoft.Finance.GeneralLedger.Preview;
-using Microsoft.Sustainability.Ledger;
 using Microsoft.Foundation.Navigate;
+using Microsoft.Sustainability.Ledger;
 
 codeunit 6226 "Sust. Preview Post. Subscriber"
 {

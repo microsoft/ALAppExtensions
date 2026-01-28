@@ -17,8 +17,8 @@ using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Finance.Registration;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.Company;
@@ -46,13 +46,14 @@ using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Reminder;
+using Microsoft.Sales.Setup;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Environment;
 using System.IO;
+using System.Privacy;
 using System.Security.Encryption;
 using System.Security.User;
-using System.Privacy;
 
 codeunit 11710 "Data Class. Eval. Handler CZL"
 {
@@ -123,6 +124,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
         SalesLine: Record "Sales Line";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesShipmentLine: Record "Sales Shipment Line";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
@@ -201,6 +203,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Period CZL");
 #pragma warning restore AL0432
 #endif        
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Report Entry Link CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Statement Attachment CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Statement Comment Line CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Stmt. Report Line Data CZL");
@@ -439,6 +442,8 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Invoice Line", SalesInvoiceLine.FieldNo("Tariff No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Line", SalesLine.FieldNo("Negative CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Line", SalesLine.FieldNo("Tariff No. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales & Receivables Setup", SalesReceivablesSetup.FieldNo("Print QR Payment CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales & Receivables Setup", SalesReceivablesSetup.FieldNo("Show VAT Corr When Posting CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
@@ -499,6 +504,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Release LocationCode CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Invt. Movement Temp. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow VAT Date Changing CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow Orig Doc VAT Date Ch CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("G/L Correction CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Amount Line", VATAmountLine.FieldNo("VAT Base (LCY) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Amount Line", VATAmountLine.FieldNo("VAT Amount (LCY) CZL"));

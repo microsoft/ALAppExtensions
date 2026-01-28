@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
-using System.Threading;
-using System.Xml;
 using Microsoft.Finance.VAT.Reporting;
 using System;
+using System.Threading;
+using System.Xml;
 
 codeunit 10511 "HMRC GovTalk Msg. Scheduler"
 {

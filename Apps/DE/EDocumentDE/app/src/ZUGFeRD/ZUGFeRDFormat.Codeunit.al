@@ -4,15 +4,17 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using System.Utilities;
+using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.Foundation.Company;
-using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
 using Microsoft.Purchases.Document;
-using Microsoft.eServices.EDocument;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.IO;
+using System.Utilities;
 
 codeunit 13920 "ZUGFeRD Format" implements "E-Document"
 {
@@ -113,7 +115,18 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
             exit;
 
         FileName := StrSubstNo(EDOCLogFileTxt, EDocumentLog."E-Doc. Entry No");
-        FileName += '.pdf';
+        FileName += EDocumentService.GetDefaultFileExtension();
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"E-Document Service", OnAfterGetDefaultFileExtension, '', false, false)]
+    local procedure HandleOnAfterGetDefaultFileExtension(EDocumentService: Record "E-Document Service"; var FileExtension: Text)
+    var
+        PDFFileTypeTok: Label '.pdf', Locked = true;
+    begin
+        if EDocumentService."Document Format" <> EDocumentService."Document Format"::ZUGFeRD then
+            exit;
+
+        FileExtension := PDFFileTypeTok;
     end;
 
     local procedure CheckCompanyInfoMandatory()
@@ -138,8 +151,10 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
             exit;
 
         if not (SourceDocumentHeader.Number in
-            [Database::"Sales Invoice Header",
+            [Database::"Sales Header",
+            Database::"Sales Invoice Header",
             Database::"Sales Cr.Memo Header",
+            Database::"Service Header",
             Database::"Service Invoice Header",
             Database::"Service Cr.Memo Header"])
         then

@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Sales.Document;
-using Microsoft.Inventory.Item;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
 
 codeunit 5124 "Contoso Sales"
 {
@@ -24,6 +24,11 @@ codeunit 5124 "Contoso Sales"
     end;
 
     procedure InsertSalesHeader(DocumentType: Enum "Sales Document Type"; SelltoCustomerNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; DocumentDate: Date; PaymentMethodCode: Code[10]; ShippingAgentCode: Code[10]; RequestedDeliveryDate: Date; ShippingAgentServiceCode: Code[10]; ExternalDocumentNo: Code[35]): Record "Sales Header"
+    begin
+        exit(InsertSalesHeader(DocumentType, SelltoCustomerNo, YourReference, OrderDate, PostingDate, PaymentTermsCode, LocationCode, DocumentDate, PaymentMethodCode, ShippingAgentCode, RequestedDeliveryDate, ShippingAgentServiceCode, ExternalDocumentNo, ''));
+    end;
+
+    procedure InsertSalesHeader(DocumentType: Enum "Sales Document Type"; SelltoCustomerNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; DocumentDate: Date; PaymentMethodCode: Code[10]; ShippingAgentCode: Code[10]; RequestedDeliveryDate: Date; ShippingAgentServiceCode: Code[10]; ExternalDocumentNo: Code[35]; SalespersonCode: Code[20]): Record "Sales Header"
     var
         SalesHeader: Record "Sales Header";
     begin
@@ -46,12 +51,19 @@ codeunit 5124 "Contoso Sales"
         SalesHeader.Validate("Shipping Agent Service Code", ShippingAgentServiceCode);
         SalesHeader.Validate("External Document No.", ExternalDocumentNo);
         SalesHeader.Validate("Location Code", LocationCode);
+        if SalespersonCode <> '' then
+            SalesHeader.Validate("Salesperson Code", SalespersonCode);
         SalesHeader.Modify(true);
 
         exit(SalesHeader);
     end;
 
     procedure InsertSalesLineWithItem(SalesHeader: Record "Sales Header"; ItemNo: Code[20]; Quantity: Decimal)
+    begin
+        InsertSalesLineWithItem(SalesHeader, ItemNo, Quantity, 0);
+    end;
+
+    procedure InsertSalesLineWithItem(SalesHeader: Record "Sales Header"; ItemNo: Code[20]; Quantity: Decimal; LineDiscountPercent: Decimal)
     var
         Item: Record Item;
         SalesLine: Record "Sales Line";
@@ -67,6 +79,8 @@ codeunit 5124 "Contoso Sales"
         SalesLine.Validate("No.", Item."No.");
         SalesLine.Validate("Unit of Measure Code", Item."Base Unit of Measure");
         SalesLine.Validate("Quantity", Quantity);
+        if LineDiscountPercent <> 0 then
+            SalesLine.Validate("Line Discount %", LineDiscountPercent);
         SalesLine.Insert(true);
     end;
 

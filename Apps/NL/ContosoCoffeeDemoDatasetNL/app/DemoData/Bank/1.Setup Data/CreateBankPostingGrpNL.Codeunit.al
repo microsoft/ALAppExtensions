@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoData.Warehousing;
-using Microsoft.DemoData.Localization;
 using Microsoft.Bank.BankAccount;
+using Microsoft.DemoData.Localization;
+using Microsoft.DemoData.Warehousing;
 
 codeunit 11518 "Create Bank Posting Grp NL"
 {

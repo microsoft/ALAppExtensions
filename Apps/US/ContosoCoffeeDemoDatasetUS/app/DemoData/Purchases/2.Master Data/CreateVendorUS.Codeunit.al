@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
-using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
+using Microsoft.Purchases.Vendor;
 
 codeunit 10512 "Create Vendor US"
 {

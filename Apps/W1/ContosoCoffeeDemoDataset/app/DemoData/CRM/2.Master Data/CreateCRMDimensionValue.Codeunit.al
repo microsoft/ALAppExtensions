@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.CRM;
 
+using Microsoft.CRM.Team;
 using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.Dimension;
-using Microsoft.CRM.Team;
 
 codeunit 5294 "Create CRM Dimension Value"
 {

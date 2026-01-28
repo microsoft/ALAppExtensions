@@ -500,6 +500,126 @@ codeunit 139511 "SAF-T Tests"
         LibraryXPathXMLReader.VerifyNodeValueByXPath(CreditAmountXpath + '/ExchangeRate', GetSAFTMonetaryDecimal(1 / ExchangeRateAmount));
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure ExportGLAccountWithExtendedCategory()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        StandardAccountCategory: Record "Standard Account Category";
+        StandardAccount: Record "Standard Account";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        TempBlob: Codeunit "Temp Blob";
+        NamespacePrefix, NamespaceUri : Text;
+        ExtendedCategoryValue: Text[256];
+        GLAccountNo: Code[20];
+        StandardAccountNo: Code[20];
+    begin
+        // [SCENARIO] Export G/L Account with extended category code exports the original long value in GroupingCategory XML node
+        Initialize();
+
+        SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Standard Account Category with Extended No. containing a long category code
+        ExtendedCategoryValue := 'This_Is_A_Very_Long_Category_Code_That_Exceeds_20_Characters';
+        StandardAccountCategory.Init();
+        StandardAccountCategory."Standard Account Type" := "Standard Account Type"::"Standard Account SAF-T";
+        StandardAccountCategory."No." := 'CAT000001';
+        StandardAccountCategory."Extended No." := ExtendedCategoryValue;
+        StandardAccountCategory.Insert();
+
+        // [GIVEN] Standard Account linked to the category
+        StandardAccountNo := 'STDACC001';
+        StandardAccount.Init();
+        StandardAccount.Type := "Standard Account Type"::"Standard Account SAF-T";
+        StandardAccount."Category No." := StandardAccountCategory."No.";
+        StandardAccount."No." := StandardAccountNo;
+        StandardAccount.Insert();
+
+        // [GIVEN] G/L Account mapped to the standard account with category
+        GLAccountNo := LibraryERM.CreateGLAccountNo();
+        GLAccountMappingLine.Init();
+        GLAccountMappingLine.Validate("G/L Account Mapping Code", GLAccountMappingLine."G/L Account Mapping Code");
+        GLAccountMappingLine.Validate("G/L Account No.", GLAccountNo);
+        GLAccountMappingLine.Validate("Standard Account Type", "Standard Account Type"::"Standard Account SAF-T");
+        GLAccountMappingLine.Validate("Standard Account Category No.", StandardAccountCategory."No.");
+        GLAccountMappingLine.Validate("Standard Account No.", StandardAccountNo);
+        GLAccountMappingLine.Insert(true);
+
+        // [GIVEN] Audit File Export document
+        SAFTTestsHelper.CreateAuditFileExportDoc(AuditFileExportHeader, WorkDate(), WorkDate(), false);
+
+        // [WHEN] Start export
+        SAFTTestsHelper.StartExport(AuditFileExportHeader);
+
+        // [THEN] The master file contains GroupingCategory with the extended value
+        GetAuditFileContent(AuditFileExportHeader.ID, 1, TempBlob);
+        XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
+        LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(
+            '/AuditFile/MasterFiles/GeneralLedgerAccounts/Account[ns:AccountID="' + GLAccountNo + '"]/GroupingCategory',
+            ExtendedCategoryValue);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure ExportGLAccountWithRegularCategory()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        StandardAccountCategory: Record "Standard Account Category";
+        StandardAccount: Record "Standard Account";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        TempBlob: Codeunit "Temp Blob";
+        NamespacePrefix, NamespaceUri : Text;
+        CategoryCode: Code[20];
+        GLAccountNo: Code[20];
+        StandardAccountNo: Code[20];
+    begin
+        // [SCENARIO] Export G/L Account with regular category (<=20 chars) exports the No. value in GroupingCategory XML node
+        Initialize();
+
+        SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Standard Account Category with regular No. (no Extended No.)
+        CategoryCode := 'REGULARCAT001';
+        StandardAccountCategory.Init();
+        StandardAccountCategory."Standard Account Type" := "Standard Account Type"::"Standard Account SAF-T";
+        StandardAccountCategory."No." := CategoryCode;
+        StandardAccountCategory."Extended No." := '';
+        if StandardAccountCategory.Insert() then;
+
+        // [GIVEN] Standard Account linked to the category
+        StandardAccountNo := 'STDACC002';
+        StandardAccount.Init();
+        StandardAccount.Type := "Standard Account Type"::"Standard Account SAF-T";
+        StandardAccount."Category No." := CategoryCode;
+        StandardAccount."No." := StandardAccountNo;
+        if StandardAccount.Insert() then;
+
+        // [GIVEN] G/L Account mapped to the standard account with category
+        GLAccountNo := LibraryERM.CreateGLAccountNo();
+        GLAccountMappingLine.Init();
+        GLAccountMappingLine.Validate("G/L Account Mapping Code", GLAccountMappingLine."G/L Account Mapping Code");
+        GLAccountMappingLine.Validate("G/L Account No.", GLAccountNo);
+        GLAccountMappingLine.Validate("Standard Account Type", "Standard Account Type"::"Standard Account SAF-T");
+        GLAccountMappingLine.Validate("Standard Account Category No.", CategoryCode);
+        GLAccountMappingLine.Validate("Standard Account No.", StandardAccountNo);
+        GLAccountMappingLine.Insert(true);
+
+        // [GIVEN] Audit File Export document
+        SAFTTestsHelper.CreateAuditFileExportDoc(AuditFileExportHeader, WorkDate(), WorkDate(), false);
+
+        // [WHEN] Start export
+        SAFTTestsHelper.StartExport(AuditFileExportHeader);
+
+        // [THEN] The master file contains GroupingCategory with the regular category code
+        GetAuditFileContent(AuditFileExportHeader.ID, 1, TempBlob);
+        XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
+        LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(
+            '/AuditFile/MasterFiles/GeneralLedgerAccounts/Account[ns:AccountID="' + GLAccountNo + '"]/GroupingCategory',
+            CategoryCode);
+    end;
+
     local procedure Initialize()
     begin
         if IsInitialized then

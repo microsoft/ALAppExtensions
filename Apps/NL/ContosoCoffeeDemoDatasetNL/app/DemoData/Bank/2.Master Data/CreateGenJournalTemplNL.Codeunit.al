@@ -5,12 +5,12 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.Foundation.AuditCodes;
-using Microsoft.DemoData.Warehousing;
+using Microsoft.Bank.Journal;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Localization;
+using Microsoft.DemoData.Warehousing;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Bank.Journal;
+using Microsoft.Foundation.AuditCodes;
 
 codeunit 11542 "Create Gen. Journal Templ. NL"
 {

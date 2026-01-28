@@ -49,6 +49,7 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(SetEnableNonDeductibleVATCZUpgradeTag());
         PerCompanyUpgradeTags.Add(GetUseW1RegistrationNumberFromSalesDocUpgradeTag());
         PerCompanyUpgradeTags.Add(GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetOriginalVATAmountsACYInVATEntriesUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -216,5 +217,10 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag(): Code[250]
     begin
         exit('CZL-579504-UseVATReturnPeriodInsteadOfVATPeriodUpgrade-20250909');
+    end;
+
+    procedure GetOriginalVATAmountsACYInVATEntriesUpgradeTag(): Code[250]
+    begin
+        exit('CZL-616614-OriginalVATAmountsACYInVATEntriesTag-20251217');
     end;
 }

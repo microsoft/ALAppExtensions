@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.HumanResources.Setup;
 using Microsoft.HumanResources.Absence;
 using Microsoft.HumanResources.Employee;
+using Microsoft.HumanResources.Setup;
 using System.Utilities;
 
 codeunit 5171 "Contoso Human Resources"
@@ -324,6 +324,15 @@ codeunit 5171 "Contoso Human Resources"
         else
             Employee.Validate("E-Mail", StrSubstNo(EmpEmailLbl, LowerCase(Employee."No.")));
 
+        Employee.Modify(true);
+    end;
+
+    procedure UpdateEmployeeManager(EmployeeNo: Code[20]; ManagerNo: Code[20])
+    var
+        Employee: Record Employee;
+    begin
+        Employee.Get(EmployeeNo);
+        Employee.Validate("Manager No.", ManagerNo);
         Employee.Modify(true);
     end;
 

@@ -4,14 +4,14 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
 
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Foundation.AuditCodes;
-using System.Reflection;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Bank.BankAccount;
+using Microsoft.Sales.Customer;
+using System.Reflection;
 
 table 18871 "TCS Journal Template"
 {

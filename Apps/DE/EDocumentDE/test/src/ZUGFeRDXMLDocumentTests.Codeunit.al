@@ -3,23 +3,26 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
-using Microsoft.Foundation.Company;
-using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Document;
-using System.Utilities;
+
 using Microsoft.Bank.BankAccount;
-using System.Reflection;
-using System.IO;
-using Microsoft.Foundation.UOM;
-using Microsoft.Foundation.Address;
 using Microsoft.eServices.EDocument;
-using Microsoft.Sales.Document;
-using Microsoft.Finance.Currency;
 using Microsoft.eServices.EDocument.Integration;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using System.IO;
+using System.Reflection;
+using System.Utilities;
 
 codeunit 13922 "ZUGFeRD XML Document Tests"
 {
@@ -115,6 +118,28 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales invoice for ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLine("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifySellerDataApplicableHeaderTradeAgreement();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -131,6 +156,29 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [THEN] ZUGFeRD Electronic Document is created with company data as seller in applicable header trade agreement
         VerifySellerData(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatWithRespCenterVerifySellerDataApplicableHeaderTradeAgreement();
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice creates electronic document in ZUGFeRD format with responsibility center data as seller in applicable header trade agreement
+        Initialize();
+
+        // [GIVEN] Responsibility Center
+        CreateResponsibilityCenter(ResponsibilityCenter);
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithRespCenter("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, ResponsibilityCenter.Code));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with responsibility data as seller in applicable header trade agreement
+        VerifySellerData(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty', ResponsibilityCenter);
     end;
 
     [Test]
@@ -327,6 +375,56 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
         VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
     end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatWithCustomReportLayout();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice with Custom Report Layout creates electronic document in ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [GIVEN] Custom Report Layout is used
+        UpdateReport(Enum::"Report Selection Usage"::"S.Invoice", Report::"ZUGFeRD Custom Sales Invoice");
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created
+        VerifyHeaderData(SalesInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure PrintPostedSalesInvoiceWithCustomReportLayout();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
+        PDFDocument: Codeunit "PDF Document";
+        PDFTempBlob: Codeunit "Temp Blob";
+        TempBlob: Codeunit "Temp Blob";
+        PDFInStream: InStream;
+    begin
+        // [SCENARIO] Print a posted sales invoice with Custom Report Layout. Ensure that no xml is embedded
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [GIVEN] Custom Report Layout is used
+        UpdateReport(Enum::"Report Selection Usage"::"S.Invoice", Report::"ZUGFeRD Custom Sales Invoice");
+
+        // [WHEN] Create PDF Attachment
+        ExportZUGFeRDDocument.GenerateSalesInvoicePDFAttachment(SalesInvoiceHeader, PDFTempBlob);
+
+        // [THEN] No XML should be embedded
+        PDFTempBlob.CreateInStream(PDFInStream);
+        Assert.IsFalse(PDFDocument.GetDocumentAttachmentStream(PDFInStream, TempBlob), 'No Document Attachment should be found.');
+    end;
+
     #endregion
 
     #region SalesCreditMemo
@@ -396,6 +494,28 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales credit memo for ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLine("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
+    end;
+
+    [Test]
     procedure ExportPostedSalesCrMemoInZUGFeRDFormatVerifySellerDataApplicableHeaderTradeAgreement();
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
@@ -412,6 +532,29 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [THEN] ZUGFeRD Electronic Document is created with company data as seller in applicable header trade agreement
         VerifySellerData(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatWithRespCenterVerifySellerDataApplicableHeaderTradeAgreement();
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales cr. memo creates electronic document in ZUGFeRD format with responsibility center data as seller in applicable header trade agreement
+        Initialize();
+
+        // [GIVEN] Responsibility Center
+        CreateResponsibilityCenter(ResponsibilityCenter);
+
+        // [GIVEN] Create and Post sales cr. memo.
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithRespCenter("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, ResponsibilityCenter.Code));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with responsibility data as seller in applicable header trade agreement
+        VerifySellerData(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty', ResponsibilityCenter);
     end;
 
     [Test]
@@ -655,6 +798,14 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostSalesDocumentWithRespCenter(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; RespCenterCode: Code[10]): Code[20];
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithLine(DocumentType, LineType, false, RespCenterCode));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
     local procedure CreatePurchDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
     var
         PurchaseLine: Record "Purchase Line";
@@ -676,11 +827,20 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         PurchaseHeader.Modify(true);
     end;
 
-    local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
+    local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20]
+    begin
+        exit(CreateSalesDocumentWithLine(DocumentType, LineType, InvoiceDiscount, ''));
+    end;
+
+    local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean; RespCenterCode: Code[20]): Code[20]
     var
         SalesHeader: Record "Sales Header";
     begin
         CreateSalesHeader(SalesHeader, DocumentType);
+        if RespCenterCode <> '' then begin
+            SalesHeader.Validate("Responsibility Center", RespCenterCode);
+            SalesHeader.Modify(true);
+        end;
         CreateSalesLine(SalesHeader, LineType, false);
 
         if InvoiceDiscount then
@@ -756,8 +916,23 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Customer.Validate("Country/Region Code", CompanyInformation."Country/Region Code");
         Customer.Validate("VAT Registration No.", CompanyInformation."VAT Registration No.");
         Customer.Validate("E-Invoice Routing No.", LibraryUtility.GenerateRandomText(20));
+        Customer.Validate("E-Mail", LibraryUtility.GenerateRandomEmail());
         Customer.Modify(true);
         exit(Customer."No.")
+    end;
+
+    local procedure CreateResponsibilityCenter(var ResponsibilityCenter: Record "Responsibility Center")
+    begin
+        ResponsibilityCenter.Init();
+        ResponsibilityCenter.Validate(Code, LibraryUtility.GenerateRandomCode(ResponsibilityCenter.FieldNo(Code), DATABASE::"Responsibility Center"));
+        ResponsibilityCenter.Validate(Name, ResponsibilityCenter.Code);  // Validating Code as Name because value is not important.
+        ResponsibilityCenter.Insert(true);
+        ResponsibilityCenter.Address := CopyStr(LibraryUtility.GenerateRandomText(10), 1, MaxStrLen(ResponsibilityCenter.Address));
+        ResponsibilityCenter."Address 2" := CopyStr(LibraryUtility.GenerateRandomText(10), 1, MaxStrLen(ResponsibilityCenter."Address 2"));
+        ResponsibilityCenter."Post Code" := CopyStr(LibraryUtility.GenerateRandomText(10), 1, MaxStrLen(ResponsibilityCenter."Post Code"));
+        ResponsibilityCenter.City := CopyStr(LibraryUtility.GenerateRandomText(10), 1, MaxStrLen(ResponsibilityCenter.City));
+        ResponsibilityCenter."Country/Region Code" := CompanyInformation."Country/Region Code";
+        ResponsibilityCenter.Modify(true);
     end;
 
     local procedure CreateSalesLine(SalesHeader: Record "Sales Header"; LineType: Enum "Sales Line Type"; LineDiscount: Boolean);
@@ -776,6 +951,14 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         if LineDiscount then
             SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
         SalesLine.Modify(true);
+    end;
+
+    local procedure CheckSalesHeader(SalesHeader: Record "Sales Header")
+    var
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(SalesHeader);
+        ZUGFeRDFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
     end;
 
     local procedure ExportInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -858,15 +1041,31 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     local procedure VerifySellerData(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
+    begin
+        VerifySellerData(TempXMLBuffer, DocumentTok, CompanyInformation.Address, CompanyInformation."Post Code", CompanyInformation.City);
+    end;
+
+    local procedure VerifySellerData(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text; ResponsibilityCenter: Record "Responsibility Center");
+    begin
+        VerifySellerData(TempXMLBuffer, DocumentTok, ResponsibilityCenter.Address, ResponsibilityCenter."Post Code", ResponsibilityCenter.City);
+    end;
+
+    local procedure VerifySellerData(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text; Address: Text[100]; PostCode: Code[20]; City: Text[30])
     var
         Path: Text;
     begin
         Path := DocumentTok + '/ram:Name';
         Assert.AreEqual(CompanyInformation.Name, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
+        Path := DocumentTok + '/ram:PostalTradeAddress/ram:LineOne';
+        Assert.AreEqual(Address, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/ram:PostalTradeAddress/ram:PostcodeCode';
-        Assert.AreEqual(CompanyInformation."Post Code", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(PostCode, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/ram:PostalTradeAddress/ram:CityName';
-        Assert.AreEqual(CompanyInformation.City, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(City, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
+        Path := DocumentTok + '/ram:URIUniversalCommunication/ram:URIID';
+        Assert.AreEqual(CompanyInformation."E-Mail", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
 
         Path := DocumentTok + '/ram:SpecifiedTaxRegistration/ram:ID';
         Assert.AreEqual(GetVATRegistrationNo(CompanyInformation."VAT Registration No.", CompanyInformation."Country/Region Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
@@ -879,6 +1078,10 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     begin
         Path := DocumentPartyTok + '/ram:Name';
         Assert.AreEqual(SalesInvoiceHeader."Bill-to Name", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
+        Path := DocumentPartyTok + '/ram:URIUniversalCommunication/ram:URIID';
+        Assert.AreEqual(SalesInvoiceHeader."Sell-to E-Mail", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
         Path := DocumentPartyTok + '/ram:SpecifiedTaxRegistration/ram:ID';
         Assert.AreEqual(GetVATRegistrationNo(SalesInvoiceHeader."VAT Registration No.", CompanyInformation."Country/Region Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
@@ -1136,6 +1339,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
     local procedure SetEdocumentServiceBuyerReference(EInvoiceBuyerReference: Enum "E-Document Buyer Reference");
     begin
+        EDocumentService."Buyer Reference Mandatory" := true;
         EDocumentService."Buyer Reference" := EInvoiceBuyerReference;
         EDocumentService.Modify();
     end;
@@ -1269,6 +1473,27 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
             Currency.TestField("Unit-Amount Rounding Precision");
             exit(DocumentCurrencyCode);
         end;
+    end;
+
+    local procedure UpdateReport(ReportUsage: Enum "Report Selection Usage"; ReportId: Integer)
+    var
+        ReportSelection: Record "Report Selections";
+    begin
+        if not ReportSelection.Get(ReportUsage, '1') then begin
+            ReportSelection.Init();
+            ReportSelection.Validate(Usage, ReportUsage);
+            ReportSelection.Validate(Sequence, '1');
+            ReportSelection.Validate("Report ID", ReportId);
+            ReportSelection.Insert(true);
+        end;
+        if ReportSelection."Report ID" <> ReportId then begin
+            ReportSelection.Validate("Report ID", ReportId);
+            ReportSelection.Modify(true);
+        end;
+        ReportSelection.SetRange(Usage, ReportUsage);
+        ReportSelection.SetFilter(Sequence, '<>1');
+        if not ReportSelection.IsEmpty() then
+            ReportSelection.DeleteAll(true);
     end;
 
     procedure FormatDate(VarDate: Date): Text[20];

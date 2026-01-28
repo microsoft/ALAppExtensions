@@ -511,21 +511,6 @@ codeunit 1917 "MigrationQB Helper Functions"
     begin
         exit(LocalGetPropertyFromCode(CodeTxt, Property));
     end;
-#if not CLEAN25
-
-    [TryFunction]
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAuthRequestUrl(ClientId: SecretText; ClientSecret: SecretText; Scope: Text; Url: Text; CallBackUrl: Text; State: Text; var AuthRequestUrl: Text)', '25.0')]
-    procedure GetAuthRequestUrl(ClientId: Text; ClientSecret: Text; Scope: Text; Url: Text; CallBackUrl: Text; State: Text; var AuthRequestUrl: Text)
-    var
-        ClientIdAsSecretText, ClientSecretAsSecretText : SecretText;
-    begin
-        ClientIdAsSecretText := ClientId;
-        ClientSecretAsSecretText := ClientSecret;
-        GetAuthRequestUrl(ClientIdAsSecretText, ClientSecretAsSecretText, Scope, Url, CallBackUrl, State, AuthRequestUrl);
-    end;
-#endif
 
     [TryFunction]
     [Scope('OnPrem')]
@@ -533,23 +518,6 @@ codeunit 1917 "MigrationQB Helper Functions"
     begin
         GetAuthRequestUrlImp(ClientId, ClientSecret, Scope, Url, CallBackUrl, State, AuthRequestUrl);
     end;
-#if not CLEAN25
-
-    [TryFunction]
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAccessToken(Url: Text; Callback: Text; AuthCode: SecretText; ClientId: SecretText; ClientSecret: SecretText; var AccessKey: SecretText)', '25.0')]
-    procedure GetAccessToken(Url: Text; Callback: Text; AuthCode: Text; ClientId: Text; ClientSecret: Text; var AccessKey: Text)
-    var
-        AuthCodeAsSecretText, ClientIdAsSecretText, ClientSecretAsSecretText, AccessKeyAsSecretText : SecretText;
-    begin
-        AuthCodeAsSecretText := AuthCode;
-        ClientIdAsSecretText := ClientId;
-        ClientSecretAsSecretText := ClientSecret;
-        GetAccessToken(Url, Callback, AuthCodeAsSecretText, ClientIdAsSecretText, ClientSecretAsSecretText, AccessKeyAsSecretText);
-        AccessKey := AccessKeyAsSecretText.Unwrap();
-    end;
-#endif
 
     [TryFunction]
     [Scope('OnPrem')]

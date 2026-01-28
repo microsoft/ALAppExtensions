@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Foundation.NoSeries;
+using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
 
 page 18747 "TDS Adjustment Journal"
 {

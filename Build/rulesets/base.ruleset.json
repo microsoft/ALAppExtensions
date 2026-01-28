@@ -24,6 +24,11 @@
       "justification": "Bug 472148. The multilanguage syntax is being deprecated. Please update to the new syntax."
     },
     {
+      "id": "AL0897",
+      "action": "Error",
+      "justification": "Marking it as error temporarily to ensure subsequent PRs have using statements in sorted order to unblock the merging of BCApps PR (to remove the exception for AL0897). Will be reverted once the exception for AL0897 is removed from BCApps."
+    },
+    {
       "id": "AL0432",
       "action": "None",
       "justification": "Use pragma to remove obsolete warning."
@@ -45,15 +50,7 @@
       "action": "Warning"
     },
     {
-      "id": "AL0551",
-      "action": "Warning"
-    },
-    {
       "id": "AL0589",
-      "action": "Warning"
-    },
-    {
-      "id": "AL0602",
       "action": "Warning"
     },
     {
@@ -249,10 +246,6 @@
       "id": "AA0181",
       "action": "Warning",
       "justification": "The FindSet() or Find() method on the record must be used only in connection with the Next() method."
-    },
-    {
-      "id": "AA0189",
-      "action": "Warning"
     },
     {
       "id": "AA0194",

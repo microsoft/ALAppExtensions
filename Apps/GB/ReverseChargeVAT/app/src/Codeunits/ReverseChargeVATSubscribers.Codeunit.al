@@ -4,18 +4,18 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.Currency;
-using Microsoft.Sales.Setup;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Setup;
-using Microsoft.Purchases.Document;
-using Microsoft.Inventory.Item;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
-using Microsoft.Purchases.Posting;
-using System.Telemetry;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Setup;
+using Microsoft.Sales.Document;
 using Microsoft.Sales.Posting;
+using Microsoft.Sales.Setup;
+using System.Telemetry;
 
 codeunit 10552 "Reverse Charge VAT Subscribers"
 {
@@ -24,6 +24,9 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     Access = Internal;
 
     var
+#if not CLEAN28    
+        VATReverseCharge: Codeunit "Reverse Charge VAT GB";
+#endif
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Text1041000Msg: Label 'Warning: You have selected an item that is subject to Reverse Charge VAT. Please check that the VAT Code %1 in the %2 field is correct. If necessary, update this field before posting. ', Comment = '%1 = field value; %2 = field caption';
         Text1041001Msg: Label 'cannot be %1. %2 %3 is not subjected to Reverse Charge', Comment = '%1, %2, %3 = field values';
@@ -35,6 +38,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnAfterAssignHeaderValues, '', false, false)]
     local procedure OnAfterAssignHeaderValues(var PurchLine: Record "Purchase Line"; PurchHeader: Record "Purchase Header")
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         PurchLine."Reverse Charge Item GB" := false;
     end;
 
@@ -44,6 +52,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
         PurchSetup: Record "Purchases & Payables Setup";
         PurchHeader: Record "Purchase Header";
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         PurchSetup.Get();
         if PurchHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.") then;
 
@@ -61,18 +74,33 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnInsertOnAfterLockTable, '', false, false)]
     local procedure OnInsertOnAfterLockTable(var PurchaseLine: Record "Purchase Line"; CurrFieldNo: Integer)
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         DomesticVendorWarning(PurchaseLine, CurrFieldNo);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnAfterModifyOnAfterVerifyChange, '', false, false)]
     local procedure OnAfterModifyOnAfterVerifyChange(var PurchaseLine: Record "Purchase Line"; CurrFieldNo: Integer)
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         DomesticVendorWarning(PurchaseLine, CurrFieldNo);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnCopyFromItemOnAfterCheck, '', false, false)]
     local procedure OnCopyFromItemOnAfterCheck(var PurchaseLine: Record "Purchase Line"; Item: Record Item; CallingFieldNo: Integer)
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         PurchaseLine."Reverse Charge Item GB" := Item."Reverse Charge Applies GB";
     end;
 
@@ -98,6 +126,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterAssignHeaderValues, '', false, false)]
     local procedure OnAfterAssignHeaderValues2(var SalesLine: Record "Sales Line"; SalesHeader: Record "Sales Header")
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         SalesLine."Reverse Charge Item GB" := false;
     end;
 
@@ -106,6 +139,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     var
         SalesSetup: Record "Sales & Receivables Setup";
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         SalesSetup.Get();
         if (SalesLine."VAT Bus. Posting Group" = SalesSetup."Reverse Charge VAT Post. Gr.") and not SalesLine."Reverse Charge Item GB" then
             SalesLine.FieldError("VAT Bus. Posting Group", StrSubstNo(Text1041001Msg, SalesLine."VAT Bus. Posting Group", SalesLine.Type, SalesLine."No."));
@@ -124,18 +162,33 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterInsertOnAfterUpdateDeferralAmounts, '', false, false)]
     local procedure OnAfterInsertOnAfterUpdateDeferralAmounts(var SalesLine: Record "Sales Line"; CurrFieldNo: Integer)
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         DomesticCustomerWarning(SalesLine, CurrFieldNo);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterModifyOnAfterVerifyChangeForSalesLineReserve, '', false, false)]
     local procedure OnAfterModifyOnAfterVerifyChangeForSalesLineReserve(var SalesLine: Record "Sales Line"; CurrFieldNo: Integer)
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         DomesticCustomerWarning(SalesLine, CurrFieldNo);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnCopyFromItemOnAfterCheck, '', false, false)]
     local procedure OnCopyFromItemOnAfterCheck2(var SalesLine: Record "Sales Line"; Item: Record Item)
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         SalesLine."Reverse Charge Item GB" := Item."Reverse Charge Applies GB";
     end;
 
@@ -144,6 +197,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     var
         SalesSetup: Record "Sales & Receivables Setup";
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         if SalesLine.GetReverseChargeApplies() and SalesLine."Reverse Charge Item GB" then begin
             SalesLine."Reverse Charge GB" := SalesLine."Amount Including VAT" - SalesLine.Amount;
             SalesLine.SuspendStatusCheck(true);
@@ -157,6 +215,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     var
         SalesSetup: Record "Sales & Receivables Setup";
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         if SalesLine.GetReverseChargeApplies() and SalesLine."Reverse Charge Item GB" then begin
             SalesLine."Reverse Charge GB" := SalesLine."Amount Including VAT" - SalesLine.Amount;
             SalesLine.SuspendStatusCheck(true);
@@ -166,21 +229,14 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnInsertVATAmountOnBeforeInsert, '', false, false)]
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
     local procedure OnInsertVATAmountOnBeforeInsert(var SalesLine: Record "Sales Line"; var VATAmountLine: Record "VAT Amount Line")
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
     begin
-#if not CLEAN25
-#pragma warning disable AL0432
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
 #endif
+
         VATAmountLine."Reverse Charge GB" := SalesLine."Reverse Charge GB";
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
     end;
 
     local procedure DomesticCustomerWarning(SalesLine: Record "Sales Line"; CurrFieldNo: Integer)
@@ -207,6 +263,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
         PurchHeader: Record "Purchase Header";
         Currency: Record Currency;
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         if not PurchaseLine."Reverse Charge Item GB" then
             exit;
         PurchSetup.Get();
@@ -229,14 +290,13 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnRunOnBeforeCalcVATAmountLines, '', false, false)]
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
     local procedure OnRunOnBeforeCalcVATAmountLines(var TempSalesLineGlobal: Record "Sales Line" temporary; var SalesHeader: Record "Sales Header"; var TempVATAmountLine: Record "VAT Amount Line" temporary; var IsHandled: Boolean)
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         if SalesHeader.GetReverseChargeApplies() then
             TempSalesLineGlobal.SetReverseChargeAppliesGB();
     end;
@@ -247,6 +307,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
         SalesSetup: Record "Sales & Receivables Setup";
         Currency: Record Currency;
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         if not (SalesLine.Quantity = 0) then
             exit;
 
@@ -267,6 +332,11 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     var
         ReverseChargeVATProcedures: Codeunit "Reverse Charge VAT Procedures";
     begin
+#if not CLEAN28
+        if not VATReverseCharge.IsEnabled() then
+            exit;
+#endif
+
         if ShouldInsertInvoiceHeader then
             SalesHeader.SetReverseChargeApplies(ReverseChargeVATProcedures.CheckIfReverseChargeApplies(SalesHeader));
     end;

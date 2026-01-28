@@ -22,8 +22,8 @@ using Microsoft.Inventory.Location;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Setup;
 using System.Globalization;
-using System.Utilities;
 using System.Telemetry;
+using System.Utilities;
 
 report 10583 "Sales - Invoice"
 {
@@ -950,13 +950,7 @@ report 10583 "Sales - Invoice"
         CompanyInfo2: Record "Company Information";
         SalesSetup: Record "Sales & Receivables Setup";
         Cust: Record Customer;
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
         RespCenter: Record "Responsibility Center";
@@ -1176,4 +1170,3 @@ report 10583 "Sales - Invoice"
         NextEntryNo := NextEntryNo + 1
     end;
 }
-

@@ -19,7 +19,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         LibraryIRSReportingPeriod: Codeunit "Library IRS Reporting Period";
         LibraryIRS1099FormBox: Codeunit "Library IRS 1099 Form Box";
         LibraryIRS1099Document: Codeunit "Library IRS 1099 Document";
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit "Assert";
@@ -66,7 +66,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         Initialize();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document without email consent and without email.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -105,7 +105,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         SentEmail.DeleteAll();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document with email consent and email.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -157,7 +157,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         Initialize();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document without email and without consent.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -183,7 +183,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         Initialize();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document without email and with consent.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -212,7 +212,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         SentEmail.DeleteAll();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document with email and consent.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -313,19 +313,11 @@ codeunit 148012 "IRS 1099 Emailing Tests"
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         DummyVendor: Record Vendor;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendorCard: TestPage "Vendor Card";
         ConfirmQuestion: Text;
     begin
         // [SCENARIO 560521] Propagate email consent from vendor to released 1099 form document.
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
 
         // [GIVEN] Released 1099 form document without email and without consent.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -350,9 +342,6 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         Assert.IsTrue(IRS1099FormDocHeader."Receiving 1099 E-Form Consent", 'Receiving 1099 E-Form Consent must be set to true.');
         Assert.AreEqual('', IRS1099FormDocHeader."Vendor E-Mail", 'Vendor E-Mail must be empty.');
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
         LibraryVariableStorage.AssertEmpty();
     end;
 
@@ -362,20 +351,12 @@ codeunit 148012 "IRS 1099 Emailing Tests"
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         DummyVendor: Record Vendor;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendorCard: TestPage "Vendor Card";
         ConfirmQuestion: Text;
         VendorEmail: Text[80];
     begin
         // [SCENARIO 560521] Propagate email from vendor to released 1099 form document.
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
 
         // [GIVEN] Released 1099 form document without email and with consent.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -401,9 +382,6 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         Assert.IsTrue(IRS1099FormDocHeader."Receiving 1099 E-Form Consent", 'Receiving 1099 E-Form Consent must be set to true.');
         Assert.AreEqual(VendorEmail, IRS1099FormDocHeader."Vendor E-Mail", 'Vendor E-Mail must be specified.');
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
         LibraryVariableStorage.AssertEmpty();
     end;
 

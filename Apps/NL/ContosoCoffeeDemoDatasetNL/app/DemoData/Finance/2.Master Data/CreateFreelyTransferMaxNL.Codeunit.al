@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.DemoData.Warehousing;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Warehousing;
 
 codeunit 11525 "Create Freely Transfer Max. NL"
 {

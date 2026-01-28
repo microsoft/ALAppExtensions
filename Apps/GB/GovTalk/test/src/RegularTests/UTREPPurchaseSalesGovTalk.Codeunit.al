@@ -5,8 +5,8 @@
 namespace Microsoft.Finance.VAT.GovTalk;
 
 using Microsoft.Finance.VAT.Reporting;
-using System.TestLibraries.Utilities;
 using System.Environment.Configuration;
+using System.TestLibraries.Utilities;
 
 codeunit 144035 "UT REP Purchase Sales GovTalk"
 {

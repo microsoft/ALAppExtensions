@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document.Attachment;
 
-using System.AI;
 using Microsoft.Sales.Document;
+using System.AI;
 
 codeunit 7296 "Lookup Items From Csv Function" implements "AOAI Function"
 {

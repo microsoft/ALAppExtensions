@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Registration;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Registration;
 
 codeunit 10838 "Create ES Vat Reg. No. Format"
 {

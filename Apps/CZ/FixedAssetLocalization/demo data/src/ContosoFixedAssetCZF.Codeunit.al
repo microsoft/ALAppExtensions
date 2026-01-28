@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets;
+using Microsoft.FixedAssets.Depreciation;
 
 codeunit 31216 "Contoso Fixed Asset CZF"
 {

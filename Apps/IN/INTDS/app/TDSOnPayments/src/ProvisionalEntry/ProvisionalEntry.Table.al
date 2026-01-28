@@ -4,16 +4,16 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSOnPayments;
 
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.TaxBase;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Inventory.Location;
-using Microsoft.Finance.Currency;
-using Microsoft.Sales.Customer;
-using Microsoft.Bank.BankAccount;
 using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 table 18766 "Provisional Entry"
 {

@@ -8,12 +8,12 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Payables;
-using System.Reflection;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
-using System.Utilities;
-using System.Telemetry;
 using System.IO;
+using System.Reflection;
+using System.Telemetry;
+using System.Utilities;
 
 report 10039 "IRS 1099 FIRE"
 {
@@ -313,6 +313,7 @@ report 10039 "IRS 1099 FIRE"
                             ApplicationArea = BasicUS;
                             Caption = 'Contact Name';
                             ToolTip = 'Specifies the name of the contact at the vendor.';
+                            Visible = not ContactInformationTakenFromAKV;
 
                             trigger OnValidate()
                             begin
@@ -325,6 +326,7 @@ report 10039 "IRS 1099 FIRE"
                             ApplicationArea = BasicUS;
                             Caption = 'Contact Phone No.';
                             ToolTip = 'Specifies the phone number of the contact at the vendor.';
+                            Visible = not ContactInformationTakenFromAKV;
 
                             trigger OnValidate()
                             begin
@@ -337,6 +339,7 @@ report 10039 "IRS 1099 FIRE"
                             ApplicationArea = BasicUS;
                             Caption = 'Contact E-Mail';
                             ToolTip = 'Specifies the email address of the contact at the vendor.';
+                            Visible = not ContactInformationTakenFromAKV;
                         }
                     }
                     field(bTestFileField; bTestFile)
@@ -481,11 +484,23 @@ report 10039 "IRS 1099 FIRE"
     }
 
     trigger OnInitReport()
+    var
+        KeyVaultClientIRIS: Codeunit "Key Vault Client IRIS";
+        KVContactName, KVContactEmail, KVContactPhoneNo : Text;
     begin
         FeatureTelemetry.LogUsage('0000ODO', FIRE1099FeatureNameTxt, RunMagMediaReportMsg);
         TestFile := ' ';
         PriorYear := ' ';
         SequenceNo := 0;
+        KeyVaultClientIRIS.GetContactInfo(KVContactName, KVContactEmail, KVContactPhoneNo);
+        if (KVContactName = '') or (KVContactEmail = '') or (KVContactPhoneNo = '') then
+            ContactInformationTakenFromAKV := false
+        else begin
+            ContactName := CopyStr(KVContactName, 1, MaxStrLen(ContactName));
+            ContactEmail := CopyStr(KVContactEmail, 1, MaxStrLen(ContactEmail));
+            ContactPhoneNo := CopyStr(KVContactPhoneNo, 1, MaxStrLen(ContactPhoneNo));
+            ContactInformationTakenFromAKV := true;
+        end;
     end;
 
     trigger OnPostReport()
@@ -600,6 +615,7 @@ report 10039 "IRS 1099 FIRE"
         ContactName: Text[40];
         ContactPhoneNo: Text[30];
         ContactEmail: Text[35];
+        ContactInformationTakenFromAKV: Boolean;
         VendContactName: Text[40];
         VendContactPhoneNo: Text[30];
         PayeeCount: array[4] of Integer;
@@ -874,8 +890,7 @@ report 10039 "IRS 1099 FIRE"
             StrSubstNo('#1##########', Helper.FormatMoneyAmount(0, 12)) +
             StrSubstNo('#1##########', Helper.FormatMoneyAmount(
                 Helper.GetAmt(GetFullMiscCode(9), FormTypeIndex, LastNo), 12)) +
-            StrSubstNo('#1##########', Helper.FormatMoneyAmount(
-                Helper.GetAmt(GetFullMiscCode(14), FormTypeIndex, LastNo), 12)) +
+            StrSubstNo(GetHashTagStringWithLength(12), Helper.FormatMoneyAmount(0, 12)) +
             StrSubstNo('#1##########', Helper.FormatMoneyAmount(
                 Helper.GetAmt(GetFullMiscCode(10), FormTypeIndex, LastNo), 12)) +
             StrSubstNo(GetHashTagStringWithLength(12), Helper.FormatMoneyAmount(
@@ -1201,8 +1216,7 @@ report 10039 "IRS 1099 FIRE"
           StrSubstNo(GetHashTagStringWithLength(18), Helper.FormatMoneyAmount(0, 18)) +
           StrSubstNo('#1################', Helper.FormatMoneyAmount(
               Helper.GetTotal(GetFullMiscCode(9), FormTypeIndex, LastNo), 18)) +
-          StrSubstNo('#1################', Helper.FormatMoneyAmount(
-              Helper.GetTotal(GetFullMiscCode(14), FormTypeIndex, LastNo), 18)) +
+          StrSubstNo(GetHashTagStringWithLength(18), Helper.FormatMoneyAmount(0, 18)) +
           StrSubstNo('#1################', Helper.FormatMoneyAmount(
               Helper.GetTotal(GetFullMiscCode(10), FormTypeIndex, LastNo), 18)) +
           StrSubstNo(GetHashTagStringWithLength(18), Helper.FormatMoneyAmount(

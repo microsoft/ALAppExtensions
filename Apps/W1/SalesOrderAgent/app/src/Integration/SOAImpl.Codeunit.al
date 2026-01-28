@@ -7,8 +7,8 @@
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.AI;
-using System.Environment;
 using System.Email;
+using System.Environment;
 using System.Security.AccessControl;
 using System.Telemetry;
 
@@ -74,7 +74,7 @@ codeunit 4587 "SOA Impl"
             exit(true);
 
         repeat
-            if User.Get(SOASetup."Agent User Security ID") then
+            if User.Get(SOASetup."User Security ID") then
                 if User.State = User.State::Enabled then
                     exit(true);
         until SOASetup.Next() = 0;

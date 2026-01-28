@@ -24,11 +24,13 @@ codeunit 148104 "Test Initialize Handler CZL"
                 UpdateReportSelections();
             134475, // "ERM Dimension Sales"
             137460, // "Phys. Invt. Item Tracking",
+            137007, // "SCM Inventory Costing",
             137153, // "SCM Warehouse - Journal",
+            137275, // "SCM Inventory Journals"
             137294, // "SCM Inventory Miscellaneous II",
             137295, // "SCM Inventory Misc. III",
             137400, // "SCM Inventory - Orders",
-            137007, // "SCM Inventory Costing",
+            137408, // "SCM Warehouse VI"
             137611: // "SCM Costing Rollup Sev 1":
                 UpdateInventorySetup();
             134008, // ERM VAT Settlement with Apply
@@ -39,7 +41,8 @@ codeunit 148104 "Test Initialize Handler CZL"
                     TryBindSuppConfVATEntUpdate();
                     UpdateUserSetup();
                 end;
-            137161: // SCM Warehouse Orders
+            137161, // SCM Warehouse Orders
+            139989: // Sub. Subcontracting Test
                 DisableVATDateUsage();
         end;
 

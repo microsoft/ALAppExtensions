@@ -111,14 +111,14 @@ page 10031 "IRS Reporting Periods"
             }
             action(CopyFrom)
             {
-                Caption = 'Copy Setup From...';
+                Caption = 'Copy Setup';
                 Image = Copy;
-                ToolTip = 'Copy the setup from another period. That includes forms with boxes, vendor setup, adjustments and form statement.';
+                ToolTip = 'Copy the setup from the current period. That includes forms with boxes, vendor setup, adjustments and form statement.';
                 trigger OnAction()
                 var
                     IRSReportingPeriod: Codeunit "IRS Reporting Period";
                 begin
-                    IRSReportingPeriod.CopyReportingPeriodSetup(Rec."No.");
+                    IRSReportingPeriod.CopyReportingPeriodSetupFrom(Rec."No.");
                 end;
             }
             action(CreateIRISTransmission)

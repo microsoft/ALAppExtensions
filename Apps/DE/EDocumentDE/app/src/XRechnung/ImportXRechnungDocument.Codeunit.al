@@ -4,19 +4,18 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using System.Utilities;
+using Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Setup;
-using System.IO;
-using System.Text;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Document;
-using System.Telemetry;
-using Microsoft.eServices.EDocument;
 using Microsoft.Purchases.Vendor;
+using System.IO;
+using System.Telemetry;
+using System.Text;
+using System.Utilities;
 
 codeunit 13915 "Import XRechnung Document"
 {
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
@@ -401,7 +400,7 @@ codeunit 13915 "Import XRechnung Document"
             '/' + DocumentType + '/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@filename':
                 DocumentAttachment."File Name" := CopyStr(TempXMLBuffer.Value.Split('.').Get(1), 1, MaxStrLen(DocumentAttachment."File Name"));
         end;
-        OnAfterParseInvoice(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer);
+        OnAfterParseInvoice(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer, DocumentType);
     end;
     #endregion
 
@@ -538,17 +537,17 @@ codeunit 13915 "Import XRechnung Document"
             '/' + DocumentType + '/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@filename':
                 DocumentAttachment."File Name" := CopyStr(TempXMLBuffer.Value.Split('.').Get(1), 1, MaxStrLen(DocumentAttachment."File Name"));
         end;
-        OnAfterParseCreditMemo(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer);
+        OnAfterParseCreditMemo(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer, DocumentType);
     end;
     #endregion
 
     [IntegrationEvent(false, false)]
-    internal procedure OnAfterParseInvoice(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; TempXMLBuffer: Record "XML Buffer" temporary)
+    internal procedure OnAfterParseInvoice(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; TempXMLBuffer: Record "XML Buffer" temporary; DocumentType: Text)
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    internal procedure OnAfterParseCreditMemo(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; TempXMLBuffer: Record "XML Buffer" temporary)
+    internal procedure OnAfterParseCreditMemo(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; TempXMLBuffer: Record "XML Buffer" temporary; DocumentType: Text)
     begin
     end;
 }

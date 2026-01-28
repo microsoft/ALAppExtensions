@@ -6,15 +6,15 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoData.Common;
-using Microsoft.DemoData.Service;
-using Microsoft.DemoData.Manufacturing;
 using Microsoft.DemoData.FixedAsset;
 using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoData.Jobs;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Enums;
 using Microsoft.Inventory.Setup;
-using Microsoft.DemoTool.Helpers;
 
 codeunit 10506 "Create GB GL Accounts"
 {
@@ -795,7 +795,7 @@ codeunit 10506 "Create GB GL Accounts"
         ContosoGLAccount.InsertGLAccount(TruckCosts(), TruckCostsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::Purchase, '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(OtherVehicleExpenses(), OtherVehicleExpensesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::Purchase, '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(FreightCosts(), FreightCostsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::"Begin-Total", '', '', 0, '', Enum::"General Posting Type"::Purchase, '', '', false, false, false);
-        ContosoGLAccount.InsertGLAccount(FreightFeesForGoods(), FreightFeesForGoodsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::Purchase, '', '', true, false, false);
+        ContosoGLAccount.InsertGLAccount(FreightFeesForGoods(), FreightFeesForGoodsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting, '', CreatePostingGroups.ZeroPostingGroup(), 0, '', Enum::"General Posting Type"::Purchase, '', CreateVATPostingGroups.NoVAT(), true, false, false);
         ContosoGLAccount.InsertGLAccount(CustomsAndForwarding(), CustomsAndForwardingName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::Purchase, '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(FreightFeesProjects(), FreightFeesProjectsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::Purchase, '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(TotalFreightCosts(), TotalFreightCostsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::"End-Total", '', '', 0, FreightCosts() + '..' + TotalFreightCosts(), Enum::"General Posting Type"::Purchase, '', '', false, false, false);

@@ -3,8 +3,8 @@ namespace Microsoft.API.V2;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Integration.Graph;
 using System.IO;
-using System.Utilities;
 using System.Reflection;
+using System.Utilities;
 
 page 30080 "APIV2 - Document Attachments"
 {
@@ -19,7 +19,7 @@ page 30080 "APIV2 - Document Attachments"
     SourceTable = "Attachment Entity Buffer";
     SourceTableTemporary = true;
     Extensible = false;
-    AboutText = 'Manages document attachments linked to sales, purchase, and financial records, enabling external systems to upload, retrieve, update, or delete files such as invoices, orders, and receipts. Supports full CRUD operations for integrating Business Central with document management platforms, automating digital archiving, compliance, and audit documentation workflows.';
+    AboutText = 'Manages document attachments linked to sales, purchase, and financial records. Enables external systems to upload, retrieve, update, or delete files such as invoices, orders, and receipts, supporting full CRUD operations for integrating Business Central with document management platforms, automating digital archiving, compliance, and audit documentation workflows.';
 
     layout
     {

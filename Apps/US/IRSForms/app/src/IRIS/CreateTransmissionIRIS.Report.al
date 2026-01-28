@@ -50,12 +50,21 @@ report 10034 "Create Transmission IRIS"
 
     trigger OnPostReport()
     var
+        CurrReportingPeriod: Record "IRS Reporting Period";
         Transmission: Record "Transmission IRIS";
         DataCheckIRIS: Codeunit "Data Check IRIS";
         IRSFormsFacade: Codeunit "IRS Forms Facade";
+        IRSReportingPeriod: Codeunit "IRS Reporting Period";
         ConfirmMgt: Codeunit "Confirm Management";
+        PrevPeriodNo: Code[20];
     begin
+        CurrReportingPeriod.Get(PeriodNo);
+        PrevPeriodNo := IRSReportingPeriod.GetReportingPeriod(CalcDate('<-1Y>', CurrReportingPeriod."Ending Date"));
+        if PrevPeriodNo <> '' then
+            IRSReportingPeriod.UpdateDataForNewTaxYear(PrevPeriodNo, PeriodNo, true);
+
         Transmission.SetRange("Period No.", PeriodNo);
+        OnPostReportOnBeforeTransmissionFindFirst(Transmission);
         if Transmission.FindFirst() then
             if not ConfirmMgt.GetResponseOrDefault(StrSubstNo(TransmissionExistsQst, PeriodNo), false) then
                 Error('');
@@ -85,5 +94,10 @@ report 10034 "Create Transmission IRIS"
     begin
         if not IRSReportingPeriod.Get(NewPeriodNo) then
             Error(PeriodNoErr, NewPeriodNo);
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnPostReportOnBeforeTransmissionFindFirst(var Transmission: Record "Transmission IRIS")
+    begin
     end;
 }

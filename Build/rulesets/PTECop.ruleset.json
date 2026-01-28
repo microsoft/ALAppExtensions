@@ -3,11 +3,13 @@
   "rules": [
     {
       "id": "PTE0001",
-      "action": "Error"
+      "action": "None",
+      "justification": "Object ID must be in free range."
     },
     {
       "id": "PTE0002",
-      "action": "Error"
+      "action": "None",
+      "justification": "PTE ID ranges do not apply to 1st party apps"
     },
     {
       "id": "PTE0003",
@@ -19,11 +21,13 @@
     },
     {
       "id": "PTE0005",
-      "action": "Error"
+      "action": "None",
+      "justification": "The compilation target of an application must be a value that is allowed in a multi-tenant SaaS environment"
     },
     {
       "id": "PTE0006",
-      "action": "Error"
+      "action": "None",
+      "justification": "Encryption key functions must not be invoked."
     },
     {
       "id": "PTE0007",
@@ -48,11 +52,13 @@
     },
     {
       "id": "PTE0012",
-      "action": "Error"
+      "action": "None",
+      "justification": "Test assertion functions are not allowed in a non-test context."
     },
     {
       "id": "PTE0013",
-      "action": "Error"
+      "action": "None",
+      "justification": "Entitlements cannot be defined in an extension."
     },
     {
       "id": "PTE0014",
@@ -97,7 +103,8 @@
     },
     {
       "id": "PTE0024",
-      "action": "Error"
+      "action": "None",
+      "justification": "We allow moved symbols for Microsoft apps because we run PTECop on the entire codebase which includes global apps."
     },
     {
       "id": "PTE0025",

@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Purchases.Document;
 using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.TaxBase;
+using Microsoft.Purchases.Document;
 
 codeunit 19068 "Contoso IN Purch. Document"
 {

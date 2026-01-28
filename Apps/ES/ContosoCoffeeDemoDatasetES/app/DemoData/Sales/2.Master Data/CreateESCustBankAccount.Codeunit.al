@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.Customer;
 
 codeunit 10820 "Create ES Cust Bank Account"
 {

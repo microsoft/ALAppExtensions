@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Jobs;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Inventory.Item;
 
 codeunit 5192 "Create Job Item"

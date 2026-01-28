@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using System.Text;
+
 codeunit 10049 "IRS 1099 Printing Impl." implements "IRS 1099 Printing"
 {
     Access = Internal;
@@ -37,10 +39,29 @@ codeunit 10049 "IRS 1099 Printing Impl." implements "IRS 1099 Printing"
 
     procedure PrintContent(IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
     begin
-        if not (IRS1099FormDocHeader.Status in ["IRS 1099 Form Doc. Status"::Released, "IRS 1099 Form Doc. Status"::Submitted]) then
+        if not (IRS1099FormDocHeader.Status in ["IRS 1099 Form Doc. Status"::Released, "IRS 1099 Form Doc. Status"::Submitted, "IRS 1099 Form Doc. Status"::"In Progress"]) then
             IRS1099FormDocHeader.FieldError(Status);
         IRS1099FormDocHeader.SetRecFilter();
         Report.Run(Report::"IRS 1099 Print", true, false, IRS1099FormDocHeader);
+    end;
+
+    procedure PrintMultipleDocumentContent(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
+    var
+        SelectionFilterMgt: Codeunit SelectionFilterManagement;
+        RecRef: RecordRef;
+        DocumentIDFilter: Text;
+    begin
+        if IRS1099FormDocHeader.FindSet() then
+            repeat
+                if not (IRS1099FormDocHeader.Status in ["IRS 1099 Form Doc. Status"::Released, "IRS 1099 Form Doc. Status"::Submitted, "IRS 1099 Form Doc. Status"::"In Progress"]) then
+                    IRS1099FormDocHeader.FieldError(Status);
+            until IRS1099FormDocHeader.Next() = 0;
+
+        RecRef.GetTable(IRS1099FormDocHeader);
+        DocumentIDFilter := SelectionFilterMgt.GetSelectionFilter(RecRef, IRS1099FormDocHeader.FieldNo(ID), false);
+        IRS1099FormDocHeader.SetFilter(ID, DocumentIDFilter);
+
+        Report.RunModal(Report::"IRS 1099 Print", true, false, IRS1099FormDocHeader);
     end;
 
     local procedure ContentForPrintingExists(IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; IRS1099PrintParams: Record "IRS 1099 Print Params"): Boolean

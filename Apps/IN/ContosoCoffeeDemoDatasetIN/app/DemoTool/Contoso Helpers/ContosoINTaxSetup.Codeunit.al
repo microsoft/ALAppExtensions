@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Finance.TaxBase;
-using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Finance.GST.Base;
-using Microsoft.Finance.GST.Reconcilation;
 using Microsoft.Finance.GST.Payments;
-using Microsoft.FixedAssets.FADepreciation;
+using Microsoft.Finance.GST.Reconcilation;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TCS.TCSBase;
+using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Finance.TDS.TDSForCustomer;
+using Microsoft.FixedAssets.FADepreciation;
 
 codeunit 19004 "Contoso IN Tax Setup"
 {

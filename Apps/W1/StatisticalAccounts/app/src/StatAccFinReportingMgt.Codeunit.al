@@ -1,7 +1,7 @@
 namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
-using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.Analysis;
+using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Period;
 

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.HumanResources.Employee;
 using Microsoft.DemoData.HumanResources;
+using Microsoft.HumanResources.Employee;
 
 codeunit 11184 "Create Employee AT"
 {

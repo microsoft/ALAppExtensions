@@ -222,8 +222,8 @@ report 11757 "Documentation for VAT CZL"
 
                             CountrySubTotalAmt[1] += "VAT Entry".Base;
                             CountrySubTotalAmt[2] += "VAT Entry".Amount;
-                            CountrySubTotalAmt[3] += "VAT Entry"."Original VAT Base CZL";
-                            CountrySubTotalAmt[4] += "VAT Entry"."Original VAT Amount CZL";
+                            CountrySubTotalAmt[3] += "VAT Entry".GetOriginalVATBaseCZL();
+                            CountrySubTotalAmt[4] += "VAT Entry".GetOriginalVATAmountCZL();
                             CountrySubTotalAmt[5] += "VAT Entry".CalcDeductibleVATBaseCZL();
 
                             SetRange(Number, 0);
@@ -242,8 +242,8 @@ report 11757 "Documentation for VAT CZL"
                     begin
                         VATEntrySubtotalAmt[1] += Base;
                         VATEntrySubtotalAmt[2] += Amount;
-                        VATEntrySubtotalAmt[3] += "Original VAT Base CZL";
-                        VATEntrySubtotalAmt[4] += "Original VAT Amount CZL";
+                        VATEntrySubtotalAmt[3] += GetOriginalVATBaseCZL();
+                        VATEntrySubtotalAmt[4] += GetOriginalVATAmountCZL();
                         VATEntrySubtotalAmt[5] += CalcDeductibleVATBaseCZL();
 
                         case "VAT Posting Setup"."VAT Calculation Type" of
@@ -399,6 +399,8 @@ report 11757 "Documentation for VAT CZL"
                                 "VAT Entry"."Non-Deductible VAT Amount" += VATEntry."Non-Deductible VAT Amount";
                                 "VAT Entry"."Original VAT Base CZL" += VATEntry."Original VAT Base CZL";
                                 "VAT Entry"."Original VAT Amount CZL" += VATEntry."Original VAT Amount CZL";
+                                "VAT Entry"."Original VAT Base ACY CZL" += VATEntry."Original VAT Base ACY CZL";
+                                "VAT Entry"."Original VAT Amount ACY CZL" += VATEntry."Original VAT Amount ACY CZL";
                                 "VAT Entry".Modify();
                             end;
                         until VATEntry.Next() = 0;
@@ -455,22 +457,29 @@ report 11757 "Documentation for VAT CZL"
 
                         trigger OnValidate()
                         begin
-                            if StartDateReq <> 0D then begin
-                                VATReturnPeriod.SetRange("Start Date", StartDateReq);
-                                VATReturnPeriod.FindLast();
-                                EndDateReq := VATReturnPeriod."End Date";
-                            end;
+                            if StartDateReq <> 0D then
+                                EndDateReq := GetVATPeriodEndDate();
                         end;
 
                         trigger OnLookup(var Text: Text): Boolean
+#if not CLEAN28
                         var
-                            VATReturnPeriodList: Page "VAT Return Period List";
+                            ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
                         begin
-                            VATReturnPeriodList.LookupMode := true;
-                            if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+#if not CLEAN28
+#pragma warning disable AL0432
+                            if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+                                if not RunVATPeriods(VATPeriodCZL) then
+                                    exit(false);
+                                StartDateReq := VATPeriodCZL."Starting Date";
+                                EndDateReq := GetVATPeriodEndDate();
+                                exit;
+                            end;
+#pragma warning restore AL0432
+#endif
+                            if not RunVATReturnPeriodList(VATReturnPeriod) then
                                 exit(false);
-
-                            VATReturnPeriodList.GetRecord(VATReturnPeriod);
                             StartDateReq := VATReturnPeriod."Start Date";
                             EndDateReq := VATReturnPeriod."End Date";
                         end;
@@ -566,6 +575,11 @@ report 11757 "Documentation for VAT CZL"
         VATEntryFiltered: Record "VAT Entry";
         VATEntry: Record "VAT Entry";
         GeneralLedgerSetup: Record "General Ledger Setup";
+#if not CLEAN28
+#pragma warning disable AL0432
+        VATPeriodCZL: Record "VAT Period CZL";
+#pragma warning restore AL0432
+#endif
         VATReturnPeriod: Record "VAT Return Period";
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT";
         Selection: Enum "VAT Statement Report Selection";
@@ -595,15 +609,15 @@ report 11757 "Documentation for VAT CZL"
                 begin
                     VATBasePurchTotal[1] += VATEntry.Base;
                     VATAmountPurchTotal[1] += VATEntry.Amount;
-                    VATBasePurchTotal[2] += VATEntry."Original VAT Base CZL";
-                    VATAmountPurchTotal[2] += VATEntry."Original VAT Amount CZL";
+                    VATBasePurchTotal[2] += VATEntry.GetOriginalVATBaseCZL();
+                    VATAmountPurchTotal[2] += VATEntry.GetOriginalVATAmountCZL();
                     VATBasePurchTotal[3] += VATEntry.CalcDeductibleVATBaseCZL();
 
                     if VATEntry."VAT Calculation Type" = VATEntry."VAT Calculation Type"::"Reverse Charge VAT" then begin
-                        VATBaseReverseChargeVATTotal[1] -= VATEntry."Original VAT Base CZL";
-                        VATAmountReverseChargeVATTotal[1] -= VATEntry."Original VAT Amount CZL";
-                        VATBaseReverseChargeVATTotal[2] -= VATEntry."Original VAT Base CZL";
-                        VATAmountReverseChargeVATTotal[2] -= VATEntry."Original VAT Amount CZL";
+                        VATBaseReverseChargeVATTotal[1] -= VATEntry.GetOriginalVATBaseCZL();
+                        VATAmountReverseChargeVATTotal[1] -= VATEntry.GetOriginalVATAmountCZL();
+                        VATBaseReverseChargeVATTotal[2] -= VATEntry.GetOriginalVATBaseCZL();
+                        VATAmountReverseChargeVATTotal[2] -= VATEntry.GetOriginalVATAmountCZL();
                         VATBaseReverseChargeVATTotal[3] -= VATEntry.CalcDeductibleVATBaseCZL();
                     end;
                 end;
@@ -611,8 +625,8 @@ report 11757 "Documentation for VAT CZL"
                 begin
                     VATBaseSaleTotal[1] += VATEntry.Base;
                     VATAmountSaleTotal[1] += VATEntry.Amount;
-                    VATBaseSaleTotal[2] += VATEntry."Original VAT Base CZL";
-                    VATAmountSaleTotal[2] += VATEntry."Original VAT Amount CZL";
+                    VATBaseSaleTotal[2] += VATEntry.GetOriginalVATBaseCZL();
+                    VATAmountSaleTotal[2] += VATEntry.GetOriginalVATAmountCZL();
                     VATBaseSaleTotal[3] += VATEntry.CalcDeductibleVATBaseCZL();
                 end;
         end;
@@ -622,6 +636,54 @@ report 11757 "Documentation for VAT CZL"
         VATBaseTotal[2] := VATBasePurchTotal[2] + VATBaseReverseChargeVATTotal[2] + VATBaseSaleTotal[2];
         VATAmountTotal[2] := VATAmountPurchTotal[2] + VATAmountReverseChargeVATTotal[2] + VATAmountSaleTotal[2];
         VATBaseTotal[3] := VATBasePurchTotal[3] + VATBaseReverseChargeVATTotal[3] + VATBaseSaleTotal[3];
+    end;
+
+    local procedure GetVATPeriodEndDate(): Date
+#if not CLEAN28
+    var
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
+    begin
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+            VATPeriodCZL.Get(StartDateReq);
+            if VATPeriodCZL.Next() > 0 then
+                exit(CalcDate('<-1D>', VATPeriodCZL."Starting Date"));
+            exit(0D);
+        end;
+#pragma warning restore AL0432
+#endif
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.SetRange("Start Date", StartDateReq);
+        VATReturnPeriod.FindLast();
+        exit(VATReturnPeriod."End Date");
+    end;
+#if not CLEAN28
+#pragma warning disable AL0432
+
+    local procedure RunVATPeriods(var OutVATPeriodCZL: Record "VAT Period CZL"): Boolean
+    var
+        VATPeriodsCZL: Page "VAT Periods CZL";
+    begin
+        VATPeriodsCZL.LookupMode := true;
+        if VATPeriodsCZL.RunModal() <> Action::LookupOK then
+            exit(false);
+        VATPeriodsCZL.GetRecord(OutVATPeriodCZL);
+        exit(true);
+    end;
+#pragma warning restore AL0432
+#endif
+
+    local procedure RunVATReturnPeriodList(var OutVATReturnPeriod: Record "VAT Return Period"): Boolean
+    var
+        VATReturnPeriodList: Page "VAT Return Period List";
+    begin
+        VATReturnPeriodList.LookupMode := true;
+        if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+            exit(false);
+        VATReturnPeriodList.GetRecord(OutVATReturnPeriod);
+        exit(true);
     end;
 
     [IntegrationEvent(true, false)]

@@ -11,8 +11,8 @@ using Microsoft.FixedAssets.Ledger;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.UOM;
-using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Transfer;
@@ -30,7 +30,6 @@ using System.Utilities;
 
 codeunit 148121 "Intrastat Report Management IT"
 {
-    Access = Internal;
     SingleInstance = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeInitSetup', '', true, true)]

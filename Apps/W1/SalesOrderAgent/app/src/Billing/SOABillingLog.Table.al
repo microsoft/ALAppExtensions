@@ -1,9 +1,9 @@
+#if not CLEANSCHEMA28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-#pragma warning disable AS0007
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.AI;
@@ -12,6 +12,14 @@ table 4586 "SOA Billing Log"
 {
     DataClassification = SystemMetadata;
     Access = Internal;
+    ObsoleteReason = 'Replaced by platform logging capabilities';
+#if not CLEAN28
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '31.0';
+#endif
     InherentEntitlements = rimX;
     InherentPermissions = rimX;
     DataPerCompany = false;
@@ -87,3 +95,4 @@ table 4586 "SOA Billing Log"
         }
     }
 }
+#endif

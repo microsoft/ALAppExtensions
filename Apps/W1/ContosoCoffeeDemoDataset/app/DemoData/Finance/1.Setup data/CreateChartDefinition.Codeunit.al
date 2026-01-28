@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using System.Visualization;
 using Microsoft.Finance.FinancialReports;
+using System.Visualization;
 
 codeunit 5427 "Create Chart Definition"
 {

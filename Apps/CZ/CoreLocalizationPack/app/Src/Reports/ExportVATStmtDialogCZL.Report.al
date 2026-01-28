@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Foundation.Company;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 using System.Utilities;
 
 report 31003 "Export VAT Stmt. Dialog CZL"
@@ -62,13 +62,27 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                         trigger OnLookup(var Text: Text): Boolean
                         var
                             VATReturnPeriod: Record "VAT Return Period";
-                            VATReturnPeriodList: Page "VAT Return Period List";
+#if not CLEAN28
+#pragma warning disable AL0432
+                            VATPeriodCZL: Record "VAT Period CZL";
+                            ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#pragma warning restore AL0432
+#endif
                         begin
-                            VATReturnPeriodList.LookupMode := true;
-                            if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+#if not CLEAN28
+#pragma warning disable AL0432
+                            if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+                                if not RunVATPeriods(VATPeriodCZL) then
+                                    exit(false);
+                                StartDate := VATPeriodCZL."Starting Date";
+                                EndDate := GetVATPeriodEndDate();
+                                StartDateOnAfterValidate();
+                                exit;
+                            end;
+#pragma warning restore AL0432
+#endif
+                            if not RunVATReturnPeriodList(VATReturnPeriod) then
                                 exit(false);
-
-                            VATReturnPeriodList.GetRecord(VATReturnPeriod);
                             StartDate := VATReturnPeriod."Start Date";
                             EndDate := VATReturnPeriod."End Date";
                             StartDateOnAfterValidate();
@@ -371,18 +385,65 @@ report 31003 "Export VAT Stmt. Dialog CZL"
     end;
 
     local procedure StartDateOnAfterValidate()
-    var
-        VATReturnPeriod: Record "VAT Return Period";
     begin
-        if StartDate <> 0D then begin
-            VATReturnPeriod.SetRange("Start Date", StartDate);
-            VATReturnPeriod.FindLast();
-            EndDate := VATReturnPeriod."End Date";
-        end;
+        if StartDate <> 0D then
+            StartDate := GetVATPeriodEndDate();
 
         UpdateDateParameters();
         Attachments := CalcAttachmentsCount();
         Comments := CalcCommentsCount();
+    end;
+
+    local procedure GetVATPeriodEndDate(): Date
+    var
+        VATReturnPeriod: Record "VAT Return Period";
+#if not CLEAN28
+#pragma warning disable AL0432
+        VATPeriodCZL: Record "VAT Period CZL";
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#pragma warning restore AL0432
+#endif
+    begin
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+            VATPeriodCZL.Get(StartDate);
+            if VATPeriodCZL.Next() > 0 then
+                exit(CalcDate('<-1D>', VATPeriodCZL."Starting Date"));
+            exit(0D);
+        end;
+#pragma warning restore AL0432
+#endif
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.SetRange("Start Date", StartDate);
+        VATReturnPeriod.FindLast();
+        exit(VATReturnPeriod."End Date");
+    end;
+#if not CLEAN28
+#pragma warning disable AL0432
+
+    local procedure RunVATPeriods(var OutVATPeriodCZL: Record "VAT Period CZL"): Boolean
+    var
+        VATPeriodsCZL: Page "VAT Periods CZL";
+    begin
+        VATPeriodsCZL.LookupMode := true;
+        if VATPeriodsCZL.RunModal() <> Action::LookupOK then
+            exit(false);
+        VATPeriodsCZL.GetRecord(OutVATPeriodCZL);
+        exit(true);
+    end;
+#pragma warning restore AL0432
+#endif
+
+    local procedure RunVATReturnPeriodList(var OutVATReturnPeriod: Record "VAT Return Period"): Boolean
+    var
+        VATReturnPeriodList: Page "VAT Return Period List";
+    begin
+        VATReturnPeriodList.LookupMode := true;
+        if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+            exit(false);
+        VATReturnPeriodList.GetRecord(OutVATReturnPeriod);
+        exit(true);
     end;
 
     local procedure SetUseAmtsInAddCurr()

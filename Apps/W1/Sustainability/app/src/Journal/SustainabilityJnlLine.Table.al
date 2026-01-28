@@ -1,9 +1,9 @@
 namespace Microsoft.Sustainability.Journal;
 
+using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.UOM;
-using Microsoft.Finance.Dimension;
 using Microsoft.Inventory.Location;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;
@@ -409,6 +409,10 @@ table 6214 "Sustainability Jnl. Line"
         field(5154; "Renewable Energy"; Boolean)
         {
             Caption = 'Renewable Energy';
+        }
+        field(5817; Correction; Boolean)
+        {
+            Caption = 'Correction';
         }
     }
 

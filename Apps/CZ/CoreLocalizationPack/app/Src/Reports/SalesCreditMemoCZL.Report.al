@@ -270,6 +270,9 @@ report 31190 "Sales Credit Memo CZL"
             column(ExternalDocumentNo_SalesCrMemoHeader; "External Document No.")
             {
             }
+            column(YourReference_SalesCrMemoHeader; "Your Reference")
+            {
+            }
             column(ShipmentMethod; ShipmentMethod.Description)
             {
             }

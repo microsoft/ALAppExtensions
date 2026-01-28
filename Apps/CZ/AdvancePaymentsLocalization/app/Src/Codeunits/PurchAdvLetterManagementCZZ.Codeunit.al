@@ -299,20 +299,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         PurchAdvLetterPostCZZ.PostAdvancePayment(
             VendorLedgerEntry, PostedGenJournalLine, GenJnlPostLine, AdvancePostingParametersCZZ);
     end;
-#if not CLEAN25
-    [Obsolete('Replaced by GetAdvanceGLAccountNoCZZ function in GenJournalLine.', '25.0')]
-    procedure GetAdvanceGLAccount(var GenJournalLine: Record "Gen. Journal Line"): Code[20]
-    var
-        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
-    begin
-        PurchAdvLetterHeaderCZZ.Get(GenJournalLine."Adv. Letter No. (Entry) CZZ");
-        PurchAdvLetterHeaderCZZ.TestField("Advance Letter Code");
-        AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Advance Letter G/L Account");
-        exit(AdvanceLetterTemplateCZZ."Advance Letter G/L Account");
-    end;
-#endif
 
     procedure PostAdvancePaymentVAT(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
     begin

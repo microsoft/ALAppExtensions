@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.DemoData.Localization;
+using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 11541 "Create FA Posting Grp. NL"
 {

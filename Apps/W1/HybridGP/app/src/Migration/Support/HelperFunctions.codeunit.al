@@ -1,44 +1,44 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Reflection;
-using System.Utilities;
-using System.Integration;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.Consolidation;
-using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Location;
-using Microsoft.Finance.Dimension;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Inventory.Setup;
-using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Inventory.Ledger;
-using Microsoft.Inventory.Journal;
-using Microsoft.Foundation.AuditCodes;
-using Microsoft.Foundation.Company;
-using Microsoft.Foundation.Period;
-using Microsoft.Manufacturing.Setup;
-using Microsoft.CRM.Setup;
-using Microsoft.Purchases.Setup;
-using Microsoft.Sales.Setup;
-using Microsoft.Sales.Customer;
-using Microsoft.Sales.Receivables;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Payables;
-using Microsoft.Foundation.PaymentTerms;
-using Microsoft.Inventory.Tracking;
-using Microsoft.Inventory.Costing;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
 using Microsoft.Bank.Reconciliation;
-using Microsoft.Purchases.Document;
-using Microsoft.Finance.Currency;
-using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.CRM.Setup;
 using Microsoft.DataMigration;
-using Microsoft.Utilities;
-using Microsoft.Inventory.Posting;
 using Microsoft.Finance.Analysis.StatisticalAccount;
+using Microsoft.Finance.Consolidation;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Period;
+using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Posting;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Tracking;
+using Microsoft.Manufacturing.Setup;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Setup;
+using Microsoft.Utilities;
+using System.Integration;
+using System.Reflection;
+using System.Utilities;
 
 codeunit 4037 "Helper Functions"
 {
@@ -106,15 +106,9 @@ codeunit 4037 "Helper Functions"
         SavedJrnlLinesFoundMsg: Label 'Saved journal lines are found. In order to use the wizard, you will need to delete the journal lines before you migrate your data.';
         MigrationNotSupportedErr: Label 'This migration does not support the "Specific" costing method. Verify your costing method in Inventory Setup.';
         PostingGroupCodeTxt: Label 'GP', Locked = true;
-#if not CLEAN25
-        DocNoOutofBalanceMsg: Label 'Document No. %1 is out of balance by %2. Transactions will not be created. Please check the amount in the import file.', Comment = '%1 = Balance Amount', Locked = true;
-#endif
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         BankBatchNameTxt: Label 'GPBANK', Locked = true;
-#if not CLEAN25
-        GlDocNoTxt: Label 'G00001', Locked = true;
-#endif
         MigrationTypeTxt: Label 'Great Plains';
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
@@ -1356,34 +1350,6 @@ codeunit 4037 "Helper Functions"
         Session.LogMessage('00007GK', StrSubstNo(FinishedTelemetryTxt, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
 
-#if not CLEAN25
-    [Obsolete('This procedure will be soon removed.', '25.0')]
-    procedure PostGLBatch(JournalBatchName: Code[10])
-    var
-        GenJournalLine: Record "Gen. Journal Line";
-        TotalBalance: Decimal;
-    begin
-        GenJournalLine.Reset();
-        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
-        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
-        // Do not care about balances for Customer, Vendor, and Bank batches
-        if (JournalBatchName <> CustomerBatchNameTxt) and (JournalBatchName <> VendorBatchNameTxt) and (JournalBatchName <> BankBatchNameTxt) then begin
-            repeat
-                TotalBalance := TotalBalance + GenJournalLine.Amount;
-            until GenJournalLine.Next() = 0;
-            if TotalBalance = 0 then
-                if GenJournalLine.FindFirst() then
-                    codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJournalLine)
-                else begin
-                    Message(StrSubstNo(DocNoOutofBalanceMsg, GlDocNoTxt, FORMAT(TotalBalance)));
-                    if GenJournalLine.FindFirst() then
-                        GenJournalLine.DeleteAll();
-                end;
-        end else
-            if GenJournalLine.FindFirst() then
-                codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJournalLine);
-    end;
-#endif
 
     local procedure SafePostGLBatch(JournalBatchName: Code[10])
     var
@@ -1399,17 +1365,6 @@ codeunit 4037 "Helper Functions"
         end;
     end;
 
-#if not CLEAN25
-    [Obsolete('This procedure will be soon removed.', '25.0')]
-    procedure PostStatisticalAccBatch(JournalBatchName: Code[10])
-    var
-        StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
-    begin
-        StatisticalAccJournalLine.SetRange("Journal Batch Name", JournalBatchName);
-        if StatisticalAccJournalLine.FindFirst() then
-            Codeunit.Run(Codeunit::"Stat. Acc. Post. Batch", StatisticalAccJournalLine);
-    end;
-#endif
 
     local procedure SafePostStatisticalAccBatch(JournalBatchName: Code[10])
     var

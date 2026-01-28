@@ -1,8 +1,8 @@
 namespace Microsoft.Utility.ImageAnalysis;
 
 using Microsoft.Inventory.Item;
-using System.AI;
 using Microsoft.Inventory.Item.Attribute;
+using System.AI;
 using System.Text;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 

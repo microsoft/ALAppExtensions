@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Sales;
 
 using Microsoft.DemoData.Finance;
-using Microsoft.Sales.Customer;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Sales.Customer;
 
 codeunit 11470 "Create Customer US"
 {

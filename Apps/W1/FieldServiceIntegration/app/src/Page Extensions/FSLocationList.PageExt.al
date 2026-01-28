@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Inventory.Location;
 using Microsoft.Integration.Dataverse;
+using Microsoft.Inventory.Location;
 
 pageextension 6623 "FS Location List" extends "Location List"
 {

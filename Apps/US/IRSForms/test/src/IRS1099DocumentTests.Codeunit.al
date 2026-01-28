@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Purchases.Document;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Setup;
 using System.TestLibraries.Utilities;
-using Microsoft.Purchases.Payables;
 
 codeunit 148010 "IRS 1099 Document Tests"
 {
@@ -37,7 +37,7 @@ codeunit 148010 "IRS 1099 Document Tests"
         CannotChangeIRSDataInEntryConnectedToFormDocumentErr: Label 'You cannot change the IRS data in the vendor ledger entry connected to the form document. Period = %1, Vendor No. = %2, Form No. = %3', Comment = '%1 = Period No., %2 = Vendor No., %3 = Form No.';
         PeriodNoFieldVisibleErr: Label 'Field Period No. should be visible.';
         PeriodNoNotVisibleErr: Label 'Field Period No. should not be visible.';
-        ChangingPostingDateInPurchHeaderWhileHavingLineMsg: Label 'You have changed the Posting Date on the purchase order, which might affect the prices and discounts on the purchase order lines.\You should review the lines and manually update prices and discounts if needed';
+        ChangingPostingDateInPurchHeaderWhileHavingLineMsg: Label 'You have changed the Posting Date on the purchase header, which might affect the prices and discounts on the purchase lines.\You should review the lines and manually update prices and discounts if needed';
 
 
     trigger OnRun()
@@ -169,6 +169,9 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099FormDocLine.TestField("Include In 1099", TempIRS1099VendFormBoxBuffer."Include In 1099");
         IRS1099FormDocLineDetail.Get(IRS1099FormDocLine."Document ID", IRS1099FormDocLine."Line No.", EntryNo);
 
+        // tear down
+        DeleteDocuments();
+        Commit();
     end;
 
     [Test]
@@ -808,12 +811,270 @@ codeunit 148010 "IRS 1099 Document Tests"
         Assert.IsFalse(IRS1099FormDocument."Period No.".Visible(), PeriodNoNotVisibleErr);
     end;
 
+    [Test]
+    procedure IRS1099DataUpdatedInPurchHeaderWhenPostingDateChangedToNewPeriod()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        VendorNo: Code[20];
+        FormNo: array[2] of Code[20];
+        FormBoxNo: array[2] of Code[20];
+        ReportingDate: array[2] of Date;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 616165] IRS 1099 data is updated in purchase header when posting date changes to a different reporting period
+        Initialize();
+
+        // [GIVEN] Two IRS Reporting Periods: "P1" for WorkDate() and "P2" for WorkDate() + 1 year
+        ReportingDate[1] := WorkDate();
+        ReportingDate[2] := CalcDate('<1Y>', WorkDate());
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(ReportingDate[1]);
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(ReportingDate[2]);
+
+        // [GIVEN] Form "F1" with form box "FB1" for period "P1"
+        FormNo[1] := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(ReportingDate[1]);
+        FormBoxNo[1] := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(ReportingDate[1], FormNo[1]);
+
+        // [GIVEN] Form "F2" with form box "FB2" for period "P2"
+        FormNo[2] := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(ReportingDate[2]);
+        FormBoxNo[2] := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(ReportingDate[2], FormNo[2]);
+
+        // [GIVEN] Vendor "V" with form box "FB1" for period "P1" and form box "FB2" for period "P2"
+        VendorNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(ReportingDate[1], FormNo[1], FormBoxNo[1]);
+        LibraryIRS1099FormBox.AssignFormBoxForVendorInPeriod(VendorNo, ReportingDate[2], ReportingDate[2], FormNo[2], FormBoxNo[2]);
+
+        // [GIVEN] Purchase invoice for vendor "V" with posting date in period "P1"
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo);
+        LibraryIRS1099Document.VerifyIRS1099CodeInPurchaseHeader(PurchaseHeader, FormNo[1], FormBoxNo[1]);
+
+        // [WHEN] Change posting date to period "P2"
+        PurchaseHeader.Validate("Posting Date", ReportingDate[2]);
+
+        // [THEN] IRS 1099 data is updated to reflect form box setup for period "P2"
+        LibraryIRS1099Document.VerifyIRS1099CodeInPurchaseHeader(PurchaseHeader, FormNo[2], FormBoxNo[2]);
+    end;
+
+    [Test]
+    procedure IRS1099DataUpdatedInGenJnlLineWhenPostingDateChangedToNewPeriod()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        VendorNo: Code[20];
+        FormNo: array[2] of Code[20];
+        FormBoxNo: array[2] of Code[20];
+        ReportingDate: array[2] of Date;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 616165] IRS 1099 data is updated in general journal line when posting date changes to a different reporting period
+        Initialize();
+
+        // [GIVEN] Two IRS Reporting Periods: "P1" for WorkDate() and "P2" for WorkDate() + 1 year
+        ReportingDate[1] := WorkDate();
+        ReportingDate[2] := CalcDate('<1Y>', WorkDate());
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(ReportingDate[1]);
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(ReportingDate[2]);
+
+        // [GIVEN] Form "F1" with form box "FB1" for period "P1"
+        FormNo[1] := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(ReportingDate[1]);
+        FormBoxNo[1] := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(ReportingDate[1], FormNo[1]);
+
+        // [GIVEN] Form "F2" with form box "FB2" for period "P2"
+        FormNo[2] := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(ReportingDate[2]);
+        FormBoxNo[2] := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(ReportingDate[2], FormNo[2]);
+
+        // [GIVEN] Vendor "V" with form box "FB1" for period "P1" and form box "FB2" for period "P2"
+        VendorNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(ReportingDate[1], FormNo[1], FormBoxNo[1]);
+        LibraryIRS1099FormBox.AssignFormBoxForVendorInPeriod(VendorNo, ReportingDate[2], ReportingDate[2], FormNo[2], FormBoxNo[2]);
+
+        // [GIVEN] General journal line with document type Invoice for vendor "V" with posting date in period "P1"
+        LibraryERM.SelectGenJnlBatch(GenJournalBatch);
+        LibraryERM.ClearGenJournalLines(GenJournalBatch);
+        LibraryERM.CreateGeneralJnlLineWithBalAcc(
+            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name,
+            GenJournalLine."Document Type"::Invoice, GenJournalLine."Account Type"::Vendor, VendorNo,
+            GenJournalLine."Bal. Account Type"::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(100, 2));
+        GenJournalLine.Validate("Posting Date", ReportingDate[1]);
+        GenJournalLine.Modify(true);
+        VerifyIRS1099DataInGenJnlLine(GenJournalLine, ReportingDate[1], FormNo[1], FormBoxNo[1]);
+
+        // [WHEN] Change posting date to period "P2"
+        GenJournalLine.Validate("Posting Date", ReportingDate[2]);
+
+        // [THEN] IRS 1099 data is updated to reflect form box setup for period "P2"
+        VerifyIRS1099DataInGenJnlLine(GenJournalLine, ReportingDate[2], FormNo[2], FormBoxNo[2]);
+    end;
+
+    [Test]
+    procedure InsertPurchaseQuoteAfterInitExistingRecord()
+    var
+        ExistingPurchaseHeader: Record "Purchase Header";
+        PurchaseHeader: Record "Purchase Header";
+        VendorNo: Code[20];
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 616165] No error when inserting a purchase quote after calling Init() on an existing record
+        Initialize();
+
+        // [GIVEN] IRS Reporting Period for WorkDate()
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+
+        // [GIVEN] Vendor "V"
+        VendorNo := LibraryPurchase.CreateVendorNo();
+
+        // [GIVEN] Existing purchase quote for vendor "V"
+        LibraryPurchase.CreatePurchHeader(ExistingPurchaseHeader, ExistingPurchaseHeader."Document Type"::Quote, VendorNo);
+
+        // [GIVEN] Find the existing purchase quote and call Init()
+        PurchaseHeader.SetRange("Document Type", PurchaseHeader."Document Type"::Quote);
+        PurchaseHeader.SetRange("Buy-from Vendor No.", VendorNo);
+        PurchaseHeader.FindFirst();
+        PurchaseHeader.Init();
+        PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::Quote;
+        PurchaseHeader."No." := '';
+
+        // [WHEN] Insert the new purchase header
+        PurchaseHeader.Insert(true);
+
+        // [THEN] No error occurs and purchase quote is created
+        Assert.AreNotEqual('', PurchaseHeader."No.", 'Purchase quote should be created with a No.');
+    end;
+
+    [Test]
+    procedure DeleteFormDocWithUniqueDocIDDoesNotAffectOtherDoc()
+    var
+        IRS1099FormDocHeader: array[2] of Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
+        IRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail";
+        PeriodNo, FormNo, FormBoxNo : Code[20];
+        VendNo: array[2] of Code[20];
+        i: Integer;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 617498] Deleting one form document does not affect line details of another form document due to unique Document IDs
+
+        Initialize();
+
+        // [GIVEN] Period "P", Form "F" and Form Box "FB"
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+
+        // [GIVEN] Two vendors "V1" and "V2" with form documents in period "P"
+        for i := 1 to 2 do begin
+            VendNo[i] := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+            IRS1099FormDocHeader[i]."Period No." := PeriodNo;
+            IRS1099FormDocHeader[i]."Vendor No." := VendNo[i];
+            IRS1099FormDocHeader[i]."Form No." := FormNo;
+            IRS1099FormDocHeader[i].Insert(true);
+            Clear(IRS1099FormDocLine);
+            IRS1099FormDocLine."Document ID" := IRS1099FormDocHeader[i].ID;
+            IRS1099FormDocLine."Period No." := PeriodNo;
+            IRS1099FormDocLine."Vendor No." := VendNo[i];
+            IRS1099FormDocLine."Form No." := FormNo;
+            IRS1099FormDocLine."Line No." := 10000;
+            IRS1099FormDocLine."Form Box No." := FormBoxNo;
+            IRS1099FormDocLine.Insert();
+            Clear(IRS1099FormDocLineDetail);
+            IRS1099FormDocLineDetail."Document ID" := IRS1099FormDocHeader[i].ID;
+            IRS1099FormDocLineDetail."Line No." := 10000;
+            IRS1099FormDocLineDetail."Vendor Ledger Entry No." := i * 100;
+            IRS1099FormDocLineDetail.Insert();
+        end;
+
+        // [WHEN] Delete form document for "V1"
+        IRS1099FormDocHeader[1].Delete(true);
+
+        // [THEN] Form document for "V2" exists with its line detail
+        Assert.IsTrue(IRS1099FormDocHeader[2].Find(), 'Form document for V2 should exist');
+        IRS1099FormDocLine.SetRange("Document ID", IRS1099FormDocHeader[2].ID);
+        Assert.RecordCount(IRS1099FormDocLine, 1);
+        IRS1099FormDocLineDetail.SetRange("Document ID", IRS1099FormDocHeader[2].ID);
+        Assert.RecordCount(IRS1099FormDocLineDetail, 1);
+
+        // Tear down
+        IRS1099FormDocHeader[2].Delete(true);
+    end;
+
+    [Test]
+    procedure PartialPaymentCreatesLineDetailWithDifferentCalculatedAndReportingAmounts()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
+        IRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail";
+        IRSFormsSetup: Record "IRS Forms Setup";
+        PeriodNo, FormNo, FormBoxNo, VendNo : Code[20];
+        InvoiceAmount, PaymentAmount : Decimal;
+        PostingDate: Date;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 617498] Partial payment creates line detail with different "Calculated Amount" and "IRS 1099 Reporting Amount"
+
+        Initialize();
+
+        // [GIVEN] Collect Details For Line is enabled
+        if not IRSFormsSetup.Get() then
+            IRSFormsSetup.Insert();
+        IRSFormsSetup."Collect Details For Line" := true;
+        IRSFormsSetup.Modify();
+
+        // [GIVEN] Period "P", Form "F" and Form Box "FB" for a unique future date
+        PostingDate := CalcDate('<2Y>', WorkDate());
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(PostingDate, FormNo);
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(PostingDate, FormNo, FormBoxNo);
+
+        // [GIVEN] Posted purchase invoice with Amount = 1000 for vendor "V"
+        InvoiceAmount := 1000;
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
+        PurchaseHeader.Validate("Posting Date", PostingDate);
+        PurchaseHeader.Modify(true);
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(
+            PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(), 1, InvoiceAmount);
+        LibraryERM.FindVendorLedgerEntry(
+            VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
+            LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+        VendorLedgerEntry.CalcFields(Amount);
+        InvoiceAmount := Abs(VendorLedgerEntry."IRS 1099 Reporting Amount");
+
+        // [GIVEN] Payment with Amount = 500 applied to the invoice (partial payment - 50%)
+        PaymentAmount := Round(InvoiceAmount / 2);
+        LibraryIRS1099Document.PostPaymentAppliedToInvoice(PostingDate, VendNo, VendorLedgerEntry."Document No.", PaymentAmount);
+
+        // [WHEN] Create form documents
+        LibraryIRS1099Document.CreateFormDocuments(PostingDate, PostingDate, VendNo, FormNo);
+
+        // [THEN] Form document line detail has different "Calculated Amount" and "IRS 1099 Reporting Amount"
+        LibraryIRS1099Document.FindIRS1099FormDocHeader(IRS1099FormDocHeader, PeriodNo, VendNo, FormNo);
+        LibraryIRS1099Document.FindIRS1099FormDocLine(IRS1099FormDocLine, PeriodNo, VendNo, FormNo, FormBoxNo);
+        IRS1099FormDocLineDetail.SetRange("Document ID", IRS1099FormDocHeader.ID);
+        IRS1099FormDocLineDetail.FindFirst();
+        IRS1099FormDocLineDetail.CalcFields("IRS 1099 Reporting Amount");
+
+        // [THEN] "IRS 1099 Reporting Amount" = Invoice Amount (sign may differ in form doc line detail)
+        Assert.AreEqual(InvoiceAmount, Abs(IRS1099FormDocLineDetail."IRS 1099 Reporting Amount"), 'IRS 1099 Reporting Amount should be full invoice amount');
+
+        // [THEN] "Calculated Amount" = Payment Amount / Invoice Amount * IRS Reporting Amount = 500 (proportional to payment)
+        Assert.AreEqual(PaymentAmount, IRS1099FormDocLineDetail."Calculated Amount", 'Calculated Amount should reflect partial payment');
+
+        // [THEN] "Calculated Amount" <> "IRS 1099 Reporting Amount"
+        Assert.AreNotEqual(
+            Abs(IRS1099FormDocLineDetail."Calculated Amount"),
+            Abs(IRS1099FormDocLineDetail."IRS 1099 Reporting Amount"),
+            'Calculated Amount and IRS 1099 Reporting Amount should be different for partial payment');
+
+        // Tear down
+        DeleteDocuments();
+    end;
 
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";
     begin
         LibrarySetupStorage.Restore();
+        DeleteDocuments();
         IRSReportingPeriod.DeleteAll(true);
         LibraryTestInitialize.OnTestInitialize(Codeunit::"IRS 1099 Document Tests");
         if IsInitialized then
@@ -822,6 +1083,14 @@ codeunit 148010 "IRS 1099 Document Tests"
         LibrarySetupStorage.SavePurchasesSetup();
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"IRS 1099 Document Tests");
+    end;
+
+    procedure DeleteDocuments()
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+    begin
+        IRS1099FormDocHeader.ModifyAll(Status, Enum::"IRS 1099 Form Doc. Status"::Open, false);
+        IRS1099FormDocHeader.DeleteAll(true);
     end;
 
     local procedure MockFormDocumentForVendorWithFixedDocID(DocID: Integer; PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20]; Status: Enum "IRS 1099 Form Doc. Status")
@@ -864,6 +1133,13 @@ codeunit 148010 "IRS 1099 Document Tests"
         DocID := LibraryIRS1099Document.MockFormDocumentForVendor(PeriodNo, VendorNo, FormNo, Status);
         LibraryIRS1099Document.MockFormDocumentLineForVendor(DocID, PeriodNo, VendorNo, FormNo, FormBoxNo);
         IRS1099FormDocHeader.Get(DocID);
+    end;
+
+    local procedure VerifyIRS1099DataInGenJnlLine(GenJournalLine: Record "Gen. Journal Line"; ReportingDate: Date; FormNo: Code[20]; FormBoxNo: Code[20])
+    begin
+        Assert.AreEqual(LibraryIRSReportingPeriod.GetReportingPeriod(ReportingDate), GenJournalLine."IRS 1099 Reporting Period", 'IRS 1099 Reporting Period mismatch');
+        Assert.AreEqual(FormNo, GenJournalLine."IRS 1099 Form No.", 'IRS 1099 Form No. mismatch');
+        Assert.AreEqual(FormBoxNo, GenJournalLine."IRS 1099 Form Box No.", 'IRS 1099 Form Box No. mismatch');
     end;
 
     [MessageHandler]

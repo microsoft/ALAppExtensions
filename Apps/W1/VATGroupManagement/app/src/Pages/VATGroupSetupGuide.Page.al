@@ -7,12 +7,12 @@ namespace Microsoft.Finance.VAT.Group;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Reporting;
-using System.Environment.Configuration;
 using System.Environment;
+using System.Environment.Configuration;
 using System.Security.Authentication;
+using System.Telemetry;
 using System.Threading;
 using System.Utilities;
-using System.Telemetry;
 
 page 4705 "VAT Group Setup Guide"
 {
@@ -257,12 +257,6 @@ page 4705 "VAT Group Setup Guide"
                         trigger OnValidate()
                         begin
                             case VATGroupAuthenticationTypeSaas of
-#if not CLEAN25
-#pragma warning disable AL0432
-                                VATGroupAuthenticationTypeSaas::WebServiceAccessKey:
-                                    VATGroupAuthenticationType := VATGroupAuthenticationType::WebServiceAccessKey;
-#pragma warning restore
-#endif
                                 VATGroupAuthenticationTypeSaas::OAuth2:
                                     VATGroupAuthenticationType := VATGroupAuthenticationType::OAuth2;
                             end;
@@ -618,12 +612,6 @@ page 4705 "VAT Group Setup Guide"
                 Step -= 1;
             if (Step = Step::"Setup Representative") and (VATGroupRole = VATGroupRole::Member) then
                 Step -= 1;
-#if not CLEAN25
-#pragma warning disable AL0432
-            if (Step = Step::"Setup Member WSAK") and (VATGroupAuthenticationType <> VATGroupAuthenticationType::WebServiceAccessKey) then
-                Step -= 1;
-#pragma warning restore
-#endif
             if (Step = Step::"Setup Member OAuth2") and (VATGroupAuthenticationType <> VATGroupAuthenticationType::OAuth2) then
                 Step -= 2;
         end else begin
@@ -632,20 +620,8 @@ page 4705 "VAT Group Setup Guide"
                 Step += 1;
             if (Step = Step::"Setup Member") and (VATGroupRole = VATGroupRole::Representative) then
                 Step += 3;
-#if not CLEAN25
-#pragma warning disable AL0432
-            if (Step = Step::"Setup Member WSAK") and (VATGroupAuthenticationType = VATGroupAuthenticationType::WindowsAuthentication) then
-                Step += 2;
-#pragma warning restore
-#endif
             if (Step = Step::"Setup Member WSAK") and (VATGroupAuthenticationType = VATGroupAuthenticationType::OAuth2) then
                 Step += 1;
-#if not CLEAN25
-#pragma warning disable AL0432
-            if (Step = Step::"Setup Member OAuth2") and (VATGroupAuthenticationType = VATGroupAuthenticationType::WebServiceAccessKey) then
-                Step += 1;
-#pragma warning restore
-#endif
             if (Step = Step::"Setup VAT Report") and (VATGroupRole = VATGroupRole::Representative) then
                 Step += 1;
         end;
@@ -835,12 +811,6 @@ page 4705 "VAT Group Setup Guide"
 
     local procedure IsNextEnabled(): Boolean
     begin
-#if not CLEAN25
-#pragma warning disable AL0432
-        if VATGroupAuthenticationType = VATGroupAuthenticationType::WebServiceAccessKey then
-            exit((APIURL <> '') and (GroupRepresentativeCompany <> '') and (WebServiceAccessKey <> '') and (Username <> ''));
-#pragma warning restore
-#endif
         if VATGroupAuthenticationType = VATGroupAuthenticationType::OAuth2 then
             exit((APIURL <> '') and (GroupRepresentativeCompany <> '') and (ClientId <> '') and (ClientSecret <> '') and (RedirectURL <> '') and (ResourceURL <> '') and (OAuthAuthorityUrl <> ''));
     end;

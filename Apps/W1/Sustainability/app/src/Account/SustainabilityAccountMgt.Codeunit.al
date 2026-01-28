@@ -1,11 +1,11 @@
 namespace Microsoft.Sustainability.Account;
 
-using Microsoft.Sustainability.Ledger;
-using Microsoft.Sustainability.Journal;
 using Microsoft.Finance.Dimension;
-using System.Utilities;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Calculation;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
+using System.Utilities;
 
 codeunit 6210 "Sustainability Account Mgt."
 {

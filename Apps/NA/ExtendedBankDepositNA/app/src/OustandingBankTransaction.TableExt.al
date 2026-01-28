@@ -3,8 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Deposit;
-using Microsoft.Bank.Reconciliation;
+
 using Microsoft.Bank.Ledger;
+using Microsoft.Bank.Reconciliation;
 tableextension 10154 "Oustanding Bank Transaction" extends "Outstanding Bank Transaction"
 {
     internal procedure CreateBankDepositHeaderLine(var TempOutstandingBankTransaction: Record "Outstanding Bank Transaction" temporary; var TempOutstandingBankTransactionCopy: Record "Outstanding Bank Transaction" temporary; BankAccountLedgerEntry: Record "Bank Account Ledger Entry")

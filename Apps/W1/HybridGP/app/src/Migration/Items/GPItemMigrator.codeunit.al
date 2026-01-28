@@ -1,12 +1,12 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Integration;
-using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Journal;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Inventory.Tracking;
 using Microsoft.Inventory.BOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Tracking;
+using System.Integration;
 
 codeunit 4019 "GP Item Migrator"
 {
@@ -369,22 +369,14 @@ codeunit 4019 "GP Item Migrator"
         TempTrackingSpecification: Record "Tracking Specification" temporary;
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         CreateReserveEntry: Codeunit "Create Reserv. Entry";
-#if CLEAN25
         ItemJnlLineReserve: Codeunit "Item Jnl. Line-Reserve";
-#endif
         ExpirationDate: Date;
     begin
         if GPItem.ItemTrackingCode = '' then
             exit;
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransactions.RecordId));
-#if not CLEAN25
-#pragma warning disable AL0432
-        TempTrackingSpecification.InitFromItemJnlLine(ItemJnlLine);
-#pragma warning restore AL0432
-#else
         ItemJnlLineReserve.InitFromItemJnlLine(TempTrackingSpecification, ItemJnlLine);
-#endif
         if GPItemTransactions.ExpirationDate = DMY2Date(1, 1, 1900) then
             ExpirationDate := 0D
         else

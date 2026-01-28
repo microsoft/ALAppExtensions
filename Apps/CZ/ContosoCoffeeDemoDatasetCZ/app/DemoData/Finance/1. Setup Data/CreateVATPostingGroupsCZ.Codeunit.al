@@ -7,8 +7,8 @@ namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.VAT.Clause;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
 
 codeunit 31189 "Create Vat Posting Groups CZ"
@@ -100,7 +100,7 @@ codeunit 31189 "Create Vat Posting Groups CZ"
         VATProductPostingGroup: Record "VAT Product Posting Group";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        VATProductPostingGroup.SetFilter(Code, '%1|%2|%3|%4|%5|%6|%7', CreateVATPostingGroups.FullNormal(), CreateVATPostingGroups.FullRed(), CreateVATPostingGroups.Standard(), CreateVATPostingGroups.Reduced(), CreateVATPostingGroups.ServNormal(), CreateVATPostingGroups.ServRed(), '');
+        VATProductPostingGroup.SetFilter(Code, '%1|%2|%3|%4|%5', CreateVATPostingGroups.FullNormal(), CreateVATPostingGroups.FullRed(), CreateVATPostingGroups.ServNormal(), CreateVATPostingGroups.ServRed(), '');
         VATProductPostingGroup.DeleteAll(true);
     end;
 
@@ -113,18 +113,10 @@ codeunit 31189 "Create Vat Posting Groups CZ"
         VATClause.DeleteAll(true);
     end;
 
-    internal procedure CreateDummyVATProductPostingGroup()
-    var
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
-        ContosoPostingGroup: Codeunit "Contoso Posting Group";
-    begin
-        ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.Reduced(), ''); // Reduced is used in Resources in Finance module
-        ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.Standard(), ''); // Standard is used in VAT Posting Setup in Common module
-    end;
-
     local procedure InsertVATProductPostingGroup()
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
     begin
         ContosoCoffeeDemoDataSetup.Get();
@@ -139,6 +131,16 @@ codeunit 31189 "Create Vat Posting Groups CZ"
         ContosoPostingGroup.InsertVATProductPostingGroup(VAT21I(), VAT21itemLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(VAT21RC(), VAT21reversechargeLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(VAT21S(), VAT21serviceLbl);
+
+        FinanceModuleSetup.Get();
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Standard" = '' then
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Standard", VAT21I());
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Reduced" = '' then
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Reduced", VAT21S());
+
+        FinanceModuleSetup.Modify();
     end;
 
     local procedure InsertVATClause()
@@ -164,7 +166,6 @@ codeunit 31189 "Create Vat Posting Groups CZ"
     begin
         if Rec."VAT Prod. Posting Group" in
             [CreateVATPostingGroups.FullNormal(), CreateVATPostingGroups.FullRed(),
-             CreateVATPostingGroups.Standard(), CreateVATPostingGroups.Reduced(),
              CreateVATPostingGroups.ServNormal(), CreateVATPostingGroups.ServRed(), '']
         then
             Rec.Delete(true);

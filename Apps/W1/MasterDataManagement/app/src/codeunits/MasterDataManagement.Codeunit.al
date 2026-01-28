@@ -1,41 +1,41 @@
 namespace Microsoft.Integration.MDM;
 
-using Microsoft.Integration.SyncEngine;
-using System.Reflection;
-using System.Threading;
-using System.Telemetry;
-using Microsoft.Integration.Dataverse;
-using System.Environment.Configuration;
-using System.Environment;
-using System.Utilities;
-using Microsoft.Finance.Currency;
 using Microsoft.CRM.Contact;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Sales.Customer;
-using System.Security.AccessControl;
-using Microsoft.Foundation.PaymentTerms;
-using Microsoft.Foundation.Address;
-using Microsoft.Purchases.Setup;
-using Microsoft.Foundation.NoSeries;
-using Microsoft.Foundation.Shipping;
-using Microsoft.Sales.Setup;
 using Microsoft.CRM.Setup;
 using Microsoft.CRM.Team;
-using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.SalesTax;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.Dimension;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Dataverse;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Setup;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Reflection;
+using System.Security.AccessControl;
+using System.Telemetry;
+using System.Threading;
+using System.Utilities;
 
 codeunit 7233 "Master Data Management"
 {
     SingleInstance = true;
-    Permissions = tabledata "Master Data Mgt. Coupling" = rmd,
+    Permissions = tabledata "Master Data Mgt. Coupling" = rimd,
                   tabledata "Integration Field Mapping" = ri,
-                  tabledata "Integration Table Mapping" = rim,
+                  tabledata "Integration Table Mapping" = rimd,
                   tabledata "Integration Synch. Job" = r,
-                  tabledata "Job Queue Entry" = rm,
-                  tabledata "Master Data Management Setup" = r;
+                  tabledata "Job Queue Entry" = rimd,
+                  tabledata "Master Data Management Setup" = rimd;
 
     var
         CachedDoesJobActOnTable: Dictionary of [Text, Boolean];

@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Journal;
 
+using Microsoft.Sustainability.Setup;
 using Microsoft.Utilities;
 using System.Utilities;
-using Microsoft.Sustainability.Setup;
 
 codeunit 6220 "Sustain. Jnl. Errors Mgt."
 {

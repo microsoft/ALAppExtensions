@@ -37,11 +37,15 @@ codeunit 10033 "Generate Xml File IRIS"
         CreateGetStatusRequestEventTxt: Label 'CreateGetStatusRequest', Locked = true;
         NoDocumentsSelectedErr: Label 'No 1099 documents were selected for the transmission of the type %1. Current filters: \%2', Comment = '%1 - transmission type, %2 - filters for IRS 1099 Form Doc. Header';
         EmptySearchIdErr: Label 'Record Id or Unique Transmission ID cannot be empty.';
+        LastAcceptedReceiptIdEmtpyErr: Label 'Last accepted receipt ID is missing for the 1099 form document with ID %1. Do not use correction for new documents.', Comment = '%1 - IRS 1099 Form Doc. ID';
+        SubmissionIdEmtpyErr: Label 'Submission ID is missing for the 1099 form document with ID %1.', Comment = '%1 - IRS 1099 Form Doc. ID';
+        RecordIdEmtpyErr: Label 'Record ID is missing for the 1099 form document with ID %1. \Reopen the document or clear the Needs Correction flag to exclude it from the correction transmission. \If you use two-step correction, release the document before step 2.', Comment = '%1 - IRS 1099 Form Doc. ID';
 
     procedure CreateTransmission(var Transmission: Record "Transmission IRIS"; TransmissionType: Enum "Transmission Type IRIS"; var UniqueTransmissionId: Text[100]; var TempIRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header" temporary; var TempBlob: Codeunit "Temp Blob")
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         ProcessTransmission: Codeunit "Process Transmission IRIS";
+        PrevTransmissionStatus: Enum "Transmission Status IRIS";
         FormType: Text;
     begin
         if CorrectionToZeroModeGlobal then
@@ -52,7 +56,11 @@ codeunit 10033 "Generate Xml File IRIS"
         IRS1099FormDocHeader.SetFilter(Status, ProcessTransmission.GetFormDocToSendStatusFilter());
         case TransmissionType of
             Enum::"Transmission Type IRIS"::"R":
-                IRS1099FormDocHeader.SetRange("IRIS Submission Status", Enum::"Transmission Status IRIS"::Rejected);  // replace only rejected submissions
+                begin
+                    PrevTransmissionStatus := Transmission.Status;
+                    if PrevTransmissionStatus = Enum::"Transmission Status IRIS"::"Partially Accepted" then
+                        IRS1099FormDocHeader.SetRange("IRIS Submission Status", Enum::"Transmission Status IRIS"::Rejected);    // replace only rejected submissions for partially accepted transmission
+                end;
             Enum::"Transmission Type IRIS"::"C":
                 IRS1099FormDocHeader.SetRange("IRIS Needs Correction", true);
         end;
@@ -122,6 +130,7 @@ codeunit 10033 "Generate Xml File IRIS"
         PrevTransmissionStatus: Enum "Transmission Status IRIS";
     begin
         Helper.AddParentXmlNode('IRTransmissionManifest');
+        Helper.AppendXmlNode('SchemaVersionNum', '2.0.3');
         Helper.AppendXmlNode('UniqueTransmissionId', UniqueTransmissionId);
         Helper.AppendXmlNode('TaxYr', Transmission."Period No.");
         Helper.AppendXmlNode('PriorYearDataInd', '0');
@@ -215,6 +224,8 @@ codeunit 10033 "Generate Xml File IRIS"
         if (TransmissionTypeGlobal = Enum::"Transmission Type IRIS"::"R") and
            (PrevTransmissionStatus = Enum::"Transmission Status IRIS"::"Partially Accepted")
         then begin
+            if TempIRS1099FormDocHeader."IRIS Submission ID" = '' then
+                Error(SubmissionIdEmtpyErr, TempIRS1099FormDocHeader.ID);
             OriginalUniqueSubmissionId := StrSubstNo('%1|%2', Transmission."Receipt ID", TempIRS1099FormDocHeader."IRIS Submission ID");
             Helper.AppendXmlNode('OriginalUniqueSubmissionId', OriginalUniqueSubmissionId);
         end;
@@ -281,12 +292,14 @@ codeunit 10033 "Generate Xml File IRIS"
     var
         CompanyInformation: Record "Company Information";
         IRSFormsSetup: Record "IRS Forms Setup";
+        "Generate Xml File IRIS Events": codeunit "Generate Xml File IRIS Events";
         RecRef: RecordRef;
     begin
         Helper.AddParentXmlNode('IssuerDetail');
 
         CompanyInformation.Get();
         IRSFormsSetup.Get();
+        "Generate Xml File IRIS Events".RunOnAddIssuerDetailsOnAfterGetCompanyInfoAndIRSFormSetup(CompanyInformation, IRSFormsSetup);
         Helper.AppendXmlNode('ForeignEntityInd', GetForeignEntityInd(CompanyInformation."Country/Region Code"));
         Helper.AppendXmlNode('TIN', Helper.FormatTIN(CompanyInformation."Federal ID No."));
         Helper.AppendXmlNode('TINSubmittedTypeCd', 'BUSINESS_TIN');
@@ -305,13 +318,24 @@ codeunit 10033 "Generate Xml File IRIS"
     local procedure AddContactPersonInformationGrp()
     var
         CompanyInformation: Record "Company Information";
+        "Generate Xml File IRIS Events": codeunit "Generate Xml File IRIS Events";
+        ContactPerson: Text;
+        PhoneNo: Text;
+        Email: Text;
     begin
+        CompanyInformation.Get();
+        "Generate Xml File IRIS Events".RunOnAddContactPersonInformationGrpOnAfterGetCompanyInformationSetup(CompanyInformation);
+        ContactPerson := Helper.FormatContactPersonName(CompanyInformation."Contact Person");
+        PhoneNo := Helper.FormatPhoneNumber(CompanyInformation."Phone No.");
+        Email := CompanyInformation."E-Mail";
+        if (ContactPerson = '') and (PhoneNo = '') and (Email = '') then
+            exit;
+
         Helper.AddParentXmlNode('ContactPersonInformationGrp');
 
-        CompanyInformation.Get();
-        Helper.AppendXmlNode('ContactPersonNm', Helper.FormatContactPersonName(CompanyInformation."Contact Person"));
-        Helper.AppendXmlNode('ContactPhoneNum', Helper.FormatPhoneNumber(CompanyInformation."Phone No."));
-        Helper.AppendXmlNode('ContactEmailAddressTxt', CompanyInformation."E-Mail");
+        Helper.AppendXmlNode('ContactPersonNm', ContactPerson);
+        Helper.AppendXmlNode('ContactPhoneNum', PhoneNo);
+        Helper.AppendXmlNode('ContactEmailAddressTxt', Email);
 
         Helper.CloseParentXmlNode();
     end;
@@ -433,6 +457,13 @@ codeunit 10033 "Generate Xml File IRIS"
             if Transmission.Status in [Enum::"Transmission Status IRIS"::Accepted, Enum::"Transmission Status IRIS"::"Partially Accepted", Enum::"Transmission Status IRIS"::"Accepted with Errors"] then
                 PrevAcceptedReceiptId := Transmission."Receipt ID";
         end;
+
+        if PrevAcceptedReceiptId = '' then
+            Error(LastAcceptedReceiptIdEmtpyErr, TempIRS1099FormDocHeader.ID);
+        if TempIRS1099FormDocHeader."IRIS Submission ID" = '' then
+            Error(SubmissionIdEmtpyErr, TempIRS1099FormDocHeader.ID);
+        if TempIRS1099FormDocHeader."IRIS Record ID" = '' then
+            Error(RecordIdEmtpyErr, TempIRS1099FormDocHeader.ID);
 
         UniqueRecordId := StrSubstNo('%1|%2|%3', PrevAcceptedReceiptId, TempIRS1099FormDocHeader."IRIS Submission ID", TempIRS1099FormDocHeader."IRIS Record ID");
         Helper.AppendXmlNode('UniqueRecordId', UniqueRecordId);

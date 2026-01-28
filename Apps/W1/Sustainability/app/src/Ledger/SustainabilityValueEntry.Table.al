@@ -2,6 +2,8 @@ namespace Microsoft.Sustainability.Ledger;
 
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Costing;
 using Microsoft.Inventory.Item;
@@ -11,6 +13,7 @@ using Microsoft.Manufacturing.MachineCenter;
 using Microsoft.Manufacturing.WorkCenter;
 using Microsoft.Projects.Project.Job;
 using Microsoft.Projects.Project.Ledger;
+using Microsoft.Projects.Resources.Ledger;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Journal;
@@ -205,7 +208,9 @@ table 6227 "Sustainability Value Entry"
             else
             if (Type = const("Charge (Item)")) "Item Charge"
             else
-            if (Type = const("G/L Account")) "G/L Account";
+            if (Type = const("G/L Account")) "G/L Account"
+            else
+            if (Type = const("Fixed Asset")) "Fixed Asset";
 
         }
         field(5818; Adjustment; Boolean)
@@ -330,6 +335,53 @@ table 6227 "Sustainability Value Entry"
             "Job No." := ValueEntry."Job No.";
             "Job Task No." := ValueEntry."Job Task No."
         end;
+    end;
+
+    procedure CopyFromResourceLedgerEntry(ResourceLedgerEntry: Record "Res. Ledger Entry")
+    begin
+        "Posting Date" := ResourceLedgerEntry."Posting Date";
+        "Document No." := ResourceLedgerEntry."Document No.";
+
+        if ResourceLedgerEntry."Entry Type" = ResourceLedgerEntry."Entry Type"::Usage then begin
+            "Valued Quantity" := -ResourceLedgerEntry.Quantity;
+            "Invoiced Quantity" := -ResourceLedgerEntry.Quantity;
+        end else begin
+            "Valued Quantity" := ResourceLedgerEntry.Quantity;
+            "Invoiced Quantity" := ResourceLedgerEntry.Quantity;
+        end;
+
+        "User ID" := ResourceLedgerEntry."User ID";
+        "Source Code" := ResourceLedgerEntry."Source Code";
+        "Global Dimension 1 Code" := ResourceLedgerEntry."Global Dimension 1 Code";
+        "Global Dimension 2 Code" := ResourceLedgerEntry."Global Dimension 2 Code";
+        "Journal Batch Name" := ResourceLedgerEntry."Journal Batch Name";
+        "Document Date" := ResourceLedgerEntry."Document Date";
+        "External Document No." := ResourceLedgerEntry."External Document No.";
+        "Document Line No." := ResourceLedgerEntry."Order Line No.";
+        "Entry Type" := "Entry Type"::"Direct Cost";
+        "Dimension Set ID" := ResourceLedgerEntry."Dimension Set ID";
+        Type := Type::Resource;
+        "No." := ResourceLedgerEntry."Resource No.";
+        "Item Ledger Entry Type" := "Item Ledger Entry Type"::" ";
+    end;
+
+    procedure CopyFromFALedgerEntry(FALedgerEntry: Record "FA Ledger Entry")
+    begin
+        "No." := FALedgerEntry."FA No.";
+        "Posting Date" := FALedgerEntry."Posting Date";
+        "Document No." := FALedgerEntry."Document No.";
+        "Valued Quantity" := FALedgerEntry.Quantity;
+        "Invoiced Quantity" := FALedgerEntry."Quantity";
+        "User ID" := FALedgerEntry."User ID";
+        "Source Code" := FALedgerEntry."Source Code";
+        "Global Dimension 1 Code" := FALedgerEntry."Global Dimension 1 Code";
+        "Global Dimension 2 Code" := FALedgerEntry."Global Dimension 2 Code";
+        "Journal Batch Name" := FALedgerEntry."Journal Batch Name";
+        "Document Date" := FALedgerEntry."Document Date";
+        "External Document No." := FALedgerEntry."External Document No.";
+        "Dimension Set ID" := FALedgerEntry."Dimension Set ID";
+        "Item Ledger Entry Type" := "Item Ledger Entry Type"::" ";
+        Type := Type::"Fixed Asset";
     end;
 
     procedure CopyFromJobLedgerEntry(JobLedgerEntry: Record "Job Ledger Entry")

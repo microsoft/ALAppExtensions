@@ -11,13 +11,13 @@ using Microsoft.Finance.GST.Sales;
 using Microsoft.Finance.TaxBase;
 using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Location;
+using Microsoft.QRGeneration;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
 using Microsoft.Service.History;
 using System.Security.Encryption;
 using System.Text;
 using System.Utilities;
-using Microsoft.QRGeneration;
 
 codeunit 18160 "e-Invoice Json Handler for Ser"
 {

@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Telemetry;
-using System.Utilities;
 using Microsoft.Purchases.Vendor;
 using System.Environment;
+using System.Telemetry;
+using System.Utilities;
 
 codeunit 10056 "Process Transmission IRIS"
 {
@@ -45,6 +45,7 @@ codeunit 10056 "Process Transmission IRIS"
         UnexpectedStatusErr: Label 'Unexpected status: %1', Comment = '%1 - status text returned by IRIS';
         UnableToParseResponseErr: Label 'Could not parse the response from IRIS.', Locked = true;
         UnableToParseResponseUserErr: Label 'Could not get the transmission status from the response returned by IRIS. Use the Download Acknowledgment Content action on the Transmission History page to download the response content and check the errors.';
+        CannotUpdateRejectedTransmissionErr: Label 'Updating rejected transmissions is not allowed. \Send the replacement transmission until it is no longer rejected.';
 
     procedure CheckOriginal(var Transmission: Record "Transmission IRIS")
     begin
@@ -343,6 +344,8 @@ codeunit 10056 "Process Transmission IRIS"
 
         OAuthClient.RequestTransmStatusOrAcknowledgement(GetStatusRequestContentBlob, AcknowledgContentBlob, HttpStatusCode);
 
+        if ReceiptID = '' then
+            ReceiptID := ProcessResponse.GetReceiptIDFromAcknowledgXmlResponse(AcknowledgContentBlob);
         if not TransmissionLog.FindRecordByUTID(UniqueTransmissionId) then
             if TransmissionLog.FindLastRecByReceiptID(ReceiptID) then;
 
@@ -642,6 +645,9 @@ codeunit 10056 "Process Transmission IRIS"
         FormDocsCreated: Boolean;
         UpdateMessage: Text;
     begin
+        if Transmission.Status = Enum::"Transmission Status IRIS"::Rejected then
+            Error(CannotUpdateRejectedTransmissionErr);
+
         // add existing released form documents first
         AddedDocsCount := AddReleasedFormDocsToTransmission(Transmission);
         if AddedDocsCount > 0 then
@@ -719,6 +725,7 @@ codeunit 10056 "Process Transmission IRIS"
     begin
         IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Released);
         IRS1099FormDocHeader.SetRange("Period No.", Transmission."Period No.");
+        OnAddReleasedFormDocsToTransmissionOnBeforeIRS1099FormDocHeaderFindSet(IRS1099FormDocHeader, Transmission);
         if IRS1099FormDocHeader.FindSet(true) then
             repeat
                 if DocumentHaveLinesToReport(IRS1099FormDocHeader) and
@@ -978,4 +985,9 @@ codeunit 10056 "Process Transmission IRIS"
     end;
 
     #endregion
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnAddReleasedFormDocsToTransmissionOnBeforeIRS1099FormDocHeaderFindSet(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; var Transmission: Record "Transmission IRIS")
+    begin
+    end;
 }

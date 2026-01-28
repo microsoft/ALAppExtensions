@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Enums;
 
 codeunit 31182 "Create G/L Account CZ"

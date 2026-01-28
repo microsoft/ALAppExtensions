@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.HumanResources;
 
-using System.Utilities;
 using Microsoft.DemoTool.Helpers;
+using System.Utilities;
 
 codeunit 5172 "Employee Media"
 {

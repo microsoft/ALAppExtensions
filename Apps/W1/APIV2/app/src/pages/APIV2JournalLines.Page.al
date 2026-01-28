@@ -1,9 +1,9 @@
 namespace Microsoft.API.V2;
 
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Bank.BankAccount;
 using Microsoft.Integration.Graph;
 
 page 30049 "APIV2 - JournalLines"
@@ -18,7 +18,7 @@ page 30049 "APIV2 - JournalLines"
     EntitySetName = 'journalLines';
     SourceTable = "Gen. Journal Line";
     Extensible = false;
-    AboutText = 'Manages individual general journal line entries, including account details, amounts, dimensions, tax codes, and descriptions, with full CRUD support. Enables external systems to automate creation, retrieval, update, and deletion of journal lines for streamlined financial postings and adjustments. Ideal for integrating payroll, expense management, and accounting solutions to ensure accurate and efficient transaction processing in Business Central.';
+    AboutText = 'Manages individual general journal line entries, including account details, amounts, dimensions, tax codes, and descriptions. Supports full CRUD operations, enabling external systems to automate creation, retrieval, update, and deletion of journal lines for streamlined financial postings and adjustments. Ideal for integrating payroll, expense management, and accounting solutions to ensure accurate and efficient transaction processing in Business Central.';
 
     layout
     {
