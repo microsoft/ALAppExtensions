@@ -1,15 +1,15 @@
 namespace Microsoft.Finance.PowerBIReports.Test;
 
-using Microsoft.PowerBIReports;
 using Microsoft.HumanResources.Payables;
-using Microsoft.PowerBIReports.Test;
-using Microsoft.Sustainability.PowerBIReports;
-using Microsoft.Sustainability.Ledger;
-using Microsoft.Sustainability.Scorecard;
 using Microsoft.Inventory.Location;
+using Microsoft.PowerBIReports;
+using Microsoft.PowerBIReports.Test;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.PowerBIReports;
+using Microsoft.Sustainability.Scorecard;
+using System.Security.User;
 using System.TestLibraries.Security.AccessControl;
 using System.Text;
-using System.Security.User;
 
 codeunit 148215 "PowerBI Sustainability Test"
 {

@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
-using System;
 using Microsoft.Finance.VAT.Reporting;
+using System;
 
 #pragma warning disable AA0247
 codeunit 10519 "EC Sales List Submit GB"

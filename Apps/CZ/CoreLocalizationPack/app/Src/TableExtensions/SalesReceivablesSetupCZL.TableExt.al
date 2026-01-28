@@ -34,6 +34,12 @@ tableextension 11714 "Sales & Receivables Setup CZL" extends "Sales & Receivable
                     CreatePrintQROnPremFontkNotification();
             end;
         }
+        field(11783; "Show VAT Corr When Posting CZL"; Boolean)
+        {
+            Caption = 'Show VAT Correction When Posting';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies whether the page for possible correction of the VAT amount in the local currency will be shown when posting a sales document in a foreign currency. If this is not activated, the VAT amount can only be changed from the posted sales document.';
+        }
     }
     local procedure CreatePrintQROnPremFontkNotification()
     var

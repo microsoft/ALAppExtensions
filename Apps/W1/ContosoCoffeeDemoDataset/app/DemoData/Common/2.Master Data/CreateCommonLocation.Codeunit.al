@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Common;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Inventory;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 4790 "Create Common Location"
 {

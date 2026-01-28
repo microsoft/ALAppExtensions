@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Reports;
 
-using Microsoft.Sales.Setup;
 using Microsoft.Finance.VAT.Setup;
+using Microsoft.Sales.Setup;
 
 reportextension 10581 "Sales Document - Test" extends "Sales Document - Test"
 {

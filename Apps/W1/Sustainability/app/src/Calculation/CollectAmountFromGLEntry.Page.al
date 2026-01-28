@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.Calculation;
 
-using Microsoft.Sustainability.Account;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Sustainability.Account;
 
 page 6224 "Collect Amount from G/L Entry"
 {

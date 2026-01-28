@@ -5,14 +5,14 @@
 
 namespace Microsoft.DataMigration.C5;
 
-using System.Integration;
-using System.Utilities;
-using System.Reflection;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
-using Microsoft.Inventory.Item;
 using Microsoft.Utilities;
+using System.Integration;
+using System.Reflection;
+using System.Utilities;
 
 codeunit 1868 "C5 Data Loader"
 {

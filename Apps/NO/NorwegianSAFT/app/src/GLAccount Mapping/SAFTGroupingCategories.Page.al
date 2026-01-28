@@ -24,6 +24,11 @@ page 10672 "SAF-T Grouping Categories"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the category of the grouping code that is used for mapping.';
                 }
+                field("Extended No."; "Extended No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the extended category number for grouping codes that exceed 20 characters. This value is used in the SAF-T export when specified.';
+                }
                 field(Description; Description)
                 {
                     ApplicationArea = Basic, Suite;

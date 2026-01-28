@@ -1,9 +1,9 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
-using System.IO;
-using Microsoft.Bank.Reconciliation;
 using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
 using Microsoft.Finance.GeneralLedger.Setup;
+using System.IO;
 
 codeunit 1451 "MS - Yodlee Import Bank Feed"
 {

@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSBase;
 
-using Microsoft.Sales.Document;
-using Microsoft.Sales.Customer;
-using Microsoft.Inventory.Location;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Inventory.Location;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 
 table 18815 "Sales Line Buffer TCS On Pmt."
 {

@@ -190,7 +190,8 @@ codeunit 10671 "SAF-T XML Import"
         SAFTMappingCategory: Record "SAF-T Mapping Category";
         SAFTMapping: Record "SAF-T Mapping";
         TempChildXMLBuffer: Record "XML Buffer" temporary;
-        CategoryCode: Code[20];
+        CategoryCode, AutoCategoryCode : Code[20];
+        ExtendedCategoryCode: Text[500];
     begin
         if not TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/GroupingCategoryCode/Account') then
             Error(NotPossibleToParseMappingXMLFileErr, SAFTGroupingCodesTxt);
@@ -198,13 +199,19 @@ codeunit 10671 "SAF-T XML Import"
             if not TempXMLBuffer.HasChildNodes() then
                 Error(NotPossibleToParseMappingXMLFileErr, SAFTGroupingCodesTxt);
             TempXMLBuffer.FindChildElements(TempChildXMLBuffer);
-            CategoryCode := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(CategoryCode));
+            ExtendedCategoryCode := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(ExtendedCategoryCode));
+            if HandleLongCategoryCode(AutoCategoryCode, ExtendedCategoryCode) then
+                CategoryCode := AutoCategoryCode
+            else
+                CategoryCode := CopyStr(ExtendedCategoryCode, 1, MaxStrLen(CategoryCode));
             if CategoryCode <> SAFTMappingCategory."No." then begin
                 SAFTMappingCategory.Init();
                 SAFTMappingCategory."Mapping Type" := SAFTMappingCategory."Mapping Type"::"Income Statement";
                 SAFTMappingCategory."No." := CategoryCode;
                 TempChildXMLBuffer.Next();
                 SAFTMappingCategory.Description := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(SAFTMappingCategory.Description));
+                if StrLen(ExtendedCategoryCode) > 20 then
+                    SAFTMappingCategory."Extended No." := ExtendedCategoryCode;
                 if not SAFTMappingCategory.insert() then
                     SAFTMappingCategory.Modify();
             end else
@@ -223,6 +230,29 @@ codeunit 10671 "SAF-T XML Import"
                 SAFTMapping.Modify();
         until TempXMLBuffer.Next() = 0;
         InsertNotApplicationMappingCode(SAFTMapping."Mapping Type");
+    end;
+
+    local procedure HandleLongCategoryCode(var AutoCategoryCode: Code[20]; ExtendedCategoryCode: Text[500]): Boolean
+    var
+        ExtendedSAFTMappingCategory: Record "SAF-T Mapping Category";
+        CatLbl: Label 'CAT', Comment = 'CAT stands for category';
+        InitialCatCodeLbl: Label 'CAT000000', Locked = true;
+    begin
+        if StrLen(ExtendedCategoryCode) <= 20 then
+            exit(false);
+
+        if AutoCategoryCode = '' then begin
+            ExtendedSAFTMappingCategory.SetRange("Mapping Type", ExtendedSAFTMappingCategory."Mapping Type"::"Income Statement");
+            ExtendedSAFTMappingCategory.SetFilter("No.", StrSubstNo('%1*', CatLbl));
+            if ExtendedSAFTMappingCategory.FindLast() then
+                AutoCategoryCode := IncStr(ExtendedSAFTMappingCategory."No.")
+            else
+#pragma warning disable AA0139
+                AutoCategoryCode := IncStr(InitialCatCodeLbl);
+#pragma warning restore AA0139
+        end else
+            AutoCategoryCode := IncStr(AutoCategoryCode);
+        exit(true);
     end;
 
     local procedure CopyTenantMediaToTempFromMappingSources(var TempTenantMedia: Record "Tenant Media" temporary; SAFTMappingSourceType: Enum "SAF-T Mapping Source Type"; CheckOnly: Boolean) MappingSourceFileLoaded: Boolean;

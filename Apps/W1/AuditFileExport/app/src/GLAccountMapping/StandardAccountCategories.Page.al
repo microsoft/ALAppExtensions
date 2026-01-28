@@ -33,6 +33,11 @@ page 5265 "Standard Account Categories"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the description of the standard account category that is used for mapping.';
                 }
+                field(ExtendedNo; Rec."Extended No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the extended category code when the original category code exceeds 20 characters.';
+                }
             }
         }
     }

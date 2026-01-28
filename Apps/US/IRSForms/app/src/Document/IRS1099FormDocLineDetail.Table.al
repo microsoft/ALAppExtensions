@@ -58,6 +58,13 @@ table 10038 "IRS 1099 Form Doc. Line Detail"
             AutoFormatType = 1;
             AutoFormatExpression = Rec."Currency Code";
         }
+        field(201; "Calculated Amount"; Decimal)
+        {
+            Caption = 'Calculated Amount';
+            Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
+        }
     }
 
     keys

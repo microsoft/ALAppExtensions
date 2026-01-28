@@ -1,22 +1,22 @@
 namespace Microsoft.Integration.MDM;
 
-using System.Threading;
-using System.Telemetry;
-using System.Environment;
-using Microsoft.Finance.GeneralLedger.Account;
-using System.Reflection;
-using System.IO;
-using System.Environment.Configuration;
-using Microsoft.Integration.Dataverse;
-using Microsoft.CRM.Contact;
-using Microsoft.Sales.Customer;
-using Microsoft.CRM.BusinessRelation;
-using Microsoft.Purchases.Vendor;
-using Microsoft.CRM.Setup;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Inventory.Item;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.SyncEngine;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Utilities;
+using System.Environment;
+using System.Environment.Configuration;
+using System.IO;
+using System.Reflection;
+using System.Telemetry;
+using System.Threading;
 
 codeunit 7237 "Master Data Mgt. Subscribers"
 {

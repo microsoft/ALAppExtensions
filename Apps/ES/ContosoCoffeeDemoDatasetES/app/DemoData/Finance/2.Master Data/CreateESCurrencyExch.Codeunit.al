@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.Currency;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.Currency;
 
 codeunit 10834 "Create ES Currency Exch"
 {

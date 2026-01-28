@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Item.Substitution;
 
+using Microsoft.Inventory.Item;
+using System;
 using System.AI;
 using System.Telemetry;
-using System;
-using Microsoft.Inventory.Item;
 
 codeunit 7330 "Item Subst. Suggestion Impl."
 {

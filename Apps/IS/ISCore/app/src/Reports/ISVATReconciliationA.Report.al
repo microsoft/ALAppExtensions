@@ -5,9 +5,9 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.VAT;
+using Microsoft.Finance.VAT.Setup;
 
 report 14601 "IS VAT Reconciliation A"
 {

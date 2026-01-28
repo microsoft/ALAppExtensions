@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Inventory.Item;
 
 codeunit 19027 "Create IN Inven. Posting Setup"

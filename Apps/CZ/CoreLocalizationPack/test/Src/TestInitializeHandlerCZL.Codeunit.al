@@ -41,7 +41,8 @@ codeunit 148104 "Test Initialize Handler CZL"
                     TryBindSuppConfVATEntUpdate();
                     UpdateUserSetup();
                 end;
-            137161: // SCM Warehouse Orders
+            137161, // SCM Warehouse Orders
+            139989: // Sub. Subcontracting Test
                 DisableVATDateUsage();
         end;
 

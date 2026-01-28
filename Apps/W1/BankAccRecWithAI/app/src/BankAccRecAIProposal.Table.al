@@ -2,9 +2,9 @@ namespace Microsoft.Bank.Reconciliation;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.Dimension;
 
 table 7250 "Bank Acc. Rec. AI Proposal"
 {

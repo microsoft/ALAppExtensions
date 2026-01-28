@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Document;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.Document;
 
 codeunit 27013 "Create CA Sales Document"
 {

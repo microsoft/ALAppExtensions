@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.Company;
 using Microsoft.DemoTool;
+using Microsoft.Foundation.Company;
 
 codeunit 11356 "Create Company Information BE"
 {

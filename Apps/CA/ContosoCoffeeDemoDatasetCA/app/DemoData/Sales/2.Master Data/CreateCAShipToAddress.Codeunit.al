@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.Customer;
 
 codeunit 27027 "Create CA Ship-to Address"
 {

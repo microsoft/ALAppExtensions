@@ -3,11 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Copilot;
-using Microsoft.Sustainability.Journal;
+
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.UOM;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Setup;
 using System.Reflection;
 
 table 6290 "Sustain. Emission Suggestion"

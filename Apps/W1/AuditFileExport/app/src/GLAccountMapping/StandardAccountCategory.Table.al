@@ -27,6 +27,11 @@ table 5262 "Standard Account Category"
             DataClassification = CustomerContent;
             Caption = 'Description';
         }
+        field(4; "Extended No."; Text[500])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Extended No.';
+        }
     }
 
     keys
@@ -34,6 +39,9 @@ table 5262 "Standard Account Category"
         key(PK; "Standard Account Type", "No.")
         {
             Clustered = true;
+        }
+        key(ExtendedNoIndex; "Standard Account Type", "Extended No.")
+        {
         }
     }
     fieldgroups

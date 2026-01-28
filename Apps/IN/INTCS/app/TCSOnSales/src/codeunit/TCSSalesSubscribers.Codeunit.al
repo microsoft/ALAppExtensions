@@ -4,14 +4,14 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSOnSales;
 
-using Microsoft.Sales.Document;
-using Microsoft.Finance.TCS.TCSBase;
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Foundation.Company;
-using Microsoft.Inventory.Location;
 using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.PostingHandler;
+using Microsoft.Finance.TCS.TCSBase;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 using Microsoft.Sales.Posting;
 using Microsoft.Utilities;
 

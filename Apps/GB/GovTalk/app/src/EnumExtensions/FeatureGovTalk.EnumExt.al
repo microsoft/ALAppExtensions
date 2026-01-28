@@ -5,8 +5,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
-using System.Environment.Configuration;
 using Microsoft.Finance.VAT.GovTalk;
+using System.Environment.Configuration;
 
 enumextension 10554 "Feature - GovTalk" extends "Feature To Update"
 {

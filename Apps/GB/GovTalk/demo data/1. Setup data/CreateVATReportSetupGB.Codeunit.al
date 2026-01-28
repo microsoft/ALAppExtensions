@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Reporting;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.VAT.GovTalk;
+using Microsoft.Finance.VAT.Reporting;
 
 codeunit 10550 "Create VAT Report Setup GB"
 {

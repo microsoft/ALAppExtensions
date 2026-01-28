@@ -6,8 +6,8 @@ namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
-using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
+using Microsoft.eServices.EDocument.Integration.Send;
 using System.Utilities;
 
 codeunit 6431 "Logiq Integration Impl." implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler

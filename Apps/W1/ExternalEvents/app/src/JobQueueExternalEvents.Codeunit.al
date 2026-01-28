@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.ExternalEvents;
 
-using System.Integration;
-using System.Threading;
 using System.Azure.Identity;
 using System.Environment;
+using System.Integration;
+using System.Threading;
 
 codeunit 38507 "Job Queue External Events"
 {

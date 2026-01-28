@@ -1,8 +1,8 @@
 namespace Microsoft.API.V1;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Period;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Integration.Graph;
 
 page 20011 "APIV1 - Company Information"

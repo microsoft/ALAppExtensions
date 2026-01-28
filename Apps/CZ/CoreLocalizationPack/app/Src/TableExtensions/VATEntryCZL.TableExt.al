@@ -4,8 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Ledger;
 
-using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT;
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Reporting;
 
 tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
@@ -56,6 +57,18 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
         field(11732; "Original VAT Entry No. CZL"; Integer)
         {
             Caption = 'Original VAT Entry No.';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11735; "Original VAT Base ACY CZL"; Decimal)
+        {
+            Caption = 'Original VAT Base ACY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(11736; "Original VAT Amount ACY CZL"; Decimal)
+        {
+            Caption = 'Original VAT Amount ACY';
             Editable = false;
             DataClassification = CustomerContent;
         }
@@ -261,7 +274,11 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
     end;
 
     procedure CalcDeductibleVATBaseCZL(): Decimal
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
     begin
+        if GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL() then
+            exit("Original VAT Base ACY CZL" + "Non-Deductible VAT Base ACY");
         exit("Original VAT Base CZL" + "Non-Deductible VAT Amount");
     end;
 
@@ -273,6 +290,30 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
     internal procedure CalcOriginalVATAmountCZL(): Decimal
     begin
         exit(Amount + "Non-Deductible VAT Amount");
+    end;
+
+    internal procedure CalcOriginalVATBaseACYCZL(): Decimal
+    begin
+        exit("Additional-Currency Base" + "Non-Deductible VAT Base ACY");
+    end;
+
+    internal procedure CalcOriginalVATAmountACYCZL(): Decimal
+    begin
+        exit("Additional-Currency Amount" + "Non-Deductible VAT Amount ACY");
+    end;
+
+    internal procedure GetOriginalVATBaseCZL(): Decimal
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        exit(GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL() ? "Original VAT Base ACY CZL" : "Original VAT Base CZL");
+    end;
+
+    internal procedure GetOriginalVATAmountCZL(): Decimal
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        exit(GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL() ? "Original VAT Amount ACY CZL" : "Original VAT Amount CZL");
     end;
 
     [IntegrationEvent(false, false)]

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.eServices;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5232 "Create Incoming Document Setup"
 {

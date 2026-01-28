@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.Foundation.AuditCodes;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.AuditCodes;
 
 codeunit 5149 "Create FA Jnl. Template"
 {

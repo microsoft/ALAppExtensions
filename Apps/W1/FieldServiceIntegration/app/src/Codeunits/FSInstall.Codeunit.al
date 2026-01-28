@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using System.Upgrade;
 using Microsoft.Integration.SyncEngine;
 using System.Environment.Configuration;
+using System.Upgrade;
 
 codeunit 6616 "FS Install"
 {

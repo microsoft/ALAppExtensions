@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Localization;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 11535 "Create VAT Setup PostingGrp NL"
 {

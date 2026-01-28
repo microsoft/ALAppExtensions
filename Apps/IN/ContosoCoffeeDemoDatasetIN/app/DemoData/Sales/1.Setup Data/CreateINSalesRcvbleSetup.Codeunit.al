@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Setup;
 using Microsoft.Finance.GST.Base;
+using Microsoft.Sales.Setup;
 
 codeunit 19033 "Create IN Sales Rcvble Setup"
 {

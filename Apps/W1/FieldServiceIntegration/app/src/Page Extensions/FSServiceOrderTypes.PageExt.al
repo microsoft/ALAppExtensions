@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Service.Setup;
 using Microsoft.Integration.Dataverse;
+using Microsoft.Service.Setup;
 
 pageextension 6625 "FS Service Order Types" extends "Service Order Types"
 {

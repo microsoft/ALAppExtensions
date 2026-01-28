@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Inventory.Intrastat;
 using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Intrastat;
 
 xmlport 31221 "Import Tariff Numbers CZ"
 {

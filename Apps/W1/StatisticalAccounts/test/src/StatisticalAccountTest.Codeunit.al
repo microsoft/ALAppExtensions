@@ -1,14 +1,14 @@
 namespace Microsoft.Test.StatisticalAccounts;
 
-using System.TestLibraries.Utilities;
+using Microsoft.Finance.AllocationAccount;
 using Microsoft.Finance.Analysis;
 using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.FinancialReports;
-using Microsoft.Foundation.Enums;
-using Microsoft.Finance.AllocationAccount;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Enums;
+using System.TestLibraries.Utilities;
 
 codeunit 139683 "Statistical Account Test"
 {

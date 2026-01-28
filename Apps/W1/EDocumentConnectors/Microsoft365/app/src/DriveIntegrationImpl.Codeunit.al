@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
-using System.Utilities;
-using System.Privacy;
 using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
+using System.Privacy;
+using System.Utilities;
 
 codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker, IConsentManager
 {

@@ -1,9 +1,9 @@
 namespace Microsoft.Finance.Latepayment;
 
-using Microsoft.Sales.History;
-using Microsoft.Sales.Receivables;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
 codeunit 139576 "LP ML Input Data Test"
 {
     Subtype = Test;

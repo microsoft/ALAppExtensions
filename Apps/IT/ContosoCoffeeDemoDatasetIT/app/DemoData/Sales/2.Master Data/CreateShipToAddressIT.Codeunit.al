@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoTool;
+using Microsoft.Sales.Customer;
 
 codeunit 12226 "Create Ship-to Address IT"
 {

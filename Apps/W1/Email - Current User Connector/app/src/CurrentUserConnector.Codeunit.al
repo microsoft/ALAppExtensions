@@ -5,8 +5,8 @@
 
 namespace System.Email;
 
-using System.Security.AccessControl;
 using System.Environment;
+using System.Security.AccessControl;
 
 codeunit 4500 "Current User Connector" implements "Default Email Rate Limit", "Email Connector v4"
 {

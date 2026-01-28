@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
-using Microsoft.Purchases.Vendor;
-using Microsoft.DemoTool;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Foundation;
-using Microsoft.Finance.TaxBase;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Purchases.Vendor;
 
 codeunit 19036 "Create IN Vendor"
 {

@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Projects.Project.Job;
 using Microsoft.Integration.Dataverse;
+using Microsoft.Projects.Project.Job;
 
 pageextension 6611 "FS Job Task Lines" extends "Job Task Lines"
 {

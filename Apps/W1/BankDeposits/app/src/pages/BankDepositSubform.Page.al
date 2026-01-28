@@ -1,14 +1,14 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Intercompany.Partner;
-using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
 
 page 1693 "Bank Deposit Subform"

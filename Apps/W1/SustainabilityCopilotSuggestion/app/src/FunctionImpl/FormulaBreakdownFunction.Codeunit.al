@@ -3,8 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Copilot;
-using System.Telemetry;
+
 using System.AI;
+using System.Telemetry;
 
 codeunit 6298 "Formula Breakdown Function" implements "AOAI Function"
 {

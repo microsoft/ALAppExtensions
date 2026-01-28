@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.HumanResources;
 
-using Microsoft.HumanResources.Employee;
 using Microsoft.DemoData.Finance;
+using Microsoft.HumanResources.Employee;
 
 codeunit 10899 "Create Empl. Posting Group FR"
 {

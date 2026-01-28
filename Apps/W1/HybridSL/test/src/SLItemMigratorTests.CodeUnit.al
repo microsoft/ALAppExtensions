@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-using System.TestLibraries.Utilities;
 using Microsoft.Inventory.Item;
 using System.Integration;
+using System.TestLibraries.Utilities;
 
 codeunit 147610 "SL Item Migrator Tests"
 {

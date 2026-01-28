@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoData.Finance;
+using Microsoft.Sales.Customer;
 
 codeunit 10713 "Create Cust. Posting Grp NO"
 {

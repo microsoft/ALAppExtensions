@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Reporting;
-using System.Xml;
-using System;
 using Microsoft.Foundation.Company;
-using Microsoft.Finance.GeneralLedger.Setup;
+using System;
 using System.TestLibraries.Environment;
+using System.Xml;
 
 codeunit 144029 "ECSL XML Gen. Test"
 {

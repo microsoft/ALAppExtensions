@@ -5,12 +5,12 @@
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.EServices.EDocument;
-using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Receive;
-using System.Telemetry;
+using Microsoft.eServices.EDocument.Processing.Import;
 using System.Email;
 using System.IO;
-using Microsoft.eServices.EDocument.Processing.Import;
+using System.Telemetry;
+using System.Utilities;
 
 codeunit 6385 "Outlook Processing"
 {

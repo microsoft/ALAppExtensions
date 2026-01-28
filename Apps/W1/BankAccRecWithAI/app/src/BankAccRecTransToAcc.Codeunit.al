@@ -1,15 +1,15 @@
 namespace Microsoft.Bank.Reconciliation;
 
 using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
-using System.Security.User;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Foundation.AuditCodes;
-using System.AI;
-using System.Telemetry;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.Finance.Dimension;
+using System.AI;
+using System.Security.User;
+using System.Telemetry;
 
 codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
 {

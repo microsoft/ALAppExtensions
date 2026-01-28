@@ -4,20 +4,20 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Tracking;
 using Microsoft.Assembly.Setup;
-using Microsoft.Inventory.Journal;
-using Microsoft.Inventory.Item.Catalog;
-using Microsoft.Inventory.Setup;
-using Microsoft.Inventory.Item.Substitution;
-using Microsoft.Inventory.Item.Attribute;
-using Microsoft.Manufacturing.Setup;
-using System.Utilities;
 using Microsoft.DemoTool;
-using Microsoft.Inventory.Ledger;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Attribute;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Inventory.Item.Substitution;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Tracking;
+using Microsoft.Manufacturing.Setup;
+using System.Utilities;
 
 codeunit 5143 "Contoso Item"
 {
@@ -238,7 +238,15 @@ codeunit 5143 "Contoso Item"
 
     procedure InsertItemVariant(ItemNo: Code[20]; VariantCode: Code[10]; Description: Text[30])
     var
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        InsertItemVariant(ItemNo, VariantCode, Description, TempBlob);
+    end;
+
+    procedure InsertItemVariant(ItemNo: Code[20]; VariantCode: Code[10]; Description: Text[30]; Picture: Codeunit "Temp Blob")
+    var
         ItemVariant: Record "Item Variant";
+        ObjInStream: InStream;
         Exists: Boolean;
     begin
         if ItemVariant.Get(ItemNo, VariantCode) then begin
@@ -251,6 +259,11 @@ codeunit 5143 "Contoso Item"
         ItemVariant.Validate(Code, VariantCode);
         ItemVariant.Validate("Item No.", ItemNo);
         ItemVariant.Validate(Description, Description);
+
+        if Picture.HasValue() then begin
+            Picture.CreateInStream(ObjInStream);
+            ItemVariant.Picture.ImportStream(ObjInStream, Description);
+        end;
 
         if Exists then
             ItemVariant.Modify(true)

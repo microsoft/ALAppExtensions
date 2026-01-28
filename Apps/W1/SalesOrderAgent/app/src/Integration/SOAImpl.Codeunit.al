@@ -7,8 +7,8 @@
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.AI;
-using System.Environment;
 using System.Email;
+using System.Environment;
 using System.Security.AccessControl;
 using System.Telemetry;
 

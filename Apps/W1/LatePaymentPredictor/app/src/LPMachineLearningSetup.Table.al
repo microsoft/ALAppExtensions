@@ -1,9 +1,9 @@
 namespace Microsoft.Finance.Latepayment;
 
 using System.AI;
-using System.Utilities;
 using System.Privacy;
 using System.Telemetry;
+using System.Utilities;
 
 table 1950 "LP Machine Learning Setup"
 {

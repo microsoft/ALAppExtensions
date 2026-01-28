@@ -1,10 +1,10 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Integration;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Analysis.StatisticalAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
+using System.Integration;
 
 codeunit 4017 "GP Account Migrator"
 {

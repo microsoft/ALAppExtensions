@@ -1,9 +1,9 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
 
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using System.Telemetry;
 using System.Utilities;
-using Microsoft.Finance.GeneralLedger.Account;
 
 page 22207 "Review G/L Entries"
 {

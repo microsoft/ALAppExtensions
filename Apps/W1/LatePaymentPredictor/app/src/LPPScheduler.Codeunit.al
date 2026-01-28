@@ -1,11 +1,11 @@
 namespace Microsoft.Finance.Latepayment;
 
-using System.Threading;
-using System.Security.User;
-using System.Utilities;
-using System.Environment.Configuration;
-using System.Environment;
 using Microsoft.Sales.Receivables;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Security.User;
+using System.Threading;
+using System.Utilities;
 codeunit 1956 "LPP Scheduler"
 {
     trigger OnRun()

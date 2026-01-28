@@ -6,13 +6,13 @@
 namespace Microsoft.DemoData.Localization;
 
 using Microsoft.DemoData.Bank;
-using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.CRM;
+using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.FixedAsset;
 using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.HumanResources;
-using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.Sales;
 using Microsoft.DemoTool;
 
@@ -142,6 +142,7 @@ codeunit 10824 "ES Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create ES Column Layout");
                     Codeunit.Run(Codeunit::"Create ES Currency Exch");
+                    Codeunit.Run(Codeunit::"Create Allocation Account ES");
                 end;
         end;
     end;

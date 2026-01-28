@@ -5,8 +5,8 @@
 namespace Microsoft.Purchases.Document;
 
 using Microsoft.Finance.GST.Application;
-using Microsoft.Finance.GST.Purchase;
 using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Purchase;
 
 pageextension 18101 "GST Purchase Order Stats." extends "Purchase Order Statistics"
 {

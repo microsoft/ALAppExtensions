@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.UOM;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.UOM;
 
 codeunit 11417 "Create UOM Translation BE"
 {

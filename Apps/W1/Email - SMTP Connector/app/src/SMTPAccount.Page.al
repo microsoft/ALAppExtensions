@@ -5,8 +5,8 @@
 
 namespace System.Email;
 
-using System.Utilities;
 using System.Environment;
+using System.Utilities;
 
 /// <summary>
 /// Displays an account that was registered via the SMTP connector.

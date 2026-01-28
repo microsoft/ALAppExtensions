@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.Shipping;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Shipping;
 
 codeunit 17115 "Create AU Shipping Agent"
 {

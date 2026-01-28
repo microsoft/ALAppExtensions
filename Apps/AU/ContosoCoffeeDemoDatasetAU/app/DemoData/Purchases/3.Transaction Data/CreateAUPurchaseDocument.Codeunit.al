@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Foundation.Address;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Foundation.Address;
+using Microsoft.Purchases.Document;
 
 codeunit 17143 "Create AU Purchase Document"
 {

@@ -1,15 +1,15 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
-using System.TestLibraries.Utilities;
-using System.AI;
 using Microsoft.Foundation.Period;
+using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Inventory.Item;
 using Microsoft.Sales.Setup;
+using System.AI;
 using System.Environment.Configuration;
-using System.Threading;
 using System.Privacy;
+using System.TestLibraries.Utilities;
+using System.Threading;
 
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.

@@ -5,8 +5,8 @@
 
 namespace System.Email;
 
-using System.Environment;
 using System.DataAdministration;
+using System.Environment;
 
 codeunit 4509 "Email - Outlook API Helper"
 {

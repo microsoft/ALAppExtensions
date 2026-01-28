@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Sales;
-using Microsoft.DemoData.Foundation;
 using Microsoft.CRM.BusinessRelation;
 using Microsoft.CRM.Opportunity;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5678 "Create Opportunity"
 {

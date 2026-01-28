@@ -1,13 +1,13 @@
 namespace Microsoft.Integration.ExternalEvents;
 
-using System.Integration;
-using Microsoft.Purchases.Payables;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
-using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+using System.Integration;
 
 codeunit 38503 "AP External Events"
 {

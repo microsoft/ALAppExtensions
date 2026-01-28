@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AdvancePayments;
 
-using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
 using System.Utilities;
 
 report 31025 "Purch. Advance Letters VAT CZZ"

@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Inventory;
+using Microsoft.Sales.Customer;
 
 codeunit 12210 "Create Customer IT"
 {
