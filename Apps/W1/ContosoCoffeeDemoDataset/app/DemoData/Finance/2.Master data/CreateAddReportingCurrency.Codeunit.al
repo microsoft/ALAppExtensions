@@ -6,6 +6,8 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 5627 "Create Add. Reporting Currency"
@@ -38,15 +40,35 @@ codeunit 5627 "Create Add. Reporting Currency"
     var
         Currency: Record "Currency";
         CreateCurrency: Codeunit "Create Currency";
-        CreateGLAccount: Codeunit "Create G/L Account";
+        FXGainsAccount: Code[20];
+        FXLossesAccount: Code[20];
     begin
+        GetResidualCurrencyAccounts(FXGainsAccount, FXLossesAccount);
         Currency.SetFilter(Code, '%1|%2', CreateCurrency.EUR(), CreateCurrency.USD());
         if Currency.FindSet(true) then begin
             repeat
-                Currency.Validate("Residual Gains Account", CreateGLAccount.RealizedFXGains());
-                Currency.Validate("Residual Losses Account", CreateGLAccount.RealizedFXLosses());
+                Currency.Validate("Residual Gains Account", FXGainsAccount);
+                Currency.Validate("Residual Losses Account", FXLossesAccount);
                 Currency.Modify(true);
             until Currency.Next() = 0;
         end;
+    end;
+
+    local procedure GetResidualCurrencyAccounts(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20])
+    var
+        CreateGLAccount: Codeunit "Create G/L Account";
+        IsHandled: Boolean;
+    begin
+        OnBeforeGetResidualCurrencyAccounts(FXGainsAccount, FXLossesAccount, IsHandled);
+        if IsHandled then
+            exit;
+
+        FXGainsAccount := CreateGLAccount.RealizedFXGains();
+        FXLossesAccount := CreateGLAccount.RealizedFXLosses();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetResidualCurrencyAccounts(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
+    begin
     end;
 }
