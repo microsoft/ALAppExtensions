@@ -5,12 +5,12 @@
 namespace Microsoft.Foundation.Company;
 
 using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.Address;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Intrastat;
 using Microsoft.Purchases.Vendor;
 using System.Email;
 using System.Reflection;
-using Microsoft.Foundation.Address;
 
 table 31105 "Statutory Reporting Setup CZL"
 {

@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Foundation.Enums;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
 
 codeunit 11186 "Create VAT Posting Group AT"
 {

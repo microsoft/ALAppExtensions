@@ -1,17 +1,17 @@
 namespace Microsoft.Test.Sustainability;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Emission;
-using Microsoft.Sales.Document;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Setup;
-using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
-using Microsoft.Sales.History;
-using Microsoft.Sustainability.Ledger;
+using Microsoft.Purchases.Setup;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
-using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.Ledger;
 
 codeunit 148210 "Sust. Item Chrg Assign. Test"
 {

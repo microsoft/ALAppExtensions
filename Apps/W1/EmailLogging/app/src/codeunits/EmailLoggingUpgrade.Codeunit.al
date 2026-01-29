@@ -1,7 +1,7 @@
 namespace Microsoft.CRM.EmailLoggin;
 
-using System.Upgrade;
 using Microsoft.CRM.Setup;
+using System.Upgrade;
 
 codeunit 1688 "Email Logging Upgrade"
 {

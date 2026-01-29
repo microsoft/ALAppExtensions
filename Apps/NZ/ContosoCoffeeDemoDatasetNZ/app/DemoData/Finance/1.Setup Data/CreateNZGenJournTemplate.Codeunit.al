@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool.Helpers;
-using Microsoft.Foundation.AuditCodes;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.AuditCodes;
 
 codeunit 17146 "Create NZ Gen. Journ. Template"
 {

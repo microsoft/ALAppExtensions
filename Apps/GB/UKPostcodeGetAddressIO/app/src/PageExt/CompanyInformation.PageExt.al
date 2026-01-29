@@ -5,8 +5,8 @@
 #if CLEAN27
 namespace app.app;
 
-using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 
 pageextension 50003 "Company Information" extends "Company Information"
 {

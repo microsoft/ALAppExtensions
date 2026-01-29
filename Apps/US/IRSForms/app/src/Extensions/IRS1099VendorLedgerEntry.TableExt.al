@@ -57,18 +57,23 @@ tableextension 10035 "IRS 1099 Vendor Ledger Entry" extends "Vendor Ledger Entry
             AutoFormatExpression = Rec."Currency Code";
 
             trigger OnValidate()
+            var
+                IRSReportingAmount: Decimal;
             begin
                 IRS1099FormDocument.CheckIfVendLedgEntryAllowed(Rec."Entry No.");
                 if "IRS 1099 Reporting Amount" <> 0 then begin
+                    IRSReportingAmount := "IRS 1099 Reporting Amount";
+                    if "Reversed Entry No." <> 0 then
+                        IRSReportingAmount := -IRSReportingAmount;
                     CalcFields(Amount);
-                    if ("Document Type" = "Document Type"::Invoice) and ("IRS 1099 Reporting Amount" > 0) then
+                    if ("Document Type" = "Document Type"::Invoice) and (IRSReportingAmount > 0) then
                         FieldError("IRS 1099 Reporting Amount", MustBeNegativeErr);
-                    if ("Document Type" = "Document Type"::"Credit Memo") and ("IRS 1099 Reporting Amount" < 0) then
+                    if ("Document Type" = "Document Type"::"Credit Memo") and (IRSReportingAmount < 0) then
                         FieldError("IRS 1099 Reporting Amount", MustBePositiveErr);
-                    if Abs("IRS 1099 Reporting Amount") > Abs(Amount) then
+                    if Abs(IRSReportingAmount) > Abs(Amount) then
                         error(IRSReportingAmountCannotBeMoreThanAmountErr);
                 end;
-                "IRS 1099 Subject For Reporting" := ("IRS 1099 Form Box No." <> '') and ("IRS 1099 Reporting Amount" <> 0);
+                "IRS 1099 Subject For Reporting" := ("IRS 1099 Form Box No." <> '') and (IRSReportingAmount <> 0);
             end;
         }
     }

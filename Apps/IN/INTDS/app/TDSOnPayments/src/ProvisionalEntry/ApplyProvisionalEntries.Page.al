@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSOnPayments;
 
-using Microsoft.Foundation.Navigate;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Navigate;
 
 page 18770 "Apply Provisional Entries"
 {

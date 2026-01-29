@@ -1,10 +1,10 @@
 namespace Microsoft.Bank.Reconciliation;
 
-using Microsoft.Bank.Statement;
-using System.Security.User;
-using Microsoft.Finance.GeneralLedger.Journal;
-using System.Telemetry;
 using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Statement;
+using Microsoft.Finance.GeneralLedger.Journal;
+using System.Security.User;
+using System.Telemetry;
 
 page 7252 "Trans. To GL Acc. AI Proposal"
 {

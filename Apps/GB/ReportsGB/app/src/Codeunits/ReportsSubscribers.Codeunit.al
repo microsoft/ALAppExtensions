@@ -4,27 +4,22 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
-using Microsoft.Sales.Document;
-
-#if not CLEAN28
-using Microsoft.FixedAssets.Reports;
-#endif
-using Microsoft.Purchases.Setup;
-using Microsoft.Sales.Reports;
-using Microsoft.Purchases.Document;
 using Microsoft.CashFlow.Forecast;
-using Microsoft.Sales.Reminder;
+using Microsoft.CashFlow.Reports;
 #if not CLEAN28
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.FixedAsset;
-#endif  
-using Microsoft.CashFlow.Reports;
-using Microsoft.Purchases.History;
-#if not CLEAN28
+using Microsoft.FixedAssets.Reports;
 using Microsoft.Foundation.Period;
 #endif
 using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Reports;
+using Microsoft.Purchases.Setup;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Reminder;
+using Microsoft.Sales.Reports;
 
 codeunit 10581 "Reports Subscribers"
 {

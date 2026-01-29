@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Document;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Sales.Document;
 
 codeunit 13446 "Create Sales Document FI"
 {

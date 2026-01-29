@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Jobs;
 
-using Microsoft.Projects.Project.Job;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Projects.Project.Job;
 
 codeunit 13724 "Create Job DK"
 {

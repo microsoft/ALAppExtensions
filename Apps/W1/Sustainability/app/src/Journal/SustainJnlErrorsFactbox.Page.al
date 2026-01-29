@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Journal;
 
-using System.Utilities;
-using Microsoft.Utilities;
 using Microsoft.Sustainability.Posting;
+using Microsoft.Utilities;
+using System.Utilities;
 
 page 6226 "Sustain. Jnl. Errors Factbox"
 {

@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
-using Microsoft.Sales.History;
 using Microsoft.Inventory.Item;
+using Microsoft.Sales.History;
 
 table 7275 "Sales Line AI Suggestions"
 {

@@ -5,12 +5,12 @@
 
 namespace Microsoft.DemoData.Bank;
 
+using Microsoft.DemoData.CRM;
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.CRM;
-using Microsoft.DemoData.Finance;
 
 codeunit 5457 "Create Bank Account"
 {

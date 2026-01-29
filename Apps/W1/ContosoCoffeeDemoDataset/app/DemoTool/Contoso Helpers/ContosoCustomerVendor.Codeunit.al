@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Sales.Pricing;
-using System.Utilities;
+using Microsoft.CRM.Contact;
 using Microsoft.DemoTool;
 using Microsoft.Finance.ReceivablesPayables;
-using Microsoft.CRM.Contact;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Pricing;
+using System.Utilities;
 
 codeunit 4795 "Contoso Customer/Vendor"
 {

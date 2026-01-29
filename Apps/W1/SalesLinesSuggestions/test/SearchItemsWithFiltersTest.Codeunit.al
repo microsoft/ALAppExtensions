@@ -1,10 +1,10 @@
 namespace Microsoft.Sales.Document.Test;
 
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 using System.TestLibraries.Utilities;
 using System.TestTools.AITestToolkit;
 using System.TestTools.TestRunner;
-using Microsoft.Sales.Customer;
-using Microsoft.Sales.Document;
 
 codeunit 133512 "Search Items With Filters Test"
 {

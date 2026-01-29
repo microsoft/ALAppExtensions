@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.Bank.Payment;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5295 "Create Payment Method"
 {

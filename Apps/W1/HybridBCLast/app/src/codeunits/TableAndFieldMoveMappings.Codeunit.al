@@ -1,11 +1,11 @@
 namespace Microsoft.DataMigration;
 
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+using System.Apps;
+using System.Environment;
 using System.Migration;
 using System.Reflection;
-using System.Apps;
-using Microsoft.Foundation.NoSeries;
-using System.Environment;
-using Microsoft.Foundation.AuditCodes;
 
 codeunit 40030 "Table and Field Move Mappings"
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Intercompany.Journal;
 

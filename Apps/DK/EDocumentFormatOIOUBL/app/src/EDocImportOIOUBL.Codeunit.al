@@ -4,15 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
-using System.Utilities;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.Codes;
 using Microsoft.Sustainability.Setup;
 using System.IO;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Inventory.Item;
+using System.Utilities;
 
 codeunit 13911 "EDoc Import OIOUBL"
 {

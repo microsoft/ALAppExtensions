@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance;
 
-using System.Utilities;
 using Microsoft.Foundation.Company;
+using System.Utilities;
 
 report 14608 "IS IRS notification"
 {

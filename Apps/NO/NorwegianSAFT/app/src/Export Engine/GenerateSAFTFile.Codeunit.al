@@ -241,12 +241,18 @@ codeunit 10673 "Generate SAF-T File"
     local procedure ExportGLAccount(MappingType: Enum "SAF-T Mapping Type"; GLAccNo: Code[20]; StandardAccNo: Text; GroupingCategory: Code[20]; GroupingNo: Code[20]; StartingDate: Date; EndingDate: Date)
     var
         GLAccount: Record "G/L Account";
+        SAFTMappingCategory: Record "SAF-T Mapping Category";
         OpeningDebitBalance: Decimal;
         OpeningCreditBalance: Decimal;
         ClosingDebitBalance: Decimal;
         ClosingCreditBalance: Decimal;
+        GroupingCategoryValue: Text[500];
     begin
         GLAccount.get(GLAccNo);
+        GroupingCategoryValue := GroupingCategory;
+        if SAFTMappingCategory.Get(SAFTMappingCategory."Mapping Type"::"Income Statement", GroupingCategory) then
+            if SAFTMappingCategory."Extended No." <> '' then
+                GroupingCategoryValue := SAFTMappingCategory."Extended No.";
         // Opening balance always zero for income statement
         if GLAccount."Income/Balance" <> GLAccount."Income/Balance"::"Income Statement" then begin
             GLAccount.SetRange("Date Filter", 0D, ClosingDate(StartingDate - 1));
@@ -273,7 +279,7 @@ codeunit 10673 "Generate SAF-T File"
         if MappingType in [MappingType::"Two Digit Standard Account", MappingType::"Four Digit Standard Account"] then
             SAFTXMLHelper.AppendXMLNode('StandardAccountID', StandardAccNo)
         else begin
-            SAFTXMLHelper.AppendXMLNode('GroupingCategory', GroupingCategory);
+            SAFTXMLHelper.AppendXMLNode('GroupingCategory', GroupingCategoryValue);
             SAFTXMLHelper.AppendXMLNode('GroupingCode', GroupingNo);
         end;
         SAFTXMLHelper.AppendXMLNode('AccountType', 'GL');

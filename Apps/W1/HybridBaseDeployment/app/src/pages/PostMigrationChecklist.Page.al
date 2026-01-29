@@ -1,8 +1,8 @@
 namespace Microsoft.DataMigration;
 
+using Microsoft.Integration.D365Sales;
 using System.Environment;
 using System.Security.User;
-using Microsoft.Integration.D365Sales;
 
 
 page 4020 "Post Migration Checklist"

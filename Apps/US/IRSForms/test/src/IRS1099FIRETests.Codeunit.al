@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.TestLibraries.Utilities;
 using Microsoft.Purchases.Vendor;
+using System.TestLibraries.Utilities;
 using System.Utilities;
 
 codeunit 148020 "IRS 1099 FIRE Tests"

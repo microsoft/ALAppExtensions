@@ -2,7 +2,7 @@
     {
         "CaseID": "{A8E114BF-F8CD-44DB-A2B3-614BC18F4442}",
         "Description": "Calculation of Tax Deduction at Source on Vendor Invoice where  PAN No. is specified without Concessional Codes.\n",
-        "Version": 30,
+        "Version": 31,
         "MinorVersion": 0,
         "TaxType": "TDS",
         "ChangedBy": "Microsoft",
@@ -10,7 +10,7 @@
         "TaxEntity": "Purchase Line",
         "ParentUseCase": "Calculation of Tax Deduction at Source on Vendor Invoice (through Purchase Order/Purchase Invoice).\n",
         "ParentCaseId": "{B8483E82-4EAB-43DE-B423-B1371AAA9CE0}",
-        "PresentationOrder": 567,
+        "PresentationOrder": 568,
         "Indent": 1,
         "PostingTableName": "TDS Posting Setup",
         "PostingTableFilters": [
@@ -68,7 +68,7 @@
         ],
         "Attributes": [
             {
-                "Name": "PAN No.",
+                "Name": "Assessee Code",
                 "When": [
                     {
                         "ValueType": "Relation",
@@ -95,7 +95,7 @@
                 ]
             },
             {
-                "Name": "Assessee Code",
+                "Name": "PAN No.",
                 "When": [
                     {
                         "ValueType": "Relation",
@@ -9839,6 +9839,80 @@
                                         }
                                     },
                                     {
+                                        "ActivityType": "IFSTATEMENT",
+                                        "Activity": {
+                                            "Condition": {
+                                                "Body": [
+                                                    {
+                                                        "Operator": " ",
+                                                        "ConditionType": "Equals",
+                                                        "LHS": {
+                                                            "Lookup": {
+                                                                "SourceType": "Table",
+                                                                "TableName": "Purchase Header",
+                                                                "TableFieldName": "Include GST in TDS Base",
+                                                                "Method": "First",
+                                                                "TableFilters": [
+                                                                    {
+                                                                        "FiterFieldName": "Document Type",
+                                                                        "FilterType": "Equals",
+                                                                        "FilterValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Current Record",
+                                                                                "TableName": "Purchase Line",
+                                                                                "FieldName": "Document Type"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "FiterFieldName": "No.",
+                                                                        "FilterType": "Equals",
+                                                                        "FilterValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Current Record",
+                                                                                "TableName": "Purchase Line",
+                                                                                "FieldName": "Document No."
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "RHS": {
+                                                            "Type": "Constant",
+                                                            "Value": "true"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "Body": [
+                                                {
+                                                    "ActivityType": "NUMBERCALCULATION",
+                                                    "Activity": {
+                                                        "OutputVariableName": "TDSBaseAmt",
+                                                        "Operator": "Plus",
+                                                        "LHS": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Variable",
+                                                                "VariableName": "TDSBaseAmt"
+                                                            }
+                                                        },
+                                                        "RHS": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Variable",
+                                                                "VariableName": "GSTAmount"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
                                         "ActivityType": "SETVARIABLE",
                                         "Activity": {
                                             "OutputVariableName": "TDSTaxableAmount",
@@ -12682,6 +12756,56 @@
         ],
         "Components": [
             {
+                "ComponentName": "TDS Base Amount",
+                "Sequence": 6,
+                "Formula": {
+                    "VariableName": "TDS Base Amount",
+                    "Expression": "TDSBaseAmount",
+                    "Tokens": [
+                        {
+                            "TokenName": "TDSBaseAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Variable",
+                                    "VariableName": "TDSBaseAmt"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "Surcharge",
+                "Sequence": 2,
+                "Formula": {
+                    "VariableName": "Surcharge",
+                    "Expression": "SurchargeTaxableAmount*SurchargePercent/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "SurchargePercent",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "Surcharge"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "SurchargeTaxableAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Variable",
+                                    "VariableName": "SurchargeBaseAmt"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
                 "ComponentName": "eCESS",
                 "Sequence": 3,
                 "Formula": {
@@ -12695,46 +12819,6 @@
                                 "Lookup": {
                                     "SourceType": "Component Percent",
                                     "ComponentName": "eCESS"
-                                }
-                            }
-                        },
-                        {
-                            "TokenName": "SurchargeAmount",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Component",
-                                    "ComponentName": "Surcharge"
-                                }
-                            }
-                        },
-                        {
-                            "TokenName": "TDSAmount",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Component",
-                                    "ComponentName": "TDS"
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "ComponentName": "SHE Cess ",
-                "Sequence": 4,
-                "Formula": {
-                    "VariableName": "SHE Cess ",
-                    "Expression": "(TDSAmount+SurchargeAmount)*SHECessPercent/100",
-                    "Tokens": [
-                        {
-                            "TokenName": "SHECessPercent",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Component Percent",
-                                    "ComponentName": "SHE Cess "
                                 }
                             }
                         },
@@ -12792,56 +12876,6 @@
                 }
             },
             {
-                "ComponentName": "TDS Base Amount",
-                "Sequence": 6,
-                "Formula": {
-                    "VariableName": "TDS Base Amount",
-                    "Expression": "TDSBaseAmount",
-                    "Tokens": [
-                        {
-                            "TokenName": "TDSBaseAmount",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Variable",
-                                    "VariableName": "TDSBaseAmt"
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "ComponentName": "Surcharge",
-                "Sequence": 2,
-                "Formula": {
-                    "VariableName": "Surcharge",
-                    "Expression": "SurchargeTaxableAmount*SurchargePercent/100",
-                    "Tokens": [
-                        {
-                            "TokenName": "SurchargePercent",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Component Percent",
-                                    "ComponentName": "Surcharge"
-                                }
-                            }
-                        },
-                        {
-                            "TokenName": "SurchargeTaxableAmount",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Variable",
-                                    "VariableName": "SurchargeBaseAmt"
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            {
                 "ComponentName": "Total TDS Amount",
                 "Sequence": 5,
                 "Formula": {
@@ -12864,6 +12898,46 @@
                                 "Type": "Lookup",
                                 "Lookup": {
                                     "SourceType": "Component",
+                                    "ComponentName": "SHE Cess "
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "SurchargeAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component",
+                                    "ComponentName": "Surcharge"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "TDSAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component",
+                                    "ComponentName": "TDS"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "SHE Cess ",
+                "Sequence": 4,
+                "Formula": {
+                    "VariableName": "SHE Cess ",
+                    "Expression": "(TDSAmount+SurchargeAmount)*SHECessPercent/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "SHECessPercent",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
                                     "ComponentName": "SHE Cess "
                                 }
                             }

@@ -6,8 +6,8 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.ReceivablesPayables;
-using Microsoft.Sales.Receivables;
 using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
 
 codeunit 31141 "Document Type Handler CZZ"
 {

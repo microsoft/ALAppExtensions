@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Reminder;
 
-using Microsoft.Sales.Setup;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Sales.Setup;
 
 reportextension 10584 Reminder extends Reminder
 {

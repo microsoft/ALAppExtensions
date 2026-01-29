@@ -2,13 +2,13 @@ namespace Microsoft.Bank.Reconciliation.Test;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
-using Microsoft.Foundation.NoSeries;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Bank.Reconciliation;
-using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.NoSeries;
 using System.TestLibraries.Utilities;
-using Microsoft.Finance.Dimension;
 
 codeunit 139777 "Bank Rec. With AI Tests"
 {

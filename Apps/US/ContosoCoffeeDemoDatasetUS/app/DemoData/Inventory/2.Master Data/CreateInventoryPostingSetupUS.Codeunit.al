@@ -6,8 +6,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 10497 "Create InventoryPostingSetupUS"
 {

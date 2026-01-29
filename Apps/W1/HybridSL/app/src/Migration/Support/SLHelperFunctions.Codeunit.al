@@ -5,26 +5,26 @@
 
 namespace Microsoft.DataMigration.SL;
 
+using Microsoft.Finance.Consolidation;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Posting;
+using Microsoft.Inventory.Tracking;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Payables;
 using System.Integration;
-using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Ledger;
-using Microsoft.Inventory.Costing;
-using Microsoft.Foundation.PaymentTerms;
-using Microsoft.Inventory.Tracking;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Inventory.Journal;
-using Microsoft.Finance.Consolidation;
-using Microsoft.Inventory.Location;
-using Microsoft.Finance.GeneralLedger.Posting;
-using Microsoft.Inventory.Posting;
 
 codeunit 47023 "SL Helper Functions"
 {

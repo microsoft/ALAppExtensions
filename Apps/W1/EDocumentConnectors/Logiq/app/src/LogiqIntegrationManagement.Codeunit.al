@@ -5,8 +5,8 @@
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 using Microsoft.eServices.EDocument;
-using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
+using Microsoft.eServices.EDocument.Integration.Send;
 using System.Utilities;
 using System.Xml;
 

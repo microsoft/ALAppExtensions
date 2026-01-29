@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Item.Substitution;
 
-using System.AI;
 using Microsoft.Inventory.Item;
+using System.AI;
 using System.Environment;
 
 codeunit 7345 "Create Product Info. Utility"

@@ -1,12 +1,12 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.Currency;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
 using System.Reflection;
 
@@ -716,6 +716,7 @@ page 30042 "APIV2 - Purchase Invoices"
     end;
 
     [ServiceEnabled]
+    [Caption('Posts the draft purchase invoice to create a finalized posted invoice')]
     [Scope('Cloud')]
     procedure Post(var ActionContext: WebServiceActionContext)
     var

@@ -1,9 +1,9 @@
 namespace Microsoft.Finance.Latepayment;
 
 using Microsoft.Sales.Document;
+using Microsoft.Sales.Receivables;
 using System.AI;
 using System.Environment.Configuration;
-using Microsoft.Sales.Receivables;
 codeunit 1950 "LP Prediction Mgt."
 {
     var

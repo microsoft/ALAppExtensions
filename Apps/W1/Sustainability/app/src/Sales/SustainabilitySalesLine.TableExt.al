@@ -1,9 +1,10 @@
 namespace Microsoft.Sustainability.Sales;
 
+using Microsoft.FixedAssets.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Projects.Resources.Resource;
-using Microsoft.Sustainability.Account;
 using Microsoft.Sales.Document;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
 
 tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
@@ -207,8 +208,8 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
             SalesLine.FieldNo("Sust. Account Name"):
                 begin
                     SalesLine.TestField("No.");
-                    if not (SalesLine.Type in [SalesLine.Type::Item, SalesLine.Type::"G/L Account", SalesLine.Type::Resource]) then
-                        Error(InvalidTypeForSustErr, SalesLine.Type::Item, SalesLine.Type::"G/L Account", SalesLine.Type::Resource);
+                    if not (SalesLine.Type in [SalesLine.Type::Item, SalesLine.Type::"G/L Account", SalesLine.Type::Resource, SalesLine.Type::"Fixed Asset"]) then
+                        Error(InvalidTypeForSustErr, SalesLine.Type::Item, SalesLine.Type::"G/L Account", SalesLine.Type::Resource, SalesLine.Type::"Fixed Asset");
 
                     if SustAccountCategory.Get(SalesLine."Sust. Account Category") then
                         if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
@@ -221,6 +222,7 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
     var
         Item: Record Item;
         Resource: Record Resource;
+        FALedgerEntry: Record "FA Ledger Entry";
     begin
         case Rec.Type of
             Rec.Type::Item:
@@ -234,11 +236,22 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
                     Resource.Get(Rec."No.");
                     Rec.Validate("CO2e per Unit", Resource."CO2e per Unit");
                 end;
+            Rec.Type::"Fixed Asset":
+                begin
+                    FALedgerEntry.SetLoadFields("Total CO2e");
+                    FALedgerEntry.SetRange("FA No.", Rec."No.");
+                    FALedgerEntry.SetRange("Depreciation Book Code", Rec."Depreciation Book Code");
+                    FALedgerEntry.SetRange("FA Posting Category", FALedgerEntry."FA Posting Category"::" ");
+                    FALedgerEntry.SetRange(Reversed, false);
+                    FALedgerEntry.CalcSums("Total CO2e");
+
+                    Rec.Validate("CO2e per Unit", FALedgerEntry."Total CO2e");
+                end;
         end;
     end;
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
-        InvalidTypeForSustErr: Label 'Sustainability is only applicable for Type: %1 , %2 and %3.', Comment = '%1 - Sales Line Type Item, %2 - Sales Line Type G/L Account, %3 - Sales Line Type Resource';
+        InvalidTypeForSustErr: Label 'Sustainability is only applicable for Type: %1 , %2 , %3 and %4.', Comment = '%1 - Sales Line Type Item, %2 - Sales Line Type G/L Account, %3 - Sales Line Type Resource,, %4 - Sales Line Type Fixed Asset';
         NotAllowedToUseSustAccountForWaterOrWasteErr: Label 'It is not allowed to use Sustainability Account %1 for water or waste in Sales document.', Comment = '%1 = Sust. Account No.';
 }

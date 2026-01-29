@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
+using System.Email;
 using System.Telemetry;
 using System.Utilities;
-using System.Email;
 
 table 6383 "Outlook Setup"
 {

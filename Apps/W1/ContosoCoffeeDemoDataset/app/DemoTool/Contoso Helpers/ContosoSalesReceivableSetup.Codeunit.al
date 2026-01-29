@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Sales.Setup;
-using Microsoft.Foundation.Enums;
-using Microsoft.Sales.Document;
-using Microsoft.Finance.ReceivablesPayables;
-using Microsoft.Warehouse.Structure;
-using Microsoft.Pricing.Calculation;
 using Microsoft.DemoTool;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Foundation.Enums;
+using Microsoft.Pricing.Calculation;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Setup;
+using Microsoft.Warehouse.Structure;
 
 codeunit 5269 "Contoso Sales Receivable Setup"
 {

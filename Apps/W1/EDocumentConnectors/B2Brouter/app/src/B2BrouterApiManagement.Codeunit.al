@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.B2Brouter;
 
+using Microsoft.EServices.EDocument;
+using Microsoft.EServices.EDocument.Integration.Receive;
+using Microsoft.EServices.EDocument.Integration.Send;
 using System.Text;
 using System.Utilities;
-using Microsoft.EServices.EDocument;
-using Microsoft.EServices.EDocument.Integration.Send;
-using Microsoft.EServices.EDocument.Integration.Receive;
 
 codeunit 6490 "B2Brouter Api Management"
 {

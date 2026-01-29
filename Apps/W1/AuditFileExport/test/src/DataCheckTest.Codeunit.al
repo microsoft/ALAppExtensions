@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Test.Finance.AuditFileExport;
 
-using Microsoft.Finance.AuditFileExport;
 using Microsoft.CRM.Contact;
+using Microsoft.Finance.AuditFileExport;
 
 codeunit 148038 "Data Check Test" implements "Audit File Export Data Check"
 {

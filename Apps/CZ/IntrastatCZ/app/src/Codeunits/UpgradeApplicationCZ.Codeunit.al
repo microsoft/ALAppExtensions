@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
+using Microsoft.Foundation.Shipping;
 using Microsoft.Inventory.Transfer;
 using Microsoft.Purchases.Archive;
 using Microsoft.Purchases.Document;
@@ -14,9 +15,8 @@ using Microsoft.Sales.History;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Environment.Configuration;
-using System.Upgrade;
-using Microsoft.Foundation.Shipping;
 using System.IO;
+using System.Upgrade;
 
 codeunit 31306 "Upgrade Application CZ"
 {

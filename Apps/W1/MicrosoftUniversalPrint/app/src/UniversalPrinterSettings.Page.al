@@ -4,9 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace System.Device.UniversalPrint;
 
-using System.Telemetry;
-
 using System.Device;
+using System.Telemetry;
 
 /// <summary>
 /// Exposes functionality to manage configuration settings of Universal Print printers.

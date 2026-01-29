@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace System.Environment.Configuration;
 
-using System.Telemetry;
 using System;
+using System.Telemetry;
 using System.Utilities;
 
 codeunit 4751 "Recommended Apps Impl."

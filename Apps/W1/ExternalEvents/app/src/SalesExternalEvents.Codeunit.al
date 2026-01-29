@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.ExternalEvents;
 
-using System.Integration;
 using Microsoft.Sales.Document;
+using System.Integration;
 
 codeunit 38504 "Sales External Events"
 {

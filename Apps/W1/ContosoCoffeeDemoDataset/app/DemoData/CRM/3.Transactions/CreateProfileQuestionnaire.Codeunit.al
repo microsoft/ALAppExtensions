@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.CRM.Profiling;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5681 "Create Profile Questionnaire"
 {

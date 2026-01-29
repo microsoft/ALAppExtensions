@@ -5,8 +5,8 @@
 #if CLEAN27
 namespace app.app;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.Foundation.Address;
+using Microsoft.Purchases.Vendor;
 
 pageextension 50006 "Vendor Card" extends "Vendor Card"
 {

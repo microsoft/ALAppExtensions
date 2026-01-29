@@ -5,15 +5,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
-using Microsoft.Purchases.History;
-using Microsoft.Sales.History;
-using Microsoft.Finance.VAT.Calculation;
-using Microsoft.Sales.Setup;
-using Microsoft.Purchases.Setup;
-using Microsoft.Inventory.Item;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Setup;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Setup;
 using System.Upgrade;
 
 codeunit 10554 "Upgrade Reverse Charge VAT"

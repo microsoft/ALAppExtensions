@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Service.Document;
-using Microsoft.Inventory.Item;
 using Microsoft.Integration.Dataverse;
+using Microsoft.Inventory.Item;
+using Microsoft.Service.Document;
 
 tableextension 6616 "FS Service Line" extends "Service Line"
 {

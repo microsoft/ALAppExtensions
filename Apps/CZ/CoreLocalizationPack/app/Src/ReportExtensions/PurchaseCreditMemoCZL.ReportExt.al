@@ -1,9 +1,9 @@
 namespace Microsoft.Purchases.History;
 
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
 using System.Utilities;
-using Microsoft.Finance.Currency;
 
 reportextension 11705 "Purchase Credit Memo CZL" extends "Purchase - Credit Memo"
 {

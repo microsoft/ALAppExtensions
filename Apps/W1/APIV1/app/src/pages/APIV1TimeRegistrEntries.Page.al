@@ -1,8 +1,8 @@
 namespace Microsoft.API.V1;
 
 using Microsoft.HumanResources.Employee;
-using Microsoft.Projects.Project.Job;
 using Microsoft.Integration.Graph;
+using Microsoft.Projects.Project.Job;
 
 page 20041 "APIV1 - Time Registr. Entries"
 {

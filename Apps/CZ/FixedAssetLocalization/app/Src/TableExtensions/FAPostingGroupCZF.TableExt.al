@@ -36,6 +36,14 @@ tableextension 31245 "FA Posting Group CZF" extends "FA Posting Group"
         }
     }
 
+    trigger OnAfterDelete()
+    var
+        FAExtendedPostingGroupCZF: Record "FA Extended Posting Group CZF";
+    begin
+        FAExtendedPostingGroupCZF.SetRange("FA Posting Group Code", Code);
+        FAExtendedPostingGroupCZF.DeleteAll();
+    end;
+
     var
         PostingSetupManagementCZF: Codeunit PostingSetupManagement;
 

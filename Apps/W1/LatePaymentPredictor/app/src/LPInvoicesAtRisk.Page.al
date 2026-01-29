@@ -1,8 +1,8 @@
 namespace Microsoft.Finance.RoleCenters;
 
-using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
 
 page 1954 "LP - Invoices at Risk"
 {

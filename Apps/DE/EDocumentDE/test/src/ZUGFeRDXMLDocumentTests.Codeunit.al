@@ -3,25 +3,26 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
-using Microsoft.Foundation.Company;
-using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Document;
-using System.Utilities;
+
 using Microsoft.Bank.BankAccount;
-using System.Reflection;
-using System.IO;
-using Microsoft.Foundation.UOM;
-using Microsoft.Foundation.Address;
 using Microsoft.eServices.EDocument;
-using Microsoft.Sales.Document;
-using Microsoft.Finance.Currency;
 using Microsoft.eServices.EDocument.Integration;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Reporting;
+using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using System.IO;
+using System.Reflection;
+using System.Utilities;
 
 codeunit 13922 "ZUGFeRD XML Document Tests"
 {

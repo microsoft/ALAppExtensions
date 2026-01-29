@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Journal;
 
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
 
@@ -167,7 +168,9 @@ tableextension 6224 "Sust. Gen. Journal Line" extends "Gen. Journal Line"
             GenJournalLine.FieldNo("CO2e per Unit"),
             GenJournalLine.FieldNo("Total CO2e"):
                 begin
-                    GenJournalLine.TestField("Job No.");
+                    if not GenJournalLine.IsSourceFixedAssetGLJournal() then
+                        GenJournalLine.TestField("Job No.");
+
                     GenJournalLine.TestField("Sust. Account No.");
                 end;
             GenJournalLine.FieldNo("Sust. Account No."):
@@ -200,6 +203,16 @@ tableextension 6224 "Sust. Gen. Journal Line" extends "Gen. Journal Line"
         Denominator := GenJournalLine."Job Quantity";
         if GenJournalLine."Total CO2e" <> 0 then
             GenJournalLine."CO2e per Unit" := GenJournalLine."Total CO2e" / Denominator;
+    end;
+
+    internal procedure IsSourceFixedAssetGLJournal(): Boolean
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+    begin
+        SourceCodeSetup.SetLoadFields("Fixed Asset G/L Journal");
+        SourceCodeSetup.Get();
+
+        exit(Rec."Source Code" = SourceCodeSetup."Fixed Asset G/L Journal");
     end;
 
     var

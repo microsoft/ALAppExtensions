@@ -5,11 +5,11 @@
 
 namespace Microsoft.DataMigration.C5;
 
-using System.Integration;
-using Microsoft.Inventory.Item;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Integration;
 
 codeunit 1870 "C5 Migr. Dashboard Mgt"
 {

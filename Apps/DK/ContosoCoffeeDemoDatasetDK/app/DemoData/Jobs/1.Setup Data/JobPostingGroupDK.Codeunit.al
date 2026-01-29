@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Jobs;
 
-using Microsoft.Projects.Project.Job;
 using Microsoft.DemoData.Finance;
+using Microsoft.Projects.Project.Job;
 
 codeunit 13731 "Job Posting Group DK"
 {

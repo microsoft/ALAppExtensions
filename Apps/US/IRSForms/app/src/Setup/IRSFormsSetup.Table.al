@@ -83,6 +83,10 @@ table 10030 "IRS Forms Setup"
             MinValue = 1;
             MaxValue = 99999;
         }
+        field(510; "Last Document ID"; Integer)
+        {
+            Editable = false;
+        }
     }
 
     keys
@@ -136,6 +140,16 @@ table 10030 "IRS Forms Setup"
     procedure DataTransferInProgress(): Boolean
     begin
         exit((not IsNullGuid(Rec."Data Transfer Task ID")) and (not Rec."Data Transfer Completed"));
+    end;
+
+    procedure GetNextDocumentID(): Integer
+    begin
+        InitSetup();
+        Rec.LockTable();
+        Rec.Get();
+        Rec."Last Document ID" += 1;
+        Rec.Modify();
+        exit(Rec."Last Document ID");
     end;
 
 }

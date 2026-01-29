@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
-using Microsoft.DemoData.Warehousing;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Warehousing;
+using Microsoft.Sales.Customer;
 
 codeunit 11523 "Create Customer Bank Acount NL"
 {

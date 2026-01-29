@@ -7,9 +7,9 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Inventory.Item;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Location;
 
 table 4760 "Manufacturing Demo Data Setup"

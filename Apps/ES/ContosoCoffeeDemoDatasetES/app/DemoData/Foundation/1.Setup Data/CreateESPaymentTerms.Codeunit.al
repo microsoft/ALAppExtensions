@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.PaymentTerms;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.PaymentTerms;
 
 codeunit 10783 "Create ES Payment Terms"
 {

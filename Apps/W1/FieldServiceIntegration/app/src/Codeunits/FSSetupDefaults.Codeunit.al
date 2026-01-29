@@ -4,21 +4,21 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.D365Sales;
-using Microsoft.Service.Setup;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.SyncEngine;
-using Microsoft.Inventory.Location;
-using Microsoft.Service.Document;
-using Microsoft.Inventory.Setup;
-using Microsoft.Utilities;
 using Microsoft.Inventory.Item;
-using System.Threading;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Setup;
 using Microsoft.Projects.Project.Job;
-using Microsoft.Service.Item;
-using Microsoft.Projects.Resources.Resource;
 using Microsoft.Projects.Project.Journal;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Service.Document;
+using Microsoft.Service.Item;
+using Microsoft.Service.Setup;
+using Microsoft.Utilities;
 using System.Environment.Configuration;
+using System.Threading;
 
 #pragma warning disable AS0130
 #pragma warning disable PTE0025

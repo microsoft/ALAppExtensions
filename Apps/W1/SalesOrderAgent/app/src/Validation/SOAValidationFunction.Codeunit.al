@@ -6,8 +6,8 @@
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.AI;
-using System.Globalization;
 using System.Azure.KeyVault;
+using System.Globalization;
 using System.Telemetry;
 
 codeunit 4302 "SOA Validation Function" implements "AOAI Function"

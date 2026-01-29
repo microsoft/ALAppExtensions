@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
 
 codeunit 17124 "Create NZ VAT Posting Group"

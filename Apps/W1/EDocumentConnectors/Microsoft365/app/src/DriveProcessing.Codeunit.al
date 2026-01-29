@@ -5,12 +5,12 @@
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.EServices.EDocument;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Integration.Receive;
+using System.Integration;
+using System.Telemetry;
 using System.Text;
 using System.Utilities;
-using System.Integration;
-using Microsoft.eServices.EDocument.Integration.Receive;
-using System.Telemetry;
-using Microsoft.eServices.EDocument.Integration;
 
 codeunit 6381 "Drive Processing"
 {

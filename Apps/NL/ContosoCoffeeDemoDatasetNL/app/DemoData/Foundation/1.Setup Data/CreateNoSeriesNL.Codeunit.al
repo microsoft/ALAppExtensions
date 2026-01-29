@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Warehousing;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Foundation.NoSeries;
 
 codeunit 11515 "Create No. Series NL"

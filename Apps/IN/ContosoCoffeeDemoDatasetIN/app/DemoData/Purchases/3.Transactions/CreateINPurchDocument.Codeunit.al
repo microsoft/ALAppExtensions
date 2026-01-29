@@ -5,12 +5,12 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Inventory.Item;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GST.Base;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Document;
 
 codeunit 19067 "Create IN Purch. Document"
 {

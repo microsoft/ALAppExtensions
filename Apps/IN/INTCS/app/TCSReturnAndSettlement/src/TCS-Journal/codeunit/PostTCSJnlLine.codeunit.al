@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
 
-using Microsoft.Foundation.NoSeries;
-using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 18871 "Post-TCS Jnl. Line"
 {

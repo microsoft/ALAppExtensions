@@ -7,8 +7,8 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.ESGReporting;
 using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.ESGReporting;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Reports;
 

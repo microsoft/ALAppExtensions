@@ -1,7 +1,7 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Graph;
 using Microsoft.Integration.Entity;
+using Microsoft.Integration.Graph;
 
 page 30033 "APIV2 - Balance Sheet"
 {

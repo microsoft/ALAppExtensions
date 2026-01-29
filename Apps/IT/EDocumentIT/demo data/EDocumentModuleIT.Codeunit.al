@@ -29,14 +29,26 @@ codeunit 12194 "E-Document Module IT"
     begin
         if Module <> Module::"E-Document Contoso Module" then
             exit;
-        if ContosoDemoDataLevel <> ContosoDemoDataLevel::"Transactional Data" then
+
+        if ContosoDemoDataLevel <> ContosoDemoDataLevel::"Historical Data" then
             exit;
 
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup."Prevent Posted Doc. Deletion" := PreventPostedDocDeletionLocal;
         SalesReceivablesSetup.Modify();
+
+        EDocumentModule(ContosoDemoDataLevel);
     end;
 
-
+    local procedure EDocumentModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    begin
+        case ContosoDemoDataLevel of
+            Enum::"Contoso Demo Data Level"::"Historical Data":
+                begin
+                    Codeunit.Run(Codeunit::"Create Demo EDocs IT");
+                    Codeunit.Run(Codeunit::"Create E-Doc Sample Inv. IT");
+                end;
+        end;
+    end;
 
 }

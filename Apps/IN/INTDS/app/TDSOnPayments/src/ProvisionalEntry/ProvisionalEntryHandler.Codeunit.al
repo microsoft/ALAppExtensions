@@ -4,18 +4,18 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSOnPayments;
 
-using Microsoft.Finance.GeneralLedger.Posting;
-using Microsoft.Foundation.Navigate;
-using Microsoft.Finance.GeneralLedger.Reversal;
-using System.Utilities;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Reversal;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Finance.Currency;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Purchases.Vendor;
+using System.Utilities;
 
 codeunit 18768 "Provisional Entry Handler"
 {

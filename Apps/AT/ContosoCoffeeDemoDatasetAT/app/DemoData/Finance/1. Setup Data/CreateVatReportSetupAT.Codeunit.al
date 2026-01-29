@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Reporting;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Finance.VAT.Reporting;
 
 codeunit 11185 "Create Vat Report Setup AT"
 {

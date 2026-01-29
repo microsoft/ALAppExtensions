@@ -7,8 +7,8 @@ namespace Microsoft.DemoData.Purchases;
 
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Intrastat;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Inventory.Intrastat;
+using Microsoft.Purchases.Vendor;
 
 codeunit 11707 "Create Intrastat Vendor CZ"
 {
