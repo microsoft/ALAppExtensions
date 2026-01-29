@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
-using Microsoft.Inventory.Item;
-using Microsoft.Manufacturing.Routing;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Item;
 using Microsoft.Manufacturing.Capacity;
+using Microsoft.Manufacturing.Routing;
 
 codeunit 4772 "Create Mfg Prod. Routing"
 {

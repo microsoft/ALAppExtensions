@@ -292,12 +292,14 @@ codeunit 10033 "Generate Xml File IRIS"
     var
         CompanyInformation: Record "Company Information";
         IRSFormsSetup: Record "IRS Forms Setup";
+        "Generate Xml File IRIS Events": codeunit "Generate Xml File IRIS Events";
         RecRef: RecordRef;
     begin
         Helper.AddParentXmlNode('IssuerDetail');
 
         CompanyInformation.Get();
         IRSFormsSetup.Get();
+        "Generate Xml File IRIS Events".RunOnAddIssuerDetailsOnAfterGetCompanyInfoAndIRSFormSetup(CompanyInformation, IRSFormsSetup);
         Helper.AppendXmlNode('ForeignEntityInd', GetForeignEntityInd(CompanyInformation."Country/Region Code"));
         Helper.AppendXmlNode('TIN', Helper.FormatTIN(CompanyInformation."Federal ID No."));
         Helper.AppendXmlNode('TINSubmittedTypeCd', 'BUSINESS_TIN');
@@ -316,11 +318,13 @@ codeunit 10033 "Generate Xml File IRIS"
     local procedure AddContactPersonInformationGrp()
     var
         CompanyInformation: Record "Company Information";
+        "Generate Xml File IRIS Events": codeunit "Generate Xml File IRIS Events";
         ContactPerson: Text;
         PhoneNo: Text;
         Email: Text;
     begin
         CompanyInformation.Get();
+        "Generate Xml File IRIS Events".RunOnAddContactPersonInformationGrpOnAfterGetCompanyInformationSetup(CompanyInformation);
         ContactPerson := Helper.FormatContactPersonName(CompanyInformation."Contact Person");
         PhoneNo := Helper.FormatPhoneNumber(CompanyInformation."Phone No.");
         Email := CompanyInformation."E-Mail";

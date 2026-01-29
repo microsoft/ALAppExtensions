@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.DemoData.Finance;
-using Microsoft.Bank.Reconciliation;
 using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.DemoData.Finance;
+using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 19008 "Create IN Gen. Journal Line"
 {

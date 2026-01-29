@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Finance.Dimension;
 using Microsoft.DemoData.Finance;
+using Microsoft.Finance.Dimension;
 using Microsoft.Sales.Customer;
 
 codeunit 19016 "Create IN Sales Dim Value"

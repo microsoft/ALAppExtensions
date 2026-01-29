@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 17121 "Create NZ Posting Groups"
 {

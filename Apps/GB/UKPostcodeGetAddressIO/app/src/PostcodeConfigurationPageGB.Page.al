@@ -13,7 +13,7 @@ page 10503 "Postcode Configuration Page GB"
     Caption = 'Postcode provider configuration page';
     PageType = StandardDialog;
     SourceTable = "Postcode Service Config";
-    UsageCategory = Administration;
+    UsageCategory = None;
 
     layout
     {

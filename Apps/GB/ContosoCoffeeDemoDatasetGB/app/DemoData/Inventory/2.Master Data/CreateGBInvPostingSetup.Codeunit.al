@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Item;
 using Microsoft.DemoData.Finance;
+using Microsoft.Inventory.Item;
 
 codeunit 11505 "Create GB Inv Posting Setup"
 {

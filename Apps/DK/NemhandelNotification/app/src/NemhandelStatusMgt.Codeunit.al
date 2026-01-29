@@ -2,10 +2,10 @@ namespace Microsoft.EServices;
 
 using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
+using System.DataAdministration;
+using System.Environment;
 using System.Environment.Configuration;
 using System.Privacy;
-using System.Environment;
-using System.DataAdministration;
 using System.Telemetry;
 using System.Utilities;
 

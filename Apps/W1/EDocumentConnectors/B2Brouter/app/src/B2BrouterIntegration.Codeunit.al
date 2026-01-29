@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.B2Brouter;
 
-using System.Utilities;
 using Microsoft.EServices.EDocument;
 using Microsoft.EServices.EDocument.Integration;
-using Microsoft.EServices.EDocument.Integration.Send;
-using Microsoft.EServices.EDocument.Integration.Receive;
 using Microsoft.EServices.EDocument.Integration.Interfaces;
+using Microsoft.EServices.EDocument.Integration.Receive;
+using Microsoft.EServices.EDocument.Integration.Send;
+using System.Utilities;
 
 codeunit 6495 "B2Brouter Integration" implements IDocumentSender, IDocumentReceiver, IDocumentResponseHandler, IReceivedDocumentMarker
 {

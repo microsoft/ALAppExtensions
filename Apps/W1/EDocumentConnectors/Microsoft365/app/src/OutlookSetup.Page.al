@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
-using System.Telemetry;
 using System.Email;
+using System.Telemetry;
 
 page 6384 "Outlook Setup"
 {

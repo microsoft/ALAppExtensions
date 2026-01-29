@@ -26,6 +26,18 @@ table 10671 "SAF-T Mapping Category"
             DataClassification = CustomerContent;
             Caption = 'Description';
         }
+        field(4; "Extended No."; Text[500])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Extended No.';
+
+            trigger OnValidate()
+            begin
+                // Meets the current legal requirement of the SAFTLongTextType
+                if StrLen("Extended No.") > 256 then
+                    Error(ExtendedNoMaxLengthErr);
+            end;
+        }
     }
 
     keys
@@ -33,6 +45,9 @@ table 10671 "SAF-T Mapping Category"
         key(PK; "Mapping Type", "No.")
         {
             Clustered = true;
+        }
+        key(ExtendedNoIndex; "Mapping Type", "Extended No.")
+        {
         }
     }
     fieldgroups
@@ -51,4 +66,7 @@ table 10671 "SAF-T Mapping Category"
         SAFTMapping.SetRange("Category No.", "No.");
         SAFTMapping.DeleteAll(true);
     end;
+
+    var
+        ExtendedNoMaxLengthErr: Label 'The Extended No. field cannot exceed 256 characters as per the SAF-T specification.';
 }

@@ -16,6 +16,10 @@ pageextension 11718 "Sales & Receivables Setup CZL" extends "Sales & Receivables
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies whether to print a code for QR payment on Sales Invoices and Advances';
             }
+            field("Show VAT Corr When Posting CZL"; Rec."Show VAT Corr When Posting CZL")
+            {
+                ApplicationArea = Basic, Suite;
+            }
         }
     }
 }

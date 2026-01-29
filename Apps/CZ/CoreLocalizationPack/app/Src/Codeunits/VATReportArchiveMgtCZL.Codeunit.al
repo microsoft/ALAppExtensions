@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Utilities;
 using Microsoft.Foundation.Attachment;
+using System.Utilities;
 
 codeunit 31173 "VAT Report Archive Mgt CZL"
 {

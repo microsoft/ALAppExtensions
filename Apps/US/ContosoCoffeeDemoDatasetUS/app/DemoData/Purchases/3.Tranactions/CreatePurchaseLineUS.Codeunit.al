@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Item;
 using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Document;
 
 codeunit 10530 "Create Purchase Line US"
 {

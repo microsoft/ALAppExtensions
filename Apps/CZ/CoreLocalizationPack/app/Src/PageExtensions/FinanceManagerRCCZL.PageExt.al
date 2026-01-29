@@ -5,18 +5,18 @@
 namespace Microsoft.Finance.RoleCenters;
 
 using Microsoft.Bank.Reports;
-using Microsoft.Purchases.Reports;
-using Microsoft.Purchases.Payables;
 using Microsoft.Finance;
-using Microsoft.Inventory.Reports;
-using Microsoft.Inventory.History;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Sales.Reports;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Reports;
 using Microsoft.Finance.VAT.Reporting;
-using Microsoft.Sales.Receivables;
+using Microsoft.Inventory.History;
 using Microsoft.Inventory.Reconciliation;
+using Microsoft.Inventory.Reports;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Reports;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reports;
 
 pageextension 11793 "Finance Manager RC CZL" extends "Finance Manager Role Center"
 {

@@ -8,6 +8,7 @@ namespace Microsoft.Agent.SalesOrderAgent;
 
 using Microsoft.Utilities;
 using System.Environment.Configuration;
+using System.Media;
 
 codeunit 4592 "SOA Events"
 {
@@ -43,4 +44,21 @@ codeunit 4592 "SOA Events"
     begin
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"SOA Setup");
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]
+    local procedure Initialize()
+    var
+        GuidedExperience: Codeunit "Guided Experience";
+        AssistedSetupGroup: Enum "Assisted Setup Group";
+        VideoCategory: Enum "Video Category";
+    begin
+        GuidedExperience.InsertAssistedSetup(SetupSalesOrderAgentTitleTxt, SetupSalesOrderAgentShortTitleTxt, SetupSalesOrderAgentDescriptionTxt, 5, ObjectType::Page,
+            Page::"SOA Setup", AssistedSetupGroup::DoMoreWithBC, '', VideoCategory::GettingStarted, SetupSalesOrderAgentHelpTxt);
+    end;
+
+    var
+        SetupSalesOrderAgentTitleTxt: Label 'Set up Sales Order Agent';
+        SetupSalesOrderAgentShortTitleTxt: Label 'Set up Sales Order Agent', MaxLength = 50;
+        SetupSalesOrderAgentDescriptionTxt: Label 'Set up Sales Order Agent to automate the process of capturing sales orders.';
+        SetupSalesOrderAgentHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2346050', Locked = true;
 }

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Setup;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Inventory.Setup;
 
 codeunit 19028 "Create IN Inventory Setup"
 {

@@ -1,10 +1,10 @@
 namespace Mirosoft.Integration.CompanyHub;
 
 using Microsoft.Utilities;
-using System.Telemetry;
-using System.Environment.Configuration;
-using System.Utilities;
 using System.Environment;
+using System.Environment.Configuration;
+using System.Telemetry;
+using System.Utilities;
 
 codeunit 1151 "COHUB Core"
 {

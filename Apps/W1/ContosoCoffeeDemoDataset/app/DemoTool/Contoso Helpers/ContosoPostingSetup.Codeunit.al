@@ -5,10 +5,10 @@
 namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.VAT.Clause;
-using Microsoft.Inventory.Item;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
+using Microsoft.Inventory.Item;
 
 codeunit 5136 "Contoso Posting Setup"
 {

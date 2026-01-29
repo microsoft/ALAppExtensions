@@ -1,6 +1,7 @@
 namespace Microsoft.Finance;
-using Microsoft.Foundation.Period;
+
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Period;
 
 codeunit 14606 "IS Docs Retention Period" implements "Documents - Retention Period"
 {

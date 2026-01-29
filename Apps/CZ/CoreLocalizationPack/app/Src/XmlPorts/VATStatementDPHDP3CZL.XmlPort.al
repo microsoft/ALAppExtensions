@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using System.Environment;
 using System.Utilities;
-using Microsoft.Finance.GeneralLedger.Setup;
 
 xmlport 11766 "VAT Statement DPHDP3 CZL"
 {

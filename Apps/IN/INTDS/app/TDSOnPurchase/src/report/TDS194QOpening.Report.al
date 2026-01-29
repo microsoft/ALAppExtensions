@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSOnPurchase;
 
-using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Foundation.Company;
-using Microsoft.Foundation.AuditCodes;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Vendor;
 
 report 18716 "TDS 194Q Opening"
 {

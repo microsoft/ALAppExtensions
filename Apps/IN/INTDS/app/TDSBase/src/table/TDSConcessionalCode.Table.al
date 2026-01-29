@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSBase;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.TaxBase;
+using Microsoft.Purchases.Vendor;
 
 table 18688 "TDS Concessional Code"
 {

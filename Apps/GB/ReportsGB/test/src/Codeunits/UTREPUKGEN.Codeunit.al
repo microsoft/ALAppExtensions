@@ -1,16 +1,16 @@
 namespace Microsoft.Sales.Document;
 
-using System.TestLibraries.Utilities;
-using Microsoft.Purchases.Document;
-using Microsoft.Foundation.Company;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Sales.Setup;
-using Microsoft.Purchases.Setup;
-using Microsoft.Foundation.Address;
 using Microsoft.Finance.Dimension;
-using Microsoft.Sales.History;
-using Microsoft.Sales.Customer;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Purchases.Setup;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Setup;
+using System.TestLibraries.Utilities;
 
 codeunit 144016 "UT REP UKGEN"
 {

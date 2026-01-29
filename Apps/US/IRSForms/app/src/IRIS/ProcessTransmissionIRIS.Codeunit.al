@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Telemetry;
-using System.Utilities;
 using Microsoft.Purchases.Vendor;
 using System.Environment;
+using System.Telemetry;
+using System.Utilities;
 
 codeunit 10056 "Process Transmission IRIS"
 {
@@ -725,6 +725,7 @@ codeunit 10056 "Process Transmission IRIS"
     begin
         IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Released);
         IRS1099FormDocHeader.SetRange("Period No.", Transmission."Period No.");
+        OnAddReleasedFormDocsToTransmissionOnBeforeIRS1099FormDocHeaderFindSet(IRS1099FormDocHeader, Transmission);
         if IRS1099FormDocHeader.FindSet(true) then
             repeat
                 if DocumentHaveLinesToReport(IRS1099FormDocHeader) and
@@ -984,4 +985,9 @@ codeunit 10056 "Process Transmission IRIS"
     end;
 
     #endregion
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnAddReleasedFormDocsToTransmissionOnBeforeIRS1099FormDocHeaderFindSet(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; var Transmission: Record "Transmission IRIS")
+    begin
+    end;
 }

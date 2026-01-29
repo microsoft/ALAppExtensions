@@ -7,8 +7,8 @@ namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.VAT.Clause;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
 
 codeunit 31189 "Create Vat Posting Groups CZ"

@@ -147,8 +147,9 @@ table 4511 "SMTP Account"
 
     trigger OnDelete()
     begin
-        if not IsNullGuid(Rec."Password Key") then
-            if IsolatedStorage.Delete(Rec."Password Key") then;
+        DeleteIsolatedStorageIfExists(Rec."Password Key");
+        DeleteIsolatedStorageIfExists(Rec."Client Id Storage Id");
+        DeleteIsolatedStorageIfExists(Rec."Client Secret Storage Id");
     end;
 
     [NonDebuggable]
@@ -212,5 +213,13 @@ table 4511 "SMTP Account"
     begin
         if not IsolatedStorage.Get(Format(ClientSecretKey), DataScope::Company, ClientSecret) then
             Error(UnableToGetClientSecretMsg);
+    end;
+
+    local procedure DeleteIsolatedStorageIfExists(KeyToCheck: Guid)
+    begin
+        if IsNullGuid(KeyToCheck) then
+            exit;
+        if IsolatedStorage.Contains(Format(KeyToCheck), DataScope::Company) then
+            IsolatedStorage.Delete(Format(KeyToCheck), DataScope::Company);
     end;
 }

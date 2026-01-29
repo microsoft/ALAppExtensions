@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
-using System.Utilities;
 using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Send;
+using System.Utilities;
 
 codeunit 148195 "Drive Int. Test Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker
 {

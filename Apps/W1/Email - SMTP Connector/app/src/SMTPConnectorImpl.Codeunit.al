@@ -5,9 +5,9 @@
 
 namespace System.Email;
 
+using System.DataAdministration;
 using System.Security.AccessControl;
 using System.Utilities;
-using System.DataAdministration;
 
 codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 {

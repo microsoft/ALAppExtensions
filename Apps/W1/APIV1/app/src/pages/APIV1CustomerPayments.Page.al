@@ -1,11 +1,11 @@
 namespace Microsoft.API.V1;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Sales.Customer;
-using Microsoft.Integration.Entity;
-using Microsoft.Sales.History;
-using Microsoft.Integration.Graph;
 using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Integration.Entity;
+using Microsoft.Integration.Graph;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
 
 page 20058 "APIV1 - Customer Payments"
 {

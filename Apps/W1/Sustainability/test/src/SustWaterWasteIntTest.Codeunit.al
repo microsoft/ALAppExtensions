@@ -1,17 +1,17 @@
 namespace Microsoft.Test.Sustainability;
 
-using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Setup;
-using Microsoft.Sustainability.Journal;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.Sustainability.Ledger;
+using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Document;
-using Microsoft.Sustainability.Emission;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Bank.BankAccount;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Foundation.UOM;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
 
 codeunit 148189 "Sust. Water/Waste Int. Test"
 {

@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.FinancialReports;
 using Microsoft.Foundation.Enums;
-using Microsoft.DemoTool.Helpers;
 
 codeunit 27042 "Create CA Column Layout"
 {

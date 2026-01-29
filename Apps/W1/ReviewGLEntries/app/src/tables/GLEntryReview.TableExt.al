@@ -1,7 +1,7 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
 
-using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
 
 tableextension 22211 "G/L Entry Review" extends "G/L Entry"
 {

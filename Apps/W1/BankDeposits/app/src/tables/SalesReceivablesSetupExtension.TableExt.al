@@ -1,7 +1,7 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Sales.Setup;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Sales.Setup;
 
 tableextension 1694 SalesReceivablesSetupExtension extends "Sales & Receivables Setup"
 {

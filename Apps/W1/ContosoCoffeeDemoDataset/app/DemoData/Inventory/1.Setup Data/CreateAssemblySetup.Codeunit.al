@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5301 "Create Assembly Setup"
 {

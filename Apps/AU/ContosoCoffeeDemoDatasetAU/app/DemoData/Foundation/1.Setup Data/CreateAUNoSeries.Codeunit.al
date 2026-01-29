@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.NoSeries;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 17116 "Create AU No. Series"
 {

@@ -1,13 +1,13 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Sales.Setup;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.Currency;
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.Dimension;
-using System.Globalization;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Sales.Setup;
+using System.Globalization;
 
 table 1690 "Bank Deposit Header"
 {

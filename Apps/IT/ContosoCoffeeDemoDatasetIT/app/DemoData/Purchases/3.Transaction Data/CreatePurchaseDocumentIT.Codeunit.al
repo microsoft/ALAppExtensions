@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Document;
 using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Document;
 
 codeunit 12221 "Create Purchase Document IT"
 {

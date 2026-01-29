@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.WithholdingTax;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.WithholdingTax;
 
 codeunit 17151 "Create AU WHT Posting Setup"
 {

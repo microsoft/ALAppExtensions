@@ -1,9 +1,9 @@
 namespace Microsoft.Sustainability.Assembly;
 
 using Microsoft.Assembly.Document;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Inventory.Item;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Setup;
 
 tableextension 6251 "Sustainability Assembly Header" extends "Assembly Header"
 {

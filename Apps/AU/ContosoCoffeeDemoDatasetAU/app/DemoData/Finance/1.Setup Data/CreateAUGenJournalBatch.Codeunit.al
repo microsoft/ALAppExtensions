@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoData.Foundation;
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 17161 "Create AU Gen. Journal Batch"
 {

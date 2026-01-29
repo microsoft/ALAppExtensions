@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
-using System.Security.Authentication;
-using System.Privacy;
 using System.Azure.KeyVault;
 using System.Environment;
+using System.Privacy;
+using System.Security.Authentication;
 
 codeunit 6364 "Pagero Auth."
 {

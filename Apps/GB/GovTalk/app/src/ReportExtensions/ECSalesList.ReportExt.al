@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
-using Microsoft.Finance.VAT.Reporting;
-using System;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Company;
+using System;
 using System.IO;
 using System.Utilities;
 

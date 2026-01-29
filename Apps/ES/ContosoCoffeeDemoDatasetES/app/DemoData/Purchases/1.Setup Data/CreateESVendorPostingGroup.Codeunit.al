@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Purchases;
 
 using Microsoft.DemoData.Finance;
-using Microsoft.Purchases.Vendor;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Purchases.Vendor;
 
 codeunit 10816 "Create ES Vendor Posting Group"
 {

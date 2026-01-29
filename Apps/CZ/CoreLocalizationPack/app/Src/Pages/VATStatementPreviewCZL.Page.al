@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Text;
 using Microsoft.Finance.GeneralLedger.Setup;
+using System.Text;
 
 page 31135 "VAT Statement Preview CZL"
 {

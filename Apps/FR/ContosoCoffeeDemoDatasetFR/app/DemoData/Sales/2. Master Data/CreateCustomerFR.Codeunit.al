@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
-using Microsoft.DemoTool;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Purchases;
+using Microsoft.DemoTool;
+using Microsoft.Sales.Customer;
 
 codeunit 10886 "Create Customer FR"
 {

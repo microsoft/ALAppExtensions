@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Setup;
 
 codeunit 10869 "Create VAT Posting Grp FR"
 {

@@ -5,12 +5,12 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Foundation.AuditCodes;
-using Microsoft.DemoTool.Helpers;
+using Microsoft.Bank.VoucherInterface;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.TaxBase;
-using Microsoft.Bank.VoucherInterface;
+using Microsoft.Foundation.AuditCodes;
 
 codeunit 19019 "Create IN Gen. Journ. Template"
 {

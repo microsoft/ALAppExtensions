@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TaxEngine;
 
+using Microsoft.Finance.TaxEngine.Core;
+using Microsoft.Finance.TaxEngine.JsonExchange;
+using Microsoft.Finance.TaxEngine.PostingHandler;
 using Microsoft.Finance.TaxEngine.ScriptHandler;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
-using Microsoft.Finance.TaxEngine.Core;
 using Microsoft.Finance.TaxEngine.UseCaseBuilder;
-using Microsoft.Finance.TaxEngine.PostingHandler;
-using Microsoft.Finance.TaxEngine.JsonExchange;
 
 permissionset 20139 "D365 Read Access - Tax Engine"
 {

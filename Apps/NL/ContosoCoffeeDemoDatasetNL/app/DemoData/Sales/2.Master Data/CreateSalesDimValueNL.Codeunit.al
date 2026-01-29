@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.Finance.Dimension;
 using Microsoft.Sales.Customer;
-using Microsoft.DemoData.Finance;
 
 codeunit 11503 "Create Sales Dim Value NL"
 {

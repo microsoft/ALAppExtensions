@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.CashFlow.Setup;
-using System.Environment.Configuration;
 using Microsoft.CashFlow.Forecast;
+using Microsoft.CashFlow.Setup;
 using System.Environment;
+using System.Environment.Configuration;
 
 codeunit 5686 "Run CashFlow Forecast Wizard"
 {

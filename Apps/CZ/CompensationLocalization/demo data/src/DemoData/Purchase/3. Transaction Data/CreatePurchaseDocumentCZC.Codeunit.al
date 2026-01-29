@@ -35,7 +35,7 @@ codeunit 31484 "Create Purchase Document CZC"
         CreateItem: Codeunit "Create Item";
         CreatePaymentMethod: Codeunit "Create Payment Method";
     begin
-        PurchaseHeader := ContosoCompensationsCZC.InsertPurchaseHeader(Enum::"Purchase Document Type"::"Credit Memo", CreateVendor.EUGraphicDesign(), '', ContosoUtilities.AdjustDate(19020101D), 20230101D, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCOD(), '', '', '', 20230101D, CreatePaymentMethod.Cash());
+        PurchaseHeader := ContosoCompensationsCZC.InsertPurchaseHeader(Enum::"Purchase Document Type"::"Credit Memo", CreateVendor.EUGraphicDesign(), '', ContosoUtilities.AdjustDate(19020101D), ContosoUtilities.AdjustDate(19020101D), ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCOD(), '', '', '', ContosoUtilities.AdjustDate(19020101D), CreatePaymentMethod.Cash());
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateItem.AthensDesk(), 4, '', 506.6);
     end;
 

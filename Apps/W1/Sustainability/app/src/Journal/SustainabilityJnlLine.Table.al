@@ -1,9 +1,9 @@
 namespace Microsoft.Sustainability.Journal;
 
+using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.UOM;
-using Microsoft.Finance.Dimension;
 using Microsoft.Inventory.Location;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;

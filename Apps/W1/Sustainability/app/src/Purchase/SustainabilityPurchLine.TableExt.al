@@ -1,5 +1,6 @@
 namespace Microsoft.Sustainability.Purchase;
 
+using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item;
 using Microsoft.Projects.Resources.Resource;
@@ -476,7 +477,7 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     SustainabilityCalcMgt.CalculationEmissions(Rec);
             end;
         }
-        #pragma warning disable PTE0002
+#pragma warning disable PTE0002
         field(6240; "Received Sust. Cert. Type Code"; Code[50])
         {
             Caption = 'Received Sustainability Certificate Type Code';
@@ -487,7 +488,7 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
             Caption = 'Received Sustainability Product Classification Code';
             DataClassification = CustomerContent;
         }
-        #pragma warning restore PTE0002
+#pragma warning restore PTE0002
     }
 
     procedure UpdateSustainabilityEmission(var PurchLine: Record "Purchase Line")
@@ -572,6 +573,7 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
         Item: Record Item;
         Resource: Record Resource;
         ItemCharge: Record "Item Charge";
+        FixedAsset: Record "Fixed Asset";
     begin
         case PurchaseLine.Type of
             PurchaseLine.Type::Item:
@@ -605,6 +607,14 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     PurchaseLine.Validate("Emission CO2 Per Unit", ItemCharge."Default CO2 Emission");
                     PurchaseLine.Validate("Emission CH4 Per Unit", ItemCharge."Default CH4 Emission");
                     PurchaseLine.Validate("Emission N2O Per Unit", ItemCharge."Default N2O Emission");
+                end;
+            PurchaseLine.Type::"Fixed Asset":
+                begin
+                    FixedAsset.Get(PurchaseLine."No.");
+
+                    PurchaseLine.Validate("Emission CO2 Per Unit", FixedAsset."Default CO2 Emission");
+                    PurchaseLine.Validate("Emission CH4 Per Unit", FixedAsset."Default CH4 Emission");
+                    PurchaseLine.Validate("Emission N2O Per Unit", FixedAsset."Default N2O Emission");
                 end;
         end
     end;
@@ -675,12 +685,15 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
             PurchaseLine.FieldNo("Sust. Account Name"):
                 begin
                     PurchaseLine.TestField("No.");
-                    if not (PurchaseLine.Type in [PurchaseLine.Type::Item, PurchaseLine.Type::"G/L Account", PurchaseLine.Type::Resource, PurchaseLine.Type::"Charge (Item)"]) then
-                        Error(InvalidTypeForSustErr, PurchaseLine.Type::Item, PurchaseLine.Type::"G/L Account", PurchaseLine.Type::Resource, PurchaseLine.Type::"Charge (Item)");
+                    if not (PurchaseLine.Type in [PurchaseLine.Type::Item, PurchaseLine.Type::"G/L Account", PurchaseLine.Type::Resource, PurchaseLine.Type::"Charge (Item)", PurchaseLine.Type::"Fixed Asset"]) then
+                        Error(InvalidTypeForSustErr, PurchaseLine.Type::Item, PurchaseLine.Type::"G/L Account", PurchaseLine.Type::Resource, PurchaseLine.Type::"Charge (Item)", PurchaseLine.Type::"Fixed Asset");
 
                     if SustAccountCategory.Get(PurchaseLine."Sust. Account Category") then
                         if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
                             Error(NotAllowedToUseSustAccountForWaterOrWasteErr, PurchaseLine."Sust. Account No.");
+
+                    if PurchaseLine.Type = PurchaseLine.Type::"Fixed Asset" then
+                        PurchaseLine.TestField("FA Posting Type", PurchaseLine."FA Posting Type"::"Acquisition Cost");
                 end;
             PurchaseLine.FieldNo("Unit for Sust. Formulas"),
             PurchaseLine.FieldNo("Fuel/Electricity"),
@@ -781,6 +794,6 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
     var
         SustainabilitySetup: Record "Sustainability Setup";
         SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
-        InvalidTypeForSustErr: Label 'Sustainability is only applicable for Type: %1 , %2 , %3 and %4', Comment = '%1 - Purchase Line Type Item, %2 - Purchase Line Type G/L Account, %3 - Purchase Line Type Resource , %4 - Purchase Line Type Charge (Item)';
+        InvalidTypeForSustErr: Label 'Sustainability is only applicable for Type: %1 , %2 , %3 , %4 and %5', Comment = '%1 - Purchase Line Type Item, %2 - Purchase Line Type G/L Account, %3 - Purchase Line Type Resource , %4 - Purchase Line Type Charge (Item) , %5 - Purchase Line Type Fixed Asset';
         NotAllowedToUseSustAccountForWaterOrWasteErr: Label 'It is not allowed to use Sustainability Account %1 for water or waste in purchase document.', Comment = '%1 = Sust. Account No.';
 }

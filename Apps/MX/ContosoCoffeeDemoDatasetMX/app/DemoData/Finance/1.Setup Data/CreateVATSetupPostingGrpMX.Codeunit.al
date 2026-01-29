@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Setup;
 
 codeunit 14111 "Create VATSetupPostingGrp. MX"
 {

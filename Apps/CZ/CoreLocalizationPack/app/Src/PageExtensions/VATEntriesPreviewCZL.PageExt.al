@@ -101,6 +101,18 @@ pageextension 11759 "VAT Entries Preview CZL" extends "VAT Entries Preview"
                 ToolTip = 'Specifies the VAT amount of the entry before the deduction by the coefficient.';
                 Visible = NonDeductibleVATVisible;
             }
+            field("Original VAT Base ACY CZL"; Rec."Original VAT Base ACY CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the additional-currency VAT base of the entry before the deduction by the coefficient.';
+                Visible = NonDeductibleVATVisible;
+            }
+            field("Original VAT Amount ACY CZL"; Rec."Original VAT Amount ACY CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the additional-currency VAT amount of the entry before the deduction by the coefficient.';
+                Visible = NonDeductibleVATVisible;
+            }
             field("Non-Deductible VAT % CZL"; Rec."Non-Deductible VAT %")
             {
                 ApplicationArea = Basic, Suite;

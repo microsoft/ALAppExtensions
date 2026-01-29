@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 19034 "Create IN Vouch. Post. Setup"

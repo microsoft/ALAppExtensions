@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
+using Microsoft.Sales.Document.Attachment;
 using System;
 using System.AI;
-using System.Telemetry;
 using System.Environment;
-using Microsoft.Sales.Document.Attachment;
+using System.Telemetry;
 
 codeunit 7275 "Sales Lines Suggestions Impl."
 {

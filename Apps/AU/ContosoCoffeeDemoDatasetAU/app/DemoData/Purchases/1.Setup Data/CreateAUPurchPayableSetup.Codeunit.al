@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Setup;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Purchases.Setup;
 
 codeunit 17142 "Create AU Purch Payable Setup"
 {

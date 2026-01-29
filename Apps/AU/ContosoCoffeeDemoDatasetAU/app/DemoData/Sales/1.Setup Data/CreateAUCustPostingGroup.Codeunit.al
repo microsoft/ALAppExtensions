@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Sales;
 
 using Microsoft.DemoData.Finance;
-using Microsoft.Sales.Customer;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.Customer;
 
 codeunit 17129 "Create AU Cust Posting Group"
 {

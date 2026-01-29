@@ -5,6 +5,8 @@
 namespace Microsoft.eServices.EDocument.Formats;
 
 using Microsoft.Sales.History;
+using System.IO;
+using System.Utilities;
 
 reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
 {

@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
 
 codeunit 31186 "Create General Ledger Setup CZ"

@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Bank;
 
 using Microsoft.Bank.BankAccount;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 17124 "Create AU Bank Acc Posting Grp"
 {

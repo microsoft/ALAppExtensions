@@ -3,8 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
-using System.Telemetry;
+
 using Microsoft.Utilities;
+using System.Telemetry;
 
 codeunit 7280 "Sales Line Utility"
 {

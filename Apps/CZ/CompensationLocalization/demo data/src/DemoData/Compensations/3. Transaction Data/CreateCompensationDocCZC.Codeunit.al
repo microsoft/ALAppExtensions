@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoData.Compensations;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Localization;
 using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.Compensations;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Sales.Receivables;
 using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
 
 codeunit 31482 "Create Compensation Doc. CZC"
 {

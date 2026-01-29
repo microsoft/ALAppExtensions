@@ -6,8 +6,8 @@
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using Microsoft.Sales.Document;
-using System.AI;
 using System.Agents;
+using System.AI;
 using System.Telemetry;
 
 codeunit 4590 "SOA Billing"

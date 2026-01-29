@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Projects.Project.Job;
 using Microsoft.Integration.SyncEngine;
+using Microsoft.Projects.Project.Job;
 
 tableextension 6610 "FS Job" extends Job
 {
