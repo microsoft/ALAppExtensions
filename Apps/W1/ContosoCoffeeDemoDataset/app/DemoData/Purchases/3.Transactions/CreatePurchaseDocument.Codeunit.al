@@ -452,6 +452,7 @@ codeunit 5420 "Create Purchase Document"
         PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Invoice, CreateVendor.EUGraphicDesign(), '', ContosoUtilities.AdjustDate(19020101D), ContosoUtilities.AdjustDate(19030214D), ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCOD(), '', '', '', ContosoUtilities.AdjustDate(19030214D), CreatePaymentMethod.Cash(), CreatePurchaser.BenjaminChiu());
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateItem.SydneySwivelChairGreen(), 7, '', 96.1);
         PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Invoice, CreateVendor.EUGraphicDesign(), '', ContosoUtilities.AdjustDate(19020101D), ContosoUtilities.AdjustDate(19030215D), ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCOD(), '', '', '', ContosoUtilities.AdjustDate(19030215D), CreatePaymentMethod.Cash(), CreatePurchaser.OtisFalls());
+        ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateItem.AthensMobilePedestal(), 10, '', 219.5);
 
         CreatePurchaseInvoicesForReconciliation();
 
