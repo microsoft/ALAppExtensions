@@ -36,12 +36,4 @@ codeunit 11715 "Create FA Setup CZ"
         FASetup.Validate("Automatic Insurance Posting", AutomaticInsurancePosting);
         FASetup.Modify(true);
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create FA GL Account", OnBeforeGetCashAccountForFixedAssetAcquisition, '', false, false)]
-    local procedure GetCZCashAccountForFixedAssetAcquisition(var GLAccountNo: Code[20])
-    var
-        CreateGLAccountCZ: Codeunit "Create G/L Account CZ";
-    begin
-        GLAccountNo := CreateGLAccountCZ.CashTransfer();
-    end;
 }
