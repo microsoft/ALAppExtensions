@@ -28,11 +28,13 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
+        OnBeforeCheck(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         CheckCompanyInfoMandatory();
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         UnbindSubscription(EDocPEPPOLValidationDE);
+        OnAfterCheck(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
     end;
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
@@ -152,6 +154,16 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnBuyerReferenceOnElseCase(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheck(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCheck(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
     end;
 }
