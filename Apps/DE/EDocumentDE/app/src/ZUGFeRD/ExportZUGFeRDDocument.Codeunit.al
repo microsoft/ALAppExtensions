@@ -67,6 +67,60 @@ codeunit 13917 "Export ZUGFeRD Document"
     begin
     end;
 
+    /// <summary>
+    /// Creates a ZUGFeRD XML document from the sales invoice and adds it as an attachment to the rendering payload.
+    /// </summary>
+    /// <param name="SalesInvoiceHeader">The sales invoice header record to export.</param>
+    /// <param name="RenderingPayload">The JSON object to add the XML attachment to.</param>
+    procedure CreateAndAddXMLAttachmentToRenderingPayload(var SalesInvoiceHeader: Record "Sales Invoice Header"; var RenderingPayload: JsonObject)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        XmlOutStream: OutStream;
+    begin
+        TempBlob.CreateOutStream(XmlOutStream, TextEncoding::UTF8);
+        CreateXML(SalesInvoiceHeader, XmlOutStream);
+
+        AddXMLAttachmentToRenderingPayload(TempBlob, RenderingPayload);
+    end;
+
+    /// <summary>
+    /// Creates a ZUGFeRD XML document from the sales credit memo and adds it as an attachment to the rendering payload.
+    /// </summary>
+    /// <param name="SalesCrMemoHeader">The sales credit memo header record to export.</param>
+    /// <param name="RenderingPayload">The JSON object to add the XML attachment to.</param>
+    procedure CreateAndAddXMLAttachmentToRenderingPayload(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var RenderingPayload: JsonObject)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        XmlOutStream: OutStream;
+    begin
+        TempBlob.CreateOutStream(XmlOutStream, TextEncoding::UTF8);
+        CreateXML(SalesCrMemoHeader, XmlOutStream);
+
+        AddXMLAttachmentToRenderingPayload(TempBlob, RenderingPayload);
+    end;
+
+    local procedure AddXMLAttachmentToRenderingPayload(var XmlAttachmentTempBlob: Codeunit "Temp Blob"; var RenderingPayload: JsonObject)
+    var
+        XmlInStream: InStream;
+        XmlOutStream: OutStream;
+        Name: Text;
+        MimeType: Text;
+        Description: Text;
+        DataType: Enum "PDF Attach. Data Relationship";
+        PDFDocument: Codeunit "PDF Document";
+    begin
+        PDFDocument.Initialize();
+        Name := 'factur-x.xml';
+        DataType := Enum::"PDF Attach. Data Relationship"::Alternative;
+        MimeType := 'text/xml';
+        Description := 'This is the e-invoicing xml document';
+
+        XmlAttachmentTempBlob.CreateInStream(XmlInStream, TextEncoding::UTF8);
+        PDFDocument.AddAttachment(Name, DataType, MimeType, XmlInStream, Description, true);
+
+        RenderingPayload := PDFDocument.ToJson(RenderingPayload);
+    end;
+
     procedure ExportSalesDocument(var RecordExportBuffer: Record "Record Export Buffer")
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
