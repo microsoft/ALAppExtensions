@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Insurance;
@@ -405,6 +406,25 @@ codeunit 4776 "Contoso Fixed Asset"
             FAJournalBatch.Modify(true)
         else
             FAJournalBatch.Insert(true);
+    end;
+
+    procedure InsertFAGenJournalLine(JournalTemplateName: Code[10]; JournalBatchName: Code[10]; LineNo: Integer; AccountNo: Code[20]; PostingDate: Date; FAPostingType: Enum "Gen. Journal Line FA Posting Type"; DocumentNo: Code[20]; Description: Text[100]; BalAccountType: Enum "Gen. Journal Account Type"; BalAccountNo: Code[20]; Amount: Decimal)
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        GenJournalLine.Validate("Journal Template Name", JournalTemplateName);
+        GenJournalLine.Validate("Journal Batch Name", JournalBatchName);
+        GenJournalLine.Validate("Line No.", LineNo);
+        GenJournalLine.Validate("Account Type", Enum::"Gen. Journal Account Type"::"Fixed Asset");
+        GenJournalLine.Validate("Account No.", AccountNo);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        GenJournalLine.Validate("FA Posting Type", FAPostingType);
+        GenJournalLine.Validate("Document No.", DocumentNo);
+        GenJournalLine.Validate(Description, Description);
+        GenJournalLine.Validate("Bal. Account Type", BalAccountType);
+        GenJournalLine.Validate("Bal. Account No.", BalAccountNo);
+        GenJournalLine.Validate(Amount, Amount);
+        GenJournalLine.Insert(true);
     end;
 
     procedure InsertInsuranceJournalTemplate(Name: Code[10]; Description: Text[80]; NoSeriesCode: Code[20])
