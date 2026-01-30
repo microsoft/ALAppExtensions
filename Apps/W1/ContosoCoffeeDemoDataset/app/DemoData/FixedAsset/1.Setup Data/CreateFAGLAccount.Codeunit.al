@@ -5,7 +5,6 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.DemoData.Finance;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Account;
 
@@ -44,17 +43,6 @@ codeunit 4773 "Create FA GL Account"
         ContosoGLAccount.AddAccountForLocalization(GainsAndLossesName(), '8840');
 
         OnAfterAddGLAccountsForLocalization();
-    end;
-
-    procedure GetCashAccountNo() GLAccountNo: Code[20]
-    var
-        CreateGLAccount: Codeunit "Create G/L Account";
-    begin
-        OnBeforeGetCashAccountForFixedAssetAcquisition(GLAccountNo);
-        if GLAccountNo <> '' then
-            exit(GLAccountNo);
-
-        exit(CreateGLAccount.Cash());
     end;
 
     var
@@ -128,11 +116,6 @@ codeunit 4773 "Create FA GL Account"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterAddGLAccountsForLocalization()
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeGetCashAccountForFixedAssetAcquisition(var GLAccountNo: Code[20])
     begin
     end;
 }
