@@ -6,7 +6,9 @@
 namespace Microsoft.DemoData.FixedAsset;
 
 using Microsoft.DemoData.Localization;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Journal;
 
 codeunit 11505 "Create FA Depreciation Book NL"
 {
@@ -31,11 +33,18 @@ codeunit 11505 "Create FA Depreciation Book NL"
         DepreciationBook.Validate("Default Final Rounding Amount", DefaultFinalRoundingAmount);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create FA GL Account", OnBeforeGetCashAccountForFixedAssetAcquisition, '', false, false)]
-    local procedure GetNLCashAccountForFixedAssetAcquisition(var GLAccountNo: Code[20])
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", OnBeforeInsertEvent, '', false, false)]
+    local procedure OnBeforeInsertGenJournalLineNL(var Rec: Record "Gen. Journal Line")
     var
+        CreateFAJnlTemplate: Codeunit "Create FA Jnl. Template";
         CreateNLGLAccounts: Codeunit "Create NL GL Accounts";
     begin
-        GLAccountNo := CreateNLGLAccounts.PettyCash();
+        if (Rec."Journal Template Name" = CreateFAJnlTemplate.Assets())
+            and (Rec."Journal Batch Name" = CreateFAJnlTemplate.Default())
+            and (Rec."Account Type" = Enum::"Gen. Journal Account Type"::"Fixed Asset")
+            and (Rec."Bal. Account Type" = Enum::"Gen. Journal Account Type"::"G/L Account")
+            and (Rec."FA Posting Type" = Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost")
+        then
+            Rec.Validate("Bal. Account No.", CreateNLGLAccounts.PettyCash());
     end;
 }
