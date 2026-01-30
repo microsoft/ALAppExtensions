@@ -81,11 +81,20 @@ xmlport 147602 "SL BC GL Account Data"
 
     trigger OnPreXmlPort()
     begin
-        GLAccount.DeleteAll();
         CaptionRow := true;
+    end;
+
+    procedure GetExpectedGLAccounts(var NewTempGLAccount: Record "G/L Account" temporary)
+    begin
+        if TempGLAccount.FindSet() then begin
+            repeat
+                NewTempGLAccount.Copy(TempGLAccount);
+                NewTempGLAccount.Insert();
+            until TempGLAccount.Next() = 0;
+        end;
     end;
 
     var
         CaptionRow: Boolean;
-        GLAccount: Record "G/L Account";
+        TempGLAccount: Record "G/L Account" temporary;
 }

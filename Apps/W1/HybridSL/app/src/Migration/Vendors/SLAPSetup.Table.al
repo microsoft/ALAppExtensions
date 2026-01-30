@@ -7,7 +7,6 @@ namespace Microsoft.DataMigration.SL;
 
 table 47047 "SL APSetup"
 {
-    Access = Internal;
     Caption = 'SL APSetup';
     DataClassification = CustomerContent;
 

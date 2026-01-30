@@ -37,7 +37,7 @@ table 47007 "SL AcctHist"
         {
             Caption = 'BegBal';
         }
-        field(7; CpnyID; Text[10])
+        field(7; CpnyID; Text[30])
         {
             Caption = 'CpnyID';
         }

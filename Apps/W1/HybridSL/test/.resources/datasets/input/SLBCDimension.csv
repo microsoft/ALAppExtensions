@@ -1,0 +1,8 @@
+﻿Code,Name,Code Caption,Filter Caption
+GROUP,Group,Group Code,Group Filter
+LOCATIONS,Location,Location Code,Location Filter
+REG/BRANCH,Reg/Branch,Reg/Branch Code,Reg/Branch Filter
+REGION,Region,Region Code,Region Filter
+REPORTING UNIT,Reporting Unit,Reporting Unit Code,Reporting Unit Filter
+SALES TYPE,Sales Type,Sales Type Code,Sales Type Filter
+TERRITORY,Territory,Territory Code,Territory Filter

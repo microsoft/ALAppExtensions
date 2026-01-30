@@ -7,7 +7,6 @@ namespace Microsoft.DataMigration.SL;
 
 table 47049 "SL Vendor"
 {
-    Access = Internal;
     Caption = 'SL Vendor';
     DataClassification = CustomerContent;
 

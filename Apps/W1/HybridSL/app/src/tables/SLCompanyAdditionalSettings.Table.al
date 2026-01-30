@@ -9,7 +9,6 @@ using Microsoft.DataMigration;
 
 table 47061 "SL Company Additional Settings"
 {
-    Access = Internal;
     DataClassification = SystemMetadata;
     DataPerCompany = false;
     Description = 'Additional Company settings for a SL migration';
@@ -487,7 +486,7 @@ table 47061 "SL Company Additional Settings"
         }
     }
 
-    internal procedure GetSingleInstance()
+    procedure GetSingleInstance()
     var
         CurrentCompanyName: Text[50];
     begin
