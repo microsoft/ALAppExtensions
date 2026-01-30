@@ -5,6 +5,7 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.FixedAssets.Depreciation;
@@ -22,6 +23,7 @@ codeunit 5609 "Create FA Jnl. Lines"
     var
         ContosoFixedAsset: Codeunit "Contoso Fixed Asset";
         ContosoUtilities: Codeunit "Contoso Utilities";
+        CreateGLAccount: Codeunit "Create G/L Account";
         CreateFGLAccount: Codeunit "Create FA GL Account";
         CreateFAJnlTemplate: Codeunit "Create FA Jnl. Template";
         CreateFANoSeries: Codeunit "Create FA No Series";
@@ -34,7 +36,7 @@ codeunit 5609 "Create FA Jnl. Lines"
         FASetup.TestField("Default Depr. Book");
         FAJournalTemplateName := CreateFAJnlTemplate.Assets();
         FAJournalBatchName := CreateFAJnlTemplate.Default();
-        BalanceAccountNo := CreateFGLAccount.GetCashAccountNo();
+        BalanceAccountNo := CreateGLAccount.Cash();
 
         ContosoFixedAsset.InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 10000, CreateFixedAsset.FA000010(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 65000);
         ContosoFixedAsset.InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 20000, CreateFixedAsset.FA000020(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 70000);
