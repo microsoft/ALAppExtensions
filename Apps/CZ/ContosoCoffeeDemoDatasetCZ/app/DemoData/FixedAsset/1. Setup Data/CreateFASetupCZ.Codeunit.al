@@ -5,6 +5,7 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.FixedAssets.Setup;
 
 codeunit 11715 "Create FA Setup CZ"
