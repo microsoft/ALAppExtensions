@@ -1,0 +1,5 @@
+﻿Code,Payables Account,Service Charge Acc.,Payment Disc. Debit Acc.,Invoice Rounding Account,Debit Curr. Appln. Rndg. Acc.,Credit Curr. Appln. Rndg. Acc.,Debit Rounding Account,Credit Rounding Account,Payment Disc. Credit Acc.,Payment Tolerance Debit Acc.,Payment Tolerance Credit Acc.,Description
+CONTRACT,2080,,,,,,,,,,,1099 Vendors
+EMP,2050,,,,,,,,,,,Employee
+SL,2050,,,,,,,,,,,Migrated from SL
+TRADE,2050,,,,,,,,,,,Trade Vendor

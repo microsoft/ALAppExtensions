@@ -28,7 +28,6 @@ using System.Integration;
 
 codeunit 47023 "SL Helper Functions"
 {
-    Access = Internal;
     Permissions = tabledata "Dimension Set Entry" = rimd,
                     tabledata "G/L Account" = rimd,
                     tabledata "G/L Entry" = rimd,
@@ -65,7 +64,7 @@ codeunit 47023 "SL Helper Functions"
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
         MigrationLogAreaBatchPostingTxt: Label 'Batch Posting', Locked = true;
 
-    internal procedure GetPostingAccountNumber(AccountToGet: Text): Code[20]
+    procedure GetPostingAccountNumber(AccountToGet: Text): Code[20]
     var
         SLAccountStagingSetup: Record "SL Account Staging Setup";
     begin
@@ -114,7 +113,7 @@ codeunit 47023 "SL Helper Functions"
         end;
     end;
 
-    internal procedure GetMigrationTypeTxt(): Text[250]
+    procedure GetMigrationTypeTxt(): Text[250]
     begin
         exit(CopyStr(MigrationTypeTxt, 1, MaxStrLen(MigrationTypeTxt)));
     end;
@@ -232,9 +231,9 @@ codeunit 47023 "SL Helper Functions"
         IncomeBalanceType: Option "Income Statement","Balance Sheet";
     begin
         if SLAccountStaging.IncomeBalance then
-            exit(IncomeBalanceType::"Balance Sheet");
+            exit(IncomeBalanceType::"Income Statement");
 
-        exit(IncomeBalanceType::"Income Statement");
+        exit(IncomeBalanceType::"Balance Sheet");
     end;
 
     internal procedure ResetAdjustforPaymentInGLSetup(var Flag: Boolean);
@@ -575,7 +574,7 @@ codeunit 47023 "SL Helper Functions"
         if (GlobalDim1 <> '') or (GlobalDim2 <> '') then
             GeneralLedgerSetup.Modify();
 
-        SetShorcutDimenions();
+        SetShortcutDimenions();
     end;
 
     internal procedure CheckPluralization(var GlobalDim: Code[20])
@@ -588,21 +587,25 @@ codeunit 47023 "SL Helper Functions"
         end;
     end;
 
-    internal procedure SetShorcutDimenions()
+    internal procedure SetShortcutDimenions()
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         SLSegments: Record "SL Segments";
+        GlobalDimension1Code: Text[20];
+        GlobalDimension2Code: Text[20];
         Modified: Boolean;
         i: Integer;
     begin
         i := 1;
         Modified := false;
         GeneralLedgerSetup.Get();
+        GlobalDimension1Code := GeneralLedgerSetup."Global Dimension 1 Code";
+        GlobalDimension2Code := GeneralLedgerSetup."Global Dimension 2 Code";
         SLSegments.SetCurrentKey(SLSegments.SegmentNumber);
         SLSegments.Ascending(true);
         if SLSegments.FindSet() then
             repeat
-                if (SLSegments.Id <> GeneralLedgerSetup."Global Dimension 1 Code") and (SLSegments.Id <> GeneralLedgerSetup."Global Dimension 2 Code") then begin
+                if (SLSegments.Id <> GlobalDimension1Code) and (SLSegments.Id <> GlobalDimension2Code) then begin
                     case i of
                         1:
                             GeneralLedgerSetup."Shortcut Dimension 3 Code" := SLSegments.Id;
@@ -661,6 +664,15 @@ codeunit 47023 "SL Helper Functions"
             else
                 exit(0);
         end;
+    end;
+
+    internal procedure GetSLSegmentsIdBySegmentNumber(SegmentNumber: Integer): Text[20]
+    var
+        SLSegments: Record "SL Segments";
+    begin
+        SLSegments.SetFilter(SLSegments.SegmentNumber, '%1', SegmentNumber);
+        if SLSegments.FindFirst() then
+            exit(SLSegments.Id);
     end;
 
     internal procedure SetProcessesRunning(IsRunning: Boolean)
@@ -1082,6 +1094,20 @@ codeunit 47023 "SL Helper Functions"
         SLConfiguration.GetSingleInstance();
         SLConfiguration."Last Error Message" := CopyStr(GetLastErrorText(), 1, 250);
         SLConfiguration.Modify();
+    end;
+
+    internal procedure RunPreMigrationCleanup()
+    var
+        Dimension: Record "Dimension";
+        GeneralPostingSetup: Record "General Posting Setup";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
+    begin
+        if not Dimension.IsEmpty() then
+            Dimension.DeleteAll(true);
+        if not GeneralPostingSetup.IsEmpty() then
+            GeneralPostingSetup.DeleteAll(true);
+        if not GenProductPostingGroup.IsEmpty() then
+            GenProductPostingGroup.DeleteAll(true);
     end;
 
     internal procedure CreatePreMigrationData(): Boolean

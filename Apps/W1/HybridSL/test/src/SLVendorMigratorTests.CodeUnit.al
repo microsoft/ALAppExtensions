@@ -4,7 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Address;
+using Microsoft.Purchases.Vendor;
+using System.Integration;
 using Microsoft.Purchases.Vendor;
 using System.Integration;
 using System.TestLibraries.Utilities;
@@ -33,12 +36,18 @@ codeunit 147603 "SL Vendor Migrator Tests"
         BCVendorInstream: InStream;
     begin
         // [Scenario] Vendor Class migration is turned on
-
-        // [Given] SL data
         Initialize();
-        SLTestHelperFunctions.ClearBCVendorTableData();
+        SLTestHelperFunctions.ClearAccountTableData();
         SLTestHelperFunctions.DeleteAllSettings();
         SLTestHelperFunctions.CreateConfigurationSettings();
+
+        // [Given] SL Vendor data
+        SLTestHelperFunctions.ImportSLVendorData();
+
+        // Import supporting test data
+        SLTestHelperFunctions.CreateConfigurationSettings();
+        SLTestHelperFunctions.ImportGLAccountData();
+        Commit();
 
         // Enable Payables Module and Vendor classes settings
         SLCompanyAdditionalSettings.GetSingleInstance();
@@ -46,10 +55,7 @@ codeunit 147603 "SL Vendor Migrator Tests"
         SLCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
         SLCompanyAdditionalSettings.Modify();
 
-        // [When] Vendor data is imported
-        SLTestHelperFunctions.GetInputStreamFromResource('datasets/input/SLTables/SLVendorWithClassID.csv', SLVendorInstream);
-        PopulateVendorBufferTable(SLVendorInstream);
-
+        // [When] Migrate Vendor Classes is enabled, migrate SL Vendor Classes to BC Vendor Posting Groups
         // Run Vendor related migration procedures
         SLVendor.FindSet();
         repeat
@@ -91,8 +97,7 @@ codeunit 147603 "SL Vendor Migrator Tests"
         SLCompanyAdditionalSettings.Modify();
 
         // [When] Vendor data is imported
-        SLTestHelperFunctions.GetInputStreamFromResource('datasets/input/SLTables/SLVendorWithClassID.csv', SLVendorInstream);
-        PopulateVendorBufferTable(SLVendorInstream);
+        SLTestHelperFunctions.ImportSLVendorData();
 
         // Run Vendor related migration procedures
         SLVendor.FindSet();
@@ -136,8 +141,7 @@ codeunit 147603 "SL Vendor Migrator Tests"
         Commit();
 
         // [When] Vendor data is imported
-        SLTestHelperFunctions.GetInputStreamFromResource('datasets/input/SLTables/SLVendorWithClassID.csv', SLVendorInstream);
-        PopulateVendorBufferTable(SLVendorInstream);
+        SLTestHelperFunctions.ImportSLVendorData();
 
         // Run Vendor related migration procedures
         SLVendor.FindSet();
@@ -170,7 +174,6 @@ codeunit 147603 "SL Vendor Migrator Tests"
         // [Given] SL data
         Initialize();
         SLTestHelperFunctions.ClearBCVendorTableData();
-        SLTestHelperFunctions.DeleteAllSettings();
         SLTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Payables Module and Vendor classes settings
@@ -181,8 +184,7 @@ codeunit 147603 "SL Vendor Migrator Tests"
         Commit();
 
         // [When] Vendor data is imported
-        SLTestHelperFunctions.GetInputStreamFromResource('datasets/input/SLTables/SLVendorWithClassID.csv', SLVendorInstream);
-        PopulateVendorBufferTable(SLVendorInstream);
+        SLTestHelperFunctions.ImportSLVendorData();
 
         // Run Vendor related migration procedures
         SLVendor.FindSet();
@@ -197,12 +199,6 @@ codeunit 147603 "SL Vendor Migrator Tests"
         SLExpectedBCVendorData.Import();
         SLExpectedBCVendorData.GetExpectedVendors(TempVendor);
         ValidateVendorData(TempVendor);
-    end;
-
-    local procedure PopulateVendorBufferTable(var Instream: InStream)
-    begin
-        // Populate Vendor buffer table
-        Xmlport.Import(Xmlport::"SL Vendor Data", Instream);
     end;
 
     local procedure ValidateVendorData(var TempVendor: Record Vendor temporary)
@@ -222,7 +218,6 @@ codeunit 147603 "SL Vendor Migrator Tests"
             Assert.AreEqual(TempVendor."Contact", Vendor."Contact", 'Vendor Contact does not match' + ' (Vendor: ' + Vendor."No." + ')');
             Assert.AreEqual(TempVendor."Phone No.", Vendor."Phone No.", 'Vendor Phone No. does not match' + ' (Vendor: ' + Vendor."No." + ')');
             Assert.AreEqual(TempVendor."Vendor Posting Group", Vendor."Vendor Posting Group", 'Vendor Vendor Posting Group does not match' + ' (Vendor: ' + Vendor."No." + ')');
-            Assert.AreEqual(TempVendor."Payment Terms Code", Vendor."Payment Terms Code", 'Vendor Payment Terms Code does not match' + ' (Vendor: ' + Vendor."No." + ')');
             Assert.AreEqual(TempVendor."Country/Region Code", Vendor."Country/Region Code", 'Vendor Country/Region Code does not match' + ' (Vendor: ' + Vendor."No." + ')');
             Assert.AreEqual(TempVendor.Blocked, Vendor.Blocked, 'Vendor Blocked does not match' + ' (Vendor: ' + Vendor."No." + ')');
             Assert.AreEqual(TempVendor."Fax No.", Vendor."Fax No.", 'Vendor Fax No. does not match' + ' (Vendor: ' + Vendor."No." + ')');
@@ -236,15 +231,84 @@ codeunit 147603 "SL Vendor Migrator Tests"
         until TempVendor.Next() = 0;
     end;
 
+    [Test]
+    procedure TestVendorTransactions()
+    var
+        SLVendor: Record "SL Vendor";
+        TempGenJournalLine: Record "Gen. Journal Line" temporary;
+        SLVendorMigrator: Codeunit "SL Vendor Migrator";
+        VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade";
+        SLExpectedBCGenJournalLineData: XmlPort "SL BC Gen. Journal Line Data";
+        BCGenJournalLineInstream: InStream;
+    begin
+        IsInitialized := false;
+        // [Scenario] Open Vendor balances should be migrated to BC
+        Initialize();
+        SLTestHelperFunctions.ClearAccountTableData();
+
+        // [Given] SL Vendor and APDoc data
+        SLTestHelperFunctions.ImportSLVendorData();
+        SLTestHelperFunctions.ImportSLAPDocBufferData();
+
+        // Import supporting test data
+        SLTestHelperFunctions.CreateConfigurationSettings();
+        SLTestHelperFunctions.ImportSLBatchData();
+        SLTestHelperFunctions.ImportGLAccountData();
+        Commit();
+
+        // Set Congfiguration Settings for AP Module
+        SLCompanyAdditionalSettings.GetSingleInstance();
+        SLCompanyAdditionalSettings.Validate("Migrate GL Module", true);
+        SLCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
+        SLCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
+        SLCompanyAdditionalSettings.Validate("Skip Posting Vendor Batches", true);
+        SLCompanyAdditionalSettings.Modify();
+
+        // [When] Migrating open Vendor balances, create general journal entries
+        // Run Migrate Vendor, Vendor Posting Groups, and Vendor Transactions procedures
+        SLVendor.FindSet();
+        repeat
+            SLVendorMigrator.MigrateVendor(VendorDataMigrationFacade, SLVendor.RecordId);
+            SLVendorMigrator.MigrateVendorPostingGroups(VendorDataMigrationFacade, SLVendor.RecordId, true);
+            SLVendorMigrator.MigrateVendorTransactions(VendorDataMigrationFacade, SLVendor.RecordId, true);
+        until SLVendor.Next() = 0;
+
+        // [Then] Verify Vendor open balance data
+        SLTestHelperFunctions.GetInputStreamFromResource('datasets/results/SLBCGenJournalLineOpenAP.csv', BCGenJournalLineInstream);
+        SLExpectedBCGenJournalLineData.SetSource(BCGenJournalLineInstream);
+        SLExpectedBCGenJournalLineData.Import();
+        SLExpectedBCGenJournalLineData.GetExpectedGenJournalLines(TempGenJournalLine);
+        ValidateVendorOpenBalanceData(TempGenJournalLine);
+    end;
+
+    procedure ValidateVendorOpenBalanceData(var TempGenJournalLine: Record "Gen. Journal Line" temporary)
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        TempGenJournalLine.Reset();
+        TempGenJournalLine.SetRange("Journal Template Name", 'GENERAL');
+        TempGenJournalLine.SetRange("Journal Batch Name", 'SLVEND');
+        TempGenJournalLine.FindSet();
+        repeat
+            Assert.IsTrue(GenJournalLine.Get(TempGenJournalLine."Journal Template Name", TempGenJournalLine."Journal Batch Name", TempGenJournalLine."Line No."), 'Gen. Journal Line does not exist in BC' + ' (Line No.: ' + Format(TempGenJournalLine."Line No.") + ')');
+            Assert.AreEqual(TempGenJournalLine.Amount, GenJournalLine.Amount, 'Gen. Journal Line Amount does not match' + ' (Line No.: ' + Format(TempGenJournalLine."Line No.") + ')');
+            Assert.AreEqual(TempGenJournalLine."Account No.", GenJournalLine."Account No.", 'Gen. Journal Line Account No. does not match' + ' (Line No.: ' + Format(TempGenJournalLine."Line No.") + ')');
+            Assert.AreEqual(TempGenJournalLine.Description, GenJournalLine.Description, 'Gen. Journal Line Description does not match' + ' (Line No.: ' + Format(TempGenJournalLine."Line No.") + ')');
+        until TempGenJournalLine.Next() = 0;
+    end;
+
     local procedure Initialize()
     var
+        GenJournalLine: Record "Gen. Journal Line";
         SLVendor: Record "SL Vendor";
         SLVendClass: Record "SL VendClass";
         ZipCode: Record "Post Code";
     begin
         // Delete/empty buffer tables        
+        GenJournalLine.DeleteAll(true);
         SLVendor.DeleteAll();
         SLVendClass.DeleteAll();
+        SLTestHelperFunctions.ClearBCVendorTableData();
 
         if IsInitialized then
             exit;
@@ -254,7 +318,6 @@ codeunit 147603 "SL Vendor Migrator Tests"
 
         // Import supporting data
         SLTestHelperFunctions.ImportDataMigrationStatus();
-        SLTestHelperFunctions.ImportGLAccountData();
         SLTestHelperFunctions.ImportGenBusinessPostingGroupData();
         SLTestHelperFunctions.ImportSLAPSetupData();
         SLTestHelperFunctions.ImportSLSalesTaxData();

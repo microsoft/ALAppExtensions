@@ -1,0 +1,7 @@
+﻿Id,Name,CodeCaption,FilterCaption,SegmentNumber
+GROUP,Group          ,Group Code,Group Filter,4
+LOCATIONS,Location       ,Location Code,Location Filter,3
+REG/BRANCH,Reg/Branch     ,Reg/Branch Code,Reg/Branch Filter,2
+REGION,Region         ,Region Code,Region Filter,6
+REPORTING UNIT,Reporting Unit ,Reporting Unit Code,Reporting Unit Filter,1
+SALES TYPE,Sales Type     ,Sales Type Code,Sales Type Filter,5

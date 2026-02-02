@@ -22,7 +22,6 @@ codeunit 47003 "SL Populate Fiscal Periods"
         FPDateBeg: Date;
         FPDateEnd: Date;
         CurFiscalYear: Integer;
-        PrevFiscalYear: Integer;
         FirstFiscalYear: Integer;
         Index: Integer;
         IndexYear: Integer;
@@ -47,8 +46,6 @@ codeunit 47003 "SL Populate Fiscal Periods"
         SLGLSetup.Reset();
         if SLGLSetup.FindFirst() then begin
             Evaluate(CurFiscalYear, CopyStr(SLGLSetup.PerNbr, 1, YearLength));
-            Evaluate(PrevFiscalYear, CopyStr(SLGLSetup.PerNbr, 1, YearLength));
-            PrevFiscalYear := PrevFiscalYear - 1;
             NumberOfPeriods := SLGLSetup.NbrPer;
             BeginFiscalYear := SLGLSetup.BegFiscalYr;
             FiscalPerEnd00 := SLGLSetup.FiscalPerEnd00;

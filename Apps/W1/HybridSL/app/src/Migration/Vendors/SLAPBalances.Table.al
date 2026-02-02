@@ -7,13 +7,12 @@ namespace Microsoft.DataMigration.SL;
 
 table 47046 "SL AP_Balances"
 {
-    Access = Internal;
     Caption = 'SL AP_Balances';
     DataClassification = CustomerContent;
 
     fields
     {
-        field(1; CpnyID; Text[10])
+        field(1; CpnyID; Text[30])
         {
             Caption = 'CpnyID';
         }
