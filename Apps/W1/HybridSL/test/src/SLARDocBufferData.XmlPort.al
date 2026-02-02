@@ -92,7 +92,7 @@ xmlport 147631 "SL ARDoc Buffer Data"
                     SLARDocBuffer.RefNbr := RefNbr;
                     SLARDocBuffer.BatNbr := BatNbr;
                     Evaluate(SLARDocBuffer.BatSeq, BatSeq);
-                    SLARDocBuffer.CpnyID := CpnyID;
+                    SLARDocBuffer.CpnyID := CopyStr(CpnyID, 1, MaxStrLen(SLARDocBuffer.CpnyID));
                     Evaluate(SLARDocBuffer.DocBal, DocBal);
                     Evaluate(SLARDocBuffer.DocDate, DocDate);
                     SLARDocBuffer.DocDesc := DocDesc;

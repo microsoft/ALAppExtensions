@@ -19,8 +19,11 @@ codeunit 10047 "Process Response IRIS"
         AckNamespaceUriTxt: Label 'urn:us:gov:treasury:irs:ir', Locked = true;
         AckNamespacePrefixTxt: Label 'n1', Locked = true;
         ParseSubmitTransmResponseEventTxt: Label 'ParseSubmitTransmissionResponse', Locked = true;
+        PreReceiptValidationEventTxt: Label 'PreReceiptValidation', Locked = true;
         ReceiptIDNotFoundErr: Label 'Receipt ID was not found in the response.';
         ReceiptIDEmptyErr: Label 'Empty Receipt ID was found in the response.';
+        PreReceiptValidationFailedTxt: Label 'Pre-receipt validation failed', Locked = true;
+        XmlSchemaValidationErrorTok: Label 'XML Schema Validation Error', Locked = true;
 
     procedure GetReceiptID(ResponseContentBlob: Codeunit "Temp Blob"; var ReceiptID: Text[100]): Boolean
     var
@@ -293,5 +296,19 @@ codeunit 10047 "Process Response IRIS"
         TempErrorInfo."Error Value" := CopyStr(ErrorValue, 1, MaxStrLen(TempErrorInfo."Error Value"));
         TempErrorInfo."Xml Element Path" := CopyStr(XmlElementPath, 1, MaxStrLen(TempErrorInfo."Xml Element Path"));
         TempErrorInfo.Insert(true);
+    end;
+
+    procedure PreReceiptValidationFailed(var TempErrorInfo: Record "Error Information IRIS" temporary): Boolean
+    begin
+        // Pre-receipt validation errors indicate that the transmission was rejected before processing.
+        // In this case, even if a Receipt ID is returned, the transmission status should not be updated.
+        TempErrorInfo.Reset();
+        TempErrorInfo.SetRange("Error Code", XmlSchemaValidationErrorTok);
+        if not TempErrorInfo.IsEmpty() then begin
+            FeatureTelemetry.LogError('0000RH0', Helper.GetIRISFeatureName(), PreReceiptValidationEventTxt, PreReceiptValidationFailedTxt);
+            exit(true);
+        end;
+
+        exit(false);
     end;
 }

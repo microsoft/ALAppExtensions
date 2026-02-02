@@ -1,4 +1,9 @@
-﻿namespace Microsoft.DataMigration;
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration;
 
 using Microsoft.API.Upgrade;
 using System.Environment;
@@ -340,7 +345,7 @@ page 40063 "Cloud Migration Management"
             action(PrepareTables)
             {
                 Enabled = IsSuper and IsSetupComplete;
-                Visible = IsOnPrem;
+                Visible = false;
                 ApplicationArea = All;
                 Caption = 'Prepare tables for replication';
                 ToolTip = 'Gets the candidate tables ready for replication';
@@ -523,10 +528,10 @@ page 40063 "Cloud Migration Management"
             action(ManageCustomTables)
             {
                 Enabled = IsSuper;
-                Visible = not IsOnPrem;
+                Visible = not IsOnPrem and (not HideManageCustomTables);
                 ApplicationArea = All;
-                Caption = 'Manage custom tables';
-                ToolTip = 'Manage custom table mappings for the migration. This functionality can be used to rename the table during replication or to split OnPrem table with customizations to main table and table extensions.';
+                Caption = 'Manage table mappings';
+                ToolTip = 'Manage table mappings for the migration. This functionality can be used to rename the table during replication or to split OnPrem table with customizations to main table and table extensions.';
                 RunObject = page "Migration Table Mapping";
                 RunPageMode = Edit;
                 Image = TransferToGeneralJournal;
@@ -600,10 +605,38 @@ page 40063 "Cloud Migration Management"
                     HybridCloudManagement.ChangeRemovePermissionsFromUsers();
                 end;
             }
-            action(ChangeTheWayDataIsReplicated)
+            action(EnableDisableCustomMigration)
             {
                 Enabled = IsSuper;
                 Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable Custom Migration';
+                ToolTip = 'Enable or disable custom migration functionality. This is the ability to use mappings defined out of the box. Custom migration apps are not affected.';
+                Image = GetEntries;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.EnableDisableCustomMigration();
+                end;
+            }
+            action(ManageTableMappings)
+            {
+                Enabled = IsSuper;
+                Visible = not IsOnPrem and CustomMigrationTablesEnabled;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Manage table mappings';
+                ToolTip = 'Manage table mappings for custom migration.';
+                RunObject = page "Custom Migration Mapping List";
+                RunPageMode = Edit;
+                Image = TransferToLines;
+            }
+
+            action(ChangeTheWayDataIsReplicated)
+            {
+                Enabled = IsSuper;
+                Visible = not IsOnPrem and (not HideChangeTheWayDataIsReplicated);
                 ApplicationArea = Basic, Suite;
                 Caption = 'Change how the data is replicated';
                 ToolTip = 'Allows defining which data is replicated and how. You can include or exclude the tables from the cloud migration and define if a table keeps existing data (delta sync) or replaces the entire table.';
@@ -628,6 +661,21 @@ page 40063 "Cloud Migration Management"
                 ToolTip = 'Allows to skip the API upgrade and run it later after the cloud migration is completed.';
                 Image = ChangeLog;
                 RunObject = page "API Data Upgrade Companies";
+            }
+            action(EnableDisableOnPremDevelopment)
+            {
+                Visible = IsSuper and (IsOnPrem or IsOnPremDevelopmentEnabled);
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable OnPrem Development';
+                ToolTip = 'Enable or disable OnPrem development functionality.';
+                Image = Debug;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.EnableDisableOnPremDevelopment();
+                end;
             }
         }
 
@@ -665,6 +713,9 @@ page 40063 "Cloud Migration Management"
                 actionref(ManageCustomTables_Promoted; ManageCustomTables)
                 {
                 }
+                actionref(ManageTableMappings_Promoted; ManageTableMappings)
+                {
+                }
                 actionref(MapUsers_Promoted; MapUsers)
                 {
                 }
@@ -683,7 +734,6 @@ page 40063 "Cloud Migration Management"
     trigger OnOpenPage()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        EnvironmentInformation: Codeunit "Environment Information";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         IntelligentCloudNotifier: Codeunit "Intelligent Cloud Notifier";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
@@ -697,26 +747,28 @@ page 40063 "Cloud Migration Management"
             SendUserIsNotSuperNotification();
 
         SendRepairDataNotification();
-        IsOnPrem := not EnvironmentInformation.IsSaaS();
+        IsOnPrem := not HybridCloudManagement.IsCloudMigrationUISupported();
+        IsOnPremDevelopmentEnabled := HybridCloudManagement.IsOnPremDevelopmentEnabled();
 
         if (not PermissionManager.IsIntelligentCloud()) and (not IsOnPrem) then
             SendSetupIntelligentCloudNotification();
 
         UpdateTablesStatistics();
         UpdateControlProperties();
+
         CanRunDiagnostic(DiagnosticRunsEnabled);
         CanShowSetupChecklist(SetupChecklistEnabled);
         CanShowMapUsers(MapUsersEnabled);
         UpdateReplicationCompaniesEnabled := true;
         CanShowUpdateReplicationCompanies(UpdateReplicationCompaniesEnabled);
         CanMapCustomTables(CustomTablesEnabled);
-
         if IntelligentCloudSetup.Get() then
             HybridDeployment.Initialize(IntelligentCloudSetup."Product ID");
 
         IntelligentCloudNotifier.ShowICUpdateNotification();
         WarnAboutNonInitializedCompanies();
         UpdateWarningCounts();
+        UpdatePropertiesCustomMigration();
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -727,6 +779,7 @@ page 40063 "Cloud Migration Management"
         HybridCloudManagement.GetLastReplicationSummary(LastHybridReplicationSummary);
         HybridCloudManagement.GetCloudMigrationStatusText(StatusTxt, StatusTxtStyle, MoreInformationTxt);
         UpdateControlProperties();
+        UpdatePropertiesCustomMigration();
     end;
 
     local procedure UpdateTablesStatistics()
@@ -777,6 +830,23 @@ page 40063 "Cloud Migration Management"
 
         if not HybridCloudManagement.RecordLinkBufferBlocked() then
             RecordLinkBufferNotEmpty := not ReplicationRecordLinkBuffer.IsEmpty();
+    end;
+
+    local procedure UpdatePropertiesCustomMigration()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not IntelligentCloudSetup.Get() then
+            exit;
+
+        if IntelligentCloudSetup."Custom Migration Provider".AsInteger() = 0 then
+            exit;
+
+        DiagnosticRunsEnabled := false;
+        SetupChecklistEnabled := false;
+        HideManageCustomTables := true;
+        HideChangeTheWayDataIsReplicated := true;
+        CustomMigrationTablesEnabled := true;
     end;
 
     procedure SendRepairDataNotification()
@@ -978,6 +1048,7 @@ page 40063 "Cloud Migration Management"
         IsSetupComplete: Boolean;
         IsSuper: Boolean;
         IsOnPrem: Boolean;
+        IsOnPremDevelopmentEnabled: Boolean;
         IsMigratedCompany: Boolean;
         DiagnosticRunsEnabled: Boolean;
         SetupChecklistEnabled: Boolean;
@@ -985,6 +1056,9 @@ page 40063 "Cloud Migration Management"
         AdlSetupEnabled: Boolean;
         UpdateReplicationCompaniesEnabled: Boolean;
         CustomTablesEnabled: Boolean;
+        CustomMigrationTablesEnabled: Boolean;
         LastRefresh: DateTime;
         RecordLinkBufferNotEmpty: Boolean;
+        HideManageCustomTables: Boolean;
+        HideChangeTheWayDataIsReplicated: Boolean;
 }

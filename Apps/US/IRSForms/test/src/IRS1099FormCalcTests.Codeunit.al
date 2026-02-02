@@ -42,7 +42,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-PeriodNo: Code[20];
+        PeriodNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
         VendNo: Code[20];
@@ -51,7 +51,7 @@ PeriodNo: Code[20];
         // [SCENARIO 495389] The calculation of the form boxes is correct for a single vendor and a single form
 
         Initialize();
-PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         // [GIVEN] IRS Reporting "X" with "Starting Date" = 01.01.2024 and "Ending Date" = 31.12.2024
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -82,7 +82,7 @@ PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         // [THEN] Check connected entry
         LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, VendorLedgerEntry."Entry No.");
 
-end;
+    end;
 
     [Test]
     procedure SingleVendorSingleFormMultipleBoxes()
@@ -91,7 +91,7 @@ end;
         PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-PeriodNo: Code[20];
+        PeriodNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: array[2] of Code[20];
         VendNo: Code[20];
@@ -103,7 +103,7 @@ PeriodNo: Code[20];
         // [SCENARIO 495389] The calculation of the form boxes is correct for a single vendor and single form with multiple form boxes
 
         Initialize();
-PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] MISC form with two boxes - MISC-01 and MISC-02
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -146,7 +146,7 @@ PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
             LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, ExpectedEntryNo[i]);
         end;
 
-end;
+    end;
 
     [Test]
     procedure SingleVendorMultipleFormsAndBoxes()
@@ -155,7 +155,7 @@ end;
         PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-PeriodNo: Code[20];
+        PeriodNo: Code[20];
         FormNo: array[2] of Code[20];
         FormBoxNo: array[2, 2] of Code[20];
         ExpectedAmount: array[2, 2] of Decimal;
@@ -167,7 +167,7 @@ PeriodNo: Code[20];
         // [SCENARIO 495389] The calculation of the form boxes is correct for a single vendor and multiple forms and form boxes
 
         Initialize();
-PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] A single vendor
         VendNo := LibraryPurchase.CreateVendorNo();
@@ -214,7 +214,7 @@ PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
                     TempVendFormBoxBuffer, PeriodNo, FormNo[i], FormBoxNo[i, j], VendNo, ExpectedAmount[i, j]);
                 LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, ExpectedEntryNo[i, j]);
             end;
-end;
+    end;
 
     [Test]
     procedure MultipleVendorsMultipleFormsAndBoxes()
@@ -223,7 +223,7 @@ end;
         PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-PeriodNo: Code[20];
+        PeriodNo: Code[20];
         FormNo: array[2] of Code[20];
         FormBoxNo: array[2, 2, 2] of Code[20];
         VendNo: array[2] of Code[20];
@@ -235,7 +235,7 @@ PeriodNo: Code[20];
         // [SCENARIO 495389] The calculation of the form boxes is correct for multiple vendors and multiple forms and form boxes
 
         Initialize();
-PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] Forms MISC and NEC with two boxes each (MISC-01, MISC-02, NEC-01, NEC-02)
         for i := 1 to ArrayLen(FormNo) do
@@ -288,7 +288,7 @@ PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
                     LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, ExpectedEntryNo[i, j, k]);
                 end;
 
-end;
+    end;
 
     [Test]
     procedure SingleRefundToCrMemo()
@@ -298,7 +298,7 @@ end;
         InvVendorLedgerEntry: Record "Vendor Ledger Entry";
         CrMemoVendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-PeriodNo: Code[20];
+        PeriodNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
         VendNo: Code[20];
@@ -307,7 +307,7 @@ PeriodNo: Code[20];
         // [SCENARIO 495389] The calculation of the form boxes is correct for a single refund and credit memo
 
         Initialize();
-PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         // [GIVEN] Form box MISC-01 is created for the period "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -356,7 +356,7 @@ PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         TempVendFormBoxBuffer.Next();
         TempVendFormBoxBuffer.TestField("Vendor Ledger Entry No.", CrMemoVendorLedgerEntry."Entry No.");
 
-end;
+    end;
 
     [Test]
     procedure OnlyAdjustment()
@@ -398,9 +398,83 @@ end;
     end;
 
     [Test]
+    procedure TwoPaymentsPartiallyAppliedToOneInvoice()
+    var
+        IRSReportingPeriod: Record "IRS Reporting Period";
+        InvVendorLedgerEntry: Record "Vendor Ledger Entry";
+        PmtVendorLedgerEntry: array[2] of Record "Vendor Ledger Entry";
+        DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
+        PeriodNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: Code[20];
+        VendNo: Code[20];
+        InvAmount: Decimal;
+        PmtAmount: array[2] of Decimal;
+        ExpectedAmount: Decimal;
+        PostingDate: Date;
+        i: Integer;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 618118] The calculation of the form box is correct when two payments are partially applied to one invoice
+        Initialize();
+
+        // [GIVEN] Form box "FB" is created for the period "P"
+        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(PostingDate, FormNo);
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(PostingDate, FormNo, FormBoxNo);
+
+        // [GIVEN] Posted invoice with "FB" code and amount = 1000
+        InvAmount := LibraryRandom.RandIntInRange(1000, 2000);
+        CreateVendorLedgerEntry(
+            InvVendorLedgerEntry, PostingDate, InvVendorLedgerEntry."Document Type"::Invoice, VendNo, FormNo, FormBoxNo, InvAmount);
+        CreateDetailedVendorLedgerEntry(
+            InvVendorLedgerEntry."Entry No.", 0, DetailedVendorLedgEntry."Entry Type"::"Initial Entry",
+            InvVendorLedgerEntry."Vendor No.", -InvAmount, true);
+
+        // [GIVEN] Two payments "P1" and "P2" each partially applied to the same invoice (400 and 600)
+        PmtAmount[1] := Round(InvAmount * 0.4);
+        PmtAmount[2] := InvAmount - PmtAmount[1];
+        for i := 1 to ArrayLen(PmtAmount) do begin
+            CreateVendorLedgerEntry(
+                PmtVendorLedgerEntry[i], PostingDate, PmtVendorLedgerEntry[i]."Document Type"::Payment, VendNo, FormNo, FormBoxNo, 0);
+            CreateDetailedVendorLedgerEntry(
+                PmtVendorLedgerEntry[i]."Entry No.", 0, DetailedVendorLedgEntry."Entry Type"::"Initial Entry",
+                VendNo, PmtAmount[i], true);
+            // Application entries linking payment to invoice
+            CreateDetailedVendorLedgerEntry(
+                InvVendorLedgerEntry."Entry No.", InvVendorLedgerEntry."Entry No.", DetailedVendorLedgEntry."Entry Type"::Application,
+                VendNo, PmtAmount[i], false);
+            CreateDetailedVendorLedgerEntry(
+                PmtVendorLedgerEntry[i]."Entry No.", InvVendorLedgerEntry."Entry No.", DetailedVendorLedgEntry."Entry Type"::Application,
+                VendNo, -PmtAmount[i], false);
+        end;
+
+        // [WHEN] Calculate form boxes for period "P"
+        LibraryIRS1099FormBox.GetVendorFormBoxAmount(TempVendFormBoxBuffer, PeriodNo, FormNo, VendNo);
+
+        // [THEN] A single form box record is created with amount equal to sum of payments
+        TempVendFormBoxBuffer.Reset();
+        TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::Amount);
+        Assert.RecordCount(TempVendFormBoxBuffer, 1);
+        ExpectedAmount := PmtAmount[1] + PmtAmount[2];
+        LibraryIRS1099FormBox.VerifyCurrTempVendFormBoxBufferIncludedIn1099(
+            TempVendFormBoxBuffer, PeriodNo, FormNo, FormBoxNo, VendNo, ExpectedAmount);
+        // [THEN] Only one connected entry exists (invoice not double-counted)
+        LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, InvVendorLedgerEntry."Entry No.");
+
+        // Tear Down
+        IRSReportingPeriod.SetRange("No.", PeriodNo);
+        IRSReportingPeriod.DeleteAll(true);
+    end;
+
+    [Test]
     procedure PaymentAppliedToMultipleInvoicesEachWithPaymentDiscount()
     var
         InvVendorLedgerEntry: array[2] of Record "Vendor Ledger Entry";
+        IRSReportingPeriod: Record "IRS Reporting Period";
         PmtVendorLedgerEntry: Record "Vendor Ledger Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
@@ -464,6 +538,10 @@ end;
         ExpectedAmount := InvAmount[1] + InvAmount[2] - PmtDiscAmount;
         LibraryIRS1099FormBox.VerifyCurrTempVendFormBoxBufferIncludedIn1099(
             TempVendFormBoxBuffer, PeriodNo, FormNo, FormBoxNo, VendNo, ExpectedAmount);
+
+        // Tear Down
+        IRSReportingPeriod.SetRange("No.", PeriodNo);
+        IRSReportingPeriod.DeleteAll(true);
     end;
 
     local procedure Initialize()

@@ -565,6 +565,115 @@ codeunit 139762 "SMTP Account Auth Tests"
         Reply := true;
     end;
 
+    [Test]
+    procedure TestOAuth2FlowWithoutCustomOAuth()
+    var
+        SMTPAccountWizard: TestPage "SMTP Account Wizard";
+    begin
+        // [SCENARIO] User sets up an SMTP account with OAuth 2.0 authentication without custom OAuth app registration
+        // [GIVEN] A new SMTP Account Wizard page is opened
+        SMTPAccountWizard.OpenNew();
+
+        // [WHEN] User fills in the basic account information on Step 1
+        SMTPAccountWizard.NameField.SetValue('Test OAuth Account');
+        SMTPAccountWizard.SenderTypeField.SetValue('Specific User');
+        SMTPAccountWizard.EmailAddress.SetValue('test@example.com');
+        SMTPAccountWizard.ServerUrl.SetValue('smtp.office365.com');
+        SMTPAccountWizard.ServerPort.SetValue(587);
+        SMTPAccountWizard.Authentication.SetValue('OAuth 2.0');
+
+        // [WHEN] User clicks Next to go to Step 2 (Custom OAuth question)
+        SMTPAccountWizard.Next.Invoke();
+
+        // [THEN] Step 2 should be visible with the custom OAuth option
+        // [WHEN] User does NOT enable custom OAuth and clicks Next to go to Step 3
+        // Custom checkbox should be unchecked by default
+        SMTPAccountWizard.Next.Invoke();
+
+        // [THEN] Step 3 should be visible
+        // [WHEN] User sets secure connection and clicks Next to finalize
+        SMTPAccountWizard.SecureConnection.SetValue(true);
+
+        // [THEN] User should be able to complete the wizard without providing Client Id, Client Secret, or Tenant Id
+        // The wizard should complete successfully without calling AuthenticateWithOAuth2CustomAppReg
+        SMTPAccountWizard.Next.Invoke();
+
+    end;
+
+    [Test]
+    procedure TestOAuth2FlowWithCustomOAuth()
+    var
+        SMTPAccountWizard: TestPage "SMTP Account Wizard";
+    begin
+        // [SCENARIO] User sets up an SMTP account with OAuth 2.0 authentication with custom OAuth app registration
+        // [GIVEN] A new SMTP Account Wizard page is opened
+        SMTPAccountWizard.OpenNew();
+
+        // [WHEN] User fills in the basic account information on Step 1
+        SMTPAccountWizard.NameField.SetValue('Test Custom OAuth Account');
+        SMTPAccountWizard.SenderTypeField.SetValue('Specific User');
+        SMTPAccountWizard.EmailAddress.SetValue('customoauth@example.com');
+        SMTPAccountWizard.ServerUrl.SetValue('smtp.office365.com');
+        SMTPAccountWizard.ServerPort.SetValue(587);
+        SMTPAccountWizard.Authentication.SetValue('OAuth 2.0');
+
+        // [WHEN] User clicks Next to go to Step 2 (Custom OAuth question)
+        SMTPAccountWizard.Next.Invoke();
+
+        // [THEN] Step 2 should be visible with the custom OAuth option
+        // [WHEN] User enables custom OAuth
+        SMTPAccountWizard.Custom.SetValue(true);
+
+        // [WHEN] User clicks Next to go to Step 3
+        SMTPAccountWizard.Next.Invoke();
+
+        // [THEN] Step 3 should be visible with OAuth fields
+        // [WHEN] User fills in the OAuth credentials
+        SMTPAccountWizard.UserName.SetValue('customoauth@example.com');
+        SMTPAccountWizard.SecureConnection.SetValue(true);
+        SMTPAccountWizard.ClientId.SetValue('test-client-id-12345');
+        SMTPAccountWizard.ClientSecret.SetValue('test-client-secret-67890');
+        SMTPAccountWizard."Tenant Id".SetValue('CDEF7890-ABCD-0123-1234-567890ABCDEF');
+
+        // [WHEN] User clicks Next to finalize
+        // [THEN] The wizard should call AuthenticateWithOAuth2CustomAppReg and attempt OAuth authentication
+        asserterror SMTPAccountWizard.Next.Invoke();
+        Assert.ExpectedError('Consent authorization failed. Please try again or contact your administrator');
+
+        // [THEN] The wizard should close and account should be created with custom OAuth settings
+        SMTPAccountWizard.Close();
+    end;
+
+    [Test]
+    procedure TestBasicAuthFlowSkipsOAuthSteps()
+    var
+        SMTPAccountWizard: TestPage "SMTP Account Wizard";
+    begin
+        // [SCENARIO] User sets up an SMTP account with Basic authentication - should skip OAuth steps
+        // [GIVEN] A new SMTP Account Wizard page is opened
+        SMTPAccountWizard.OpenNew();
+
+        // [WHEN] User fills in the basic account information on Step 1
+        SMTPAccountWizard.NameField.SetValue('Test Basic Auth Account');
+        SMTPAccountWizard.SenderTypeField.SetValue('Specific User');
+        SMTPAccountWizard.EmailAddress.SetValue('basic@example.com');
+        SMTPAccountWizard.ServerUrl.SetValue('smtp.example.com');
+        SMTPAccountWizard.ServerPort.SetValue(587);
+        SMTPAccountWizard.Authentication.SetValue('Basic');
+
+        // [WHEN] User clicks Next
+        SMTPAccountWizard.Next.Invoke();
+
+        // [THEN] Should go directly to Step 3 (skipping Step 2 - Custom OAuth question)
+        // [WHEN] User fills in credentials
+        SMTPAccountWizard.UserName.SetValue('basic@example.com');
+        SMTPAccountWizard.Password.SetValue('testpassword');
+        SMTPAccountWizard.SecureConnection.SetValue(true);
+
+        // [WHEN] User clicks Next to finalize
+        SMTPAccountWizard.Next.Invoke();
+    end;
+
     #endregion
 
     #region Wizard page tests 

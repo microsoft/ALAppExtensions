@@ -2,6 +2,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    TestType = UnitTest;
 
     var
         Assert: Codeunit Assert;
@@ -9,6 +10,9 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Initialized: Boolean;
         ExtensionRefreshFailureErr: Label 'Some extensions could not be updated and may need to be reinstalled to refresh their data.';
         ExtensionRefreshUnexpectedFailureErr: Label 'Failed to update extensions. You may need to verify and reinstall any missing extensions if needed.';
+        TableNotMarkedForDeltaSyncErr: Label 'Table %1 was not correctly marked for delta sync';
+        IntelligentCloudStatusRecordNotFoundErr: Label 'Intelligent cloud status record for table %1 not found';
+        TableNotMarkedForReplicationErr: Label 'Table %1 was not correctly marked for replication';
 
     local procedure Initialize()
     var
@@ -16,6 +20,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         HybridDeploymentSetup: Record "Hybrid Deployment Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
     begin
         if not Initialized then begin
             HybridDeploymentSetup.DeleteAll();
@@ -23,6 +28,11 @@ codeunit 139656 "Hybrid Cloud Management Tests"
             HybridDeploymentSetup.Insert();
             BindSubscription(LibraryHybridManagement);
             HybridDeploymentSetup.Get();
+
+            // Mark system tables as not replicated to avoid permission issues in tests
+            IntelligentCloudStatus.SetRange("Table Id", 2000000000, 2000100000);
+            if IntelligentCloudStatus.FindSet() then
+                IntelligentCloudStatus.DeleteAll();
         end;
 
         HybridReplicationDetail.DeleteAll();
@@ -468,6 +478,8 @@ codeunit 139656 "Hybrid Cloud Management Tests"
 #pragma warning disable AA0210
         IntelligentCloudStatus.SetRange("Replicate Data", false);
 #pragma warning restore AA0210
+        // Exclude system tables (2000000000-2000100000) except for allowed Tenant Media tables
+        IntelligentCloudStatus.SetFilter("Table Id", '<%1|>%2', 2000000000, 2000100000);
         IntelligentCloudStatus.FindFirst();
         CloudMigSelectTables.Filter.SetFilter("Table Id", Format(IntelligentCloudStatus."Table Id"));
         CloudMigSelectTables.IncludeTablesInMigration.Invoke();
@@ -532,6 +544,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
 #pragma warning disable AA0210
         IntelligentCloudStatus.SetRange("Company Name", '');
         IntelligentCloudStatus.SetRange("Preserve Cloud Data", false);
+        IntelligentCloudStatus.SetFilter("Table Id", '<%1|>%2', 2000000000, 2000100000);
 #pragma warning restore AA0210
         if not IntelligentCloudStatus.FindFirst() then begin
             IntelligentCloudStatus.SetRange("Preserve Cloud Data");
@@ -565,8 +578,12 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         OpenCloudMigSelectTablesPage(CloudMigSelectTables);
 #pragma warning disable AA0210
         IntelligentCloudStatus.SetRange("Preserve Cloud Data", true);
+        IntelligentCloudStatus.SetRange("Replicate Data", true);
 #pragma warning restore AA0210
+        // Exclude system tables (2000000000-2000100000) except for allowed Tenant Media tables
+        IntelligentCloudStatus.SetFilter("Table Id", '<%1|>%2', 2000000000, 2000100000);
         IntelligentCloudStatus.FindFirst();
+
         CloudMigSelectTables.Filter.SetFilter("Table Id", Format(IntelligentCloudStatus."Table Id"));
         CloudMigSelectTables.ReplaceSyncTables.Invoke();
 
@@ -722,7 +739,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
     begin
         // [THEN] The table is marked as included in replication
-        Assert.AreEqual(ExpectedReplicateProperty, CloudMigSelectTables."Replicate Data".AsBoolean(), 'Table was not correctly marked for replication');
+        Assert.AreEqual(ExpectedReplicateProperty, CloudMigSelectTables."Replicate Data".AsBoolean(), StrSubstNo(TableNotMarkedForReplicationErr, SelectedTableId));
 
         // [THEN] The log table is created and main intelligent cloud status table is updated
         Assert.IsTrue(IntelligentCloudStatus.Get(CloudMigSelectTables."Table Name".Value, CloudMigSelectTables."Company Name".Value), 'Intelligent cloud status record not found');
@@ -738,10 +755,10 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
     begin
         // [THEN] The table is marked as included in replication
-        Assert.AreEqual(ExpectedDeltaSyncProperty, CloudMigSelectTables."Preserve Cloud Data".AsBoolean(), 'Table was not correctly marked for delta sync');
+        Assert.AreEqual(ExpectedDeltaSyncProperty, CloudMigSelectTables."Preserve Cloud Data".AsBoolean(), StrSubstNo(TableNotMarkedForDeltaSyncErr, SelectedTableId));
 
         // [THEN] The log table is created and main intelligent cloud status table is updated
-        Assert.IsTrue(IntelligentCloudStatus.Get(CloudMigSelectTables."Table Name".Value, CloudMigSelectTables."Company Name".Value), 'Intelligent cloud status record not found');
+        Assert.IsTrue(IntelligentCloudStatus.Get(CloudMigSelectTables."Table Name".Value, CloudMigSelectTables."Company Name".Value), StrSubstNo(IntelligentCloudStatusRecordNotFoundErr, CloudMigSelectTables."Table Name".Value));
         Assert.AreEqual(ExpectedDeltaSyncProperty, IntelligentCloudStatus."Preserve Cloud Data", 'Intelligent cloud status record not updated correctly');
         Assert.IsTrue(CloudMigOverrideLog.FindLast(), 'Cloud migration override log record not found');
         Assert.AreEqual(SelectedTableId, CloudMigOverrideLog."Table Id", 'Cloud migration override log record not updated correctly');

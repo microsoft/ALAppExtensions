@@ -13,6 +13,8 @@ codeunit 148001 "Library IRS 1099 Document"
 {
     var
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryInventory: Codeunit "Library - Inventory";
         LibraryIRSReportingPeriod: Codeunit "Library IRS Reporting Period";
         LibraryIRS1099FormBox: Codeunit "Library IRS 1099 Form Box";
         Assert: Codeunit "Assert";
@@ -64,6 +66,31 @@ codeunit 148001 "Library IRS 1099 Document"
         IRS1099FormDocImpl: Codeunit "IRS 1099 Form Docs Impl.";
     begin
         IRS1099FormDocImpl.CreateFormDocs(TempVendFormBoxBuffer, IRS1099CalcParameters);
+    end;
+
+    procedure CreateAndPostPurchaseDocument(DocumentType: Enum "Purchase Document Type"; VendorNo: Code[20]; Year: Integer; FormNo: Code[20]; FormBoxNo: Code[20]) PostedDocNo: Code[20]
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PostingDate: Date;
+        i: Integer;
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
+        PostingDate := LibraryRandom.RandDateFrom(DMY2Date(1, 1, Year), 360);
+        PurchaseHeader.Validate("Posting Date", PostingDate);
+        PurchaseHeader.Validate("Document Date", PostingDate);
+        PurchaseHeader.Validate("IRS 1099 Reporting Period", Format(Year));
+        PurchaseHeader.Validate("IRS 1099 Form No.", FormNo);
+        PurchaseHeader.Validate("IRS 1099 Form Box No.", FormBoxNo);
+        PurchaseHeader.Modify(true);
+
+        for i := 1 to 2 do begin
+            LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandIntInRange(10, 20));
+            PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(100, 200, 2));
+            PurchaseLine.Modify(true);
+        end;
+
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
     end;
 
     procedure MockInvVendLedgEntry(var VendLedgEntry: Record "Vendor Ledger Entry"; StartingDate: Date; EndingDate: Date; VendorNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20]): Integer
@@ -283,6 +310,14 @@ codeunit 148001 "Library IRS 1099 Document"
         IRS1099FormDocLine.SetRange("Vendor No.", IRS1099FormDocHeader."Vendor No.");
         IRS1099FormDocLine.SetRange("Form No.", IRS1099FormDocHeader."Form No.");
         Assert.RecordCount(IRS1099FormDocLine, ExpectedCount);
+    end;
+
+    procedure DeleteFormDocuments()
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+    begin
+        IRS1099FormDocHeader.ModifyAll(Status, Enum::"IRS 1099 Form Doc. Status"::Open, false);
+        IRS1099FormDocHeader.DeleteAll(true);
     end;
 
 }

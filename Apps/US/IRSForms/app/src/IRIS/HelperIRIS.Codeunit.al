@@ -16,7 +16,7 @@ codeunit 10035 "Helper IRIS"
     InherentPermissions = X;
 
     var
-        KeyVaultClient: Codeunit "Key Vault Client IRIS";
+        IRSFormsFacade: Codeunit "IRS Forms Facade";
         XMLDOMManagement: Codeunit "XML DOM Management";
         TypeHelper: Codeunit "Type Helper";
         XMLDoc: XmlDocument;
@@ -51,7 +51,7 @@ codeunit 10035 "Helper IRIS"
     procedure CreateUniqueTransmissionIdentifier(): Text[100]
     begin
         // example of UTID: da20a4de-1357-11ed-861d-0242ac120002:IRIS:00000::A
-        exit(StrSubstNo(UTIDTxt, CreateUUID(), GetApplicationID(), KeyVaultClient.GetTCC(), GetRequestType()));
+        exit(StrSubstNo(UTIDTxt, CreateUUID(), GetApplicationID(), IRSFormsFacade.GetTCC(), GetRequestType()));
     end;
 
     procedure CreateUUID(): Text[36]

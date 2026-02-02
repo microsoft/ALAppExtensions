@@ -122,6 +122,8 @@ codeunit 18200 "GST Distribution"
             if DetailedGSTDistEntry.IsEmpty() then begin
                 PostedGSTDistributionHeader.Get(ReversalInvNo);
                 PostedGSTDistributionHeader."Completely Reversed" := true;
+                PostedGSTDistributionHeader.Reversal := true;
+                PostedGSTDistributionHeader."Reversal Invoice No." := PostedDistNo;
                 PostedGSTDistributionHeader.Modify(true);
             end;
         end;

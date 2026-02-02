@@ -49,7 +49,7 @@ codeunit 31182 "Create G/L Account CZ"
         SubCategory := Format(GLAccountCategoryMgtCZL.GetBI1IntangibleResultsofResearchandDevelopment(), 80);
         ContosoGLAccount.InsertGLAccount(Intangibleresultsofresearchanddevelopment(), IntangibleresultsofresearchanddevelopmentName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
         SubCategory := Format(GLAccountCategoryMgtCZL.GetBI21Software(), 80);
-        ContosoGLAccount.InsertGLAccount(CreateGLAccount.Software(), CreateGLAccount.SoftwareName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
+        ContosoGLAccount.InsertGLAccount(CreateGLAccount.Software(), CreateGLAccount.SoftwareName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         SubCategory := Format(GLAccountCategoryMgtCZL.GetBI22OtherValuableRights(), 80);
         ContosoGLAccount.InsertGLAccount(Valuablerights(), ValuablerightsName(), Enum::"G/L Account Income/Balance"::"Balance Sheet", Enum::"G/L Account Category"::Assets, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
         SubCategory := Format(GLAccountCategoryMgtCZL.GetBI3Goodwill(), 80);

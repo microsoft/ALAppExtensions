@@ -101,7 +101,7 @@ xmlport 147609 "SL GLSetup Data"
 
                     SLGLSetup.SetupId := SetupId;
                     Evaluate(SLGLSetup.BegFiscalYr, BegFiscalYr);
-                    SLGLSetup.CpnyId := CpnyId;
+                    SLGLSetup.CpnyId := CopyStr(CpnyId, 1, MaxStrLen(SLGLSetup.CpnyId));
                     SLGLSetup.CpnyName := CpnyName;
                     SLGLSetup.FiscalPerEnd00 := FiscalPerEnd00;
                     SLGLSetup.FiscalPerEnd01 := FiscalPerEnd01;

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 using Microsoft.CRM.Outlook;
@@ -8,8 +13,6 @@ table 4003 "Intelligent Cloud Setup"
 {
     DataPerCompany = false;
     ReplicateData = false;
-    // Do not extend this table
-    // Extensible = false;
 
     fields
     {
@@ -154,6 +157,21 @@ table 4003 "Intelligent Cloud Setup"
         field(26; "Keep User Permissions"; Boolean)
         {
             Description = 'Specifies if the permissions should be removed from users.';
+            DataClassification = SystemMetadata;
+        }
+        field(27; "Custom Migration Enabled"; Boolean)
+        {
+            Description = 'Specifies if custom migration is enabled.';
+            DataClassification = SystemMetadata;
+        }
+        field(28; "Custom Migration Provider"; Enum "Custom Migration Provider")
+        {
+            Description = 'Specifies the custom migration provider to use.';
+            DataClassification = SystemMetadata;
+        }
+        field(100; "Enable OnPrem Development"; Boolean)
+        {
+            Description = 'Specifies whether OnPrem development is enabled.';
             DataClassification = SystemMetadata;
         }
     }

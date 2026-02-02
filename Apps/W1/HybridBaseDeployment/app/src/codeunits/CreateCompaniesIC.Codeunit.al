@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 using Microsoft.Utilities;
@@ -30,11 +35,17 @@ codeunit 4004 "Create Companies IC"
     internal procedure SetDemoDataType()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        CloudMigrationProviderInterface: Interface "Custom Migration Provider";
     begin
-        CompanyDataType := CompanyDataType::None;
+        CompanyDataType := CompanyDataType::"Create New - No Data";
 
         if IntelligentCloudSetup.Get() then
             OnBeforeCreateCompany(IntelligentCloudSetup."Product ID", CompanyDataType);
+
+        if IntelligentCloudSetup."Custom Migration Provider".AsInteger() <> 0 then begin
+            CloudMigrationProviderInterface := IntelligentCloudSetup."Custom Migration Provider";
+            CompanyDataType := CloudMigrationProviderInterface.GetDemoDataType();
+        end;
     end;
 
     internal procedure CreateCompany(var HybridCompany: Record "Hybrid Company")
@@ -70,10 +81,10 @@ codeunit 4004 "Create Companies IC"
     end;
 
     [IntegrationEvent(false, false)]
-    procedure OnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Option "Evaluation Data","Standard Data","None","Extended Data","Full No Data")
+    procedure OnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Enum "Company Demo Data Type")
     begin
     end;
 
     var
-        CompanyDataType: Option "Evaluation Data","Standard Data","None","Extended Data","Full No Data";
+        CompanyDataType: Enum "Company Demo Data Type";
 }

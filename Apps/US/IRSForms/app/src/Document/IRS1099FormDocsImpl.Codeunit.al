@@ -147,31 +147,42 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
         if TempIRS1099FormDocHeader.FindSet() then
             repeat
                 TempDocID := TempIRS1099FormDocHeader.ID;
-                IRS1099FormDocHeader := TempIRS1099FormDocHeader;
-                IRS1099FormDocHeader.ID := 0;
-                IRS1099FormDocHeader.Validate("Vendor No.");
-                IRS1099FormDocHeader.Insert(true);
-                IRS1099FormDocHeaderIDs.Add(IRS1099FormDocHeader.ID);
+                // Skip creating form document if no lines have "Include In 1099" = true
                 TempIRS1099FormDocLine.SetRange("Document ID", TempDocID);
-                if TempIRS1099FormDocLine.FindSet() then
-                    repeat
-                        IRS1099FormDocLine := TempIRS1099FormDocLine;
-                        IRS1099FormDocLine.Validate("Document ID", IRS1099FormDocHeader.ID);
-                        IRS1099FormDocLine.Validate(Amount, IRS1099FormDocLine.Amount);
-                        IRS1099FormDocLine.Insert(true);
-                        if IRSFormsSetup."Collect Details For Line" then begin
-                            TempIRS1099FormDocLineDetail.SetRange("Document ID", TempDocID);
-                            TempIRS1099FormDocLineDetail.SetRange("Line No.", TempIRS1099FormDocLine."Line No.");
-                            if TempIRS1099FormDocLineDetail.FindSet() then
-                                repeat
-                                    IRS1099FormDocLineDetail := TempIRS1099FormDocLineDetail;
-                                    IRS1099FormDocLineDetail.Validate("Document ID", IRS1099FormDocLine."Document ID");
-                                    IRS1099FormDocLineDetail.Insert(true);
-                                until TempIRS1099FormDocLineDetail.Next() = 0;
-                        end;
-                    until TempIRS1099FormDocLine.Next() = 0;
+                TempIRS1099FormDocLine.SetRange("Include In 1099", true);
+                if TempIRS1099FormDocLine.IsEmpty() then begin
+                    TempIRS1099FormDocLine.SetRange("Include In 1099");
+                    TempIRS1099FormDocLine.SetRange("Document ID");
+                end else begin
+                    TempIRS1099FormDocLine.SetRange("Include In 1099");
+                    IRS1099FormDocHeader := TempIRS1099FormDocHeader;
+                    IRS1099FormDocHeader.ID := 0;
+                    IRS1099FormDocHeader.Validate("Vendor No.");
+                    IRS1099FormDocHeader.Insert(true);
+                    IRS1099FormDocHeaderIDs.Add(IRS1099FormDocHeader.ID);
+                    TempIRS1099FormDocLine.SetRange("Document ID", TempDocID);
+                    if TempIRS1099FormDocLine.FindSet() then
+                        repeat
+                            IRS1099FormDocLine := TempIRS1099FormDocLine;
+                            IRS1099FormDocLine.Validate("Document ID", IRS1099FormDocHeader.ID);
+                            IRS1099FormDocLine.Validate(Amount, IRS1099FormDocLine.Amount);
+                            IRS1099FormDocLine.Insert(true);
+                            if IRSFormsSetup."Collect Details For Line" then begin
+                                TempIRS1099FormDocLineDetail.SetRange("Document ID", TempDocID);
+                                TempIRS1099FormDocLineDetail.SetRange("Line No.", TempIRS1099FormDocLine."Line No.");
+                                if TempIRS1099FormDocLineDetail.FindSet() then
+                                    repeat
+                                        IRS1099FormDocLineDetail := TempIRS1099FormDocLineDetail;
+                                        IRS1099FormDocLineDetail.Validate("Document ID", IRS1099FormDocLine."Document ID");
+                                        IRS1099FormDocLineDetail.Insert(true);
+                                    until TempIRS1099FormDocLineDetail.Next() = 0;
+                            end;
+                        until TempIRS1099FormDocLine.Next() = 0;
+                    TempIRS1099FormDocLine.SetRange("Document ID");
+                end;
             until TempIRS1099FormDocHeader.Next() = 0;
     end;
+
 
     procedure AddTempFormLineFromBuffer(var TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary; var TempIRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail" temporary; var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; LineAction: Enum "IRS 1099 Form Doc. Line Action")
     var

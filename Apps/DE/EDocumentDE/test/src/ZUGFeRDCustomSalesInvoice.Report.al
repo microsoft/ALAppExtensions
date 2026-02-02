@@ -53,5 +53,4 @@ report 13918 "ZUGFeRD Custom Sales Invoice"
 
         ExportZUGFeRDDocument.CreateAndAddXMLAttachmentToRenderingPayload(Header, RenderingPayload);
     end;
-
 }

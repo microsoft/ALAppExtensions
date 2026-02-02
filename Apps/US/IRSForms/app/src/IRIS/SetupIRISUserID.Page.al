@@ -65,7 +65,7 @@ page 10068 "Setup IRIS User ID"
 
                             trigger OnDrillDown()
                             begin
-                                Message(GetIRISUserIDInstructionsTxt, KeyVaultClient.GetConsentAppURL());
+                                Message(GetIRISUserIDInstructionsTxt, IRSFormsFacade.GetConsentAppURL());
                             end;
                         }
                     }
@@ -89,7 +89,7 @@ page 10068 "Setup IRIS User ID"
                 var
                     ConsentAppURL: Text;
                 begin
-                    ConsentAppURL := KeyVaultClient.GetConsentAppURL();
+                    ConsentAppURL := IRSFormsFacade.GetConsentAppURL();
                     if ConsentAppURL = '' then
                         ConsentAppURL := ConsentAppURLTxt;
                     Hyperlink(ConsentAppURL);
@@ -119,7 +119,7 @@ page 10068 "Setup IRIS User ID"
         IRSFormsSetup: Record "IRS Forms Setup";
         UserParamsIRIS: Record "User Params IRIS";
         Helper: Codeunit "Helper IRIS";
-        KeyVaultClient: Codeunit "Key Vault Client IRIS";
+        IRSFormsFacade: Codeunit "IRS Forms Facade";
         OAuthClient: Codeunit "OAuth Client IRIS";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         IRISAPIClientID: Text[36];

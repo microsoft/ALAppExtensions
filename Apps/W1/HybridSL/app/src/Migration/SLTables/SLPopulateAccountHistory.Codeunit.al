@@ -32,7 +32,7 @@ codeunit 47002 "SL Populate Account History"
         if SLGLAcctBalByPeriod.FindFirst() then
             SLGLAcctBalByPeriod.DeleteAll();
 
-        AccountQuery.SetRange(CpnyID, CompanyName().Trim());
+        AccountQuery.SetRange(CpnyID, GetCpnyID());
         AccountQuery.SetRange(LedgerID, SLLedgerID);
         AccountQuery.SetFilter(Active, '=%1', 1);
         AccountQuery.SetFilter(Acct, '<> %1', SLYtdNetIncAcct);
@@ -225,6 +225,11 @@ codeunit 47002 "SL Populate Account History"
                 else
                     exit('');
         end;
+    end;
+
+    internal procedure GetCpnyID(): Text[10]
+    begin
+        exit(CopyStr(CompanyName(), 1, 10));
     end;
 
     var

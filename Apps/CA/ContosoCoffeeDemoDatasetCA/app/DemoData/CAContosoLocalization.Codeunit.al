@@ -97,7 +97,6 @@ codeunit 27054 "CA Contoso Localization"
                     Codeunit.Run(Codeunit::"Create CA Column Layout");
                     CreateCATaxArea.UpdateTaxAreaOnCompanyInformation();
                     CreateCAGeneralLedgerSetup.UpdateMaxVATDifferenceAllowedOnGeneralLedgerSetup();
-                    Codeunit.Run(Codeunit::"Create Allocation Account CA");
                 end;
         end;
     end;
@@ -204,6 +203,8 @@ codeunit 27054 "CA Contoso Localization"
                 BindSubscription(CreateCANoSeriesLine);
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account CA");
                     BindSubscription(CreateCAGenJournalTemplate);
                     BindSubscription(CreateCACurrency);
                     BindSubscription(CreateCACurrExchRate);

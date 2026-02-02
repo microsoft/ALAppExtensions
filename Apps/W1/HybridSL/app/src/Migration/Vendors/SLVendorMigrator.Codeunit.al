@@ -190,7 +190,7 @@ codeunit 47021 "SL Vendor Migrator"
             exit;
 
         Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)), '', '');
-        SLAPDoc.SetRange(CpnyID, CompanyName);
+        SLAPDoc.SetRange(CpnyID, GetCpnyID());
         SLAPDoc.SetRange(VendId, SLVendor.VendId);
         SLAPDoc.SetRange(DocType, APDocTypePrePaymentTxt);  // Payment
         SLAPDoc.SetFilter(DocBal, '<>%1', 0);
@@ -227,7 +227,7 @@ codeunit 47021 "SL Vendor Migrator"
             until SLAPDoc.Next() = 0;
 
         SLAPDoc.Reset();
-        SLAPDoc.SetRange(CpnyID, CompanyName);
+        SLAPDoc.SetRange(CpnyID, GetCpnyID());
         SLAPDoc.SetRange(VendId, SLVendor.VendId);
         SLAPDoc.SetFilter(DocType, '%1|%2', APDocTypeVoucherTxt, APDocTypeAdjustmentCreditTxt);  // Invoice
         SLAPDoc.SetFilter(DocBal, '<>%1', 0);
@@ -272,7 +272,7 @@ codeunit 47021 "SL Vendor Migrator"
             until SLAPDoc.Next() = 0;
 
         SLAPDoc.Reset();
-        SLAPDoc.SetRange(CpnyID, CompanyName);
+        SLAPDoc.SetRange(CpnyID, GetCpnyID());
         SLAPDoc.SetRange(VendId, SLVendor.VendId);
         SLAPDoc.SetFilter(DocType, APDocTypeAdjustmentDebitTxt);  // Credit Memo
         SLAPDoc.SetFilter(DocBal, '<>%1', 0);
@@ -385,5 +385,10 @@ codeunit 47021 "SL Vendor Migrator"
         Sender.CreatePostingSetupIfNeeded(SLVendClass.ClassID, SLVendClass.Descr, SLVendClass.APAcct);
         Sender.SetVendorPostingGroup(SLVendClass.ClassID);
         Sender.ModifyVendor(true);
+    end;
+
+    internal procedure GetCpnyID(): Text[10]
+    begin
+        exit(CopyStr(CompanyName(), 1, 10));
     end;
 }

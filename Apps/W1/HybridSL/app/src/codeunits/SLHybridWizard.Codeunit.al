@@ -6,6 +6,7 @@
 namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration;
+using Microsoft.Utilities;
 using System.Environment;
 
 codeunit 47012 "SL Hybrid Wizard"
@@ -63,13 +64,12 @@ codeunit 47012 "SL Hybrid Wizard"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Companies IC", OnBeforeCreateCompany, '', false, false)]
-    local procedure HandleOnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Option "Evaluation Data","Standard Data",None,"Extended Data","Full No Data")
+    local procedure HandleOnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Enum "Company Demo Data Type")
     begin
-
         if not CanHandle(ProductId) then
             exit;
 
-        CompanyDataType := CompanyDataType::"Standard Data";
+        CompanyDataType := CompanyDataType::"Production - Setup Data Only";
     end;
 
     internal procedure CanHandle(productId: Text): Boolean

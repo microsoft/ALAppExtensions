@@ -133,6 +133,15 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         PurchLine."1099 Liable" := (PurchHeader."IRS 1099 Form Box No." <> '')
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Standard Vendor Purchase Code", 'OnApplyStdCodesToPurchaseLinesOnAfterPurchLineInsert', '', false, false)]
+    local procedure Update1099LiableOnApplyStdCodesToPurchaseLinesOnAfterPurchLineInsert(var PurchaseLine: Record "Purchase Line"; var PurchaseHeader: Record "Purchase Header"; var StandardPurchaseLine: Record "Standard Purchase Line")
+    begin
+        if PurchaseLine."1099 Liable" = (PurchaseHeader."IRS 1099 Form Box No." <> '') then
+            exit;
+        PurchaseLine."1099 Liable" := (PurchaseHeader."IRS 1099 Form Box No." <> '');
+        PurchaseLine.Modify();
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Page Management", 'OnConditionalCardPageIDNotFound', '', true, true)]
     local procedure OnConditionalCardPageIDNotFound(RecordRef: RecordRef; var CardPageID: Integer);
     begin

@@ -101,13 +101,12 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     local procedure AddXMLAttachmentToRenderingPayload(var XmlAttachmentTempBlob: Codeunit "Temp Blob"; var RenderingPayload: JsonObject)
     var
+        PDFDocument: Codeunit "PDF Document";
+        DataType: Enum "PDF Attach. Data Relationship";
         XmlInStream: InStream;
-        XmlOutStream: OutStream;
         Name: Text;
         MimeType: Text;
         Description: Text;
-        DataType: Enum "PDF Attach. Data Relationship";
-        PDFDocument: Codeunit "PDF Document";
     begin
         PDFDocument.Initialize();
         Name := 'factur-x.xml';

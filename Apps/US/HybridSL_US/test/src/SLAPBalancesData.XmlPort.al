@@ -94,7 +94,7 @@ xmlport 147658 "SL AP Balances Data"
                     end;
 
                     SLAPBalances.VendID := VendID;
-                    SLAPBalances.CpnyID := CpnyID;
+                    SLAPBalances.CpnyID := CopyStr(CpnyID, 1, MaxStrLen(SLAPBalances.CpnyID));
                     Evaluate(SLAPBalances.CYBox00, CYBox00);
                     Evaluate(SLAPBalances.CYBox01, CYBox01);
                     Evaluate(SLAPBalances.CYBox02, CYBox02);

@@ -131,6 +131,28 @@ codeunit 4305 "SOA Filters Impl."
         if MissingContactNotification.Recall() then;
     end;
 
+    internal procedure ShowDuplicateContactNotification(FromEmail: Text; ContactCount: Integer)
+    var
+        DuplicateContactNotification: Notification;
+    begin
+        RecallDuplicateContactNotification(DuplicateContactNotification);
+        DuplicateContactNotification.Message := StrSubstNo(DuplicateContactNotificationLbl, ContactCount, FromEmail);
+        DuplicateContactNotification.Send();
+    end;
+
+    procedure RecallDuplicateContactNotification()
+    var
+        DuplicateContactNotification: Notification;
+    begin
+        RecallDuplicateContactNotification(DuplicateContactNotification);
+    end;
+
+    local procedure RecallDuplicateContactNotification(DuplicateContactNotification: Notification)
+    begin
+        DuplicateContactNotification.Id := '2b66d895-4c76-55c8-c1e9-544b6d1d7b80';
+        if DuplicateContactNotification.Recall() then;
+    end;
+
     procedure CreateContactFromEmail(MissingContactNotification: Notification)
     var
         FromEmail: Text;
@@ -184,4 +206,5 @@ codeunit 4305 "SOA Filters Impl."
         SecurityFilteringDocumentationURLTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2298901', Locked = true;
         MissingContactNotificationLbl: Label 'A contact with email <%1> is not found. Without it, document access and creation are not possible.', Comment = '%1 - email address';
         ContactAlreadyExistQst: Label 'A contact with the same email already exists. Contact number is %1. Do you want to open it?', Comment = '%1 = Contact number';
+        DuplicateContactNotificationLbl: Label 'There are %1 contacts with the same email address <%2>. The first matching contact will be used.', Comment = '%1 - number of contacts, %2 - email address';
 }

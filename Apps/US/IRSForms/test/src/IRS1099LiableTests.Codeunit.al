@@ -18,6 +18,7 @@ codeunit 148019 "IRS 1099 Liable Tests"
         LibraryIRSReportingPeriod: Codeunit "Library IRS Reporting Period";
         LibraryIRS1099FormBox: Codeunit "Library IRS 1099 Form Box";
         LibraryPurchase: Codeunit "Library - Purchase";
+        LibrarySmallBusiness: Codeunit "Library - Small Business";
         LibraryERM: Codeunit "Library - ERM";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryRandom: Codeunit "Library - Random";
@@ -178,6 +179,59 @@ codeunit 148019 "IRS 1099 Liable Tests"
         // Tear down
         IRSReportingPeriod.SetRange("No.", PeriodNo);
         IRSReportingPeriod.DeleteAll(true);
+    end;
+
+    [Test]
+    procedure PurchLineHas1099LiableWhenStdPurchCodeAppliedAndHeaderHas1099Code()
+    var
+        IRSReportingPeriod: Record "IRS Reporting Period";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        StandardPurchaseCode: Record "Standard Purchase Code";
+        StandardPurchaseLine: Record "Standard Purchase Line";
+        StandardVendorPurchaseCode: Record "Standard Vendor Purchase Code";
+        VendorNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: Code[20];
+        PeriodNo: Code[20];
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 618160] Purchase line has "1099 Liable" option enabled when standard purchase codes are applied and header has "IRS 1099 Form Box No."
+        Initialize();
+
+        // [GIVEN] Vendor "V" with IRS 1099 Form Box No. "MISC-01"
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate(), WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), WorkDate(), FormNo);
+        VendorNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), WorkDate(), FormNo, FormBoxNo);
+
+        // [GIVEN] Standard purchase code "SPC" with a G/L Account line for vendor "V"
+        LibrarySmallBusiness.CreateStandardPurchaseCode(StandardPurchaseCode);
+        LibrarySmallBusiness.CreateStandardPurchaseLine(StandardPurchaseLine, StandardPurchaseCode.Code);
+        StandardPurchaseLine.Validate(Type, StandardPurchaseLine.Type::"G/L Account");
+        StandardPurchaseLine.Validate("No.", LibraryERM.CreateGLAccountWithPurchSetup());
+        StandardPurchaseLine.Validate(Quantity, 1);
+        StandardPurchaseLine.Validate("Amount Excl. VAT", LibraryRandom.RandDec(100, 2));
+        StandardPurchaseLine.Modify(true);
+        LibrarySmallBusiness.CreateVendorPurchaseCode(StandardVendorPurchaseCode, VendorNo, StandardPurchaseCode.Code);
+        StandardVendorPurchaseCode.Validate("Insert Rec. Lines On Invoices", StandardVendorPurchaseCode."Insert Rec. Lines On Invoices"::Automatic);
+        StandardVendorPurchaseCode.Modify(true);
+
+        // [WHEN] Create purchase invoice for vendor "V"
+        PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::Invoice;
+        PurchaseHeader.Validate("Buy-from Vendor No.", VendorNo);
+        PurchaseHeader.Insert(true);
+
+        // [THEN] Purchase line created from standard code has "1099 Liable" = true
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.FindFirst();
+        Assert.AreEqual(true, PurchaseLine."1099 Liable", 'Purchase line should have 1099 Liable enabled');
+
+        // Tear Down
+        IRSReportingPeriod.SetRange("No.", PeriodNo);
+        IRSReportingPeriod.DeleteAll(true);
+        StandardVendorPurchaseCode.Delete(true);
     end;
 
     local procedure Initialize()

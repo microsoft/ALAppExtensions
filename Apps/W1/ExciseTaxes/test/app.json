@@ -1,0 +1,65 @@
+{
+  "id": "0fe902fd-6065-4247-b798-506ba16d9730",
+  "name": "Excise Taxes Tests",
+  "publisher": "Microsoft",
+  "version": "28.0.0.0",
+  "brief": "Tests for Microsoft Excise Taxes app.",
+  "description": "Tests for Microsoft Excise Taxes app.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "logo": "./ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "a7bd3b4e-5469-4185-88b5-06745dd4c153",
+      "name": "Excise Taxes",
+      "publisher": "Microsoft",
+      "version": "28.0.0.0"
+    },
+    {
+      "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
+      "name": "Sustainability",
+      "publisher": "Microsoft",
+      "version": "28.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "28.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "name": "Library Variable Storage",
+      "publisher": "Microsoft",
+      "version": "28.0.0.0"
+    },
+    {
+      "id": "40860557-a18d-42ad-aecb-22b7dd80dc80",
+      "publisher": "Microsoft",
+      "name": "Permissions Mock",
+      "version": "28.0.0.0"
+    }
+  ],
+  "internalsVisibleTo": [],
+  "screenshots": [],
+  "platform": "28.0.0.0",
+  "application": "28.0.0.0",
+  "idRanges": [
+    {
+      "from": 148350,
+      "to": 148360
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "TranslationFile"
+  ],
+  "target": "OnPrem"
+}

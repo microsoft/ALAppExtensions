@@ -17,8 +17,28 @@
   "target": "OnPrem",
   "idRanges": [
     {
-      "from": 3000,
-      "to": 5000
+      "from": 4002,
+      "to": 4002
+    },
+    {
+      "from": 4302,
+      "to": 4302
+    },
+    {
+      "from": 4304,
+      "to": 4309
+    },
+    {
+      "from": 4323,
+      "to": 4325
+    },
+    {
+      "from": 4395,
+      "to": 4420
+    },
+    {
+      "from": 4580,
+      "to": 4600
     }
   ],
   "internalsVisibleTo": [

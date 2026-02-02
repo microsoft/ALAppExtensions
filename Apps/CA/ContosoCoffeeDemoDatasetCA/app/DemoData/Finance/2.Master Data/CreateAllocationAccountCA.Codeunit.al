@@ -5,9 +5,6 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.Finance.AllocationAccount;
-
 codeunit 27095 "Create Allocation Account CA"
 {
     InherentEntitlements = X;
@@ -15,21 +12,12 @@ codeunit 27095 "Create Allocation Account CA"
 
     trigger OnRun()
     var
-        AllocationAccount: Record "Allocation Account";
-        AllocAccountDistribution: Record "Alloc. Account Distribution";
-        ContosoAllocationAccount: Codeunit "Contoso Allocation Account";
-        CreateDimensionValue: Codeunit "Create Dimension Value";
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
-        ContosoAllocationAccount.InsertAllocationAccount(
-            Licenses(), LicensesDescription(),
-            AllocationAccount."Account Type"::Fixed, AllocationAccount."Document Lines Split"::"Split Amount");
-        ContosoAllocationAccount.InsertAllocationAccountDistribution(
-            Licenses(), 10000, AllocAccountDistribution."Account Type"::Fixed, 1, 50,
-            AllocAccountDistribution."Destination Account Type"::"G/L Account", CreateGLAccount.OtherComputerExpenses(), CreateDimensionValue.AdministrationDepartment(), '');
-        ContosoAllocationAccount.InsertAllocationAccountDistribution(
-            Licenses(), 20000, AllocAccountDistribution."Account Type"::Fixed, 1, 50,
-            AllocAccountDistribution."Destination Account Type"::"G/L Account", CreateGLAccount.OtherComputerExpenses(), CreateDimensionValue.SalesDepartment(), '');
+        FinanceModuleSetup.Get();
+        FinanceModuleSetup."Yearly License All. GLAcc No." := CreateGLAccount.OtherComputerExpenses();
+        FinanceModuleSetup.Modify();
     end;
 
     procedure Licenses(): Code[20]

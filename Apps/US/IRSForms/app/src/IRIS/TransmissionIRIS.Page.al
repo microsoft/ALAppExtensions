@@ -250,7 +250,7 @@ page 10058 "Transmission IRIS"
             {
                 Caption = 'Request Status';
                 Image = Status;
-                ToolTip = 'Request the status of the transmission from the IRS using Receipt ID. Use this action if the transmission was sent and the status was not updated or when the status is Processing.';
+                ToolTip = 'Request the status of the transmission from the IRS using Receipt ID. Use this action if the transmission was sent and the status was not updated or when the status is Processing. This action requires a Receipt ID to be assigned to the transmission.';
 
                 trigger OnAction()
                 var
@@ -270,8 +270,9 @@ page 10058 "Transmission IRIS"
                         UniqueTransmissionId := TransmissionLog."Unique Transmission ID";
 
                     ProcessTransmission.RequestAcknowledgement(Rec."Receipt ID", UniqueTransmissionId, TransmissionStatus, SubmissionsStatus, TempErrorInfo);
-                    ProcessTransmission.UpadateTransmissionStatus(Rec, TransmissionStatus, SubmissionsStatus);
                     ProcessTransmission.SetTransmissionErrors(Rec."Document ID", UniqueTransmissionId, SubmissionsStatus, TempErrorInfo);
+                    if not ProcessResponse.PreReceiptValidationFailed(TempErrorInfo) then
+                        ProcessTransmission.UpadateTransmissionStatus(Rec, TransmissionStatus, SubmissionsStatus);
 
                     Sleep(500);
                     ProcessDialog.Close();
@@ -281,8 +282,7 @@ page 10058 "Transmission IRIS"
             {
                 Caption = 'Request Status by UTID';
                 Image = Status;
-                ToolTip = 'Request the status of the transmission from the IRS using Unique Transmission Id. Use this action if the transmission was sent and the status was not updated or when the status is Processing.';
-                Visible = false;    // hidden because status is requested by Receipt ID by default
+                ToolTip = 'Request the status of the transmission from the IRS using Unique Transmission ID. Use this action when the Receipt ID is not available, for example, when a pre-receipt validation error (such as XML Schema Validation Error) was returned and the Receipt ID was not saved to the transmission record.';
 
                 trigger OnAction()
                 var
@@ -301,8 +301,9 @@ page 10058 "Transmission IRIS"
                     UniqueTransmissionId := TransmissionLog."Unique Transmission ID";
 
                     ProcessTransmission.RequestAcknowledgement('', UniqueTransmissionId, TransmissionStatus, SubmissionsStatus, TempErrorInfo);
-                    ProcessTransmission.UpadateTransmissionStatus(Rec, TransmissionStatus, SubmissionsStatus);
                     ProcessTransmission.SetTransmissionErrors(Rec."Document ID", UniqueTransmissionId, SubmissionsStatus, TempErrorInfo);
+                    if not ProcessResponse.PreReceiptValidationFailed(TempErrorInfo) then
+                        ProcessTransmission.UpadateTransmissionStatus(Rec, TransmissionStatus, SubmissionsStatus);
 
                     Sleep(500);
                     ProcessDialog.Close();
@@ -391,6 +392,7 @@ page 10058 "Transmission IRIS"
 
     var
         ProcessTransmission: Codeunit "Process Transmission IRIS";
+        ProcessResponse: Codeunit "Process Response IRIS";
         ConfirmMgt: Codeunit "Confirm Management";
         StatusStyle: Text;
         ErrorInfoCaption: Text;
@@ -413,17 +415,17 @@ page 10058 "Transmission IRIS"
         ConfirmAssignReceiptIDQst: Label 'Are you sure you want to assign the Receipt ID to the transmission manually?';
         OverwriteReceiptIDQst: Label 'The transmission already has a Receipt ID. Do you want to overwrite it?';
         SendOrigTransmConsentTxt: Label 'By choosing this action, you consent to use third party systems. These systems may have their own terms of use, license, pricing and privacy, and they may not meet the same compliance and security standards as Microsoft Dynamics 365 Business Central. Your privacy is important to us.';
-        ReceiptIDNotAssignedErr: Label 'The Receipt ID is not assigned to the transmission.\\ If the the Receipt ID was not received for some reason (e.g., the session times out or is terminated) or it is accidentally lost or deleted, request the Receipt ID from the IRIS help desk. You will be required to identify yourself and provide the unique transmission ID which can be found on Transmission History page.\\ After you receive the Receipt ID, use the Assign Receipt ID action to associate it with the transmission and then request the status of the transmission.';
+        ReceiptIDNotAssignedErr: Label 'The Receipt ID is not assigned to the transmission.\\ Possible reasons:\- Pre-receipt validation error (e.g., XML Schema Validation Error) - use Request Status by UTID action.\- Receipt ID was lost or not received - contact IRIS help desk, provide them Unique Transmission ID from Transmission History, then use Assign Receipt ID action to set it and Request Status action to update the status.';
         UTIDNotFoundErr: Label 'Unable to get Unique Transmission Id from the transmission history, because it does not have any records for the current transmission.';
         TestModeMsg: Label 'This transmission is in test mode. No data will be reported to the IRS. All data will be transmitted to the IRIS Assurance Testing System (IRIS ATS) for testing purposes.';
         ErrorInfoCaptionTxt: Label 'Show %1 error(s)', Comment = '%1 - number of errors';
 
     local procedure SetTestModeFields()
     var
-        KeyVaultClient: Codeunit "Key Vault Client IRIS";
+        IRSFormsFacade: Codeunit "IRS Forms Facade";
     begin
         TestModeText := 'Test Mode';
-        TestModeVisible := KeyVaultClient.TestMode();
+        TestModeVisible := IRSFormsFacade.TestMode();
     end;
 
     local procedure SetActionsVisibility()

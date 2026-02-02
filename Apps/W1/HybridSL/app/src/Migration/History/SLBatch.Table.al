@@ -57,7 +57,7 @@ table 47027 "SL Batch"
         {
             Caption = 'Cleared';
         }
-        field(12; CpnyID; Text[30])
+        field(12; CpnyID; Text[10])
         {
             Caption = 'CpnyID';
         }

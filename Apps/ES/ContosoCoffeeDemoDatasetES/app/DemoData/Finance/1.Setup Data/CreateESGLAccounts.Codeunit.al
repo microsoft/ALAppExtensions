@@ -2642,6 +2642,8 @@ codeunit 10780 "Create ES GL Accounts"
         ContosoGLAccount.SetOverwriteData(false);
         UpdateIncomeStatmentBalanceAccount();
         UpdateAPIAccountTypeToGLAccount();
+
+        Codeunit.Run(Codeunit::"Create Deferral Template ES");
     end;
 
     local procedure UpdateIncomeStatmentBalanceAccount()

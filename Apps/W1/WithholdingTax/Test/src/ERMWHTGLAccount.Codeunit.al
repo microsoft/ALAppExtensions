@@ -32,7 +32,7 @@ codeunit 148325 "ERM WHT G/L Account"
         InvalidLineValueErr: Label 'Invalid Line value.';
 
     [Test]
-    [HandlerFunctions('WhereUsedHandler')]
+    [HandlerFunctions('WhereUsedHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure CheckWHTPostingSetup()
     var
@@ -67,7 +67,7 @@ codeunit 148325 "ERM WHT G/L Account"
     end;
 
     [Test]
-    [HandlerFunctions('WhereUsedShowDetailsHandler')]
+    [HandlerFunctions('WhereUsedShowDetailsHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure ShowDetailsWhereUsedWHTPostingSetup()
     var
@@ -139,6 +139,13 @@ codeunit 148325 "ERM WHT G/L Account"
     begin
         GLAccountWhereUsedList.First();
         GLAccountWhereUsedList.ShowDetails.Invoke();
+    end;
+
+    [ConfirmHandler]
+    [Scope('OnPrem')]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
     end;
 }
 

@@ -2,7 +2,10 @@ namespace Microsoft.Test.Sustainability;
 
 using Microsoft.Integration.D365Sales;
 using Microsoft.Integration.Dataverse;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Tracking;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.CBAM;
 using Microsoft.Sustainability.Certificate;
@@ -20,6 +23,8 @@ codeunit 148182 "Library - Sustainability"
 {
     var
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryItemTracking: Codeunit "Library - Item Tracking";
         LibraryERM: Codeunit "Library - ERM";
 
     procedure InsertAccountCategory(Code: Code[20]; Description: Text[100]; Scope: Enum "Emission Scope"; CalcFoundation: Enum "Calculation Foundation"; CO2: Boolean; CH4: Boolean; N2O: Boolean; CustomValue: Text[100]; CalcFromGL: Boolean): Record "Sustain. Account Category"
@@ -495,5 +500,39 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityExciseJnlLine.DeleteAll();
         SustExciseTransactionLog.DeleteAll();
         SustainabilityDisclaimer.DeleteAll();
+    end;
+
+    procedure CreateItemWithSpecificCarbonTrackingMethod(var Item: Record Item)
+    begin
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Carbon Tracking Method", Item."Carbon Tracking Method"::Specific);
+        Item.Modify();
+    end;
+
+    procedure UpdateCarbonTrackingMethod(var Item: Record Item; CarbonTrackingMethod: Enum "Sust. Carbon Tracking Method")
+    begin
+        if Item."No." = '' then
+            LibraryInventory.CreateItem(Item);
+
+        Item.Validate("Carbon Tracking Method", CarbonTrackingMethod);
+        Item.Modify();
+    end;
+
+    procedure PostPositiveAdjustmentWithItemTracking(Item: Record Item; LocationCode: Code[10]; AccountCode: Code[20]; VariantCode: Code[10];
+        Qty: Decimal; PostingDate: Date; SerialNo: Code[50]; LotNo: Code[50]; TotalCo2e: Decimal)
+    var
+        ReservationEntry: Record "Reservation Entry";
+        ItemJournalTemplate: Record "Item Journal Template";
+        ItemJournalLine: Record "Item Journal Line";
+        ItemJournalBatch: Record "Item Journal Batch";
+    begin
+        LibraryInventory.CreateItemJournalBatchByType(ItemJournalBatch, ItemJournalTemplate.Type::Item);
+        LibraryInventory.CreateItemJournalLine(ItemJournalLine, ItemJournalBatch, Item, LocationCode, VariantCode, PostingDate,
+          ItemJournalLine."Entry Type"::"Positive Adjmt.", Qty, 0);
+        ItemJournalLine.Validate("Sust. Account No.", AccountCode);
+        ItemJournalLine.Validate("Total CO2e", TotalCo2e);
+        ItemJournalLine.Modify();
+        LibraryItemTracking.CreateItemJournalLineItemTracking(ReservationEntry, ItemJournalLine, SerialNo, LotNo, Qty);
+        LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
     end;
 }

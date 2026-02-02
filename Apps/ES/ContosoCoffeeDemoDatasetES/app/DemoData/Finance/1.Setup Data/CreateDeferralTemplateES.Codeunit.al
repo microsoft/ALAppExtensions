@@ -10,11 +10,13 @@ codeunit 10885 "Create Deferral Template ES"
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Deferral Template", OnDefineDeferralAccountNo, '', false, false)]
-    local procedure OnDefineDeferralAccountNo(var DeferralAccountNo: Code[20])
+    trigger OnRun()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateESGLAccounts: Codeunit "Create ES GL Accounts";
     begin
-        DeferralAccountNo := CreateESGLAccounts.OtherCreditors();
+        FinanceModuleSetup.Get();
+        FinanceModuleSetup."Deferral Account No." := CreateESGLAccounts.OtherCreditors();
+        FinanceModuleSetup.Modify();
     end;
 }

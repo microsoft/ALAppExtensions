@@ -1069,6 +1069,68 @@ codeunit 148010 "IRS 1099 Document Tests"
         DeleteDocuments();
     end;
 
+    [Test]
+    procedure FormDocLineIncludeIn1099FalseWhenAmountBelowMinimum()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        IRS1099FormBox: Record "IRS 1099 Form Box";
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        PeriodNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: Code[20];
+        VendNo: Code[20];
+        PostingDate: Date;
+        MinimumReportableAmount: Decimal;
+        InvoiceAmount: Decimal;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 620124] No form document is created when payment amount is less than "Minimum Reportable Amount"
+        Initialize();
+
+        // [GIVEN] Minimum Reportable Amount = 600
+        MinimumReportableAmount := 600;
+        InvoiceAmount := 100;
+        PostingDate := WorkDate();
+
+        // [GIVEN] IRS Reporting Period "P" with Form "F" and Form Box "FB" with "Minimum Reportable Amount" = 600
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(PostingDate, FormNo);
+        IRS1099FormBox.Get(PeriodNo, FormNo, FormBoxNo);
+        IRS1099FormBox.Validate("Minimum Reportable Amount", MinimumReportableAmount);
+        IRS1099FormBox.Modify(true);
+
+        // [GIVEN] Vendor "V" with Form Box "FB"
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(PostingDate, FormNo, FormBoxNo);
+
+        // [GIVEN] Posted purchase invoice for vendor "V" with Amount = 100
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
+        PurchaseHeader.Validate("Posting Date", PostingDate);
+        PurchaseHeader.Modify(true);
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(), 1, InvoiceAmount);
+        LibraryERM.FindVendorLedgerEntry(
+            VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
+            LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+        VendorLedgerEntry.CalcFields(Amount);
+
+        // [GIVEN] Payment with amount 100 applied to the invoice
+        LibraryIRS1099Document.PostPaymentAppliedToInvoice(PostingDate, VendNo, VendorLedgerEntry."Document No.", -VendorLedgerEntry.Amount);
+
+        // [WHEN] Create form documents
+        LibraryIRS1099Document.CreateFormDocuments(PostingDate, PostingDate, VendNo, FormNo);
+
+        // [THEN] No form document header is created for vendor "V" when amount is below minimum reportable amount
+        IRS1099FormDocHeader.SetRange("Period No.", PeriodNo);
+        IRS1099FormDocHeader.SetRange("Vendor No.", VendNo);
+        IRS1099FormDocHeader.SetRange("Form No.", FormNo);
+        Assert.RecordIsEmpty(IRS1099FormDocHeader);
+
+        // Tear down
+        DeleteDocuments();
+    end;
+
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";

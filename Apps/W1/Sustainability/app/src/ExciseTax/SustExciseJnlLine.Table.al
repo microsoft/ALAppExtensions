@@ -234,6 +234,7 @@ table 6240 "Sust. Excise Jnl. Line"
                 Resource: Record Resource;
                 SustainabilityCertificate: Record "Sustainability Certificate";
                 SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
+                IsHandled: Boolean;
             begin
                 Rec.Validate("Source Description", '');
                 if Rec."Source No." = '' then begin
@@ -241,7 +242,10 @@ table 6240 "Sust. Excise Jnl. Line"
                     exit;
                 end;
 
-                Rec.TestField("Partner No.");
+                OnValidateSourceNoBeforeTestFieldPartnerNo(Rec, IsHandled);
+                if not IsHandled then
+                    Rec.TestField("Partner No.");
+
                 case "Source Type" of
                     Rec."Source Type"::Item:
                         begin
@@ -253,6 +257,8 @@ table 6240 "Sust. Excise Jnl. Line"
                             SustainabilityExciseJnlBatch.Get("Journal Template Name", "Journal Batch Name");
                             if SustainabilityExciseJnlBatch.Type = SustainabilityExciseJnlBatch.Type::EPR then
                                 Rec.Validate("Material Breakdown No.", Item."Material Composition No.");
+
+                            OnAfterCopyFromItem(Rec, Item);
                         end;
                     Rec."Source Type"::"G/L Account":
                         begin
@@ -265,6 +271,8 @@ table 6240 "Sust. Excise Jnl. Line"
                             FixedAsset.Get(Rec."Source No.");
 
                             Rec.Validate("Source Description", FixedAsset.Description);
+
+                            OnAfterCopyFromFixedAsset(Rec, FixedAsset);
                         end;
                     Rec."Source Type"::"Charge (Item)":
                         begin
@@ -917,6 +925,21 @@ table 6240 "Sust. Excise Jnl. Line"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterSetupNewLine(var SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line"; SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch"; PreviousSustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateSourceNoBeforeTestFieldPartnerNo(var SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromItem(var ExciseJournalLine: Record "Sust. Excise Jnl. Line"; Item: Record Item)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromFixedAsset(var ExciseJournalLine: Record "Sust. Excise Jnl. Line"; FixedAsset: Record "Fixed Asset")
     begin
     end;
 }

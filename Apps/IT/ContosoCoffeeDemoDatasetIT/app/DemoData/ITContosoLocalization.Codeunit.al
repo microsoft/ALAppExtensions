@@ -74,10 +74,8 @@ codeunit 12251 "IT Contoso Localization"
                     Codeunit.Run(Codeunit::"Create VAT Statement IT");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate IT");
-                    Codeunit.Run(Codeunit::"Create Allocation Account IT");
-                end;
+                Codeunit.Run(Codeunit::"Create Currency Ex. Rate IT");
+
         end;
     end;
 

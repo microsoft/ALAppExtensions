@@ -147,7 +147,7 @@ codeunit 11508 "NL Contoso Localization"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure OnBeforeGeneratingDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         CreateLocationNL: Codeunit "Create Location NL";
         CreateItemNL: Codeunit "Create Item NL";
@@ -181,6 +181,8 @@ codeunit 11508 "NL Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account NL");
                     BindSubscription(CreateCurrencyNL);
                     BindSubscription(CreateCurrencyExchRateNL);
                     BindSubscription(CreateResourceNL);

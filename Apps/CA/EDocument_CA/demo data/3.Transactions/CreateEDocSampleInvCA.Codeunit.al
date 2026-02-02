@@ -25,7 +25,7 @@ codeunit 11507 "Create E-Doc Sample Inv. CA"
         CreateJobItem: Codeunit "Create Job Item";
         CreateCommonUnitOfMeasure: Codeunit "Create Common Unit Of Measure";
         CreateDemoEDocsCA: Codeunit "Create Demo EDocs CA";
-        CreateAllocationAccountCA: Codeunit "Create Allocation Account CA";
+        CreateAllocationAccount: Codeunit "Create Allocation Account";
 
     trigger OnRun()
     var
@@ -51,7 +51,7 @@ codeunit 11507 "Create E-Doc Sample Inv. CA"
 
         EDocSamplePurchaseInvoice.AddInvoice(CreateVendor.EUGraphicDesign(), '108427', YearlyLicenstCostLbl, 390);
         EDocSamplePurchaseInvoice.AddLine(
-            Enum::"Purchase Line Type"::" ", '', CreateAllocationAccountCA.LicensesDescription(), 6, 500, '', CreateCommonUnitOfMeasure.Piece());
+            Enum::"Purchase Line Type"::" ", '', CreateAllocationAccount.LicensesDescription(), 6, 500, '', CreateCommonUnitOfMeasure.Piece());
         EDocSamplePurchaseInvoice.Generate();
     end;
 }

@@ -102,7 +102,7 @@ xmlport 147633 "SL APDoc Buffer Data"
                     SLAPDocBuffer.RefNbr := RefNbr;
                     Evaluate(SLAPDocBuffer.RecordID, RecordID);
                     SLAPDocBuffer.BatNbr := BatchNbr;
-                    SLAPDocBuffer.CpnyID := CpnyID;
+                    SLAPDocBuffer.CpnyID := CopyStr(CpnyID, 1, MaxStrLen(SLAPDocBuffer.CpnyID));
                     Evaluate(SLAPDocBuffer.DocBal, DocBal);
                     Evaluate(SLAPDocBuffer.DocDate, DocDate);
                     SLAPDocBuffer.DocDesc := DocDesc;

@@ -67,13 +67,13 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
             LogMessage(MessageCodeSkippedTxt, 'SL Vendor Next 1099 Year Data Migration is not enabled on the SL Company Migration Configuration page.');
 
         SLCurr1099Yr := SLVendor1099MappingHelpers.GetCurrent1099YearFromSLAPSetup();
-        if SLCurr1099Yr <> 0 then begin
+        if SLCurr1099Yr <> 0 then
             Current1099YearOpen := SLVendor1099MappingHelpers.GetCurrent1099YearOpenStatus();
-        end;
+
         SLNext1099Yr := SLVendor1099MappingHelpers.GetNext1099YearFromSLAPSetup();
-        if SLNext1099Yr <> 0 then begin
+        if SLNext1099Yr <> 0 then
             Next1099YearOpen := SLVendor1099MappingHelpers.GetNext1099YearOpenStatus();
-        end;
+
         if not Current1099YearOpen and not Next1099YearOpen then begin
             LogMessage(MessageCodeAbortedTxt, 'Neither the SL Current 1099 Year nor the Next 1099 Year is open for data entry.');
             exit;
@@ -115,8 +115,6 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         SLHelperFunctions: Codeunit "SL Helper Functions";
         CurrentYear: Integer;
-        Day31: Integer;
-        Month12: Integer;
         NextYear: Integer;
         VendorTaxBatchCode: Code[10];
     begin
@@ -566,7 +564,6 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
         GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLine: Record "Gen. Journal Line";
         SL1099YearJournalBatchName: Code[20];
-        NextYearJournalBatchName: Code[20];
     begin
         SL1099YearJournalBatchName := VendorTaxBatchNameTxt + Format(SL1099Year);
         GenJournalLine.SetRange("Journal Batch Name", SL1099YearJournalBatchName);

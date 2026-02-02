@@ -41,6 +41,11 @@ page 18690 "TDS Concessional Codes"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specify the concessional form/certificate number of the deductee.';
                 }
+                field("Certificate Value"; Rec."Certificate Value")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specify the certificate value as per the certificate number of the deductee.';
+                }
                 field("Start Date"; Rec."Start Date")
                 {
                     ApplicationArea = Basic, Suite;

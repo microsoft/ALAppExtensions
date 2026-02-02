@@ -10,7 +10,7 @@ tableextension 47200 "SL Company Add. Settings Ext." extends "SL Company Additio
 {
     fields
     {
-        field(57200; "Migrate Current 1099 Year"; Boolean)
+        field(47200; "Migrate Current 1099 Year"; Boolean)
         {
             Caption = 'Migrate Current 1099 Year';
             InitValue = true;
@@ -26,7 +26,7 @@ tableextension 47200 "SL Company Add. Settings Ext." extends "SL Company Additio
                 end;
             end;
         }
-        field(57201; "Migrate Next 1099 Year"; Boolean)
+        field(47201; "Migrate Next 1099 Year"; Boolean)
         {
             Caption = 'Migrate Next 1099 Year';
             InitValue = true;
