@@ -136,6 +136,7 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridReplicationDetail: Record "Hybrid Replication Detail";
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
         GPMigrationWarnings: Record "GP Migration Warnings";
+        MigrationValidationError: Record "Migration Validation Error";
     begin
         GPCompanyMigrationSettings.Reset();
         if GPCompanyMigrationSettings.FindSet() then
@@ -158,6 +159,9 @@ codeunit 4015 "Hybrid GP Wizard"
 
         if not GPMigrationWarnings.IsEmpty() then
             GPMigrationWarnings.DeleteAll();
+
+        if not MigrationValidationError.IsEmpty() then
+            MigrationValidationError.DeleteAll();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterDeleteEvent', '', false, false)]
@@ -170,6 +174,7 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridReplicationDetail: Record "Hybrid Replication Detail";
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
         GPMigrationWarnings: Record "GP Migration Warnings";
+        MigrationValidationError: Record "Migration Validation Error";
     begin
         if Rec.IsTemporary() then
             exit;
@@ -197,6 +202,10 @@ codeunit 4015 "Hybrid GP Wizard"
         GPMigrationWarnings.SetRange("Company Name", Rec.Name);
         if not GPMigrationWarnings.IsEmpty() then
             GPMigrationWarnings.DeleteAll();
+
+        MigrationValidationError.SetRange("Company Name", Rec.Name);
+        if not MigrationValidationError.IsEmpty() then
+            MigrationValidationError.DeleteAll();
     end;
 
     local procedure ProcessesAreRunning(): Boolean

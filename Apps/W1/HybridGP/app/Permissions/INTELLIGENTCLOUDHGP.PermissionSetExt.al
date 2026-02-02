@@ -118,5 +118,6 @@ permissionsetextension 4028 "INTELLIGENT CLOUD - HGP" extends "INTELLIGENT CLOUD
                   tabledata "GP Migration Warnings" = RIMD,
                   tabledata "GP IV00104" = RIMD,
                   tabledata "GP PM00101" = RIMD,
-                  tabledata "GP PM00203" = RIMD;
+                  tabledata "GP PM00203" = RIMD,
+                  tabledata "GP PO Validation Buffer" = RIMD;
 }

@@ -180,6 +180,54 @@ page 4008 "Intelligent Cloud Stat Factbox"
                             Page.Run(Page::"Hybrid Companies List");
                         end;
                     }
+
+                    field(Warnings; NumberOfWarnings)
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                        Caption = 'Warnings';
+                        ToolTip = 'Specifies the number of warnings for the selected migration.';
+                        Style = Unfavorable;
+                        StyleExpr = (NumberOfWarnings > 0);
+
+                        trigger OnDrillDown()
+                        begin
+                            Page.Run(Page::"Cloud Migration Warnings");
+                        end;
+                    }
+
+                    field("Validation Errors"; ValidationErrors)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Validation Errors';
+                        Style = Unfavorable;
+                        StyleExpr = (ValidationErrors > 0);
+                        ToolTip = 'Indicates the total number of failed post migration validation tests, for all migrated companies.';
+                        Visible = (NumberOfRegisteredValidators > 0);
+
+                        trigger OnDrillDown()
+                        var
+                            ValidationSuite: Record "Validation Suite";
+                            ValidationSuiteLine: Record "Validation Suite Line";
+                            MigrationValidationResults: Page "Migration Validation Results";
+                            ValidatorFilter: Text;
+                            SeparatorChar: Text;
+                        begin
+                            ValidationSuite.SetRange("Migration Type", MigrationType);
+                            if ValidationSuite.FindSet() then
+                                repeat
+                                    if ValidatorFilter <> '' then
+                                        SeparatorChar := '|';
+
+                                    ValidatorFilter := SeparatorChar + ValidatorFilter;
+                                until ValidationSuite.Next() = 0;
+
+                            ValidationSuiteLine.SetFilter("Validation Suite Id", ValidatorFilter);
+                            MigrationValidationResults.SetTableView(ValidationSuiteLine);
+                            MigrationValidationResults.RunModal();
+                            RefreshStats();
+                        end;
+                    }
                 }
 
                 field(Spacer3; '')
@@ -203,16 +251,40 @@ page 4008 "Intelligent Cloud Stat Factbox"
         if TablesNotMigratedEnabled then
             TotalTablesNotMigrated := HybridCloudManagement.GetTotalTablesNotMigrated();
 
-        if IntelligentCloudSetup.Get() then
+        if IntelligentCloudSetup.Get() then begin
             NextScheduledRun := IntelligentCloudSetup.GetNextScheduledRunDateTime(CurrentDateTime());
+            MigrationType := IntelligentCloudSetup."Product ID";
+        end;
 
         ShowNextScheduled := NextScheduledRun <> 0DT;
 
+        RefreshStats();
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        RefreshStats();
+    end;
+
+    procedure RefreshStats()
+    var
+        MigrationValidationSuite: Record "Validation Suite";
+        MigrationValidationError: Record "Migration Validation Error";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
         if Rec."Run ID" <> '' then begin
             TotalSuccessfulTables := HybridCloudManagement.GetTotalSuccessfulTables();
             TotalTablesNotMigrated := HybridCloudManagement.GetTotalTablesNotMigrated();
             SourceProduct := HybridCloudManagement.GetChosenProductName();
         end;
+
+        UpdateWarningCounts();
+
+        MigrationValidationSuite.SetRange("Migration Type", MigrationType);
+        NumberOfRegisteredValidators := MigrationValidationSuite.Count();
+
+        MigrationValidationError.SetRange("Migration Type", MigrationType);
+        ValidationErrors := MigrationValidationError.Count();
     end;
 
     local procedure ShowTablesNotMigrated()
@@ -262,6 +334,21 @@ page 4008 "Intelligent Cloud Stat Factbox"
         Page.Run(4019, TempIntelligentCloudNotMigrated);
     end;
 
+    local procedure UpdateWarningCounts()
+    var
+        ICloudMigrationWarning: Interface "Cloud Migration Warning";
+        CloudMigrationWarningType: Enum "Cloud Migration Warning Type";
+        WarningImplementations: List of [Integer];
+        WarningImplementation: Integer;
+    begin
+        NumberOfWarnings := 0;
+        WarningImplementations := CloudMigrationWarningType.Ordinals();
+        foreach WarningImplementation in WarningImplementations do begin
+            ICloudMigrationWarning := "Cloud Migration Warning Type".FromInteger(WarningImplementation);
+            NumberOfWarnings += ICloudMigrationWarning.GetWarningCount();
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure CanShowTablesNotMigrated(var Enabled: Boolean)
     begin
@@ -274,5 +361,9 @@ page 4008 "Intelligent Cloud Stat Factbox"
         TotalTablesNotMigrated: Integer;
         ShowNextScheduled: Boolean;
         TablesNotMigratedEnabled: Boolean;
+        MigrationType: Text;
+        NumberOfWarnings: Integer;
+        NumberOfRegisteredValidators: Integer;
+        ValidationErrors: Integer;
 }
 

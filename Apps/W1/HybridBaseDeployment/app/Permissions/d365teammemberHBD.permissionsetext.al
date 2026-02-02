@@ -17,5 +17,9 @@ permissionsetextension 4002 "D365 TEAM MEMBER - HBD" extends "D365 TEAM MEMBER"
                   tabledata "Replication Run Completed Arg" = RIMD,
                   tabledata "Replication Record Link Buffer" = RIMD,
                   tabledata "Record Link Mapping" = RIMD,
-                  tabledata "Cloud Migration Warning" = RIMD;
+                  tabledata "Cloud Migration Warning" = RIMD,
+                  tabledata "Validation Suite" = RIMD,
+                  tabledata "Migration Validation Error" = RIMD,
+                  tabledata "Validation Suite Line" = RIMD,
+                  tabledata "Validation Progress" = RIMD;
 }

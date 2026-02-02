@@ -14,4 +14,9 @@ enum 40010 "Cloud Migration Warning Type" implements "Cloud Migration Warning"
         Caption = 'Tenant Media';
         Implementation = "Cloud Migration Warning" = "Tenant Media Warning";
     }
+    value(3; "Migration Validator")
+    {
+        Caption = 'Migration Validator';
+        Implementation = "Cloud Migration Warning" = "Migration Validator Warning";
+    }
 }

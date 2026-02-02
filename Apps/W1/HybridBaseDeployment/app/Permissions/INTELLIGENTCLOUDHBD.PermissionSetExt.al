@@ -18,5 +18,9 @@ permissionsetextension 4003 "INTELLIGENT CLOUD - HBD" extends "INTELLIGENT CLOUD
                   tabledata "Hybrid DA Approval" = rmi,
                   tabledata "Replication Record Link Buffer" = RIMD,
                   tabledata "Record Link Mapping" = RIMD,
-                  tabledata "Cloud Migration Warning" = RIMD;
+                  tabledata "Cloud Migration Warning" = RIMD,
+                  tabledata "Validation Suite" = RIMD,
+                  tabledata "Migration Validation Error" = RIMD,
+                  tabledata "Validation Suite Line" = RIMD,
+                  tabledata "Validation Progress" = RIMD;
 }

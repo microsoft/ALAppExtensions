@@ -5,13 +5,12 @@ using System.Integration;
 
 codeunit 42004 "GP Cloud Migration US"
 {
-
-    [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Data Migration Mgt.", 'OnAfterMigrationFinished', '', false, false)]
-    local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
+    [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Data Migration Mgt.", OnCreatePostMigrationData, '', false, false)]
+    local procedure OnCreatePostMigrationDataSubscriber(var DataMigrationStatus: Record "Data Migration Status")
     var
         HelperFunctions: Codeunit "Helper Functions";
     begin
-        if not (DataMigrationStatus."Migration Type" = HelperFunctions.GetMigrationTypeTxt()) then
+        if DataMigrationStatus."Migration Type" <> HelperFunctions.GetMigrationTypeTxt() then
             exit;
 
         RunPostMigration();

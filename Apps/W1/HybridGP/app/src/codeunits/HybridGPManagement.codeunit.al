@@ -329,6 +329,31 @@ codeunit 4016 "Hybrid GP Management"
             Message(GPCloudMigrationDoesNotSupportNewUIMsg);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnValidateMigration, '', false, false)]
+    local procedure StartMigrationValidation(var DataCreationFailed: Boolean)
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        MigrationValidationError: Record "Migration Validation Error";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
+        MigrationValidation: Codeunit "Migration Validation";
+    begin
+        if DataCreationFailed then
+            exit;
+
+        IntelligentCloudSetup.Get();
+        if IntelligentCloudSetup."Product ID" <> HybridGPWizard.ProductId() then
+            exit;
+
+        MigrationValidation.RunTests(true);
+
+        MigrationValidationError.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
+        MigrationValidationError.SetRange("Company Name", CompanyName());
+        MigrationValidationError.SetRange("Is Warning", false);
+        MigrationValidationError.SetRange("Errors should fail migration", true);
+        if not MigrationValidationError.IsEmpty() then
+            DataCreationFailed := true;
+    end;
+
     procedure InvokeCompanyUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50])
     begin
         InvokeCompanyUpgrade(HybridReplicationSummary, CompanyName, GetMinimalDelayDuration());
