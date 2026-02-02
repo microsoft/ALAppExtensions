@@ -103,6 +103,24 @@ page 10036 "IRS 1099 Form Documents"
                     IRS1099FormDocument.RecreateForm(Rec);
                 end;
             }
+            action(DeleteSelected)
+            {
+                Caption = 'Delete Selected';
+                Image = Delete;
+                Scope = Repeater;
+                ToolTip = 'Delete all selected IRS 1099 form documents.';
+
+                trigger OnAction()
+                var
+                    IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+                begin
+                    IRS1099FormDocHeader := Rec;
+                    CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
+                    if not IRS1099FormDocHeader.IsEmpty() then
+                        if Confirm(DeleteSelectedQst, false) then
+                            IRS1099FormDocHeader.DeleteAll(true);
+                end;
+            }
             action(ReleaseAll)
             {
                 Caption = 'Release All';
@@ -261,6 +279,7 @@ page 10036 "IRS 1099 Form Documents"
 
     var
         PeriodIsVisible: Boolean;
+        DeleteSelectedQst: Label 'Do you want to delete the selected IRS 1099 form documents?';
 
     trigger OnOpenPage()
     begin

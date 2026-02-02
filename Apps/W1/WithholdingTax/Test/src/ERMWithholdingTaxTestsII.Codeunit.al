@@ -46,6 +46,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOfPostedInvoiceJnlAndPaymentJnl()
     var
         BankAccount: Record "Bank Account";
@@ -87,6 +88,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryForPaymentWithManualApplication()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -130,6 +132,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryForPartialPaymentsWithDiffAccounts()
     var
         PurchaseLine: Record "Purchase Line";
@@ -172,6 +175,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PostApplyPaymentsToWHTAndNormalInvoices()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -233,6 +237,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure ConfirmErrorOnBlankWHTSetupPurchase()
     var
         PurchLine: Record "Purchase Line";
@@ -261,6 +266,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTPostingSetupGetPrepaidWHTAccountUT()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
@@ -269,6 +275,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         // [SCENARIO 285194] WHT Posting Setup's functions GetPrepaidWithholdingAccount returns PrepaidWHTAccount or throws an error when empty
         Initialize();
 
+        UpdateLocalFunctionalitiesOnGeneralLedgerSetup(true);
         WHTPostingSetup.Init();
         asserterror WHTPostingSetup.GetPrepaidWithholdingTaxAccount();
         Assert.ExpectedErrorCode('TestField');
@@ -284,6 +291,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTPostingSetupGetPayableWHTAccountUT()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
@@ -292,6 +300,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         // [SCENARIO 285194] WHT Posting Setup's functions GetPayableWithholdingAccount returns PayableWHTAccount or throws an error when empty
         Initialize();
 
+        UpdateLocalFunctionalitiesOnGeneralLedgerSetup(true);
         WHTPostingSetup.Init();
         asserterror WHTPostingSetup.GetPayableWithholdingTaxAccount();
         Assert.ExpectedErrorCode('TestField');
@@ -306,6 +315,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure JournalPostingNoSeriesLessThanNoSeriesOnePmtOneInv()
     var
         InvoiceGenJournalLine: Record "Gen. Journal Line";
@@ -337,6 +347,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure JournalPostingNoSeriesMoreThanNoSeriesOnePmtOneInv()
     var
         InvoiceGenJournalLine: Record "Gen. Journal Line";
@@ -368,6 +379,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure JournalPostingNoSeriesLessThanNoSeriesOnePmtTwoInv()
     var
         InvoiceGenJournalLine: array[2] of Record "Gen. Journal Line";
@@ -402,6 +414,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure JournalPostingNoSeriesMoreThanNoSeriesOnePmtTwoInv()
     var
         InvoiceGenJournalLine: array[2] of Record "Gen. Journal Line";
@@ -436,6 +449,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure JournalPostingNoSeriesLessThanNoSeriesTwoPmtTwoInvDiffDocNos()
     var
         InvoiceGenJournalLine: array[2] of Record "Gen. Journal Line";
@@ -469,6 +483,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure JournalPostingNoSeriesMoreThanNoSeriesTwoPmtTwoInvDiffDocNos()
     var
         InvoiceGenJournalLine: array[2] of Record "Gen. Journal Line";
@@ -502,6 +517,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure JournalPostingNoSeriesLessThanNoSeriesTwoPmtTwoInvSameDocNos()
     var
         InvoiceGenJournalLine: array[2] of Record "Gen. Journal Line";
@@ -535,6 +551,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure JournalPostingNoSeriesMoreThanNoSeriesTwoPmtTwoInvSameDocNos()
     var
         InvoiceGenJournalLine: array[2] of Record "Gen. Journal Line";
@@ -1034,5 +1051,12 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     [Scope('OnPrem')]
     procedure MessageHandler(Message: Text[1024])
     begin
+    end;
+
+    [ConfirmHandler]
+    [Scope('OnPrem')]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
     end;
 }

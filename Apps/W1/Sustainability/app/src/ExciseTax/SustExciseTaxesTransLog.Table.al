@@ -399,6 +399,8 @@ table 6241 "Sust. Excise Taxes Trans. Log"
         Rec."Dimension Set ID" := SustainabilityExciseJnlLine."Dimension Set ID";
         Rec."Calculated Date" := SustainabilityExciseJnlLine."Calculated Date";
         Rec."Calculated By" := SustainabilityExciseJnlLine."Calculated By";
+
+        OnAfterCopyFromSustainabilityExciseJnlLine(Rec, SustainabilityExciseJnlLine);
     end;
 
     local procedure ShowDimensions()
@@ -406,5 +408,11 @@ table 6241 "Sust. Excise Taxes Trans. Log"
         DimMgt: Codeunit DimensionManagement;
     begin
         DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo(EntryRecIDLbl, TableCaption(), "Entry No."));
+    end;
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromSustainabilityExciseJnlLine(var SustExciseTaxesTransactionLog: Record "Sust. Excise Taxes Trans. Log"; SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
+    begin
     end;
 }

@@ -250,7 +250,7 @@ codeunit 47018 "SL Customer Migrator"
             exit;
 
         Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)), '', '');
-        SLARDoc.SetRange(CpnyID, CompanyName);
+        SLARDoc.SetRange(CpnyID, GetCpnyID());
         SLARDoc.SetRange(CustId, SLCustomer.CustId);
         SLARDoc.SetFilter(DocType, '%1|%2|%3|%4|%5', ARDocTypeInvoiceTxt, ARDocTypeCashSaleTxt, ARDocTypeDebitMemoTxt, ARDocTypeSmallCreditTxt, ARDocTypeNSFCheckChargeTxt);  //Invoices
         SLARDoc.SetFilter(DocBal, '<>%1', 0);
@@ -295,7 +295,7 @@ codeunit 47018 "SL Customer Migrator"
             until SLARDoc.Next() = 0;
 
         SLARDoc.Reset();
-        SLARDoc.SetRange(CpnyID, CompanyName);
+        SLARDoc.SetRange(CpnyID, GetCpnyID());
         SLARDoc.SetRange(CustId, SLCustomer.CustId);
         SLARDoc.SetFilter(DocType, '%1|%2', ARDocTypePaymentTxt, ARDocTypePaymentPrepaymentTxt);  //Payments
         SLARDoc.SetFilter(DocBal, '<>%1', 0);
@@ -331,7 +331,7 @@ codeunit 47018 "SL Customer Migrator"
             until SLARDoc.Next() = 0;
 
         SLARDoc.Reset();
-        SLARDoc.SetRange(CpnyID, CompanyName);
+        SLARDoc.SetRange(CpnyID, GetCpnyID());
         SLARDoc.SetRange(CustId, SLCustomer.CustId);
         SLARDoc.SetFilter(DocType, '%1|%2|%3', ARDocTypeCreditMemoTxt, ARDocTypeSmallBalanceTxt, ARDocTypeNSFReversalTxt);  //Credit Memos
         SLARDoc.SetFilter(DocBal, '<>%1', 0);
@@ -390,7 +390,7 @@ codeunit 47018 "SL Customer Migrator"
             until SLARDoc.Next() = 0;
 
         SLARDoc.Reset();
-        SLARDoc.SetRange(CpnyID, CompanyName);
+        SLARDoc.SetRange(CpnyID, GetCpnyID());
         SLARDoc.SetRange(CustId, SLCustomer.CustId);
         SLARDoc.SetRange(DocType, ARDocTypeFinanceChargeTxt);  // Finance Charge
         SLARDoc.SetFilter(DocBal, '<>%1', 0);
@@ -432,5 +432,10 @@ codeunit 47018 "SL Customer Migrator"
                     end;
                 end;
             until SLARDoc.Next() = 0;
+    end;
+
+    internal procedure GetCpnyID(): Text[10]
+    begin
+        exit(CopyStr(CompanyName(), 1, 10));
     end;
 }

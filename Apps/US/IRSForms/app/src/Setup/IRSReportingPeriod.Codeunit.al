@@ -169,12 +169,14 @@ codeunit 10042 "IRS Reporting Period"
         IRS1099FormBox: Record "IRS 1099 Form Box";
         IRS1099FormStatementLine: Record "IRS 1099 Form Statement Line";
         IRS1099VendorFormBoxAdj: Record "IRS 1099 Vendor Form Box Adj.";
+        IRS1099FormInstruction: Record "IRS 1099 Form Instruction";
         NewIRS1099Form: Record "IRS 1099 Form";
         NewIRS1099FormBox: Record "IRS 1099 Form Box";
         NewIRS1099FormStatementLine: Record "IRS 1099 Form Statement Line";
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
         NewIRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
         NewIRS1099VendorFormBoxAdj: Record "IRS 1099 Vendor Form Box Adj.";
+        NewIRS1099FormInstruction: Record "IRS 1099 Form Instruction";
     begin
         if FromPeriodNo = ToPeriodNo then
             Error(SamePeriodFromAndPeriodToErr);
@@ -230,6 +232,15 @@ codeunit 10042 "IRS Reporting Period"
                 NewIRS1099VendorFormBoxAdj.Insert();
             until IRS1099VendorFormBoxAdj.Next() = 0;
             UpdateSummaryMessage(SetupCompletedMessage, SomethingHasBeenCopied, IRS1099VendorFormBoxAdj.TableCaption, IRS1099VendorFormBoxAdj.Count(), SummaryMessageCreated);
+        end;
+        IRS1099FormInstruction.SetRange("Period No.", FromPeriodNo);
+        if IRS1099FormInstruction.FindSet() then begin
+            repeat
+                NewIRS1099FormInstruction := IRS1099FormInstruction;
+                NewIRS1099FormInstruction."Period No." := ToPeriodNo;
+                NewIRS1099FormInstruction.Insert();
+            until IRS1099FormInstruction.Next() = 0;
+            UpdateSummaryMessage(SetupCompletedMessage, SomethingHasBeenCopied, IRS1099FormInstruction.TableCaption, IRS1099FormInstruction.Count(), SummaryMessageCreated);
         end;
         SummaryMessageCreated := true;
     end;

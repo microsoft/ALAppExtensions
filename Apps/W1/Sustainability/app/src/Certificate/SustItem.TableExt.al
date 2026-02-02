@@ -263,6 +263,12 @@ tableextension 6220 "Sust. Item" extends Item
                                                                           "Type" = field("Product Classification Type")));
         }
 #pragma warning restore PTE0002
+        field(6250; "Carbon Tracking Method"; Enum "Sust. Carbon Tracking Method")
+        {
+            Caption = 'Carbon Tracking Method';
+            ToolTip = 'Specifies the Carbon Tracking Method for this item.';
+            DataClassification = CustomerContent;
+        }
     }
 
     var

@@ -61,7 +61,7 @@ codeunit 148327 "Withholding Tax Journals"
     end;
 
     [Test]
-    [HandlerFunctions('ApplyVendorEntriesModalPageHandler')]
+    [HandlerFunctions('ApplyVendorEntriesModalPageHandler,ConfirmHandler')]
     [Scope('OnPrem')]
     procedure PostPaymentJournalWithAppliedEntryTwoVendors()
     var
@@ -212,5 +212,12 @@ codeunit 148327 "Withholding Tax Journals"
     begin
         ApplyVendorEntries.ActionSetAppliesToID.Invoke();
         ApplyVendorEntries.OK().Invoke();
+    end;
+
+    [ConfirmHandler]
+    [Scope('OnPrem')]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
     end;
 }

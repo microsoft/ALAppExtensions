@@ -4741,6 +4741,61 @@ codeunit 139550 "Intrastat Report Test"
         Assert.ExpectedError(PurchaseHeader.FieldName("Transport Method"));
     end;
 
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure IntrastatReportLineUsesIntrastatCode()
+    var
+        CountryRegion: array[2] of Record "Country/Region";
+        Item: Record Item;
+        Location: Record Location;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        Customer: Record Customer;
+        DocumentNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [SCENARIO 610009] Intrastat Code should be used instead of Country/Region Code in Intrastat Report Lines
+        Initialize();
+
+        // [GIVEN] Create Country/Region with different Intrastat Code.
+        LibraryIntrastat.CreateCountryRegion(CountryRegion[1], true);
+        LibraryIntrastat.CreateCountryRegion(CountryRegion[2], true);
+        CountryRegion[1].Validate(CountryRegion[1]."Intrastat Code", CountryRegion[2].Code);
+        CountryRegion[1].Modify(true);
+
+        // [GIVEN] A customer with Country/Region Code = 'NI'
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Validate("Country/Region Code", CountryRegion[1].Code);
+        Customer.Modify(true);
+
+        // [GIVEN] Create an Item with Unit Price.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Unit Price", LibraryRandom.RandDecInRange(100, 200, 2));
+        Item.Modify(true);
+
+        // [GIVEN] Posted Sales Order for the customer.
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
+        InsertIntrastatInfoInSalesHeader(SalesHeader);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, Item."No.", LibraryRandom.RandDec(10, 2));
+        SalesLine.Validate("Unit Price", LibraryRandom.RandDec(100, 2));
+        SalesLine.Modify(true);
+
+        // [GIVEN] Location with Inventory Posting Setup.
+        LibraryInventory.UpdateInventoryPostingSetup(Location, Item."Inventory Posting Group");
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] Suggest lines for Intrastat Report
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+
+        // [THEN] The Intrastat Report Line should have Intrastat Country Code populated.
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportNo);
+        IntrastatReportLine.SetRange("Document No.", DocumentNo);
+        IntrastatReportLine.SetRange("Intrastat Country/Region Code", CountryRegion[2].Code);
+        IntrastatReportLine.FindFirst();
+        Assert.RecordIsNotEmpty(IntrastatReportLine);
+    end;
+
     local procedure Initialize()
     var
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";

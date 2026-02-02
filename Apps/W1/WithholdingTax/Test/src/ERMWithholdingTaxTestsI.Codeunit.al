@@ -47,6 +47,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         IsInitialized: Boolean;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTPaymentJournalWithoutAppliedIdPostingErr()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -79,6 +80,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOnPostedPurchaseInvoiceWithWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -90,6 +92,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOnPostedPurchaseCreditMemoWithWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -125,6 +128,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOnPostedPurchasePaymentJournalWithWHT()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -161,6 +165,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PaymentJournalAppliedWithCurrencyAndWHT()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -202,6 +207,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PostedPurchaseUnrealizedAmountAndBaseOnWHTEntry()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -234,6 +240,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PostedPaymentJournalAmountOnGLEntry()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -311,6 +318,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure MultipleGenJournalWithDiffAccountTypeAmountOnGLEntry()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -353,6 +361,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PaymentJournalWithCurrency()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -387,6 +396,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntriesPartialPurchAppliesToID()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
@@ -433,6 +443,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntriesPartialPurchAppliesToDocNo()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
@@ -478,6 +489,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PurchaseCrMemoMultiplePartialAppln()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
@@ -528,6 +540,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure TFS376116_Inconsistent()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -582,6 +595,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure TFS376796_Inconsistent()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -630,6 +644,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure ApplyPaymentToExceedingInvoices()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -675,6 +690,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure TFS377165_Inconsistent()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -710,6 +726,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchDocEmptyTypeNegativeAmtAndPurchInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -761,6 +778,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchDocEmptyTypePositiveAmtAndPurchInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -812,6 +830,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchInvoiceWHTWithAppliedPurchCrMemoWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -866,6 +885,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchInvoiceWHTAndPurchCrMemoWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -921,6 +941,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchInvoiceWHTWithAppliedPurchCrMemoNonWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -976,6 +997,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchInvoiceWHTAndPurchCrMemoNonWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1029,6 +1051,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentWithLessAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1075,6 +1098,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentWithEqualAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1119,6 +1143,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentWithGreaterAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1165,6 +1190,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchDocEmptyTypeNegativeAmtAndPurchInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1217,6 +1243,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchDocEmptyTypePositiveAmtAndPurchInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1269,6 +1296,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchInvoiceWHTWithAppliedPurchCrMemoWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1323,6 +1351,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchInvoiceWHTAndPurchCrMemoWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1379,6 +1408,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchInvoiceWHTWithAppliedPurchCrMemoNonWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1433,6 +1463,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchInvoiceWHTAndPurchCrMemoNonWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1487,6 +1518,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentWithLessAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1536,6 +1568,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentWithEqualAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1649,6 +1682,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PostMultipleWHTInvoiceWithPayment()
     var
         GenJournalLine: array[3] of Record "Gen. Journal Line";
@@ -1703,6 +1737,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOnPostedPurchaseInvoiceJournalWithWHT()
     var
         GenJournalLine: Record "Gen. Journal Line";

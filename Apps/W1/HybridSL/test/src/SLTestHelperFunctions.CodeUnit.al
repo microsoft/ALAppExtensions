@@ -8,7 +8,6 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
-using Microsoft.Sales.Customer;
 
 codeunit 147601 "SL Test Helper Functions"
 {

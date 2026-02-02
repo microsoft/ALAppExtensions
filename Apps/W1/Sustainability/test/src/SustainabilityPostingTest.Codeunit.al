@@ -15,6 +15,7 @@ using Microsoft.Inventory.BOM;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Tracking;
 using Microsoft.Inventory.Transfer;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Purchases.Document;
@@ -52,6 +53,7 @@ codeunit 148184 "Sustainability Posting Test"
         LibraryResource: Codeunit "Library - Resource";
         LibraryWarehouse: Codeunit "Library - Warehouse";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryItemTracking: Codeunit "Library - Item Tracking";
         NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
         InformationTakenToLedgerEntryLbl: Label '%1 on the Ledger Entry should be taken from %2', Locked = true;
         ValueMustBeEqualErr: Label '%1 must be equal to %2 in the %3.', Comment = '%1 = Field Caption , %2 = Expected Value, %3 = Table Caption';
@@ -5982,6 +5984,65 @@ codeunit 148184 "Sustainability Posting Test"
         Assert.ExpectedError(ItemOrCategoryFilterErr);
     end;
 
+    [Test]
+    procedure VerifySustValueEntryForAssemblyWithLotAndSpecificCarbonTracking()
+    var
+        CompItem: Record Item;
+        ParentItem: Record Item;
+        AssemblyHeader: Record "Assembly Header";
+        PostedAssemblyHeader: Record "Posted Assembly Header";
+        SustainabilityAccount: Record "Sustainability Account";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        Quantity: Decimal;
+        AccountCode: array[2] of Code[20];
+        CO2ePerUnit: array[2] of Decimal;
+        LotNo: array[2] of Code[50];
+        ExpectedCO2eOnLot: array[2] of Decimal;
+    begin
+        // [SCENARIO 546875] Verify Sustainability Value Entry is created for Component Item when Assembly is posted with Lot tracking and Specific Carbon Tracking Method.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode[1], CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode[1]);
+
+        // [GIVEN] Generate Random "CO2e Per Unit" and Quantity.
+        CO2ePerUnit[1] := LibraryRandom.RandIntInRange(10, 10);
+        CO2ePerUnit[2] := LibraryRandom.RandIntInRange(20, 20);
+        Quantity := LibraryRandom.RandIntInRange(10, 10);
+
+        // [GIVEN] Create a Assembly Item.
+        CreateAssembledItem(ParentItem, "Assembly Policy"::"Assemble-to-Order", 1, 1);
+        ParentItem.Validate("Default Sust. Account", AccountCode[1]);
+        ParentItem.Validate("CO2e per Unit", CO2ePerUnit[1]);
+        ParentItem.Modify();
+
+        // [GIVEN] Create Sustainability Account and update Sustainability Account No., "CO2e per unit" in Component item.
+        CreateAndUpdateSustAccOnCompItem(ParentItem, CompItem, AccountCode[2], CO2ePerUnit[2]);
+
+        // [GIVEN] Create Lot No. and calculate Expected CO2e on Lot.
+        LibraryItemTracking.AddLotNoTrackingInfo(CompItem);
+
+        // [GIVEN] Update Carbon Tracking Method and Calculate Expected CO2e on Lot.
+        LibrarySustainability.UpdateCarbonTrackingMethod(CompItem, CompItem."Carbon Tracking Method"::Specific);
+        AddInventoryForLotTrackedItem(CompItem, LotNo, ExpectedCO2eOnLot, AccountCode[2], Quantity);
+
+        // [GIVEN] Create Assembly Document.
+        LibraryAssembly.CreateAssemblyHeader(AssemblyHeader, WorkDate() + 1, ParentItem."No.", '', Quantity, '');
+        UpdateLotTrackingInAssemblyLine(AssemblyHeader, CompItem, LotNo[2]);
+
+        // [WHEN] Post Assembly Document.
+        LibraryAssembly.PostAssemblyHeader(AssemblyHeader, '');
+
+        // [THEN] Verify Sustainability Value Entry should be shown when navigating Posted Sales Invoice through NavigateFindEntriesHandler handler.
+        GetPostedAssemblyHeader(PostedAssemblyHeader, ParentItem."No.");
+        VerifySustValueEntry(PostedAssemblyHeader."No.", CompItem."No.", -ExpectedCO2eOnLot[2]);
+    end;
+
     local procedure CreateUserSetup(var UserSetup: Record "User Setup"; UserID: Code[50])
     begin
         UserSetup.Init();
@@ -6702,6 +6763,48 @@ codeunit 148184 "Sustainability Posting Test"
         LibraryInventory.SelectItemJournalTemplateName(ItemJournalTemplate, TemplateType);
         LibraryInventory.SelectItemJournalBatchName(ItemJournalBatch, ItemJournalTemplate.Type, ItemJournalTemplate.Name);
         LibraryInventory.ClearItemJournal(ItemJournalTemplate, ItemJournalBatch);
+    end;
+
+    local procedure VerifySustValueEntry(DocumentNo: Code[20]; ItemNo: Code[20]; ExpectedCO2eEmission: Decimal)
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+    begin
+        SustainabilityValueEntry.SetRange("Document No.", DocumentNo);
+        SustainabilityValueEntry.SetRange("Item No.", ItemNo);
+        SustainabilityValueEntry.FindFirst();
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), ExpectedCO2eEmission, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
+    local procedure UpdateLotTrackingInAssemblyLine(AssemblyHeader: Record "Assembly Header"; CompItem: Record Item; LotNo: Code[50])
+    var
+        AssemblyLine: Record "Assembly Line";
+        ReservationEntry: Record "Reservation Entry";
+    begin
+        AssemblyLine.SetRange("Document No.", AssemblyHeader."No.");
+        AssemblyLine.SetRange(Type, AssemblyLine.Type::Item);
+        AssemblyLine.SetRange("No.", CompItem."No.");
+        AssemblyLine.FindFirst();
+        LibraryItemTracking.CreateAssemblyLineItemTracking(ReservationEntry, AssemblyLine, '', LotNo, AssemblyLine."Quantity (Base)");
+    end;
+
+    local procedure AddInventoryForLotTrackedItem(var Item: Record Item; var LotNo: array[2] of Code[50]; var ExpectedCO2eOnLot: array[2] of Decimal; AccountCode: Code[20]; Quantity: Decimal)
+    var
+        Index: Integer;
+    begin
+        for Index := 1 to ArrayLen(LotNo) do
+            LotNo[Index] := LibraryUtility.GenerateGUID();
+
+        for Index := 1 to ArrayLen(ExpectedCO2eOnLot) do
+            ExpectedCO2eOnLot[Index] := LibraryRandom.RandDecInRange(200, 600, 2);
+        LibrarySustainability.PostPositiveAdjustmentWithItemTracking(Item, '', AccountCode, '', Quantity, WorkDate(), '', LotNo[1], ExpectedCO2eOnLot[1]);
+        LibrarySustainability.PostPositiveAdjustmentWithItemTracking(Item, '', AccountCode, '', Quantity, WorkDate(), '', LotNo[2], ExpectedCO2eOnLot[2]);
     end;
 
 #if not CLEAN26

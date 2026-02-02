@@ -5,8 +5,8 @@
 
 namespace Microsoft.DataMigration.SL;
 
-using System.Integration;
 using Microsoft.Finance.VAT.Reporting;
+using System.Integration;
 
 codeunit 47203 "SL Cloud Migration US"
 {

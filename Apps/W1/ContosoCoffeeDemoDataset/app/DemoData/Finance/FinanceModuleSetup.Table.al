@@ -5,6 +5,7 @@
 
 namespace Microsoft.DemoData.Finance;
 
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.VAT.Setup;
 
 table 4772 "Finance Module Setup"
@@ -37,6 +38,15 @@ table 4772 "Finance Module Setup"
         {
             Caption = 'No VAT Product Posting Group';
             TableRelation = "VAT Product Posting Group";
+        }
+        field(5; "Yearly License All. GLAcc No."; Code[20])
+        {
+            Caption = 'Yearly License Allocation G/L Account No.';
+            TableRelation = "G/L Account";
+        }
+        field(6; "Deferral Account No."; Code[20])
+        {
+            Caption = 'Deferral Account No.';
         }
     }
 

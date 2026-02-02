@@ -30,5 +30,11 @@ tableextension 18717 "Purchase Header" extends "Purchase Header"
                     until PurchLine.Next() = 0;
             end;
         }
+        field(18717; "Remaining TDS Cert. Value"; Decimal)
+        {
+            Caption = 'Remaining TDS Cert. Value';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
     }
 }

@@ -183,7 +183,7 @@ codeunit 47000 "SL Account Migrator"
         NbrOfSegments := SLPopulateAccountHistory.GetNumberOfSegments();
 
         PostingGroupCode := PostingGroupCodeTxt + Format(InitialYear) + BeginningBalancePeriodTxt;
-        SLAcctHist.SetRange(CpnyID, CompanyName());
+        SLAcctHist.SetRange(CpnyID, GetCpnyID());
         SLAcctHist.SetRange(Acct, SLAcccountStaging.AcctNum);
         SLAcctHist.SetRange(LedgerID, SLGLSetup.LedgerID);
         SLAcctHist.SetRange(FiscYr, Format(InitialYear));
@@ -523,5 +523,10 @@ codeunit 47000 "SL Account Migrator"
         CodeText := TheCode;
         CodeText := CopyStr(CodeText.Trim(), 1, MaxStrLen(CodeText));
         exit(CodeText = '');
+    end;
+
+    internal procedure GetCpnyID(): Text[10]
+    begin
+        exit(CopyStr(CompanyName(), 1, 10));
     end;
 }

@@ -591,8 +591,8 @@ codeunit 47023 "SL Helper Functions"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         SLSegments: Record "SL Segments";
-        GlobalDimension1Code: Text[20];
-        GlobalDimension2Code: Text[20];
+        GlobalDimension1Code: Code[20];
+        GlobalDimension2Code: Code[20];
         Modified: Boolean;
         i: Integer;
     begin

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 table 4000 "Hybrid Product Type"
@@ -21,6 +26,12 @@ table 4000 "Hybrid Product Type"
         field(3; "App ID"; Guid)
         {
             Description = 'The product extension app id';
+            DataClassification = SystemMetadata;
+        }
+        field(4; "Custom Migration Provider"; Enum "Custom Migration Provider")
+        {
+            Caption = 'Custom Migration Provider';
+            Description = 'Specifies the custom migration provider associated with this product type.';
             DataClassification = SystemMetadata;
         }
     }

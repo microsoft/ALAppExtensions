@@ -28,7 +28,7 @@ codeunit 17213 "Create Demo EDocs AU"
 
     procedure GetShipmentDHLInvoiceDescription(): Text[100]
     var
-        ShipmentDHLLbl: Label 'Shipment, DHL', MaxLength = 100;
+        ShipmentDHLLbl: Label 'Shipment', MaxLength = 100;
     begin
         exit(ShipmentDHLLbl);
     end;
@@ -40,7 +40,7 @@ codeunit 17213 "Create Demo EDocs AU"
         CreateCommonUnitOfMeasure: Codeunit "Create Common Unit Of Measure";
         CreateEDocumentMasterData: Codeunit "Create E-Document Master Data";
         CreateJobItem: Codeunit "Create Job Item";
-        CreateAllocationAccountAU: Codeunit "Create Allocation Account AU";
+        CreateAllocationAccount: Codeunit "Create Allocation Account";
         CreateDeferralTemplate: Codeunit "Create Deferral Template";
         CreateGLAccount: Codeunit "Create G/L Account";
         EDocSamplePurchaseInvoice: Codeunit "E-Doc Sample Purchase Invoice";
@@ -49,44 +49,48 @@ codeunit 17213 "Create Demo EDocs AU"
         ITServicesMarchLbl: Label 'IT Services Support period: March', MaxLength = 100;
         ITServicesAprilLbl: Label 'IT Services Support period: April', MaxLength = 100;
         ITServicesMayLbl: Label 'IT Services Support period: May', MaxLength = 100;
+        SavedWorkDate, SampleInvoiceDate : Date;
     begin
-        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.EUGraphicDesign(), EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate(), '245');
+        SavedWorkDate := WorkDate();
+        SampleInvoiceDate := EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate();
+        WorkDate(SampleInvoiceDate);
+        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.EUGraphicDesign(), SampleInvoiceDate, '245');
         ContosoInboundEDocument.AddEDocPurchaseLine(
-            Enum::"Purchase Line Type"::"Allocation Account", CreateAllocationAccountAU.Licenses(), '',
+            Enum::"Purchase Line Type"::"Allocation Account", CreateAllocationAccount.Licenses(), '',
             6, 500, CreateDeferralTemplate.DeferralCode1Y(), '');
         ContosoInboundEDocument.Generate();
 
-        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate(), '1419');
+        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), SampleInvoiceDate, '1419');
         ContosoInboundEDocument.AddEDocPurchaseLine(
             Enum::"Purchase Line Type"::"G/L Account", CreateGLAccount.ConsultantServices(),
             ITServicesJanuaryLbl, 6, 200, '', CreateCommonUnitOfMeasure.Hour());
         ContosoInboundEDocument.Generate();
 
-        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate(), '1425');
+        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), SampleInvoiceDate, '1425');
         ContosoInboundEDocument.AddEDocPurchaseLine(
             Enum::"Purchase Line Type"::"G/L Account", CreateGLAccount.ConsultantServices(),
             ITServicesFebruaryLbl, 19, 200, '', CreateCommonUnitOfMeasure.Hour());
         ContosoInboundEDocument.Generate();
 
-        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate(), '1437');
+        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), SampleInvoiceDate, '1437');
         ContosoInboundEDocument.AddEDocPurchaseLine(
             Enum::"Purchase Line Type"::"G/L Account", CreateGLAccount.ConsultantServices(),
             ITServicesMarchLbl, 2, 200, '', CreateCommonUnitOfMeasure.Hour());
         ContosoInboundEDocument.Generate();
 
-        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate(), '1456');
+        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), SampleInvoiceDate, '1456');
         ContosoInboundEDocument.AddEDocPurchaseLine(
             Enum::"Purchase Line Type"::"G/L Account", CreateGLAccount.ConsultantServices(),
             ITServicesAprilLbl, 7, 200, '', CreateCommonUnitOfMeasure.Hour());
         ContosoInboundEDocument.Generate();
 
-        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate(), '1479');
+        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticFirstUp(), SampleInvoiceDate, '1479');
         ContosoInboundEDocument.AddEDocPurchaseLine(
             Enum::"Purchase Line Type"::"G/L Account", CreateGLAccount.ConsultantServices(),
             ITServicesMayLbl, 16, 200, '', CreateCommonUnitOfMeasure.Hour());
         ContosoInboundEDocument.Generate();
 
-        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.ExportFabrikam(), EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate(), 'F12938');
+        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.ExportFabrikam(), SampleInvoiceDate, 'F12938');
         ContosoInboundEDocument.AddEDocPurchaseLine(
             Enum::"Purchase Line Type"::Item, CreateEDocumentMasterData.WholeDecafBeansColombia(),
             '', 50, 5, '', CreateCommonUnitOfMeasure.Piece());
@@ -98,7 +102,7 @@ codeunit 17213 "Create Demo EDocs AU"
             GetShipmentDHLInvoiceDescription(), 1, 60, '', '');
         ContosoInboundEDocument.Generate();
 
-        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticWorldImporter(), EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate(), '000982');
+        ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.DomesticWorldImporter(), SampleInvoiceDate, '000982');
         ContosoInboundEDocument.AddEDocPurchaseLine(
             Enum::"Purchase Line Type"::Item, CreateEDocumentMasterData.SmartGrindHome(),
             '', 100, 299, '', CreateCommonUnitOfMeasure.Piece());
@@ -106,6 +110,7 @@ codeunit 17213 "Create Demo EDocs AU"
             Enum::"Purchase Line Type"::Item, CreateEDocumentMasterData.PrecisionGrindHome(),
             '', 50, 199, '', CreateCommonUnitOfMeasure.Piece());
         ContosoInboundEDocument.Generate();
+        WorkDate(SavedWorkDate);
     end;
 
 }

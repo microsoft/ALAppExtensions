@@ -65,7 +65,7 @@ table 47073 "SL APDoc Buffer"
         {
             Caption = 'CodeType';
         }
-        field(14; CpnyID; Text[30])
+        field(14; CpnyID; Text[10])
         {
             Caption = 'CpnyID';
         }

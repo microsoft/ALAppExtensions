@@ -5,6 +5,7 @@
 namespace Microsoft.WithholdingTax;
 
 using Microsoft.Finance.GeneralLedger.Setup;
+using System.Utilities;
 
 tableextension 6790 "Withholding GL Setup Ext" extends "General Ledger Setup"
 {
@@ -14,6 +15,12 @@ tableextension 6790 "Withholding GL Setup Ext" extends "General Ledger Setup"
         {
             Caption = 'Enable Withholding Tax';
             DataClassification = CustomerContent;
+            trigger OnValidate()
+            begin
+                if Rec."Enable Withholding Tax" then
+                    if not ConfirmManagement.GetResponseOrDefault(ConfirmEnableWithholdingTaxQst, false) then
+                        Error('');
+            end;
         }
         field(6785; "Manual Sales Wthldg. Tax Calc."; Boolean)
         {
@@ -41,4 +48,8 @@ tableextension 6790 "Withholding GL Setup Ext" extends "General Ledger Setup"
             DataClassification = CustomerContent;
         }
     }
+
+    var
+        ConfirmManagement: Codeunit "Confirm Management";
+        ConfirmEnableWithholdingTaxQst: Label 'Withholding Tax feature is currently in preview. We strongly recommend that you first enable and test this feature on a sandbox environment that has a copy of production data before doing this on a production environment.\\Are you sure you want to enable this feature?';
 }

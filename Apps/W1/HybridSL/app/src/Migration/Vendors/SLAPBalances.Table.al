@@ -12,7 +12,7 @@ table 47046 "SL AP_Balances"
 
     fields
     {
-        field(1; CpnyID; Text[30])
+        field(1; CpnyID; Text[10])
         {
             Caption = 'CpnyID';
         }

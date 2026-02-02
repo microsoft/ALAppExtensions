@@ -86,10 +86,7 @@ codeunit 13750 "DK Contoso Localization"
                     Codeunit.Run(Codeunit::"Create VAT Setup Post.Grp. DK");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate DK");
-                    Codeunit.Run(Codeunit::"Create Allocation Account DK");
-                end;
+                Codeunit.Run(Codeunit::"Create Currency Ex. Rate DK");
         end;
     end;
 
@@ -177,6 +174,8 @@ codeunit 13750 "DK Contoso Localization"
                         Codeunit.Run(Codeunit::"Create Vat Posting Groups DK");
                         CreatePostingGroupsDK.InsertGenPostingGroup();
                     end;
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account DK");
                     BindSubscription(CreatePostingGroupsDK);
                     BindSubscription(CreateAnalysisViewDK);
                     BindSubscription(CreateAccScheduleLineDK);

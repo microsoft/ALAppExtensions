@@ -23,7 +23,13 @@ codeunit 10778 "Verifactu Export"
     InherentPermissions = X;
     Permissions = tabledata "E-Document" = rimd,
                   tabledata "E-Document Log" = rimd,
-                  tabledata "E-Doc. Data Storage" = rimd;
+                  tabledata "E-Doc. Data Storage" = rimd,
+                  tabledata "Sales Invoice Header" = rm,
+                  tabledata "Sales Invoice Line" = rm,
+                  tabledata "Sales Cr.Memo Header" = rm,
+                  tabledata "Sales Cr.Memo Line" = rm,
+                  tabledata "Service Invoice Header" = rm,
+                  tabledata "Service Invoice Line" = rm;
 
     var
         CompanyInformation: Record "Company Information";

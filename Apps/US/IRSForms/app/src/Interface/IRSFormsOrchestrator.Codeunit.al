@@ -35,6 +35,11 @@ codeunit 10034 "IRS Forms Orchestrator"
         exit(GetImplementation());
     end;
 
+    procedure GetIRISConfigurationImplementation(): Interface "IRS 1099 IRIS Configuration"
+    begin
+        exit(GetImplementation());
+    end;
+
     local procedure GetImplementation(): Enum "IRS Forms Implementation"
     var
         IRSFormsSetup: Record "IRS Forms Setup";
