@@ -6,8 +6,6 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.Finance.Currency;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 5627 "Create Add. Reporting Currency"
