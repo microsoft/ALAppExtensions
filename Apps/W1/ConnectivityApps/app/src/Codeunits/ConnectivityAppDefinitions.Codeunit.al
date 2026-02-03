@@ -313,7 +313,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Sumango AutoBank' to NO, SE
+            Add app 'Sumango AutoBank' to NO, SE, DK, FI
         ***************************************************/
 
         AppId := '52508c8d-fb2b-49da-9657-f49859fd43cc';
@@ -322,11 +322,13 @@ codeunit 20352 "Connectivity App Definitions"
         AppDescription := 'Connect Business central to your bank. Sumango AutoBank streamlines, simplifies, and expands functionality to your payment handling, receivables, and reconciliation of your bank transactions. The solution is built with a direct integration to your bank - no more file handling in business central or in your online banking solution. AutoBank supports handling of all currencies interchangeably, including the SEPA standard.';
         AppProviderSupportURL := 'https://oseberg.atlassian.net/wiki/spaces/Autobank/pages/2342191252/Integrated+banks';
         AppSourceUrl := 'https://appsource.microsoft.com/nb-NO/product/dynamics-365-business-central/PUBID.sumango_as%7CAID.sumango_autobank%7CPAPPID.52508c8d-fb2b-49da-9657-f49859fd43cc';
-        AppApprovedFor := 'NO,SE';
-        AppWorksOn := 'NO,SE';
+        AppApprovedFor := 'NO,SE,DK,FI';
+        AppWorksOn := 'NO,SE,DK,FI';
 
         AddDescriptionTranslation(AppId, 'Koble Business Central til banken. Sumango AutoBank effektiviserer og utvider funksjonaliteten for håndtering av betalinger, innbetalinger og avstemming av banktransaksjoner. Autobank er bygget med direkte integrasjon til din bank, som fjerner behovet for filhåndteringer i Business Central eller i din nettbankløsning. AutoBank støtter håndtering av alle valutaer, inkludert SEPA-standarden.', 1044);
         AddDescriptionTranslation(AppId, 'Anslut Business Central till banken. Sumango AutoBank effektiviserar och utökar funktionaliteten för hantering av betalningar, inbetalningar och avstämning av banktransaktioner. AutoBank är byggt med direkt integration till din bank vilket eliminerar behovet av ytterligare filhantering i Business Central eller din internetbank. AutoBank stödjer hantering av alla valutor, inklusive SEPA-standarden.', 1053);
+        AddDescriptionTranslation(AppId, 'Tilslut Business Central til din bank. Sumango AutoBank strømliner, forenkler og udvider funktionaliteten til din betalingshåndtering, dine tilgodehavender og afstemning af dine banktransaktioner. Løsningen er bygget med en direkte integration til din bank – ikke mere filhåndtering i Business Central eller i din online bankløsning. AutoBank understøtter håndtering af alle valutaer ombytteligt, inklusive SEPA-standarden.', 1030);
+        AddDescriptionTranslation(AppId, 'Yhdistä Business Central pankkiisi. Sumango AutoBank virtaviivaistaa, yksinkertaistaa ja laajentaa toiminnallisuutta maksujen käsittelyyn, saataviin ja pankkitapahtumiesi täsmäytykseen. Ratkaisu on rakennettu suoralla integraatiolla pankkiisi – ei enää tiedostojen käsittelyä Business Centralissa tai verkkopankkijärjestelmässäsi. AutoBank tukee kaikkien valuuttojen käsittelyä vaihdellen, mukaan lukien SEPA-standardi.', 1035);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
