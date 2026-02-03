@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 using System.Security.AccessControl;
@@ -25,7 +30,6 @@ page 4007 "Intelligent Cloud Ready"
                     field(Spacer1; '')
                     {
                         ApplicationArea = All;
-                        Caption = '';
                         ShowCaption = false;
                         Editable = false;
                     }

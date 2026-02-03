@@ -23,11 +23,11 @@ codeunit 5688 "Create Extended Purch Document"
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         PurchaseHeader: Record "Purchase Header";
         ContosoPurchase: Codeunit "Contoso Purchase";
-        CreateVendor: Codeunit "Create Vendor";
         ContosoUtilities: Codeunit "Contoso Utilities";
-        CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateItem: Codeunit "Create Item";
         CreatePaymentMethod: Codeunit "Create Payment Method";
+        CreatePaymentTerms: Codeunit "Create Payment Terms";
+        CreateVendor: Codeunit "Create Vendor";
         DocumentDate: Date;
         StartingDate: Date;
     begin
@@ -36,7 +36,7 @@ codeunit 5688 "Create Extended Purch Document"
 
         DocumentDate := CalcDate('<-6M>', StartingDate);
 
-        PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, CreateVendor.EUGraphicDesign(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), DocumentDate, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCM(), '', '', '', DocumentDate, '');
+        PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, CreateVendor.EUGraphicDesign(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), DocumentDate, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCM(), '', '', '', DocumentDate, CreatePaymentMethod.Cash());
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateItem.AthensDesk(), 60, '', 219.5);
 
         PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, CreateVendor.DomesticNodPublisher(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), DocumentDate, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCOD(), '', '', '', DocumentDate, CreatePaymentMethod.Cash());
@@ -57,7 +57,7 @@ codeunit 5688 "Create Extended Purch Document"
         PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, CreateVendor.EUGraphicDesign(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), DocumentDate, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCOD(), '', '', '', DocumentDate, CreatePaymentMethod.Cash());
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateItem.BerlingGuestChairYellow(), 5, '', 27.8);
 
-        PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, CreateVendor.DomesticFirstUp(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), DocumentDate, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCM(), '', '', '', DocumentDate, '');
+        PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, CreateVendor.DomesticFirstUp(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), DocumentDate, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCM(), '', '', '', DocumentDate, CreatePaymentMethod.Cash());
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateItem.RomeGuestChairGreen(), 39, '', 97.5);
 
         PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, CreateVendor.DomesticWorldImporter(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), DocumentDate, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCOD(), '', '', '', DocumentDate, CreatePaymentMethod.Cash());

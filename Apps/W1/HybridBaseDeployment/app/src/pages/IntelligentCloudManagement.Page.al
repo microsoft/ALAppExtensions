@@ -1,4 +1,9 @@
-﻿namespace Microsoft.DataMigration;
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration;
 
 using System.Environment;
 using System.Integration;
@@ -212,7 +217,7 @@ page 4003 "Intelligent Cloud Management"
             action(PrepareTables)
             {
                 Enabled = IsSuper and IsSetupComplete;
-                Visible = IsOnPrem;
+                Visible = false;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Prepare tables for migration';
                 ToolTip = 'Gets the candidate tables ready for migration';
@@ -416,6 +421,37 @@ page 4003 "Intelligent Cloud Management"
                     HybridCloudManagement.ChangeRemovePermissionsFromUsers();
                 end;
             }
+            action(EnableDisableCustomMigration)
+            {
+                Enabled = IsSuper;
+                Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable Custom Migration';
+                ToolTip = 'Enable or disable custom migration functionality. This is the ability to use mappings defined out of the box. Custom migration apps are not affected.';
+                Image = GetEntries;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.EnableDisableCustomMigration();
+                end;
+            }
+            action(EnableDisableOnPremDevelopment)
+            {
+                Visible = IsSuper and IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable OnPrem Development';
+                ToolTip = 'Enable or disable OnPrem development functionality.';
+                Image = Debug;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.EnableDisableOnPremDevelopment();
+                end;
+            }
         }
     }
 
@@ -429,7 +465,6 @@ page 4003 "Intelligent Cloud Management"
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
-        EnvironmentInformation: Codeunit "Environment Information";
         IntelligentCloudNotifier: Codeunit "Intelligent Cloud Notifier";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -445,7 +480,7 @@ page 4003 "Intelligent Cloud Management"
             SendUserIsNotSuperNotification();
 
         SendRepairDataNotification();
-        IsOnPrem := not EnvironmentInformation.IsSaaS();
+        IsOnPrem := not HybridCloudManagement.IsCloudMigrationUISupported();
 
         if (not PermissionManager.IsIntelligentCloud()) and (not IsOnPrem) then
             SendSetupIntelligentCloudNotification();

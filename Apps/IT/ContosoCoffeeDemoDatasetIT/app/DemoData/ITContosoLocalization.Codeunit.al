@@ -5,6 +5,7 @@
 
 namespace Microsoft.DemoData.Localization;
 
+using Microsoft.DemoData.Analytics;
 using Microsoft.DemoData.Bank;
 using Microsoft.DemoData.CRM;
 using Microsoft.DemoData.Finance;
@@ -73,10 +74,8 @@ codeunit 12251 "IT Contoso Localization"
                     Codeunit.Run(Codeunit::"Create VAT Statement IT");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate IT");
-                    Codeunit.Run(Codeunit::"Create Allocation Account IT");
-                end;
+                Codeunit.Run(Codeunit::"Create Currency Ex. Rate IT");
+
         end;
     end;
 
@@ -154,6 +153,7 @@ codeunit 12251 "IT Contoso Localization"
         CreateSalesDimValueIT: Codeunit "Create Sales Dim Value IT";
         CreatePurchDimValueIT: Codeunit "Create Purch. Dim. Value IT";
         CreateCurrencyIT: Codeunit "Create Currency IT";
+        CreateAnalyticsDataIT: Codeunit "Create Analytics Data IT";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Foundation:
@@ -205,6 +205,7 @@ codeunit 12251 "IT Contoso Localization"
                 begin
                     BindSubscription(CreatePurchaseDocumentIT);
                     BindSubscription(CreateSalesDocumentIT);
+                    BindSubscription(CreateAnalyticsDataIT);
                 end;
         end;
     end;
@@ -230,6 +231,7 @@ codeunit 12251 "IT Contoso Localization"
         CreateSalesDimValueIT: Codeunit "Create Sales Dim Value IT";
         CreatePurchDimValueIT: Codeunit "Create Purch. Dim. Value IT";
         CreateCurrencyIT: Codeunit "Create Currency IT";
+        CreateAnalyticsDataIT: Codeunit "Create Analytics Data IT";
     begin
         case Module of
             Enum::"Contoso Demo Data Module"::Foundation:
@@ -281,6 +283,7 @@ codeunit 12251 "IT Contoso Localization"
                 begin
                     UnbindSubscription(CreatePurchaseDocumentIT);
                     UnbindSubscription(CreateSalesDocumentIT);
+                    UnbindSubscription(CreateAnalyticsDataIT);
                 end;
         end;
     end;

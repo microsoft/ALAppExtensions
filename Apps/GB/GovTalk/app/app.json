@@ -12,14 +12,6 @@
   "logo": "ExtensionLogo.png",
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/ui-extensions",
   "application": "28.0.0.0",
-  "dependencies": [
-    {
-      "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
-      "name": "Contoso Coffee Demo Dataset",
-      "publisher": "Microsoft",
-      "version": "28.0.0.0"
-    }
-  ],
   "internalsVisibleTo": [
     {
       "id": "039d5e09-7eea-4b0b-b2b9-4b060e5d330a",

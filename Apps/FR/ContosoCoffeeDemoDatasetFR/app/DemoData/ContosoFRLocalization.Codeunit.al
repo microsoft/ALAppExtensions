@@ -88,7 +88,6 @@ codeunit 10864 "Contoso FR Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create Currency Exc. Rate FR");
                     Codeunit.Run(Codeunit::"Create Column Layout FR");
-                    Codeunit.Run(Codeunit::"Create Allocation Account FR");
                 end;
         end;
     end;

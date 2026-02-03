@@ -68,6 +68,7 @@ codeunit 148326 "ERM Withholding VAT For SEA"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure ApplyPaymentAfterPostPurchaseInvoice()
     var
         GeneralPostingSetup: Record "General Posting Setup";
@@ -93,6 +94,7 @@ codeunit 148326 "ERM Withholding VAT For SEA"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure ApplyRefundAfterPostPurchaseCreditMemo()
     var
         GeneralPostingSetup: Record "General Posting Setup";
@@ -148,6 +150,7 @@ codeunit 148326 "ERM Withholding VAT For SEA"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PostWHTEntryWithoutAnyError()
     var
         GeneralPostingSetup: Record "General Posting Setup";
@@ -179,6 +182,7 @@ codeunit 148326 "ERM Withholding VAT For SEA"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure VerifyErrorOnWHTCertificateNoSeries()
     var
         GeneralPostingSetup: Record "General Posting Setup";

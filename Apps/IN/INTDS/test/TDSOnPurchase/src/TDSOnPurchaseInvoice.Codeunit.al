@@ -1836,6 +1836,66 @@ codeunit 18791 "TDS On Purchase Invoice"
         VerifyGLEntryCount(DocumentNo, 6);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    // [SCENARIO] [482399] Required a validation on TDS concessional code with Certificate No. and Values.
+    procedure PostFromPurchInvWithGLAccWithPANWithConCodeAndCertificateValue()
+    var
+        Vendor: Record Vendor;
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode With Certificate Value with Threshold.
+        LibraryTDS.CreateTDSSetupWithConcessionalCertificate(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithConcessional(Vendor, false, false);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Created and Posted Purchase Invoice.
+        DocumentNo := CreateAndPostPurchaseDocument(
+            PurchaseHeader,
+            PurchaseHeader."Document Type"::Invoice,
+            Vendor."No.", WorkDate(),
+            PurchaseLine.Type::"G/L Account", false);
+
+        // [THEN] G/L Entries and TDS Entries Verified
+        VerifyGLEntryCount(DocumentNo, 3);
+        LibraryTDS.VerifyGLEntryWithTDS(DocumentNo, TDSPostingSetup."TDS Account");
+        VerifyTDSEntry(DocumentNo, true, true, true);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    // [SCENARIO] [482399] Required a validation on TDS concessional code with Certificate No. and Values.
+    procedure PostFromPurchInvWithGLAccWithPANWithConCodeAndCrossedCertificateValue()
+    var
+        Vendor: Record Vendor;
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode With Certificate Value with Threshold.
+        LibraryTDS.CreateTDSSetupWithConcessionalCertificate(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithConcessional(Vendor, false, false);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Created and Posted Purchase Invoice.
+        DocumentNo := CreateAndPostPurchaseDocumentCrossedTDSCertificateValue(
+            PurchaseHeader,
+            PurchaseHeader."Document Type"::Invoice,
+            Vendor."No.", WorkDate(),
+            PurchaseLine.Type::"G/L Account", false);
+
+        // [THEN] G/L Entries and TDS Entries Verified
+        VerifyGLEntryCount(DocumentNo, 3);
+        LibraryTDS.VerifyGLEntryWithTDS(DocumentNo, TDSPostingSetup."TDS Account");
+        VerifyTDSEntry(DocumentNo, true, true, true);
+    end;
+
     local procedure UpdateTDSSection(PurchaseHeader: Record "Purchase Header")
     var
         PurchaseInvoice: TestPage "Purchase Invoice";
@@ -2014,6 +2074,22 @@ codeunit 18791 "TDS On Purchase Invoice"
         exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true))
     end;
 
+    procedure CreateAndPostPurchaseDocumentCrossedTDSCertificateValue(var PurchaseHeader: Record "Purchase Header";
+        DocumentType: enum "Purchase Document Type";
+        VendorNo: Code[20];
+        PostingDate: Date;
+        LineType: enum "Purchase Line Type";
+        LineDiscount: Boolean): Code[20]
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
+        PurchaseHeader.Validate("Posting Date", PostingDate);
+        PurchaseHeader.Modify(true);
+        CreatePurchaseLineCrossedTDSCertificatevalue(PurchaseHeader, PurchaseLine, LineType, LineDiscount);
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true))
+    end;
+
     local procedure CreatePurchaseLine(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line";
         Type: enum "Purchase Line Type"; LineDiscount: Boolean)
     begin
@@ -2022,6 +2098,17 @@ codeunit 18791 "TDS On Purchase Invoice"
             PurchaseLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
 
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInDecimalRange(1000, 1001, 0));
+        PurchaseLine.Modify(true);
+    end;
+
+    local procedure CreatePurchaseLineCrossedTDSCertificatevalue(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line";
+        Type: enum "Purchase Line Type"; LineDiscount: Boolean)
+    begin
+        InsertPurchaseLine(PurchaseLine, PurchaseHeader, Type);
+        if LineDiscount then
+            PurchaseLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
+
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInDecimalRange(30000, 1001, 0));
         PurchaseLine.Modify(true);
     end;
 

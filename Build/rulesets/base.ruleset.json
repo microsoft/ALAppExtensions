@@ -24,11 +24,6 @@
       "justification": "Bug 472148. The multilanguage syntax is being deprecated. Please update to the new syntax."
     },
     {
-      "id": "AL0897",
-      "action": "Error",
-      "justification": "Marking it as error temporarily to ensure subsequent PRs have using statements in sorted order to unblock the merging of BCApps PR (to remove the exception for AL0897). Will be reverted once the exception for AL0897 is removed from BCApps."
-    },
-    {
       "id": "AL0432",
       "action": "None",
       "justification": "Use pragma to remove obsolete warning."
@@ -387,22 +382,22 @@
     },
     {
       "id": "AA0471",
-      "action": "None",
+      "action": "Error",
       "justification": "AutoformatType should be defined for decimal fields in Page objects to ensure proper formatting behavior."
     },
     {
       "id": "AA0472",
-      "action": "None",
+      "action": "Error",
       "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
     },
     {
       "id": "AA0473",
-      "action": "None",
+      "action": "Error",
       "justification": "AutoformatType should be defined for decimal fields in Table objects to ensure proper formatting behavior."
     },
     {
       "id": "AA0474",
-      "action": "None",
+      "action": "Error",
       "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
     },
     {

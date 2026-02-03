@@ -476,6 +476,91 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         IRS1099VendorOverviewPage.Close();
     end;
 
+    [Test]
+    [HandlerFunctions('NoDataFoundMessageHandler')]
+    procedure VendorOverviewShowsDataForSelectedPeriodOnly()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        IRS1099VendorOverviewPage: TestPage "IRS 1099 Vendor Overview";
+        PeriodNo1, PeriodNo2, FormNo1, FormNo2, FormBoxNo1, FormBoxNo2, VendorNo1, VendorNo2 : Code[20];
+        PostingDate1, PostingDate2 : Date;
+        ExpectedAmount1, ExpectedAmount2 : Decimal;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 619930] When switching between reporting periods in IRS 1099 Vendor Overview, only data from the selected period is displayed
+        Initialize();
+
+        // [GIVEN] Two IRS Reporting Periods "P1" and "P2" for different years
+        PostingDate1 := LibraryIRSReportingPeriod.GetPostingDate();
+        PostingDate2 := CalcDate('<1Y>', PostingDate1);
+        PeriodNo1 := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate1);
+        PeriodNo2 := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate2);
+
+        // [GIVEN] Form "F1", form box "FB1" and vendor "V1" setup for the first period
+        FormNo1 := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate1);
+        FormBoxNo1 := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(PostingDate1, FormNo1);
+        VendorNo1 := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(PostingDate1, FormNo1, FormBoxNo1);
+
+        // [GIVEN] Invoice posted and paid for vendor "V1" in the first period
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo1);
+        PurchaseHeader.Validate("Posting Date", PostingDate1);
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(
+            PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10), LibraryRandom.RandDecInRange(100, 200, 2));
+        LibraryERM.FindVendorLedgerEntry(
+            VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
+            LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+        VendorLedgerEntry.CalcFields(Amount);
+        ExpectedAmount1 := -VendorLedgerEntry.Amount;
+        LibraryIRS1099Document.PostPaymentAppliedToInvoice(PostingDate1, VendorNo1, VendorLedgerEntry."Document No.", -VendorLedgerEntry.Amount);
+
+        // [GIVEN] Form "F2", form box "FB2" and vendor "V2" setup for the second period
+        FormNo2 := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate2);
+        FormBoxNo2 := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(PostingDate2, FormNo2);
+        VendorNo2 := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(PostingDate2, FormNo2, FormBoxNo2);
+
+        // [GIVEN] Invoice posted and paid for vendor "V2" in the second period
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo2);
+        PurchaseHeader.Validate("Posting Date", PostingDate2);
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(
+            PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10), LibraryRandom.RandDecInRange(300, 400, 2));
+        LibraryERM.FindVendorLedgerEntry(
+            VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice,
+            LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+        VendorLedgerEntry.CalcFields(Amount);
+        ExpectedAmount2 := -VendorLedgerEntry.Amount;
+        LibraryIRS1099Document.PostPaymentAppliedToInvoice(PostingDate2, VendorNo2, VendorLedgerEntry."Document No.", -VendorLedgerEntry.Amount);
+
+        // [GIVEN] User opens IRS 1099 Vendor Overview page and sets the reporting period to "P1"
+        IRS1099VendorOverviewPage.OpenView();
+        IRS1099VendorOverviewPage.IRSReportingPeriodNoField.SetValue(PeriodNo1);
+
+        // [THEN] The page shows data from the first period for vendor "V1"
+        Assert.IsTrue(IRS1099VendorOverviewPage.First(), 'Expected data for the first period');
+        IRS1099VendorOverviewPage."Vendor No.".AssertEquals(VendorNo1);
+        IRS1099VendorOverviewPage."Form No.".AssertEquals(FormNo1);
+        IRS1099VendorOverviewPage."Form Box No.".AssertEquals(FormBoxNo1);
+        IRS1099VendorOverviewPage.Amount.AssertEquals(ExpectedAmount1);
+
+        // [WHEN] User changes the IRS Reporting Period No. to the second period "P2"
+        IRS1099VendorOverviewPage.IRSReportingPeriodNoField.SetValue(PeriodNo2);
+
+        // [THEN] The page shows only data from the second period for vendor "V2"
+        Assert.IsTrue(IRS1099VendorOverviewPage.First(), 'Expected data for the second period');
+        IRS1099VendorOverviewPage."Vendor No.".AssertEquals(VendorNo2);
+        IRS1099VendorOverviewPage."Form No.".AssertEquals(FormNo2);
+        IRS1099VendorOverviewPage."Form Box No.".AssertEquals(FormBoxNo2);
+        IRS1099VendorOverviewPage.Amount.AssertEquals(ExpectedAmount2);
+
+        // [THEN] There is only one record (no data from the first period)
+        Assert.IsFalse(IRS1099VendorOverviewPage.Next(), 'Expected only one record from the second period');
+
+        IRS1099VendorOverviewPage.Close();
+    end;
+
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";

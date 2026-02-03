@@ -455,6 +455,16 @@ codeunit 13916 "Export XRechnung Document"
         RootElement.Add(PriceElement);
     end;
 
+    local procedure InsertInvoicePeriod(var RootElement: XmlElement; StartDate: Date; EndDate: Date);
+    var
+        InvoicePeriodElement: XmlElement;
+    begin
+        InvoicePeriodElement := XmlElement.Create('InvoicePeriod', XmlNamespaceCAC);
+        InvoicePeriodElement.Add(XmlElement.Create('StartDate', XmlNamespaceCBC, StartDate));
+        InvoicePeriodElement.Add(XmlElement.Create('EndDate', XmlNamespaceCBC, EndDate));
+        RootElement.Add(InvoicePeriodElement);
+    end;
+
     local procedure InsertSellersItemIdentification(var ItemElement: XmlElement; ItemNo: Code[20]);
     var
         SellersItemIdElement: XmlElement;
@@ -866,6 +876,8 @@ codeunit 13916 "Export XRechnung Document"
             InvoiceLineElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, Format(SalesInvLine."Line No.")));
             InvoiceLineElement.Add(XmlElement.Create('InvoicedQuantity', XmlNamespaceCBC, XmlAttribute.Create('unitCode', GetUoMCode(SalesInvLine."Unit of Measure Code")), FormatDecimal(SalesInvLine.Quantity)));
             InvoiceLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesInvLine.Amount + SalesInvLine."Inv. Discount Amount")));
+            if SalesInvLine."Shipment Date" <> 0D then
+                InsertInvoicePeriod(InvoiceLineElement, SalesInvLine."Shipment Date", SalesInvLine."Shipment Date");
             InsertOrderLineReference(InvoiceLineElement, SalesInvLine."Line No.");
             if SalesInvLine."Line Discount Amount" > 0 then
                 InsertAllowanceCharge(
@@ -904,6 +916,8 @@ codeunit 13916 "Export XRechnung Document"
             CrMemoLineElement.Add(XmlElement.Create('CreditedQuantity', XmlNamespaceCBC, XmlAttribute.Create('unitCode', GetUoMCode(SalesCrMemoLine."Unit of Measure Code")), FormatDecimal(SalesCrMemoLine.Quantity)));
             CrMemoLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount")));
             InsertOrderLineReference(CrMemoLineElement, SalesCrMemoLine."Line No.");
+            if SalesCrMemoLine."Shipment Date" <> 0D then
+                InsertInvoicePeriod(CrMemoLineElement, SalesCrMemoLine."Shipment Date", SalesCrMemoLine."Shipment Date");
             if SalesCrMemoLine."Line Discount Amount" > 0 then
                 InsertAllowanceCharge(
                     CrMemoLineElement, 'LineDiscount', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"),

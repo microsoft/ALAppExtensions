@@ -153,10 +153,7 @@ codeunit 17131 "AU Contoso Localization"
                     Codeunit.Run(Codeunit::"Create VAT Setup Post.Grp. AU");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate AU");
-                    Codeunit.Run(Codeunit::"Create Allocation Account AU");
-                end;
+                Codeunit.Run(Codeunit::"Create Currency Ex. Rate AU");
         end;
     end;
 

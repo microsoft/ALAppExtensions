@@ -32,7 +32,7 @@ codeunit 47002 "SL Populate Account History"
         if SLGLAcctBalByPeriod.FindFirst() then
             SLGLAcctBalByPeriod.DeleteAll();
 
-        AccountQuery.SetRange(CpnyID, CompanyName().Trim());
+        AccountQuery.SetRange(CpnyID, GetCpnyID());
         AccountQuery.SetRange(LedgerID, SLLedgerID);
         AccountQuery.SetFilter(Active, '=%1', 1);
         AccountQuery.SetFilter(Acct, '<> %1', SLYtdNetIncAcct);
@@ -141,7 +141,17 @@ codeunit 47002 "SL Populate Account History"
         NbrSegments: Integer;
     begin
         NbrSegments := 0;
-        SLFlexDef.SetRange(FieldClassName, 'SUBACCOUNT');
+        SLFlexDef.SetRange(FieldClassName, SubaccountTxt);
+        if SLFlexDef.FindFirst() then
+            NbrSegments := SLFlexDef.NumberSegments;
+        exit(NbrSegments);
+    end;
+
+    internal procedure PopulateSegmentLengths()
+    var
+        SLFlexDef: Record "SL FlexDef";
+    begin
+        SLFlexDef.SetRange(FieldClassName, SubaccountTxt);
         if SLFlexDef.FindFirst() then begin
             SegLen1 := SLFlexDef.SegLength00;
             SegLen2 := SLFlexDef.SegLength01;
@@ -151,15 +161,14 @@ codeunit 47002 "SL Populate Account History"
             SegLen6 := SLFlexDef.SegLength05;
             SegLen7 := SLFlexDef.SegLength06;
             SegLen8 := SLFlexDef.SegLength07;
-            NbrSegments := SLFlexDef.NumberSegments;
         end;
-        exit(NbrSegments);
     end;
 
     internal procedure GetSubAcctSegmentText(Subaccount: Text[24]; SegmentNo: Integer; NbrOfSegments: Integer): Text[24]
     var
         SubaccountSegmentText: Text;
     begin
+        PopulateSegmentLengths();
         case SegmentNo of
             1:
                 begin
@@ -218,6 +227,11 @@ codeunit 47002 "SL Populate Account History"
         end;
     end;
 
+    internal procedure GetCpnyID(): Text[10]
+    begin
+        exit(CopyStr(CompanyName(), 1, 10));
+    end;
+
     var
         SegLen1: Integer;
         SegLen2: Integer;
@@ -227,4 +241,5 @@ codeunit 47002 "SL Populate Account History"
         SegLen6: Integer;
         SegLen7: Integer;
         SegLen8: Integer;
+        SubaccountTxt: Label 'SUBACCOUNT', Locked = true;
 }

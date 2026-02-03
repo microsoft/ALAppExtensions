@@ -1,0 +1,1 @@
+{"user":{"accessTokens":[{"appId":"10003600","value":"fastlinktoken","url":"http://source.com:7100/authenticate/nodesmb/"}]}}

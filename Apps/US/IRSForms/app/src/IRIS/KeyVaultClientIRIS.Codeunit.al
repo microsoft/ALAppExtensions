@@ -8,7 +8,7 @@ using System.Azure.KeyVault;
 using System.Environment;
 using System.Telemetry;
 
-codeunit 10057 "Key Vault Client IRIS"
+codeunit 10057 "Key Vault Client IRIS" implements "IRS 1099 IRIS Configuration"
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -37,6 +37,7 @@ codeunit 10057 "Key Vault Client IRIS"
         ValueIsEmptyUserErr: Label '%1 value from Azure Key Vault is empty. Try the operation again later. If the issue persists, open a Business Central support request.', Comment = '%1 - parameter name, ex. Client ID';
         ContactInfoIncorrectJSONErr: Label 'Cannot create JSON object from Contact Info string.';
 
+    #region Interface Methods
     procedure GetTCC() TCC: Text
     var
         TCCKey: Text;
@@ -52,69 +53,12 @@ codeunit 10057 "Key Vault Client IRIS"
             LogEmptyValueError('0000P7P', 'TCC', TCCKey);
     end;
 
-    procedure GetSubmitEndpointURL() EndpointURL: Text
-    var
-        EndpointKey: Text;
-    begin
-        if TestMode() then
-            EndpointKey := SubmitEndpointTestKeyTok
-        else
-            EndpointKey := SubmitEndpointLiveKeyTok;
-
-        if not AzureKeyVault.GetAzureKeyVaultSecret(EndpointKey, EndpointURL) then
-            LogKeyVaultError('0000PA7', 'Submit Endpoint URL', EndpointKey);
-        if EndpointURL = '' then
-            LogEmptyValueError('0000PA7', 'Submit Endpoint URL', EndpointKey);
-    end;
-
-    procedure GetStatusEndpointURL() EndpointURL: Text
-    var
-        EndpointKey: Text;
-    begin
-        if TestMode() then
-            EndpointKey := GetStatusEndpointTestKeyTok
-        else
-            EndpointKey := GetStatusEndpointLiveKeyTok;
-
-        if not AzureKeyVault.GetAzureKeyVaultSecret(EndpointKey, EndpointURL) then
-            LogKeyVaultError('0000PA9', 'Status Endpoint URL', EndpointKey);
-        if EndpointURL = '' then
-            LogEmptyValueError('0000PA9', 'Status Endpoint URL', EndpointKey);
-    end;
-
     procedure GetSoftwareId() SoftwareID: Text
     begin
         if not AzureKeyVault.GetAzureKeyVaultSecret(SoftwareIDKeyTok, SoftwareID) then
             LogKeyVaultError('0000P7Q', 'Software ID', SoftwareIDKeyTok);
         if SoftwareID = '' then
             LogEmptyValueError('0000P7Q', 'Software ID', SoftwareIDKeyTok);
-    end;
-
-    procedure GetAPIClientIDFromKV(): Text[36]
-    var
-        APIClientID: Text;
-    begin
-        if not AzureKeyVault.GetAzureKeyVaultSecret(APIClientIDKeyTok, APIClientID) then
-            FeatureTelemetry.LogError('0000P7R', Helper.GetIRISFeatureName(), '', StrSubstNo(CannotGetValueFromKeyVaultErr, 'API Client ID', APIClientIDKeyTok));
-        if APIClientID = '' then
-            FeatureTelemetry.LogError('0000P7R', Helper.GetIRISFeatureName(), '', StrSubstNo(ValueFromKeyVaultIsEmptyErr, 'API Client ID', APIClientIDKeyTok));
-        exit(CopyStr(APIClientID, 1, 36));
-    end;
-
-    procedure GetJSONWebKeyID() KeyID: Text
-    begin
-        if not AzureKeyVault.GetAzureKeyVaultSecret(JSONWebKeyIDKeyTok, KeyID) then
-            LogKeyVaultError('0000P7S', 'JSON Web Key ID', JSONWebKeyIDKeyTok);
-        if KeyID = '' then
-            LogEmptyValueError('0000P7S', 'JSON Web Key ID', JSONWebKeyIDKeyTok);
-    end;
-
-    procedure GetAuthURL() AuthURL: Text
-    begin
-        if not AzureKeyVault.GetAzureKeyVaultSecret(AuthURLKeyTok, AuthURL) then
-            LogKeyVaultError('0000P7T', 'Auth URL', AuthURLKeyTok);
-        if AuthURL = '' then
-            LogEmptyValueError('0000P7T', 'Auth URL', AuthURLKeyTok);
     end;
 
     procedure GetConsentAppURL() ConsentAppURL: Text
@@ -153,6 +97,75 @@ codeunit 10057 "Key Vault Client IRIS"
             ContactPhone := JToken.AsValue().AsText();
     end;
 
+    procedure TestMode(): Boolean
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        if EnvironmentInformation.IsSandbox() then
+            exit(true);
+
+        exit(false);
+    end;
+    #endregion Interface Methods
+
+    #region Internal Methods
+    procedure GetSubmitEndpointURL() EndpointURL: Text
+    var
+        EndpointKey: Text;
+    begin
+        if TestMode() then
+            EndpointKey := SubmitEndpointTestKeyTok
+        else
+            EndpointKey := SubmitEndpointLiveKeyTok;
+
+        if not AzureKeyVault.GetAzureKeyVaultSecret(EndpointKey, EndpointURL) then
+            LogKeyVaultError('0000PA7', 'Submit Endpoint URL', EndpointKey);
+        if EndpointURL = '' then
+            LogEmptyValueError('0000PA7', 'Submit Endpoint URL', EndpointKey);
+    end;
+
+    procedure GetStatusEndpointURL() EndpointURL: Text
+    var
+        EndpointKey: Text;
+    begin
+        if TestMode() then
+            EndpointKey := GetStatusEndpointTestKeyTok
+        else
+            EndpointKey := GetStatusEndpointLiveKeyTok;
+
+        if not AzureKeyVault.GetAzureKeyVaultSecret(EndpointKey, EndpointURL) then
+            LogKeyVaultError('0000PA9', 'Status Endpoint URL', EndpointKey);
+        if EndpointURL = '' then
+            LogEmptyValueError('0000PA9', 'Status Endpoint URL', EndpointKey);
+    end;
+
+    procedure GetAPIClientIDFromKV(): Text[36]
+    var
+        APIClientID: Text;
+    begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret(APIClientIDKeyTok, APIClientID) then
+            FeatureTelemetry.LogError('0000P7R', Helper.GetIRISFeatureName(), '', StrSubstNo(CannotGetValueFromKeyVaultErr, 'API Client ID', APIClientIDKeyTok));
+        if APIClientID = '' then
+            FeatureTelemetry.LogError('0000P7R', Helper.GetIRISFeatureName(), '', StrSubstNo(ValueFromKeyVaultIsEmptyErr, 'API Client ID', APIClientIDKeyTok));
+        exit(CopyStr(APIClientID, 1, 36));
+    end;
+
+    procedure GetJSONWebKeyID() KeyID: Text
+    begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret(JSONWebKeyIDKeyTok, KeyID) then
+            LogKeyVaultError('0000P7S', 'JSON Web Key ID', JSONWebKeyIDKeyTok);
+        if KeyID = '' then
+            LogEmptyValueError('0000P7S', 'JSON Web Key ID', JSONWebKeyIDKeyTok);
+    end;
+
+    procedure GetAuthURL() AuthURL: Text
+    begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret(AuthURLKeyTok, AuthURL) then
+            LogKeyVaultError('0000P7T', 'Auth URL', AuthURLKeyTok);
+        if AuthURL = '' then
+            LogEmptyValueError('0000P7T', 'Auth URL', AuthURLKeyTok);
+    end;
+
     procedure GetCertificate() Certificate: Text
     var
         CertificateName: Text;
@@ -163,6 +176,7 @@ codeunit 10057 "Key Vault Client IRIS"
         if not AzureKeyVault.GetAzureKeyVaultCertificate(CertificateName, Certificate) then
             LogKeyVaultError('0000P7W', 'Certificate', CertificateName);
     end;
+    #endregion Internal Methods
 
     local procedure LogKeyVaultError(EventId: Text; ParameterName: Text; KeyName: Text)
     begin
@@ -176,15 +190,5 @@ codeunit 10057 "Key Vault Client IRIS"
         FeatureTelemetry.LogError(EventId, Helper.GetIRISFeatureName(), '', StrSubstNo(ValueFromKeyVaultIsEmptyErr, ParameterName, KeyName));
         if GuiAllowed() then
             Error(ValueIsEmptyUserErr, ParameterName);
-    end;
-
-    procedure TestMode(): Boolean
-    var
-        EnvironmentInformation: Codeunit "Environment Information";
-    begin
-        if EnvironmentInformation.IsSandbox() then
-            exit(true);
-
-        exit(false);
     end;
 }

@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.Posting;
 using Microsoft.FixedAssets.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
+using Microsoft.Manufacturing.Capacity;
 using Microsoft.Projects.Project.Ledger;
 using Microsoft.Projects.Resources.Ledger;
 using Microsoft.Sustainability.Account;
@@ -264,6 +265,140 @@ codeunit 6212 "Sustainability Post Mgt"
 
         CO2eEmission := (EmissionCO2 * CO2Factor) + (EmissionN2O * N2OFactor) + (EmissionCH4 * CH4Factor);
         CarbonFee := CO2eEmission * EmissionCarbonFee;
+    end;
+
+    procedure GetTotalCO2eAmount(ItemLedgerEntry: Record "Item Ledger Entry"; ValueEntryType: Enum "Capacity Type Journal"; var TotalCO2e: Decimal; CO2ePerUnit: Decimal)
+    var
+        TempItemLedgerEntry: Record "Item Ledger Entry" temporary;
+        ShowAppliedEntries: Codeunit "Show Applied Entries";
+        AppliedAmount: Decimal;
+        AppliedQuantity: Decimal;
+        IsNegativeEntry: Boolean;
+    begin
+        if not IsCarbonTrackingSpecificItem(ItemLedgerEntry."Item No.") then
+            exit;
+
+        if TotalCO2e < 0 then
+            IsNegativeEntry := true;
+
+        if ItemLedgerEntry."Entry Type" = ItemLedgerEntry."Entry Type"::Transfer then begin
+            TotalCO2e := Abs(CO2ePerUnit * ItemLedgerEntry.Quantity);
+            CorrectSign(TotalCO2e, IsNegativeEntry);
+            exit;
+        end;
+
+        ShowAppliedEntries.FindAppliedEntries(ItemLedgerEntry, TempItemLedgerEntry);
+        if TempItemLedgerEntry.IsEmpty() then
+            GetILEForAssemblyOutputs(ItemLedgerEntry, TempItemLedgerEntry);
+
+        if TempItemLedgerEntry.FindSet() then
+            repeat
+                GetCO2eAmountAndQuantity(TempItemLedgerEntry."Entry No.", AppliedAmount, AppliedQuantity);
+            until TempItemLedgerEntry.Next() = 0;
+
+        if AppliedAmount = 0 then
+            exit;
+
+        if ItemLedgerEntry."Entry Type" in [ItemLedgerEntry."Entry Type"::"Assembly Output", ItemLedgerEntry."Entry Type"::"Output"] then begin
+            CalculateForProductionOutput(TotalCO2e, AppliedAmount, ValueEntryType);
+            CorrectSign(TotalCO2e, IsNegativeEntry);
+            exit;
+        end;
+
+        if AppliedQuantity <> 0 then begin
+            TotalCO2e := Abs((AppliedAmount / AppliedQuantity) * ItemLedgerEntry.Quantity);
+            CorrectSign(TotalCO2e, IsNegativeEntry);
+        end;
+    end;
+
+    local procedure CalculateForProductionOutput(var TotalCO2e: Decimal; AppliedAmount: Decimal; ValueEntryType: Enum "Capacity Type Journal")
+    begin
+        if ValueEntryType in [ValueEntryType::"Machine Center", ValueEntryType::"Work Center"] then begin
+            TotalCO2e += Abs(AppliedAmount);
+            exit;
+        end;
+
+        TotalCO2e := Abs(AppliedAmount);
+    end;
+
+    procedure GetCO2eAmountAndQuantity(ItemLedgerEntryNo: Integer; var CO2eAmount: Decimal; var CO2eQuantity: Decimal)
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+    begin
+        SustainabilityValueEntry.SetLoadFields("Item Ledger Entry No.", "CO2e Amount (Actual)", "Item Ledger Entry Quantity");
+        SustainabilityValueEntry.SetRange("Item Ledger Entry No.", ItemLedgerEntryNo);
+        SustainabilityValueEntry.CalcSums("CO2e Amount (Actual)", "Item Ledger Entry Quantity");
+        CO2eAmount += SustainabilityValueEntry."CO2e Amount (Actual)";
+        CO2eQuantity += SustainabilityValueEntry."Item Ledger Entry Quantity";
+    end;
+
+    procedure GetTotalCO2eAmountFromValueEntry(
+        ItemLedgerEntryDocumentType: Enum "Item Ledger Document Type";
+        DocumentNo: Code[20];
+        DocumentLineNo: Integer;
+        ItemNo: Code[20];
+        var TotalCO2eAmount: Decimal;
+        var TotalCO2eQuantity: Decimal)
+    var
+        ValueEntry: Record "Value Entry";
+    begin
+        ValueEntry.SetLoadFields("Document Type", "Document No.", "Document Line No.", "Item No.", "Item Ledger Entry No.");
+        ValueEntry.SetRange("Document Type", ItemLedgerEntryDocumentType);
+        ValueEntry.SetRange("Document No.", DocumentNo);
+        ValueEntry.SetRange("Document Line No.", DocumentLineNo);
+        ValueEntry.SetRange("Item No.", ItemNo);
+        if ValueEntry.FindSet() then
+            repeat
+                GetCO2eAmountAndQuantity(ValueEntry."Item Ledger Entry No.", TotalCO2eAmount, TotalCO2eQuantity);
+            until ValueEntry.Next() = 0;
+    end;
+
+    procedure IsCarbonTrackingSpecificItem(ItemNo: Code[20]): Boolean
+    var
+        Item: Record Item;
+    begin
+        Item.SetLoadFields("Carbon Tracking Method");
+        if not Item.Get(ItemNo) then
+            exit;
+        if Item."Carbon Tracking Method" <> Item."Carbon Tracking Method"::Specific then
+            exit;
+
+        exit(true);
+    end;
+
+    local procedure CorrectSign(var Value: Decimal; IsNegativeEntry: Boolean)
+    begin
+        if IsNegativeEntry then
+            Value := -Value;
+    end;
+
+    local procedure GetILEForAssemblyOutputs(ItemLedgerEntry: Record "Item Ledger Entry"; var TempItemLedgerEntry: Record "Item Ledger Entry" temporary)
+    var
+        ItemLedgerEntry2: Record "Item Ledger Entry";
+    begin
+        if ItemLedgerEntry."Item Register No." = 0 then
+            exit;
+
+        if not (ItemLedgerEntry."Entry Type" in [ItemLedgerEntry."Entry Type"::"Assembly Output", ItemLedgerEntry."Entry Type"::"Output"]) then
+            exit;
+
+        ItemLedgerEntry2.SetRange("Item Register No.", ItemLedgerEntry."Item Register No.");
+        ItemLedgerEntry2.SetRange("Entry Type", GetConsumptionEntryType(ItemLedgerEntry."Entry Type"));
+        if ItemLedgerEntry2.FindSet() then
+            repeat
+                TempItemLedgerEntry := ItemLedgerEntry2;
+                TempItemLedgerEntry.Insert();
+            until ItemLedgerEntry2.Next() = 0;
+    end;
+
+    local procedure GetConsumptionEntryType(ItemLedgerEntryType: Enum "Item Ledger Entry Type"): Enum "Item Ledger Entry Type"
+    begin
+        case ItemLedgerEntryType of
+            ItemLedgerEntryType::"Assembly Output":
+                exit(ItemLedgerEntryType::"Assembly Consumption");
+            ItemLedgerEntryType::Output:
+                exit(ItemLedgerEntryType::Consumption);
+        end;
     end;
 
     local procedure FindEmissionFeeForEmissionType(var EmissionFee: Record "Emission Fee"; EmissionType: Enum "Emission Type"): Boolean

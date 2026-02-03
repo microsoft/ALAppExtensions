@@ -1,0 +1,9 @@
+﻿No.,Name,Search Name,Name 2,Address,Address 2,City,Contact,Phone No.,Vendor Posting Group,Payment Terms Code,Country/Region Code,Blocked,Fax No.,Gen. Bus. Posting Group,ZIP Code,State,Email,Tax Area Code,Tax Liable,Federal ID No.,FATCA Requirement,Tax Identification Type
+VT0100,International,INTERNATIONAL,International,400 West Madison St.,Suite 400,Chicago,,5555550190,TRADE,,US,,5555550191,SL,222222,IL ,someone@example.com,COOK-G,true,,false,Legal Entity
+VT0110,America,AMERICA,America,100 N. State St.,Suite 1200,Madison,,5555550196,TRADE,,US,,5555550197,SL,45454,WI ,,,false,1122334455,false,Legal Entity
+VT0120,Circle,CIRCLE,Circle,258 N. Johnson Ave.,,Sioux City,,5555550105,TRADE,,US,,5555550106,SL,09000,IA ,,,false,369987,false,Legal Entity
+VT0121,Square,SQUARE,Square,10 S. Ricker Ave.,,Sioux City,,5555550107,TRADE,,US,,5555550108,SL,08777,IA ,,,false,123321,false,Legal Entity
+VT0122,Alphabet,ALPHABET,Alphabet,125 N. Main Ave.,,Sioux City,,5555550109,TRADE,,US,,5555550110,SL,10100,IA ,,,false,147852,false,Legal Entity
+VT0123,Consolidated Messenger,CONSOLIDATED MESSENGER,Consolidated Messenger,139 N. Akron Ave.,,Sioux City,,5555550111,TRADE,,US,,5555550112,SL,22111,IA ,,,false,369258,false,Legal Entity
+VT0124,Fourth Coffee,FOURTH COFFEE,Fourth Coffee,420 S. State St.,,Sioux City,,5555550112,TRADE,,US,,5555550113,SL,01000,IA ,,,false,951159,false,Legal Entity
+VT0125,Trey Research,TREY RESEARCH,Trey Research,520 N. Laurence Ave.,,Sioux City,,5555550113,TRADE,,US,,5555550114,SL,01000,IA ,,,false,986532,false,Legal Entity

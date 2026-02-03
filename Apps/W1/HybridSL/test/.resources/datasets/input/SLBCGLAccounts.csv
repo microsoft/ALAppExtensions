@@ -1,0 +1,383 @@
+﻿No.,Name,Search Name,Account Type,Account Category,Income/Balance,Debit/Credit,Direct Posting
+000000,GL SUSPENSE                   ,GL SUSPENSE,Posting,Assets,Balance Sheet,Both,true
+1000,Cash - NPP                    ,CASH - NPP,Posting,Assets,Balance Sheet,Both,true
+1001,Cash 1001                     ,CASH 1001,Posting,Assets,Balance Sheet,Both,true
+1030,Cash-US Dollars-US            ,CASH-US DOLLARS-US,Posting,Assets,Balance Sheet,Both,true
+1031,Cash US Dollars               ,CASH US DOLLARS,Posting,Assets,Balance Sheet,Both,true
+1037,Cash US Dollars-Main          ,CASH US DOLLARS-MAIN,Posting,Assets,Balance Sheet,Both,true
+1038,Cash US Dollars-Investments   ,CASH US DOLLARS-INVESTMENTS,Posting,Assets,Balance Sheet,Both,true
+1039,Cash US Dollars-Petty Cash    ,CASH US DOLLARS-PETTY CASH,Posting,Assets,Balance Sheet,Both,true
+1040,Cash US Dollars-Corporate     ,CASH US DOLLARS-CORPORATE,Posting,Assets,Balance Sheet,Both,true
+1041,Cash Us Dollars-General       ,CASH US DOLLARS-GENERAL,Posting,Assets,Balance Sheet,Both,true
+1070,Cash-Other                    ,CASH-OTHER,Posting,Assets,Balance Sheet,Both,true
+1110,A/R Trade-USD                 ,A/R TRADE-USD,Posting,Assets,Balance Sheet,Both,true
+1115,AR Holding Account            ,AR HOLDING ACCOUNT,Posting,Assets,Balance Sheet,Both,true
+1140,Advances in Travel & Expense  ,ADVANCES IN TRAVEL & EXPENSE,Posting,Assets,Balance Sheet,Both,true
+1150,Due From Company 0010         ,DUE FROM COMPANY 0010,Posting,Assets,Balance Sheet,Both,true
+1151,Due From Company 0020         ,DUE FROM COMPANY 0020,Posting,Assets,Balance Sheet,Both,true
+1152,Due From Company 0030         ,DUE FROM COMPANY 0030,Posting,Assets,Balance Sheet,Both,true
+1153,Due From Company 0040         ,DUE FROM COMPANY 0040,Posting,Assets,Balance Sheet,Both,true
+1154,Due From Company 0050         ,DUE FROM COMPANY 0050,Posting,Assets,Balance Sheet,Both,true
+1155,Due From Company 0060         ,DUE FROM COMPANY 0060,Posting,Assets,Balance Sheet,Both,true
+1156,Due From Company 0070         ,DUE FROM COMPANY 0070,Posting,Assets,Balance Sheet,Both,true
+1157,Due From Company 0080         ,DUE FROM COMPANY 0080,Posting,Assets,Balance Sheet,Both,true
+1160,A/R Inter-Company-USD         ,A/R INTER-COMPANY-USD,Posting,Assets,Balance Sheet,Both,true
+1170,Notes Receivable-USD          ,NOTES RECEIVABLE-USD,Posting,Assets,Balance Sheet,Both,true
+1171,Notes Receivable-IntCo-0010   ,NOTES RECEIVABLE-INTCO-0010,Posting,Assets,Balance Sheet,Both,true
+1173,Notes Receivable-IntCo-0020   ,NOTES RECEIVABLE-INTCO-0020,Posting,Assets,Balance Sheet,Both,true
+1190,A/R Holding-USD               ,A/R HOLDING-USD,Posting,Assets,Balance Sheet,Both,true
+1191,Miscellaneous Receivables     ,MISCELLANEOUS RECEIVABLES,Posting,Assets,Balance Sheet,Both,true
+1192,Unbilled Receivables - Expense,UNBILLED RECEIVABLES - EXPENSE,Posting,Assets,Balance Sheet,Both,true
+1210,Inventory-Merchandise         ,INVENTORY-MERCHANDISE,Posting,Assets,Balance Sheet,Both,true
+1220,Inventory-Raw Materials       ,INVENTORY-RAW MATERIALS,Posting,Assets,Balance Sheet,Both,true
+1225,Inventory-WIP                 ,INVENTORY-WIP,Posting,Assets,Balance Sheet,Both,true
+1226,Project Materials             ,PROJECT MATERIALS,Posting,Assets,Balance Sheet,Both,true
+1230,Inventory-Components          ,INVENTORY-COMPONENTS,Posting,Assets,Balance Sheet,Both,true
+12301,WIP: Materials                ,WIP: MATERIALS,Posting,Assets,Balance Sheet,Both,true
+12302,WIP: Labor                    ,WIP: LABOR,Posting,Assets,Balance Sheet,Both,true
+12303,WIP: Subcontract              ,WIP: SUBCONTRACT,Posting,Assets,Balance Sheet,Both,true
+12304,WIP: Other Direct Costs       ,WIP: OTHER DIRECT COSTS,Posting,Assets,Balance Sheet,Both,true
+12305,WIP: Overhead                 ,WIP: OVERHEAD,Posting,Assets,Balance Sheet,Both,true
+12309,WIP: Rollup Variance          ,WIP: ROLLUP VARIANCE,Posting,Assets,Balance Sheet,Both,true
+1231,Inventory-Components-1        ,INVENTORY-COMPONENTS-1,Posting,Assets,Balance Sheet,Both,true
+12311,Project WIP: Materials        ,PROJECT WIP: MATERIALS,Posting,Assets,Balance Sheet,Both,true
+12312,Project WIP: Labor            ,PROJECT WIP: LABOR,Posting,Assets,Balance Sheet,Both,true
+12313,Project WIP: Subcontract      ,PROJECT WIP: SUBCONTRACT,Posting,Assets,Balance Sheet,Both,true
+12314,Project WIP: Other Direct Cost,PROJECT WIP: OTHER DIRECT COST,Posting,Assets,Balance Sheet,Both,true
+12315,Project WIP: Overhead         ,PROJECT WIP: OVERHEAD,Posting,Assets,Balance Sheet,Both,true
+12319,Project WIP: Rollup Variance  ,PROJECT WIP: ROLLUP VARIANCE,Posting,Assets,Balance Sheet,Both,true
+1232,Inventory-Components-2        ,INVENTORY-COMPONENTS-2,Posting,Assets,Balance Sheet,Both,true
+1233,Inventory-Components-3        ,INVENTORY-COMPONENTS-3,Posting,Assets,Balance Sheet,Both,true
+1234,Inventory-Components-4        ,INVENTORY-COMPONENTS-4,Posting,Assets,Balance Sheet,Both,true
+1235,Inventory-Components-5        ,INVENTORY-COMPONENTS-5,Posting,Assets,Balance Sheet,Both,true
+1236,Inventory-Components-6        ,INVENTORY-COMPONENTS-6,Posting,Assets,Balance Sheet,Both,true
+1237,Inventory-Components-7        ,INVENTORY-COMPONENTS-7,Posting,Assets,Balance Sheet,Both,true
+1240,Inventory-Fin. Goods          ,INVENTORY-FIN. GOODS,Posting,Assets,Balance Sheet,Both,true
+1241,Inventory-Fin. Goods-1        ,INVENTORY-FIN. GOODS-1,Posting,Assets,Balance Sheet,Both,true
+1242,Inventory-Fin. Goods-2        ,INVENTORY-FIN. GOODS-2,Posting,Assets,Balance Sheet,Both,true
+1243,Inventory-Fin. Goods-3        ,INVENTORY-FIN. GOODS-3,Posting,Assets,Balance Sheet,Both,true
+1244,Inventory-Fin. Goods-4        ,INVENTORY-FIN. GOODS-4,Posting,Assets,Balance Sheet,Both,true
+1245,Inventory-Fin. Goods-5        ,INVENTORY-FIN. GOODS-5,Posting,Assets,Balance Sheet,Both,true
+1246,Inventory-Fin. Goods-6        ,INVENTORY-FIN. GOODS-6,Posting,Assets,Balance Sheet,Both,true
+1247,Inventory-Fin. Goods-7        ,INVENTORY-FIN. GOODS-7,Posting,Assets,Balance Sheet,Both,true
+1250,Supplies                      ,SUPPLIES,Posting,Assets,Balance Sheet,Both,true
+1251,Prepaid Supplies              ,PREPAID SUPPLIES,Posting,Assets,Balance Sheet,Both,true
+1310,Prepaid Insurance             ,PREPAID INSURANCE,Posting,Assets,Balance Sheet,Both,true
+1320,Prepaid Interest              ,PREPAID INTEREST,Posting,Assets,Balance Sheet,Both,true
+1330,Deposits Refundable           ,DEPOSITS REFUNDABLE,Posting,Assets,Balance Sheet,Both,true
+1340,Bid Deposits                  ,BID DEPOSITS,Posting,Assets,Balance Sheet,Both,true
+1565,SWE Test                      ,SWE TEST,Posting,Assets,Balance Sheet,Both,true
+1601,Currency Gain - Unrealized    ,CURRENCY GAIN - UNREALIZED,Posting,Assets,Balance Sheet,Both,true
+1602,Currency Gain - Realized      ,CURRENCY GAIN - REALIZED,Posting,Assets,Balance Sheet,Both,true
+1610,Land                          ,LAND,Posting,Assets,Balance Sheet,Both,true
+1620,Buildings                     ,BUILDINGS,Posting,Assets,Balance Sheet,Both,true
+1621,Accumulated Depreciation      ,ACCUMULATED DEPRECIATION,Posting,Assets,Balance Sheet,Both,true
+1630,Furniture & Fixtures          ,FURNITURE & FIXTURES,Posting,Assets,Balance Sheet,Both,true
+1631,Less: Accumulated Deprec.     ,LESS: ACCUMULATED DEPREC.,Posting,Assets,Balance Sheet,Both,true
+1640,Machines & Equipment          ,MACHINES & EQUIPMENT,Posting,Assets,Balance Sheet,Both,true
+1641,Less: Accumulated Deprec.     ,LESS: ACCUMULATED DEPREC.,Posting,Assets,Balance Sheet,Both,true
+1650,Automobiles                   ,AUTOMOBILES,Posting,Assets,Balance Sheet,Both,true
+1651,Less: Accumulated Deprec.     ,LESS: ACCUMULATED DEPREC.,Posting,Assets,Balance Sheet,Both,true
+1660,Trucks                        ,TRUCKS,Posting,Assets,Balance Sheet,Both,true
+1661,Less: Accumulated Deprec.     ,LESS: ACCUMULATED DEPREC.,Posting,Assets,Balance Sheet,Both,true
+1670,Office Equipment              ,OFFICE EQUIPMENT,Posting,Assets,Balance Sheet,Both,true
+1671,Less: Accumulated Deprec.     ,LESS: ACCUMULATED DEPREC.,Posting,Assets,Balance Sheet,Both,true
+1680,Leaseholds                    ,LEASEHOLDS,Posting,Assets,Balance Sheet,Both,true
+1681,Less: Accumulated Deprec.     ,LESS: ACCUMULATED DEPREC.,Posting,Assets,Balance Sheet,Both,true
+1810,Prepaid Insurance             ,PREPAID INSURANCE,Posting,Assets,Balance Sheet,Both,true
+1820,Prepaid Interest              ,PREPAID INTEREST,Posting,Assets,Balance Sheet,Both,true
+1830,Prepaid Rent                  ,PREPAID RENT,Posting,Assets,Balance Sheet,Both,true
+1840,Organizational Expense        ,ORGANIZATIONAL EXPENSE,Posting,Assets,Balance Sheet,Both,true
+1850,Deferred Charges              ,DEFERRED CHARGES,Posting,Assets,Balance Sheet,Both,true
+1860,Deposits                      ,DEPOSITS,Posting,Assets,Balance Sheet,Both,true
+1901,Due to/from NPP               ,DUE TO/FROM NPP,Posting,Assets,Balance Sheet,Both,true
+1910,Investments Treasuries        ,INVESTMENTS TREASURIES,Posting,Assets,Balance Sheet,Both,true
+1911,Investments Money Market      ,INVESTMENTS MONEY MARKET,Posting,Assets,Balance Sheet,Both,true
+1912,Investments Banks             ,INVESTMENTS BANKS,Posting,Assets,Balance Sheet,Both,true
+1913,Investments Stocks            ,INVESTMENTS STOCKS,Posting,Assets,Balance Sheet,Both,true
+1914,Investments Stocks Foreign    ,INVESTMENTS STOCKS FOREIGN,Posting,Assets,Balance Sheet,Both,true
+1915,Investments Miscellanous      ,INVESTMENTS MISCELLANOUS,Posting,Assets,Balance Sheet,Both,true
+1916,Accrued Investment Income     ,ACCRUED INVESTMENT INCOME,Posting,Assets,Balance Sheet,Both,true
+1917,Accrued Misc. Receivables     ,ACCRUED MISC. RECEIVABLES,Posting,Assets,Balance Sheet,Both,true
+1918,Accrued Income Misc.          ,ACCRUED INCOME MISC.,Posting,Assets,Balance Sheet,Both,true
+1920,Goodwill                      ,GOODWILL,Posting,Assets,Balance Sheet,Both,true
+1990,Due to/from 401K              ,DUE TO/FROM 401K,Posting,Assets,Balance Sheet,Both,true
+1999,Out of Balance Correction     ,OUT OF BALANCE CORRECTION,Posting,Assets,Balance Sheet,Both,true
+2000,AP - NPP                      ,AP - NPP,Posting,Liabilities,Balance Sheet,Both,true
+2001,Due to Company 0010           ,DUE TO COMPANY 0010,Posting,Liabilities,Balance Sheet,Both,true
+2002,Due to Company 0020           ,DUE TO COMPANY 0020,Posting,Liabilities,Balance Sheet,Both,true
+2003,Due to Company 0030           ,DUE TO COMPANY 0030,Posting,Liabilities,Balance Sheet,Both,true
+2004,Due to Company 0040           ,DUE TO COMPANY 0040,Posting,Liabilities,Balance Sheet,Both,true
+2005,Due to Company 0050           ,DUE TO COMPANY 0050,Posting,Liabilities,Balance Sheet,Both,true
+2006,Due to Company 0060           ,DUE TO COMPANY 0060,Posting,Liabilities,Balance Sheet,Both,true
+2007,Due to Company 0070           ,DUE TO COMPANY 0070,Posting,Liabilities,Balance Sheet,Both,true
+2008,Due to Company 0080           ,DUE TO COMPANY 0080,Posting,Liabilities,Balance Sheet,Both,true
+2010,Inter-Company A/P-USD         ,INTER-COMPANY A/P-USD,Posting,Liabilities,Balance Sheet,Both,true
+2020,Mortgage Payable-Current      ,MORTGAGE PAYABLE-CURRENT,Posting,Liabilities,Balance Sheet,Both,true
+2025,Bonds Payable                 ,BONDS PAYABLE,Posting,Liabilities,Balance Sheet,Both,true
+2030,Notes Payable-Demand          ,NOTES PAYABLE-DEMAND,Posting,Liabilities,Balance Sheet,Both,true
+2031,Notes Payable-Line of Credit  ,NOTES PAYABLE-LINE OF CREDIT,Posting,Liabilities,Balance Sheet,Both,true
+2032,Notes Payable- Suppliers      ,NOTES PAYABLE- SUPPLIERS,Posting,Liabilities,Balance Sheet,Both,true
+2033,Notes Payable-Other Banks     ,NOTES PAYABLE-OTHER BANKS,Posting,Liabilities,Balance Sheet,Both,true
+2040,Notes Payable-Current         ,NOTES PAYABLE-CURRENT,Posting,Liabilities,Balance Sheet,Both,true
+2050,A/P Trade-USD                 ,A/P TRADE-USD,Posting,Liabilities,Balance Sheet,Both,true
+2060,A/P-Other-USD                 ,A/P-OTHER-USD,Posting,Liabilities,Balance Sheet,Both,true
+2065,A/P-Misc-USD                  ,A/P-MISC-USD,Posting,Liabilities,Balance Sheet,Both,true
+2070,A/P-Customer Refunds          ,A/P-CUSTOMER REFUNDS,Posting,Liabilities,Balance Sheet,Both,true
+2071,A/R Customer Refunds          ,A/R CUSTOMER REFUNDS,Posting,Liabilities,Balance Sheet,Both,true
+2072,A/R Prepayment                ,A/R PREPAYMENT,Posting,Liabilities,Balance Sheet,Both,true
+2075,Customer Deposits             ,CUSTOMER DEPOSITS,Posting,Liabilities,Balance Sheet,Both,true
+2080,Contracts Payable-Current     ,CONTRACTS PAYABLE-CURRENT,Posting,Liabilities,Balance Sheet,Both,true
+2090,Construction Advances         ,CONSTRUCTION ADVANCES,Posting,Liabilities,Balance Sheet,Both,true
+2100,Benefits Payable              ,BENEFITS PAYABLE,Posting,Liabilities,Balance Sheet,Both,true
+2110,Federal Tax Withheld          ,FEDERAL TAX WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2120,FICA Withheld                 ,FICA WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2121,Employee Medicare FICA        ,EMPLOYEE MEDICARE FICA,Posting,Liabilities,Balance Sheet,Both,true
+2130,FICA-Employer                 ,FICA-EMPLOYER,Posting,Liabilities,Balance Sheet,Both,true
+2131,Employer Medicare FICA        ,EMPLOYER MEDICARE FICA,Posting,Liabilities,Balance Sheet,Both,true
+2140,State Income Tax Withheld     ,STATE INCOME TAX WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2150,Local Income Tax Withheld     ,LOCAL INCOME TAX WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2160,Federal Unemploy. Withheld    ,FEDERAL UNEMPLOY. WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2170,State Unemploy. Withheld      ,STATE UNEMPLOY. WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2180,Workers' Compensation         ,WORKERS' COMPENSATION,Posting,Liabilities,Balance Sheet,Both,true
+2190,Misc. 1 Withheld              ,MISC. 1 WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2200,Misc. 2 Withheld              ,MISC. 2 WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2210,Misc. 3 Withheld              ,MISC. 3 WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2220,Misc. 4 Withheld              ,MISC. 4 WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2230,Misc. 5 Withheld              ,MISC. 5 WITHHELD,Posting,Liabilities,Balance Sheet,Both,true
+2240,Sales Tax Payable             ,SALES TAX PAYABLE,Posting,Liabilities,Balance Sheet,Both,true
+2241,Sales Tax Payable - City      ,SALES TAX PAYABLE - CITY,Posting,Liabilities,Balance Sheet,Both,true
+2242,Sales Tax Payable - County    ,SALES TAX PAYABLE - COUNTY,Posting,Liabilities,Balance Sheet,Both,true
+2243,Sales Tax Payable - State     ,SALES TAX PAYABLE - STATE,Posting,Liabilities,Balance Sheet,Both,true
+2245,Sales Tax Payable - AvaTax    ,SALES TAX PAYABLE - AVATAX,Posting,Liabilities,Balance Sheet,Both,true
+2300,Accrued A/P Trade-USD         ,ACCRUED A/P TRADE-USD,Posting,Liabilities,Balance Sheet,Both,true
+2301,Accrued A/P Trade-CAD         ,ACCRUED A/P TRADE-CAD,Posting,Liabilities,Balance Sheet,Both,true
+2302,Accrued A/P Trade-FRF         ,ACCRUED A/P TRADE-FRF,Posting,Liabilities,Balance Sheet,Both,true
+2303,Accrued A/P Trade-DEM         ,ACCRUED A/P TRADE-DEM,Posting,Liabilities,Balance Sheet,Both,true
+2304,Accrued A/P Trade-GBP         ,ACCRUED A/P TRADE-GBP,Posting,Liabilities,Balance Sheet,Both,true
+2305,Accrued A/P Trade-LRA         ,ACCRUED A/P TRADE-LRA,Posting,Liabilities,Balance Sheet,Both,true
+2310,Accrued Interest              ,ACCRUED INTEREST,Posting,Liabilities,Balance Sheet,Both,true
+2320,Accrued Rent                  ,ACCRUED RENT,Posting,Liabilities,Balance Sheet,Both,true
+2330,Accrued Wages                 ,ACCRUED WAGES,Posting,Liabilities,Balance Sheet,Both,true
+23301,Applied Labor                 ,APPLIED LABOR,Posting,Liabilities,Balance Sheet,Both,true
+2340,Accrued Insurance             ,ACCRUED INSURANCE,Posting,Liabilities,Balance Sheet,Both,true
+2350,Accrued Real Estate Taxes     ,ACCRUED REAL ESTATE TAXES,Posting,Liabilities,Balance Sheet,Both,true
+2360,Federal Taxes Payable         ,FEDERAL TAXES PAYABLE,Posting,Liabilities,Balance Sheet,Both,true
+2370,State Taxes Payable           ,STATE TAXES PAYABLE,Posting,Liabilities,Balance Sheet,Both,true
+2410,Dividends Paid                ,DIVIDENDS PAID,Posting,Liabilities,Balance Sheet,Both,true
+2510,Mortgage Payable              ,MORTGAGE PAYABLE,Posting,Liabilities,Balance Sheet,Both,true
+2520,Long Term Notes Payable       ,LONG TERM NOTES PAYABLE,Posting,Liabilities,Balance Sheet,Both,true
+2530,Contracts Payable-LT          ,CONTRACTS PAYABLE-LT,Posting,Liabilities,Balance Sheet,Both,true
+2540,Land Contracts Payable        ,LAND CONTRACTS PAYABLE,Posting,Liabilities,Balance Sheet,Both,true
+2550,Shareholder Loans             ,SHAREHOLDER LOANS,Posting,Liabilities,Balance Sheet,Both,true
+2560,Officer Loans                 ,OFFICER LOANS,Posting,Liabilities,Balance Sheet,Both,true
+2610,Deferred Income               ,DEFERRED INCOME,Posting,Liabilities,Balance Sheet,Both,true
+2710,Issued Common Stock           ,ISSUED COMMON STOCK,Posting,Liabilities,Balance Sheet,Both,true
+2720,Paid in Capital               ,PAID IN CAPITAL,Posting,Liabilities,Balance Sheet,Both,true
+2730,Treasury Stock                ,TREASURY STOCK,Posting,Liabilities,Balance Sheet,Both,true
+2740,Retained Earnings             ,RETAINED EARNINGS,Posting,Liabilities,Balance Sheet,Both,true
+2750,YTD Net Income                ,YTD NET INCOME,Posting,Liabilities,Balance Sheet,Both,true
+2760,Variance                      ,VARIANCE,Posting,Liabilities,Balance Sheet,Both,true
+2800,SWE Test                      ,SWE TEST,Posting,Liabilities,Balance Sheet,Both,true
+2810,SWE Test                      ,SWE TEST,Posting,Liabilities,Balance Sheet,Both,true
+2900,Pension Accrued               ,PENSION ACCRUED,Posting,Liabilities,Balance Sheet,Both,true
+2901,401k Accrued                  ,401K ACCRUED,Posting,Liabilities,Balance Sheet,Both,true
+3020,Inter-Company Sales           ,INTER-COMPANY SALES,Posting,Income,Income Statement,Both,true
+3030,Sales/Income                  ,SALES/INCOME,Posting,Income,Income Statement,Both,true
+3031,Sales/Income Type 1           ,SALES/INCOME TYPE 1,Posting,Income,Income Statement,Both,true
+3032,Sales/Income Type 2           ,SALES/INCOME TYPE 2,Posting,Income,Income Statement,Both,true
+3033,Sales/Income Type 3           ,SALES/INCOME TYPE 3,Posting,Income,Income Statement,Both,true
+3034,Sales/Income Type 4           ,SALES/INCOME TYPE 4,Posting,Income,Income Statement,Both,true
+3035,Sales/Income Type 5           ,SALES/INCOME TYPE 5,Posting,Income,Income Statement,Both,true
+3036,Sales/Income Type 6           ,SALES/INCOME TYPE 6,Posting,Income,Income Statement,Both,true
+3037,Sales/Income Type 7           ,SALES/INCOME TYPE 7,Posting,Income,Income Statement,Both,true
+3042,Writeup/Writedown Labor       ,WRITEUP/WRITEDOWN LABOR,Posting,Income,Income Statement,Both,true
+3044,Writeup/Writedown Expenses    ,WRITEUP/WRITEDOWN EXPENSES,Posting,Income,Income Statement,Both,true
+3050,Discounts Allowed-Trade       ,DISCOUNTS ALLOWED-TRADE,Posting,Income,Income Statement,Both,true
+3070,Freight Income                ,FREIGHT INCOME,Posting,Income,Income Statement,Both,true
+3080,Miscellaneous Income          ,MISCELLANEOUS INCOME,Posting,Income,Income Statement,Both,true
+3090,Customer Finance Charges      ,CUSTOMER FINANCE CHARGES,Posting,Income,Income Statement,Both,true
+3100,Miscellaneous Income          ,MISCELLANEOUS INCOME,Posting,Income,Income Statement,Both,true
+3220,Proceeds from Securities      ,PROCEEDS FROM SECURITIES,Posting,Income,Income Statement,Both,true
+4010,Beginning Inventory           ,BEGINNING INVENTORY,Posting,Expense,Income Statement,Both,true
+4020,Inter-Company Purchases       ,INTER-COMPANY PURCHASES,Posting,Expense,Income Statement,Both,true
+4030,Merchandise Purchases         ,MERCHANDISE PURCHASES,Posting,Expense,Income Statement,Both,true
+4040,Discounts Taken               ,DISCOUNTS TAKEN,Posting,Expense,Income Statement,Both,true
+4050,Productive Labor              ,PRODUCTIVE LABOR,Posting,Expense,Income Statement,Both,true
+4051,Premium Labor                 ,PREMIUM LABOR,Posting,Expense,Income Statement,Both,true
+4052,Labor - Direct                ,LABOR - DIRECT,Posting,Expense,Income Statement,Both,true
+4053,"Labor - Direct, Fixed         ","LABOR - DIRECT, FIXED",Posting,Expense,Income Statement,Both,true
+4054,Labor - Indirect              ,LABOR - INDIRECT,Posting,Expense,Income Statement,Both,true
+4055,"Labor - Indirect, Fixed       ","LABOR - INDIRECT, FIXED",Posting,Expense,Income Statement,Both,true
+4059,Fringe                        ,FRINGE,Posting,Expense,Income Statement,Both,true
+4060,Vacation-Holiday Pay          ,VACATION-HOLIDAY PAY,Posting,Expense,Income Statement,Both,true
+4065,Sick Leave                    ,SICK LEAVE,Posting,Expense,Income Statement,Both,true
+4070,Payroll Taxes                 ,PAYROLL TAXES,Posting,Expense,Income Statement,Both,true
+4080,Payroll Benefits              ,PAYROLL BENEFITS,Posting,Expense,Income Statement,Both,true
+4090,Sub-Contracts                 ,SUB-CONTRACTS,Posting,Expense,Income Statement,Both,true
+4091,Federal Tax Expense           ,FEDERAL TAX EXPENSE,Posting,Expense,Income Statement,Both,true
+4092,State Taxes Payable           ,STATE TAXES PAYABLE,Posting,Expense,Income Statement,Both,true
+4100,Freight-In                    ,FREIGHT-IN,Posting,Expense,Income Statement,Both,true
+4110,Supplies                      ,SUPPLIES,Posting,Expense,Income Statement,Both,true
+4120,Deprec.-Production Equip.     ,DEPREC.-PRODUCTION EQUIP.,Posting,Expense,Income Statement,Both,true
+4130,Utilities-Production          ,UTILITIES-PRODUCTION,Posting,Expense,Income Statement,Both,true
+4140,Inventory Increase/Decrease   ,INVENTORY INCREASE/DECREASE,Posting,Expense,Income Statement,Both,true
+4141,Inventory Issue (Non-Project) ,INVENTORY ISSUE (NON-PROJECT),Posting,Expense,Income Statement,Both,true
+4142,Inventory Issue (Project)     ,INVENTORY ISSUE (PROJECT),Posting,Expense,Income Statement,Both,true
+4150,Cost of Goods Sold            ,COST OF GOODS SOLD,Posting,Expense,Income Statement,Both,true
+41501,Late Charges                  ,LATE CHARGES,Posting,Expense,Income Statement,Both,true
+4151,Cost of Goods Sold-Type 1     ,COST OF GOODS SOLD-TYPE 1,Posting,Expense,Income Statement,Both,true
+4152,Cost of Goods Sold-Type 2     ,COST OF GOODS SOLD-TYPE 2,Posting,Expense,Income Statement,Both,true
+4153,Cost of Goods Sold-Type 3     ,COST OF GOODS SOLD-TYPE 3,Posting,Expense,Income Statement,Both,true
+4154,Cost of Goods Sold-Type 4     ,COST OF GOODS SOLD-TYPE 4,Posting,Expense,Income Statement,Both,true
+4155,Cost of Goods Sold-Type 5     ,COST OF GOODS SOLD-TYPE 5,Posting,Expense,Income Statement,Both,true
+4156,Cost of Goods Sold-Type 6     ,COST OF GOODS SOLD-TYPE 6,Posting,Expense,Income Statement,Both,true
+4157,Cost of Goods Sold-Type 7     ,COST OF GOODS SOLD-TYPE 7,Posting,Expense,Income Statement,Both,true
+4200,Ending Inventory              ,ENDING INVENTORY,Posting,Expense,Income Statement,Both,true
+4210,Inventory Revaluation         ,INVENTORY REVALUATION,Posting,Expense,Income Statement,Both,true
+4220,Clearing-Other Direct Costs   ,CLEARING-OTHER DIRECT COSTS,Posting,Expense,Income Statement,Both,true
+4230,Clearing-Material O/H         ,CLEARING-MATERIAL O/H,Posting,Expense,Income Statement,Both,true
+4240,Clearing-Machine O/H          ,CLEARING-MACHINE O/H,Posting,Expense,Income Statement,Both,true
+4290,Clearing-Landed Costs         ,CLEARING-LANDED COSTS,Posting,Expense,Income Statement,Both,true
+4300,Variance-Direct Material      ,VARIANCE-DIRECT MATERIAL,Posting,Expense,Income Statement,Both,true
+43001,Variance-Rollup Variance      ,VARIANCE-ROLLUP VARIANCE,Posting,Expense,Income Statement,Both,true
+4310,Variance-Direct Labor         ,VARIANCE-DIRECT LABOR,Posting,Expense,Income Statement,Both,true
+4320,Variance-Other Direct Cost    ,VARIANCE-OTHER DIRECT COST,Posting,Expense,Income Statement,Both,true
+4330,Variance-Material O/H         ,VARIANCE-MATERIAL O/H,Posting,Expense,Income Statement,Both,true
+4340,Variance-Labor O/H            ,VARIANCE-LABOR O/H,Posting,Expense,Income Statement,Both,true
+4350,Variance-Machine O/H          ,VARIANCE-MACHINE O/H,Posting,Expense,Income Statement,Both,true
+4360,Scrap Var-Direct Material     ,SCRAP VAR-DIRECT MATERIAL,Posting,Expense,Income Statement,Both,true
+4370,Scrap Var-Direct Labor        ,SCRAP VAR-DIRECT LABOR,Posting,Expense,Income Statement,Both,true
+4380,Scrap Var-Other Direct Cost   ,SCRAP VAR-OTHER DIRECT COST,Posting,Expense,Income Statement,Both,true
+4390,Scrap Var-Material O/H        ,SCRAP VAR-MATERIAL O/H,Posting,Expense,Income Statement,Both,true
+4400,Scrap Var-Labor O/H           ,SCRAP VAR-LABOR O/H,Posting,Expense,Income Statement,Both,true
+4410,Scrap Var-Machine O/H         ,SCRAP VAR-MACHINE O/H,Posting,Expense,Income Statement,Both,true
+4500,Std Chg Var-Dir Material      ,STD CHG VAR-DIR MATERIAL,Posting,Expense,Income Statement,Both,true
+4510,Std Chg Var-Dir Labor         ,STD CHG VAR-DIR LABOR,Posting,Expense,Income Statement,Both,true
+4520,Std Chg Var-Other Direct      ,STD CHG VAR-OTHER DIRECT,Posting,Expense,Income Statement,Both,true
+4530,Std Chg Var-Material O/H      ,STD CHG VAR-MATERIAL O/H,Posting,Expense,Income Statement,Both,true
+4540,Std Chg Var-Labor O/H         ,STD CHG VAR-LABOR O/H,Posting,Expense,Income Statement,Both,true
+4550,Std Chg Var-Machine O/H       ,STD CHG VAR-MACHINE O/H,Posting,Expense,Income Statement,Both,true
+4610,Effic Var-Direct Labor        ,EFFIC VAR-DIRECT LABOR,Posting,Expense,Income Statement,Both,true
+4710,Rate Var-Direct Labor         ,RATE VAR-DIRECT LABOR,Posting,Expense,Income Statement,Both,true
+4790,Variance-Landed Costs         ,VARIANCE-LANDED COSTS,Posting,Expense,Income Statement,Both,true
+5010,Officers Salaries             ,OFFICERS SALARIES,Posting,Expense,Income Statement,Both,true
+5020,Office Salaries               ,OFFICE SALARIES,Posting,Expense,Income Statement,Both,true
+5030,Sales Salaries                ,SALES SALARIES,Posting,Expense,Income Statement,Both,true
+5040,Shop Wages                    ,SHOP WAGES,Posting,Expense,Income Statement,Both,true
+5050,Delivery Wages                ,DELIVERY WAGES,Posting,Expense,Income Statement,Both,true
+5060,Maintenance Wages             ,MAINTENANCE WAGES,Posting,Expense,Income Statement,Both,true
+5070,Warehouse Wages               ,WAREHOUSE WAGES,Posting,Expense,Income Statement,Both,true
+5080,Vacation                      ,VACATION,Posting,Expense,Income Statement,Both,true
+5090,Payroll Taxes                 ,PAYROLL TAXES,Posting,Expense,Income Statement,Both,true
+5100,Payroll Benefits              ,PAYROLL BENEFITS,Posting,Expense,Income Statement,Both,true
+5110,Clearing-Direct Labor         ,CLEARING-DIRECT LABOR,Posting,Expense,Income Statement,Both,true
+5120,Clearing-Labor O/H            ,CLEARING-LABOR O/H,Posting,Expense,Income Statement,Both,true
+5130,Clearing - Labor G&A          ,CLEARING - LABOR G&A,Posting,Expense,Income Statement,Both,true
+5400,SWE Test                      ,SWE TEST,Posting,Expense,Income Statement,Both,true
+5450,SWE Test                      ,SWE TEST,Posting,Expense,Income Statement,Both,true
+6010,Advertising                   ,ADVERTISING,Posting,Expense,Income Statement,Both,true
+6020,Answering Service             ,ANSWERING SERVICE,Posting,Expense,Income Statement,Both,true
+6030,Accounting and Legal Fees     ,ACCOUNTING AND LEGAL FEES,Posting,Expense,Income Statement,Both,true
+6040,Vehicle Expense               ,VEHICLE EXPENSE,Posting,Expense,Income Statement,Both,true
+6050,Bad Check                     ,BAD CHECK,Posting,Expense,Income Statement,Both,true
+6060,Bad Debts                     ,BAD DEBTS,Posting,Expense,Income Statement,Both,true
+6061,Small Balance WO              ,SMALL BALANCE WO,Posting,Expense,Income Statement,Both,true
+6070,Bank Service Charges          ,BANK SERVICE CHARGES,Posting,Expense,Income Statement,Both,true
+6071,Bank Fee                      ,BANK FEE,Posting,Expense,Income Statement,Both,true
+6080,Janitorial/Cleaning Service   ,JANITORIAL/CLEANING SERVICE,Posting,Expense,Income Statement,Both,true
+6100,Lab Tests                     ,LAB TESTS,Posting,Expense,Income Statement,Both,true
+6500,Commissions                   ,COMMISSIONS,Posting,Expense,Income Statement,Both,true
+6510,Contributions                 ,CONTRIBUTIONS,Posting,Expense,Income Statement,Both,true
+6520,Collection                    ,COLLECTION,Posting,Expense,Income Statement,Both,true
+6530,Delivery                      ,DELIVERY,Posting,Expense,Income Statement,Both,true
+6540,Directors Fees                ,DIRECTORS FEES,Posting,Expense,Income Statement,Both,true
+6550,Dues and Subscriptions        ,DUES AND SUBSCRIPTIONS,Posting,Expense,Income Statement,Both,true
+6560,Depreciation                  ,DEPRECIATION,Posting,Expense,Income Statement,Both,true
+6570,Amort/Leasehold Improve.      ,AMORT/LEASEHOLD IMPROVE.,Posting,Expense,Income Statement,Both,true
+6580,Amort/Organ. Expense          ,AMORT/ORGAN. EXPENSE,Posting,Expense,Income Statement,Both,true
+6590,Entertainment                 ,ENTERTAINMENT,Posting,Expense,Income Statement,Both,true
+7000,Travel Expense                ,TRAVEL EXPENSE,Posting,Expense,Income Statement,Both,true
+7001,Per Diem                      ,PER DIEM,Posting,Expense,Income Statement,Both,true
+7005,Travel Expense - Meals        ,TRAVEL EXPENSE - MEALS,Posting,Expense,Income Statement,Both,true
+7006,Meals                         ,MEALS,Posting,Expense,Income Statement,Both,true
+7007,Management Meals              ,MANAGEMENT MEALS,Posting,Expense,Income Statement,Both,true
+7010,Travel Expense - Lodging      ,TRAVEL EXPENSE - LODGING,Posting,Expense,Income Statement,Both,true
+7011,Logding                       ,LOGDING,Posting,Expense,Income Statement,Both,true
+7020,Travel Expense - Transportatin,TRAVEL EXPENSE - TRANSPORTATIN,Posting,Expense,Income Statement,Both,true
+7021,Air/Train                     ,AIR/TRAIN,Posting,Expense,Income Statement,Both,true
+7022,Taxi/Mass Transit             ,TAXI/MASS TRANSIT,Posting,Expense,Income Statement,Both,true
+7030,Travel Expense - Entertainment,TRAVEL EXPENSE - ENTERTAINMENT,Posting,Expense,Income Statement,Both,true
+7040,Office Expenses - Misc.       ,OFFICE EXPENSES - MISC.,Posting,Expense,Income Statement,Both,true
+7050,Telephone Expense             ,TELEPHONE EXPENSE,Posting,Expense,Income Statement,Both,true
+7055,Equipment Rental              ,EQUIPMENT RENTAL,Posting,Expense,Income Statement,Both,true
+7056,AV Equipment                  ,AV EQUIPMENT,Posting,Expense,Income Statement,Both,true
+7060,Electric Expense              ,ELECTRIC EXPENSE,Posting,Expense,Income Statement,Both,true
+7070,Gas                           ,GAS,Posting,Expense,Income Statement,Both,true
+7080,Water                         ,WATER,Posting,Expense,Income Statement,Both,true
+7090,Insurance-General             ,INSURANCE-GENERAL,Posting,Expense,Income Statement,Both,true
+7100,Insurance-Group Medical       ,INSURANCE-GROUP MEDICAL,Posting,Expense,Income Statement,Both,true
+7101,Currency Loss - Unrealized    ,CURRENCY LOSS - UNREALIZED,Posting,Expense,Income Statement,Both,true
+7102,Currency Loss - Realized      ,CURRENCY LOSS - REALIZED,Posting,Expense,Income Statement,Both,true
+7110,Insurance-Officer's Life      ,INSURANCE-OFFICER'S LIFE,Posting,Expense,Income Statement,Both,true
+7120,Long Term Interest            ,LONG TERM INTEREST,Posting,Expense,Income Statement,Both,true
+7130,Laundry                       ,LAUNDRY,Posting,Expense,Income Statement,Both,true
+7140,Uniform                       ,UNIFORM,Posting,Expense,Income Statement,Both,true
+7150,Licenses                      ,LICENSES,Posting,Expense,Income Statement,Both,true
+7160,Repair/Maint-Building         ,REPAIR/MAINT-BUILDING,Posting,Expense,Income Statement,Both,true
+7170,Repair/Maint-Equipment        ,REPAIR/MAINT-EQUIPMENT,Posting,Expense,Income Statement,Both,true
+7171,Repair/Maint Expense          ,REPAIR/MAINT EXPENSE,Posting,Expense,Income Statement,Both,true
+7172,Management Rent               ,MANAGEMENT RENT,Posting,Expense,Income Statement,Both,true
+7180,Office Supplies               ,OFFICE SUPPLIES,Posting,Expense,Income Statement,Both,true
+7181,Copy Services                 ,COPY SERVICES,Posting,Expense,Income Statement,Both,true
+7182,Design Services               ,DESIGN SERVICES,Posting,Expense,Income Statement,Both,true
+7183,Printing Services             ,PRINTING SERVICES,Posting,Expense,Income Statement,Both,true
+7184,Copy Services - ODC           ,COPY SERVICES - ODC,Posting,Expense,Income Statement,Both,true
+7190,Outside Services              ,OUTSIDE SERVICES,Posting,Expense,Income Statement,Both,true
+7200,Rubbish Removal               ,RUBBISH REMOVAL,Posting,Expense,Income Statement,Both,true
+7210,Sales Promotion               ,SALES PROMOTION,Posting,Expense,Income Statement,Both,true
+7220,Salesman's Vehicle Expense    ,SALESMAN'S VEHICLE EXPENSE,Posting,Expense,Income Statement,Both,true
+7221,Corporate Vehicle Expense     ,CORPORATE VEHICLE EXPENSE,Posting,Expense,Income Statement,Both,true
+7222,Travel Expenses               ,TRAVEL EXPENSES,Posting,Expense,Income Statement,Both,true
+7230,Shop Supplies                 ,SHOP SUPPLIES,Posting,Expense,Income Statement,Both,true
+7240,Taxes/Personal Property       ,TAXES/PERSONAL PROPERTY,Posting,Expense,Income Statement,Both,true
+7250,Taxes/Real Estate             ,TAXES/REAL ESTATE,Posting,Expense,Income Statement,Both,true
+7260,Taxes Franchise               ,TAXES FRANCHISE,Posting,Expense,Income Statement,Both,true
+7270,Freight                       ,FREIGHT,Posting,Expense,Income Statement,Both,true
+7271,Freight Expense               ,FREIGHT EXPENSE,Posting,Expense,Income Statement,Both,true
+7272,Express Freight               ,EXPRESS FREIGHT,Posting,Expense,Income Statement,Both,true
+7273,Honor                         ,HONOR,Posting,Expense,Income Statement,Both,true
+7280,Postage                       ,POSTAGE,Posting,Expense,Income Statement,Both,true
+7281,Postage Expense               ,POSTAGE EXPENSE,Posting,Expense,Income Statement,Both,true
+7290,Personnel                     ,PERSONNEL,Posting,Expense,Income Statement,Both,true
+7300,Miscellaneous                 ,MISCELLANEOUS,Posting,Expense,Income Statement,Both,true
+7410,Sales Tax  Paid               ,SALES TAX  PAID,Posting,Expense,Income Statement,Both,true
+7411,Sales Tax Paid - City         ,SALES TAX PAID - CITY,Posting,Expense,Income Statement,Both,true
+7412,Sales Tax Paid - County       ,SALES TAX PAID - COUNTY,Posting,Expense,Income Statement,Both,true
+7413,Sales Tax Paid - State        ,SALES TAX PAID - STATE,Posting,Expense,Income Statement,Both,true
+7415,Sales Tax Paid - IL           ,SALES TAX PAID - IL,Posting,Expense,Income Statement,Both,true
+7416,Sales Tax Paid - IL - City    ,SALES TAX PAID - IL - CITY,Posting,Expense,Income Statement,Both,true
+7417,Sales Tax Paid - IL - County  ,SALES TAX PAID - IL - COUNTY,Posting,Expense,Income Statement,Both,true
+7418,Sales Tax Paid - IL - State   ,SALES TAX PAID - IL - STATE,Posting,Expense,Income Statement,Both,true
+7419,Sales Tax Paid Expense - GST  ,SALES TAX PAID EXPENSE - GST,Posting,Expense,Income Statement,Both,true
+7420,Sales Tax Paid Expense - VAT  ,SALES TAX PAID EXPENSE - VAT,Posting,Expense,Income Statement,Both,true
+7500,PPV                           ,PPV,Posting,Expense,Income Statement,Both,true
+8000,Pooled Rent Expense           ,POOLED RENT EXPENSE,Posting,Expense,Income Statement,Both,true
+8001,Test Allocation 8001          ,TEST ALLOCATION 8001,Posting,Expense,Income Statement,Both,true
+8002,Test Allocation 8002          ,TEST ALLOCATION 8002,Posting,Expense,Income Statement,Both,true
+8003,Test Allocation 8003          ,TEST ALLOCATION 8003,Posting,Expense,Income Statement,Both,true
+8010,Commissions                   ,COMMISSIONS,Posting,Income,Income Statement,Both,true
+8020,Interest Earned               ,INTEREST EARNED,Posting,Income,Income Statement,Both,true
+8030,Discounts Taken               ,DISCOUNTS TAKEN,Posting,Income,Income Statement,Both,true
+8040,Rents                         ,RENTS,Posting,Income,Income Statement,Both,true
+8050,Gain on Sale of Assets        ,GAIN ON SALE OF ASSETS,Posting,Income,Income Statement,Both,true
+8060,Dividends Received            ,DIVIDENDS RECEIVED,Posting,Income,Income Statement,Both,true
+8070,Miscellaneous                 ,MISCELLANEOUS,Posting,Income,Income Statement,Both,true
+8300,SWE Test                      ,SWE TEST,Posting,Income,Income Statement,Both,true
+8999,Allocated Rent Offset         ,ALLOCATED RENT OFFSET,Posting,Income,Income Statement,Both,true
+9010,Discounts-Allowed             ,DISCOUNTS-ALLOWED,Posting,Expense,Income Statement,Both,true
+9020,Interest-General              ,INTEREST-GENERAL,Posting,Expense,Income Statement,Both,true
+9030,Loss on Sale of Assets        ,LOSS ON SALE OF ASSETS,Posting,Expense,Income Statement,Both,true
+9040,Miscellaneous                 ,MISCELLANEOUS,Posting,Expense,Income Statement,Both,true
+9050,Non-Deductible Penalties      ,NON-DEDUCTIBLE PENALTIES,Posting,Expense,Income Statement,Both,true
+9090,Provision for Income Tax1     ,PROVISION FOR INCOME TAX1,Posting,Expense,Income Statement,Both,true

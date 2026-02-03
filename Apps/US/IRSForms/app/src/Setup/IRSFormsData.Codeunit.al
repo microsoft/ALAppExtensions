@@ -9,8 +9,6 @@ using System.Reflection;
 
 codeunit 10039 "IRS Forms Data"
 {
-    Access = Internal;
-
     var
         StatementLineFilterExpressionTxt: Label 'Form Box No.: %1', Comment = '%1 = Form Box No.';
 

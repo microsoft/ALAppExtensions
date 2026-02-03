@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString />
+      </ConnectionProperties>
+      <rd:SecurityType>None</rd:SecurityType>
+    </DataSource>
+  </DataSources>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <Height>2in</Height>
+        <Style />
+      </Body>
+      <Width>6.5in</Width>
+      <Page>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <Language>=User!Language</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>0eeb6585-38ae-40f1-885b-8d50088d51b4</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="FirstNo">
+          <DataField>FirstNo</DataField>
+        </Field>
+        <Field Name="LastNo">
+          <DataField>LastNo</DataField>
+        </Field>
+        <Field Name="Vendor__No__">
+          <DataField>Vendor__No__</DataField>
+        </Field>
+        <Field Name="Vendor_Name">
+          <DataField>Vendor_Name</DataField>
+        </Field>
+        <Field Name="TotalDebit">
+          <DataField>TotalDebit</DataField>
+        </Field>
+        <Field Name="TotalDebitFormat">
+          <DataField>TotalDebitFormat</DataField>
+        </Field>
+        <Field Name="TotalCredit">
+          <DataField>TotalCredit</DataField>
+        </Field>
+        <Field Name="TotalCreditFormat">
+          <DataField>TotalCreditFormat</DataField>
+        </Field>
+        <Field Name="TotalDebit_TotalCredit">
+          <DataField>TotalDebit_TotalCredit</DataField>
+        </Field>
+        <Field Name="TotalDebit_TotalCreditFormat">
+          <DataField>TotalDebit_TotalCreditFormat</DataField>
+        </Field>
+        <Field Name="General_Vendor_ledger_reconciliationCaption">
+          <DataField>General_Vendor_ledger_reconciliationCaption</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Debit_Amount_Caption">
+          <DataField>G_L_Entry__Debit_Amount_Caption</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Credit_Amount_Caption">
+          <DataField>G_L_Entry__Credit_Amount_Caption</DataField>
+        </Field>
+        <Field Name="G_L_Entry_AmountCaption">
+          <DataField>G_L_Entry_AmountCaption</DataField>
+        </Field>
+        <Field Name="G_L_Entry_DescriptionCaption">
+          <DataField>G_L_Entry_DescriptionCaption</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Document_No__Caption">
+          <DataField>G_L_Entry__Document_No__Caption</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Document_Type_Caption">
+          <DataField>G_L_Entry__Document_Type_Caption</DataField>
+        </Field>
+        <Field Name="G_L_Entry__G_L_Account_No__Caption">
+          <DataField>G_L_Entry__G_L_Account_No__Caption</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Posting_Date_Caption">
+          <DataField>G_L_Entry__Posting_Date_Caption</DataField>
+        </Field>
+        <Field Name="General_AmountCaption">
+          <DataField>General_AmountCaption</DataField>
+        </Field>
+        <Field Name="TotalDebit_TotalCredit_Control1120015">
+          <DataField>TotalDebit_TotalCredit_Control1120015</DataField>
+        </Field>
+        <Field Name="TotalDebit_TotalCredit_Control1120015Format">
+          <DataField>TotalDebit_TotalCredit_Control1120015Format</DataField>
+        </Field>
+        <Field Name="TotalCredit_Control1120014">
+          <DataField>TotalCredit_Control1120014</DataField>
+        </Field>
+        <Field Name="TotalCredit_Control1120014Format">
+          <DataField>TotalCredit_Control1120014Format</DataField>
+        </Field>
+        <Field Name="TotalDebit_Control1120013">
+          <DataField>TotalDebit_Control1120013</DataField>
+        </Field>
+        <Field Name="TotalDebit_Control1120013Format">
+          <DataField>TotalDebit_Control1120013Format</DataField>
+        </Field>
+        <Field Name="Vendor_Posting_Group_Code">
+          <DataField>Vendor_Posting_Group_Code</DataField>
+        </Field>
+        <Field Name="Vendor_Posting_Group_Payables_Account">
+          <DataField>Vendor_Posting_Group_Payables_Account</DataField>
+        </Field>
+        <Field Name="Total_amount_for_the_vendorCaption">
+          <DataField>Total_amount_for_the_vendorCaption</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Debit_Amount_">
+          <DataField>G_L_Entry__Debit_Amount_</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Debit_Amount_Format">
+          <DataField>G_L_Entry__Debit_Amount_Format</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Credit_Amount_">
+          <DataField>G_L_Entry__Credit_Amount_</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Credit_Amount_Format">
+          <DataField>G_L_Entry__Credit_Amount_Format</DataField>
+        </Field>
+        <Field Name="G_L_Entry_Amount">
+          <DataField>G_L_Entry_Amount</DataField>
+        </Field>
+        <Field Name="G_L_Entry_AmountFormat">
+          <DataField>G_L_Entry_AmountFormat</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Posting_Date_">
+          <DataField>G_L_Entry__Posting_Date_</DataField>
+        </Field>
+        <Field Name="G_L_Entry_Description">
+          <DataField>G_L_Entry_Description</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Document_Type_">
+          <DataField>G_L_Entry__Document_Type_</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Document_No__">
+          <DataField>G_L_Entry__Document_No__</DataField>
+        </Field>
+        <Field Name="G_L_Entry__G_L_Account_No__">
+          <DataField>G_L_Entry__G_L_Account_No__</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Debit_Amount__Control1120036">
+          <DataField>G_L_Entry__Debit_Amount__Control1120036</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Debit_Amount__Control1120036Format">
+          <DataField>G_L_Entry__Debit_Amount__Control1120036Format</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Credit_Amount__Control1120037">
+          <DataField>G_L_Entry__Credit_Amount__Control1120037</DataField>
+        </Field>
+        <Field Name="G_L_Entry__Credit_Amount__Control1120037Format">
+          <DataField>G_L_Entry__Credit_Amount__Control1120037Format</DataField>
+        </Field>
+        <Field Name="G_L_Entry_Amount_Control1120038">
+          <DataField>G_L_Entry_Amount_Control1120038</DataField>
+        </Field>
+        <Field Name="G_L_Entry_Amount_Control1120038Format">
+          <DataField>G_L_Entry_Amount_Control1120038Format</DataField>
+        </Field>
+        <Field Name="G_L_Entry_Entry_No_">
+          <DataField>G_L_Entry_Entry_No_</DataField>
+        </Field>
+        <Field Name="Total_amount_for_the_general_ledgerCaption">
+          <DataField>Total_amount_for_the_general_ledgerCaption</DataField>
+        </Field>
+        <Field Name="HavingDetail">
+          <DataField>HavingDetail</DataField>
+        </Field>
+        <Field Name="GL_Account_Net_Change">
+          <DataField>GL_Account_Net_Change</DataField>
+        </Field>
+        <Field Name="GL_Account_Net_ChangeFormat">
+          <DataField>GL_Account_Net_ChangeFormat</DataField>
+        </Field>
+        <Field Name="GL_Account_No">
+          <DataField>GL_Account_No</DataField>
+        </Field>
+        <Field Name="General_amount_for_the_general_ledgerCaption">
+          <DataField>General_amount_for_the_general_ledgerCaption</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
+</Report>

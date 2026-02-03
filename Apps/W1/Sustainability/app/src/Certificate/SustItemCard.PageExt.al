@@ -123,6 +123,10 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the End-of-Life Disposal Requirements field.';
                 }
+                field("Carbon Tracking Method"; Rec."Carbon Tracking Method")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
                 group("Product Classification")
                 {
                     Caption = 'Product Classification';

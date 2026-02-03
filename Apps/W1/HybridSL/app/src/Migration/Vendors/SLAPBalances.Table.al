@@ -7,7 +7,6 @@ namespace Microsoft.DataMigration.SL;
 
 table 47046 "SL AP_Balances"
 {
-    Access = Internal;
     Caption = 'SL AP_Balances';
     DataClassification = CustomerContent;
 

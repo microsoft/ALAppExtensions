@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 using Microsoft.Foundation.Company;
@@ -94,6 +99,8 @@ codeunit 4001 "Hybrid Cloud Management"
         DataUpgradeScheduledLbl: Label 'Cloud Migration data upgrade scheduled.', Locked = true;
         UnblockedManuallyLbl: Label 'Unblocked manually';
         SettingForUserPermissionsMsg: Label 'Setting for Keeping user permissions was set to: %1.', Comment = '%1 - true or false';
+        CustomMigrationSettingMsg: Label 'Setting for Custom Migration Enabled was set to: %1.', Comment = '%1 - true or false';
+        OnPremDevelopmentSettingMsg: Label 'Setting for Enable OnPrem Development was set to: %1.', Comment = '%1 - true or false';
         DoNotManageCompaniesManuallyLbl: Label 'We strongly recommend that you don''t manage companies, such as renaming and deleting, while cloud migration is running.';
         LearnMoreMsg: Label 'Learn more';
         DontShowAgainMsg: Label 'Don''t show again';
@@ -255,6 +262,26 @@ codeunit 4001 "Hybrid Cloud Management"
                 exit(false);
 
         exit(true);
+    end;
+
+    procedure IsCloudMigrationUISupported(): Boolean
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        if EnvironmentInformation.IsSaaS() then
+            exit(true);
+
+        exit(IsOnPremDevelopmentEnabled());
+    end;
+
+    procedure IsOnPremDevelopmentEnabled(): Boolean
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not IntelligentCloudSetup.Get() then
+            exit(false);
+
+        exit(IntelligentCloudSetup."Enable OnPrem Development");
     end;
 
     procedure IsIntelligentCloudEnabled(): Boolean
@@ -608,18 +635,28 @@ codeunit 4001 "Hybrid Cloud Management"
     end;
 
     procedure HandleShowCompanySelectionStep(var HybridProductType: Record "Hybrid Product Type"; SqlConnectionString: Text; SqlServerType: Text; IRName: Text)
+    begin
+        HandleShowCompanySelectionStep(HybridProductType, SqlConnectionString, SqlServerType, IRName, '', '', '');
+    end;
+
+    procedure HandleShowCompanySelectionStep(var HybridProductType: Record "Hybrid Product Type"; SqlConnectionString: Text; SqlServerType: Text; IRName: Text; SourceCompaniesTableName: Text; SetupMappingsTableName: Text; ReplicationMappingsTableName: Text)
     var
         HandledExternally: Boolean;
     begin
-        OnBeforeShowCompanySelectionStep(HybridProductType, SqlConnectionString, SqlServerType, IRName, HandledExternally);
+        OnBeforeShowCompanySelectionStep(HybridProductType, SqlConnectionString, SqlServerType, IRName, HandledExternally, SourceCompaniesTableName, SetupMappingsTableName, ReplicationMappingsTableName);
         if HandledExternally then
             exit;
 
-        EnableReplication(HybridProductType, SqlConnectionString, SqlServerType, IRName);
+        EnableReplication(HybridProductType, SqlConnectionString, SqlServerType, IRName, SourceCompaniesTableName, SetupMappingsTableName, ReplicationMappingsTableName);
         ClearCompanyCreationStatus();
     end;
 
     internal procedure EnableReplication(var HybridProductType: Record "Hybrid Product Type"; SqlConnectionString: Text; SqlServerType: Text; IRName: Text)
+    begin
+        EnableReplication(HybridProductType, SqlConnectionString, SqlServerType, IRName, '', '', '');
+    end;
+
+    internal procedure EnableReplication(var HybridProductType: Record "Hybrid Product Type"; SqlConnectionString: Text; SqlServerType: Text; IRName: Text; SourceCompaniesTableName: Text; SetupMappingsTableName: Text; ReplicationMappingsTableName: Text)
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridDeployment: Codeunit "Hybrid Deployment";
@@ -627,7 +664,7 @@ codeunit 4001 "Hybrid Cloud Management"
         LatestVersion: Text;
     begin
         HybridDeployment.Initialize(HybridProductType.ID);
-        HybridDeployment.EnableReplication(SqlConnectionString, SqlServerType, IRName);
+        HybridDeployment.EnableReplication(SqlConnectionString, SqlServerType, IRName, SourceCompaniesTableName, SetupMappingsTableName, ReplicationMappingsTableName);
 
         HybridDeployment.GetVersionInformation(DeployedVersion, LatestVersion);
         IntelligentCloudSetup.SetDeployedVersion(DeployedVersion);
@@ -641,6 +678,7 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridCompany: Record "Hybrid Company";
         GuidedExperience: Codeunit "Guided Experience";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        CustomMigrationProviderInterface: Interface "Custom Migration Provider";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('TotalNumberOfOnPremCompanies', Format(HybridCompany.Count(), 0, 9));
@@ -648,7 +686,14 @@ codeunit 4001 "Hybrid Cloud Management"
         GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard");
         IntelligentCloudSetup.Validate("Replication User", UserId());
         IntelligentCloudSetup.Modify();
-        RestoreDefaultMigrationTableMappings(false);
+
+        if IntelligentCloudSetup."Custom Migration Provider".AsInteger() = 0 then
+            RestoreDefaultMigrationTableMappings(false)
+        else begin
+            CustomMigrationProviderInterface := IntelligentCloudSetup."Custom Migration Provider";
+            CustomMigrationProviderInterface.SetupReplicationTableMappings();
+        end;
+
         RefreshIntelligentCloudStatusTable();
         CreateCompanies();
 
@@ -833,8 +878,10 @@ codeunit 4001 "Hybrid Cloud Management"
 
         MarkTablesAsReplaceData();
         OnHandleRunReplication(Handled, RunId, ReplicationType);
-        if not Handled then
+        if not Handled then begin
+            PrepareTablesForCustomMigration();
             HybridDeployment.RunReplication(RunId, ReplicationType);
+        end;
 
         HybridReplicationSummary.CreateInProgressRecord(RunId, ReplicationType);
         if HybridReplicationSummary.FindLast() then;
@@ -859,6 +906,28 @@ codeunit 4001 "Hybrid Cloud Management"
                 exit('Diagnostic');
         end;
         exit('');
+    end;
+
+    internal procedure PrepareTablesForCustomMigration()
+    var
+        CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
+    begin
+        CloudMigReplicateDataMgt.CheckCanChangeAllIntelligentCloudStatus();
+
+        if not IsCustomMigrationEnabled() then
+            exit;
+
+        CloudMigReplicateDataMgt.ValidateAndEnableReplicationForMappedTables();
+    end;
+
+    local procedure IsCustomMigrationEnabled(): Boolean
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not IntelligentCloudSetup.Get() then
+            exit(false);
+
+        exit(IntelligentCloudSetup."Custom Migration Enabled");
     end;
 
     internal procedure GetFeatureTelemetryName(): Text
@@ -1196,10 +1265,38 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        IntelligentCloudSetup.Get();
+        GetIntelligentCloudSetupSafe(IntelligentCloudSetup);
         IntelligentCloudSetup."Keep User Permissions" := not IntelligentCloudSetup."Keep User Permissions";
         IntelligentCloudSetup.Modify();
         Message(SettingForUserPermissionsMsg, IntelligentCloudSetup."Keep User Permissions");
+    end;
+
+    internal procedure EnableDisableCustomMigration()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        GetIntelligentCloudSetupSafe(IntelligentCloudSetup);
+        IntelligentCloudSetup."Custom Migration Enabled" := not IntelligentCloudSetup."Custom Migration Enabled";
+        IntelligentCloudSetup.Modify();
+        Message(CustomMigrationSettingMsg, IntelligentCloudSetup."Custom Migration Enabled");
+    end;
+
+    internal procedure EnableDisableOnPremDevelopment()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        OnPremMigrationHandler: Codeunit "OnPrem Migration Handler";
+    begin
+        GetIntelligentCloudSetupSafe(IntelligentCloudSetup);
+        IntelligentCloudSetup."Enable OnPrem Development" := not IntelligentCloudSetup."Enable OnPrem Development";
+        IntelligentCloudSetup.Modify();
+        OnPremMigrationHandler.Activate();
+        Message(OnPremDevelopmentSettingMsg, IntelligentCloudSetup."Enable OnPrem Development");
+    end;
+
+    local procedure GetIntelligentCloudSetupSafe(var IntelligentCloudSetup: Record "Intelligent Cloud Setup")
+    begin
+        if not IntelligentCloudSetup.Get() then
+            IntelligentCloudSetup.Insert();
     end;
 
     internal procedure VerifyCanCompleteCloudMigration()
@@ -1344,7 +1441,7 @@ codeunit 4001 "Hybrid Cloud Management"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeShowCompanySelectionStep(var HybridProductType: Record "Hybrid Product Type"; SqlConnectionString: Text; SqlServerType: Text; IRName: Text; var Handled: Boolean)
+    local procedure OnBeforeShowCompanySelectionStep(var HybridProductType: Record "Hybrid Product Type"; SqlConnectionString: Text; SqlServerType: Text; IRName: Text; var Handled: Boolean; SourceCompaniesTableName: Text; SetupMappingsTableName: Text; ReplicationMappingsTableName: Text)
     begin
     end;
 
@@ -1375,6 +1472,11 @@ codeunit 4001 "Hybrid Cloud Management"
 
     [IntegrationEvent(false, false)]
     procedure OnShowProductTypeStep(var HybridProductType: Record "Hybrid Product Type")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnShowCustomMigrationStep(var HybridProductType: Record "Hybrid Product Type")
     begin
     end;
 

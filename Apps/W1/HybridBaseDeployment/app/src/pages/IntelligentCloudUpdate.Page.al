@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 using System.Environment;
@@ -42,14 +47,14 @@ page 4017 "Intelligent Cloud Update"
 
                     group("Para1.1.1")
                     {
-                        Caption = '';
+                        ShowCaption = false;
                         InstructionalText = 'This process will update your Cloud Migration environment to the latest version.';
 
 #pragma warning disable AA0218, AA0225
                         field(UpdateICInfo; StrSubstNo(VersionTxt, DeployedVersion, LatestVersion))
                         {
                             ApplicationArea = Basic, Suite;
-                            Caption = '';
+                            ShowCaption = false;
                         }
 #pragma warning restore
                         field(ProcessUpdateTxt; PleaseWaitTxt)
@@ -106,12 +111,11 @@ page 4017 "Intelligent Cloud Update"
     var
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
-        EnvironmentInformation: Codeunit "Environment Information";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         UpdateVisible := true;
         IsSuperAndSetupComplete := PermissionManager.IsIntelligentCloud() and UserPermissions.IsSuper(UserSecurityId());
-        IsOnPrem := not EnvironmentInformation.IsSaaS();
-
+        IsOnPrem := not HybridCloudManagement.IsCloudMigrationUISupported();
         if not IsSuperAndSetupComplete then
             Error(RunUpdatePermissionErr);
 
