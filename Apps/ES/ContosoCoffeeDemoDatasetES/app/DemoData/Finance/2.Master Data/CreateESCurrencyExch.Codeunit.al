@@ -191,7 +191,7 @@ codeunit 10834 "Create ES Currency Exch"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Add. Reporting Currency", OnBeforeGetResidualCurrencyAccounts, '', false, false)]
-    local procedure GetResidualCurrencyAccountsCH(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
+    local procedure GetResidualCurrencyAccountsES(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
     var
         CreateESGLAccount: Codeunit "Create ES GL Accounts";
     begin
