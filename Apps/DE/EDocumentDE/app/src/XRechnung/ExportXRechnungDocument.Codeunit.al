@@ -956,12 +956,14 @@ codeunit 13916 "Export XRechnung Document"
             Database::"Sales Invoice Header":
                 begin
                     HeaderRecordRef.SetTable(SalesInvoiceHeader);
-                    PEPPOLMgt.FindNextSalesInvoiceRec(SalesInvoiceHeader, SalesHeader, 1);
+                    SalesHeader.TransferFields(SalesInvoiceHeader);
+                    SalesHeader."Document Type" := SalesHeader."Document Type"::Invoice;
                 end;
             Database::"Sales Cr.Memo Header":
                 begin
                     HeaderRecordRef.SetTable(SalesCrMemoHeader);
-                    PEPPOLMgt.FindNextSalesCreditMemoRec(SalesCrMemoHeader, SalesHeader, 1);
+                    SalesHeader.TransferFields(SalesCrMemoHeader);
+                    SalesHeader."Document Type" := SalesHeader."Document Type"::"Credit Memo";
                 end;
         end;
         PEPPOLMgt.GeneratePDFAttachmentAsAdditionalDocRef(
