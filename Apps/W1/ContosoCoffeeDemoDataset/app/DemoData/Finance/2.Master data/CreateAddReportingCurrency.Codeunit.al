@@ -43,13 +43,12 @@ codeunit 5627 "Create Add. Reporting Currency"
     begin
         GetResidualCurrencyAccounts(FXGainsAccount, FXLossesAccount);
         Currency.SetFilter(Code, '%1|%2', CreateCurrency.EUR(), CreateCurrency.USD());
-        if Currency.FindSet(true) then begin
+        if Currency.FindSet(true) then
             repeat
                 Currency.Validate("Residual Gains Account", FXGainsAccount);
                 Currency.Validate("Residual Losses Account", FXLossesAccount);
                 Currency.Modify(true);
             until Currency.Next() = 0;
-        end;
     end;
 
     local procedure GetResidualCurrencyAccounts(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20])
