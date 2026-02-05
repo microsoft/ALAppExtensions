@@ -6,6 +6,7 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.Finance.Currency;
+using Microsoft.DemoData.Localization;
 
 codeunit 11536 "Create Currency NL"
 {
@@ -79,5 +80,15 @@ codeunit 11536 "Create Currency NL"
     begin
         Currency.Validate("Realized Gains Acc.", '');
         Currency.Validate("Realized Losses Acc.", '');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Add. Reporting Currency", OnBeforeGetResidualCurrencyAccounts, '', false, false)]
+    local procedure GetResidualCurrencyAccountsNL(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
+    var
+        CreateNLGLAccount: Codeunit "Create NL GL Accounts";
+    begin
+        FXGainsAccount := CreateNLGLAccount.CurrencyGains();
+        FXLossesAccount := CreateNLGLAccount.CurrencyLosses();
+        IsHandled := true;
     end;
 }
