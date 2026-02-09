@@ -303,7 +303,8 @@ codeunit 31215 "Contoso CZ Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    BindSubscription(CreateItemCZ);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemCZ);
                     BindSubscription(CreateInvtPostingSetupCZ);
                     BindSubscription(CreateItemChargeCZ);
                 end;
@@ -381,7 +382,8 @@ codeunit 31215 "Contoso CZ Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateItemCZ);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateItemCZ);
                     UnbindSubscription(CreateInvtPostingSetupCZ);
                     UnbindSubscription(CreateItemChargeCZ);
                 end;

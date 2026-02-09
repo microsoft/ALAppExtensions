@@ -45,7 +45,7 @@ codeunit 13750 "DK Contoso Localization"
         if Module = Enum::"Contoso Demo Data Module"::"Human Resources Module" then
             HumanResource(ContosoDemoDataLevel);
 
-        UnBindSubscriptionDemoData(Module);
+        UnBindSubscriptionDemoData(ContosoDemoDataLevel, Module);
     end;
 
     local procedure HumanResource(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
@@ -198,7 +198,8 @@ codeunit 13750 "DK Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateInvPostingSetupDK);
-                    BindSubscription(CreateItemDK);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemDK);
                     BindSubscription(CreateLocationDK);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
@@ -226,7 +227,7 @@ codeunit 13750 "DK Contoso Localization"
     end;
 
 
-    local procedure UnBindSubscriptionDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure UnBindSubscriptionDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         CreatePostingGroupsDK: Codeunit "Create Posting Groups DK";
         CreateAnalysisViewDK: Codeunit "Create Analysis View DK";
@@ -280,7 +281,8 @@ codeunit 13750 "DK Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnBindSubscription(CreateInvPostingSetupDK);
-                    UnBindSubscription(CreateItemDK);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnBindSubscription(CreateItemDK);
                     UnBindSubscription(CreateLocationDK);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:

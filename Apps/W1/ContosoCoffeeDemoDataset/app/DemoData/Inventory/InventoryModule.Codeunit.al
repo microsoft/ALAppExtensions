@@ -56,6 +56,7 @@ codeunit 5680 "Inventory Module" implements "Contoso Demo Data Module"
 
     procedure CreateTransactionalData()
     begin
+        Codeunit.Run(Codeunit::"Create Item Jnl Line");
         Codeunit.Run(Codeunit::"Create Item Reference");
         Codeunit.Run(Codeunit::"Create Nonstock Item");
         Codeunit.Run(Codeunit::"Create Transfer Orders");

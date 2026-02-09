@@ -43,7 +43,7 @@ codeunit 11355 "Contoso BE Localization"
         if Module = Enum::"Contoso Demo Data Module"::CRM then
             CRMModule(ContosoDemoDataLevel);
 
-        UnBindSubscriptionDemoData(Module);
+        UnBindSubscriptionDemoData(ContosoDemoDataLevel, Module);
     end;
 
     local procedure FixedAssetModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
@@ -205,7 +205,8 @@ codeunit 11355 "Contoso BE Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateInvPostingSetupBE);
-                    BindSubscription(CreateItemBE);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemBE);
                     BindSubscription(CreateLoactionBE);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
@@ -228,7 +229,7 @@ codeunit 11355 "Contoso BE Localization"
         end;
     end;
 
-    local procedure UnBindSubscriptionDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure UnBindSubscriptionDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         CreateResourceBE: Codeunit "Create Resource BE";
         CreateCurrencyExcRate: Codeunit "Create Currency Ex. Rate BE";
@@ -273,7 +274,8 @@ codeunit 11355 "Contoso BE Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnbindSubscription(CreateInvPostingSetupBE);
-                    UnbindSubscription(CreateItemBE);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateItemBE);
                     UnbindSubscription(CreateLoactionBE);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:

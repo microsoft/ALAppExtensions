@@ -1,5 +1,6 @@
 namespace Microsoft.Intercompany.CrossEnvironment;
 
+using Microsoft.Intercompany;
 using Microsoft.Intercompany.Inbox;
 
 page 30411 "API - IC Inbox Transactions"
@@ -39,16 +40,11 @@ page 30411 "API - IC Inbox Transactions"
                     Caption = 'Intercompany Partner Code';
                     Editable = true;
                 }
-#if not CLEAN27
-                field(sourceType; Rec."Source Type")
+                field(sourceType; LocalSourceType)
                 {
                     Caption = 'Source Type';
                     Editable = true;
-                    ObsoleteReason = 'Replaced with IC Source Type for consistent naming.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '27.0';
                 }
-#endif
                 field(icSourceType; Rec."IC Source Type")
                 {
                     Caption = 'IC Source Type';
@@ -124,11 +120,15 @@ page 30411 "API - IC Inbox Transactions"
     }
     trigger OnAfterGetRecord()
     begin
-#if not CLEAN27
-        SourceTypeIndex := Rec."Source Type";
-#else
+        case Rec."IC Source Type" of
+            Enum::"IC Transaction Source Type"::Journal:
+                LocalSourceType := LocalSourceType::Journal;
+            Enum::"IC Transaction Source Type"::"Sales Document":
+                LocalSourceType := LocalSourceType::"Sales Document";
+            Enum::"IC Transaction Source Type"::"Purchase Document":
+                LocalSourceType := LocalSourceType::"Purchase Document";
+        end;
         SourceTypeIndex := Rec."IC Source Type".AsInteger();
-#endif
         DocumentTypeOrdinal := Rec."Document Type".AsInteger();
         TransactionSourceIndex := Rec."Transaction Source";
         LineActionIndex := Rec."Line Action";
@@ -136,5 +136,6 @@ page 30411 "API - IC Inbox Transactions"
     end;
 
     var
+        LocalSourceType: Option Journal,"Sales Document","Purchase Document";
         SourceTypeIndex, DocumentTypeOrdinal, TransactionSourceIndex, LineActionIndex, IcAccountTypeOrdinal : Integer;
 }

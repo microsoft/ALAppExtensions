@@ -35,6 +35,7 @@ codeunit 31189 "Create Vat Posting Groups CZ"
         if ContosoCoffeeDemoDataSetup."Company Type" = ContosoCoffeeDemoDataSetup."Company Type"::"Sales Tax" then
             exit;
 
+        ContosoPostingSetupCZ.SetOverwriteData(true);
         ContosoPostingSetupCZ.InsertVATPostingSetup('', NOVAT(), NOVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", '', false, "VAT Rate CZL"::" ");
         ContosoPostingSetupCZ.InsertVATPostingSetup('', VAT12I(), VAT12I(), 0, Enum::"Tax Calculation Type"::"Normal VAT", '', false, "VAT Rate CZL"::Reduced);
         ContosoPostingSetupCZ.InsertVATPostingSetup('', VAT12S(), VAT12S(), 0, Enum::"Tax Calculation Type"::"Normal VAT", '', false, "VAT Rate CZL"::Reduced);
@@ -57,6 +58,7 @@ codeunit 31189 "Create Vat Posting Groups CZ"
         ContosoPostingSetupCZ.InsertVATPostingSetup(CreateVATPostingGroups.Export(), VAT12S(), VAT12S(), 12, Enum::"Tax Calculation Type"::"Normal VAT", '', false, "VAT Rate CZL"::Reduced);
         ContosoPostingSetupCZ.InsertVATPostingSetup(CreateVATPostingGroups.Export(), VAT21I(), VAT21I(), 0, Enum::"Tax Calculation Type"::"Normal VAT", '', false, "VAT Rate CZL"::Base);
         ContosoPostingSetupCZ.InsertVATPostingSetup(CreateVATPostingGroups.Export(), VAT21S(), VAT21S(), 21, Enum::"Tax Calculation Type"::"Normal VAT", '', false, "VAT Rate CZL"::Base);
+        ContosoPostingSetupCZ.SetOverwriteData(false);
     end;
 
     procedure UpdateVATPostingSetup()

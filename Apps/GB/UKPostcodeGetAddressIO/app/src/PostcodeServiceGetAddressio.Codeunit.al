@@ -16,7 +16,6 @@ codeunit 9092 "Postcode Service GetAddress.io"
         ServiceNameMsg: Label 'GetAddress.io', Locked = true;
         UKPostCodeFeatureNameTxt: Label 'GetAddress.io UK Postcodes', Locked = true;
         TechnicalErr: Label 'A technical error occurred while trying to reach the service.';
-        WrongServiceErr: Label 'You must choose the getAddress.io service.';
         ServiceUnavailableErr: Label 'The getAddress.io service is not available right now. Try again later.';
         ExpiredTok: Label 'expired', Locked = true;
         PaymentTok: Label 'Payment Required', Locked = true;
@@ -64,12 +63,8 @@ codeunit 9092 "Postcode Service GetAddress.io"
         FeatureTelemetry.LogUptake('0000FW5', UKPostCodeFeatureNameTxt, Enum::"Feature Uptake Status"::Used);
 
         // Check if we're the selected service
-        if ServiceKey <> ServiceIdentifierMsg then begin
-            ErrorMsg := WrongServiceErr;
-            IsSuccessful := false;
-            FeatureTelemetry.LogError('0000BUX', UKPostCodeFeatureNameTxt, 'Checking the selected service', ErrorMsg);
+        if ServiceKey <> ServiceIdentifierMsg then
             exit;
-        end;
 
         GetConfigAndIfNecessaryCreate();
 

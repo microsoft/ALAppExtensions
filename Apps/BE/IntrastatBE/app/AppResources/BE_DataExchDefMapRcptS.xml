@@ -37,7 +37,7 @@
       <DataExchColumnDef ColumnNo="9" Name="EXTXVAL" Show="false" DataType="0" Path="/Item/Dim[@prop=&quot;EXTXVAL&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" />
       <DataExchMapping TableId="4812" Name="" KeyIndex="7" MappingCodeunit="1269">
         <DataExchFieldMapping ColumnNo="2" FieldID="3" Optional="true" />
-        <DataExchFieldMapping ColumnNo="3" FieldID="7" Optional="true" />
+        <DataExchFieldMapping ColumnNo="3" FieldID="101" Optional="true" />
         <DataExchFieldMapping ColumnNo="4" FieldID="8" Optional="true" />
         <DataExchFieldMapping ColumnNo="5" FieldID="26" Optional="true" />
         <DataExchFieldMapping ColumnNo="6" FieldID="5" Optional="true" TransformationRule="ALPHANUM_ONLY" />

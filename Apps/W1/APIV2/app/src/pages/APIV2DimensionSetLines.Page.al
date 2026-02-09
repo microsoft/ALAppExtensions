@@ -331,6 +331,8 @@ page 30022 "APIV2 - Dimension Set Lines"
                             SalesCrMemoHeader.SetRange("Draft Cr. Memo SystemId", ParentIdFilter);
                             if SalesCrMemoHeader.FindFirst() then
                                 exit(SalesCrMemoHeader."Dimension Set ID");
+                            if SalesCrMemoHeader.GetBySystemId(ParentIdFilter) then
+                                exit(SalesCrMemoHeader."Dimension Set ID");
                         end;
                 end;
             DimensionSetEntryBufferParentType::"Sales Invoice":
@@ -504,6 +506,13 @@ page 30022 "APIV2 - Dimension Set Lines"
                         end else begin
                             SalesCrMemoHeader.SetRange("Draft Cr. Memo SystemId", ParentIdFilter);
                             if SalesCrMemoHeader.FindFirst() then begin
+                                SalesCrMemoHeader."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+                                DimensionManagement.UpdateGlobalDimFromDimSetID(
+                                    SalesCrMemoHeader."Dimension Set ID", SalesCrMemoHeader."Shortcut Dimension 1 Code", SalesCrMemoHeader."Shortcut Dimension 2 Code");
+                                SalesCrMemoHeader.Modify(true);
+                                exit;
+                            end;
+                            if SalesCrMemoHeader.GetBySystemId(ParentIdFilter) then begin
                                 SalesCrMemoHeader."Dimension Set ID" := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
                                 DimensionManagement.UpdateGlobalDimFromDimSetID(
                                     SalesCrMemoHeader."Dimension Set ID", SalesCrMemoHeader."Shortcut Dimension 1 Code", SalesCrMemoHeader."Shortcut Dimension 2 Code");

@@ -167,7 +167,8 @@ codeunit 17142 "NZ Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateNZLocation);
-                    BindSubscription(CreateNZItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateNZItem);
                 end;
             Enum::"Contoso Demo Data Module"::Bank:
                 BindSubscription(CreateNZBankAccount);
@@ -224,7 +225,8 @@ codeunit 17142 "NZ Contoso Localization"
                 UnbindSubscription(CreateNZBankAccount);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateNZItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateNZItem);
                     UnbindSubscription(CreateNZLocation);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:

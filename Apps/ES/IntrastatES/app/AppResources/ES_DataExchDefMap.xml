@@ -17,7 +17,7 @@
       <DataExchColumnDef ColumnNo="13" Name="Statistical Value" Show="false" DataType="2" DataFormat="&lt;Precision,2:&gt;&lt;Integer&gt;&lt;Decimal&gt;" DataFormattingCulture="en-US" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
       <DataExchColumnDef ColumnNo="14" Name="Partner Tax ID" Show="false" DataType="0" TextPaddingRequired="false" Justification="1" UseNodeNameAsValue="false" />
       <DataExchMapping TableId="4812" Name="" KeyIndex="1" MappingCodeunit="1269">
-        <DataExchFieldMapping ColumnNo="1" FieldID="7" Optional="true" TransformationRule="EUCOUNTRYCODELOOKUP">
+        <DataExchFieldMapping ColumnNo="1" FieldID="101" Optional="true" TransformationRule="EUCOUNTRYCODELOOKUP">
           <TransformationRules>
             <Code>EUCOUNTRYCODELOOKUP</Code>
             <Description>EU Country Lookup</Description>
@@ -37,7 +37,7 @@
             <Direction />
           </TransformationRules>
         </DataExchFieldMapping>
-        <DataExchFieldMapping ColumnNo="2" FieldID="101" Optional="true" />
+        <DataExchFieldMapping ColumnNo="2" FieldID="26" Optional="true" />
         <DataExchFieldMapping ColumnNo="3" FieldID="28" Optional="true" />
         <DataExchFieldMapping ColumnNo="4" FieldID="8" Optional="true" />
         <DataExchFieldMapping ColumnNo="5" FieldID="9" Optional="true" />

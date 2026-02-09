@@ -4,24 +4,13 @@
 /// </summary>
 namespace Microsoft.Finance.VAT.Setup;
 
-using Microsoft.Bank.Reports;
-using Microsoft.CashFlow.Reports;
-using Microsoft.FixedAssets.Reports;
-using Microsoft.Foundation.Reporting;
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.History;
-using Microsoft.Purchases.Reports;
-using Microsoft.Sales.FinanceCharge;
-using Microsoft.Sales.History;
-using Microsoft.Sales.Reminder;
-using Microsoft.Sales.Reports;
 using System.Environment.Configuration;
-using System.Reflection;
 using System.Upgrade;
 
 codeunit 10580 "Feature - Reports GB" implements "Feature Data Update"
 {
     Access = Internal;
+    Permissions = TableData "Feature Data Update Status" = rm;
     InherentEntitlements = X;
     InherentPermissions = X;
     ObsoleteReason = 'Feature Reports GB will be enabled by default in version 30.0.';
@@ -30,7 +19,6 @@ codeunit 10580 "Feature - Reports GB" implements "Feature Data Update"
 
     var
         UpgTagReportsGB: Codeunit "Upg. Tag Reports GB";
-        ReportsGBApplicationAppIdTok: Label '{a4417920-02d4-47fc-b6d2-3bcfdfe1e798}', Locked = true;
         DescriptionTxt: Label 'Report layouts will be updated to contain GB localization functionality';
 
     procedure IsDataUpdateRequired(): Boolean
@@ -50,12 +38,13 @@ codeunit 10580 "Feature - Reports GB" implements "Feature Data Update"
     procedure UpdateData(FeatureDataUpdateStatus: Record "Feature Data Update Status")
     var
         FeatureDataUpdateMgt: Codeunit "Feature Data Update Mgt.";
+        ReportsGBHelperProcedures: Codeunit "Reports GB Helper Procedures";
         StartDateTime: DateTime;
         EndDateTime: DateTime;
     begin
         StartDateTime := CurrentDateTime;
         FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, 'Upgrade Reports GB', StartDateTime);
-        SetDefaultReportLayouts();
+        ReportsGBHelperProcedures.SetDefaultReportLayouts();
         EndDateTime := CurrentDateTime;
         FeatureDataUpdateMgt.LogTask(FeatureDataUpdateStatus, 'Upgrade Reports GB', EndDateTime);
     end;
@@ -88,99 +77,6 @@ codeunit 10580 "Feature - Reports GB" implements "Feature Data Update"
         UpgradeTag.SetUpgradeTag(UpgTagReportsGB.GetReportsGBUpgradeTag());
         if not DataUpgradeExecuted then
             UpgradeTag.SetSkippedUpgrade(UpgTagReportsGB.GetReportsGBUpgradeTag(), true);
-    end;
-
-    procedure SetDefaultReportLayouts()
-    begin
-        SetDefaultReportLayout(Report::"Sales Document - Test");
-        SetDefaultReportLayout(Report::"Purchase Document - Test");
-        SetDefaultReportLayout(Report::Reminder);
-        SetDefaultReportLayout(Report::"Bank Account - List");
-        SetDefaultReportLayout(Report::"Cash Flow Dimensions - Detail");
-        SetDefaultReportLayout(Report::"Finance Charge Memo");
-#if not CLEAN28
-        SetDefaultReportLayout(Report::"Fixed Asset - Projected Value");
-#endif
-        SetDefaultReportLayout(Report::"Purchase - Quote");
-        SetDefaultReportLayout(Report::"Purchase - Receipt");
-        SetDefaultReportLayout(Report::"Sales - Shipment");
-    end;
-
-    local procedure SetDefaultReportLayout(ReportID: Integer)
-    var
-        SelectedReportLayoutList: Record "Report Layout List";
-    begin
-        SelectedReportLayoutList.SetRange("Report ID", ReportID);
-        SelectedReportLayoutList.SetRange(Name, 'GBlocalizationLayout');
-        SelectedReportLayoutList.SetRange("Application ID", ReportsGBApplicationAppIdTok);
-        if SelectedReportLayoutList.FindFirst() then
-            SetDefaultReportLayoutSelection(SelectedReportLayoutList);
-        SelectedReportLayoutList.Reset();
-    end;
-
-    local procedure SetDefaultReportLayoutSelection(SelectedReportLayoutList: Record "Report Layout List")
-    var
-        ReportLayoutSelection: Record "Report Layout Selection";
-        CustomDimensions: Dictionary of [Text, Text];
-        EmptyGuid: Guid;
-        SelectedCompany: Text[30];
-    begin
-        SelectedCompany := CopyStr(CompanyName, 1, MaxStrLen(SelectedCompany));
-        AddLayoutSelection(SelectedReportLayoutList, EmptyGuid, SelectedCompany);
-        if ReportLayoutSelection.get(SelectedReportLayoutList."Report ID", SelectedCompany) then begin
-            ReportLayoutSelection.Type := GetReportLayoutSelectionCorrespondingEnum(SelectedReportLayoutList);
-            ReportLayoutSelection.Modify(true);
-        end else begin
-            ReportLayoutSelection."Report ID" := SelectedReportLayoutList."Report ID";
-            ReportLayoutSelection."Company Name" := SelectedCompany;
-            ReportLayoutSelection."Custom Report Layout Code" := '';
-            ReportLayoutSelection.Type := GetReportLayoutSelectionCorrespondingEnum(SelectedReportLayoutList);
-            ReportLayoutSelection.Insert(true);
-        end;
-
-        InitReportLayoutListDimensions(SelectedReportLayoutList, CustomDimensions);
-        AddReportLayoutDimensionsAction('SetDefault', CustomDimensions);
-    end;
-
-    local procedure AddLayoutSelection(SelectedReportLayoutList: Record "Report Layout List"; UserId: Guid; SelectedCompany: Text[30]): Boolean
-    var
-        TenantReportLayoutSelection: Record "Tenant Report Layout Selection";
-    begin
-        TenantReportLayoutSelection.Init();
-        TenantReportLayoutSelection."App ID" := SelectedReportLayoutList."Application ID";
-        TenantReportLayoutSelection."Company Name" := SelectedCompany;
-        TenantReportLayoutSelection."Layout Name" := SelectedReportLayoutList."Name";
-        TenantReportLayoutSelection."Report ID" := SelectedReportLayoutList."Report ID";
-        TenantReportLayoutSelection."User ID" := UserId;
-
-        if not TenantReportLayoutSelection.Insert(true) then
-            TenantReportLayoutSelection.Modify(true);
-    end;
-
-    local procedure GetReportLayoutSelectionCorrespondingEnum(SelectedReportLayoutList: Record "Report Layout List"): Integer
-    begin
-        case SelectedReportLayoutList."Layout Format" of
-
-            SelectedReportLayoutList."Layout Format"::RDLC:
-                exit(0);
-            SelectedReportLayoutList."Layout Format"::Word:
-                exit(1);
-            SelectedReportLayoutList."Layout Format"::Excel:
-                exit(3);
-            SelectedReportLayoutList."Layout Format"::Custom:
-                exit(4);
-        end
-    end;
-
-    local procedure InitReportLayoutListDimensions(ReportLayoutList: Record "Report Layout List"; var CustomDimensions: Dictionary of [Text, Text])
-    begin
-        CustomDimensions.Set('ReportId', Format(ReportLayoutList."Report ID"));
-        CustomDimensions.Set('LayoutName', ReportLayoutList."Name");
-    end;
-
-    local procedure AddReportLayoutDimensionsAction(Action: Text; var CustomDimensions: Dictionary of [Text, Text])
-    begin
-        CustomDimensions.Add('Action', Action);
     end;
 }
 #endif

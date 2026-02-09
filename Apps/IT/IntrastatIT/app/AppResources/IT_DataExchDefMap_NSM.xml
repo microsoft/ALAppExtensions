@@ -47,7 +47,7 @@
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="4" Optional="true" UseDefaultValue="true" DefaultValue="1" />
         <DataExchFieldMapping ColumnNo="5" FieldID="46" Optional="true" />
-        <DataExchFieldMapping ColumnNo="6" FieldID="7" Optional="true" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="101" Optional="true" />
         <DataExchFieldMapping ColumnNo="7" FieldID="29" Optional="true" />
         <DataExchFieldMapping ColumnNo="8" FieldID="13" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>

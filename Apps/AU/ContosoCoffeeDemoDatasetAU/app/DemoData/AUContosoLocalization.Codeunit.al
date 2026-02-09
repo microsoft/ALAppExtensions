@@ -215,7 +215,8 @@ codeunit 17131 "AU Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateAULocation);
-                    BindSubscription(CreateAUItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateAUItem);
                 end;
             Enum::"Contoso Demo Data Module"::Bank:
                 begin
@@ -286,7 +287,8 @@ codeunit 17131 "AU Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateAUItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateAUItem);
                     UnbindSubscription(CreateAULocation);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
