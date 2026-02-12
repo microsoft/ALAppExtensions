@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.Currency;
 using Microsoft.DemoData.Localization;
+using Microsoft.Finance.Currency;
 
 codeunit 11536 "Create Currency NL"
 {
