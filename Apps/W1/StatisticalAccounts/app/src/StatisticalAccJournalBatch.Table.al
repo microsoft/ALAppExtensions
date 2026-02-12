@@ -27,6 +27,14 @@ table 2630 "Statistical Acc. Journal Batch"
             DataClassification = CustomerContent;
             TableRelation = "Statistical Account";
         }
+        field(40; "No. of Lines"; Integer)
+        {
+            CalcFormula = count("Statistical Acc. Journal Line" where("Journal Template Name" = field("Journal Template Name"), "Journal Batch Name" = field(Name)));
+            Caption = 'No. of Lines';
+            Editable = false;
+            FieldClass = FlowField;
+            ToolTip = 'Specifies the number of lines in this journal batch.';
+        }
         field(50; "Statistical Account Name"; Text[100])
         {
             FieldClass = FlowField;

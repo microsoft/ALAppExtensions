@@ -67,6 +67,14 @@ page 18327 "GST Journal Batches"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the type of template as GST Adjustment Journal for update on journal line.';
                 }
+                field("No. of Lines"; Rec."No. of Lines")
+                {
+                    Visible = false;
+                    trigger OnDrillDown()
+                    begin
+                        GSTJnlManagement.TemplateSelectionFromGSTBatch(Rec)
+                    end;
+                }
             }
         }
     }
