@@ -37,6 +37,11 @@ codeunit 4781 "Contoso Purchase"
     end;
 
     procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; BuyfromVendorNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; ExpectedReceiptDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; VendorOrderNo: Code[20]; VendorInvoiceNo: Code[35]; DocumentDate: Date; PaymentMethodCode: Code[10]; PurchaserCode: Code[20]): Record "Purchase Header";
+    begin
+        exit(InsertPurchaseHeader(DocumentType, BuyfromVendorNo, YourReference, PostingDate, PostingDate, 0D, PaymentTermsCode, CopyStr(LocationCode, 1, 10), VendorOrderNo, VendorInvoiceNo, '', PostingDate, PaymentMethodCode, ''));
+    end;
+
+    procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; BuyfromVendorNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; ExpectedReceiptDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; VendorOrderNo: Code[20]; VendorInvoiceNo: Code[35]; VendorCrMemoNo: Code[35]; DocumentDate: Date; PaymentMethodCode: Code[10]; PurchaserCode: Code[20]): Record "Purchase Header";
     var
         PurchaseHeader: Record "Purchase Header";
     begin
@@ -62,6 +67,9 @@ codeunit 4781 "Contoso Purchase"
             PurchaseHeader.Validate("Vendor Invoice No.", VendorInvoiceNo)
         else
             PurchaseHeader.Validate("Vendor Invoice No.", PurchaseHeader."No.");
+
+        if VendorCrMemoNo <> '' then
+            PurchaseHeader.Validate("Vendor Cr. Memo No.", VendorCrMemoNo);
 
         PurchaseHeader.Validate("Document Date", DocumentDate);
         PurchaseHeader.Validate("Payment Method Code", PaymentMethodCode);
