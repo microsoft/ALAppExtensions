@@ -61,6 +61,27 @@ page 9142 "GetAddress.io Config"
         }
     }
 
+    actions
+    {
+        area(processing)
+        {
+            action(Disable)
+            {
+                ApplicationArea = All;
+                Image = Setup;
+                Caption = 'Disable';
+                ToolTip = 'Disables the service by clearing the URL.';
+
+                trigger OnAction()
+                begin
+                    Rec.EndpointURL := '';
+                    Rec.Modify();
+                    CurrPage.Update();
+                end;
+            }
+        }
+    }
+
     trigger OnAfterGetRecord()
     begin
         UpdateAPIField();

@@ -1,0 +1,22 @@
+{
+  "result": [
+    {
+      "id": "1",
+      "line_1": "ADDRESS-1",
+      "line_2": "ADDRESS 2-1",
+      "post_town": "CITY",
+      "postcode": "TESTPOSTCODE",
+      "county": "COUNTY",
+      "country_iso_2": "GB"      
+    },
+    {
+      "id": "2",
+      "line_1": "ADDRESS",
+      "line_2": "ADDRESS 2",
+      "post_town": "CITY",
+      "postcode": "TESTPOSTCODE",
+      "county": "COUNTY",
+      "country_iso_2": "GB"      
+    }
+]
+}

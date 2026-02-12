@@ -13,6 +13,7 @@ codeunit 13613 "Elec. VAT Decl. Submit"
         SubmissionSuccessfulMsg: Label 'VAT Return draft submitted successfully. You need confirm the draft as final on skat.dk website.';
         FeatureNameTxt: Label 'Electronic VAT Declaration DK', Locked = true;
         VATReturnSubmittedTxt: Label 'VAT Return Created', Locked = true;
+        SubmitVATReturnOnRunTxt: Label 'Submit VAT Return OnRun', Locked = true;
 
     trigger OnRun()
     var
@@ -20,6 +21,7 @@ codeunit 13613 "Elec. VAT Decl. Submit"
         SubmissionTempBlob: Codeunit "Temp Blob";
         HttpResponse: Interface "Elec. VAT Decl. Response";
     begin
+        FeatureTelemetry.LogUsage('0000RIX', FeatureNameTxt, SubmitVATReturnOnRunTxt);
         HttpResponse := ElecVATDeclSKATAPI.SubmitVATReturn(Rec, SubmissionTempBlob);
         GetDeeplink(HttpResponse);
         ElecVATDeclArchiving.ArchiveSubmissionMessageBlob(SubmissionTempBlob, Rec);

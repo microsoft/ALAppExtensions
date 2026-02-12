@@ -30,12 +30,12 @@
                         <Direction />
                     </TransformationRules>
                 </DataExchFieldMapping>
-                <DataExchFieldMapping ColumnNo="2" FieldID="101" />
+                <DataExchFieldMapping ColumnNo="2" FieldID="17" />
                 <DataExchFieldMapping ColumnNo="3" FieldID="28" />
                 <DataExchFieldMapping ColumnNo="4" FieldID="8" />
                 <DataExchFieldMapping ColumnNo="5" FieldID="21" />
                 <DataExchFieldMapping ColumnNo="6" FieldID="35" Optional="true" />
-                <DataExchFieldMapping ColumnNo="7" FieldID="7" />
+                <DataExchFieldMapping ColumnNo="7" FieldID="101" />
                 <DataExchFieldMapping ColumnNo="8" FieldID="18" />
             </DataExchMapping>
         </DataExchLineDef>

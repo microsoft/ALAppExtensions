@@ -85,7 +85,7 @@
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
         </DataExchFieldMapping>
-        <DataExchFieldMapping ColumnNo="9" FieldID="7" Optional="true" />
+        <DataExchFieldMapping ColumnNo="9" FieldID="101" Optional="true" />
         <DataExchFieldMapping ColumnNo="10" FieldID="29" Optional="true" />
         <DataExchFieldMapping ColumnNo="11" FieldID="13" Optional="true" TransformationRule="GETAMOUNTSIGN">
           <TransformationRules>

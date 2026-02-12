@@ -225,7 +225,8 @@ codeunit 27054 "CA Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateCAItemJnlTemplate);
-                    BindSubscription(CreateCAItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateCAItem);
                     BindSubscription(CreateCAItemCharge);
                     BindSubscription(CreateCALocation);
                 end;
@@ -290,7 +291,8 @@ codeunit 27054 "CA Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnBindSubscription(CreateCAItemJnlTemplate);
-                    UnBindSubscription(CreateCAItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnBindSubscription(CreateCAItem);
                     UnBindSubscription(CreateCAItemCharge);
                     UnBindSubscription(CreateCALocation);
                 end;

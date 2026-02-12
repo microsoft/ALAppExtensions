@@ -22,7 +22,8 @@ codeunit 5279 "Generate Contoso Demo Data"
         JobQueueLogEntry: Record "Job Queue Log Entry";
     begin
         // give time to update AssistedCompanySetupStatus with "Session ID" and "Task ID"
-        Sleep(500);
+        // also time to initialize permission systems in new company
+        Sleep(10 * 1000);
 
         if not CODEUNIT.Run(CODEUNIT::"Company Creation Contoso", Rec) then begin
             AssistedCompanySetupStatus.Get(CompanyName);

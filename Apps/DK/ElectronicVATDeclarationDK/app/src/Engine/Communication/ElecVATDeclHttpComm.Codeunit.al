@@ -83,13 +83,15 @@ codeunit 13605 "Elec. VAT Decl. Http Comm." implements "Elec. VAT Decl. Communic
         ErrorNode: XmlNode;
         ErrorCode: Integer;
         ResponseText: Text;
+        CustomDimensions: Dictionary of [Text, Text];
     begin
         Response.Content.ReadAs(ResponseText);
         if not ElecVATDeclXml.TryGetErrorNodeFromResponseText(ResponseText, ErrorNode) then
             exit;
 
         Evaluate(ErrorCode, ErrorNode.AsXmlElement().InnerText());
-        FeatureTelemetry.LogError('0000LR0', FeatureNameTxt, StrSubstNo(ErrorTemplateErr, ErrorCode, ''), '');
+        CustomDimensions.Add('ErrorCode', Format(ErrorCode));
+        FeatureTelemetry.LogError('0000LR0', FeatureNameTxt, StrSubstNo(ErrorTemplateErr, ErrorCode, ''), '', '', CustomDimensions);
         case ErrorCode of
             4801:
                 Error(ErrorTemplateErr, ErrorCode, Error4801Err);

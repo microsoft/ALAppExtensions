@@ -4796,6 +4796,39 @@ codeunit 139550 "Intrastat Report Test"
         Assert.RecordIsNotEmpty(IntrastatReportLine);
     end;
 
+    [Test]
+    procedure WhenValidateTariffNoInItemTemplateThenAnErrorOccur()
+    var
+        ItemTempl: Record "Item Templ.";
+        TariffNo: Record "Tariff Number";
+        UnitOfMeasure: Record "Unit of Measure";
+        LibraryTemplates: Codeunit "Library - Templates";
+    begin
+        // [SCENARIO 618166] When validating an item template in Business Central that contains a tariff number (Tariff No.) an error occurs
+        Initialize();
+
+        // [GIVEN] Create Item Unit of Measure
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+
+        // [GIVEN] Create Tariff Number
+        TariffNo.Init();
+        TariffNo.Validate("No.", LibraryUtility.GenerateGUID());
+        TariffNo.Validate("Supplementary Units", true);
+        TariffNo.SetSkipValidationLogic(true);
+        TariffNo.Validate("Suppl. Unit of Measure", UnitOfMeasure.Code);
+        TariffNo.Insert(true);
+
+        // [GIVEN] Create Item Template
+        LibraryTemplates.CreateItemTemplateWithData(ItemTempl);
+
+        //[WHEN] Select same Tariff No in created Item Template
+        ItemTempl.Validate("Tariff No.", TariffNo."No.");
+        ItemTempl.Modify(true);
+
+        //[THEN] Tariff No selected successfully No error occur
+        Assert.AreEqual(TariffNo."No.", ItemTempl."Tariff No.", '');
+    end;
+
     local procedure Initialize()
     var
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";

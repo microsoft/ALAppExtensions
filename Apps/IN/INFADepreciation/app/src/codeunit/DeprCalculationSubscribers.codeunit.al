@@ -141,7 +141,7 @@ codeunit 18632 "Depr Calculation Subscribers"
             end;
 
         if (DeprBook."FA Book Type" = DeprBook."FA Book Type"::"Income Tax") or (DeprBook."Fiscal Year 365 Days") then
-            NumberOfDays := CalculateDeprDays(FirstDeprDate, UntilDate);
+            NumberOfDays := DepreciationCalc.DeprDays(FirstDeprDate, UntilDate, Year365Days);
 
         OnAfterCalculateNumberofDays(FixedAsset, DeprBook, NumberofDays, FirstDeprDate, UntilDate, Year365Days);
 
@@ -423,6 +423,23 @@ codeunit 18632 "Depr Calculation Subscribers"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterCalcDB1Amount', '', false, false)]
+    local procedure OnAfterCalcDB1Amount(DBPercent: Decimal; NumberOfDays: Integer; BookValue: Decimal; var Result: Decimal; FADepreciationBook: Record "FA Depreciation Book")
+    var
+        DeprBook: Record "Depreciation Book";
+    begin
+        if not DeprBook.Get(FADepreciationBook."Depreciation Book Code") then
+            exit;
+
+        if not (DeprBook."FA Book Type" = FADepreciationBook."FA Book Type"::"Income Tax") then
+            exit;
+
+        if NumberOfDays <= DeprBook."Depr. Threshold Days" then
+            Result := -(BookValue * DBPercent / 200)
+        else
+            Result := -(BookValue * DBPercent / 100);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Check Consistency", 'OnCheckNormalPostingOnAfterSetFALedgerEntryFilters', '', false, false)]
     local procedure CheckNormalPostingError(DepreciationBookCode: Code[10]; FANo: Code[20])
     var
@@ -479,17 +496,6 @@ codeunit 18632 "Depr Calculation Subscribers"
                (FALedgerEntry."No. of Depreciation Days" <= DeprBookThresholdDays)
             then
                 AddDeprAmount += FALedgerEntry."Add. Depreciation Amount";
-    end;
-
-    local procedure CalculateDeprDays(StartingDate: Date; EndingDate: Date): Integer
-    begin
-        if EndingDate < StartingDate then
-            exit(0);
-
-        if (StartingDate = 0D) or (EndingDate = 0D) then
-            exit(0);
-
-        exit(1 + (EndingDate - StartingDate));
     end;
 
     local procedure CreateDisposedError(DepreciationBookCode: Code[20]; FANo: Code[20])

@@ -15,6 +15,7 @@ codeunit 13620 "Elec. VAT Decl. Check Status"
         ElecVATDeclAcceptedTxt: Label 'Electronic VAT Declaration was accepted with this response', Locked = true;
         ElecVATDeclRejectedTxt: Label 'Electronic VAT Declaration was rejected with this response', Locked = true;
         EvelVATDeclResponseRcvdTxt: Label 'Electronic VAT Declaration response received', Locked = true;
+        CheckStatusOnRunTxt: Label 'Check VAT Return Status OnRun', Locked = true;
 
     trigger OnRun()
     var
@@ -25,6 +26,7 @@ codeunit 13620 "Elec. VAT Decl. Check Status"
         ResponseText: Text;
         TransactionID: Code[100];
     begin
+        FeatureTelemetry.LogUsage('0000RIW', FeatureNameTxt, CheckStatusOnRunTxt);
         TransactionID := ElecVATDeclCommunication.GetTransactionIDForVATReturn(Rec."No.");
         Response := ElecVATDeclSKATAPI.CheckVATReturnStatus(TransactionID);
         ResponseText := Response.GetResponseBodyAsText();

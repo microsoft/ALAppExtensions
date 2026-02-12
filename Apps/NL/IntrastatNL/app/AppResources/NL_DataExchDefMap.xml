@@ -52,7 +52,7 @@
             <ExportFromDateType>3</ExportFromDateType>
           </TransformationRules>
         </DataExchFieldMapping>
-        <DataExchFieldMapping ColumnNo="2" FieldID="101" Optional="true" TransformationRule="GETMONTH">
+        <DataExchFieldMapping ColumnNo="2" FieldID="4" Optional="true" TransformationRule="GETMONTH">
           <TransformationRules>
             <Code>GETMONTH</Code>
             <Description>Get Month From Date</Description>
