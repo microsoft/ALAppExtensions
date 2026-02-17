@@ -9,10 +9,12 @@ tableextension 11037 "E-Doc Sales Invoice Header DE" extends "Sales Invoice Head
 {
     fields
     {
+#pragma warning disable AS0125
         field(11035; "Buyer Reference"; Text[100])
         {
             Caption = 'Buyer Reference';
             DataClassification = CustomerContent;
         }
+#pragma warning restore AS0125
     }
 }

@@ -33,6 +33,7 @@ page 6236 "Sustainability Activities"
                 field("Emission CO2"; EmissionCO2)
                 {
                     ApplicationArea = All;
+                    AutoFormatType = 0;
                     Caption = 'CO2 This Month';
                     StyleExpr = EmissionCO2StyleText;
                     DecimalPlaces = 2 : 2;
@@ -47,6 +48,7 @@ page 6236 "Sustainability Activities"
                 field("Emission CH4"; EmissionCH4)
                 {
                     ApplicationArea = All;
+                    AutoFormatType = 0;
                     Caption = 'CH4 This Month';
                     StyleExpr = EmissionCH4StyleText;
                     DecimalPlaces = 2 : 2;
@@ -61,6 +63,7 @@ page 6236 "Sustainability Activities"
                 field("Emission N2O"; EmissionN2O)
                 {
                     ApplicationArea = All;
+                    AutoFormatType = 0;
                     Caption = 'N2O This Month';
                     StyleExpr = EmissionN2OStyleText;
                     DecimalPlaces = 2 : 2;
@@ -82,6 +85,7 @@ page 6236 "Sustainability Activities"
                 field("Water Intensity"; WaterIntensity)
                 {
                     ApplicationArea = All;
+                    AutoFormatType = 0;
                     Caption = 'Water This Month';
                     StyleExpr = WaterIntensityStyleText;
                     DecimalPlaces = 2 : 2;
@@ -96,6 +100,7 @@ page 6236 "Sustainability Activities"
                 field("Waste Intensity"; WasteIntensity)
                 {
                     ApplicationArea = All;
+                    AutoFormatType = 0;
                     Caption = 'Waste This Month';
                     StyleExpr = WasteIntensityStyleText;
                     DecimalPlaces = 2 : 2;

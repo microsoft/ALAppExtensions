@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Privacy;
+using System.Telemetry;
 using System.Utilities;
 
 page 10058 "Transmission IRIS"
@@ -354,6 +355,23 @@ page 10058 "Transmission IRIS"
                     Message(TokensRemovedMsg);
                 end;
             }
+            action(ShowCorrectionActions)
+            {
+                Caption = 'Show Correction Actions';
+                ToolTip = 'Force show correction actions regardless of the transmission status. Use this action for troubleshooting when the correction actions are hidden but should be available.';
+                Image = AddAction;
+                Visible = false;
+
+                trigger OnAction()
+                begin
+                    if not ConfirmMgt.GetResponseOrDefault(ShowCorrectionActionsQst, false) then
+                        exit;
+
+                    FeatureTelemetry.LogUsage('0000RNZ', Helper.GetIRISFeatureName(), ForceCorrectionActionsEventTxt);
+                    ForceCorrectionActionsVisible := true;
+                    SetActionsVisibility();
+                end;
+            }
         }
         area(Promoted)
         {
@@ -394,6 +412,8 @@ page 10058 "Transmission IRIS"
         ProcessTransmission: Codeunit "Process Transmission IRIS";
         ProcessResponse: Codeunit "Process Response IRIS";
         ConfirmMgt: Codeunit "Confirm Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        Helper: Codeunit "Helper IRIS";
         StatusStyle: Text;
         ErrorInfoCaption: Text;
         TestModeText: Text;
@@ -402,6 +422,7 @@ page 10058 "Transmission IRIS"
         SendOriginalActionVisible: Boolean;
         SendReplacementActionVisible: Boolean;
         SendCorrectionActionVisible: Boolean;
+        ForceCorrectionActionsVisible: Boolean;
         SendTransmissionQst: Label 'Do you want to send the transmission to the IRS?';
         SendReplacementTransmissionQst: Label 'Do you want to send the replacement transmission to the IRS?';
         SendCorrectionTransmissionQst: Label 'Do you want to send the correction transmission to the IRS?';
@@ -410,6 +431,8 @@ page 10058 "Transmission IRIS"
         SendingCorrectionMsg: Label 'Sending correction transmission to the IRS...';
         RequestingStatusMsg: Label 'Requesting transmission status...';
         TokensRemovedMsg: Label 'The IRIS auth tokens were removed from the user storage.';
+        ShowCorrectionActionsQst: Label 'The standard correction conditions are not met. Do you want to force show the correction actions for troubleshooting purposes?';
+        ForceCorrectionActionsEventTxt: Label 'ForceCorrectionActionsEnabled', Locked = true;
         TwoStepCorrectionHelpMsg: Label 'Use the two-step correction process if incorrect form type was previously filed, e.g., 1099-MISC instead of 1099-NEC. \\Step 1: Submit zero amounts correction. \Step 2.1: After the transmission is accepted, use the action Update Transmission to add the corrected 1099 form documents. \Step 2.2: Send the updated transmission to the IRS.';
         FirstStepCompletedMsg: Label 'The correction transmission with zero amounts was sent to the IRS. After the transmission is accepted, use the action Update Transmission to add the corrected 1099 form documents and then send the updated transmission to the IRS.';
         ConfirmAssignReceiptIDQst: Label 'Are you sure you want to assign the Receipt ID to the transmission manually?';
@@ -432,7 +455,7 @@ page 10058 "Transmission IRIS"
     begin
         SendOriginalActionVisible := ProcessTransmission.IsSendOriginalAllowed(Rec);
         SendReplacementActionVisible := ProcessTransmission.IsSendReplacementAllowed(Rec);
-        SendCorrectionActionVisible := ProcessTransmission.IsSendCorrectionAllowed(Rec);
+        SendCorrectionActionVisible := ProcessTransmission.IsSendCorrectionAllowed(Rec) or ForceCorrectionActionsVisible;
     end;
 
     local procedure SetErrorInfoField()

@@ -8,7 +8,7 @@ using System.Text;
 
 page 31202 "Save Acc. Schedule Result CZL"
 {
-    Caption = 'Save Acc. Schedule Result';
+    Caption = 'Save Fin. Report Result';
     PageType = Card;
 
     layout
@@ -21,10 +21,10 @@ page 31202 "Save Acc. Schedule Result CZL"
                 field(AccSchedName; AccSchedName)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Acc. Schedule Name';
+                    Caption = 'Fin. Report Name';
                     Lookup = true;
                     TableRelation = "Acc. Schedule Name";
-                    ToolTip = 'Specifies the name of account schedule.';
+                    ToolTip = 'Specifies the name of financial report.';
                     Editable = false;
                 }
                 field(ColumnLayoutName; ColumnLayoutName)
@@ -55,7 +55,7 @@ page 31202 "Save Acc. Schedule Result CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Description';
-                    ToolTip = 'Specifies the description of account schedule result.';
+                    ToolTip = 'Specifies the description of financial report result.';
                 }
                 field(UseAmtsInAddCurr; UseAmtsInAddCurr)
                 {

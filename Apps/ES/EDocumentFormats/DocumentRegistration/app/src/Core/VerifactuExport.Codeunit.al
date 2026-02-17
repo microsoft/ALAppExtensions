@@ -7,7 +7,6 @@ namespace Microsoft.EServices.EDocument.Verifactu;
 using Microsoft.EServices.EDocument;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
-using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using Microsoft.Service.History;
 using System.Reflection;
@@ -63,28 +62,32 @@ codeunit 10778 "Verifactu Export"
             Database::"Sales Invoice Header":
                 begin
                     SourceDocumentHeader.SetTable(SalesInvoiceHeader);
-                    SalesInvoiceHeader.SetRecFilter();
+                    if not IsBatch then
+                        SalesInvoiceHeader.SetRecFilter();
                     SourceDocumentLines.SetTable(SalesInvoiceLine);
                     ExportInvoice(EDocument, SalesInvoiceHeader, SalesInvoiceLine, TempBlob, IsBatch);
                 end;
             Database::"Sales Cr.Memo Header":
                 begin
                     SourceDocumentHeader.SetTable(SalesCrMemoHeader);
-                    SalesCrMemoHeader.SetRecFilter();
+                    if not IsBatch then
+                        SalesCrMemoHeader.SetRecFilter();
                     SourceDocumentLines.SetTable(SalesCrMemoLine);
                     ExportCreditMemo(EDocument, SalesCrMemoHeader, SalesCrMemoLine, TempBlob, IsBatch);
                 end;
             Database::"Service Invoice Header":
                 begin
                     SourceDocumentHeader.SetTable(ServiceInvoiceHeader);
-                    ServiceInvoiceHeader.SetRecFilter();
+                    if not IsBatch then
+                        ServiceInvoiceHeader.SetRecFilter();
                     SourceDocumentLines.SetTable(ServiceInvoiceLine);
                     ExportServiceInvoice(EDocument, ServiceInvoiceHeader, ServiceInvoiceLine, TempBlob, IsBatch);
                 end;
             Database::"Service Cr.Memo Header":
                 begin
                     SourceDocumentHeader.SetTable(ServiceCrMemoHeader);
-                    ServiceCrMemoHeader.SetRecFilter();
+                    if not IsBatch then
+                        ServiceCrMemoHeader.SetRecFilter();
                     SourceDocumentLines.SetTable(ServiceCrMemoLine);
                     ExportServiceCreditMemo(EDocument, ServiceCrMemoHeader, ServiceCrMemoLine, TempBlob, IsBatch);
                 end;
@@ -96,35 +99,9 @@ codeunit 10778 "Verifactu Export"
     #region Invoice
     local procedure ExportInvoice(var EDocument: Record "E-Document"; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; var TempBlob: Codeunit "Temp Blob"; IsBatch: Boolean)
     var
-        TempBlobQR: Codeunit "Temp Blob";
-        InvoiceType, VerifactuDateTime : Text;
-        PreviousDocumentNo, PreviousHuella : Text;
-        VerifactuHash: Text[64];
-        PreviousPostingDate: Date;
-        FileOutStream, OutStr : OutStream;
-        InStr: InStream;
-    begin
-        SalesInvoiceHeader.CalcFields(Amount, "Amount Including VAT");
-        InvoiceType := GetOptionFirstTwoChars(SalesInvoiceHeader."Invoice Type");
-        VerifactuDateTime := GetCustomDateTimeFormat(CurrentDateTime());
-        FindLastRegisteredDocument(PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-        VerifactuHash := GenerateHash(SalesInvoiceHeader, InvoiceType, VerifactuDateTime, PreviousHuella);
-        VerifactuDocUploadMgt.InsertVerifactuDocument(EDocument, SalesInvoiceHeader."No.", SalesInvoiceHeader."Posting Date", VerifactuHash);
-
-        CreateXML(SalesInvoiceHeader, SalesInvoiceLine, IsBatch, TempBlob, FileOutStream, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-
-        TempBlobQR := GenerateQRCode(SalesInvoiceHeader."No.", SalesInvoiceHeader."Posting Date", SalesInvoiceHeader."Amount Including VAT");
-        TempBlobQR.CreateInStream(InStr);
-        SalesInvoiceHeader."QR Code Base64".CreateOutStream(OutStr, TextEncoding::UTF8);
-        CopyStream(OutStr, InStr);
-        SalesInvoiceHeader."QR Code Image".ImportStream(InStr, 'image.png');
-        SalesInvoiceHeader.Modify();
-    end;
-
-    local procedure CreateXML(var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; IsBatch: Boolean; var TempBlob: Codeunit "Temp Blob"; var FileOutStream: OutStream; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
-    var
         HeaderXMLNode, BodyXMLNode, RegFactuSistemaFacturacionXMLNode, RootXMLNode : XmlElement;
         XMLDocOut: XmlDocument;
+        FileOutStream: OutStream;
     begin
         TempBlob.CreateOutStream(FileOutStream, TextEncoding::UTF8);
 
@@ -136,7 +113,7 @@ codeunit 10778 "Verifactu Export"
         BodyXMLNode := XmlElement.Create('Body', XmlNamespaceSoapenv);
         RegFactuSistemaFacturacionXMLNode := XmlElement.Create('RegFactuSistemaFacturacion', XmlNamespaceSum);
         InsertHeaderData(RegFactuSistemaFacturacionXMLNode);
-        InsertInvoicesData(RegFactuSistemaFacturacionXMLNode, SalesInvoiceHeader, SalesInvoiceLine, IsBatch, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+        InsertInvoicesData(RegFactuSistemaFacturacionXMLNode, SalesInvoiceHeader, SalesInvoiceLine, IsBatch, EDocument);
 
         BodyXMLNode.Add(RegFactuSistemaFacturacionXMLNode);
         RootXMLNode.Add(HeaderXMLNode);
@@ -145,29 +122,46 @@ codeunit 10778 "Verifactu Export"
         XmlDocOut.WriteTo(FileOutStream);
     end;
 
-    local procedure InsertInvoicesData(var RootXMLNode: XmlElement; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; IsBatch: Boolean; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
+    local procedure InsertInvoicesData(var RootXMLNode: XmlElement; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; IsBatch: Boolean; var EDocument: Record "E-Document")
     var
         InvoiceXMLNode: XmlElement;
         InvoiceCount: Integer;
     begin
         InvoiceXMLNode := XmlElement.Create('RegistroFactura', XmlNamespaceSum);
 
-        if IsBatch then
+        if IsBatch then begin
+            SalesInvoiceHeader.SetAutoCalcFields(Amount, "Amount Including VAT");
+            SalesInvoiceHeader.FindSet();
             repeat
                 InvoiceCount += 1;
                 if InvoiceCount > 1000 then
                     Error(MaxBatchSizeErr);
-                InsertInvoice(InvoiceXMLNode, SalesInvoiceHeader, SalesInvoiceLine, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-            until SalesInvoiceHeader.Next() = 0
-        else
-            InsertInvoice(InvoiceXMLNode, SalesInvoiceHeader, SalesInvoiceLine, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+                InsertInvoice(InvoiceXMLNode, SalesInvoiceHeader, SalesInvoiceLine, EDocument);
+            until SalesInvoiceHeader.Next() = 0;
+        end else begin
+            SalesInvoiceHeader.CalcFields(Amount, "Amount Including VAT");
+            InsertInvoice(InvoiceXMLNode, SalesInvoiceHeader, SalesInvoiceLine, EDocument);
+        end;
         RootXMLNode.Add(InvoiceXMLNode);
     end;
 
-    local procedure InsertInvoice(var RootXMLNode: XmlElement; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
+    local procedure InsertInvoice(var RootXMLNode: XmlElement; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; var EDocument: Record "E-Document")
     var
+        TempBlobQR: Codeunit "Temp Blob";
+        InvoiceType, VerifactuDateTime : Text;
+        PreviousDocumentNo, PreviousHuella : Text;
+        VerifactuHash: Text[64];
+        PreviousPostingDate: Date;
         InvoiceXMLNode: XmlElement;
+        OutStr: OutStream;
+        InStr: InStream;
     begin
+        InvoiceType := GetOptionFirstTwoChars(SalesInvoiceHeader."Invoice Type");
+        VerifactuDateTime := GetCustomDateTimeFormat(CurrentDateTime());
+        FindLastRegisteredDocument(PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+        VerifactuHash := GenerateHash(SalesInvoiceHeader, InvoiceType, VerifactuDateTime, PreviousHuella);
+        VerifactuDocUploadMgt.InsertVerifactuDocument(EDocument, SalesInvoiceHeader."No.", SalesInvoiceHeader."Posting Date", VerifactuHash);
+
         InvoiceXMLNode := XmlElement.Create('RegistroAlta', XmlNamespaceSum1);
 
         InsertInvoiceHeaderData(InvoiceXMLNode, SalesInvoiceHeader, InvoiceType);
@@ -178,6 +172,13 @@ codeunit 10778 "Verifactu Export"
         InsertHuellaDigital(InvoiceXMLNode, VerifactuDateTime, VerifactuHash);
 
         RootXMLNode.Add(InvoiceXMLNode);
+
+        TempBlobQR := GenerateQRCode(SalesInvoiceHeader."No.", SalesInvoiceHeader."Posting Date", SalesInvoiceHeader."Amount Including VAT");
+        TempBlobQR.CreateInStream(InStr);
+        SalesInvoiceHeader."QR Code Base64".CreateOutStream(OutStr, TextEncoding::UTF8);
+        CopyStream(OutStr, InStr);
+        SalesInvoiceHeader."QR Code Image".ImportStream(InStr, 'image.png');
+        SalesInvoiceHeader.Modify();
     end;
 
     local procedure InsertInvoiceHeaderData(var InvoiceXMLNode: XmlElement; var SalesInvoiceHeader: Record "Sales Invoice Header"; InvoiceType: Text)
@@ -288,27 +289,9 @@ codeunit 10778 "Verifactu Export"
     #region Service Invoice
     local procedure ExportServiceInvoice(var EDocument: Record "E-Document"; var ServiceInvoiceHeader: Record "Service Invoice Header"; var ServiceInvoiceLine: Record "Service Invoice Line"; var TempBlob: Codeunit "Temp Blob"; IsBatch: Boolean)
     var
-        InvoiceType, VerifactuDateTime : Text;
-        PreviousDocumentNo, PreviousHuella : Text;
-        VerifactuHash: Text[64];
-        PreviousPostingDate: Date;
-        FileOutStream: OutStream;
-    begin
-        ServiceInvoiceHeader.CalcFields(Amount, "Amount Including VAT");
-        InvoiceType := GetOptionFirstTwoChars(ServiceInvoiceHeader."Invoice Type");
-        VerifactuDateTime := GetCustomDateTimeFormat(CurrentDateTime());
-        FindLastRegisteredDocument(PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-        VerifactuHash := GenerateHash(ServiceInvoiceHeader, InvoiceType, VerifactuDateTime, PreviousHuella);
-        VerifactuDocUploadMgt.InsertVerifactuDocument(EDocument, ServiceInvoiceHeader."No.", ServiceInvoiceHeader."Posting Date", VerifactuHash);
-
-        CreateXML(ServiceInvoiceHeader, ServiceInvoiceLine, IsBatch, TempBlob, FileOutStream, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-        ServiceInvoiceHeader.Modify();
-    end;
-
-    local procedure CreateXML(var ServiceInvoiceHeader: Record "Service Invoice Header"; var ServiceInvoiceLine: Record "Service Invoice Line"; IsBatch: Boolean; var TempBlob: Codeunit "Temp Blob"; var FileOutStream: OutStream; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
-    var
         HeaderXMLNode, BodyXMLNode, RegFactuSistemaFacturacionXMLNode, RootXMLNode : XmlElement;
         XMLDocOut: XmlDocument;
+        FileOutStream: OutStream;
     begin
         TempBlob.CreateOutStream(FileOutStream, TextEncoding::UTF8);
 
@@ -320,7 +303,7 @@ codeunit 10778 "Verifactu Export"
         BodyXMLNode := XmlElement.Create('Body', XmlNamespaceSoapenv);
         RegFactuSistemaFacturacionXMLNode := XmlElement.Create('RegFactuSistemaFacturacion', XmlNamespaceSum);
         InsertHeaderData(RegFactuSistemaFacturacionXMLNode);
-        InsertServiceInvoicesData(RegFactuSistemaFacturacionXMLNode, ServiceInvoiceHeader, ServiceInvoiceLine, IsBatch, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+        InsertServiceInvoicesData(RegFactuSistemaFacturacionXMLNode, ServiceInvoiceHeader, ServiceInvoiceLine, IsBatch, EDocument);
 
         BodyXMLNode.Add(RegFactuSistemaFacturacionXMLNode);
         RootXMLNode.Add(HeaderXMLNode);
@@ -329,25 +312,46 @@ codeunit 10778 "Verifactu Export"
         XmlDocOut.WriteTo(FileOutStream);
     end;
 
-    local procedure InsertServiceInvoicesData(var RootXMLNode: XmlElement; var ServiceInvoiceHeader: Record "Service Invoice Header"; var ServiceInvoiceLine: Record "Service Invoice Line"; IsBatch: Boolean; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
+    local procedure InsertServiceInvoicesData(var RootXMLNode: XmlElement; var ServiceInvoiceHeader: Record "Service Invoice Header"; var ServiceInvoiceLine: Record "Service Invoice Line"; IsBatch: Boolean; var EDocument: Record "E-Document")
     var
         InvoiceXMLNode: XmlElement;
+        InvoiceCount: Integer;
     begin
         InvoiceXMLNode := XmlElement.Create('RegistroFactura', XmlNamespaceSum);
 
-        if IsBatch then
+        if IsBatch then begin
+            ServiceInvoiceHeader.SetAutoCalcFields(Amount, "Amount Including VAT");
+            ServiceInvoiceHeader.FindSet();
             repeat
-                InsertServiceInvoice(InvoiceXMLNode, ServiceInvoiceHeader, ServiceInvoiceLine, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-            until ServiceInvoiceHeader.Next() = 0
-        else
-            InsertServiceInvoice(InvoiceXMLNode, ServiceInvoiceHeader, ServiceInvoiceLine, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+                InvoiceCount += 1;
+                if InvoiceCount > 1000 then
+                    Error(MaxBatchSizeErr);
+                InsertServiceInvoice(InvoiceXMLNode, ServiceInvoiceHeader, ServiceInvoiceLine, EDocument);
+            until ServiceInvoiceHeader.Next() = 0;
+        end else begin
+            ServiceInvoiceHeader.CalcFields(Amount, "Amount Including VAT");
+            InsertServiceInvoice(InvoiceXMLNode, ServiceInvoiceHeader, ServiceInvoiceLine, EDocument);
+        end;
         RootXMLNode.Add(InvoiceXMLNode);
     end;
 
-    local procedure InsertServiceInvoice(var RootXMLNode: XmlElement; var ServiceInvoiceHeader: Record "Service Invoice Header"; var ServiceInvoiceLine: Record "Service Invoice Line"; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
+    local procedure InsertServiceInvoice(var RootXMLNode: XmlElement; var ServiceInvoiceHeader: Record "Service Invoice Header"; var ServiceInvoiceLine: Record "Service Invoice Line"; var EDocument: Record "E-Document")
     var
+        TempBlobQR: Codeunit "Temp Blob";
+        InvoiceType, VerifactuDateTime : Text;
+        PreviousDocumentNo, PreviousHuella : Text;
+        VerifactuHash: Text[64];
+        PreviousPostingDate: Date;
         InvoiceXMLNode: XmlElement;
+        OutStr: OutStream;
+        InStr: InStream;
     begin
+        InvoiceType := GetOptionFirstTwoChars(ServiceInvoiceHeader."Invoice Type");
+        VerifactuDateTime := GetCustomDateTimeFormat(CurrentDateTime());
+        FindLastRegisteredDocument(PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+        VerifactuHash := GenerateHash(ServiceInvoiceHeader, InvoiceType, VerifactuDateTime, PreviousHuella);
+        VerifactuDocUploadMgt.InsertVerifactuDocument(EDocument, ServiceInvoiceHeader."No.", ServiceInvoiceHeader."Posting Date", VerifactuHash);
+
         InvoiceXMLNode := XmlElement.Create('RegistroAlta', XmlNamespaceSum1);
 
         InsertServiceInvoiceHeaderData(InvoiceXMLNode, ServiceInvoiceHeader, InvoiceType);
@@ -358,6 +362,13 @@ codeunit 10778 "Verifactu Export"
         InsertHuellaDigital(InvoiceXMLNode, VerifactuDateTime, VerifactuHash);
 
         RootXMLNode.Add(InvoiceXMLNode);
+
+        TempBlobQR := GenerateQRCode(ServiceInvoiceHeader."No.", ServiceInvoiceHeader."Posting Date", ServiceInvoiceHeader."Amount Including VAT");
+        TempBlobQR.CreateInStream(InStr);
+        ServiceInvoiceHeader."QR Code Base64".CreateOutStream(OutStr, TextEncoding::UTF8);
+        CopyStream(OutStr, InStr);
+        ServiceInvoiceHeader."QR Code Image".ImportStream(InStr, 'image.png');
+        ServiceInvoiceHeader.Modify();
     end;
 
     local procedure InsertServiceInvoiceHeaderData(var InvoiceXMLNode: XmlElement; var ServiceInvoiceHeader: Record "Service Invoice Header"; InvoiceType: Text)
@@ -468,35 +479,9 @@ codeunit 10778 "Verifactu Export"
     #region Credit Memo
     local procedure ExportCreditMemo(var EDocument: Record "E-Document"; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var TempBlob: Codeunit "Temp Blob"; IsBatch: Boolean)
     var
-        TempBlobQR: Codeunit "Temp Blob";
-        InvoiceType, VerifactuDateTime : Text;
-        PreviousDocumentNo, PreviousHuella : Text;
-        VerifactuHash: Text[64];
-        PreviousPostingDate: Date;
-        FileOutStream, OutStr : OutStream;
-        InStr: InStream;
-    begin
-        SalesCrMemoHeader.CalcFields(Amount, "Amount Including VAT");
-        InvoiceType := GetOptionFirstTwoChars(SalesCrMemoHeader."Cr. Memo Type");
-        VerifactuDateTime := GetCustomDateTimeFormat(CurrentDateTime());
-        FindLastRegisteredDocument(PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-        VerifactuHash := GenerateHash(SalesCrMemoHeader, InvoiceType, VerifactuDateTime, PreviousHuella);
-        VerifactuDocUploadMgt.InsertVerifactuDocument(EDocument, SalesCrMemoHeader."No.", SalesCrMemoHeader."Posting Date", VerifactuHash);
-
-        CreateXML(SalesCrMemoHeader, SalesCrMemoLine, IsBatch, TempBlob, FileOutStream, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-
-        TempBlobQR := GenerateQRCode(SalesCrMemoHeader."No.", SalesCrMemoHeader."Posting Date", SalesCrMemoHeader."Amount Including VAT");
-        TempBlobQR.CreateInStream(InStr);
-        SalesCrMemoHeader."QR Code Base64".CreateOutStream(OutStr, TextEncoding::UTF8);
-        CopyStream(OutStr, InStr);
-        SalesCrMemoHeader."QR Code Image".ImportStream(InStr, 'image.png');
-        SalesCrMemoHeader.Modify();
-    end;
-
-    local procedure CreateXML(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; IsBatch: Boolean; var TempBlob: Codeunit "Temp Blob"; var FileOutStream: OutStream; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
-    var
         HeaderXMLNode, BodyXMLNode, RegFactuSistemaFacturacionXMLNode, RootXMLNode : XmlElement;
         XMLDocOut: XmlDocument;
+        FileOutStream: OutStream;
     begin
         TempBlob.CreateOutStream(FileOutStream, TextEncoding::UTF8);
 
@@ -508,7 +493,7 @@ codeunit 10778 "Verifactu Export"
         BodyXMLNode := XmlElement.Create('Body', XmlNamespaceSoapenv);
         RegFactuSistemaFacturacionXMLNode := XmlElement.Create('RegFactuSistemaFacturacion', XmlNamespaceSum);
         InsertHeaderData(RegFactuSistemaFacturacionXMLNode);
-        InsertCreditMemosData(RegFactuSistemaFacturacionXMLNode, SalesCrMemoHeader, SalesCrMemoLine, IsBatch, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+        InsertCreditMemosData(RegFactuSistemaFacturacionXMLNode, SalesCrMemoHeader, SalesCrMemoLine, IsBatch, EDocument);
 
         BodyXMLNode.Add(RegFactuSistemaFacturacionXMLNode);
         RootXMLNode.Add(HeaderXMLNode);
@@ -517,31 +502,45 @@ codeunit 10778 "Verifactu Export"
         XmlDocOut.WriteTo(FileOutStream);
     end;
 
-    local procedure InsertCreditMemosData(var RootXMLNode: XmlElement; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; IsBatch: Boolean; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
+    local procedure InsertCreditMemosData(var RootXMLNode: XmlElement; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; IsBatch: Boolean; var EDocument: Record "E-Document")
     var
         CreditMemoXMLNode: XmlElement;
         CreditMemoCount: Integer;
     begin
         CreditMemoXMLNode := XmlElement.Create('RegistroFactura', XmlNamespaceSum);
 
-        if IsBatch then
+        if IsBatch then begin
+            SalesCrMemoHeader.SetAutoCalcFields(Amount, "Amount Including VAT");
+            SalesCrMemoHeader.FindSet();
             repeat
                 CreditMemoCount += 1;
                 if CreditMemoCount > 1000 then
                     Error(MaxBatchSizeErr);
-                InsertCreditMemo(CreditMemoXMLNode, SalesCrMemoHeader, SalesCrMemoLine, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-            until SalesCrMemoHeader.Next() = 0
-        else
-            InsertCreditMemo(CreditMemoXMLNode, SalesCrMemoHeader, SalesCrMemoLine, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+                InsertCreditMemo(CreditMemoXMLNode, SalesCrMemoHeader, SalesCrMemoLine, EDocument);
+            until SalesCrMemoHeader.Next() = 0;
+        end else begin
+            SalesCrMemoHeader.CalcFields(Amount, "Amount Including VAT");
+            InsertCreditMemo(CreditMemoXMLNode, SalesCrMemoHeader, SalesCrMemoLine, EDocument);
+        end;
         RootXMLNode.Add(CreditMemoXMLNode);
     end;
 
-    local procedure InsertCreditMemo(var RootXMLNode: XmlElement; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
+    local procedure InsertCreditMemo(var RootXMLNode: XmlElement; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var EDocument: Record "E-Document")
     var
-        Customer: Record Customer;
+        TempBlobQR: Codeunit "Temp Blob";
+        InvoiceType, VerifactuDateTime : Text;
+        PreviousDocumentNo, PreviousHuella : Text;
+        VerifactuHash: Text[64];
+        PreviousPostingDate: Date;
         CrMemoXMLNode: XmlElement;
+        OutStr: OutStream;
+        InStr: InStream;
     begin
-        Customer.Get(SalesCrMemoHeader."Bill-to Customer No.");
+        InvoiceType := GetOptionFirstTwoChars(SalesCrMemoHeader."Cr. Memo Type");
+        VerifactuDateTime := GetCustomDateTimeFormat(CurrentDateTime());
+        FindLastRegisteredDocument(PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+        VerifactuHash := GenerateHash(SalesCrMemoHeader, InvoiceType, VerifactuDateTime, PreviousHuella);
+        VerifactuDocUploadMgt.InsertVerifactuDocument(EDocument, SalesCrMemoHeader."No.", SalesCrMemoHeader."Posting Date", VerifactuHash);
 
         CrMemoXMLNode := XmlElement.Create('RegistroAlta', XmlNamespaceSum1);
 
@@ -553,6 +552,13 @@ codeunit 10778 "Verifactu Export"
         InsertHuellaDigital(CrMemoXMLNode, VerifactuDateTime, VerifactuHash);
 
         RootXMLNode.Add(CrMemoXMLNode);
+
+        TempBlobQR := GenerateQRCode(SalesCrMemoHeader."No.", SalesCrMemoHeader."Posting Date", SalesCrMemoHeader."Amount Including VAT");
+        TempBlobQR.CreateInStream(InStr);
+        SalesCrMemoHeader."QR Code Base64".CreateOutStream(OutStr, TextEncoding::UTF8);
+        CopyStream(OutStr, InStr);
+        SalesCrMemoHeader."QR Code Image".ImportStream(InStr, 'image.png');
+        SalesCrMemoHeader.Modify();
     end;
 
     local procedure InsertCreditMemoHeaderData(var InvoiceXMLNode: XmlElement; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; InvoiceType: Text)
@@ -682,28 +688,9 @@ codeunit 10778 "Verifactu Export"
     #region Service Credit Memo
     local procedure ExportServiceCreditMemo(var EDocument: Record "E-Document"; var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var ServiceCrMemoLine: Record "Service Cr.Memo Line"; var TempBlob: Codeunit "Temp Blob"; IsBatch: Boolean)
     var
-        InvoiceType, VerifactuDateTime : Text;
-        PreviousDocumentNo, PreviousHuella : Text;
-        VerifactuHash: Text[64];
-        PreviousPostingDate: Date;
-        FileOutStream: OutStream;
-    begin
-        ServiceCrMemoHeader.CalcFields(Amount, "Amount Including VAT");
-        InvoiceType := GetOptionFirstTwoChars(ServiceCrMemoHeader."Cr. Memo Type");
-        VerifactuDateTime := GetCustomDateTimeFormat(CurrentDateTime());
-        FindLastRegisteredDocument(PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-        VerifactuHash := GenerateHash(ServiceCrMemoHeader, InvoiceType, VerifactuDateTime, PreviousHuella);
-        VerifactuDocUploadMgt.InsertVerifactuDocument(EDocument, ServiceCrMemoHeader."No.", ServiceCrMemoHeader."Posting Date", VerifactuHash);
-
-        CreateXML(ServiceCrMemoHeader, ServiceCrMemoLine, IsBatch, TempBlob, FileOutStream, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-
-        ServiceCrMemoHeader.Modify();
-    end;
-
-    local procedure CreateXML(var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var ServiceCrMemoLine: Record "Service Cr.Memo Line"; IsBatch: Boolean; var TempBlob: Codeunit "Temp Blob"; var FileOutStream: OutStream; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
-    var
         HeaderXMLNode, BodyXMLNode, RegFactuSistemaFacturacionXMLNode, RootXMLNode : XmlElement;
         XMLDocOut: XmlDocument;
+        FileOutStream: OutStream;
     begin
         TempBlob.CreateOutStream(FileOutStream, TextEncoding::UTF8);
 
@@ -715,7 +702,7 @@ codeunit 10778 "Verifactu Export"
         BodyXMLNode := XmlElement.Create('Body', XmlNamespaceSoapenv);
         RegFactuSistemaFacturacionXMLNode := XmlElement.Create('RegFactuSistemaFacturacion', XmlNamespaceSum);
         InsertHeaderData(RegFactuSistemaFacturacionXMLNode);
-        InsertServiceCreditMemosData(RegFactuSistemaFacturacionXMLNode, ServiceCrMemoHeader, ServiceCrMemoLine, IsBatch, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+        InsertServiceCreditMemosData(RegFactuSistemaFacturacionXMLNode, ServiceCrMemoHeader, ServiceCrMemoLine, IsBatch, EDocument);
 
         BodyXMLNode.Add(RegFactuSistemaFacturacionXMLNode);
         RootXMLNode.Add(HeaderXMLNode);
@@ -724,27 +711,45 @@ codeunit 10778 "Verifactu Export"
         XmlDocOut.WriteTo(FileOutStream);
     end;
 
-    local procedure InsertServiceCreditMemosData(var RootXMLNode: XmlElement; var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var ServiceCrMemoLine: Record "Service Cr.Memo Line"; IsBatch: Boolean; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
+    local procedure InsertServiceCreditMemosData(var RootXMLNode: XmlElement; var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var ServiceCrMemoLine: Record "Service Cr.Memo Line"; IsBatch: Boolean; var EDocument: Record "E-Document")
     var
         CreditMemoXMLNode: XmlElement;
+        CreditMemoCount: Integer;
     begin
         CreditMemoXMLNode := XmlElement.Create('RegistroFactura', XmlNamespaceSum);
 
-        if IsBatch then
+        if IsBatch then begin
+            ServiceCrMemoHeader.SetAutoCalcFields(Amount, "Amount Including VAT");
+            ServiceCrMemoHeader.FindSet();
             repeat
-                InsertServiceCreditMemo(CreditMemoXMLNode, ServiceCrMemoHeader, ServiceCrMemoLine, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
-            until ServiceCrMemoHeader.Next() = 0
-        else
-            InsertServiceCreditMemo(CreditMemoXMLNode, ServiceCrMemoHeader, ServiceCrMemoLine, InvoiceType, VerifactuDateTime, VerifactuHash, PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+                CreditMemoCount += 1;
+                if CreditMemoCount > 1000 then
+                    Error(MaxBatchSizeErr);
+                InsertServiceCreditMemo(CreditMemoXMLNode, ServiceCrMemoHeader, ServiceCrMemoLine, EDocument);
+            until ServiceCrMemoHeader.Next() = 0;
+        end else begin
+            ServiceCrMemoHeader.CalcFields(Amount, "Amount Including VAT");
+            InsertServiceCreditMemo(CreditMemoXMLNode, ServiceCrMemoHeader, ServiceCrMemoLine, EDocument);
+        end;
         RootXMLNode.Add(CreditMemoXMLNode);
     end;
 
-    local procedure InsertServiceCreditMemo(var RootXMLNode: XmlElement; var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var ServiceCrMemoLine: Record "Service Cr.Memo Line"; InvoiceType: Text; VerifactuDateTime: Text; VerifactuHash: Text[64]; PreviousDocumentNo: Text; PreviousPostingDate: Date; PreviousHuella: Text)
+    local procedure InsertServiceCreditMemo(var RootXMLNode: XmlElement; var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var ServiceCrMemoLine: Record "Service Cr.Memo Line"; var EDocument: Record "E-Document")
     var
-        Customer: Record Customer;
+        TempBlobQR: Codeunit "Temp Blob";
+        InvoiceType, VerifactuDateTime : Text;
+        PreviousDocumentNo, PreviousHuella : Text;
+        VerifactuHash: Text[64];
+        PreviousPostingDate: Date;
         CrMemoXMLNode: XmlElement;
+        OutStr: OutStream;
+        InStr: InStream;
     begin
-        Customer.Get(ServiceCrMemoHeader."Bill-to Customer No.");
+        InvoiceType := GetOptionFirstTwoChars(ServiceCrMemoHeader."Cr. Memo Type");
+        VerifactuDateTime := GetCustomDateTimeFormat(CurrentDateTime());
+        FindLastRegisteredDocument(PreviousDocumentNo, PreviousPostingDate, PreviousHuella);
+        VerifactuHash := GenerateHash(ServiceCrMemoHeader, InvoiceType, VerifactuDateTime, PreviousHuella);
+        VerifactuDocUploadMgt.InsertVerifactuDocument(EDocument, ServiceCrMemoHeader."No.", ServiceCrMemoHeader."Posting Date", VerifactuHash);
 
         CrMemoXMLNode := XmlElement.Create('RegistroAlta', XmlNamespaceSum1);
 
@@ -756,6 +761,13 @@ codeunit 10778 "Verifactu Export"
         InsertHuellaDigital(CrMemoXMLNode, VerifactuDateTime, VerifactuHash);
 
         RootXMLNode.Add(CrMemoXMLNode);
+
+        TempBlobQR := GenerateQRCode(ServiceCrMemoHeader."No.", ServiceCrMemoHeader."Posting Date", ServiceCrMemoHeader."Amount Including VAT");
+        TempBlobQR.CreateInStream(InStr);
+        ServiceCrMemoHeader."QR Code Base64".CreateOutStream(OutStr, TextEncoding::UTF8);
+        CopyStream(OutStr, InStr);
+        ServiceCrMemoHeader."QR Code Image".ImportStream(InStr, 'image.png');
+        ServiceCrMemoHeader.Modify();
     end;
 
     local procedure InsertServiceCreditMemoHeaderData(var InvoiceXMLNode: XmlElement; var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; InvoiceType: Text)

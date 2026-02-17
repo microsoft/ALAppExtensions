@@ -41,6 +41,7 @@ table 6217 "Sustainability Setup"
         }
         field(4; "Reporting UOM Factor"; Decimal)
         {
+            AutoFormatType = 0;
             InitValue = 1;
             Caption = 'Reporting UOM Factor';
             DecimalPlaces = 0 : 10;
@@ -56,6 +57,7 @@ table 6217 "Sustainability Setup"
         }
         field(6; "Emission Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Emission Rounding Precision';
             DecimalPlaces = 0 : 10;
             InitValue = 0.01;
@@ -186,6 +188,7 @@ table 6217 "Sustainability Setup"
         }
         field(28; "Energy Reporting UOM Factor"; Decimal)
         {
+            AutoFormatType = 0;
             InitValue = 1;
             Caption = 'Energy Reporting UOM Factor';
             DecimalPlaces = 0 : 10;

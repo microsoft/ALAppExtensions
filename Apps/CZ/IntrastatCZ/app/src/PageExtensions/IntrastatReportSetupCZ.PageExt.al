@@ -29,6 +29,13 @@ pageextension 31342 "Intrastat Report Setup CZ" extends "Intrastat Report Setup"
                 ToolTip = 'Specifies the rounding type for amount calculation for Intrastat declaration.';
             }
         }
+        addlast(Reporting)
+        {
+            field("Min. Tol. Fair Market Value CZ"; Rec."Min. Tol. Fair Market Value CZ")
+            {
+                ApplicationArea = Basic, Suite;
+            }
+        }
 #if not CLEAN26
         addafter(Numbering)
         {

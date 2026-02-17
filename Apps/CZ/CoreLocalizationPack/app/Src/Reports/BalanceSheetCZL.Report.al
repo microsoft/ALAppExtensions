@@ -440,7 +440,7 @@ report 11794 "Balance Sheet CZL"
                             Caption = 'Row Definition';
                             Lookup = true;
                             TableRelation = "Acc. Schedule Name";
-                            ToolTip = 'Specifies the name of the account schedule to be shown in the report.';
+                            ToolTip = 'Specifies the name of the financial report to be shown in the report.';
 
                             trigger OnLookup(var Text: Text): Boolean
                             var
@@ -657,9 +657,9 @@ report 11794 "Balance Sheet CZL"
                         field(ShowAccSchedSetupCZL; ShowAccSchedSetup)
                         {
                             ApplicationArea = Basic, Suite;
-                            Caption = 'Show Account Schedule Setup';
+                            Caption = 'Show Financial Report Setup';
                             MultiLine = true;
-                            ToolTip = 'Specifies when the account schedule setup is to be show';
+                            ToolTip = 'Specifies when the financial report setup is to be show';
                         }
                         field(SkipEmptyLinesCZL; SkipEmptyLines)
                         {
@@ -695,7 +695,7 @@ report 11794 "Balance Sheet CZL"
     labels
     {
         ReportCaptionLbl = 'Balance Sheet';
-        AccScheduleName_Name_CaptionLbl = 'Account Schedule';
+        AccScheduleName_Name_CaptionLbl = 'Financial Report';
         ColumnLayoutNameCaptionLbl = 'Column Layout';
         FiscalStartDateCaptionLbl = 'Fiscal Start Date';
         PeriodTextCaptionLbl = 'Period';

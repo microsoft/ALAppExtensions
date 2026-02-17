@@ -376,6 +376,7 @@ page 31287 "Apply Gen. Ledger Entries CZA"
                             Rec.SetRange("Applies-to ID CZA", AppliesToID)
                         else
                             Rec.SetRange("Applies-to ID CZA");
+                        CurrPage.Update(false);
                     end;
                 }
             }
@@ -565,17 +566,16 @@ page 31287 "Apply Gen. Ledger Entries CZA"
     begin
         if Rec.Get(TempApplyingGLEntry."Entry No.") then begin
             GLEntryPostApplicationCZA.SetApplyingGLEntry(Rec, false, '');
-            Rec.SetRange(Amount);
             Rec."Applying Entry CZA" := false;
             Rec.Modify();
-
-            Clear(TempApplyingGLEntry);
-            Rec.SetCurrentKey("Entry No.");
-            Rec.SetRange("Entry No.");
-            AvailableAmount := 0;
-            ApplyingRemainingAmount := 0;
-            CalcApplyingAmount();
         end;
+
+        Clear(TempApplyingGLEntry);
+        Rec.SetCurrentKey("Entry No.");
+        Rec.Reset();
+        AvailableAmount := 0;
+        ApplyingRemainingAmount := 0;
+        CalcApplyingAmount();
     end;
 
     local procedure SetAppliesToID()
@@ -674,6 +674,7 @@ page 31287 "Apply Gen. Ledger Entries CZA"
         TempModifiedGLEntry.DeleteAll();
 
         TempGLEntry.Copy(Rec, true);
+        TempGLEntry.Reset();
         TempGLEntry.SetRange("Applies-to ID CZA", TempApplyingGLEntry."Applies-to ID CZA");
         if TempGLEntry.FindSet() then
             repeat

@@ -54,7 +54,9 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         GenJournalLine2: Record "Gen. Journal Line";
         VATPostingSetup: Record "VAT Posting Setup";
         WHTEntry: Record "Withholding Tax Entry";
+        WHTBusPostingGroup: Record "Wthldg. Tax Bus. Post. Group";
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
+        WHTProdPostingGroup: Record "Wthldg. Tax Prod. Post. Group";
         DocumentNo: Code[20];
         WHTAmount: Decimal;
     begin
@@ -64,9 +66,11 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         Initialize();
         UpdateLocalFunctionalitiesOnGeneralLedgerSetup(true);
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
+        LibraryWithholdingTax.CreateWHTBusinessPostingGroup(WHTBusPostingGroup);
+        LibraryWithholdingTax.CreateWHTProductPostingGroup(WHTProdPostingGroup);
         CreateGeneralJournalLineWithBalAccountType(
-          GenJournalLine, GenJournalLine."Document Type"::Invoice, CreateVendor(VATPostingSetup."VAT Bus. Posting Group", ''), '',
-          '', GenJournalLine."Bal. Account Type"::"G/L Account", CreateGLAccountWithVATBusPostingGroup(VATPostingSetup),
+          GenJournalLine, GenJournalLine."Document Type"::Invoice, CreateVendor(VATPostingSetup."VAT Bus. Posting Group", WHTBusPostingGroup.Code), '',
+          '', GenJournalLine."Bal. Account Type"::"G/L Account", CreateGLAccountWithVATBusPostingGroup(VATPostingSetup, WHTProdPostingGroup.Code),
           -LibraryRandom.RandDecInRange(100, 200, 2));  // Blank - WHT Bus Posting Group, Applies To Doc. No, Currency, Random - Direct unit cost.
         UpdateGenJournalLineWHTAbsorbBase(GenJournalLine);
         FindWHTPostingSetup(WHTPostingSetup, GenJournalLine."Wthldg. Tax Bus. Post. Group", GenJournalLine."Wthldg. Tax Prod. Post. Group", '');  // Blank Currency Code.
@@ -77,6 +81,8 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         CreateGeneralJournalLineWithBalAccountType(
           GenJournalLine2, GenJournalLine."Document Type"::Payment, GenJournalLine."Account No.", DocumentNo,
           '', GenJournalLine2."Bal. Account Type"::"Bank Account", BankAccount."No.", -FindVendorLedgerEntryAmount(DocumentNo));  // Currency - Blank.
+        GenJournalLine2.Validate("Wthldg. Tax Prod. Post. Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group");
+        GenJournalLine2.Modify(true);
 
         // Exercise.
         LibraryERM.PostGeneralJnlLine(GenJournalLine2);
@@ -115,7 +121,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
             LibraryRandom.RandIntInRange(1000, 10000));  // Random - Direct unit cost.
         CreateGeneralJournalLineWithBalAccountType(
           GenJournalLine, GenJournalLine."Document Type"::Payment, PurchaseLine."Buy-from Vendor No.", '',
-          CurrencyCode, GenJournalLine."Bal. Account Type"::"G/L Account", CreateGLAccountWithVATBusPostingGroup(VATPostingSetup),
+          CurrencyCode, GenJournalLine."Bal. Account Type"::"G/L Account", CreateGLAccountWithVATBusPostingGroup(VATPostingSetup, WHTPostingSetup."Wthldg. Tax Prod. Post. Group"),
           -FindVendorLedgerEntryAmount(DocumentNo));  // Blank - Balance Account No.
         GenJournalLine.Validate("Wthldg. Tax Prod. Post. Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group");
         GenJournalLine.Modify(true);
@@ -194,12 +200,11 @@ codeunit 148322 "ERM Withholding Tax Tests II"
 
         // [GIVEN] Purchase WHT Invoice = "Inv1"
         UpdateGLSetupAndPurchasesPayablesSetup(VATPostingSetup);
-        CreateAndPostVendorInvoice(GenJournalLine, CreateVendor(VATPostingSetup."VAT Bus. Posting Group", ''));
-        FindWHTPostingSetup(
-          WHTPostingSetup, GenJournalLine."Wthldg. Tax Bus. Post. Group", GenJournalLine."Wthldg. Tax Prod. Post. Group", '');
+        CreateWHTPostingSetup(WHTPostingSetup, '');
+        CreateAndPostVendorWHTInvoice(GenJournalLine, CreateVendor(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group"), VATPostingSetup, WHTPostingSetup);
 
         // [GIVEN] Normal Purchase Invoice = "Inv2"
-        CreateAndPostVendorInvoice(NormalGenJournalLine, LibraryPurchase.CreateVendorNo());
+        CreateAndPostVendorInvoice(NormalGenJournalLine, LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group"));
 
         // [GIVEN] Use General Journal Batch with No. Series defined
         LibraryJournals.CreateGenJournalBatch(GenJournalBatch);
@@ -207,11 +212,11 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         GenJournalBatch.Modify(true);
 
         // [GIVEN] Payment lines within the Batch for "Inv1" and "Inv2"
-        CreateApplnVendorPayment(
+        CreateApplnVendorWHTPayment(
           GenJournalLine, GenJournalBatch,
           GenJournalLine."Account Type", GenJournalLine."Account No.", -GenJournalLine.Amount,
           GenJournalLine."Applies-to Doc. Type"::Invoice, GenJournalLine."Document No.",
-          NoSeriesBatch.GetNextNo(GenJournalBatch."No. Series"));
+          NoSeriesBatch.GetNextNo(GenJournalBatch."No. Series"), WHTPostingSetup);
         WHTPaymentNo := GenJournalLine."Document No.";
         WHTBalAccountNo := GenJournalLine."Bal. Account No.";
 
@@ -270,17 +275,23 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     procedure WHTPostingSetupGetPrepaidWHTAccountUT()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
+        WHTBusPostingGroup: Record "Wthldg. Tax Bus. Post. Group";
+        WHTProdPostingGroup: Record "Wthldg. Tax Prod. Post. Group";
     begin
         // [FEATURE] [UT]
         // [SCENARIO 285194] WHT Posting Setup's functions GetPrepaidWithholdingAccount returns PrepaidWHTAccount or throws an error when empty
         Initialize();
 
         UpdateLocalFunctionalitiesOnGeneralLedgerSetup(true);
+        LibraryWithholdingTax.CreateWHTBusinessPostingGroup(WHTBusPostingGroup);
+        LibraryWithholdingTax.CreateWHTProductPostingGroup(WHTProdPostingGroup);
         WHTPostingSetup.Init();
+        WHTPostingSetup."Wthldg. Tax Bus. Post. Group" := WHTBusPostingGroup.Code;
+        WHTPostingSetup."Wthldg. Tax Prod. Post. Group" := WHTProdPostingGroup.Code;
         asserterror WHTPostingSetup.GetPrepaidWithholdingTaxAccount();
         Assert.ExpectedErrorCode('TestField');
         Assert.ExpectedError(StrSubstNo(WHTAccountCodeEmptyErr,
-            WHTPostingSetup.FieldCaption("Prepaid Wthldg. Tax Acc. Code"), '', WHTPostingSetup."Wthldg. Tax Prod. Post. Group"));
+            WHTPostingSetup.FieldCaption("Prepaid Wthldg. Tax Acc. Code"), WHTPostingSetup."Wthldg. Tax Bus. Post. Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"));
 
         WHTPostingSetup.Init();
         WHTPostingSetup."Prepaid Wthldg. Tax Acc. Code" := LibraryUtility.GenerateGUID();
@@ -706,13 +717,24 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         exit(GLAccount."No.");
     end;
 
-    local procedure CreateGLAccountWithVATBusPostingGroup(VATPostingSetup: Record "VAT Posting Setup"): Code[20]
+    local procedure CreateGLAccountWithVATBusPostingGroup(VATPostingSetup: Record "VAT Posting Setup"; WHTProdPostingGroup: Code[20]): Code[20]
     var
         GLAccount: Record "G/L Account";
     begin
         GLAccount.Get(CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group"));
         GLAccount.Validate("VAT Bus. Posting Group", VATPostingSetup."VAT Bus. Posting Group");
+        GLAccount.Validate("Wthldg. Tax Prod. Post. Group", WHTProdPostingGroup);
         GLAccount.Validate("Gen. Posting Type", GLAccount."Gen. Posting Type"::Purchase);
+        GLAccount.Modify(true);
+        exit(GLAccount."No.");
+    end;
+
+    local procedure CreateGLAccountForPayment(WHTProdPostingGroup: Code[20]): Code[20]
+    var
+        GLAccount: Record "G/L Account";
+    begin
+        GLAccount.Get(LibraryERM.CreateGLAccountNo());
+        GLAccount.Validate("Wthldg. Tax Prod. Post. Group", WHTProdPostingGroup);
         GLAccount.Modify(true);
         exit(GLAccount."No.");
     end;
@@ -724,6 +746,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         LibraryPurchase.CreateVendor(Vendor);
         Vendor.Validate("VAT Bus. Posting Group", VATBusPostingGroup);
         Vendor.Validate("WHT ABN", '');
+        Vendor.Validate("Withholding Tax Liable", true);
         Vendor.Validate("Wthldg. Tax Bus. Post. Group", WHTBusinessPostingGroup);
         Vendor.Modify(true);
         exit(Vendor."No.");
@@ -826,6 +849,30 @@ codeunit 148322 "ERM Withholding Tax Tests II"
         exit(GenJournalLine."Document No.");
     end;
 
+    local procedure CreateAndPostVendorWHTInvoice(var GenJournalLine: Record "Gen. Journal Line"; VendorNo: Code[20]; VATPostingSetup: Record "VAT Posting Setup"; WHTPostingSetup: Record "Withholding Tax Posting Setup"): Code[20]
+    begin
+        CreateGeneralJournalLineWithBalAccountType(
+          GenJournalLine, GenJournalLine."Document Type"::Invoice, VendorNo, '',
+          '', GenJournalLine."Bal. Account Type"::"G/L Account", CreateGLAccountWithVATBusPostingGroup(VATPostingSetup, WHTPostingSetup."Wthldg. Tax Prod. Post. Group"),
+          -LibraryRandom.RandDecInRange(100, 200, 2));
+        GenJournalLine.Validate("Wthldg. Tax Prod. Post. Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group");
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+        exit(GenJournalLine."Document No.");
+    end;
+
+    local procedure CreateApplnVendorWHTPayment(var GenJournalLine: Record "Gen. Journal Line"; GenJournalBatch: Record "Gen. Journal Batch"; AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; ApplyAmount: Decimal; ApplyToDocType: Enum "Gen. Journal Account Type"; ApplyToDocNo: Code[20]; DocumentNo: Code[20]; WHTPostingSetup: Record "Withholding Tax Posting Setup")
+    begin
+        LibraryJournals.CreateGenJournalLine(
+          GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name,
+          GenJournalLine."Document Type"::Payment, AccountType, AccountNo,
+          GenJournalLine."Bal. Account Type"::"G/L Account", CreateGLAccountForPayment(WHTPostingSetup."Wthldg. Tax Prod. Post. Group"),
+          ApplyAmount);
+        GenJournalLine.Validate("Document No.", DocumentNo);
+        GenJournalLine.Validate("Applies-to Doc. Type", ApplyToDocType);
+        GenJournalLine.Validate("Applies-to Doc. No.", ApplyToDocNo);
+        GenJournalLine.Modify(true);
+    end;
+
     local procedure CreateApplnVendorPayment(var GenJournalLine: Record "Gen. Journal Line"; GenJournalBatch: Record "Gen. Journal Batch"; AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; ApplyAmount: Decimal; ApplyToDocType: Enum "Gen. Journal Account Type"; ApplyToDocNo: Code[20]; DocumentNo: Code[20])
     begin
         LibraryJournals.CreateGenJournalLine(
@@ -903,6 +950,17 @@ codeunit 148322 "ERM Withholding Tax Tests II"
               WHTProductPostingGroup, CurrencyCode, LibraryRandom.RandDecInRange(50, 100, 2));  // WHT Minimum Invoice Amount.
     end;
 
+    local procedure CreateWHTPostingSetup(var WHTPostingSetup: Record "Withholding Tax Posting Setup"; CurrencyCode: Code[10])
+    var
+        WHTBusinessPostingGroup: Record "Wthldg. Tax Bus. Post. Group";
+        WHTProductPostingGroup: Record "Wthldg. Tax Prod. Post. Group";
+    begin
+        LibraryWithholdingTax.CreateWHTBusinessPostingGroup(WHTBusinessPostingGroup);
+        LibraryWithholdingTax.CreateWHTProductPostingGroup(WHTProductPostingGroup);
+        CreateWHTPostingSetup(WHTPostingSetup, WHTBusinessPostingGroup.Code,
+              WHTProductPostingGroup.Code, CurrencyCode, LibraryRandom.RandDecInRange(50, 100, 2));  // WHT Minimum Invoice Amount.
+    end;
+
     local procedure FindVendorLedgerEntry(VendorNo: Code[20]): Code[20]
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
@@ -949,7 +1007,7 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     local procedure UpdateGLSetupAndPurchasesPayablesSetup(var VATPostingSetup: Record "VAT Posting Setup")
     begin
         UpdateLocalFunctionalitiesOnGeneralLedgerSetup(true);
-        LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
+        LibraryERM.FindZeroVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
     end;
 
     local procedure VerifyWHTEntry(DocumentType: Enum "Gen. Journal Document Type"; BillToPayToNo: Code[20]; Amount: Decimal; UnrealizedAmount: Decimal)

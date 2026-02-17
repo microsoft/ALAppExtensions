@@ -31,7 +31,7 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
             field("Acc. Schedule Results Nos. CZL"; Rec."Acc. Schedule Results Nos. CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the code for the number series that will be used to assign numbers to account schedule results.';
+                ToolTip = 'Specifies the code for the number series that will be used to assign numbers to financial report results.';
             }
         }
         addlast(content)
@@ -118,7 +118,7 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
             field("Shared Account Schedule CZL"; Rec."Shared Account Schedule CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies to share the account schedule in general ledger setup.';
+                ToolTip = 'Specifies to share the financial report in general ledger setup.';
             }
         }
         movefirst(VatCZL; "VAT Reporting Date Usage", "Default VAT Reporting Date")

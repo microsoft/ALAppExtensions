@@ -186,6 +186,7 @@ table 6251 "Sust. Unit"
         }
         field(36; ConversionFactor; Decimal)
         {
+            AutoFormatType = 0;
             ExternalName = 'msdyn_conversionfactor';
             ExternalType = 'Decimal';
             Description = 'Conversion factor to convert to the base unit.';

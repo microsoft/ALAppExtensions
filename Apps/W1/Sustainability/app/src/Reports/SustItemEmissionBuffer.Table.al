@@ -63,6 +63,7 @@ table 6250 "Sust. Item Emission Buffer"
         }
         field(15; "Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DecimalPlaces = 0 : 5;
         }

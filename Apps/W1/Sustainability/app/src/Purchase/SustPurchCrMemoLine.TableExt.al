@@ -166,11 +166,13 @@ tableextension 6213 "Sust. Purch. Cr. Memo Line" extends "Purch. Cr. Memo Line"
         }
         field(6238; "Installation Multiplier"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Installation Multiplier';
             DataClassification = CustomerContent;
         }
         field(6239; "Time Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Time Factor';
             MaxValue = 1;
             DataClassification = CustomerContent;

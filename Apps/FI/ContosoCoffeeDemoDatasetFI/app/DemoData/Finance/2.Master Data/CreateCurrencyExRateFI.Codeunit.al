@@ -200,4 +200,14 @@ codeunit 13433 "Create Currency Ex. Rate FI"
         CurrencyExchangeRate.Validate("Relational Exch. Rate Amount", RelationalExchRateAmount);
         CurrencyExchangeRate.Validate("Relational Adjmt Exch Rate Amt", RelationalAdjmtExchRateAmt);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Add. Reporting Currency", OnBeforeGetResidualCurrencyAccounts, '', false, false)]
+    local procedure GetResidualCurrencyAccountsFI(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
+    var
+        CreateFIGLAccount: Codeunit "Create FI GL Accounts";
+    begin
+        FXGainsAccount := CreateFIGLAccount.Otherfinancialincome2();
+        FXLossesAccount := CreateFIGLAccount.Financialexpenses9();
+        IsHandled := true;
+    end;
 }

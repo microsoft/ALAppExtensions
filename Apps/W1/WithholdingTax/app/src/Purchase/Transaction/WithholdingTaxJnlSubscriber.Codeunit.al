@@ -48,11 +48,30 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", OnAfterAccountNoOnValidateGetGLAccount, '', false, false)]
     local procedure AssignGLAccValue(var GenJournalLine: Record "Gen. Journal Line"; var GLAccount: Record "G/L Account")
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
             exit;
 
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
+            exit;
+
         GenJournalLine."Wthldg. Tax Bus. Post. Group" := GLAccount."Wthldg. Tax Bus. Post. Group";
+        GenJournalLine."Wthldg. Tax Prod. Post. Group" := GLAccount."Wthldg. Tax Prod. Post. Group";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", OnAfterAccountNoOnValidateGetGLBalAccount, '', false, false)]
+    local procedure AssignBalGLAccValue(var GenJournalLine: Record "Gen. Journal Line"; var GLAccount: Record "G/L Account")
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
+    begin
+        if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
+            exit;
+
         GenJournalLine."Wthldg. Tax Prod. Post. Group" := GLAccount."Wthldg. Tax Prod. Post. Group";
     end;
 
@@ -62,9 +81,11 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
         if CheckWithholdingTaxDisabled() then
             exit;
 
+        if not Vendor."Withholding Tax Liable" then
+            exit;
+
         GenJournalLine."Skip Withholding Tax" := Vendor."WHT ABN" <> '';
         GenJournalLine."Wthldg. Tax Bus. Post. Group" := Vendor."Wthldg. Tax Bus. Post. Group";
-        GenJournalLine."Wthldg. Tax Prod. Post. Group" := '';
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", OnAfterClearPostingGroups, '', false, false)]
@@ -79,8 +100,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnBeforeInitGLEntryForGLAcc, '', false, false)]
     local procedure OnBeforeInitGLEntryForGLAcc(GenJnlLine: Record "Gen. Journal Line"; GLAcc: Record "G/L Account"; var GLEntry: Record "G/L Entry"; var TaxAmount: Decimal; var TaxAmountLCY: Decimal; var IsHandled: Boolean; var sender: Codeunit "Gen. Jnl.-Post Line")
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJnlLine) then
             exit;
 
         CalcGLAccWithholdingTax(GenJnlLine, TaxAmountLCY);
@@ -93,8 +119,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnPostGLAccOnBeforeDeferralPosting, '', false, false)]
     local procedure PostWithholdingTaxforGL(var GenJournalLine: Record "Gen. Journal Line"; sender: Codeunit "Gen. Jnl.-Post Line"; TaxAmount: Decimal; TaxAmountLCY: Decimal)
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         PostGLAccWithholdingTax(GenJournalLine, TaxAmountLCY, sender);
@@ -106,6 +137,9 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
         if CheckWithholdingTaxDisabled() then
             exit;
 
+        if not Vendor."Withholding Tax Liable" then
+            exit;
+
         CalcVendWithholdingTax(GenJnlLine, TaxAmountLCY, TaxAmount);
         VendLedgEntry."Amount to Apply" := GenJnlLine.Amount;
     end;
@@ -114,8 +148,12 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
     local procedure OnPostVendAfterTempDtldCVLedgEntryBufInit(var GenJnlLine: Record "Gen. Journal Line"; var TempDtldCVLedgEntryBuf: Record "Detailed CV Ledg. Entry Buffer" temporary; TaxAmount: Decimal; TaxAmountLCY: Decimal)
     var
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJnlLine) then
             exit;
 
         TempDtldCVLedgEntryBuf.Amount := TempDtldCVLedgEntryBuf.Amount - GenJnlLine."WHT Interest Amount" - GenJnlPostLine.ExchangeAmtLCYToFCY2(TaxAmount);
@@ -154,8 +192,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnBeforePostingDeferral, '', false, false)]
     local procedure OnAfterVendLedgEntryInsert(GenJnlLine: Record "Gen. Journal Line"; VendLedgEntry: Record "Vendor Ledger Entry"; TaxAmount: Decimal; TaxAmountLCY: Decimal; NextTransactionNo: Integer; var NextTaxEntryNo: Integer; var IsHandled: Boolean; sender: Codeunit "Gen. Jnl.-Post Line")
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJnlLine) then
             exit;
 
         PostVendWithholdingTax(GenJnlLine, VendLedgEntry, TaxAmount, TaxAmountLCY, NextTransactionNo, NextTaxEntryNo, sender);
@@ -683,8 +726,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnPostBankAccOnBeforeInitBankAccLedgEntry, '', false, false)]
     local procedure OnPostBankAccOnBeforeInitBankAccLedgEntry(var GenJournalLine: Record "Gen. Journal Line"; var TaxAmount: Decimal; var TaxAmountLCY: Decimal)
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         CalcBankAccWHT(GenJournalLine, TaxAmountLCY, TaxAmount);
@@ -706,8 +754,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnPostBankAccOnBeforeCheckLedgEntryInsert, '', false, false)]
     local procedure OnPostBankAccOnBeforeCheckLedgEntryInsert(var CheckLedgerEntry: Record "Check Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line"; TaxAmount: Decimal; TaxAmountLCY: Decimal)
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         PostBankAccWHTOnBeforeCheckLedgEntryInsert(CheckLedgerEntry, GenJournalLine, TaxAmountLCY);
@@ -715,8 +768,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnPostBankAccOnBeforeCreateGLEntryBalAcc, '', false, false)]
     local procedure OnPostBankAccOnBeforeCreateGLEntryBalAcc(var GenJnlLine: Record "Gen. Journal Line"; BankAccPostingGr: Record "Bank Account Posting Group"; TaxAmount: Decimal; TaxAmountLCY: Decimal; sender: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean)
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJnlLine) then
             exit;
 
         sender.CreateGLEntryBalAcc(
@@ -895,17 +953,27 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnBeforeCopyFromCVLedgEntryBuffer, '', false, false)]
     local procedure OnBeforeCopyFromCVLedgEntryBuffer(var GenJnlLine: Record "Gen. Journal Line"; OldVendLedgEntry: Record "Vendor Ledger Entry"; TempOldVendLedgEntry: Record "Vendor Ledger Entry" temporary; AppliedAmount: Decimal; var RemainingTaxAmount: Decimal; NextTransactionNo: Integer; var NextTaxEntryNo: Integer)
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJnlLine) then
             exit;
 
         ApplyVendLedgEntryOnBeforeOldVendLedgEntryModify(GenJnlLine, OldVendLedgEntry, TempOldVendLedgEntry, AppliedAmount, RemainingTaxAmount, NextTransactionNo, NextTaxEntryNo);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnBeforeUpdateOldVendLedgEntryAmountToApply, '', false, false)]
-    local procedure OnBeforeUpdateOldVendLedgEntryAmountToApply(var OldVendLedgEntry: Record "Vendor Ledger Entry"; OldCVLedgEntryBuf: Record "CV Ledger Entry Buffer"; RemainingTaxAmount: Decimal; AppliedAmount: Decimal; var IsHandled: Boolean)
+    local procedure OnBeforeUpdateOldVendLedgEntryAmountToApply(var OldVendLedgEntry: Record "Vendor Ledger Entry"; OldCVLedgEntryBuf: Record "CV Ledger Entry Buffer"; RemainingTaxAmount: Decimal; AppliedAmount: Decimal; GenJnlLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJnlLine) then
             exit;
 
         UpdateAmountToApply(OldVendLedgEntry, RemainingTaxAmount, AppliedAmount, IsHandled);
@@ -913,8 +981,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", OnAfterOldVendLedgEntryModify, '', false, false)]
     local procedure OnAfterOldVendLedgEntryModify(GenJournalLine: Record "Gen. Journal Line"; AppliedAmount: Decimal; var NextTaxEntryNo: Integer; var NextEntryNo: Integer; var NextCheckEntryNo: Integer; NextTransactionNo: Integer; sender: Codeunit "Gen. Jnl.-Post Line")
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         ApplyWHT(GenJournalLine, AppliedAmount, NextTaxEntryNo, NextEntryNo, NextCheckEntryNo, NextTransactionNo, sender);
@@ -925,9 +998,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
     var
         GLSetup: Record "General Ledger Setup";
         PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
         WithholdingTaxAmount: Decimal;
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         if GenJournalLine."Document Type" = GenJournalLine."Document Type"::Refund then
@@ -1423,9 +1500,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
     local procedure OnUnapplyVendLedgEntryOnAfterCreateGLEntriesForTotalAmounts(var GenJournalLine: Record "Gen. Journal Line"; DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry"; GenJournalLineToPost: Record "Gen. Journal Line"; var NextTaxEntryNo: Integer; var NextEntryNo: Integer; var NextCheckEntryNo: Integer; NextTransactionNo: Integer; sender: Codeunit "Gen. Jnl.-Post Line")
     var
         SourceCodeSetup: Record "Source Code Setup";
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
         VoidCheck: Boolean;
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         SourceCodeSetup.Get();
@@ -1566,8 +1647,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", OnBeforeProcessBalanceOfLines, '', false, false)]
     local procedure OnBeforeProcessBalanceOfLines(var GenJournalBatch: Record "Gen. Journal Batch"; var GenJournalLine: Record "Gen. Journal Line"; var GenJournalTemplate: Record "Gen. Journal Template"; var IsKeySet: Boolean)
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         if (IsWHTPaymentPosting(GenJournalLine) or GenJournalTemplate."Force Doc. Balance") then
@@ -1629,8 +1715,12 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
     local procedure OnProcessLinesOnAfterProcessICTransaction(var GenJournalLine: Record "Gen. Journal Line"; CurrentICPartner: Code[20]; ICTransactionNo: Integer; var LastTaxLineNo: Integer; sender: Codeunit "Gen. Jnl.-Post Batch")
     var
         WHTGenJournalLine: Record "Gen. Journal Line";
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         WHTGenJournalLine.SetRange("Journal Template Name", GenJournalLine."Journal Template Name");
@@ -1647,8 +1737,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", OnBeforeFindGenJnlLineOnProcessLines, '', false, false)]
     local procedure OnBeforeFindGenJnlLineOnProcessLines(var GenJournalLine: Record "Gen. Journal Line")
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         GenJournalLine.SetRange("Is Withholding Tax");
@@ -1657,8 +1752,13 @@ codeunit 6786 "Withholding Tax Jnl Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Bank Acc. Reconciliation Post", OnPostPaymentApplicationsOnAfterPostGenJnlLine, '', false, false)]
     local procedure OnPostPaymentApplicationsOnAfterPostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    var
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJournalLine) then
             exit;
 
         PostUnrealizedWHT(GenJournalLine, GenJnlPostLine);
