@@ -102,15 +102,11 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         GPUpgradeSettings: Record "GP Upgrade Settings";
         HybridGPWizard: Codeunit "Hybrid GP Wizard";
         UserPermissions: Codeunit "User Permissions";
-        MigrationValidation: Codeunit "Migration Validation";
     begin
         IsSuper := UserPermissions.IsSuper(UserSecurityId());
 
         if IntelligentCloudSetup.Get() then
-            if IntelligentCloudSetup."Product ID" = HybridGPWizard.ProductId() then begin
-                FactBoxesVisible := true;
-                MigrationValidation.PrepareValidation();
-            end;
+            FactBoxesVisible := IntelligentCloudSetup."Product ID" = HybridGPWizard.ProductId();
 
         HybridCompany.SetRange(Replicate, true);
         HasCompletedSetupWizard := not HybridCompany.IsEmpty();

@@ -747,6 +747,10 @@ page 4050 "GP Migration Configuration"
     end;
 
     trigger OnOpenPage()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
+        MigrationValidation: Codeunit "Migration Validation";
     begin
         if not Rec.Get() then
             Rec.Insert(true);
@@ -759,6 +763,10 @@ page 4050 "GP Migration Configuration"
                                                         Rec."Migrate Hist. AP Trx." and
                                                         Rec."Migrate Hist. Inv. Trx." and
                                                         Rec."Migrate Hist. Purch. Trx.";
+
+        if IntelligentCloudSetup.Get() then
+            if IntelligentCloudSetup."Product ID" = HybridGPWizard.ProductId() then
+                MigrationValidation.PrepareValidation();
     end;
 
     local procedure EnsureSettingsForAllCompanies()
