@@ -25,10 +25,10 @@ page 11702 "Acc. Schedule File Mapping CZL"
                 field(CurrentSchedName; CurrentSchedName)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Account Schedule Name';
+                    Caption = 'Financial Report Name';
                     Lookup = true;
                     LookupPageId = "Account Schedule Names";
-                    ToolTip = 'Specifies the account schedule name.';
+                    ToolTip = 'Specifies the financial report name.';
                     Editable = false;
                 }
                 field(CurrentColumnName; CurrentColumnName)
@@ -48,13 +48,13 @@ page 11702 "Acc. Schedule File Mapping CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies a number for the account schedule line.';
+                    ToolTip = 'Specifies a number for the financial report line.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies text that will appear on the account schedule line.';
+                    ToolTip = 'Specifies text that will appear on the financial report line.';
                 }
                 field("ColumnValues[1]"; ColumnValues[1])
                 {
@@ -334,7 +334,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Previous Column';
                 Image = PreviousRecord;
-                ToolTip = 'Show the account schedule based on the previous column.';
+                ToolTip = 'Show the financial report based on the previous column.';
 
                 trigger OnAction()
                 begin
@@ -346,7 +346,7 @@ page 11702 "Acc. Schedule File Mapping CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Next Column';
                 Image = NextRecord;
-                ToolTip = 'Show the account schedule based on the next column.';
+                ToolTip = 'Show the financial report based on the next column.';
 
                 trigger OnAction()
                 begin

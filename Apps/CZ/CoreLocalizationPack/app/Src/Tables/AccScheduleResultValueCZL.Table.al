@@ -6,7 +6,7 @@ namespace Microsoft.Finance.FinancialReports;
 
 table 31113 "Acc. Schedule Result Value CZL"
 {
-    Caption = 'Acc. Schedule Result Value';
+    Caption = 'Fin. Report Result Value';
 
     fields
     {

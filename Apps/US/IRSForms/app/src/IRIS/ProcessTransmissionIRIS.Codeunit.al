@@ -134,7 +134,7 @@ codeunit 10056 "Process Transmission IRIS"
 
         exit(((Transmission.Status = Enum::"Transmission Status IRIS"::Rejected) and not PrevSendIsCorrection) or
             (Transmission.Status = Enum::"Transmission Status IRIS"::"Partially Accepted") or
-            TransmHasRejectedSubmissions);
+            (TransmHasRejectedSubmissions and not PrevSendIsCorrection));
     end;
 
     procedure IsSendCorrectionAllowed(var Transmission: Record "Transmission IRIS"): Boolean
@@ -547,6 +547,34 @@ codeunit 10056 "Process Transmission IRIS"
             if RecordId <> '' then
                 ErrorInformation.SetFilter("Record ID", '%1|%2', RecordId, '');     // also show submission related errors
         end;
+    end;
+
+    procedure GetRecordErrorCount(TransmissionDocumentID: Integer; SubmissionId: Text[20]; RecordId: Text[20]): Integer
+    var
+        ErrorInformation: Record "Error Information IRIS";
+    begin
+        if (SubmissionId = '') or (RecordId = '') then
+            exit(0);
+
+        ErrorInformation.SetRange("Transmission Document ID", TransmissionDocumentID);
+        ErrorInformation.SetRange("Entity Type", Enum::"Entity Type IRIS"::RecordType);
+        ErrorInformation.SetRange("Submission ID", SubmissionId);
+        ErrorInformation.SetRange("Record ID", RecordId);
+        exit(ErrorInformation.Count());
+    end;
+
+    procedure HasSubmissionLevelErrors(TransmissionDocumentID: Integer; SubmissionId: Text[20]): Boolean
+    var
+        ErrorInformation: Record "Error Information IRIS";
+    begin
+        if SubmissionId = '' then
+            exit(false);
+
+        ErrorInformation.SetRange("Transmission Document ID", TransmissionDocumentID);
+        ErrorInformation.SetRange("Entity Type", Enum::"Entity Type IRIS"::Submission);
+        ErrorInformation.SetRange("Submission ID", SubmissionId);
+        ErrorInformation.SetRange("Record ID", '');
+        exit(not ErrorInformation.IsEmpty());
     end;
 
     procedure ShowErrorInformation(TransmissionDocumentID: Integer; SubmissionId: Text[20]; RecordId: Text[20])

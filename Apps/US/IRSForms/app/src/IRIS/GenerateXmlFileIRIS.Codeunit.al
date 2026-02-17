@@ -387,7 +387,7 @@ codeunit 10033 "Generate Xml File IRIS"
 
         AddRecipientDetails(Vendor);
 
-        Helper.AppendXmlNode('RecipientAccountNum', GetVendorBankAccountNo(Vendor));
+        Helper.AppendXmlNode('RecipientAccountNum', Helper.GetVendorBankAccountNo(Vendor));
 
         CalcFormTotalAmounts(TempIRS1099FormDocHeader, TotalAmounts);
         GetFormBoxAmtXmlElemNamesAndValues(TempIRS1099FormDocHeader, TotalAmounts, FormBoxAmtXmlElemNamesValues);
@@ -585,6 +585,7 @@ codeunit 10033 "Generate Xml File IRIS"
     var
         AddressLine1: Text;
         AddressLine2: Text;
+        FormattedStateCode: Text;
     begin
         Helper.AddParentXmlNode(AddressTagName);
         Helper.AddParentXmlNode(Format(Enum::"Address Type IRIS"::USAddress));
@@ -593,7 +594,8 @@ codeunit 10033 "Generate Xml File IRIS"
         Helper.AppendXmlNode('AddressLine1Txt', AddressLine1);
         Helper.AppendXmlNode('AddressLine2Txt', AddressLine2);
         Helper.AppendXmlNode('CityNm', Helper.FormatCityName(CityName, Enum::"Address Type IRIS"::USAddress));
-        Helper.AppendXmlNode('StateAbbreviationCd', Format(StateCode));
+        Helper.MatchStateCode(StateCode, FormattedStateCode);
+        Helper.AppendXmlNode('StateAbbreviationCd', FormattedStateCode);
         Helper.AppendXmlNode('ZIPCd', Helper.FormatZipCode(PostCode));
 
         Helper.CloseParentXmlNode();
@@ -672,20 +674,6 @@ codeunit 10033 "Generate Xml File IRIS"
             until TempIRS1099FormDocHeader.Next() = 0;
 
         exit(VendorNos.Keys());
-    end;
-
-    local procedure GetVendorBankAccountNo(var Vendor: Record Vendor) BankAccountNo: Text
-    var
-        VendorBankAccount: Record "Vendor Bank Account";
-    begin
-        if Vendor."Preferred Bank Account Code" <> '' then begin
-            VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code");
-            BankAccountNo := VendorBankAccount.GetBankAccountNo();
-        end;
-
-        BankAccountNo := Helper.FormatText(BankAccountNo);
-        if StrLen(BankAccountNo) > 30 then
-            BankAccountNo := '';
     end;
 
     local procedure CalcFormTotalAmounts(var TempIRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header" temporary; var TotalAmounts: Dictionary of [Text, Decimal])

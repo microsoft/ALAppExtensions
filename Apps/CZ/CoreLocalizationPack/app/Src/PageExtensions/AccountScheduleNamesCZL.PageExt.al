@@ -13,7 +13,7 @@ pageextension 11781 "Account Schedule Names CZL" extends "Account Schedule Names
             field("Acc. Schedule Type CZL"; Rec."Acc. Schedule Type CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the type of account schedule (Balance Sheet or Income Statement).';
+                ToolTip = 'Specifies the type of financial report (Balance Sheet or Income Statement).';
             }
         }
     }

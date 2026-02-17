@@ -70,6 +70,7 @@ table 2632 "Statistical Account"
         field(31; "Balance at Date"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Statistical Ledger Entry".Amount where("Statistical Account No." = field("No."),
                                                         "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                         "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
@@ -83,6 +84,7 @@ table 2632 "Statistical Account"
         field(32; "Net Change"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Statistical Ledger Entry".Amount where("Statistical Account No." = field("No."),
                                                         "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                         "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
@@ -95,6 +97,7 @@ table 2632 "Statistical Account"
         field(36; Balance; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Statistical Ledger Entry".Amount where("Statistical Account No." = field("No."),
                                                         "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                         "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),

@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Foundation.Address;
+using Microsoft.Purchases.Vendor;
 using System.Reflection;
 using System.Utilities;
 using System.Xml;
@@ -561,6 +562,22 @@ codeunit 10035 "Helper IRIS"
         exit(TB.ToText());
     end;
 
+    procedure MatchStateCode(InputText: Text; var StateCode: Text): Boolean
+    var
+        StateTypeIRIS: Enum "State Type IRIS";
+        TrimmedText: Text;
+        StateName: Text;
+    begin
+        TrimmedText := DelChr(InputText, '<>', ' ');
+        foreach StateName in StateTypeIRIS.Names() do
+            if UpperCase(TrimmedText) = UpperCase(StateName) then begin
+                StateCode := StateName;
+                exit(true);
+            end;
+
+        exit(false);
+    end;
+
     procedure FormatPhoneNumber(InputText: Text): Text
     var
         TB: TextBuilder;
@@ -891,6 +908,24 @@ codeunit 10035 "Helper IRIS"
             else
                 exit(CopyStr(ISOCountryCode, 1, 2));
         end;
+    end;
+
+    procedure GetVendorBankAccountNo(var Vendor: Record Vendor) BankAccountNo: Text
+    var
+        VendorBankAccount: Record "Vendor Bank Account";
+    begin
+        if Vendor."Preferred Bank Account Code" <> '' then
+            if VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code") then
+                BankAccountNo := VendorBankAccount.GetBankAccountNo();
+
+        BankAccountNo := FormatText(BankAccountNo);
+        if StrLen(BankAccountNo) > GetRecipientBankAccountNoMaxLength() then        // RecipientAccountNum is optional, but cannot exceed 30 chars
+            BankAccountNo := '';
+    end;
+
+    local procedure GetRecipientBankAccountNoMaxLength(): Integer
+    begin
+        exit(30);
     end;
 
     [IntegrationEvent(false, false)]

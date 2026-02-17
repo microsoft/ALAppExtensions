@@ -46,6 +46,7 @@ tableextension 6220 "Sust. Item" extends Item
         }
         field(6213; "Carbon Credit Per UOM"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Carbon Credit Per UOM';
 

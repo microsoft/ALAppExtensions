@@ -166,6 +166,7 @@ table 6241 "Sust. Excise Taxes Trans. Log"
         }
         field(29; "Source Qty."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Source Qty.';
         }
         field(40; "Material Breakdown No."; Code[20])
@@ -178,6 +179,7 @@ table 6241 "Sust. Excise Taxes Trans. Log"
         }
         field(42; "Material Breakdown Weight"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Material Breakdown Weight';
         }
         field(43; "Material Breakdown UOM"; Code[10])

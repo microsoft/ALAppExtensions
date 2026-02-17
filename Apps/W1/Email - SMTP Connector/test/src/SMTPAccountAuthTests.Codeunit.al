@@ -219,7 +219,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] SMTP Account page can be opened successfully
 
         // [GIVEN] A new SMTP Account record
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Opening the SMTP Account page
         SMTPAccountPage.OpenEdit();
@@ -237,7 +237,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Account Name field validation works correctly
 
         // [GIVEN] A new SMTP Account record
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Opening the page and setting account name
         SMTPAccountPage.OpenEdit();
@@ -255,7 +255,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Sender Type field changes affect field editability
 
         // [GIVEN] A new SMTP Account record
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Opening the page and changing sender type to Specific User
         SMTPAccountPage.OpenEdit();
@@ -282,7 +282,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Email Address validation auto-fills User Name
 
         // [GIVEN] A new SMTP Account record with Specific User sender type
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
         SMTPAccount."Sender Type" := SMTPAccount."Sender Type"::"Specific User";
         SMTPAccount.Modify();
 
@@ -303,7 +303,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Server URL field validation works correctly
 
         // [GIVEN] A new SMTP Account record
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Setting server URL
         SMTPAccountPage.OpenEdit();
@@ -322,7 +322,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Server Port field accepts valid port numbers
 
         // [GIVEN] A new SMTP Account record
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Setting server port
         SMTPAccountPage.OpenEdit();
@@ -341,7 +341,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Authentication Type changes affect field editability
 
         // [GIVEN] A new SMTP Account record
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Setting authentication to Basic
         SMTPAccountPage.OpenEdit();
@@ -369,7 +369,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Apply Office 365 Server Settings action works correctly
 
         // [GIVEN] A new SMTP Account record
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Opening the page and applying Office 365 settings
         SMTPAccountPage.OpenEdit();
@@ -390,7 +390,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Secure Connection field can be toggled
 
         // [GIVEN] A new SMTP Account record
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Opening the page and setting secure connection
         SMTPAccountPage.OpenEdit();
@@ -415,7 +415,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Email Address OnValidate does not override User Name if it is already set.
 
         // [GIVEN] A new SMTP Account record with a pre-set User Name
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
         SMTPAccount."Sender Type" := SMTPAccount."Sender Type"::"Specific User";
         SMTPAccount."User Name" := 'existing-user@example.com';
         SMTPAccount.Modify();
@@ -443,7 +443,7 @@ codeunit 139762 "SMTP Account Auth Tests"
 
         // [GIVEN] OnPrem + an SMTP account
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
 
         // [WHEN] Open the SMTP Account page and configure OAuth 2.0 with O365 via the UI
         SMTPAccountPage.OpenEdit();
@@ -483,7 +483,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] Turning off Custom OAuth 2.0 clears secret-related fields.
 
         // [GIVEN] An SMTP account with custom OAuth 2.0 GUIDs filled
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
         SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::"OAuth 2.0";
         SMTPAccount."Client Id Storage Id" := CreateGuid();
         SMTPAccount."Client Secret Storage Id" := CreateGuid();
@@ -513,7 +513,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] "Authenticate with Customized OAuth 2.0" errors when Client Id or Secret is missing.
 
         // [GIVEN] OAuth 2.0 account using O365 server and Custom OAuth toggled on, but without ClientId/Secret
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
         SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::"OAuth 2.0";
         SMTPAccount.Server := 'smtp.office365.com';
         SMTPAccount."Client Id Storage Id" := CreateGuid(); // Only ClientId is present to force partial configuration
@@ -540,7 +540,7 @@ codeunit 139762 "SMTP Account Auth Tests"
         // [SCENARIO] When Custom OAuth 2.0 is enabled but required fields are missing, closing page asks for confirmation.
 
         // [GIVEN] OAuth 2.0 account with Custom OAuth enabled and incomplete configuration
-        CreateSMTPAccount();
+        CreateSMTPBasicAccount();
         SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::"OAuth 2.0";
         SMTPAccount."Client Id Storage Id" := CreateGuid(); // Only ClientId present
         SMTPAccount.Modify();
@@ -1047,7 +1047,202 @@ codeunit 139762 "SMTP Account Auth Tests"
 
     #endregion
 
-    local procedure CreateSMTPAccount()
+    [Test]
+    procedure TestWizardCurrentUserNextEnabledAfterApplyOffice365()
+    begin
+        // [SCENARIO] Bug fix: When user selects Current User and applies Office 365 settings,
+        // the Next button should be enabled. Previously, IsAccountValid checked Step 3 fields
+        // (UserName for Basic auth) which are not yet filled in Step 1, blocking Next.
+
+        // [WHEN] Opening the wizard
+        SMTPAccountWizardPage.OpenNew();
+
+        // [WHEN] Filling Name and selecting Current User
+        SMTPAccountWizardPage.NameField.SetValue('Current User Test');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Current User");
+
+        // [WHEN] Applying Office 365 settings (sets Auth to Basic, Server to smtp.office365.com)
+        SMTPAccountWizardPage.ApplyOffice365.Invoke();
+
+        // [THEN] Next button should be enabled because Step 1 validation only checks
+        // Name, Email Address (for Specific User), and Server
+        Assert.IsTrue(SMTPAccountWizardPage.Next.Enabled(), 'Next should be enabled for Current User after Apply Office 365');
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    procedure TestWizardCurrentUserNextEnabledWithManualServerEntry()
+    begin
+        // [SCENARIO] Bug fix: When user manually fills in Name and Server with Current User,
+        // Next should be enabled without needing Email Address.
+
+        // [WHEN] Opening the wizard
+        SMTPAccountWizardPage.OpenNew();
+
+        // [WHEN] Filling required fields for Current User
+        SMTPAccountWizardPage.NameField.SetValue('Manual Server Test');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Current User");
+        SMTPAccountWizardPage.ServerUrl.SetValue('smtp.example.com');
+
+        // [THEN] Next button should be enabled
+        Assert.IsTrue(SMTPAccountWizardPage.Next.Enabled(), 'Next should be enabled for Current User with Name and Server filled');
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    procedure TestWizardSpecificUserNextDisabledWithoutEmail()
+    begin
+        // [SCENARIO] Regression check: Specific User still requires Email Address for Next to be enabled.
+
+        // [WHEN] Opening the wizard
+        SMTPAccountWizardPage.OpenNew();
+
+        // [WHEN] Filling Name and Server but not Email Address for Specific User
+        SMTPAccountWizardPage.NameField.SetValue('Specific User Test');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Specific User");
+        SMTPAccountWizardPage.ServerUrl.SetValue('smtp.example.com');
+
+        // [THEN] Next button should be disabled because Email Address is required
+        Assert.IsFalse(SMTPAccountWizardPage.Next.Enabled(), 'Next should be disabled for Specific User without Email Address');
+
+        // [WHEN] Filling Email Address
+        SMTPAccountWizardPage.EmailAddress.SetValue('test@example.com');
+
+        // [THEN] Next button should be enabled
+        Assert.IsTrue(SMTPAccountWizardPage.Next.Enabled(), 'Next should be enabled for Specific User with all fields filled');
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    procedure TestPasswordNotShownForOAuthAccount()
+    begin
+        // [SCENARIO] Bug fix: On the SMTP Account page, the password field should not show '***'
+        // for OAuth 2.0 accounts, even if a Password Key GUID exists. This prevents users from
+        // thinking a password is set when it is actually empty.
+
+        // [GIVEN] An SMTP account with OAuth 2.0 and a password stored in isolated storage
+        CreateSMTPOAuthAccount();
+        SMTPAccount.SetPassword(SecretStrSubstNo('TestPassword123'));
+        SMTPAccount.Modify();
+
+        // [WHEN] Opening the SMTP Account page with the specific record
+        SMTPAccountPage.Trap();
+        Page.Run(Page::"SMTP Account", SMTPAccount);
+
+        // [THEN] Password field should be empty (not showing '***')
+        Assert.AreEqual('', SMTPAccountPage.Password.Value(), 'Password should not show masked content for OAuth 2.0 accounts');
+
+        SMTPAccountPage.Close();
+    end;
+
+    [Test]
+    procedure TestPasswordShownForBasicAuthAccount()
+    begin
+        // [SCENARIO] Regression check: On the SMTP Account page, the password field should
+        // show '***' for Basic authentication accounts that have a password set.
+
+        // [GIVEN] An SMTP account with Basic auth and a password set
+        CreateSMTPBasicAccount();
+        SMTPAccount.SetPassword(SecretStrSubstNo('TestPassword123'));
+        SMTPAccount.Modify();
+
+        // [WHEN] Opening the SMTP Account page with the specific record
+        SMTPAccountPage.Trap();
+        Page.Run(Page::"SMTP Account", SMTPAccount);
+
+        // [THEN] Password field should show masked content (not empty)
+        Assert.AreNotEqual('', SMTPAccountPage.Password.Value(), 'Password should show masked content for Basic auth accounts');
+
+        SMTPAccountPage.Close();
+    end;
+
+    [Test]
+    procedure TestPasswordClearedWhenSwitchingToOAuthAndBackToBasic()
+    begin
+        // [SCENARIO] When switching authentication from Basic to OAuth 2.0 and back to Basic,
+        // the password should be cleared when switching to OAuth 2.0 and remain empty after switching back.
+
+        // [GIVEN] An SMTP account with Basic auth and a password set
+        CreateSMTPBasicAccount();
+        SMTPAccount.SetPassword(SecretStrSubstNo('TestPassword123'));
+        SMTPAccount.Modify();
+
+        // [WHEN] Opening the SMTP Account page
+        SMTPAccountPage.Trap();
+        Page.Run(Page::"SMTP Account", SMTPAccount);
+
+        // [THEN] Password field should show masked content for Basic auth
+        Assert.AreNotEqual('', SMTPAccountPage.Password.Value(), 'Password should show masked content initially for Basic auth');
+
+        // [WHEN] Switching authentication to OAuth 2.0
+        SMTPAccountPage.Authentication.SetValue(SMTPAccount."Authentication Type"::"OAuth 2.0");
+
+        // [THEN] Password should be cleared
+        Assert.AreEqual('', SMTPAccountPage.Password.Value(), 'Password should be cleared after switching to OAuth 2.0');
+
+        // [WHEN] Switching authentication back to Basic
+        SMTPAccountPage.Authentication.SetValue(SMTPAccount."Authentication Type"::Basic);
+
+        // [THEN] Password should remain empty (it was deleted from isolated storage when switching to OAuth 2.0)
+        Assert.AreEqual('', SMTPAccountPage.Password.Value(), 'Password should remain empty after switching back to Basic from OAuth 2.0');
+
+        SMTPAccountPage.Close();
+    end;
+
+    [Test]
+    procedure TestOAuthActionsVisibleOnSaaS()
+    var
+        SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+    begin
+        // [SCENARIO] Bug fix: OAuth 2.0 authenticate actions should be visible on SaaS environments.
+        // When Custom OAuth is enabled, the custom authenticate action should be visible and standard ones hidden.
+        // When Custom OAuth is disabled, the custom authenticate action should not be visible.
+
+        // [GIVEN] SaaS environment with an SMTP account
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+        CreateSMTPBasicAccount();
+
+        // [WHEN] Opening the SMTP Account page and configuring OAuth 2.0 with O365 server
+        SMTPAccountPage.OpenEdit();
+        SMTPAccountPage.GoToRecord(SMTPAccount);
+        SMTPAccountPage.Authentication.SetValue(SMTPAccount."Authentication Type"::"OAuth 2.0");
+        SMTPAccountPage.ServerUrl.SetValue(SMTPConnectorImpl.GetO365SmtpServer());
+
+        // [THEN] The standard OAuth 2.0 actions should NOT be visible on SaaS
+        Assert.IsFalse(SMTPAccountPage."Authenticate with OAuth 2.0".Visible(), 'OAuth 2.0 authenticate action should not be visible on SaaS');
+        Assert.IsFalse(SMTPAccountPage."Check OAuth 2.0 authentication".Visible(), 'Check OAuth 2.0 authentication action should not be visible on SaaS');
+
+        // [THEN] The custom OAuth 2.0 action should NOT be visible when custom OAuth is disabled
+        Assert.IsFalse(SMTPAccountPage."Authenticate with Customized OAuth 2.0".Visible(), 'Custom OAuth 2.0 authenticate action should not be visible when custom OAuth is disabled');
+
+        // [WHEN] Enabling custom OAuth 2.0
+        SMTPAccountPage.CustomOAuth2Settings.SetValue(true);
+
+        // [THEN] The custom OAuth 2.0 action should be visible
+        Assert.IsTrue(SMTPAccountPage."Authenticate with Customized OAuth 2.0".Visible(), 'Custom OAuth 2.0 authenticate action should be visible when custom OAuth is enabled');
+
+        // [THEN] The standard OAuth 2.0 actions should be hidden
+        Assert.IsFalse(SMTPAccountPage."Authenticate with OAuth 2.0".Visible(), 'Standard OAuth 2.0 authenticate action should be hidden when custom OAuth is enabled');
+        Assert.IsFalse(SMTPAccountPage."Check OAuth 2.0 authentication".Visible(), 'Check OAuth 2.0 authentication action should be hidden when custom OAuth is enabled');
+
+        // [WHEN] Disabling custom OAuth 2.0
+        SMTPAccountPage.CustomOAuth2Settings.SetValue(false);
+
+        // [THEN] The custom OAuth 2.0 action should NOT be visible again
+        Assert.IsFalse(SMTPAccountPage."Authenticate with Customized OAuth 2.0".Visible(), 'Custom OAuth 2.0 authenticate action should not be visible after disabling custom OAuth');
+
+        // [THEN] The standard OAuth 2.0 actions should NOT be visible after disabling custom OAuth
+        Assert.IsFalse(SMTPAccountPage."Authenticate with OAuth 2.0".Visible(), 'Standard OAuth 2.0 authenticate action should not be visible after disabling custom OAuth');
+        Assert.IsFalse(SMTPAccountPage."Check OAuth 2.0 authentication".Visible(), 'Check OAuth 2.0 authentication action should not be visible after disabling custom OAuth');
+
+        SMTPAccountPage.Close();
+    end;
+
+    local procedure CreateSMTPBasicAccount()
     var
         RandomText: Text;
     begin
@@ -1061,6 +1256,23 @@ codeunit 139762 "SMTP Account Auth Tests"
         SMTPAccount."Sender Type" := SMTPAccount."Sender Type"::"Current User";
         SMTPAccount.Insert();
     end;
+
+    local procedure CreateSMTPOAuthAccount()
+    var
+        RandomText: Text;
+    begin
+        SMTPAccount.Init();
+        SMTPAccount.Id := CreateGuid();
+        RandomText := Format(CreateGuid());
+        SMTPAccount.Name := 'Test Account ' + CopyStr(RandomText, 1, 10);
+        SMTPAccount.Server := 'smtp.test.com';
+        SMTPAccount."Server Port" := 25;
+        SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::"OAuth 2.0";
+        SMTPAccount."Password Key" := CreateGuid();
+        SMTPAccount."Sender Type" := SMTPAccount."Sender Type"::"Current User";
+        SMTPAccount.Insert();
+    end;
+
 
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)

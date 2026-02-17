@@ -76,6 +76,7 @@ codeunit 5415 "Finance Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Currency Exchange Rate");
         Codeunit.Run(Codeunit::"Create Resource");
         Codeunit.Run(Codeunit::"Create Allocation Account");
+        Codeunit.Run(Codeunit::"Create Add. Reporting Currency");
     end;
 
     procedure CreateTransactionalData()

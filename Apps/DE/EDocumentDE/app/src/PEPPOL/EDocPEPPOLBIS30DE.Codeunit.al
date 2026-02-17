@@ -132,6 +132,15 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 
         EDocServiceSupportedType."Source Document Type" := Enum::"E-Document Type"::"Sales Credit Memo";
         EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := Enum::"E-Document Type"::"Service Invoice";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := Enum::"E-Document Type"::"Service Credit Memo";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := Enum::"E-Document Type"::"Service Order";
+        EDocServiceSupportedType.Insert();
     end;
 
     local procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)
@@ -178,6 +187,8 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         Customer: Record Customer;
         CustomerNoFieldRef: FieldRef;
         YourReferenceFieldRef: FieldRef;
@@ -209,6 +220,19 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
                     SourceDocumentHeader.SetTable(SalesCrMemoHeader);
                     SalesCrMemoHeader.Validate("Buyer Reference", BuyerReference);
                     SalesCrMemoHeader.Modify(true);
+                end;
+
+            Database::"Service Invoice Header":
+                begin
+                    SourceDocumentHeader.SetTable(ServiceInvoiceHeader);
+                    ServiceInvoiceHeader.Validate("Buyer Reference", BuyerReference);
+                    ServiceInvoiceHeader.Modify(true);
+                end;
+            Database::"Service Cr.Memo Header":
+                begin
+                    SourceDocumentHeader.SetTable(ServiceCrMemoHeader);
+                    ServiceCrMemoHeader.Validate("Buyer Reference", BuyerReference);
+                    ServiceCrMemoHeader.Modify(true);
                 end;
         end;
     end;

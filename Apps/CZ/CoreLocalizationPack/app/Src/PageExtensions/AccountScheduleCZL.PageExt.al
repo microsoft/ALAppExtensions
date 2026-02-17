@@ -39,7 +39,7 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
             field("Calc CZL"; Rec."Calc CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies when the value can be calculated in the Account Schedule - Always, Never, When Positive, When Negative.';
+                ToolTip = 'Specifies when the value can be calculated in the Financial Report - Always, Never, When Positive, When Negative.';
             }
         }
         addlast(Control1)
@@ -47,7 +47,7 @@ pageextension 11782 "Account Schedule CZL" extends "Account Schedule"
             field("Assets/Liabilities Type CZL"; Rec."Assets/Liabilities Type CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the assets or liabilities type for the account schedule line.';
+                ToolTip = 'Specifies the assets or liabilities type for the financial report line.';
                 Visible = false;
             }
         }

@@ -49,6 +49,7 @@ table 6222 "Sustainability Certificate"
         }
         field(8; "Value"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Value';
 

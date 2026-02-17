@@ -4993,4 +4993,21 @@ codeunit 6785 "Withholding Tax Mgmt."
         then
             exit(WithholdingTaxEntry2."Entry No." + 1);
     end;
+
+    procedure CheckVendorWithholdingTaxLiable(GenJnlLine: Record "Gen. Journal Line"): Boolean
+    var
+        Vendor: Record Vendor;
+    begin
+        if Vendor.Get(GetVendorNo(GenJnlLine)) then
+            exit(Vendor."Withholding Tax Liable");
+    end;
+
+    local procedure GetVendorNo(GenJnlLine: Record "Gen. Journal Line"): Code[20]
+    begin
+        if GenJnlLine."Account Type" = GenJnlLine."Account Type"::Vendor then
+            exit(GenJnlLine."Account No.")
+        else
+            if GenJnlLine."Bal. Account Type" = GenJnlLine."Bal. Account Type"::Vendor then
+                exit(GenJnlLine."Bal. Account No.");
+    end;
 }

@@ -17,7 +17,7 @@ using Microsoft.Warehouse.Structure;
 
 table 31092 "Acc. Schedule Extension CZL"
 {
-    Caption = 'Acc. Schedule Extension';
+    Caption = 'Fin. Report Extension';
     LookupPageId = "Acc. Schedule Extensions CZL";
 
     fields

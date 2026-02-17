@@ -195,6 +195,8 @@ table 6232 "Sust. Posted ESG Report Line"
         }
         field(40; "Posted Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Posted Amount';
         }
         field(50; "Coupled to Dataverse"; Boolean)

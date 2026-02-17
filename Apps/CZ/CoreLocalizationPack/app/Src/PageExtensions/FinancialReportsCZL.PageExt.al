@@ -17,7 +17,7 @@ pageextension 11702 "Financial Reports CZL" extends "Financial Reports"
                 Ellipsis = true;
                 Image = NewSum;
                 RunObject = page "Acc. Schedule Extensions CZL";
-                ToolTip = 'Specifies acc. schedule extensions page';
+                ToolTip = 'Specifies financial report extensions page.';
             }
             action("File Mapping CZL")
             {
@@ -42,7 +42,7 @@ pageextension 11702 "Financial Reports CZL" extends "Financial Reports"
                 Image = ViewDetails;
                 RunObject = page "Acc. Sched. Res. Hdr. List CZL";
                 RunPageLink = "Acc. Schedule Name" = field("Financial Report Row Group");
-                ToolTip = 'Opens acc. schedule res. header list';
+                ToolTip = 'Opens financial report res. header list.';
             }
         }
         addlast(Category_Process)

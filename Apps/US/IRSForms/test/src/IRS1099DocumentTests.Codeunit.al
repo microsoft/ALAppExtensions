@@ -1131,6 +1131,168 @@ codeunit 148010 "IRS 1099 Document Tests"
         DeleteDocuments();
     end;
 
+    [Test]
+    procedure FormDocLineIncludeIn1099TrueWhenAmountEqualsMinimum()
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
+        IRS1099FormBox: Record "IRS 1099 Form Box";
+        PeriodNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: Code[20];
+        VendNo: Code[20];
+        MinimumReportableAmount: Decimal;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 620524] "Include In 1099" is TRUE when Amount equals "Minimum Reportable Amount"
+        Initialize();
+        MinimumReportableAmount := 600;
+
+        // [GIVEN] IRS Reporting Period with Form "F" and Form Box "FB" having "Minimum Reportable Amount" = 600
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        IRS1099FormBox.Get(PeriodNo, FormNo, FormBoxNo);
+        IRS1099FormBox.Validate("Minimum Reportable Amount", MinimumReportableAmount);
+        IRS1099FormBox.Modify(true);
+
+        // [GIVEN] Vendor "V" with form box "FB"
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+
+        // [GIVEN] Open form document for vendor "V"
+        IRS1099FormDocHeader.Validate("Period No.", PeriodNo);
+        IRS1099FormDocHeader.Validate("Vendor No.", VendNo);
+        IRS1099FormDocHeader.Validate("Form No.", FormNo);
+        IRS1099FormDocHeader.Insert(true);
+
+        // [GIVEN] Form document line with "Minimum Reportable Amount" = 600
+        IRS1099FormDocLine."Document ID" := IRS1099FormDocHeader.ID;
+        IRS1099FormDocLine."Period No." := PeriodNo;
+        IRS1099FormDocLine."Vendor No." := VendNo;
+        IRS1099FormDocLine."Form No." := FormNo;
+        IRS1099FormDocLine."Line No." := 10000;
+        IRS1099FormDocLine."Form Box No." := FormBoxNo;
+        IRS1099FormDocLine."Minimum Reportable Amount" := MinimumReportableAmount;
+        IRS1099FormDocLine.Insert();
+
+        // [WHEN] Validate Amount to exactly equal the Minimum Reportable Amount
+        IRS1099FormDocLine.Validate(Amount, MinimumReportableAmount);
+
+        // [THEN] "Include In 1099" is TRUE
+        Assert.IsTrue(
+            IRS1099FormDocLine."Include In 1099",
+            'Include In 1099 should be TRUE when Amount equals Minimum Reportable Amount');
+        IRS1099FormDocHeader.Delete(true);
+    end;
+
+    [Test]
+    procedure FormDocLineIncludeIn1099TrueWhenAmountAboveMinimum()
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
+        IRS1099FormBox: Record "IRS 1099 Form Box";
+        PeriodNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: Code[20];
+        VendNo: Code[20];
+        MinimumReportableAmount: Decimal;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 620524] "Include In 1099" is TRUE when Amount is above "Minimum Reportable Amount"
+        Initialize();
+        MinimumReportableAmount := 600;
+
+        // [GIVEN] IRS Reporting Period with Form "F" and Form Box "FB" having "Minimum Reportable Amount" = 600
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        IRS1099FormBox.Get(PeriodNo, FormNo, FormBoxNo);
+        IRS1099FormBox.Validate("Minimum Reportable Amount", MinimumReportableAmount);
+        IRS1099FormBox.Modify(true);
+
+        // [GIVEN] Vendor "V" with form box "FB"
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+
+        // [GIVEN] Open form document for vendor "V"
+        IRS1099FormDocHeader.Validate("Period No.", PeriodNo);
+        IRS1099FormDocHeader.Validate("Vendor No.", VendNo);
+        IRS1099FormDocHeader.Validate("Form No.", FormNo);
+        IRS1099FormDocHeader.Insert(true);
+
+        // [GIVEN] Form document line with "Minimum Reportable Amount" = 600
+        IRS1099FormDocLine."Document ID" := IRS1099FormDocHeader.ID;
+        IRS1099FormDocLine."Period No." := PeriodNo;
+        IRS1099FormDocLine."Vendor No." := VendNo;
+        IRS1099FormDocLine."Form No." := FormNo;
+        IRS1099FormDocLine."Line No." := 10000;
+        IRS1099FormDocLine."Form Box No." := FormBoxNo;
+        IRS1099FormDocLine."Minimum Reportable Amount" := MinimumReportableAmount;
+        IRS1099FormDocLine.Insert();
+
+        // [WHEN] Validate Amount to be above the Minimum Reportable Amount
+        IRS1099FormDocLine.Validate(Amount, MinimumReportableAmount + 100);
+
+        // [THEN] "Include In 1099" is TRUE
+        Assert.IsTrue(
+            IRS1099FormDocLine."Include In 1099",
+            'Include In 1099 should be TRUE when Amount is above Minimum Reportable Amount');
+        IRS1099FormDocHeader.Delete(true);
+    end;
+
+    [Test]
+    procedure FormDocLineIncludeIn1099FalseWhenAmountBelowMinimumUT()
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
+        IRS1099FormBox: Record "IRS 1099 Form Box";
+        PeriodNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: Code[20];
+        VendNo: Code[20];
+        MinimumReportableAmount: Decimal;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 620524] "Include In 1099" is FALSE when Amount is below "Minimum Reportable Amount"
+        Initialize();
+        MinimumReportableAmount := 600;
+
+        // [GIVEN] IRS Reporting Period with Form "F" and Form Box "FB" having "Minimum Reportable Amount" = 600
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        IRS1099FormBox.Get(PeriodNo, FormNo, FormBoxNo);
+        IRS1099FormBox.Validate("Minimum Reportable Amount", MinimumReportableAmount);
+        IRS1099FormBox.Modify(true);
+
+        // [GIVEN] Vendor "V" with form box "FB"
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+
+        // [GIVEN] Open form document for vendor "V"
+        IRS1099FormDocHeader.Validate("Period No.", PeriodNo);
+        IRS1099FormDocHeader.Validate("Vendor No.", VendNo);
+        IRS1099FormDocHeader.Validate("Form No.", FormNo);
+        IRS1099FormDocHeader.Insert(true);
+
+        // [GIVEN] Form document line with "Minimum Reportable Amount" = 600
+        IRS1099FormDocLine."Document ID" := IRS1099FormDocHeader.ID;
+        IRS1099FormDocLine."Period No." := PeriodNo;
+        IRS1099FormDocLine."Vendor No." := VendNo;
+        IRS1099FormDocLine."Form No." := FormNo;
+        IRS1099FormDocLine."Line No." := 10000;
+        IRS1099FormDocLine."Form Box No." := FormBoxNo;
+        IRS1099FormDocLine."Minimum Reportable Amount" := MinimumReportableAmount;
+        IRS1099FormDocLine.Insert();
+
+        // [WHEN] Validate Amount to be below the Minimum Reportable Amount
+        IRS1099FormDocLine.Validate(Amount, MinimumReportableAmount - 100);
+
+        // [THEN] "Include In 1099" is FALSE
+        Assert.IsFalse(
+            IRS1099FormDocLine."Include In 1099",
+            'Include In 1099 should be FALSE when Amount is below Minimum Reportable Amount');
+        IRS1099FormDocHeader.Delete(true);
+    end;
+
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";

@@ -203,4 +203,14 @@ codeunit 11630 "Create CH Currency Ex. Rate"
         CurrencyExchangeRate.Validate("Relational Exch. Rate Amount", RelationalExchRateAmount);
         CurrencyExchangeRate.Validate("Relational Adjmt Exch Rate Amt", RelationalAdjmtExchRateAmt);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Add. Reporting Currency", OnBeforeGetResidualCurrencyAccounts, '', false, false)]
+    local procedure GetResidualCurrencyAccountsCH(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
+    var
+        CreateCHGLAccounts: Codeunit "Create CH GL Accounts";
+    begin
+        FXGainsAccount := CreateCHGLAccounts.UnrealizedExchRateAdjmts();
+        FXLossesAccount := CreateCHGLAccounts.UnrealizedExchRateAdjmts();
+        IsHandled := true;
+    end;
 }

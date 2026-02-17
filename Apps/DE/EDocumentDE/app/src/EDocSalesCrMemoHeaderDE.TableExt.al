@@ -9,10 +9,12 @@ tableextension 11038 "E-Doc Sales CrMemo Header DE" extends "Sales Cr.Memo Heade
 {
     fields
     {
+#pragma warning disable AS0125
         field(11035; "Buyer Reference"; Text[100])
         {
             Caption = 'Buyer Reference';
             DataClassification = CustomerContent;
         }
+#pragma warning restore AS0125
     }
 }

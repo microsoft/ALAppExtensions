@@ -5,7 +5,6 @@
 namespace Microsoft.eServices.EDocument.Formats;
 
 using Microsoft.Sales.History;
-
 reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
 {
     trigger OnPreRendering(var RenderingPayload: JsonObject)

@@ -19,7 +19,7 @@ pageextension 11798 "Acc. Schedule Overview CZL" extends "Acc. Schedule Overview
                     Caption = 'Save Results';
                     Ellipsis = true;
                     Image = Save;
-                    ToolTip = 'Opens window for saving results of account schedule';
+                    ToolTip = 'Opens window for saving results of financial report.';
 
                     trigger OnAction()
                     var
@@ -35,7 +35,7 @@ pageextension 11798 "Acc. Schedule Overview CZL" extends "Acc. Schedule Overview
                     Image = ViewDetails;
                     RunObject = page "Acc. Sched. Res. Hdr. List CZL";
                     RunPageLink = "Acc. Schedule Name" = field("Schedule Name");
-                    ToolTip = 'Opens account schedule result header list';
+                    ToolTip = 'Opens financial report result header list.';
                 }
             }
         }

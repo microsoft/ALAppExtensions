@@ -6,7 +6,7 @@
 namespace System.Email;
 
 
-codeunit 4503 "Microsoft 365 Connector" implements "Default Email Rate Limit", "Email Connector v4"
+codeunit 4503 "Microsoft 365 Connector" implements "Default Email Rate Limit", "Email Connector v5"
 {
     Access = Internal;
     Permissions = tabledata "Email - Outlook Account" = r;
@@ -102,5 +102,20 @@ codeunit 4503 "Microsoft 365 Connector" implements "Default Email Rate Limit", "
     procedure GetDefaultEmailRateLimit(): Integer
     begin
         exit(EmailOutlookAPIHelper.DefaultEmailRateLimit());
+    end;
+
+    procedure GetEmailCategories(AccountId: Guid; var EmailCategories: Record "Email Categories" temporary)
+    begin
+        EmailOutlookAPIHelper.GetEmailCategories(AccountId, EmailCategories);
+    end;
+
+    procedure CreateEmailCategory(AccountId: Guid; CategoryDisplayName: Text; CategoryColor: Text): Text
+    begin
+        exit(EmailOutlookAPIHelper.CreateEmailCategory(AccountId, CategoryDisplayName, CategoryColor));
+    end;
+
+    procedure ApplyEmailCategory(AccountId: Guid; ExternalId: Text; Categories: List of [Text])
+    begin
+        EmailOutlookAPIHelper.ApplyEmailCategory(AccountId, ExternalId, Categories);
     end;
 }

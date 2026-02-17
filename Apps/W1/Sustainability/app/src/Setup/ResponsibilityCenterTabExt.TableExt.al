@@ -14,6 +14,7 @@ tableextension 6226 "Responsibility Center - TabExt" extends "Responsibility Cen
         }
         field(6211; "Water Capacity Quantity(Month)"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Water Capacity Quantity(Month)';
             DecimalPlaces = 2 : 2;

@@ -6,7 +6,6 @@ namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Receive;
-using Microsoft.eServices.EDocument.Processing.Import;
 using System.Email;
 using System.IO;
 using System.Telemetry;
@@ -259,6 +258,9 @@ codeunit 6385 "Outlook Processing"
     local procedure IgnoreMailAttachment(EmailMessage: Codeunit "Email Message"; ExternalMessageId: Text[2048]; var IgnoredBecauseExisting: Integer): Boolean
     var
         EDocument: Record "E-Document";
+        TempBlob: Codeunit "Temp Blob";
+        InStream: InStream;
+        ExceedsPageCountThreshold: Boolean;
     begin
         if IgnoreMailAttachment(EmailMessage.Attachments_GetLength(), EmailMessage.Attachments_GetContentType(), EmailMessage.Attachments_GetName()) then
             exit(true);
@@ -272,6 +274,14 @@ codeunit 6385 "Outlook Processing"
             exit(true);
         end;
 
+        TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
+        EmailMessage.Attachments_GetContent(InStream);
+        if not DocumentExceedsPageCountThreshold(InStream, ExceedsPageCountThreshold) then
+            Session.LogMessage('0000PMR', PageCountCallFailedTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
+        if ExceedsPageCountThreshold then begin
+            Session.LogMessage('0000PKT', StrSubstNo(PageCountExceededTelemetryTxt, Format(PageCountThreshold())), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
+            exit(true)
+        end;
         exit(false)
     end;
 
@@ -302,7 +312,6 @@ codeunit 6385 "Outlook Processing"
         ReceivedDateTime: DateTime;
         MessageIdGuid, ExternalMessageIdGuid : Guid;
         ContentId: Text[2048];
-        ExceedsPageCountThreshold: Boolean;
     begin
         CheckSetupEnabled(OutlookSetup);
 
@@ -339,20 +348,11 @@ codeunit 6385 "Outlook Processing"
                         AttachmentFound := true;
                         TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
                         EmailMessage.Attachments_GetContent(InStream);
-                        if not DocumentExceedsPageCountThreshold(InStream, ExceedsPageCountThreshold) then
-                            Session.LogMessage('0000PMR', PageCountCallFailedTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
-                        if ExceedsPageCountThreshold then begin
-                            Session.LogMessage('0000PKT', StrSubstNo(PageCountExceededTelemetryTxt, Format(PageCountThreshold())), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
-                            EDocument."Structure Data Impl." := "Structure Received E-Doc."::"Already Structured";
-                            EDocument."Read into Draft Impl." := "E-Doc. Read Into Draft"::"Blank Draft";
-                            EDocumentErrorHelper.LogWarningMessage(EDocument, EDocument, EDocument.FieldNo("Structured Data Entry No."), StrSubstNo(PageCountExceededTxt, FileId, Format(PageCountThreshold())));
-                        end else begin
-                            ReceiveContext.SetFileFormat("E-Doc. File Format"::PDF);
-                            ReceiveContext.GetTempBlob().CreateOutStream(DocumentOutStream, TextEncoding::UTF8);
-                            CopyStream(DocumentOutStream, InStream);
-                            if not ReceiveContext.GetTempBlob().HasValue() then
-                                EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(NoContentErr, FileId));
-                        end;
+                        ReceiveContext.SetFileFormat("E-Doc. File Format"::PDF);
+                        ReceiveContext.GetTempBlob().CreateOutStream(DocumentOutStream, TextEncoding::UTF8);
+                        CopyStream(DocumentOutStream, InStream);
+                        if not ReceiveContext.GetTempBlob().HasValue() then
+                            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(NoContentErr, FileId));
                         EDocument.Modify();
                     end;
                 until (EmailMessage.Attachments_Next() = 0) or AttachmentFound;
@@ -428,7 +428,6 @@ codeunit 6385 "Outlook Processing"
         TooManyAttachmentsTxt: Label 'E-mail with more than %1 attachments is ignored.', Comment = '%1 - an integer (10)';
         RetrieveEmailsErr: Label 'Failed to retrieve emails from the email connector.';
         ProcessingEmailTxt: label 'Processing email.', Locked = true;
-        PageCountExceededTxt: Label 'Attachment %1 was ignored because it exceeds the feature limit of %2 pages.', Comment = '%1 - file name, %2 - an integer';
         PageCountExceededTelemetryTxt: label 'PDF Attachment ignored because it exceeds page count of %1.', Locked = true;
         PageCountCallFailedTelemetryTxt: label 'Unable to calculate page count for PDF Attachment.', Locked = true;
 }

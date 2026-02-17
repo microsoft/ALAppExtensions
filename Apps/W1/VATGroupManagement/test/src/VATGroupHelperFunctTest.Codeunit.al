@@ -808,6 +808,69 @@ codeunit 139520 "VAT Group Helper Funct Test"
           DummyVATReportSetup."VAT Group BC Version"::BC, 'GetVATGroupDefaultBCVersion');
     end;
 
+    [Test]
+    procedure ValidateURLWithValidProductionURL()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        // [FEATURE] [AI test]
+
+        // [GIVEN] VAT Report Setup
+        VATReportSetup."Group Representative API URL" := 'https://api.businesscentral.dynamics.com';
+
+        // [WHEN] ValidateURL is called with valid production URL "https://api.businesscentral.dynamics.com"
+        // [THEN] ValidateURL returns true
+        Assert.IsTrue(VATReportSetup.ValidateGroupRepresentativeAPIURL(), 'The production API URL should be valid');
+    end;
+
+    [Test]
+    procedure ValidateURLWithValidTieURL()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO] Validate URL returns true for valid TIE API URL
+
+        // [GIVEN] VAT Report Setup
+        VATReportSetup."Group Representative API URL" := 'https://api.businesscentral.dynamics-tie.com';
+
+        // [WHEN] ValidateURL is called with valid TIE URL "https://api.businesscentral.dynamics-tie.com"
+        // [THEN] ValidateURL returns true
+        Assert.IsTrue(VATReportSetup.ValidateGroupRepresentativeAPIURL(), 'The staging API URL should be valid');
+    end;
+
+    [Test]
+    procedure ValidateURLWithEmptyURL()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO] Validate URL returns true for empty URL
+
+        // [GIVEN] VAT Report Setup
+        VATReportSetup."Group Representative API URL" := '';
+
+        // [WHEN] ValidateURL is called with empty URL
+        // [THEN] ValidateURL returns true
+        Assert.IsTrue(VATReportSetup.ValidateGroupRepresentativeAPIURL(), 'The empty API URL should be valid');
+    end;
+
+    [Test]
+    procedure ValidateURLWithInvalidURL()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO] Validate URL returns false for invalid URL
+
+        // [GIVEN] VAT Report Setup
+        VATReportSetup."Group Representative API URL" := 'https://invalid.url.com';
+
+        // [WHEN] ValidateURL is called with invalid URL "https://invalid.url.com"
+        // [THEN] ValidateURL returns false
+        Assert.IsFalse(VATReportSetup.ValidateGroupRepresentativeAPIURL(), 'The invalid API URL should not be valid');
+    end;
+
     local procedure Initialize()
     begin
         LibraryVATGroup.EnableDefaultVATMemberSetup();
