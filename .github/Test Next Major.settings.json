@@ -1,4 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/32e66d69cfd2c1e3eca39e416e27c6aa58de6df3/Actions/settings.schema.json",
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/0c7b1de38ba518aaf5fdee3902c2d2ae886ede32/Actions/.Modules/settings.schema.json",
   "*": null
 }
