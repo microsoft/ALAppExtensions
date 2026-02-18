@@ -10,6 +10,11 @@
   ],
   "rules": [
     {
+      "id": "AL1085",
+      "action": "None",
+      "justification": "Needed for workspace compilation."
+    },
+    {
       "id": "AD0001",
       "action": "Error",
       "justification": "Analyzer exceptions should be an error as they can prevent other rules from being validated properly."
