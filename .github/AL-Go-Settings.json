@@ -61,6 +61,7 @@
   "enableUICop": true,
   "rulesetFile": "..\\..\\..\\Build\\rulesets\\app.ruleset.json",
   "useWorkspaceCompilation": true,
+  "workspaceCompilationParallelism": -1,
   "skipUpgrade": true,
   "fullBuildPatterns": [
     "Build/*",
