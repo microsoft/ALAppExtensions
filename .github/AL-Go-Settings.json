@@ -69,5 +69,6 @@
   ],
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "PullRequestTrigger": "pull_request",
-  "templateSha": "8edc212cf392aa985d35e99ae22756762607f974"
+  "templateSha": "8edc212cf392aa985d35e99ae22756762607f974",
+  "ghTokenWorkflowSecretName": "GhTokenWorkflow"
 }
