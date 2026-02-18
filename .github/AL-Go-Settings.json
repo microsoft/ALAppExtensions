@@ -1,7 +1,7 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/32e66d69cfd2c1e3eca39e416e27c6aa58de6df3/Actions/.Modules/settings.schema.json",
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/aholstrup/workspace_compilationm/Actions/.Modules/settings.schema.json",
   "type": "PTE",
-  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
+  "templateUrl": "https://github.com/microsoft/AL-Go@aholstrup/workspace_compilationm",
   "bcContainerHelperVersion": "latest",
   "runs-on": "windows-latest",
   "cacheImageName": "",
@@ -69,6 +69,6 @@
   ],
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "PullRequestTrigger": "pull_request",
-  "templateSha": "8edc212cf392aa985d35e99ae22756762607f974",
+  "templateSha": "51465adf6893e8e15af86a68099af9ca188403b3",
   "ghTokenWorkflowSecretName": "GhTokenWorkflow"
 }
