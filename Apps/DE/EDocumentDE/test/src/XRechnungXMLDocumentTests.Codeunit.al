@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
+using Microsoft.Bank.BankAccount;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.Currency;
@@ -194,7 +195,37 @@ codeunit 13918 "XRechnung XML Document Tests"
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
 
         // [THEN] XRechnung Electronic Document is created with bank informarion as payment means
-        VerifyPaymentMeans(TempXMLBuffer, '/ubl:Invoice/cac:PaymentMeans');
+        VerifyPaymentMeans(TempXMLBuffer, '/ubl:Invoice/cac:PaymentMeans', CompanyInformation.IBAN, CompanyInformation."SWIFT Code");
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyBankAccountPaymentMeans();
+    var
+        BankAccount: Record "Bank Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        BankAccountIBAN: Text;
+        BankAccountSWIFT: Text;
+    begin
+        // [SCENARIO 496414] Export posted sales invoice uses Bank Account IBAN and SWIFT Code when Company Bank Account Code is specified
+        Initialize();
+
+        // [GIVEN] Create Bank Account with specific IBAN and SWIFT Code
+        BankAccountIBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        BankAccountSWIFT := LibraryUtility.GenerateGUID();
+        LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount.IBAN := BankAccountIBAN;
+        BankAccount."SWIFT Code" := BankAccountSWIFT;
+        BankAccount.Modify(true);
+
+        // [GIVEN] Create and Post Sales Invoice with Bank Account Code
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithBankAccount("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, BankAccount."No."));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document uses Bank Account IBAN and SWIFT Code
+        VerifyPaymentMeans(TempXMLBuffer, '/ubl:Invoice/cac:PaymentMeans', BankAccountIBAN, BankAccountSWIFT);
     end;
 
     [Test]
@@ -760,7 +791,37 @@ codeunit 13918 "XRechnung XML Document Tests"
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
 
-        // [THEN] XRechnung Electronic Document is created with bank informarion as payment means
+        // [THEN] XRechnung Electronic Document is created with payment means code
+        VerifyPaymentMeans(TempXMLBuffer, '/ns0:CreditNote/cac:PaymentMeans');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyBankAccountPaymentMeans();
+    var
+        BankAccount: Record "Bank Account";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        BankAccountIBAN: Text;
+        BankAccountSWIFT: Text;
+    begin
+        // [SCENARIO 496414] Export posted sales cr. memo uses Bank Account IBAN and SWIFT Code when Company Bank Account Code is specified
+        Initialize();
+
+        // [GIVEN] Create Bank Account with specific IBAN and SWIFT Code
+        BankAccountIBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        BankAccountSWIFT := LibraryUtility.GenerateGUID();
+        LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount.IBAN := BankAccountIBAN;
+        BankAccount."SWIFT Code" := BankAccountSWIFT;
+        BankAccount.Modify(true);
+
+        // [GIVEN] Create and Post sales cr. memo with Bank Account Code
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithBankAccount("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, BankAccount."No."));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document has payment means code
         VerifyPaymentMeans(TempXMLBuffer, '/ns0:CreditNote/cac:PaymentMeans');
     end;
 
@@ -1388,6 +1449,17 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostSalesDocumentWithBankAccount(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; BankAccountCode: Code[20]): Code[20];
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType);
+        SalesHeader.Validate("Company Bank Account Code", BankAccountCode);
+        SalesHeader.Modify(true);
+        CreateSalesLine(SalesHeader, LineType, false);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
     local procedure CreatePurchDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
     var
         PurchaseLine: Record "Purchase Line";
@@ -1851,7 +1923,20 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path: Text;
     begin
         Path := DocumentTok + '/cbc:PaymentMeansCode';
-        Assert.AreEqual('68', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual('58', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyPaymentMeans(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text; ExpectedIBAN: Text; ExpectedSWIFT: Text);
+    var
+        Path: Text;
+    begin
+        VerifyPaymentMeans(TempXMLBuffer, DocumentTok);
+        Path := DocumentTok + '/cac:PayeeFinancialAccount/cbc:ID';
+        Assert.AreEqual(ExpectedIBAN, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        if ExpectedSWIFT <> '' then begin
+            Path := DocumentTok + '/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:ID';
+            Assert.AreEqual(ExpectedSWIFT, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        end;
     end;
 
     local procedure VerifyPaymentTerms(PaymentTermsCode: Code[10]; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
@@ -2519,6 +2604,9 @@ codeunit 13918 "XRechnung XML Document Tests"
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"XRechnung XML Document Tests");
         IsInitialized := true;
         CompanyInformation.Get();
+        CompanyInformation.IBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        CompanyInformation."SWIFT Code" := LibraryUtility.GenerateGUID();
+        CompanyInformation.Modify();
         GeneralLedgerSetup.Get();
         EDocumentService.DeleteAll();
         EDocumentService.Get(LibraryEdocument.CreateService("E-Document Format"::XRechnung, "Service Integration"::"No Integration"));

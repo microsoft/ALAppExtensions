@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
+using Microsoft.Bank.BankAccount;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.Foundation.Company;
@@ -30,6 +31,7 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
     begin
         OnBeforeCheck(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         CheckCompanyInfoMandatory();
+        CheckBankAccountIBANMandatory(SourceDocumentHeader);
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
@@ -85,10 +87,40 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
         CompanyInformation.TestField("E-Mail");
     end;
 
+    local procedure CheckBankAccountIBANMandatory(SourceDocumentHeader: RecordRef)
+    var
+        BankAccount: Record "Bank Account";
+        CompanyInformation: Record "Company Information";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        BankAccountCodeFieldRef: FieldRef;
+        CheckBankAccount: Boolean;
+        BankAccountCode: Code[20];
+    begin
+        if not (SourceDocumentHeader.Number() in
+            [Database::"Sales Header",
+             Database::"Sales Invoice Header",
+             Database::"Sales Cr.Memo Header"])
+        then
+            exit;
+
+        BankAccountCodeFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Company Bank Account Code"));
+        BankAccountCode := BankAccountCodeFieldRef.Value();
+
+        if BankAccountCode <> '' then
+            CheckBankAccount := BankAccount.Get(BankAccountCode);
+
+        if CheckBankAccount then
+            BankAccount.TestField(IBAN)
+        else begin
+            CompanyInformation.Get();
+            CompanyInformation.TestField(IBAN);
+        end;
+    end;
+
     local procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)
     var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
         Customer: Record Customer;
+        SalesInvoiceHeader: Record "Sales Invoice Header";
         CustomerNoFieldRef: FieldRef;
         YourReferenceFieldRef: FieldRef;
     begin
