@@ -52,6 +52,14 @@ page 18871 "TCS Journal Batches"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code for the number series that will be used to assign document numbers to ledger entries that are posted from this journal batch.';
                 }
+                field("No. of Lines"; Rec."No. of Lines")
+                {
+                    Visible = false;
+                    trigger OnDrillDown()
+                    begin
+                        TCSAdjustment.TemplateSelectionFromTCSBatch(Rec);
+                    end;
+                }
             }
         }
     }

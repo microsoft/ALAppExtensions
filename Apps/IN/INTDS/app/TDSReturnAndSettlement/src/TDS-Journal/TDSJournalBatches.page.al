@@ -58,6 +58,14 @@ page 18748 "TDS Journal Batches"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the reason code, a supplementary source code that enables you to trace the entry.';
                 }
+                field("No. of Lines"; Rec."No. of Lines")
+                {
+                    Visible = false;
+                    trigger OnDrillDown()
+                    begin
+                        TDSJnlManagement.TemplateSelectionFromTaxBatch(Rec);
+                    end;
+                }
             }
         }
     }
