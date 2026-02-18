@@ -60,6 +60,7 @@
   "enablePerTenantExtensionCop": true,
   "enableUICop": true,
   "rulesetFile": "..\\..\\..\\Build\\rulesets\\app.ruleset.json",
+  "useWorkspaceCompilation": true,
   "skipUpgrade": true,
   "fullBuildPatterns": [
     "Build/*",
