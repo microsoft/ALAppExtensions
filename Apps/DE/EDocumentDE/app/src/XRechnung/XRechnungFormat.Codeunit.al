@@ -28,10 +28,12 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
         EDocImportXRechnung: Codeunit "Import XRechnung Document";
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
+    var
+        CompanyInformation: Record "Company Information";
     begin
         OnBeforeCheck(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
-        CheckCompanyInfoMandatory();
-        CheckBankAccountIBANMandatory(SourceDocumentHeader);
+        CheckCompanyInfoMandatory(CompanyInformation);
+        CheckBankAccountIBANMandatory(SourceDocumentHeader, CompanyInformation);
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
@@ -79,31 +81,37 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
         TempBlob.FromRecord(TempRecordExportBuffer, TempRecordExportBuffer.FieldNo("File Content"));
     end;
 
-    local procedure CheckCompanyInfoMandatory()
-    var
-        CompanyInformation: Record "Company Information";
+    local procedure CheckCompanyInfoMandatory(var CompanyInformation: Record "Company Information")
     begin
         CompanyInformation.Get();
         CompanyInformation.TestField("E-Mail");
     end;
 
-    local procedure CheckBankAccountIBANMandatory(SourceDocumentHeader: RecordRef)
+    local procedure CheckBankAccountIBANMandatory(SourceDocumentHeader: RecordRef; var CompanyInformation: Record "Company Information")
     var
         BankAccount: Record "Bank Account";
-        CompanyInformation: Record "Company Information";
         SalesInvoiceHeader: Record "Sales Invoice Header";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
         BankAccountCodeFieldRef: FieldRef;
         CheckBankAccount: Boolean;
         BankAccountCode: Code[20];
+        BankAccFieldNo: Integer;
     begin
         if not (SourceDocumentHeader.Number() in
             [Database::"Sales Header",
              Database::"Sales Invoice Header",
-             Database::"Sales Cr.Memo Header"])
+             Database::"Sales Cr.Memo Header",
+             Database::"Service Header",
+             Database::"Service Invoice Header",
+             Database::"Service Cr.Memo Header"])
         then
             exit;
 
-        BankAccountCodeFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Company Bank Account Code"));
+        BankAccFieldNo := SalesInvoiceHeader.FieldNo("Company Bank Account Code");
+        if SourceDocumentHeader.Number() in [Database::"Service Header", Database::"Service Invoice Header", Database::"Service Cr.Memo Header"] then
+            BankAccFieldNo := ServiceInvoiceHeader.FieldNo("Company Bank Account Code");
+
+        BankAccountCodeFieldRef := SourceDocumentHeader.Field(BankAccFieldNo);
         BankAccountCode := BankAccountCodeFieldRef.Value();
 
         if BankAccountCode <> '' then
@@ -111,10 +119,8 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
 
         if CheckBankAccount then
             BankAccount.TestField(IBAN)
-        else begin
-            CompanyInformation.Get();
+        else
             CompanyInformation.TestField(IBAN);
-        end;
     end;
 
     local procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)

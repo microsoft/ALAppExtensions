@@ -1457,17 +1457,12 @@ codeunit 13916 "Export XRechnung Document"
         Clear(IBAN);
         Clear(SWIFTCode);
 
-        if BankAccountCode = '' then begin
-            IBAN := CompanyInformation.IBAN;
-            SWIFTCode := CompanyInformation."SWIFT Code";
-            exit;
-        end;
-
-        if BankAccount.Get(BankAccountCode) then begin
-            IBAN := BankAccount.IBAN;
-            SWIFTCode := BankAccount."SWIFT Code";
-            exit;
-        end;
+        if BankAccountCode <> '' then
+            if BankAccount.Get(BankAccountCode) then begin
+                IBAN := BankAccount.IBAN;
+                SWIFTCode := BankAccount."SWIFT Code";
+                exit;
+            end;
 
         IBAN := CompanyInformation.IBAN;
         SWIFTCode := CompanyInformation."SWIFT Code";
