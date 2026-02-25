@@ -8,7 +8,7 @@ using System.Security.User;
 
 page 31206 "Acc. Sched. Res. Overview CZL"
 {
-    Caption = 'Acc. Schedule Results Overview';
+    Caption = 'Fin. Report Results Overview';
     InsertAllowed = false;
     PageType = Card;
     SourceTable = "Acc. Schedule Result Hdr. CZL";
@@ -24,24 +24,24 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies the result code of account schedule results.';
+                    ToolTip = 'Specifies the result code of financial report results.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the description of account schedule results.';
+                    ToolTip = 'Specifies the description of financial report results.';
                 }
                 field("Date Filter"; Rec."Date Filter")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies the date filter of account schedule results.';
+                    ToolTip = 'Specifies the date filter of financial report results.';
                 }
                 field("Acc. Schedule Name"; Rec."Acc. Schedule Name")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies the name of the account schedule.';
+                    ToolTip = 'Specifies the name of the financial report.';
                 }
                 field("Column Layout Name"; Rec."Column Layout Name")
                 {
@@ -62,25 +62,25 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies dimensions which was used by account schedule results creating.';
+                    ToolTip = 'Specifies dimensions which was used by financial report results creating.';
                 }
                 field("Dimension 2 Filter"; Rec."Dimension 2 Filter")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies dimensions which was used by account schedule results creating.';
+                    ToolTip = 'Specifies dimensions which was used by financial report results creating.';
                 }
                 field("Dimension 3 Filter"; Rec."Dimension 3 Filter")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies dimensions which was used by account schedule results creating.';
+                    ToolTip = 'Specifies dimensions which was used by financial report results creating.';
                 }
                 field("Dimension 4 Filter"; Rec."Dimension 4 Filter")
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies dimensions which was used by account schedule results creating.';
+                    ToolTip = 'Specifies dimensions which was used by financial report results creating.';
                 }
             }
             group(Options)
@@ -101,12 +101,12 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                 field("Result Date"; Rec."Result Date")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the created date of account schedule results.';
+                    ToolTip = 'Specifies the created date of financial report results.';
                 }
                 field("Result Time"; Rec."Result Time")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the created time of account schedule results.';
+                    ToolTip = 'Specifies the created time of financial report results.';
                 }
                 field(ShowOnlyChangedValues; ShowOnlyChangedValues)
                 {
@@ -136,7 +136,7 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                     Caption = 'Print';
                     Ellipsis = true;
                     Image = Print;
-                    ToolTip = 'Allows print the account schedule results.';
+                    ToolTip = 'Allows print the financial report results.';
 
                     trigger OnAction()
                     var
@@ -153,7 +153,7 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                     Caption = 'Export to Excel';
                     Ellipsis = true;
                     Image = ExportToExcel;
-                    ToolTip = 'Allows the account schedule results export to excel.';
+                    ToolTip = 'Allows the financial report results export to excel.';
 
                     trigger OnAction()
                     var
@@ -169,7 +169,7 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Next Set';
                 Image = NextSet;
-                ToolTip = 'Go to the next set of the account schedule results.';
+                ToolTip = 'Go to the next set of the financial report results.';
 
                 trigger OnAction()
                 begin
@@ -183,7 +183,7 @@ page 31206 "Acc. Sched. Res. Overview CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Previous Set';
                 Image = PreviousSet;
-                ToolTip = 'Go to the previous set of the account schedule results.';
+                ToolTip = 'Go to the previous set of the financial report results.';
 
                 trigger OnAction()
                 begin

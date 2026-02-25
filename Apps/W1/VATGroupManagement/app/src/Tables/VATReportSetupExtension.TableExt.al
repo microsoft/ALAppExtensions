@@ -7,10 +7,10 @@ namespace Microsoft.Finance.VAT.Group;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Reporting;
+using System.Environment;
 
 tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
 {
-
     fields
     {
         field(4700; "VAT Group Role"; Enum "VAT Group Role")
@@ -35,6 +35,15 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
             DataClassification = OrganizationIdentifiableInformation;
             Caption = 'Group Representative API URL';
             ExtendedDatatype = URL;
+
+            trigger OnValidate()
+            var
+                EnvironmentInformation: Codeunit "Environment Information";
+            begin
+                if EnvironmentInformation.IsSaaSInfrastructure() then
+                    if not ValidateGroupRepresentativeAPIURL() then
+                        Error(InvalidURLErr);
+            end;
         }
 #if not CLEANSCHEMA25
 #pragma warning disable AL0432
@@ -178,4 +187,29 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
     begin
         exit("VAT Group Role" = "VAT Group Role"::Member);
     end;
+
+    procedure GetGroupRepresentativeURL(): Text[250]
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+        GroupRepAPIURL: Text[250];
+    begin
+        GroupRepAPIURL := Rec."Group Representative API URL";
+        if EnvironmentInformation.IsSaaSInfrastructure() then
+            if not ValidateGroupRepresentativeAPIURL() then
+                Error(InvalidURLErr);
+        exit(GroupRepAPIURL);
+    end;
+
+    internal procedure ValidateGroupRepresentativeAPIURL(): Boolean
+    begin
+        if Rec."Group Representative API URL" <> '' then
+            if not Lowercase(Rec."Group Representative API URL").StartsWith('https://api.businesscentral.dynamics.com') then
+                if not Lowercase(Rec."Group Representative API URL").StartsWith('https://api.businesscentral.dynamics-tie.com') then
+                    exit(false);
+
+        exit(true);
+    end;
+
+    var
+        InvalidURLErr: Label 'The Group Representative API URL must start with https://api.businesscentral.dynamics.com or https://api.businesscentral.dynamics-tie.com';
 }

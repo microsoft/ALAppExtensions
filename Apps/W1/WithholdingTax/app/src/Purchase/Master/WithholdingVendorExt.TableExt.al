@@ -74,7 +74,11 @@ tableextension 6784 "Withholding Vendor Ext" extends Vendor
             Caption = 'Withholding Tax Registration ID';
             OptimizeForTextSearch = true;
         }
-
+        field(6790; "Withholding Tax Liable"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Withholding Tax Liable';
+        }
     }
 
     local procedure CheckABN(ABN: Text[13]; Which: Option Customer,Vendor,Internal,Contact)

@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
+using Microsoft.Bank.BankAccount;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.Foundation.Company;
@@ -27,10 +28,14 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
         EDocImportXRechnung: Codeunit "Import XRechnung Document";
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
+    var
+        CompanyInformation: Record "Company Information";
     begin
         OnBeforeCheck(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
-        CheckCompanyInfoMandatory();
+        CheckCompanyInfoMandatory(CompanyInformation);
+        CheckBankAccountIBANMandatory(SourceDocumentHeader, CompanyInformation);
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        EDocPEPPOLValidationDE.SetBuyerReference(EDocumentService."Buyer Reference");
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         UnbindSubscription(EDocPEPPOLValidationDE);
@@ -77,18 +82,52 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
         TempBlob.FromRecord(TempRecordExportBuffer, TempRecordExportBuffer.FieldNo("File Content"));
     end;
 
-    local procedure CheckCompanyInfoMandatory()
-    var
-        CompanyInformation: Record "Company Information";
+    local procedure CheckCompanyInfoMandatory(var CompanyInformation: Record "Company Information")
     begin
         CompanyInformation.Get();
         CompanyInformation.TestField("E-Mail");
     end;
 
+    local procedure CheckBankAccountIBANMandatory(SourceDocumentHeader: RecordRef; var CompanyInformation: Record "Company Information")
+    var
+        BankAccount: Record "Bank Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        BankAccountCodeFieldRef: FieldRef;
+        CheckBankAccount: Boolean;
+        BankAccountCode: Code[20];
+        BankAccFieldNo: Integer;
+    begin
+        if not (SourceDocumentHeader.Number() in
+            [Database::"Sales Header",
+             Database::"Sales Invoice Header",
+             Database::"Sales Cr.Memo Header",
+             Database::"Service Header",
+             Database::"Service Invoice Header",
+             Database::"Service Cr.Memo Header"])
+        then
+            exit;
+
+        BankAccFieldNo := SalesInvoiceHeader.FieldNo("Company Bank Account Code");
+        if SourceDocumentHeader.Number() in [Database::"Service Header", Database::"Service Invoice Header", Database::"Service Cr.Memo Header"] then
+            BankAccFieldNo := ServiceInvoiceHeader.FieldNo("Company Bank Account Code");
+
+        BankAccountCodeFieldRef := SourceDocumentHeader.Field(BankAccFieldNo);
+        BankAccountCode := BankAccountCodeFieldRef.Value();
+
+        if BankAccountCode <> '' then
+            CheckBankAccount := BankAccount.Get(BankAccountCode);
+
+        if CheckBankAccount then
+            BankAccount.TestField(IBAN)
+        else
+            CompanyInformation.TestField(IBAN);
+    end;
+
     local procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)
     var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
         Customer: Record Customer;
+        SalesInvoiceHeader: Record "Sales Invoice Header";
         CustomerNoFieldRef: FieldRef;
         YourReferenceFieldRef: FieldRef;
     begin
@@ -149,6 +188,15 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
         EDocServiceSupportedType.Insert();
 
         EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Purchase Credit Memo";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Invoice";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Credit Memo";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Order";
         EDocServiceSupportedType.Insert();
     end;
 

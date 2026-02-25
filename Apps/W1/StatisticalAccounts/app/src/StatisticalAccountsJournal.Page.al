@@ -222,6 +222,7 @@ page 2633 "Statistical Accounts Journal"
                         {
                             ApplicationArea = All;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Balance';
                             Editable = false;
                             ToolTip = 'Specifies the balance that has accumulated in the journal on the selected line.';
@@ -234,6 +235,7 @@ page 2633 "Statistical Accounts Journal"
                         {
                             ApplicationArea = All;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'BalanceAfterPosting';
                             Editable = false;
                             ToolTip = 'Specifies the balance that has accumulated in the journal selected on the line.';

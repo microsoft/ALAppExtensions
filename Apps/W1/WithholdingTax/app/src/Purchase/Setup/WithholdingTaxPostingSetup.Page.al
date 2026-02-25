@@ -23,11 +23,13 @@ page 6786 "Withholding Tax Posting Setup"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a Withholding Tax Business Posting group code.';
+                    NotBlank = true;
                 }
                 field("Wthldg. Tax Prod. Post. Group"; Rec."Wthldg. Tax Prod. Post. Group")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a Withholding Tax Product Posting group code.';
+                    NotBlank = true;
                 }
                 field("Wthldg. Tax Calculation Rule"; Rec."Wthldg. Tax Calculation Rule")
                 {
@@ -93,6 +95,7 @@ page 6786 "Withholding Tax Posting Setup"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the Revenue Type this combination of Withholding Business and Product Posting group belongs to.';
+                    ShowMandatory = true;
                 }
                 field("Purch. Wthldg. Tax Adj. Acc No"; Rec."Purch. Wthldg. Tax Adj. Acc No")
                 {
@@ -113,9 +116,4 @@ page 6786 "Withholding Tax Posting Setup"
             }
         }
     }
-
-    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
-    begin
-        Rec.TestField(Rec."Revenue Type");
-    end;
 }

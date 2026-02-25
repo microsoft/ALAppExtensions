@@ -334,6 +334,7 @@ table 6240 "Sust. Excise Jnl. Line"
         }
         field(24; "Source Qty."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Source Qty.';
 
             trigger OnValidate()
@@ -392,6 +393,7 @@ table 6240 "Sust. Excise Jnl. Line"
         }
         field(28; "Material Breakdown Weight"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Material Breakdown Weight';
 
             trigger OnValidate()

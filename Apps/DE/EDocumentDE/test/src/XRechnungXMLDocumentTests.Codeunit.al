@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
+using Microsoft.Bank.BankAccount;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.Currency;
@@ -18,6 +19,9 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Service.Test;
 using System.IO;
 using System.Utilities;
 
@@ -38,6 +42,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryService: Codeunit "Library - Service";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryRandom: Codeunit "Library - Random";
         LibraryERM: Codeunit "Library - ERM";
@@ -50,6 +55,24 @@ codeunit 13918 "XRechnung XML Document Tests"
         IsInitialized: Boolean;
 
     #region SalesInvoice
+    [Test]
+    procedure CheckSalesInvoiceInXRechnungFormatVATRegNoNotMandatoryWithCustomerReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // [SCENARIO] When Buyer Reference is Customer Reference, VAT Registration No. is not required if customer has E-Invoice Routing No.
+        Initialize();
+
+        // [GIVEN] Buyer Reference is Customer Reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [GIVEN] Sales Invoice for a customer with E-Invoice Routing No. but without VAT Registration No.
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithCustomerWithoutVATRegNo("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+
+        // [WHEN/THEN] Check does not throw an error - VAT Registration No. is not required
+        CheckSalesHeader(SalesHeader);
+    end;
+
     [Test]
     procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyHeaderData();
     var
@@ -191,7 +214,37 @@ codeunit 13918 "XRechnung XML Document Tests"
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
 
         // [THEN] XRechnung Electronic Document is created with bank informarion as payment means
-        VerifyPaymentMeans(TempXMLBuffer, '/ubl:Invoice/cac:PaymentMeans');
+        VerifyPaymentMeans(TempXMLBuffer, '/ubl:Invoice/cac:PaymentMeans', CompanyInformation.IBAN, CompanyInformation."SWIFT Code");
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyBankAccountPaymentMeans();
+    var
+        BankAccount: Record "Bank Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        BankAccountIBAN: Text;
+        BankAccountSWIFT: Text;
+    begin
+        // [SCENARIO 496414] Export posted sales invoice uses Bank Account IBAN and SWIFT Code when Company Bank Account Code is specified
+        Initialize();
+
+        // [GIVEN] Create Bank Account with specific IBAN and SWIFT Code
+        BankAccountIBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        BankAccountSWIFT := LibraryUtility.GenerateGUID();
+        LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount.IBAN := BankAccountIBAN;
+        BankAccount."SWIFT Code" := BankAccountSWIFT;
+        BankAccount.Modify(true);
+
+        // [GIVEN] Create and Post Sales Invoice with Bank Account Code
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithBankAccount("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, BankAccount."No."));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document uses Bank Account IBAN and SWIFT Code
+        VerifyPaymentMeans(TempXMLBuffer, '/ubl:Invoice/cac:PaymentMeans', BankAccountIBAN, BankAccountSWIFT);
     end;
 
     [Test]
@@ -290,45 +343,6 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
 
     [Test]
-    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyInvoiceWithInvoiceDiscounts();
-    var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempXMLBuffer: Record "XML Buffer" temporary;
-    begin
-        // [SCENARIO 575895] Export posted sales invoice creates electronic document in XRechnung format with 2 invoice lines and invoice discount
-        Initialize();
-
-        // [GIVEN] Create and Post Sales Invoice with invoice discount
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, true));
-
-        // [WHEN] Export XRechnung Electronic Document.
-        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
-
-        // [THEN] XRechnung Electronic Document is created with 2 invoice lines and invoice discount
-        VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
-    end;
-
-    [Test]
-    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyInvoiceWithInvoiceDiscountsAndLineDiscount();
-    var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempXMLBuffer: Record "XML Buffer" temporary;
-    begin
-        // [SCENARIO 575895] Export posted sales invoice creates electronic document in XRechnung format with 2 invoice lines with discount and invoice discount
-        Initialize();
-
-        // [GIVEN] Create and Post Sales Invoice with invoice discount and line discount on one line
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLinesLineDiscount("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, true));
-
-        // [WHEN] Export XRechnung Electronic Document.
-        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
-
-        // [THEN] XRechnung Electronic Document is created with 2 invoice lines with line discount and invoice discount
-        VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
-        VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
-    end;
-
-    [Test]
     procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyPDFEmbeddedToXML()
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -368,6 +382,287 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
+        VerifyAccountingSupplierParty(TempXMLBuffer, '/ubl:Invoice/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
+    end;
+    #endregion
+
+    #region ServiceInvoice
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyHeaderData();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with header data from the document
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created
+        VerifyHeaderData(ServiceInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyBuyerReferenceAsCustomerReference();
+    var
+        Customer: Record Customer;
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with customer reference
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = customer reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [GIVEN] Create and Post Service Invoice with Customer X, E-invoice routing no. = XY
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with buyer reference XY
+        Customer.Get(ServiceInvoiceHeader."Customer No.");
+        VerifyBuyerReference(Customer."E-Invoice Routing No.", TempXMLBuffer, '/ubl:Invoice');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyBuyerReferenceAsYourReference();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with your reference from the document
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create and Post Service Invoice with your reference = XX
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with buyer reference XX
+        VerifyBuyerReference(ServiceInvoiceHeader."Your Reference", TempXMLBuffer, '/ubl:Invoice');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatMandateBuyerReferenceAsYourReference();
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Mandate buyer reference as your reference when releasing service invoice for XRechnung format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Service Invoice with your reference = XX
+        ServiceHeader.Get(ServiceHeader."Document Type"::Invoice, CreateServiceDocumentWithLine());
+
+        // [WHEN] Remove your reference
+        ServiceHeader.Validate("Your Reference", '');
+        ServiceHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the service invoice
+        asserterror CheckServiceHeader(ServiceHeader);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyAccountingSupplierParty();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with company data as accounting supplier party
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
+        VerifyAccountingSupplierParty(TempXMLBuffer, '/ubl:Invoice/cac:AccountingSupplierParty/cac:Party');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyAccountingCustomerParty();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with customer data as accounting customer party
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with customer data as accounting customer party
+        VerifyAccountingCustomerParty(ServiceInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyPaymentMeans();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with bank information as payment means
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with bank information as payment means
+        VerifyPaymentMeans(TempXMLBuffer, '/ubl:Invoice/cac:PaymentMeans');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyPaymentTerms();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with payment terms
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with payment terms
+        VerifyPaymentTerms(ServiceInvoiceHeader."Payment Terms Code", TempXMLBuffer, '/ubl:Invoice/cac:PaymentTerms');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyTaxTotal();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with different tax totals
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with different tax totals
+        VerifyTaxTotals(ServiceInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyLegalMonetaryTotal();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with document totals
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with document totals
+        VerifyLegalMonetaryTotal(ServiceInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyInvoiceLine();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with 2 invoice lines
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocumentWithTwoLines());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 invoice lines
+        VerifyServiceInvoiceLine(ServiceInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyPDFEmbeddedToXML()
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with embedded PDF
+        Initialize();
+
+        // [GIVEN] Enable Embedding of PDF in export
+        SetEdocumentServiceEmbedPDFInExport(true);
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] PDF is embedded in the XML
+        VerifyInvoicePDFEmbeddedToXML(TempXMLBuffer);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifySellerAddressFromRespCenter();
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service invoice creates electronic document in XRechnung format with seller info from responsibility center
+        Initialize();
+
+        // [GIVEN] Responsibility Center
+        CreateResponsibilityCenter(ResponsibilityCenter);
+
+        // [GIVEN] Create and Post Service Invoice.
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocumentWithRespCenter(ResponsibilityCenter.Code));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
 
         // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
         VerifyAccountingSupplierParty(TempXMLBuffer, '/ubl:Invoice/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
@@ -515,7 +810,37 @@ codeunit 13918 "XRechnung XML Document Tests"
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
 
-        // [THEN] XRechnung Electronic Document is created with bank informarion as payment means
+        // [THEN] XRechnung Electronic Document is created with payment means code
+        VerifyPaymentMeans(TempXMLBuffer, '/ns0:CreditNote/cac:PaymentMeans');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyBankAccountPaymentMeans();
+    var
+        BankAccount: Record "Bank Account";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        BankAccountIBAN: Text;
+        BankAccountSWIFT: Text;
+    begin
+        // [SCENARIO 496414] Export posted sales cr. memo uses Bank Account IBAN and SWIFT Code when Company Bank Account Code is specified
+        Initialize();
+
+        // [GIVEN] Create Bank Account with specific IBAN and SWIFT Code
+        BankAccountIBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        BankAccountSWIFT := LibraryUtility.GenerateGUID();
+        LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount.IBAN := BankAccountIBAN;
+        BankAccount."SWIFT Code" := BankAccountSWIFT;
+        BankAccount.Modify(true);
+
+        // [GIVEN] Create and Post sales cr. memo with Bank Account Code
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithBankAccount("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, BankAccount."No."));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document has payment means code
         VerifyPaymentMeans(TempXMLBuffer, '/ns0:CreditNote/cac:PaymentMeans');
     end;
 
@@ -596,45 +921,6 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
 
     [Test]
-    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyCrMemoWithInvoiceDiscounts();
-    var
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        TempXMLBuffer: Record "XML Buffer" temporary;
-    begin
-        // [SCENARIO 575895] Export posted sales cr. memo creates electronic document in XRechnung format with 2 lines and invoice discount
-        Initialize();
-
-        // [GIVEN] Create and Post Sales Invoice with invoice discount
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, true));
-
-        // [WHEN] Export XRechnung Electronic Document.
-        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
-
-        // [THEN] XRechnung Electronic Document is created with 2 lines and invoice discount
-        VerifyCrMemoWithInvDiscount(SalesCrMemoHeader, TempXMLBuffer);
-    end;
-
-    [Test]
-    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyCrMemoWithInvoiceDiscountsAndLineDiscount();
-    var
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        TempXMLBuffer: Record "XML Buffer" temporary;
-    begin
-        // [SCENARIO 575895] Export posted sales cr.memo creates electronic document in XRechnung format with 2 cr.memo lines with discount and invoice discount
-        Initialize();
-
-        // [GIVEN] Create and Post Sales Cr. Memo with invoice discount and line discount on one line
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLinesLineDiscount("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, true));
-
-        // [WHEN] Export XRechnung Electronic Document.
-        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
-
-        // [THEN] XRechnung Electronic Document is created with 2 lines with line discount and invoice discount
-        VerifyCrMemoWithInvDiscount(SalesCrMemoHeader, TempXMLBuffer);
-        VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader, TempXMLBuffer);
-    end;
-
-    [Test]
     procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyPDFEmbeddedToXML()
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
@@ -680,6 +966,366 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
     #endregion
 
+    #region ServiceCreditMemo
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyHeaderData();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with header data from the document
+        Initialize();
+
+        // [GIVEN] Create and Post service cr. memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created
+        VerifyHeaderData(ServiceCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyBuyerReferenceAsCustomerReference();
+    var
+        Customer: Record Customer;
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with customer reference
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = customer reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [GIVEN] Create and Post service cr. memo with Customer X, E-invoice routing no. = XY
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with buyer reference XY
+        Customer.Get(ServiceCrMemoHeader."Customer No.");
+        VerifyBuyerReference(Customer."E-Invoice Routing No.", TempXMLBuffer, '/ns0:CreditNote');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyBuyerReferenceAsYourReference();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with your reference from the document
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create and Post service cr. memo with your reference = XX
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with buyer reference XX
+        VerifyBuyerReference(ServiceCrMemoHeader."Your Reference", TempXMLBuffer, '/ns0:CreditNote');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatMandateBuyerReferenceAsYourReference();
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Mandate buyer reference as your reference when releasing service credit memo for XRechnung format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Service Credit Memo with your reference = XX
+        ServiceHeader.Get(ServiceHeader."Document Type"::"Credit Memo", CreateServiceCrMemoDocumentWithLine());
+
+        // [WHEN] Remove your reference
+        ServiceHeader.Validate("Your Reference", '');
+        ServiceHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the service credit memo
+        asserterror CheckServiceHeader(ServiceHeader);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyAccountingSupplierParty();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with company data as accounting supplier party
+        Initialize();
+
+        // [GIVEN] Create and Post service cr. memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
+        VerifyAccountingSupplierParty(TempXMLBuffer, '/ns0:CreditNote/cac:AccountingSupplierParty/cac:Party');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyAccountingCustomerParty();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with customer data as accounting customer party
+        Initialize();
+
+        // [GIVEN] Create and Post service cr. memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with customer data as accounting customer party
+        VerifyAccountingCustomerParty(ServiceCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyPaymentMeans();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with bank information as payment means
+        Initialize();
+
+        // [GIVEN] Create and Post service cr. memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with bank information as payment means
+        VerifyPaymentMeans(TempXMLBuffer, '/ns0:CreditNote/cac:PaymentMeans');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyPaymentTerms();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with payment terms
+        Initialize();
+
+        // [GIVEN] Create and Post service cr. memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with payment terms
+        VerifyPaymentTerms(ServiceCrMemoHeader."Payment Terms Code", TempXMLBuffer, '/ns0:CreditNote/cac:PaymentTerms');
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyTaxTotal();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with different tax totals
+        Initialize();
+
+        // [GIVEN] Create and Post service cr. memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with different tax totals
+        VerifyTaxTotals(ServiceCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyLegalMonetaryTotal();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with document totals
+        Initialize();
+
+        // [GIVEN] Create and Post service cr. memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with document totals
+        VerifyLegalMonetaryTotal(ServiceCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyCrMemoLine();
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with 2 cr.memo lines
+        Initialize();
+
+        // [GIVEN] Create and Post service cr. memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocumentWithTwoLines());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 cr.memo lines
+        VerifyServiceCrMemoLine(ServiceCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifyPDFEmbeddedToXML()
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service cr. memo creates electronic document in XRechnung format with embedded PDF
+        Initialize();
+
+        // [GIVEN] Enable Embedding of PDF in export
+        SetEdocumentServiceEmbedPDFInExport(true);
+
+        // [GIVEN] Create and Post Service Cr. Memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] PDF is embedded in the XML
+        VerifyCrMemoPDFEmbeddedToXML(TempXMLBuffer);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure ExportPostedServiceCrMemoInXRechnungFormatVerifySellerAddressFromRespCenter();
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 604872] Export posted service credit memo creates electronic document in XRechnung format with seller info from responsibility center
+        Initialize();
+
+        // [GIVEN] Responsibility Center
+        CreateResponsibilityCenter(ResponsibilityCenter);
+
+        // [GIVEN] Create and Post Service Credit Memo.
+        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocumentWithRespCenter(ResponsibilityCenter.Code));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
+        VerifyAccountingSupplierParty(TempXMLBuffer, '/ns0:CreditNote/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
+    end;
+    #endregion
+
+    #region InvoiceDiscount
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyInvoiceWithInvoiceDiscounts();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales invoice creates electronic document in XRechnung format with 2 invoice lines and invoice discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with invoice discount
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, true));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 invoice lines and invoice discount
+        VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyInvoiceWithInvoiceDiscountsAndLineDiscount();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales invoice creates electronic document in XRechnung format with 2 invoice lines with discount and invoice discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with invoice discount and line discount on one line
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLinesLineDiscount("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, true));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 invoice lines with line discount and invoice discount
+        VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
+        VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyCrMemoWithInvoiceDiscounts();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales cr. memo creates electronic document in XRechnung format with 2 lines and invoice discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with invoice discount
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, true));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 lines and invoice discount
+        VerifyCrMemoWithInvDiscount(SalesCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyCrMemoWithInvoiceDiscountsAndLineDiscount();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales cr.memo creates electronic document in XRechnung format with 2 cr.memo lines with discount and invoice discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Cr. Memo with invoice discount and line discount on one line
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLinesLineDiscount("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, true));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 lines with line discount and invoice discount
+        VerifyCrMemoWithInvDiscount(SalesCrMemoHeader, TempXMLBuffer);
+        VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader, TempXMLBuffer);
+    end;
+    #endregion
     #region PurchaseInvoice
     [Test]
     procedure ReleasePurchaseInvoiceInXRechnungFormat();
@@ -728,6 +1374,76 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostServiceDocument(): Code[20];
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        ServiceHeader.Get(ServiceHeader."Document Type"::Invoice, CreateServiceDocumentWithLine());
+        exit(PostServiceDocument(ServiceHeader));
+    end;
+
+    local procedure CreateAndPostServiceDocumentWithTwoLines(): Code[20];
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        ServiceHeader.Get(ServiceHeader."Document Type"::Invoice, CreateServiceDocumentWithTwoLines());
+        exit(PostServiceDocument(ServiceHeader));
+    end;
+
+    local procedure CreateAndPostServiceDocumentWithRespCenter(RespCenterCode: Code[10]): Code[20];
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        ServiceHeader.Get(ServiceHeader."Document Type"::Invoice, CreateServiceDocumentWithLine());
+        ServiceHeader.Validate("Responsibility Center", RespCenterCode);
+        ServiceHeader.Modify(true);
+        exit(PostServiceDocument(ServiceHeader));
+    end;
+
+    local procedure PostServiceDocument(var ServiceHeader: Record "Service Header"): Code[20]
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+    begin
+        LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+        ServiceInvoiceHeader.FindLast();
+        exit(ServiceInvoiceHeader."No.");
+    end;
+
+    local procedure CreateAndPostServiceCrMemoDocument(): Code[20]
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        ServiceHeader.Get(ServiceHeader."Document Type"::"Credit Memo", CreateServiceCrMemoDocumentWithLine());
+        exit(PostServiceCrMemoDocument(ServiceHeader));
+    end;
+
+    local procedure CreateAndPostServiceCrMemoDocumentWithTwoLines(): Code[20]
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        ServiceHeader.Get(ServiceHeader."Document Type"::"Credit Memo", CreateServiceCrMemoDocumentWithTwoLines());
+        exit(PostServiceCrMemoDocument(ServiceHeader));
+    end;
+
+    local procedure CreateAndPostServiceCrMemoDocumentWithRespCenter(RespCenterCode: Code[10]): Code[20]
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        ServiceHeader.Get(ServiceHeader."Document Type"::"Credit Memo", CreateServiceCrMemoDocumentWithLine());
+        ServiceHeader.Validate("Responsibility Center", RespCenterCode);
+        ServiceHeader.Modify(true);
+        exit(PostServiceCrMemoDocument(ServiceHeader));
+    end;
+
+    local procedure PostServiceCrMemoDocument(var ServiceHeader: Record "Service Header"): Code[20]
+    var
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+    begin
+        LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+        ServiceCrMemoHeader.FindLast();
+        exit(ServiceCrMemoHeader."No.");
+    end;
+
     local procedure CreateAndPostSalesDocumentWithTwoLines(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
@@ -749,6 +1465,17 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesHeader: Record "Sales Header";
     begin
         SalesHeader.Get(DocumentType, CreateSalesDocumentWithLine(DocumentType, LineType, false, RespCenterCode));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreateAndPostSalesDocumentWithBankAccount(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; BankAccountCode: Code[20]): Code[20];
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType);
+        SalesHeader.Validate("Company Bank Account Code", BankAccountCode);
+        SalesHeader.Modify(true);
+        CreateSalesLine(SalesHeader, LineType, false);
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
@@ -830,13 +1557,18 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
 
     local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type");
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType, CreateCustomer());
+    end;
+
+    local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type"; CustomerNo: Code[20]);
     var
         PostCode: Record "Post Code";
         PaymentTermsCode: Code[10];
     begin
         LibraryERM.FindPostCode(PostCode);
         PaymentTermsCode := LibraryERM.FindPaymentTermsCode();
-        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CreateCustomer());
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
         SalesHeader.Validate("Sell-to Contact", SalesHeader."No.");
         SalesHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
         SalesHeader.Validate("Bill-to City", PostCode.City);
@@ -858,6 +1590,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Customer.Validate("Country/Region Code", CompanyInformation."Country/Region Code");
         Customer.Validate("VAT Registration No.", CompanyInformation."VAT Registration No.");
         Customer.Validate("E-Invoice Routing No.", LibraryUtility.GenerateRandomText(20));
+        Customer.Validate("E-Mail", LibraryUtility.GenerateRandomEmail());
         Customer.Modify(true);
         exit(Customer."No.")
     end;
@@ -894,12 +1627,124 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesLine.Modify(true);
     end;
 
+    local procedure CreateServiceDocumentWithLine(): Code[20]
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        CreateServiceHeader(ServiceHeader);
+        CreateServiceLine(ServiceHeader);
+        exit(ServiceHeader."No.");
+    end;
+
+    local procedure CreateServiceDocumentWithTwoLines(): Code[20]
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        CreateServiceHeader(ServiceHeader);
+        CreateServiceLine(ServiceHeader);
+        CreateServiceLine(ServiceHeader);
+        exit(ServiceHeader."No.");
+    end;
+
+    local procedure CreateServiceHeader(var ServiceHeader: Record "Service Header")
+    var
+        PostCode: Record "Post Code";
+        PaymentTermsCode: Code[10];
+    begin
+        LibraryERM.FindPostCode(PostCode);
+        PaymentTermsCode := LibraryERM.FindPaymentTermsCode();
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Invoice, CreateCustomer());
+        ServiceHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
+        ServiceHeader.Validate("Bill-to City", PostCode.City);
+        ServiceHeader.Validate("Ship-to Address", LibraryUtility.GenerateGUID());
+        ServiceHeader.Validate("Ship-to City", PostCode.City);
+        ServiceHeader.Validate(Address, LibraryUtility.GenerateGUID());
+        ServiceHeader.Validate(City, PostCode.City);
+        ServiceHeader.Validate("Your Reference", LibraryUtility.GenerateRandomText(20));
+        ServiceHeader.Validate("Payment Terms Code", PaymentTermsCode);
+        ServiceHeader.Modify(true);
+    end;
+
+    local procedure CreateServiceLine(ServiceHeader: Record "Service Header")
+    var
+        ServiceLine: Record "Service Line";
+        UnitOfMeasure: Record "Unit of Measure";
+    begin
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+        UnitOfMeasure."International Standard Code" := LibraryUtility.GenerateGUID();
+        UnitOfMeasure.Modify(true);
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+        ServiceLine.Validate(Quantity, LibraryRandom.RandDecInRange(10, 20, 2));
+        ServiceLine.Validate("Unit Price", LibraryRandom.RandDecInRange(100, 200, 2));
+        ServiceLine.Validate("Unit of Measure", UnitOfMeasure.Code);
+        ServiceLine.Modify(true);
+    end;
+
+    local procedure CreateServiceCrMemoDocumentWithLine(): Code[20]
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        CreateServiceCrMemoHeader(ServiceHeader);
+        CreateServiceLine(ServiceHeader);
+        exit(ServiceHeader."No.");
+    end;
+
+    local procedure CreateServiceCrMemoDocumentWithTwoLines(): Code[20]
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        CreateServiceCrMemoHeader(ServiceHeader);
+        CreateServiceLine(ServiceHeader);
+        CreateServiceLine(ServiceHeader);
+        exit(ServiceHeader."No.");
+    end;
+
+    local procedure CreateServiceCrMemoHeader(var ServiceHeader: Record "Service Header")
+    var
+        PostCode: Record "Post Code";
+        PaymentTermsCode: Code[10];
+    begin
+        LibraryERM.FindPostCode(PostCode);
+        PaymentTermsCode := LibraryERM.FindPaymentTermsCode();
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::"Credit Memo", CreateCustomer());
+        ServiceHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
+        ServiceHeader.Validate("Bill-to City", PostCode.City);
+        ServiceHeader.Validate("Ship-to Address", LibraryUtility.GenerateGUID());
+        ServiceHeader.Validate("Ship-to City", PostCode.City);
+        ServiceHeader.Validate(Address, LibraryUtility.GenerateGUID());
+        ServiceHeader.Validate(City, PostCode.City);
+        ServiceHeader.Validate("Your Reference", LibraryUtility.GenerateRandomText(20));
+        ServiceHeader.Validate("Payment Terms Code", PaymentTermsCode);
+        ServiceHeader.Modify(true);
+    end;
+
+    local procedure CheckServiceHeader(ServiceHeader: Record "Service Header")
+    var
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(ServiceHeader);
+        ExportXRechnungFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
+    end;
+
     local procedure CheckSalesHeader(SalesHeader: Record "Sales Header")
     var
         SourceDocumentHeader: RecordRef;
     begin
         SourceDocumentHeader.GetTable(SalesHeader);
         ExportXRechnungFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
+    end;
+
+    local procedure CreateSalesDocumentWithCustomerWithoutVATRegNo(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+    begin
+        Customer.Get(CreateCustomer());
+        Customer."VAT Registration No." := '';
+        Customer.Modify(true);
+        CreateSalesHeader(SalesHeader, DocumentType, Customer."No.");
+        CreateSalesLine(SalesHeader, LineType, false);
+        exit(SalesHeader."No.");
     end;
 
     local procedure ExportInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -918,6 +1763,22 @@ codeunit 13918 "XRechnung XML Document Tests"
         TempXMLBuffer.LoadFromStream(FileInStream);
     end;
 
+    local procedure ExportServiceInvoice(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceInvoiceLine: Record "Service Invoice Line";
+        EDocument: Record "E-Document";
+        TempBlob: Codeunit "Temp Blob";
+        SourceDocumentHeader: RecordRef;
+        SourceDocumentLines: RecordRef;
+        FileInStream: InStream;
+    begin
+        SourceDocumentHeader.GetTable(ServiceInvoiceHeader);
+        SourceDocumentLines.GetTable(ServiceInvoiceLine);
+        ExportXRechnungFormat.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
+        TempBlob.CreateInStream(FileInStream);
+        TempXMLBuffer.LoadFromStream(FileInStream);
+    end;
+
     local procedure ExportCreditMemo(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
     var
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
@@ -929,6 +1790,22 @@ codeunit 13918 "XRechnung XML Document Tests"
     begin
         SourceDocumentHeader.GetTable(SalesCrMemoHeader);
         SourceDocumentLines.GetTable(SalesCrMemoLine);
+        ExportXRechnungFormat.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
+        TempBlob.CreateInStream(FileInStream);
+        TempXMLBuffer.LoadFromStream(FileInStream);
+    end;
+
+    local procedure ExportServiceCreditMemo(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceCrMemoLine: Record "Service Cr.Memo Line";
+        EDocument: Record "E-Document";
+        TempBlob: Codeunit "Temp Blob";
+        SourceDocumentHeader: RecordRef;
+        SourceDocumentLines: RecordRef;
+        FileInStream: InStream;
+    begin
+        SourceDocumentHeader.GetTable(ServiceCrMemoHeader);
+        SourceDocumentLines.GetTable(ServiceCrMemoLine);
         ExportXRechnungFormat.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         TempBlob.CreateInStream(FileInStream);
         TempXMLBuffer.LoadFromStream(FileInStream);
@@ -962,6 +1839,36 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.AreEqual(FormatDate(SalesCrMemoHeader."Posting Date"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentCreditNoteTok + '/cbc:DocumentCurrencyCode';
         Assert.AreEqual(GetCurrencyCode(SalesCrMemoHeader."Currency Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyHeaderData(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceDocumentTok: Label '/ubl:Invoice', Locked = true;
+        Path: Text;
+    begin
+        Path := ServiceDocumentTok + '/cbc:InvoiceTypeCode';
+        Assert.AreEqual('380', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentTok + '/cbc:ID';
+        Assert.AreEqual(ServiceInvoiceHeader."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentTok + '/cbc:IssueDate';
+        Assert.AreEqual(FormatDate(ServiceInvoiceHeader."Posting Date"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentTok + '/cbc:DocumentCurrencyCode';
+        Assert.AreEqual(GetCurrencyCode(ServiceInvoiceHeader."Currency Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyHeaderData(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceDocumentCreditNoteTok: Label '/ns0:CreditNote', Locked = true;
+        Path: Text;
+    begin
+        Path := ServiceDocumentCreditNoteTok + '/cbc:CreditNoteTypeCode';
+        Assert.AreEqual('381', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentCreditNoteTok + '/cbc:ID';
+        Assert.AreEqual(ServiceCrMemoHeader."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentCreditNoteTok + '/cbc:IssueDate';
+        Assert.AreEqual(FormatDate(ServiceCrMemoHeader."Posting Date"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentCreditNoteTok + '/cbc:DocumentCurrencyCode';
+        Assert.AreEqual(GetCurrencyCode(ServiceCrMemoHeader."Currency Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyBuyerReference(BuyerReference: Text[50]; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
@@ -999,14 +1906,14 @@ codeunit 13918 "XRechnung XML Document Tests"
 
     local procedure VerifyAccountingCustomerParty(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
     var
-        DocumentPartyTok: Label '/ubl:Invoice/cac:AccountingCustomerParty/cac:Party', Locked = true;
+        SalesDocumentPartyTok: Label '/ubl:Invoice/cac:AccountingCustomerParty/cac:Party', Locked = true;
         Path: Text;
     begin
-        Path := DocumentPartyTok + '/cbc:EndpointID';
+        Path := SalesDocumentPartyTok + '/cbc:EndpointID';
         Assert.AreEqual(SalesInvoiceHeader."Sell-to E-Mail", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-        Path := DocumentPartyTok + '/cac:PostalAddress/cbc:StreetName';
+        Path := SalesDocumentPartyTok + '/cac:PostalAddress/cbc:StreetName';
         Assert.AreEqual(SalesInvoiceHeader."Bill-to Address", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-        Path := DocumentPartyTok + '/cac:PostalAddress/cbc:CityName';
+        Path := SalesDocumentPartyTok + '/cac:PostalAddress/cbc:CityName';
         Assert.AreEqual(SalesInvoiceHeader."Bill-to City", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
@@ -1023,12 +1930,51 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.AreEqual(SalesCrMemoHeader."Bill-to City", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
+    local procedure VerifyAccountingCustomerParty(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        DocumentServicePartyTok: Label '/ubl:Invoice/cac:AccountingCustomerParty/cac:Party', Locked = true;
+        Path: Text;
+    begin
+        Path := DocumentServicePartyTok + '/cbc:EndpointID';
+        Assert.AreEqual(ServiceInvoiceHeader."E-Mail", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentServicePartyTok + '/cac:PostalAddress/cbc:StreetName';
+        Assert.AreEqual(ServiceInvoiceHeader."Bill-to Address", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentServicePartyTok + '/cac:PostalAddress/cbc:CityName';
+        Assert.AreEqual(ServiceInvoiceHeader."Bill-to City", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyAccountingCustomerParty(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceDocumentAccountingCustomerPartyTok: Label '/ns0:CreditNote/cac:AccountingCustomerParty/cac:Party', Locked = true;
+        Path: Text;
+    begin
+        Path := ServiceDocumentAccountingCustomerPartyTok + '/cbc:EndpointID';
+        Assert.AreEqual(ServiceCrMemoHeader."E-Mail", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentAccountingCustomerPartyTok + '/cac:PostalAddress/cbc:StreetName';
+        Assert.AreEqual(ServiceCrMemoHeader."Bill-to Address", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentAccountingCustomerPartyTok + '/cac:PostalAddress/cbc:CityName';
+        Assert.AreEqual(ServiceCrMemoHeader."Bill-to City", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
     local procedure VerifyPaymentMeans(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
     var
         Path: Text;
     begin
         Path := DocumentTok + '/cbc:PaymentMeansCode';
-        Assert.AreEqual('68', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual('58', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyPaymentMeans(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text; ExpectedIBAN: Text; ExpectedSWIFT: Text);
+    var
+        Path: Text;
+    begin
+        VerifyPaymentMeans(TempXMLBuffer, DocumentTok);
+        Path := DocumentTok + '/cac:PayeeFinancialAccount/cbc:ID';
+        Assert.AreEqual(ExpectedIBAN, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        if ExpectedSWIFT <> '' then begin
+            Path := DocumentTok + '/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:ID';
+            Assert.AreEqual(ExpectedSWIFT, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        end;
     end;
 
     local procedure VerifyPaymentTerms(PaymentTermsCode: Code[10]; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
@@ -1057,6 +2003,24 @@ codeunit 13918 "XRechnung XML Document Tests"
     begin
         Path := DocumentTaxTotalsTok + '/cbc:TaxAmount';
         Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(GetTotalTaxAmount(SalesCrMemoHeader)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyTaxTotals(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceDocumentTaxTotalTok: Label '/ubl:Invoice/cac:TaxTotal', Locked = true;
+        Path: Text;
+    begin
+        Path := ServiceDocumentTaxTotalTok + '/cbc:TaxAmount';
+        Assert.AreEqual(FormatDecimal(GetTotalTaxAmount(ServiceInvoiceHeader)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyTaxTotals(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceDocumentTaxTotalsTok: Label '/ns0:CreditNote/cac:TaxTotal', Locked = true;
+        Path: Text;
+    begin
+        Path := ServiceDocumentTaxTotalsTok + '/cbc:TaxAmount';
+        Assert.AreEqual(FormatDecimal(GetTotalTaxAmount(ServiceCrMemoHeader)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyLegalMonetaryTotal(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -1093,6 +2057,40 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(SalesCrMemoHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
+    local procedure VerifyLegalMonetaryTotal(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        LineAmounts: Dictionary of [Text, Decimal];
+        ServiceDocumentLegalMonetaryTotalTok: Label '/ubl:Invoice/cac:LegalMonetaryTotal', Locked = true;
+        Path: Text;
+    begin
+        CalculateLineAmounts(ServiceInvoiceHeader, LineAmounts);
+        Path := ServiceDocumentLegalMonetaryTotalTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentLegalMonetaryTotalTok + '/cbc:TaxExclusiveAmount';
+        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentLegalMonetaryTotalTok + '/cbc:TaxInclusiveAmount';
+        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentLegalMonetaryTotalTok + '/cbc:PayableAmount';
+        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyLegalMonetaryTotal(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        LineAmounts: Dictionary of [Text, Decimal];
+        ServiceDocumentLegalMonetaryTotalsTok: Label '/ns0:CreditNote/cac:LegalMonetaryTotal', Locked = true;
+        Path: Text;
+    begin
+        CalculateLineAmounts(ServiceCrMemoHeader, LineAmounts);
+        Path := ServiceDocumentLegalMonetaryTotalsTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentLegalMonetaryTotalsTok + '/cbc:TaxExclusiveAmount';
+        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentLegalMonetaryTotalsTok + '/cbc:TaxInclusiveAmount';
+        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := ServiceDocumentLegalMonetaryTotalsTok + '/cbc:PayableAmount';
+        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
     local procedure VerifyInvoiceLine(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
@@ -1103,6 +2101,102 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyFirstInvoiceLine(SalesInvoiceLine, TempXMLBuffer, DocumentTok);
         SalesInvoiceLine.Next();
         VerifySecondInvoiceLine(SalesInvoiceLine, TempXMLBuffer, DocumentTok);
+    end;
+
+    local procedure VerifyServiceInvoiceLine(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceInvoiceLine: Record "Service Invoice Line";
+        DocumentTok: Label '/ubl:Invoice/cac:InvoiceLine', Locked = true;
+    begin
+        ServiceInvoiceLine.SetRange("Document No.", ServiceInvoiceHeader."No.");
+        ServiceInvoiceLine.FindSet();
+        VerifyFirstServiceInvoiceLine(ServiceInvoiceLine, TempXMLBuffer, DocumentTok);
+        ServiceInvoiceLine.Next();
+        VerifySecondServiceInvoiceLine(ServiceInvoiceLine, TempXMLBuffer, DocumentTok);
+    end;
+
+    local procedure VerifyFirstServiceInvoiceLine(ServiceInvoiceLine: Record "Service Invoice Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:ID';
+        Assert.AreEqual(Format(ServiceInvoiceLine."Line No."), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:InvoicedQuantity';
+        Assert.AreEqual(FormatDecimal(ServiceInvoiceLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(ServiceInvoiceLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cbc:Name';
+        Assert.AreEqual(ServiceInvoiceLine."Description", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
+        Assert.AreEqual(ServiceInvoiceLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
+        Assert.AreEqual(FormatFourDecimal(ServiceInvoiceLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifySecondServiceInvoiceLine(ServiceInvoiceLine: Record "Service Invoice Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:ID';
+        Assert.AreEqual(Format(ServiceInvoiceLine."Line No."), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:InvoicedQuantity';
+        Assert.AreEqual(FormatDecimal(ServiceInvoiceLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(ServiceInvoiceLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cbc:Name';
+        Assert.AreEqual(ServiceInvoiceLine."Description", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
+        Assert.AreEqual(ServiceInvoiceLine."No.", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
+        Assert.AreEqual(FormatFourDecimal(ServiceInvoiceLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyServiceCrMemoLine(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
+    var
+        ServiceCrMemoLine: Record "Service Cr.Memo Line";
+        DocumentTok: Label '/ns0:CreditNote/cac:CreditNoteLine', Locked = true;
+    begin
+        ServiceCrMemoLine.SetRange("Document No.", ServiceCrMemoHeader."No.");
+        ServiceCrMemoLine.FindSet();
+        VerifyFirstServiceCrMemoLine(ServiceCrMemoLine, TempXMLBuffer, DocumentTok);
+        ServiceCrMemoLine.Next();
+        VerifySecondServiceCrMemoLine(ServiceCrMemoLine, TempXMLBuffer, DocumentTok);
+    end;
+
+    local procedure VerifyFirstServiceCrMemoLine(ServiceCrMemoLine: Record "Service Cr.Memo Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:ID';
+        Assert.AreEqual(Format(ServiceCrMemoLine."Line No."), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:CreditedQuantity ';
+        Assert.AreEqual(FormatDecimal(ServiceCrMemoLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(ServiceCrMemoLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cbc:Name';
+        Assert.AreEqual(ServiceCrMemoLine."Description", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
+        Assert.AreEqual(ServiceCrMemoLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
+        Assert.AreEqual(FormatFourDecimal(ServiceCrMemoLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifySecondServiceCrMemoLine(ServiceCrMemoLine: Record "Service Cr.Memo Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:ID';
+        Assert.AreEqual(Format(ServiceCrMemoLine."Line No."), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:CreditedQuantity ';
+        Assert.AreEqual(FormatDecimal(ServiceCrMemoLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(ServiceCrMemoLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cbc:Name';
+        Assert.AreEqual(ServiceCrMemoLine."Description", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
+        Assert.AreEqual(ServiceCrMemoLine."No.", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
+        Assert.AreEqual(FormatFourDecimal(ServiceCrMemoLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyFirstInvoiceLine(SalesInvoiceLine: Record "Sales Invoice Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
@@ -1393,6 +2487,58 @@ codeunit 13918 "XRechnung XML Document Tests"
             LineAmounts.Add(SalesCrMemoLine.FieldName("Inv. Discount Amount"), SalesCrMemoLine."Inv. Discount Amount");
     end;
 
+    local procedure CalculateLineAmounts(ServiceInvoiceHeader: Record "Service Invoice Header"; var LineAmounts: Dictionary of [Text, Decimal])
+    var
+        ServiceInvLine: Record "Service Invoice Line";
+        Currency: Record Currency;
+    begin
+        GetCurrencyCode(ServiceInvoiceHeader."Currency Code", Currency);
+        ServiceInvLine.SetRange("Document No.", ServiceInvoiceHeader."No.");
+        ServiceInvLine.FindSet();
+        if ServiceInvoiceHeader."Prices Including VAT" then
+            repeat
+                ServiceInvLine."Line Discount Amount" := Round(ServiceInvLine."Line Discount Amount" / (1 + ServiceInvLine."VAT %" / 100), Currency."Amount Rounding Precision");
+                ServiceInvLine."Inv. Discount Amount" := Round(ServiceInvLine."Inv. Discount Amount" / (1 + ServiceInvLine."VAT %" / 100), Currency."Amount Rounding Precision");
+                ServiceInvLine."Unit Price" := Round(ServiceInvLine."Unit Price" / (1 + ServiceInvLine."VAT %" / 100), Currency."Amount Rounding Precision");
+                ServiceInvLine.Modify(true);
+            until ServiceInvLine.Next() = 0;
+
+        ServiceInvLine.CalcSums(Amount, "Amount Including VAT", "Inv. Discount Amount");
+
+        if not LineAmounts.ContainsKey(ServiceInvLine.FieldName(Amount)) then
+            LineAmounts.Add(ServiceInvLine.FieldName(Amount), ServiceInvLine.Amount);
+        if not LineAmounts.ContainsKey(ServiceInvLine.FieldName("Amount Including VAT")) then
+            LineAmounts.Add(ServiceInvLine.FieldName("Amount Including VAT"), ServiceInvLine."Amount Including VAT");
+        if not LineAmounts.ContainsKey(ServiceInvLine.FieldName("Inv. Discount Amount")) then
+            LineAmounts.Add(ServiceInvLine.FieldName("Inv. Discount Amount"), ServiceInvLine."Inv. Discount Amount");
+    end;
+
+    local procedure CalculateLineAmounts(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var LineAmounts: Dictionary of [Text, Decimal])
+    var
+        ServiceCrMemoLine: Record "Service Cr.Memo Line";
+        Currency: Record Currency;
+    begin
+        GetCurrencyCode(ServiceCrMemoHeader."Currency Code", Currency);
+        ServiceCrMemoLine.SetRange("Document No.", ServiceCrMemoHeader."No.");
+        ServiceCrMemoLine.FindSet();
+        if ServiceCrMemoHeader."Prices Including VAT" then
+            repeat
+                ServiceCrMemoLine."Line Discount Amount" := Round(ServiceCrMemoLine."Line Discount Amount" / (1 + ServiceCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
+                ServiceCrMemoLine."Inv. Discount Amount" := Round(ServiceCrMemoLine."Inv. Discount Amount" / (1 + ServiceCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
+                ServiceCrMemoLine."Unit Price" := Round(ServiceCrMemoLine."Unit Price" / (1 + ServiceCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
+                ServiceCrMemoLine.Modify(true);
+            until ServiceCrMemoLine.Next() = 0;
+
+        ServiceCrMemoLine.CalcSums(Amount, "Amount Including VAT", "Inv. Discount Amount");
+
+        if not LineAmounts.ContainsKey(ServiceCrMemoLine.FieldName(Amount)) then
+            LineAmounts.Add(ServiceCrMemoLine.FieldName(Amount), ServiceCrMemoLine.Amount);
+        if not LineAmounts.ContainsKey(ServiceCrMemoLine.FieldName("Amount Including VAT")) then
+            LineAmounts.Add(ServiceCrMemoLine.FieldName("Amount Including VAT"), ServiceCrMemoLine."Amount Including VAT");
+        if not LineAmounts.ContainsKey(ServiceCrMemoLine.FieldName("Inv. Discount Amount")) then
+            LineAmounts.Add(ServiceCrMemoLine.FieldName("Inv. Discount Amount"), ServiceCrMemoLine."Inv. Discount Amount");
+    end;
+
     local procedure GetTotalTaxAmount(SalesInvoiceHeader: Record "Sales Invoice Header"): Decimal
     var
         SalesInvLine: Record "Sales Invoice Line";
@@ -1423,6 +2569,36 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(SalesCrMemoLine."Amount Including VAT" - SalesCrMemoLine.Amount);
     end;
 
+    local procedure GetTotalTaxAmount(ServiceInvoiceHeader: Record "Service Invoice Header"): Decimal
+    var
+        ServiceInvLine: Record "Service Invoice Line";
+    begin
+        ServiceInvLine.SetRange("Document No.", ServiceInvoiceHeader."No.");
+        ServiceInvLine.SetFilter(
+          "VAT Calculation Type", '%1|%2|%3',
+          ServiceInvLine."VAT Calculation Type"::"Normal VAT",
+          ServiceInvLine."VAT Calculation Type"::"Full VAT",
+          ServiceInvLine."VAT Calculation Type"::"Reverse Charge VAT");
+        ServiceInvLine.CalcSums(Amount, "Amount Including VAT");
+        ServiceInvLine.SetRange("VAT Calculation Type");
+        exit(ServiceInvLine."Amount Including VAT" - ServiceInvLine.Amount);
+    end;
+
+    local procedure GetTotalTaxAmount(ServiceCrMemoHeader: Record "Service Cr.Memo Header"): Decimal
+    var
+        ServiceCrMemoLine: Record "Service Cr.Memo Line";
+    begin
+        ServiceCrMemoLine.SetRange("Document No.", ServiceCrMemoHeader."No.");
+        ServiceCrMemoLine.SetFilter(
+          "VAT Calculation Type", '%1|%2|%3',
+          ServiceCrMemoLine."VAT Calculation Type"::"Normal VAT",
+          ServiceCrMemoLine."VAT Calculation Type"::"Full VAT",
+          ServiceCrMemoLine."VAT Calculation Type"::"Reverse Charge VAT");
+        ServiceCrMemoLine.CalcSums(Amount, "Amount Including VAT");
+        ServiceCrMemoLine.SetRange("VAT Calculation Type");
+        exit(ServiceCrMemoLine."Amount Including VAT" - ServiceCrMemoLine.Amount);
+    end;
+
     local procedure GetCurrencyCode(DocumentCurrencyCode: Code[10]; var Currency: Record Currency): Code[10]
     begin
         if DocumentCurrencyCode = '' then begin
@@ -1451,11 +2627,20 @@ codeunit 13918 "XRechnung XML Document Tests"
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"XRechnung XML Document Tests");
         IsInitialized := true;
         CompanyInformation.Get();
+        CompanyInformation.IBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        CompanyInformation."SWIFT Code" := LibraryUtility.GenerateGUID();
+        CompanyInformation.Modify();
         GeneralLedgerSetup.Get();
         EDocumentService.DeleteAll();
         EDocumentService.Get(LibraryEdocument.CreateService("E-Document Format"::XRechnung, "Service Integration"::"No Integration"));
         Commit();
 
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"XRechnung XML Document Tests");
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandlerYes(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
     end;
 }

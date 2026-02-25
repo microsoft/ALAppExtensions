@@ -80,6 +80,14 @@ page 10059 "Transmission IRIS Subform"
                         ProcessTransmission.ShowErrorInformation(Rec."IRIS Transmission Document ID", Rec."IRIS Submission ID", Rec."IRIS Record ID");
                     end;
                 }
+                field("Record Errors"; RecordErrorCount)
+                {
+                    Caption = 'Record Errors';
+                    ToolTip = 'Specifies the number of errors returned by IRS for this specific record. Drill down on IRIS Submission Status to see error details.';
+                    Editable = false;
+                    BlankZero = true;
+                    StyleExpr = RecordErrorsStyle;
+                }
                 field("IRIS Corrected"; Format(Rec."IRIS Corrected"))
                 {
                     Caption = 'Corrected';
@@ -103,8 +111,10 @@ page 10059 "Transmission IRIS Subform"
         ProcessTransmission: Codeunit "Process Transmission IRIS";
         DocStatusStyle: Text;
         SubmStatusStyle: Text;
+        RecordErrorsStyle: Text;
         CorrectedStyle: Text;
         NeedsCorrectionEditable: Boolean;
+        RecordErrorCount: Integer;
 
     local procedure SetDocStatusStyle()
     begin
@@ -118,13 +128,18 @@ page 10059 "Transmission IRIS Subform"
     end;
 
     local procedure SetSubmStatusStyle()
-    var
-        ErrorInformation: Record "Error Information IRIS";
     begin
         SubmStatusStyle := '';
-        ProcessTransmission.FilterErrorInformation(ErrorInformation, Rec."IRIS Transmission Document ID", Rec."IRIS Submission ID", Rec."IRIS Record ID");
-        if not ErrorInformation.IsEmpty() then
+        RecordErrorsStyle := '';
+
+        if ProcessTransmission.HasSubmissionLevelErrors(Rec."IRIS Transmission Document ID", Rec."IRIS Submission ID") then
+            SubmStatusStyle := 'Ambiguous';
+
+        RecordErrorCount := ProcessTransmission.GetRecordErrorCount(Rec."IRIS Transmission Document ID", Rec."IRIS Submission ID", Rec."IRIS Record ID");
+        if RecordErrorCount > 0 then begin
             SubmStatusStyle := 'Attention';
+            RecordErrorsStyle := 'Unfavorable';
+        end;
     end;
 
     local procedure SetCorrectedStyle()

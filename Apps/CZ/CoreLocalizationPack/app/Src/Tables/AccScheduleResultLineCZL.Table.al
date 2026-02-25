@@ -9,7 +9,7 @@ using Microsoft.Finance.GeneralLedger.Account;
 
 table 31111 "Acc. Schedule Result Line CZL"
 {
-    Caption = 'Acc. Schedule Result Line';
+    Caption = 'Fin. Report Result Line';
 
     fields
     {

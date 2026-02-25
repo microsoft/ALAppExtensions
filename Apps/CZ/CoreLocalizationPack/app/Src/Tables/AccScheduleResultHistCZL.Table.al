@@ -8,7 +8,7 @@ using System.Security.AccessControl;
 
 table 31114 "Acc. Schedule Result Hist. CZL"
 {
-    Caption = 'Acc. Schedule Result History';
+    Caption = 'Fin. Report Result History';
 
     fields
     {

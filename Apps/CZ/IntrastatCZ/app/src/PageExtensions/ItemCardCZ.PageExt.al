@@ -23,5 +23,12 @@ pageextension 31301 "Item Card CZ" extends "Item Card"
                 ToolTip = 'Specifies the Specific Movement for Intrastat reporting purposes.';
             }
         }
+        addlast(ForeignTrade)
+        {
+            field("Fair Market Value CZ"; Rec."Fair Market Value CZ")
+            {
+                ApplicationArea = Basic, Suite;
+            }
+        }
     }
 }

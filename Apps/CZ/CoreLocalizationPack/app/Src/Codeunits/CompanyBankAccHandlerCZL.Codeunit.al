@@ -225,6 +225,9 @@ codeunit 31447 "Company Bank Acc. Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Inv. Header - Edit", 'OnBeforePurchInvHeaderModify', '', false, false)]
     local procedure PurchInvoiceEditOnBeforePurchInvHeaderModify(var PurchInvHeader: Record "Purch. Inv. Header"; PurchInvHeaderRec: Record "Purch. Inv. Header")
     begin
+        if PurchInvHeader."Vendor Invoice No." <> PurchInvHeaderRec."Vendor Invoice No." then
+            PurchInvHeaderRec.CheckAndConfirmExternalDocumentNumber();
+
         PurchInvHeader.Validate("Due Date", PurchInvHeaderRec."Due Date");
         PurchInvHeader.Validate("Bank Account Code CZL", PurchInvHeaderRec."Bank Account Code CZL");
         PurchInvHeader.Validate("Vendor Invoice No.", PurchInvHeaderRec."Vendor Invoice No.");

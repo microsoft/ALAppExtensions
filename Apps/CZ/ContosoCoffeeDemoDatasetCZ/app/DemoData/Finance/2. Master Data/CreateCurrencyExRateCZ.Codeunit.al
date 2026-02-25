@@ -60,4 +60,14 @@ codeunit 31337 "Create Currency Ex. Rate CZ"
     begin
         exit(0.026618);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Add. Reporting Currency", OnBeforeGetResidualCurrencyAccounts, '', false, false)]
+    local procedure GetResidualCurrencyAccountsCZ(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
+    var
+        CreateGLAccountCZ: Codeunit "Create G/L Account CZ";
+    begin
+        FXGainsAccount := CreateGLAccountCZ.ExchangeGainsRealized();
+        FXLossesAccount := CreateGLAccountCZ.ExchangeLossesRealized();
+        IsHandled := true;
+    end;
 }

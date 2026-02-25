@@ -42,6 +42,7 @@ table 2633 "Statistical Ledger Entry"
         field(17; Amount; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             DataClassification = CustomerContent;
         }

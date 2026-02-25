@@ -515,10 +515,14 @@ codeunit 31302 IntrastatReportManagementCZ
     var
         IntrastatReportHeader: Record "Intrastat Report Header";
         IntrastatReportSetup: Record "Intrastat Report Setup";
+        Item: Record Item;
         SpecificMovementCZ: Record "Specific Movement CZ";
         TempSalesHeader: Record "Sales Header" temporary;
         IntrastatReportManagement: Codeunit IntrastatReportManagement;
         RoundingDirection: Text[1];
+        CurrencyFactor: Decimal;
+        FairMarketValue: Decimal;
+        ToleranceFairMarketValuePer: Decimal;
     begin
         IntrastatReportHeader.Get(IntrastatReportLine."Intrastat No.");
         IntrastatReportLine."Partner VAT ID" := '';
@@ -550,6 +554,29 @@ codeunit 31302 IntrastatReportManagementCZ
                         TempSalesHeader."Currency Factor",
                         TempSalesHeader."VAT Currency Factor CZL"),
                     1, RoundingDirection);
+        end;
+
+        if (IntrastatReportLine.Amount = 0) or (IntrastatReportLine.Quantity = 0) then
+            exit;
+
+        IntrastatReportSetup.Get();
+        if IntrastatReportSetup."Min. Tol. Fair Market Value CZ" = 0 then
+            exit;
+
+        Item.SetLoadFields("Fair Market Value CZ");
+        Item.Get(ItemLedgerEntry."Item No.");
+        if Item."Fair Market Value CZ" = 0 then
+            exit;
+
+        FairMarketValue := Item."Fair Market Value CZ" * IntrastatReportLine.Quantity;
+        if IntrastatReportLine.Amount >= FairMarketValue then
+            exit;
+
+        CurrencyFactor := IntrastatReportLine."Source Currency Amount" / IntrastatReportLine.Amount;
+        ToleranceFairMarketValuePer := Abs(IntrastatReportLine.Amount - FairMarketValue) / FairMarketValue * 100;
+        if ToleranceFairMarketValuePer >= IntrastatReportSetup."Min. Tol. Fair Market Value CZ" then begin
+            IntrastatReportLine.Validate(Amount, FairMarketValue);
+            IntrastatReportLine."Source Currency Amount" := IntrastatReportLine.Amount * CurrencyFactor;
         end;
     end;
 

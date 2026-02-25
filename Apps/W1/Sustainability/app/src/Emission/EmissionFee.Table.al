@@ -29,6 +29,8 @@ table 6226 "Emission Fee"
         }
         field(3; "Carbon Fee"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Carbon Fee';
             DecimalPlaces = 2 : 5;
@@ -42,6 +44,7 @@ table 6226 "Emission Fee"
         }
         field(4; "Carbon Equivalent Factor"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Carbon Equivalent Factor';
             DecimalPlaces = 2 : 5;

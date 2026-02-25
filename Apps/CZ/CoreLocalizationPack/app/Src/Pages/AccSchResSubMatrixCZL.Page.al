@@ -23,20 +23,20 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies a Row number for the account schedule line.';
+                    ToolTip = 'Specifies a Row number for the financial report line.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
-                    ToolTip = 'Specifies the description of account schedule results.';
+                    ToolTip = 'Specifies the description of financial report results.';
                 }
                 field(Field1; Value[1])
                 {
                     ApplicationArea = All;
                     BlankZero = true;
                     CaptionClass = '3,' + MATRIX_CaptionSet[1];
-                    ToolTip = 'Specifies the value of account schedule result subpage matrix';
+                    ToolTip = 'Specifies the value of financial report result subpage matrix';
                     Visible = Field1Visible;
 
                     trigger OnAssistEdit()
@@ -55,7 +55,7 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
                     ApplicationArea = All;
                     BlankZero = true;
                     CaptionClass = '3,' + MATRIX_CaptionSet[2];
-                    ToolTip = 'Specifies the value of account schedule result subpage matrix';
+                    ToolTip = 'Specifies the value of financial report result subpage matrix';
                     Visible = Field2Visible;
 
                     trigger OnAssistEdit()
@@ -74,7 +74,7 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
                     ApplicationArea = All;
                     BlankZero = true;
                     CaptionClass = '3,' + MATRIX_CaptionSet[3];
-                    ToolTip = 'Specifies the value of account schedule result subpage matrix';
+                    ToolTip = 'Specifies the value of financial report result subpage matrix';
                     Visible = Field3Visible;
 
                     trigger OnAssistEdit()
@@ -93,7 +93,7 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
                     ApplicationArea = All;
                     BlankZero = true;
                     CaptionClass = '3,' + MATRIX_CaptionSet[4];
-                    ToolTip = 'Specifies the value of account schedule result subpage matrix';
+                    ToolTip = 'Specifies the value of financial report result subpage matrix';
                     Visible = Field4Visible;
 
                     trigger OnAssistEdit()

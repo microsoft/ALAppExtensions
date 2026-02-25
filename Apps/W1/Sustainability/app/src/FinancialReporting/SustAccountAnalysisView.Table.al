@@ -222,7 +222,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(100; "Net Change (CO2)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission CO2" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -241,7 +241,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(101; "Balance at Date (CO2)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission CO2" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -260,7 +260,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(102; "Balance (CO2)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission CO2" where("Analysis View Code" = field("Analysis View Filter"),
                                                                                  "Business Unit Code" = field("Business Unit Filter"),
@@ -279,7 +279,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(103; "Net Change (CH4)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission CH4" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -298,7 +298,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(104; "Balance at Date (CH4)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission CH4" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -317,7 +317,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(105; "Balance (CH4)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission CH4" where("Analysis View Code" = field("Analysis View Filter"),
                                                                                  "Business Unit Code" = field("Business Unit Filter"),
@@ -336,7 +336,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(106; "Net Change (N2O)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission N2O" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -355,7 +355,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(107; "Balance at Date (N2O)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission N2O" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -374,7 +374,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(108; "Balance (N2O)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Emission N2O" where("Analysis View Code" = field("Analysis View Filter"),
                                                                                  "Business Unit Code" = field("Business Unit Filter"),
@@ -393,7 +393,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(109; "Net Change (CO2e Emission)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."CO2e Emission" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -411,7 +411,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(110; "Bal. at Date (CO2e Emission)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."CO2e Emission" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -429,7 +429,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(111; "Balance (CO2e Emission)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."CO2e Emission" where("Analysis View Code" = field("Analysis View Filter"),
                                                                                  "Business Unit Code" = field("Business Unit Filter"),
@@ -447,7 +447,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(112; "Net Change (Carbon Fee)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Carbon Fee" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -465,7 +465,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(113; "Balance at Date (Carbon Fee)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Carbon Fee" where("Analysis View Code" = field("Analysis View Filter"),
                                                                          "Business Unit Code" = field("Business Unit Filter"),
@@ -483,7 +483,7 @@ table 6225 "Sust. Account (Analysis View)"
         }
         field(114; "Balance (Carbon Fee)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             BlankZero = true;
             CalcFormula = sum("Analysis View Entry"."Carbon Fee" where("Analysis View Code" = field("Analysis View Filter"),
                                                                                  "Business Unit Code" = field("Business Unit Filter"),

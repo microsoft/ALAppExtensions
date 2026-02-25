@@ -11,29 +11,25 @@ codeunit 22201 "Upgrade"
     trigger OnUpgradePerCompany()
     begin
         MovetoGLEntryReviewLog();
-        FixGLEntryReviewLogWithReviewAmountZero();
+        FixGLEntryReviewLogWithReviewAmountZeroWithDataTransfer();
     end;
 
-    local procedure FixGLEntryReviewLogWithReviewAmountZero()
+    local procedure FixGLEntryReviewLogWithReviewAmountZeroWithDataTransfer()
     var
-        GLEntryReviewLog, GLEntryReviewLog2 : Record "G/L Entry Review Log";
+        GLEntryReviewLog: Record "G/L Entry Review Log";
         GlEntry: Record "G/L Entry";
         UpgradeTag: Codeunit "Upgrade Tag";
+        GLEntryDataTransfer: DataTransfer;
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeFixGLEntryReviewLogWithReviewedAmountZeroTag()) then exit;
+        if UpgradeTag.HasUpgradeTag(UpgradeFixGLEntryReviewLogWithReviewedAmountZeroWithDataTransferTag()) then exit;
 
-        GLEntryReviewLog.SetCurrentKey("Reviewed Amount");
-        GLEntryReviewLog.SetRange("Reviewed Amount", 0);
-        if GLEntryReviewLog.FindSet() then
-            repeat
-                if GlEntry.Get(GLEntryReviewLog."G/L Entry No.") then begin
-                    GLEntryReviewLog2.Copy(GLEntryReviewLog);
-                    GLEntryReviewLog2."Reviewed Amount" := GlEntry.Amount;
-                    GLEntryReviewLog2.Modify(false);
-                end;
-            until GLEntryReviewLog.Next() = 0;
+        GLEntryDataTransfer.SetTables(Database::"G/L Entry", Database::"G/L Entry Review Log");
+        GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo(Amount), GLEntryReviewLog.FieldNo("Reviewed Amount"));
+        GLEntryDataTransfer.AddJoin(GLEntry.FieldNo("Entry No."), GLEntryReviewLog.FieldNo("G/L Entry No."));
+        GLEntryDataTransfer.AddDestinationFilter(GLEntryReviewLog.FieldNo("Reviewed Amount"), '=0');
+        GLEntryDataTransfer.CopyFields();
 
-        UpgradeTag.SetUpgradeTag(UpgradeFixGLEntryReviewLogWithReviewedAmountZeroTag());
+        UpgradeTag.SetUpgradeTag(UpgradeFixGLEntryReviewLogWithReviewedAmountZeroWithDataTransferTag());
     end;
 
     local procedure MovetoGLEntryReviewLog()
@@ -65,7 +61,7 @@ codeunit 22201 "Upgrade"
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(UpgradeReviewGLEntryTag());
-        PerCompanyUpgradeTags.Add(UpgradeFixGLEntryReviewLogWithReviewedAmountZeroTag());
+        PerCompanyUpgradeTags.Add(UpgradeFixGLEntryReviewLogWithReviewedAmountZeroWithDataTransferTag());
     end;
 
     local procedure UpgradeReviewGLEntryTag(): Code[250]
@@ -73,8 +69,9 @@ codeunit 22201 "Upgrade"
         exit('MS-547765-UpdateReviewGLEntry-20250704');
     end;
 
-    local procedure UpgradeFixGLEntryReviewLogWithReviewedAmountZeroTag(): Code[250]
+    local procedure UpgradeFixGLEntryReviewLogWithReviewedAmountZeroWithDataTransferTag(): Code[250]
     begin
-        exit('MS-616473-UpgradeFixGLEntryReviewLogWithReviewedAmountZeroTag-20251216');
+        exit('MS-621701-UpgradeFixGLEntryReviewLogWithReviewedAmountZero-20260212');
     end;
+
 }

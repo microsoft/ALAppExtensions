@@ -91,6 +91,14 @@ tableextension 31326 "Intrastat Report Setup CZ" extends "Intrastat Report Setup
             Caption = 'Default Phys. Trans. - Returns';
             DataClassification = CustomerContent;
         }
+        field(31320; "Min. Tol. Fair Market Value CZ"; Decimal)
+        {
+            Caption = 'Minimum Tolerance from Fair Market Value (%)';
+            DataClassification = CustomerContent;
+            MinValue = 0;
+            MaxValue = 100;
+            ToolTip = 'Specifies the minimum percentage tolerance at which the system replaces the sales or purchase price from the item ledger entries with the fair market value entered on the item card when generating Intrastat line suggestions. This tolerance is evaluated during the Intrastat report line creation process.';
+        }
     }
 
     var

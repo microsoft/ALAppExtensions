@@ -57,7 +57,7 @@ page 4511 "SMTP Account Wizard"
 
                     trigger OnValidate()
                     begin
-                        IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                        IsNextEnabled := IsStep1Valid();
                     end;
                 }
 
@@ -70,7 +70,7 @@ page 4511 "SMTP Account Wizard"
                     trigger OnValidate()
                     begin
                         SetProperties();
-                        IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                        IsNextEnabled := IsStep1Valid();
                     end;
                 }
 
@@ -90,14 +90,13 @@ page 4511 "SMTP Account Wizard"
                     Caption = 'Email Address';
                     ToolTip = 'Specifies the Email Address specified as the from email address.';
                     Enabled = SenderFieldsEnabled;
-                    ShowMandatory = true;
-                    NotBlank = true;
+                    ShowMandatory = SenderFieldsEnabled;
 
                     trigger OnValidate()
                     begin
                         if Rec."User Name" = '' then
                             Rec."User Name" := Rec."Email Address";
-                        IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                        IsNextEnabled := IsStep1Valid();
                     end;
                 }
 
@@ -109,7 +108,7 @@ page 4511 "SMTP Account Wizard"
 
                     trigger OnValidate()
                     begin
-                        IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                        IsNextEnabled := IsStep1Valid();
                         SetProperties();
                         if ShowMessageAboutSigningIn then
                             Message(EveryUserShouldPressAuthenticateMsg);
@@ -135,6 +134,7 @@ page 4511 "SMTP Account Wizard"
                     begin
                         SetProperties();
                         UpdateVisibility();
+                        IsNextEnabled := IsStep1Valid();
                         if ShowMessageAboutSigningIn then
                             Message(EveryUserShouldPressAuthenticateMsg);
                     end;
@@ -349,7 +349,7 @@ page 4511 "SMTP Account Wizard"
 
                     SMTPConnectorImpl.ApplyOffice365Smtp(Rec);
 
-                    IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                    IsNextEnabled := IsStep1Valid();
                     SetProperties();
 
                     CurrPage.Update();
@@ -384,7 +384,7 @@ page 4511 "SMTP Account Wizard"
                     if Step2Visible then begin
                         Step2Visible := false;
                         Step1Visible := true;
-                        IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                        IsNextEnabled := IsStep1Valid();
                         CurrPage.Update();
                         exit;
                     end;
@@ -495,6 +495,20 @@ page 4511 "SMTP Account Wizard"
 
         IsOnPrem := EnvironmentInformation.IsOnPrem();
         IsNextEnabled := false;
+    end;
+
+    local procedure IsStep1Valid(): Boolean
+    begin
+        if Rec.Name = '' then
+            exit(false);
+
+        if (Rec."Sender Type" = Rec."Sender Type"::"Specific User") and (Rec."Email Address" = '') then
+            exit(false);
+
+        if Rec.Server = '' then
+            exit(false);
+
+        exit(true);
     end;
 
     local procedure IsOAuthAuth(): Boolean

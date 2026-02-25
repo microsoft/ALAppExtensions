@@ -314,6 +314,16 @@ codeunit 4509 "Email - Outlook API Helper"
         OnAfterInitializeClientsV5(OutlookAPIClient, OAuthClient);
     end;
 
+    procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v6"; var OAuthClient: interface "Email - OAuth Client v2")
+    var
+        DefaultAPIClient: Codeunit "Email - Outlook API Client";
+        DefaultOAuthClient: Codeunit "Email - OAuth Client";
+    begin
+        OutlookAPIClient := DefaultAPIClient;
+        OAuthClient := DefaultOAuthClient;
+        OnAfterInitializeClientsV6(OutlookAPIClient, OAuthClient);
+    end;
+
     procedure Send(EmailMessage: Codeunit "Email Message"; AccountId: Guid)
     var
         EmailOutlookAccount: Record "Email - Outlook Account";
@@ -674,6 +684,86 @@ codeunit 4509 "Email - Outlook API Helper"
         APIClient.MarkEmailAsRead(AccessToken, EmailOutlookAccount."Email Address", ExternalMessageId);
     end;
 
+    procedure GetEmailCategories(AccountId: Guid; var EmailCategories: Record "Email Categories" temporary)
+    var
+        EmailOutlookAccount: Record "Email - Outlook Account";
+        APIClient: interface "Email - Outlook API Client v6";
+        OAuthClient: interface "Email - OAuth Client v2";
+        AccessToken: SecretText;
+        CategoriesJsonArray: JsonArray;
+        CategoryObject: JsonObject;
+        JsonToken: JsonToken;
+        Counter: Integer;
+        CategoryId: Text;
+        DisplayName: Text;
+        Color: Text;
+    begin
+        InitializeClients(APIClient, OAuthClient);
+        if not EmailOutlookAccount.Get(AccountId) then
+            Error(AccountNotFoundErr);
+
+        EmailOutlookAccountAddressValidation(EmailOutlookAccount);
+
+        OAuthClient.GetAccessToken(AccessToken);
+
+        CategoriesJsonArray := APIClient.GetEmailCategories(AccessToken, EmailOutlookAccount);
+
+        for Counter := 0 to CategoriesJsonArray.Count() - 1 do begin
+            CategoriesJsonArray.Get(Counter, JsonToken);
+            CategoryObject := JsonToken.AsObject();
+
+            CategoryId := GetTextFromJsonObject(CategoryObject, 'id');
+            DisplayName := GetTextFromJsonObject(CategoryObject, 'displayName');
+            if CategoryObject.Get('color', JsonToken) then
+                Color := JsonToken.AsValue().AsText()
+            else
+                Color := '';
+
+            EmailCategories.Init();
+            EmailCategories.Ordering := Counter + 1;
+            EmailCategories.Id := CopyStr(CategoryId, 1, MaxStrLen(EmailCategories.Id));
+            EmailCategories."Display Name" := CopyStr(DisplayName, 1, MaxStrLen(EmailCategories."Display Name"));
+            EmailCategories.Color := CopyStr(Color, 1, MaxStrLen(EmailCategories.Color));
+            EmailCategories.Insert();
+        end;
+    end;
+
+    procedure CreateEmailCategory(AccountId: Guid; CategoryDisplayName: Text; CategoryColor: Text): Text
+    var
+        EmailOutlookAccount: Record "Email - Outlook Account";
+        APIClient: interface "Email - Outlook API Client v6";
+        OAuthClient: interface "Email - OAuth Client v2";
+        AccessToken: SecretText;
+    begin
+        InitializeClients(APIClient, OAuthClient);
+        if not EmailOutlookAccount.Get(AccountId) then
+            Error(AccountNotFoundErr);
+
+        EmailOutlookAccountAddressValidation(EmailOutlookAccount);
+
+        OAuthClient.GetAccessToken(AccessToken);
+
+        exit(APIClient.CreateEmailCategory(AccessToken, EmailOutlookAccount, CategoryDisplayName, CategoryColor));
+    end;
+
+    procedure ApplyEmailCategory(AccountId: Guid; ExternalId: Text; Categories: List of [Text])
+    var
+        EmailOutlookAccount: Record "Email - Outlook Account";
+        APIClient: interface "Email - Outlook API Client v6";
+        OAuthClient: interface "Email - OAuth Client v2";
+        AccessToken: SecretText;
+    begin
+        InitializeClients(APIClient, OAuthClient);
+        if not EmailOutlookAccount.Get(AccountId) then
+            Error(AccountNotFoundErr);
+
+        EmailOutlookAccountAddressValidation(EmailOutlookAccount);
+
+        OAuthClient.GetAccessToken(AccessToken);
+
+        APIClient.ApplyEmailCategory(AccessToken, EmailOutlookAccount, ExternalId, Categories);
+    end;
+
     procedure ReplyEmail(AccountId: Guid; var EmailMessage: Codeunit "Email Message")
     var
         EmailOutlookAccount: Record "Email - Outlook Account";
@@ -754,6 +844,11 @@ codeunit 4509 "Email - Outlook API Helper"
 
     [InternalEvent(false)]
     local procedure OnAfterInitializeClientsV5(var OutlookAPIClient: interface "Email - Outlook API Client v5"; var OAuthClient: interface "Email - OAuth Client v2")
+    begin
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnAfterInitializeClientsV6(var OutlookAPIClient: interface "Email - Outlook API Client v6"; var OAuthClient: interface "Email - OAuth Client v2")
     begin
     end;
 

@@ -16,6 +16,9 @@ codeunit 148023 "Library - IRS 1099 IRIS"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryERM: Codeunit "Library - ERM";
+        SavedIRISUserIDKey: Guid;
+        IRISUserIDSaved: Boolean;
+        TINSequenceNameLbl: Label 'TestUniqueTIN', Locked = true;
 
     #region Company
     procedure InitializeCompanyInformation()
@@ -30,9 +33,11 @@ codeunit 148023 "Library - IRS 1099 IRIS"
         PostCode.Insert();
         CompanyInformation.Get();
         CompanyInformation.Name := LibraryUtility.GenerateGUID();
-        CompanyInformation."Federal ID No." := '00-0123456';
+        CompanyInformation."Federal ID No." := GetUniqueTIN();
         CompanyInformation.Validate("Post Code", PostCode.Code);
         CompanyInformation.Address := '6201 Roosevelt Rd';
+        CompanyInformation."Contact Person" := 'John Doe Jr.';
+        CompanyInformation."Phone No." := LibraryUtility.GenerateRandomPhoneNo();
         CompanyInformation.Modify();
     end;
 
@@ -87,6 +92,14 @@ codeunit 148023 "Library - IRS 1099 IRIS"
         CreateVendor(Vendor, 'US', 'IL');
     end;
 
+    procedure CreateUSVendorWithBankAccount(var Vendor: Record Vendor; BankAccountNo: Code[30])
+    var
+        VendorBankAccount: Record "Vendor Bank Account";
+    begin
+        CreateUSVendor(Vendor);
+        CreateVendorBankAccount(VendorBankAccount, Vendor."No.", BankAccountNo);
+    end;
+
     procedure CreateVendor(var Vendor: Record Vendor; CountryRegionCode: Code[10]; ProvinceOrStateName: Text[30])
     var
         PostCode: Record "Post Code";
@@ -100,12 +113,78 @@ codeunit 148023 "Library - IRS 1099 IRIS"
 
         LibraryERM.CreatePaymentMethodWithBalAccount(PaymentMethod);
 
+        Vendor.SetLoadFields("Federal ID No.", "Post Code", "Address", "Payment Method Code");
         Vendor.Get(LibraryPurchase.CreateVendorNo());
-        Vendor."Federal ID No." := '00-0654321';
+        Vendor."Federal ID No." := GetUniqueTIN();
         Vendor.Validate("Post Code", PostCode.Code);
         Vendor.Validate(Address, LibraryUtility.GenerateGUID());
         Vendor.Validate("Payment Method Code", PaymentMethod.Code);     // CASH payment method
         Vendor.Modify();
     end;
+
+    procedure CreateVendorBankAccount(var VendorBankAccount: Record "Vendor Bank Account"; VendorNo: Code[20]; BankAccountNo: Code[30])
+    var
+        Vendor: Record Vendor;
+    begin
+        VendorBankAccount.Init();
+        VendorBankAccount.Validate("Vendor No.", VendorNo);
+        VendorBankAccount.Validate(Code, LibraryUtility.GenerateGUID());
+        VendorBankAccount.Validate("Bank Account No.", BankAccountNo);
+        VendorBankAccount.Insert(true);
+
+        Vendor.SetLoadFields("Preferred Bank Account Code");
+        Vendor.Get(VendorNo);
+        Vendor."Preferred Bank Account Code" := VendorBankAccount.Code;
+        Vendor.Modify();
+    end;
     #endregion Vendor
+
+    procedure SaveIRISUserID()
+    var
+        UserParamsIRIS: Record "User Params IRIS";
+    begin
+        UserParamsIRIS.GetRecord();
+        SavedIRISUserIDKey := UserParamsIRIS."IRIS User ID Key";
+        IRISUserIDSaved := not IsNullGuid(SavedIRISUserIDKey);
+    end;
+
+    procedure RestoreIRISUserID()
+    var
+        UserParamsIRIS: Record "User Params IRIS";
+    begin
+        if not IRISUserIDSaved then
+            exit;
+        UserParamsIRIS.GetRecord();
+        UserParamsIRIS."IRIS User ID Key" := SavedIRISUserIDKey;
+        UserParamsIRIS.Modify();
+    end;
+
+    [NonDebuggable]
+    procedure InitializeIRISUserID()
+    var
+        UserParamsIRIS: Record "User Params IRIS";
+        OAuthClient: Codeunit "OAuth Client IRIS";
+        NewTokenKey: Guid;
+        IRISUserID: Text;
+        IRISUserIDSecret: SecretText;
+    begin
+        IRISUserID := 'test-user-id';
+        IRISUserIDSecret := IRISUserID;
+        OAuthClient.SetToken(NewTokenKey, IRISUserIDSecret);
+        UserParamsIRIS.GetRecord();
+        UserParamsIRIS."IRIS User ID Key" := NewTokenKey;
+        UserParamsIRIS.Modify();
+    end;
+
+    procedure GetUniqueTIN(): Text[30]
+    var
+        SeqNo: Integer;
+        SeqNoText: Text;
+    begin
+        if not NumberSequence.Exists(TINSequenceNameLbl) then
+            NumberSequence.Insert(TINSequenceNameLbl, 0, 1, true);
+        SeqNo := NumberSequence.Next(TINSequenceNameLbl);
+        SeqNoText := Format(SeqNo);
+        exit('00-09' + PadStr('', 5 - StrLen(SeqNoText), '0') + SeqNoText);
+    end;
 }

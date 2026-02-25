@@ -15,51 +15,61 @@ table 6221 "Sustainability Goal Cue"
         }
         field(2; "Realized % for CO2"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Realized % for CO2';
             Editable = false;
         }
         field(3; "Realized % for CH4"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Realized % for CH4';
             Editable = false;
         }
         field(4; "Realized % for N2O"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Realized % for N2O';
             Editable = false;
         }
         field(5; "CO2 % vs Baseline"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CO2 % vs Baseline';
             Editable = false;
         }
         field(6; "CH4 % vs Baseline"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CH4 % vs Baseline';
             Editable = false;
         }
         field(7; "N2O % vs Baseline"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'N2O % vs Baseline';
             Editable = false;
         }
         field(10; "Realized % for Water"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Realized % for Water';
             Editable = false;
         }
         field(11; "Realized % for Waste"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Realized % for Waste';
             Editable = false;
         }
         field(12; "Water % vs Baseline"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Water % vs Baseline';
             Editable = false;
         }
         field(13; "Waste % vs Baseline"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Waste % vs Baseline';
             Editable = false;
         }

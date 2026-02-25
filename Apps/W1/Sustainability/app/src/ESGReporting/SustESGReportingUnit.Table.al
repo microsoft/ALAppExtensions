@@ -27,6 +27,7 @@ table 6252 "Sust. ESG Reporting Unit"
         }
         field(3; "Conversion Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Conversion Factor';
         }
         field(4; "Base Reporting Unit Code"; Code[20])

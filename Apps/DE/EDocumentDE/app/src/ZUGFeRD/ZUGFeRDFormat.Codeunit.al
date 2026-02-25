@@ -31,6 +31,7 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
         OnBeforeCheck(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         CheckCompanyInfoMandatory();
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        EDocPEPPOLValidationDE.SetBuyerReference(EDocumentService."Buyer Reference");
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         UnbindSubscription(EDocPEPPOLValidationDE);
@@ -101,6 +102,15 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
         EDocServiceSupportedType.Insert();
 
         EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Purchase Credit Memo";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Invoice";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Credit Memo";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Order";
         EDocServiceSupportedType.Insert();
     end;
 

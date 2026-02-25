@@ -17,6 +17,8 @@ using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Location;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Peppol;
+using Microsoft.Service.History;
 using System.IO;
 using System.Reflection;
 using System.Telemetry;
@@ -33,6 +35,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         GeneralLedgerSetup: Record "General Ledger Setup";
         EDocumentService: Record "E-Document Service";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        PEPPOLMgt: Codeunit "PEPPOL Management";
         FeatureNameTok: Label 'E-document ZUGFeRD Format', Locked = true;
         StartEventNameTok: Label 'E-document ZUGFeRD export started', Locked = true;
         EndEventNameTok: Label 'E-document ZUGFeRD export completed', Locked = true;
@@ -99,6 +102,38 @@ codeunit 13917 "Export ZUGFeRD Document"
         AddXMLAttachmentToRenderingPayload(TempBlob, RenderingPayload);
     end;
 
+    /// <summary>
+    /// Creates a ZUGFeRD XML document from the service invoice and adds it as an attachment to the rendering payload.
+    /// </summary>
+    /// <param name="ServiceInvoiceHeader">The service invoice header record to export.</param>
+    /// <param name="RenderingPayload">The JSON object to add the XML attachment to.</param>
+    procedure CreateAndAddXMLAttachmentToRenderingPayload(var ServiceInvoiceHeader: Record "Service Invoice Header"; var RenderingPayload: JsonObject)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        XmlOutStream: OutStream;
+    begin
+        TempBlob.CreateOutStream(XmlOutStream, TextEncoding::UTF8);
+        CreateXML(ServiceInvoiceHeader, XmlOutStream);
+
+        AddXMLAttachmentToRenderingPayload(TempBlob, RenderingPayload);
+    end;
+
+    /// <summary>
+    /// Creates a ZUGFeRD XML document from the service credit memo and adds it as an attachment to the rendering payload.
+    /// </summary>
+    /// <param name="ServiceCrMemoHeader">The service credit memo header record to export.</param>
+    /// <param name="RenderingPayload">The JSON object to add the XML attachment to.</param>
+    procedure CreateAndAddXMLAttachmentToRenderingPayload(var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var RenderingPayload: JsonObject)
+    var
+        TempBlob: Codeunit "Temp Blob";
+        XmlOutStream: OutStream;
+    begin
+        TempBlob.CreateOutStream(XmlOutStream, TextEncoding::UTF8);
+        CreateXML(ServiceCrMemoHeader, XmlOutStream);
+
+        AddXMLAttachmentToRenderingPayload(TempBlob, RenderingPayload);
+    end;
+
     local procedure AddXMLAttachmentToRenderingPayload(var XmlAttachmentTempBlob: Codeunit "Temp Blob"; var RenderingPayload: JsonObject)
     var
         PDFDocument: Codeunit "PDF Document";
@@ -107,12 +142,13 @@ codeunit 13917 "Export ZUGFeRD Document"
         Name: Text;
         MimeType: Text;
         Description: Text;
+        DescriptionLbl: Label 'This is the e-invoicing xml document';
     begin
         PDFDocument.Initialize();
         Name := 'factur-x.xml';
         DataType := Enum::"PDF Attach. Data Relationship"::Alternative;
         MimeType := 'text/xml';
-        Description := 'This is the e-invoicing xml document';
+        Description := DescriptionLbl;
 
         XmlAttachmentTempBlob.CreateInStream(XmlInStream, TextEncoding::UTF8);
         PDFDocument.AddAttachment(Name, DataType, MimeType, XmlInStream, Description, true);
@@ -124,6 +160,8 @@ codeunit 13917 "Export ZUGFeRD Document"
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         TempBlob: Codeunit "Temp Blob";
         FileOutStream: OutStream;
         FileInStream: InStream;
@@ -141,6 +179,18 @@ codeunit 13917 "Export ZUGFeRD Document"
                 begin
                     SalesCrMemoHeader.Get(RecordExportBuffer.RecordID);
                     if not GenerateSalesCrMemoPDFAttachment(SalesCrMemoHeader, TempBlob) then
+                        exit;
+                end;
+            Database::"Service Invoice Header":
+                begin
+                    ServiceInvoiceHeader.Get(RecordExportBuffer.RecordID);
+                    if not GenerateServiceInvoicePDFAttachment(ServiceInvoiceHeader, TempBlob) then
+                        exit;
+                end;
+            Database::"Service Cr.Memo Header":
+                begin
+                    ServiceCrMemoHeader.Get(RecordExportBuffer.RecordID);
+                    if not GenerateServiceCrMemoPDFAttachment(ServiceCrMemoHeader, TempBlob) then
                         exit;
                 end;
         end;
@@ -180,6 +230,38 @@ codeunit 13917 "Export ZUGFeRD Document"
         ReportSelections.GetPdfReportForCust(
             TempBlob, "Report Selection Usage"::"S.Cr.Memo",
             SalesCrMemoHeader, SalesCrMemoHeader."Bill-to Customer No.");
+        exit(TempBlob.HasValue());
+    end;
+
+    procedure GenerateServiceInvoicePDFAttachment(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        ReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGenerateServiceInvoicePDFAttachment(ServiceInvoiceHeader, TempBlob, IsHandled);
+        if IsHandled then
+            exit(TempBlob.HasValue());
+        ServiceInvoiceHeader.SetRange("No.", ServiceInvoiceHeader."No.");
+        ReportSelections.GetPdfReportForCust(
+            TempBlob, "Report Selection Usage"::"SM.Invoice",
+            ServiceInvoiceHeader, ServiceInvoiceHeader."Bill-to Customer No.");
+        exit(TempBlob.HasValue());
+    end;
+
+    procedure GenerateServiceCrMemoPDFAttachment(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        ReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGenerateServiceCrMemoPDFAttachment(ServiceCrMemoHeader, TempBlob, IsHandled);
+        if IsHandled then
+            exit(TempBlob.HasValue());
+        ServiceCrMemoHeader.SetRange("No.", ServiceCrMemoHeader."No.");
+        ReportSelections.GetPdfReportForCust(
+            TempBlob, "Report Selection Usage"::"SM.Credit Memo",
+            ServiceCrMemoHeader, ServiceCrMemoHeader."Bill-to Customer No.");
         exit(TempBlob.HasValue());
     end;
 
@@ -243,6 +325,90 @@ codeunit 13917 "Export ZUGFeRD Document"
         InsertVATAmounts(SalesCrMemoLine, LineVATAmount, LineAmount, LineDiscAmount, SalesCrMemoHeader."Prices Including VAT", Currency);
         InsertHeaderData(RootXMLNode, SalesCrMemoHeader);
         InsertSupplyChainTradeTransaction(RootXMLNode, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode, Currency, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
+        OnCreateXMLOnBeforeSalesCrMemoXmlDocumentWriteToFile(XMLDoc, SalesCrMemoHeader);
+        XMLDoc.WriteTo(XMLDocText);
+        FileOutstream.WriteText(XMLDocText);
+        Clear(XMLDoc);
+    end;
+
+    procedure CreateXML(ServiceInvoiceHeader: Record "Service Invoice Header"; var FileOutstream: Outstream)
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        ServiceInvoiceLine: Record "Service Invoice Line";
+        TempSalesInvLine: Record "Sales Invoice Line" temporary;
+        Currency: Record Currency;
+        CurrencyCode: Code[10];
+        RootXMLNode: XmlElement;
+        XMLDoc: XmlDocument;
+        XMLDocText: Text;
+        LineAmounts: Dictionary of [Text, Decimal];
+        LineVATAmount: Dictionary of [Decimal, Decimal];
+        LineAmount: Dictionary of [Decimal, Decimal];
+        LineDiscAmount: Dictionary of [Decimal, Decimal];
+    begin
+        GetSetups();
+        FindEDocumentService();
+        PEPPOLMgt.TransferHeaderToSalesInvoiceHeader(ServiceInvoiceHeader, SalesInvoiceHeader);
+        ServiceInvoiceLine.SetRange("Document No.", ServiceInvoiceHeader."No.");
+        if ServiceInvoiceLine.FindSet() then
+            repeat
+                PEPPOLMgt.TransferLineToSalesInvoiceLine(ServiceInvoiceLine, TempSalesInvLine);
+                TempSalesInvLine.Insert();
+            until ServiceInvoiceLine.Next() = 0;
+        if not DocumentLinesExist(SalesInvoiceHeader, TempSalesInvLine) then
+            exit;
+
+        XmlDocument.ReadFrom(GetInvoiceXMLHeader(), XMLDoc);
+        XmlDoc.GetRoot(RootXMLNode);
+
+        InitializeNamespaces();
+        CurrencyCode := GetCurrencyCode(SalesInvoiceHeader."Currency Code", Currency);
+        CalculateLineAmounts(SalesInvoiceHeader, TempSalesInvLine, Currency, LineAmounts);
+        InsertVATAmounts(TempSalesInvLine, LineVATAmount, LineAmount, LineDiscAmount, SalesInvoiceHeader."Prices Including VAT", Currency);
+        InsertHeaderData(RootXMLNode, SalesInvoiceHeader);
+        InsertSupplyChainTradeTransaction(RootXMLNode, SalesInvoiceHeader, TempSalesInvLine, CurrencyCode, Currency, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
+        OnCreateXMLOnBeforeSalesInvXmlDocumentWriteToFile(XMLDoc, SalesInvoiceHeader);
+        XMLDoc.WriteTo(XMLDocText);
+        FileOutstream.WriteText(XMLDocText);
+        Clear(XMLDoc);
+    end;
+
+    procedure CreateXML(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var FileOutstream: Outstream)
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempSalesCrMemoLine: Record "Sales Cr.Memo Line" temporary;
+        ServiceCrMemoLine: Record "Service Cr.Memo Line";
+        Currency: Record Currency;
+        CurrencyCode: Code[10];
+        RootXMLNode: XmlElement;
+        XMLDoc: XmlDocument;
+        XMLDocText: Text;
+        LineAmounts: Dictionary of [Text, Decimal];
+        LineVATAmount: Dictionary of [Decimal, Decimal];
+        LineAmount: Dictionary of [Decimal, Decimal];
+        LineDiscAmount: Dictionary of [Decimal, Decimal];
+    begin
+        GetSetups();
+        FindEDocumentService();
+        PEPPOLMgt.TransferHeaderToSalesCrMemoHeader(ServiceCrMemoHeader, SalesCrMemoHeader);
+        ServiceCrMemoLine.SetRange("Document No.", ServiceCrMemoHeader."No.");
+        if ServiceCrMemoLine.FindSet() then
+            repeat
+                PEPPOLMgt.TransferLineToSalesCrMemoLine(ServiceCrMemoLine, TempSalesCrMemoLine);
+                TempSalesCrMemoLine.Insert();
+            until ServiceCrMemoLine.Next() = 0;
+        if not DocumentLinesExist(SalesCrMemoHeader, TempSalesCrMemoLine) then
+            exit;
+
+        XmlDocument.ReadFrom(GetInvoiceXMLHeader(), XMLDoc);
+        XmlDoc.GetRoot(RootXMLNode);
+
+        InitializeNamespaces();
+        CurrencyCode := GetCurrencyCode(SalesCrMemoHeader."Currency Code", Currency);
+        CalculateLineAmounts(SalesCrMemoHeader, TempSalesCrMemoLine, Currency, LineAmounts);
+        InsertVATAmounts(TempSalesCrMemoLine, LineVATAmount, LineAmount, LineDiscAmount, SalesCrMemoHeader."Prices Including VAT", Currency);
+        InsertHeaderData(RootXMLNode, SalesCrMemoHeader);
+        InsertSupplyChainTradeTransaction(RootXMLNode, SalesCrMemoHeader, TempSalesCrMemoLine, CurrencyCode, Currency, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
         OnCreateXMLOnBeforeSalesCrMemoXmlDocumentWriteToFile(XMLDoc, SalesCrMemoHeader);
         XMLDoc.WriteTo(XMLDocText);
         FileOutstream.WriteText(XMLDocText);
@@ -573,13 +739,13 @@ codeunit 13917 "Export ZUGFeRD Document"
 
         InsertPaymentTerms(SettlementElement, SalesInvHeader."Payment Terms Code", SalesInvHeader."Due Date");
         MonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementHeaderMonetarySummation', XmlNamespaceRAM);
-        MonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvHeader.Amount + LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
+        MonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvLine.Amount + LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
         MonetarySummationElement.Add(XmlElement.Create('AllowanceTotalAmount', XmlNamespaceRAM, FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
-        MonetarySummationElement.Add(XmlElement.Create('TaxBasisTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvHeader.Amount)));
-        MonetarySummationElement.Add(XmlElement.Create('TaxTotalAmount', XmlNamespaceRAM, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesInvHeader."Amount Including VAT" - SalesInvHeader.Amount)));
-        MonetarySummationElement.Add(XmlElement.Create('GrandTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvHeader."Amount Including VAT")));
+        MonetarySummationElement.Add(XmlElement.Create('TaxBasisTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvLine.Amount)));
+        MonetarySummationElement.Add(XmlElement.Create('TaxTotalAmount', XmlNamespaceRAM, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesInvLine."Amount Including VAT" - SalesInvLine.Amount)));
+        MonetarySummationElement.Add(XmlElement.Create('GrandTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvLine."Amount Including VAT")));
         MonetarySummationElement.Add(XmlElement.Create('TotalPrepaidAmount', XmlNamespaceRAM, FormatDecimal(0)));
-        MonetarySummationElement.Add(XmlElement.Create('DuePayableAmount', XmlNamespaceRAM, FormatDecimal(SalesInvHeader."Amount Including VAT")));
+        MonetarySummationElement.Add(XmlElement.Create('DuePayableAmount', XmlNamespaceRAM, FormatDecimal(SalesInvLine."Amount Including VAT")));
 
         SettlementElement.Add(MonetarySummationElement);
         RootXMLNode.Add(SettlementElement);
@@ -598,13 +764,13 @@ codeunit 13917 "Export ZUGFeRD Document"
 
         InsertPaymentTerms(SettlementElement, SalesCrMemoHeader."Payment Terms Code", SalesCrMemoHeader."Due Date");
         MonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementHeaderMonetarySummation', XmlNamespaceRAM);
-        MonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoHeader.Amount + LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
+        MonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoLine.Amount + LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
         MonetarySummationElement.Add(XmlElement.Create('AllowanceTotalAmount', XmlNamespaceRAM, FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
-        MonetarySummationElement.Add(XmlElement.Create('TaxBasisTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoHeader.Amount)));
-        MonetarySummationElement.Add(XmlElement.Create('TaxTotalAmount', XmlNamespaceRAM, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesCrMemoHeader."Amount Including VAT" - SalesCrMemoHeader.Amount)));
-        MonetarySummationElement.Add(XmlElement.Create('GrandTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoHeader."Amount Including VAT")));
+        MonetarySummationElement.Add(XmlElement.Create('TaxBasisTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoLine.Amount)));
+        MonetarySummationElement.Add(XmlElement.Create('TaxTotalAmount', XmlNamespaceRAM, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesCrMemoLine."Amount Including VAT" - SalesCrMemoLine.Amount)));
+        MonetarySummationElement.Add(XmlElement.Create('GrandTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoLine."Amount Including VAT")));
         MonetarySummationElement.Add(XmlElement.Create('TotalPrepaidAmount', XmlNamespaceRAM, FormatDecimal(0)));
-        MonetarySummationElement.Add(XmlElement.Create('DuePayableAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoHeader."Amount Including VAT")));
+        MonetarySummationElement.Add(XmlElement.Create('DuePayableAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoLine."Amount Including VAT")));
 
         SettlementElement.Add(MonetarySummationElement);
         RootXMLNode.Add(SettlementElement);
@@ -682,7 +848,7 @@ codeunit 13917 "Export ZUGFeRD Document"
             until SalesInvoiceLine.Next() = 0;
         InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesInvoiceHeader);
         InsertApplicableHeaderTradeDelivery(SupplyChainTradeTransactionElement, SalesInvoiceHeader);
-        SalesInvoiceHeader.CalcFields("Amount Including VAT", Amount);
+        SalesInvoiceLine.CalcSums(Amount, "Amount Including VAT");
         InsertApplicableHeaderTradeSettlement(SupplyChainTradeTransactionElement, SalesInvoiceHeader, SalesInvoiceLine, CurrencyCode, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
 
         RootXMLNode.Add(SupplyChainTradeTransactionElement);
@@ -783,7 +949,7 @@ codeunit 13917 "Export ZUGFeRD Document"
             until SalesCrMemoLine.Next() = 0;
         InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesCrMemoHeader);
         InsertApplicableHeaderTradeDelivery(SupplyChainTradeTransactionElement, SalesCrMemoHeader);
-        SalesCrMemoHeader.CalcFields("Amount Including VAT", Amount);
+        SalesCrMemoLine.CalcSums(Amount, "Amount Including VAT");
         InsertApplicableHeaderTradeSettlement(SupplyChainTradeTransactionElement, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
 
         RootXMLNode.Add(SupplyChainTradeTransactionElement);
@@ -1279,6 +1445,16 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGenerateSalesCrMemoPDFAttachment(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGenerateServiceInvoicePDFAttachment(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGenerateServiceCrMemoPDFAttachment(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
     begin
     end;
 

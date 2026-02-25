@@ -6,8 +6,12 @@ namespace Microsoft.Purchases.History;
 
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Setup;
 using Microsoft.Purchases.Vendor;
+using System.Utilities;
 
 tableextension 11730 "Purch. Inv. Header CZL" extends "Purch. Inv. Header"
 {
@@ -186,6 +190,7 @@ tableextension 11730 "Purch. Inv. Header CZL" extends "Purch. Inv. Header"
 
     var
         PopUpVATLCYCorrection: Boolean;
+        PurchaseInvoiceAlreadyExistsQst: Label 'Purchase invoice %1 already exists for this vendor.\Do you want to continue?', Comment = '%1 = External Document No.; e.g. Purchase Invoice 123 already exists...';
 
     procedure SetPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection: Boolean)
     begin
@@ -221,6 +226,35 @@ tableextension 11730 "Purch. Inv. Header CZL" extends "Purch. Inv. Header"
         "IBAN CZL" := IBANCode;
         "SWIFT Code CZL" := SWIFTCode;
         OnAfterUpdateBankInfoCZL(Rec);
+    end;
+
+    internal procedure CheckAndConfirmExternalDocumentNumber()
+    var
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        ConfirmManagement: Codeunit "Confirm Management";
+    begin
+        if not GuiAllowed() then
+            exit;
+
+        PurchasesPayablesSetup.Get();
+        if not PurchasesPayablesSetup."Ext. Doc. No. Mandatory" and ("Vendor Invoice No." = '') then
+            exit;
+
+        if not ExistEntriesWithSameExternalDocNo("Vendor Invoice No.") then
+            exit;
+
+        if not ConfirmManagement.GetResponse(StrSubstNo(PurchaseInvoiceAlreadyExistsQst, "Vendor Invoice No."), false) then
+            Error('');
+    end;
+
+    local procedure ExistEntriesWithSameExternalDocNo(ExternalDocumentNo: Code[35]): Boolean
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        VendorMgt: Codeunit "Vendor Mgt.";
+    begin
+        VendorMgt.SetFilterForExternalDocNo(
+          VendorLedgerEntry, Enum::"Gen. Journal Document Type"::Invoice, ExternalDocumentNo, "Pay-to Vendor No.", "Document Date");
+        exit(not VendorLedgerEntry.IsEmpty());
     end;
 
     [IntegrationEvent(false, false)]
