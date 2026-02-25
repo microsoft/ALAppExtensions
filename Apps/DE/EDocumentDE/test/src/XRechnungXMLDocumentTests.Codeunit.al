@@ -223,8 +223,8 @@ codeunit 13918 "XRechnung XML Document Tests"
         BankAccount: Record "Bank Account";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         TempXMLBuffer: Record "XML Buffer" temporary;
-        BankAccountIBAN: Text;
-        BankAccountSWIFT: Text;
+        BankAccountIBAN: Text[50];
+        BankAccountSWIFT: Text[20];
     begin
         // [SCENARIO 496414] Export posted sales invoice uses Bank Account IBAN and SWIFT Code when Company Bank Account Code is specified
         Initialize();
@@ -820,8 +820,8 @@ codeunit 13918 "XRechnung XML Document Tests"
         BankAccount: Record "Bank Account";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         TempXMLBuffer: Record "XML Buffer" temporary;
-        BankAccountIBAN: Text;
-        BankAccountSWIFT: Text;
+        BankAccountIBAN: Text[50];
+        BankAccountSWIFT: Text[20];
     begin
         // [SCENARIO 496414] Export posted sales cr. memo uses Bank Account IBAN and SWIFT Code when Company Bank Account Code is specified
         Initialize();
@@ -2011,7 +2011,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path: Text;
     begin
         Path := ServiceDocumentTaxTotalTok + '/cbc:TaxAmount';
-        Assert.AreEqual(FormatDecimal(GetTotalTaxAmount(ServiceInvoiceHeader)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(GetTotalTaxAmount(ServiceInvoiceHeader)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyTaxTotals(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
@@ -2020,7 +2020,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path: Text;
     begin
         Path := ServiceDocumentTaxTotalsTok + '/cbc:TaxAmount';
-        Assert.AreEqual(FormatDecimal(GetTotalTaxAmount(ServiceCrMemoHeader)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(GetTotalTaxAmount(ServiceCrMemoHeader)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyLegalMonetaryTotal(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -2065,13 +2065,13 @@ codeunit 13918 "XRechnung XML Document Tests"
     begin
         CalculateLineAmounts(ServiceInvoiceHeader, LineAmounts);
         Path := ServiceDocumentLegalMonetaryTotalTok + '/cbc:LineExtensionAmount';
-        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := ServiceDocumentLegalMonetaryTotalTok + '/cbc:TaxExclusiveAmount';
-        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := ServiceDocumentLegalMonetaryTotalTok + '/cbc:TaxInclusiveAmount';
-        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := ServiceDocumentLegalMonetaryTotalTok + '/cbc:PayableAmount';
-        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(ServiceInvoiceHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyLegalMonetaryTotal(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
@@ -2082,13 +2082,13 @@ codeunit 13918 "XRechnung XML Document Tests"
     begin
         CalculateLineAmounts(ServiceCrMemoHeader, LineAmounts);
         Path := ServiceDocumentLegalMonetaryTotalsTok + '/cbc:LineExtensionAmount';
-        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := ServiceDocumentLegalMonetaryTotalsTok + '/cbc:TaxExclusiveAmount';
-        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName(Amount))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := ServiceDocumentLegalMonetaryTotalsTok + '/cbc:TaxInclusiveAmount';
-        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := ServiceDocumentLegalMonetaryTotalsTok + '/cbc:PayableAmount';
-        Assert.AreEqual(FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(LineAmounts.Get(ServiceCrMemoHeader.FieldName("Amount Including VAT"))), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyInvoiceLine(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -2122,15 +2122,15 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path := DocumentTok + '/cbc:ID';
         Assert.AreEqual(Format(ServiceInvoiceLine."Line No."), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:InvoicedQuantity';
-        Assert.AreEqual(FormatDecimal(ServiceInvoiceLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(ServiceInvoiceLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:LineExtensionAmount';
-        Assert.AreEqual(FormatDecimal(ServiceInvoiceLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(ServiceInvoiceLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Item/cbc:Name';
         Assert.AreEqual(ServiceInvoiceLine."Description", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
         Assert.AreEqual(ServiceInvoiceLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
-        Assert.AreEqual(FormatFourDecimal(ServiceInvoiceLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimalUnlimited(ServiceInvoiceLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifySecondServiceInvoiceLine(ServiceInvoiceLine: Record "Service Invoice Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
@@ -2140,15 +2140,15 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path := DocumentTok + '/cbc:ID';
         Assert.AreEqual(Format(ServiceInvoiceLine."Line No."), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:InvoicedQuantity';
-        Assert.AreEqual(FormatDecimal(ServiceInvoiceLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimalUnlimited(ServiceInvoiceLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:LineExtensionAmount';
-        Assert.AreEqual(FormatDecimal(ServiceInvoiceLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(ServiceInvoiceLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Item/cbc:Name';
         Assert.AreEqual(ServiceInvoiceLine."Description", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
         Assert.AreEqual(ServiceInvoiceLine."No.", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
-        Assert.AreEqual(FormatFourDecimal(ServiceInvoiceLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimalUnlimited(ServiceInvoiceLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyServiceCrMemoLine(ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
@@ -2170,15 +2170,15 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path := DocumentTok + '/cbc:ID';
         Assert.AreEqual(Format(ServiceCrMemoLine."Line No."), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:CreditedQuantity ';
-        Assert.AreEqual(FormatDecimal(ServiceCrMemoLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimalUnlimited(ServiceCrMemoLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:LineExtensionAmount';
-        Assert.AreEqual(FormatDecimal(ServiceCrMemoLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(ServiceCrMemoLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Item/cbc:Name';
         Assert.AreEqual(ServiceCrMemoLine."Description", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
         Assert.AreEqual(ServiceCrMemoLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
-        Assert.AreEqual(FormatFourDecimal(ServiceCrMemoLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimalUnlimited(ServiceCrMemoLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifySecondServiceCrMemoLine(ServiceCrMemoLine: Record "Service Cr.Memo Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
@@ -2188,15 +2188,15 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path := DocumentTok + '/cbc:ID';
         Assert.AreEqual(Format(ServiceCrMemoLine."Line No."), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:CreditedQuantity ';
-        Assert.AreEqual(FormatDecimal(ServiceCrMemoLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimalUnlimited(ServiceCrMemoLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:LineExtensionAmount';
-        Assert.AreEqual(FormatDecimal(ServiceCrMemoLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimal(ServiceCrMemoLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Item/cbc:Name';
         Assert.AreEqual(ServiceCrMemoLine."Description", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
         Assert.AreEqual(ServiceCrMemoLine."No.", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
-        Assert.AreEqual(FormatFourDecimal(ServiceCrMemoLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(ExportXRechnungDocument.FormatDecimalUnlimited(ServiceCrMemoLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyFirstInvoiceLine(SalesInvoiceLine: Record "Sales Invoice Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
@@ -2629,6 +2629,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         CompanyInformation.Get();
         CompanyInformation.IBAN := LibraryUtility.GenerateMOD97CompliantCode();
         CompanyInformation."SWIFT Code" := LibraryUtility.GenerateGUID();
+        CompanyInformation."E-Mail" := LibraryUtility.GenerateRandomEmail();
         CompanyInformation.Modify();
         GeneralLedgerSetup.Get();
         EDocumentService.DeleteAll();
