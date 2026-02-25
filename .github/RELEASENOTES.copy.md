@@ -2,6 +2,134 @@
 
 Note that when using the preview version of AL-Go for GitHub, we recommend you Update your AL-Go system files, as soon as possible when informed that an update is available.
 
+### Issues
+
+- Issue 1915 CICD fails on releases/26.x branch - '26.x' cannot be recognized as a semantic version string
+
+### The default pull request trigger is changing
+
+AL-Go for GitHub is transitioning from the pull_request_target trigger to the more secure pull_request trigger. This is a step we are taking to make AL-Go for GitHub more secure by default. If you are used to working from branches within the repository you may not notice any difference. If you get pull requests from forks, those pull requests will no longer be able to access secrets. If that is blocking for your repository, you will need to update your settings to use the pull_request_target trigger.
+
+**How do I revert back to pull_request_target?**
+
+Add the following setting to one of your settings files and run the Update AL-Go System Files workflow:
+
+```json
+  "pullRequestTrigger": "pull_request_target"
+```
+
+## v8.2
+
+### Issues
+
+- Issue 2095 DeliverToAppSource.ProductId needs to be specified (Library app)
+- Issue 2082 Sign action no longer fails when repository is empty or no artifacts are generated
+- Issue 2078 Workflows run since January 14th '26 have space before CI/CD removed
+- Issue 2070 Support public GitHub Packages feeds without requiring a Personal Access Token (PAT)
+- Issue 2004 PublishToAppSource workflow publishes multi-app repos in alphabetical order instead of dependency order
+- Issue 2045 DateTime parsing fails on non-US locale runners in WorkflowPostProcess.ps1
+- Issue 2055 When using versioningStrategy 3+16, you get an error when building
+- Issue 2094 PR into release branch gets wrong previous release
+- AL-Go repositories with large amounts of projects may run into issues with too large environment variables
+- Discussion 1855 Add trigger 'workflow_call' to workflow 'Update AL-Go System Files' for reusability
+- Issue 2050 Publish To Environment creates mistyped environment
+
+### Publish To Environment no longer creates unknown environments by default
+
+Previously, when running the "Publish To Environment" workflow with an environment name that doesn't exist in GitHub or AL-Go settings, the workflow would automatically create a new GitHub environment. This could lead to problems when environment names were mistyped, as the bogus environment would then cause subsequent CI/CD workflows to fail.
+
+Now, the workflow will fail with a clear error message if the specified environment doesn't exist. If you intentionally want to deploy to a new environment that hasn't been configured yet, you can check the **Create environment if it does not exist** checkbox when running the workflow.
+
+### Set default values for workflow inputs
+
+The `workflowDefaultInputs` setting now also applies to `workflow_call` inputs when an input with the same name exists for `workflow_dispatch`.
+This ensures consistent default values across both manual workflow runs and reusable workflow calls.
+
+Read more at [workflowDefaultInputs](https://aka.ms/algosettings#workflowDefaultInputs).
+
+### Merge queue support
+
+AL-Go now supports GitHub's merge queue feature out of the box! The `merge_group` trigger has been added to the Pull Request Build workflow, enabling seamless integration with merge queues. When you have the merge queue feature enabled in your repo, multiple PRs will automatically be validated together. Read more about merge queues [here](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue).
+
+> [!WARNING]
+> If you rely on a custom workflow for merge queue validation, you may need to adjust your setup to avoid duplicate builds.
+
+### AL-Go Telemetry updates
+
+AL-Go telemetry now includes test results so you can more easily see how many AL tests, Page Scripting tests and BCPT tests ran in your workflows across all your repositories. Documentation for this can be found on [this article](https://github.com/microsoft/AL-Go/blob/main/Scenarios/EnablingTelemetry.md) on enabling telemetry.
+
+## v8.1
+
+### Custom AL-Go files
+
+AL-Go for GitHub now supports updating files from your custom templates via the new `customALGoFiles` setting. Read more at [customALGoFiles](https://aka.ms/algosettings#customALGoFiles).
+
+### Set default values for workflow inputs
+
+A new setting `workflowDefaultInputs` allows you to configure default values for workflow_dispatch inputs. This makes it easier to run workflows manually with consistent settings across your team.
+
+When you add this setting to your AL-Go settings file and run the "Update AL-Go System Files" workflow, the default values will be automatically applied to the workflow YAML files in your repository.
+The default values must match the input types (boolean, number, string, or choice) defined in the workflow YAML files.
+
+Example configuration:
+
+```json
+{
+  "workflowDefaultInputs": [
+    { "name": "directCommit", "value": true },
+    { "name": "useGhTokenWorkflow", "value": true }
+  ]
+}
+```
+
+This setting can be used on its own in repository settings to apply defaults to all workflows with matching input names. Alternatively, you can use it within [conditional settings](https://aka.ms/algosettings#conditional-settings) to apply defaults only to specific workflows, branches, or other conditions.
+
+Example using conditional settings to target specific workflows:
+
+```json
+{
+  "conditionalSettings": [
+    {
+      "workflows": ["Create Release"],
+      "settings": {
+        "workflowDefaultInputs": [
+          { "name": "directCommit", "value": true },
+          { "name": "releaseType", "value": "Prerelease" }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**Important:** When multiple conditional settings blocks match and both define `workflowDefaultInputs`, the arrays are merged following AL-Go's standard behavior for complex setting types (all entries are kept). If the same input name appears in multiple entries, the last matching entry takes precedence.
+
+Read more at [workflowDefaultInputs](https://aka.ms/algosettings#workflowDefaultInputs).
+
+### Issues
+
+- Issue 2039 Error when deploy to environment: NewTemporaryFolder is not recognized
+- Issue 1961 KeyVault access in PR pipeline
+- Discussion 1911 Add support for reportSuppressedDiagnostics
+- Discussion 1968 Parameter for settings passed to CreateDevEnv
+- Issue 1945 Deploy Reference Documentation fails for CI/CD
+- Use Runner_Temp instead of GetTempFolder whenever possible
+- Issue 2016 Running Update AL-Go system files with branches wildcard `*` tries to update _origin_
+- Issue 1960 Deploy Reference Documentation fails
+- Discussion 1952 Set default values on workflow_dispatch input
+
+### Deprecations
+
+- `unusedALGoSystemFiles` will be removed after October 1st 2026. Please use [`customALGoFiles.filesToExclude`](https://aka.ms/algosettings#customALGoFiles) instead.
+
+## v8.0
+
+### Mechanism to overwrite complex settings type
+
+By default, AL-Go merges settings from various places (see [settings levels](https://aka.ms/algosettings#where-are-the-settings-located)). Basic setting types such as `string` and `integer` are overwritten, but settings with complex types such as `array` and `object` are merged.
+
+However, sometimes it is useful to avoid merging complex types. This can be achieved by specifying `overwriteSettings` property on a settings object. The purpose of the property is to list settings, for which the value will be overwritten, instead of merged. Read more at [overwriteSettings property](https://aka.ms/algosettings#overwriteSettings)
+
 ### AL Code Analysis tracked in GitHub
 
 AL-Go already supports AL code analysis, but up until now this was not tracked in GitHub. It is now possible to track code analysis issues automatically in the GitHub security tab, as well as having any new issues posted as a comment in Pull Requests.
@@ -13,6 +141,14 @@ Please note that some automated features are premium and require the use of [Git
 ### Issues
 
 - Discussion 1885 Conditional settings for CI/CD are not applied
+- Discussion 1899 Remove optional properties from "required" list in settings.schema.json
+- Issue 1905 AL-Go system files update fails (Get Workflow Multi-Run Branches action fails when there are tags with same value but different casing)
+- Issue 1926 Deployment fails when using build modes
+- Issue 1898 GetDependencies in localDevEnv does not fallback to github token
+- Issue 1947 Project settings are ignored when loading bccontainerhelper
+- Issue 1937 trackALAlertsInGitHub is failing in preview
+- DeployTo settings from environment-specific AL-Go settings are not applied when deploying
+- `ReadSettings` action outputs too much information that is mainly used for debugging
 
 ## v7.3
 
@@ -35,7 +171,7 @@ Example
 
 AL-Go now offers a dataexplorer dashboard to get started with AL-Go telemetry. Additionally, we've updated the documentation to include a couple of kusto queries if you would rather build your own reports.
 
-### Support for AL-Go settings as GitHub environment variable: ALGoEnvSettings
+### Support for AL-Go settings as GitHub environment variable: ALGoEnvironmentSettings
 
 AL-Go settings can now be defined in GitHub environment variables. To use this feature, create a new variable under your GitHub environment called `ALGoEnvironmentSettings`. Please note that this variable should not include your environment name.
 
@@ -905,7 +1041,7 @@ Setting the repo setting "runs-on" to "Ubuntu-latest", followed by running Updat
 ### Issues
 
 - Issue #143 Commit Message for **Increment Version Number** workflow
-- Issue #160 Create local DevEnv aith appDependencyProbingPaths
+- Issue #160 Create local DevEnv with appDependencyProbingPaths
 - Issue #156 Versioningstrategy 2 doesn't use 24h format
 - Issue #155 Initial Add existing app fails with "Cannot find path"
 - Issue #152 Error when loading dependencies from releases
