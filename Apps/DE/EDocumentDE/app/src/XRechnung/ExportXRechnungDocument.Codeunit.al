@@ -824,7 +824,8 @@ codeunit 13916 "Export XRechnung Document"
         if CustomerGLN <> '' then
             InsertPartyIdentification(PartyElement, CustomerGLN)
         else
-            InsertPartyIdentification(PartyElement, GetVATRegistrationNo(VATRegNo, PostalAddress."Country/Region Code"));
+            if VATRegNo <> '' then
+                InsertPartyIdentification(PartyElement, GetVATRegistrationNo(VATRegNo, PostalAddress."Country/Region Code"));
 
         InsertPartyName(PartyElement, PartyName);
         InsertAddress(PartyElement, 'PostalAddress', PostalAddress);
