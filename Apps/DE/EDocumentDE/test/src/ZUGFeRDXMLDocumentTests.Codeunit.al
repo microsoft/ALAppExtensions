@@ -2544,8 +2544,8 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"ZUGFeRD XML Document Tests");
         IsInitialized := true;
         CompanyInformation.Get();
+        CompanyInformation.IBAN := LibraryUtility.GenerateMOD97CompliantCode();
         CompanyInformation."SWIFT Code" := LibraryUtility.GenerateGUID();
-        CompanyInformation."E-Mail" := LibraryUtility.GenerateRandomEmail();
         CompanyInformation."E-Mail" := LibraryUtility.GenerateRandomEmail();
         CompanyInformation.Modify();
         GeneralLedgerSetup.Get();
