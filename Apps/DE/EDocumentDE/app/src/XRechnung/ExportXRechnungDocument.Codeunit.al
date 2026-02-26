@@ -1329,15 +1329,13 @@ codeunit 13916 "Export XRechnung Document"
         exit(Format(VarDecimal, 0, 9));
     end;
 
-#pragma warning disable AS0072
-#if not CLEAN28
-    [Obsolete('FormatFourDecimal is no longer used internally. Quantity and unit price fields are now exported with unlimited precision per EN 16931. For VAT percentages, use FormatFiveDecimal. For quantity and unit price, use FormatDecimalUnlimited.', '28.0')]
+#if not CLEAN29
+    [Obsolete('FormatFourDecimal is no longer used internally. Quantity and unit price fields are now exported with unlimited precision per EN 16931. For VAT percentages, use FormatFiveDecimal. For quantity and unit price, use FormatDecimalUnlimited.', '29.0')]
     procedure FormatFourDecimal(VarDecimal: Decimal): Text[30];
     begin
         exit(Format(Round(VarDecimal, 0.0001), 0, 9));
     end;
 #endif
-#pragma warning restore AS0072
 
     procedure FormatFiveDecimal(VarDecimal: Decimal): Text[30];
     begin

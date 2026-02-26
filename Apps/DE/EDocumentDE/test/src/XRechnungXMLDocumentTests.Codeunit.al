@@ -761,7 +761,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
 
-        // [THEN] XRechnung Electronic Document is created with payment means code
+        // [THEN] XRechnung Electronic Document is created with bank informarion as payment means
         VerifyPaymentMeans(TempXMLBuffer, '/ns0:CreditNote/cac:PaymentMeans');
     end;
 
@@ -2507,6 +2507,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         CompanyInformation.Get();
         CompanyInformation.IBAN := LibraryUtility.GenerateMOD97CompliantCode();
         CompanyInformation."SWIFT Code" := LibraryUtility.GenerateGUID();
+        CompanyInformation."E-Mail" := LibraryUtility.GenerateRandomEmail();
         CompanyInformation.Modify();
         GeneralLedgerSetup.Get();
         EDocumentService.DeleteAll();

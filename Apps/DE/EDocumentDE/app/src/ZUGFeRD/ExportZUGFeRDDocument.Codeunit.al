@@ -1309,15 +1309,13 @@ codeunit 13917 "Export ZUGFeRD Document"
         exit(Format(VarDecimal, 0, 9));
     end;
 
-#pragma warning disable AS0072
-#if not CLEAN28
-    [Obsolete('FormatFourDecimal is no longer used internally. Quantity and unit price fields are now exported with unlimited precision per EN 16931. For VAT percentages, use FormatFiveDecimal. For quantity and unit price, use FormatDecimalUnlimited.', '28.0')]
+#if not CLEAN29
+    [Obsolete('FormatFourDecimal is no longer used internally. Quantity and unit price fields are now exported with unlimited precision per EN 16931. For VAT percentages, use FormatFiveDecimal. For quantity and unit price, use FormatDecimalUnlimited.', '29.0')]
     procedure FormatFourDecimal(VarDecimal: Decimal): Text
     begin
         exit(Format(VarDecimal, 0, '<Precision,4:4><Standard Format,9>'));
     end;
 #endif
-#pragma warning restore AS0072
 
     procedure FormatFiveDecimal(VarDecimal: Decimal): Text
     begin
