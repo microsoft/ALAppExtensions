@@ -86,17 +86,14 @@ report 11728 "Cash Desk Book CZP"
                     else
                         TempCashDocumentHeaderCZP.Next();
 
+                    Payment := 0;
+                    Receipt := 0;
+
                     case TempCashDocumentHeaderCZP."Document Type" of
                         TempCashDocumentHeaderCZP."Document Type"::Receipt:
-                            begin
-                                Receipt := TempCashDocumentHeaderCZP."Released Amount";
-                                Payment := 0;
-                            end;
+                            Receipt := TempCashDocumentHeaderCZP."Released Amount";
                         TempCashDocumentHeaderCZP."Document Type"::Withdrawal:
-                            begin
-                                Payment := TempCashDocumentHeaderCZP."Released Amount";
-                                Receipt := 0;
-                            end;
+                            Payment := TempCashDocumentHeaderCZP."Released Amount";
                     end;
                     Balance += Receipt - Payment;
                 end;
@@ -124,25 +121,9 @@ report 11728 "Cash Desk Book CZP"
                 if "Currency Code" = '' then
                     "Currency Code" := GeneralLedgerSetup."LCY Code";
 
-                CashDeskCZP2.Get("No.");
-                CashDeskCZP2.SetFilter("Date Filter", '..%1', CalcDate('<-1D>', GetRangeMin("Date Filter")));
-                BalanceToDate := CashDeskCZP2.CalcBalance();
-
                 TempCashDocumentHeaderCZP.DeleteAll();
-                CashDocumentHeaderCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
-                CashDocumentHeaderCZP.SetRange(Status, CashDocumentHeaderCZP.Status::Released);
-                CashDocumentHeaderCZP.SetFilter("Posting Date", '..%1', CalcDate('<-1D>', GetRangeMin("Date Filter")));
-                CopyFilter("Date Filter", CashDocumentHeaderCZP."Posting Date");
-                if CashDocumentHeaderCZP.FindSet() then
-                    repeat
-                        TempCashDocumentHeaderCZP.Init();
-                        TempCashDocumentHeaderCZP.TransferFields(CashDocumentHeaderCZP);
-                        TempCashDocumentHeaderCZP."Released Amount" := CashDocumentHeaderCZP."Released Amount";
-                        TempCashDocumentHeaderCZP.Insert();
-                    until CashDocumentHeaderCZP.Next() = 0;
 
                 PostedCashDocumentHdrCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
-                PostedCashDocumentHdrCZP.SetFilter("Posting Date", '..%1', CalcDate('<-1D>', GetRangeMin("Date Filter")));
                 CopyFilter("Date Filter", PostedCashDocumentHdrCZP."Posting Date");
                 if PostedCashDocumentHdrCZP.FindSet() then
                     repeat
@@ -152,7 +133,23 @@ report 11728 "Cash Desk Book CZP"
                         TempCashDocumentHeaderCZP."Released Amount" := PostedCashDocumentHdrCZP."Amount Including VAT";
                         TempCashDocumentHeaderCZP.Insert();
                     until PostedCashDocumentHdrCZP.Next() = 0;
+
+                CashDocumentHeaderCZP.SetRange("Cash Desk No.", CashDeskCZP."No.");
+                CashDocumentHeaderCZP.SetRange(Status, CashDocumentHeaderCZP.Status::Released);
+                CopyFilter("Date Filter", CashDocumentHeaderCZP."Posting Date");
+                if CashDocumentHeaderCZP.FindSet() then
+                    repeat
+                        TempCashDocumentHeaderCZP.Init();
+                        TempCashDocumentHeaderCZP.TransferFields(CashDocumentHeaderCZP);
+                        TempCashDocumentHeaderCZP."Released Amount" := CashDocumentHeaderCZP."Released Amount";
+                        TempCashDocumentHeaderCZP.Insert();
+                    until CashDocumentHeaderCZP.Next() = 0;
+
+                CashDeskCZP2.Get("No.");
+                CashDeskCZP2.SetFilter("Date Filter", '..%1', CalcDate('<-1D>', GetRangeMin("Date Filter")));
+                BalanceToDate := CashDeskCZP2.CalcBalance();
             end;
+
 
             trigger OnPreDataItem()
             var

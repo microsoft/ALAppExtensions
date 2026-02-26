@@ -39,16 +39,21 @@ table 20301 "Tax Component Summary"
         }
         field(6; "Component %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Component %';
         }
         field(7; "Base Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Base Amount';
         }
         field(8; "Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Amount';
         }

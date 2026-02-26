@@ -79,6 +79,8 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
             }
             field("Deductible VAT Base CZL"; Rec.CalcDeductibleVATBaseCZL())
             {
+                AutoFormatExpression = '';
+                AutoFormatType = 1;
                 Caption = 'Deductible VAT Base';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT base increased by the amount of unapplied input VAT.';

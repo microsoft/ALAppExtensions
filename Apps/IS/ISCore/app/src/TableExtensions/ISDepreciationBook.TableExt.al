@@ -17,6 +17,7 @@ tableextension 14601 "IS Depreciation Book" extends "Depreciation Book"
 
         field(14601; "Residual Val. %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Residual Value %';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 0;

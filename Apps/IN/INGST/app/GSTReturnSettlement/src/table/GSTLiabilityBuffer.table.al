@@ -41,11 +41,15 @@ table 18320 "GST Liability Buffer"
         }
         field(6; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
         field(7; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
@@ -61,6 +65,8 @@ table 18320 "GST Liability Buffer"
         }
         field(10; "Applied Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Applied Amount';
             DataClassification = CustomerContent;
         }
@@ -110,6 +116,8 @@ table 18320 "GST Liability Buffer"
         }
         field(19; "Applied Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Applied Base Amount';
             DataClassification = CustomerContent;
         }
@@ -121,6 +129,8 @@ table 18320 "GST Liability Buffer"
         }
         field(21; "Charge To Cust/Vend"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Charge To Cust/Vend';
             DataClassification = CustomerContent;
             Editable = false;
@@ -132,12 +142,14 @@ table 18320 "GST Liability Buffer"
         }
         field(23; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 1 : 6;
         }
         field(24; "GST Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Rounding Precision';
             DataClassification = CustomerContent;
         }
@@ -148,6 +160,8 @@ table 18320 "GST Liability Buffer"
         }
         field(26; "TDS/TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS/TCS Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -164,6 +178,7 @@ table 18320 "GST Liability Buffer"
         }
         field(29; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
         }
@@ -179,11 +194,14 @@ table 18320 "GST Liability Buffer"
         }
         field(32; "GST %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST %';
             DataClassification = CustomerContent;
         }
         field(33; "Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Amount';
             DataClassification = CustomerContent;
         }

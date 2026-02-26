@@ -45,6 +45,7 @@ table 4039 "GPIVTrxAmountsHist"
         }
         field(8; LNSEQNBR; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Line SEQ Number';
             DataClassification = CustomerContent;
         }
@@ -55,16 +56,19 @@ table 4039 "GPIVTrxAmountsHist"
         }
         field(10; TRXQTY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TRX QTY';
             DataClassification = CustomerContent;
         }
         field(11; UNITCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
         }
         field(12; EXTDCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Extended Cost';
             DataClassification = CustomerContent;
         }
@@ -114,6 +118,7 @@ table 4039 "GPIVTrxAmountsHist"
         }
         field(21; QTYBSUOM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY In Base U Of M';
             DataClassification = CustomerContent;
         }

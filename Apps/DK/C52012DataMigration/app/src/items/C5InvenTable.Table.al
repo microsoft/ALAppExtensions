@@ -54,6 +54,7 @@ table 1862 "C5 InvenTable"
         }
         field(11; CostPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cost price';
         }
         field(12; Group; Code[10])
@@ -72,6 +73,7 @@ table 1862 "C5 InvenTable"
         }
         field(15; PurchSeriesSize; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Purch. qty';
         }
         field(16; PrimaryVendor; Code[10])
@@ -115,10 +117,12 @@ table 1862 "C5 InvenTable"
         }
         field(25; NetWeight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Net weight';
         }
         field(26; Volume; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Volume';
         }
         field(27; TariffNumber; Code[20])
@@ -140,6 +144,7 @@ table 1862 "C5 InvenTable"
         }
         field(31; ExtraCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Misc. charges';
         }
         field(32; PurchCostModel; Option)
@@ -166,34 +171,42 @@ table 1862 "C5 InvenTable"
         }
         field(37; Inventory; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Inventory';
         }
         field(38; Delivered; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Delivered';
         }
         field(39; Reserved; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Reserved';
         }
         field(40; Received; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Received';
         }
         field(41; Ordered; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Ordered';
         }
         field(42; InventoryValue; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Inventory value in LCY';
         }
         field(43; DeliveredValue; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Value delivered in LCY';
         }
         field(44; ReceivedValue; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Value received in LCY';
         }
         field(45; Department; Code[10])
@@ -202,6 +215,7 @@ table 1862 "C5 InvenTable"
         }
         field(46; CostPriceUnit; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cost price unit';
         }
         field(47; DEL_PurchDuty; Text[10])
@@ -214,6 +228,7 @@ table 1862 "C5 InvenTable"
         }
         field(49; Pulled; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Pulled';
         }
         field(50; WarnNegativeInventory; Option)
@@ -246,6 +261,7 @@ table 1862 "C5 InvenTable"
         }
         field(56; ProjCostFactor; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Proj. factor';
         }
         field(57; Centre; Code[10])
@@ -258,6 +274,7 @@ table 1862 "C5 InvenTable"
         }
         field(59; SupplFactor; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Suppl. factor';
         }
         field(60; SupplementaryUnits; Text[13])
@@ -266,6 +283,7 @@ table 1862 "C5 InvenTable"
         }
         field(61; MarkedPhysical; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Mrk. physical';
         }
         field(62; LastMovementDate; Date)

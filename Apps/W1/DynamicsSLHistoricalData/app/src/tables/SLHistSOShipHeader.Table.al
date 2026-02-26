@@ -78,6 +78,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(17; BalDue; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BalDue';
         }
         field(18; BIInvoice; Text[1])
@@ -134,6 +135,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(31; BMICost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMICost';
         }
         field(32; BMICuryID; Text[4])
@@ -150,6 +152,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(35; BMIRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMIRate';
         }
         field(36; BMIRtTp; Text[6])
@@ -170,6 +173,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(40; BuildActQty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BuildActQty';
         }
         field(41; BuildCmpltDate; DateTime)
@@ -186,10 +190,12 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(44; BuildQty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BuildQty';
         }
         field(45; BuildTotalCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BuildTotalCost';
         }
         field(46; BuyerID; Text[10])
@@ -226,6 +232,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(54; CmmnPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CmmnPct';
         }
         field(55; ConsolInv; Integer)
@@ -246,6 +253,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(59; CreditApprLimit; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CreditApprLimit';
         }
         field(60; CreditChk; Integer)
@@ -274,10 +282,12 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(66; CuryBalDue; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryBalDue';
         }
         field(67; CuryBuildTotCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryBuildTotCost';
         }
         field(68; CuryEffDate; DateTime)
@@ -294,10 +304,12 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(71; CuryPremFrtAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryPremFrtAmt';
         }
         field(72; CuryRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRate';
         }
         field(73; CuryRateType; Text[6])
@@ -306,42 +318,52 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(74; CuryTotFrtCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotFrtCost';
         }
         field(75; CuryTotFrtInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotFrtInvc';
         }
         field(76; CuryTotInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotInvc';
         }
         field(77; CuryTotLineDisc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotLineDisc';
         }
         field(78; CuryTotMerch; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotMerch';
         }
         field(79; CuryTotMisc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotMisc';
         }
         field(80; CuryTotPmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotPmt';
         }
         field(81; CuryTotTax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotTax';
         }
         field(82; CuryTotTxbl; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotTxbl';
         }
         field(83; CuryWholeOrdDisc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryWholeOrdDisc';
         }
         field(84; CustGLClassID; Text[4])
@@ -370,6 +392,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(90; DiscPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DiscPct';
         }
         field(91; DiscSub; Text[24])
@@ -538,6 +561,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(131; PremFrtAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PremFrtAmt';
         }
         field(132; Priority; Integer)
@@ -554,6 +578,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(135; ReleaseValue; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReleaseValue';
         }
         field(136; RequireStepAssy; Integer)
@@ -574,18 +599,22 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(140; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(141; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(142; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(143; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(144; S4Future07; DateTime)
@@ -762,34 +791,42 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(187; TotCommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotCommCost';
         }
         field(188; TotCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotCost';
         }
         field(189; TotFrtCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotFrtCost';
         }
         field(190; TotFrtInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotFrtInvc';
         }
         field(191; TotInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotInvc';
         }
         field(192; TotLineDisc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotLineDisc';
         }
         field(193; TotMerch; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotMerch';
         }
         field(194; TotMisc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotMisc';
         }
         field(195; TotPallets; Integer)
@@ -798,18 +835,22 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(196; TotPmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotPmt';
         }
         field(197; TotShipWght; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotShipWght';
         }
         field(198; TotTax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotTax';
         }
         field(199; TotTxbl; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotTxbl';
         }
         field(200; TrackingNbr; Text[25])
@@ -842,10 +883,12 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(207; User5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User5';
         }
         field(208; User6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User6';
         }
         field(209; User7; Text[10])
@@ -866,6 +909,7 @@ table 42815 "SL Hist. SOShipHeader"
         }
         field(213; WholeOrdDisc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'WholeOrdDisc';
         }
         field(214; WorkflowID; Integer)

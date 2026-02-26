@@ -2,10 +2,15 @@ namespace Microsoft.Purchases.Payables;
 
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Purchases.History;
+using System.Security.User;
 
 codeunit 31135 "Vend. Entry-Edit Handler CZL"
 {
     Access = Internal;
+    Permissions = TableData "VAT Entry" = r,
+                  TableData "G/L Entry" = r,
+                  TableData "Purch. Inv. Header" = r;
 
     var
         VATEntryInVATCtrlReportErr: Label 'The VAT Entries are already included in the VAT Control Report.';
@@ -32,8 +37,11 @@ codeunit 31135 "Vend. Entry-Edit Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vend. Entry-Edit", 'OnRunOnAfterVendLedgEntryMofidy', '', false, false)]
     local procedure UpdateEntriesOnRunOnAfterVendLedgEntryMofidy(var VendorLedgerEntry: Record "Vendor Ledger Entry")
     begin
+        if not IsExtDocNoChangingAllowed() then
+            exit;
         UpdateVATEntries(VendorLedgerEntry);
         UpdateGLEntries(VendorLedgerEntry);
+        UpdatePurchInvHeader(VendorLedgerEntry);
     end;
 
     local procedure CheckVATEntries(VendLedgEntry: Record "Vendor Ledger Entry")
@@ -83,5 +91,25 @@ codeunit 31135 "Vend. Entry-Edit Handler CZL"
                 GLEntry."External Document No." := VendLedgEntry."External Document No.";
                 Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
             until GLEntry.Next() = 0;
+    end;
+
+    local procedure UpdatePurchInvHeader(VendorLedgerEntry: Record "Vendor Ledger Entry")
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+    begin
+        PurchInvHeader.SetRange("Vendor Ledger Entry No.", VendorLedgerEntry."Entry No.");
+        if not PurchInvHeader.FindFirst() then
+            exit;
+        if PurchInvHeader."Vendor Invoice No." = VendorLedgerEntry."External Document No." then
+            exit;
+        PurchInvHeader."Vendor Invoice No." := VendorLedgerEntry."External Document No.";
+        Codeunit.Run(Codeunit::"Purch. Inv. Header - Edit CZL", PurchInvHeader);
+    end;
+
+    local procedure IsExtDocNoChangingAllowed(): Boolean
+    var
+        UserSetupAdvManagement: Codeunit "User Setup Adv. Management CZL";
+    begin
+        exit(UserSetupAdvManagement.IsExtDocNoChangingAllowed());
     end;
 }

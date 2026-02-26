@@ -351,6 +351,8 @@ table 31075 "VIES Declaration Header CZL"
         }
         field(30; "Purchase Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("VIES Declaration Line CZL"."Amount (LCY)" where("VIES Declaration No." = field("No."),
                                                                             "Trade Type" = const(Purchase)));
             Caption = 'Purchase Amount (LCY)';
@@ -359,6 +361,8 @@ table 31075 "VIES Declaration Header CZL"
         }
         field(31; "Sales Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("VIES Declaration Line CZL"."Amount (LCY)" where("VIES Declaration No." = field("No."),
                                                                             "Trade Type" = const(Sales)));
             Caption = 'Sales Amount (LCY)';
@@ -367,6 +371,8 @@ table 31075 "VIES Declaration Header CZL"
         }
         field(32; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("VIES Declaration Line CZL"."Amount (LCY)" where("VIES Declaration No." = field("No.")));
             Caption = 'Amount (LCY)';
             Editable = false;
@@ -374,6 +380,7 @@ table 31075 "VIES Declaration Header CZL"
         }
         field(33; "Number of Supplies"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = sum("VIES Declaration Line CZL"."Number of Supplies" where("VIES Declaration No." = field("No.")));
             Caption = 'Number of Supplies';
             DecimalPlaces = 0 : 0;
@@ -516,6 +523,8 @@ table 31075 "VIES Declaration Header CZL"
             Caption = 'Purchase Additional-Currency Amount';
             Editable = false;
             FieldClass = FlowField;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
         }
         field(112; "Sales Add.-Currency Amount"; Decimal)
         {
@@ -524,6 +533,8 @@ table 31075 "VIES Declaration Header CZL"
             Caption = 'Sales Additional-Currency Amount';
             Editable = false;
             FieldClass = FlowField;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
         }
         field(113; "Additional-Currency Amount"; Decimal)
         {
@@ -531,6 +542,8 @@ table 31075 "VIES Declaration Header CZL"
             Caption = 'Additional-Currency Amount';
             Editable = false;
             FieldClass = FlowField;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
         }
         field(120; "Export Amt.inAdd.-CurrencyAmt."; Boolean)
         {
@@ -572,14 +585,14 @@ table 31075 "VIES Declaration Header CZL"
     begin
         if "No." = '' then begin
             NoSeriesCode := GetNoSeriesCode();
-                "No. Series" := NoSeriesCode;
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
+            "No. Series" := NoSeriesCode;
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series");
+            VIESDeclarationHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
+            VIESDeclarationHeader.SetLoadFields("No.");
+            while VIESDeclarationHeader.Get("No.") do
                 "No." := NoSeries.GetNextNo("No. Series");
-                VIESDeclarationHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
-                VIESDeclarationHeader.SetLoadFields("No.");
-                while VIESDeclarationHeader.Get("No.") do
-                    "No." := NoSeries.GetNextNo("No. Series");
         end;
         InitRecord();
     end;
@@ -742,10 +755,7 @@ table 31075 "VIES Declaration Header CZL"
     procedure Export()
     var
         VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
-        VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
-        TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL" temporary;
         TempBlob: Codeunit "Temp Blob";
-        VIESDeclarationCZL: XmlPort "VIES Declaration CZL";
         OutStream: OutStream;
         FileNameTok: Label '%1.xml', Locked = true;
     begin
@@ -756,19 +766,9 @@ table 31075 "VIES Declaration Header CZL"
 
         VIESDeclarationHeaderCZL := Rec;
         VIESDeclarationHeaderCZL.SetRecFilter();
-        VIESDeclarationLineCZL.SetRange("VIES Declaration No.", "No.");
-        if VIESDeclarationLineCZL.FindSet() then
-            repeat
-                TempVIESDeclarationLineCZL := VIESDeclarationLineCZL;
-                TempVIESDeclarationLineCZL.Insert();
-            until VIESDeclarationLineCZL.Next() = 0;
 
         TempBlob.CreateOutStream(OutStream);
-        VIESDeclarationCZL.SetHeader(VIESDeclarationHeaderCZL);
-        VIESDeclarationCZL.SetLines(TempVIESDeclarationLineCZL);
-        VIESDeclarationCZL.SetShowAmtInAddCurrency("Export Amt.inAdd.-CurrencyAmt.");
-        VIESDeclarationCZL.SetDestination(OutStream);
-        VIESDeclarationCZL.Export();
+        Xmlport.Export(StatutoryReportingSetupCZL."VIES Declaration Export No.", OutStream, VIESDeclarationHeaderCZL);
         FileManagement.BLOBExport(TempBlob, StrSubstNo(FileNameTok, "No."), true);
     end;
 
@@ -843,6 +843,17 @@ table 31075 "VIES Declaration Header CZL"
         "Document Date" := SavedVIESDeclarationHeaderCZL."Document Date";
         "Declaration Type" := SavedVIESDeclarationHeaderCZL."Declaration Type";
         "Corrected Declaration No." := SavedVIESDeclarationHeaderCZL."Corrected Declaration No.";
+    end;
+
+    /// <summary>
+    /// Returns the additional reporting currency code from General Ledger Setup.
+    /// Used for additional currency amount formatting in flowfields.
+    /// </summary>
+    /// <returns>Additional reporting currency code or empty string if not configured</returns>
+    procedure GetCurrencyCode(): Code[10]
+    begin
+        GeneralLedgerSetup.GetRecordOnce();
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
     end;
 
     [IntegrationEvent(true, false)]

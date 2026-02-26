@@ -56,10 +56,14 @@ table 18810 "TCS Entry"
         }
         field(8; "TCS Amount Including Surcharge"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(9; "TCS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(10; "Customer No."; Code[20])
@@ -93,6 +97,7 @@ table 18810 "TCS Entry"
         }
         field(18; "TCS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(19; Adjusted; Boolean)
@@ -101,10 +106,13 @@ table 18810 "TCS Entry"
         }
         field(20; "Adjusted TCS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(21; "Bal. TCS Including SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(22; "Pay TCS Document No."; Code[20])
@@ -113,6 +121,7 @@ table 18810 "TCS Entry"
         }
         field(24; "Surcharge %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(25; "Transaction No."; Integer)
@@ -125,6 +134,8 @@ table 18810 "TCS Entry"
         }
         field(27; "Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(28; "Concessional Code"; Code[10])
@@ -134,6 +145,8 @@ table 18810 "TCS Entry"
         }
         field(29; "Invoice Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(30; Applied; Boolean)
@@ -142,22 +155,31 @@ table 18810 "TCS Entry"
         }
         field(31; "TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(32; "Remaining Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(33; "Remaining TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(34; "Adjusted Surcharge %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(35; "Surcharge Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(36; "G/L Enty No."; Integer)
@@ -166,18 +188,24 @@ table 18810 "TCS Entry"
         }
         field(37; "eCESS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(38; "eCESS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(39; "Total TCS Including SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(40; "Adjusted eCESS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(41; "T.C.A.N. No."; Code[10])
@@ -220,17 +248,23 @@ table 18810 "TCS Entry"
         field(50; "SHE Cess %"; Decimal)
         {
             DataClassification = EndUserIdentifiableInformation;
+            AutoFormatType = 0;
         }
         field(51; "SHE Cess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(52; "Adjusted SHE CESS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(53; "Original TCS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
             Editable = false;
         }
@@ -241,6 +275,8 @@ table 18810 "TCS Entry"
         }
         field(55; "Payment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(56; "Check/DD No."; Code[10])
@@ -258,10 +294,13 @@ table 18810 "TCS Entry"
         }
         field(59; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(60; "Rem. Total TCS Incl. SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(61; "Concessional Form No."; Code[20])

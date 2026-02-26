@@ -20,10 +20,12 @@ table 47007 "SL AcctHist"
         field(2; AnnBdgt; Decimal)
         {
             Caption = 'AnnBdgt';
+            AutoFormatType = 0;
         }
         field(3; AnnMemo1; Decimal)
         {
             Caption = 'AnnMemo1';
+            AutoFormatType = 0;
         }
         field(4; BalanceType; Text[1])
         {
@@ -36,6 +38,7 @@ table 47007 "SL AcctHist"
         field(6; BegBal; Decimal)
         {
             Caption = 'BegBal';
+            AutoFormatType = 0;
         }
         field(7; CpnyID; Text[10])
         {
@@ -92,158 +95,197 @@ table 47007 "SL AcctHist"
         field(20; PtdAlloc00; Decimal)
         {
             Caption = 'PtdAlloc00';
+            AutoFormatType = 0;
         }
         field(21; PtdAlloc01; Decimal)
         {
             Caption = 'PtdAlloc01';
+            AutoFormatType = 0;
         }
         field(22; PtdAlloc02; Decimal)
         {
             Caption = 'PtdAlloc02';
+            AutoFormatType = 0;
         }
         field(23; PtdAlloc03; Decimal)
         {
             Caption = 'PtdAlloc03';
+            AutoFormatType = 0;
         }
         field(24; PtdAlloc04; Decimal)
         {
             Caption = 'PtdAlloc04';
+            AutoFormatType = 0;
         }
         field(25; PtdAlloc05; Decimal)
         {
             Caption = 'PtdAlloc05';
+            AutoFormatType = 0;
         }
         field(26; PtdAlloc06; Decimal)
         {
             Caption = 'PtdAlloc06';
+            AutoFormatType = 0;
         }
         field(27; PtdAlloc07; Decimal)
         {
             Caption = 'PtdAlloc07';
+            AutoFormatType = 0;
         }
         field(28; PtdAlloc08; Decimal)
         {
             Caption = 'PtdAlloc08';
+            AutoFormatType = 0;
         }
         field(29; PtdAlloc09; Decimal)
         {
             Caption = 'PtdAlloc09';
+            AutoFormatType = 0;
         }
         field(30; PtdAlloc10; Decimal)
         {
             Caption = 'PtdAlloc10';
+            AutoFormatType = 0;
         }
         field(31; PtdAlloc11; Decimal)
         {
             Caption = 'PtdAlloc11';
+            AutoFormatType = 0;
         }
         field(32; PtdAlloc12; Decimal)
         {
             Caption = 'PtdAlloc12';
+            AutoFormatType = 0;
         }
         field(33; PtdBal00; Decimal)
         {
             Caption = 'PtdBal00';
+            AutoFormatType = 0;
         }
         field(34; PtdBal01; Decimal)
         {
             Caption = 'PtdBal01';
+            AutoFormatType = 0;
         }
         field(35; PtdBal02; Decimal)
         {
             Caption = 'PtdBal02';
+            AutoFormatType = 0;
         }
         field(36; PtdBal03; Decimal)
         {
             Caption = 'PtdBal03';
+            AutoFormatType = 0;
         }
         field(37; PtdBal04; Decimal)
         {
             Caption = 'PtdBal04';
+            AutoFormatType = 0;
         }
         field(38; PtdBal05; Decimal)
         {
             Caption = 'PtdBal05';
+            AutoFormatType = 0;
         }
         field(39; PtdBal06; Decimal)
         {
             Caption = 'PtdBal06';
+            AutoFormatType = 0;
         }
         field(40; PtdBal07; Decimal)
         {
             Caption = 'PtdBal07';
+            AutoFormatType = 0;
         }
         field(41; PtdBal08; Decimal)
         {
             Caption = 'PtdBal08';
+            AutoFormatType = 0;
         }
         field(42; PtdBal09; Decimal)
         {
             Caption = 'PtdBal09';
+            AutoFormatType = 0;
         }
         field(43; PtdBal10; Decimal)
         {
             Caption = 'PtdBal10';
+            AutoFormatType = 0;
         }
         field(44; PtdBal11; Decimal)
         {
             Caption = 'PtdBal11';
+            AutoFormatType = 0;
         }
         field(45; PtdBal12; Decimal)
         {
             Caption = 'PtdBal12';
+            AutoFormatType = 0;
         }
         field(46; PtdCon00; Decimal)
         {
             Caption = 'PtdCon00';
+            AutoFormatType = 0;
         }
         field(47; PtdCon01; Decimal)
         {
             Caption = 'PtdCon01';
+            AutoFormatType = 0;
         }
         field(48; PtdCon02; Decimal)
         {
             Caption = 'PtdCon02';
+            AutoFormatType = 0;
         }
         field(49; PtdCon03; Decimal)
         {
             Caption = 'PtdCon03';
+            AutoFormatType = 0;
         }
         field(50; PtdCon04; Decimal)
         {
             Caption = 'PtdCon04';
+            AutoFormatType = 0;
         }
         field(51; PtdCon05; Decimal)
         {
             Caption = 'PtdCon05';
+            AutoFormatType = 0;
         }
         field(52; PtdCon06; Decimal)
         {
             Caption = 'PtdCon06';
+            AutoFormatType = 0;
         }
         field(53; PtdCon07; Decimal)
         {
             Caption = 'PtdCon07';
+            AutoFormatType = 0;
         }
         field(54; PtdCon08; Decimal)
         {
             Caption = 'PtdCon08';
+            AutoFormatType = 0;
         }
         field(55; PtdCon09; Decimal)
         {
             Caption = 'PtdCon09';
+            AutoFormatType = 0;
         }
         field(56; PtdCon10; Decimal)
         {
             Caption = 'PtdCon10';
+            AutoFormatType = 0;
         }
         field(57; PtdCon11; Decimal)
         {
             Caption = 'PtdCon11';
+            AutoFormatType = 0;
         }
         field(58; PtdCon12; Decimal)
         {
             Caption = 'PtdCon12';
+            AutoFormatType = 0;
         }
         field(59; S4Future01; Text[30])
         {
@@ -256,18 +298,22 @@ table 47007 "SL AcctHist"
         field(61; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(62; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(63; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(64; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(65; S4Future07; DateTime)
         {
@@ -312,10 +358,12 @@ table 47007 "SL AcctHist"
         field(75; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(76; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(77; User5; Text[10])
         {
@@ -336,58 +384,72 @@ table 47007 "SL AcctHist"
         field(81; YtdBal00; Decimal)
         {
             Caption = 'YtdBal00';
+            AutoFormatType = 0;
         }
         field(82; YtdBal01; Decimal)
         {
             Caption = 'YtdBal01';
+            AutoFormatType = 0;
         }
         field(83; YtdBal02; Decimal)
         {
             Caption = 'YtdBal02';
+            AutoFormatType = 0;
         }
         field(84; YtdBal03; Decimal)
         {
             Caption = 'YtdBal03';
+            AutoFormatType = 0;
         }
         field(85; YtdBal04; Decimal)
         {
             Caption = 'YtdBal04';
+            AutoFormatType = 0;
         }
         field(86; YtdBal05; Decimal)
         {
             Caption = 'YtdBal05';
+            AutoFormatType = 0;
         }
         field(87; YtdBal06; Decimal)
         {
             Caption = 'YtdBal06';
+            AutoFormatType = 0;
         }
         field(88; YtdBal07; Decimal)
         {
             Caption = 'YtdBal07';
+            AutoFormatType = 0;
         }
         field(89; YtdBal08; Decimal)
         {
             Caption = 'YtdBal08';
+            AutoFormatType = 0;
         }
         field(90; YtdBal09; Decimal)
         {
             Caption = 'YtdBal09';
+            AutoFormatType = 0;
         }
         field(91; YtdBal10; Decimal)
         {
             Caption = 'YtdBal10';
+            AutoFormatType = 0;
         }
         field(92; YtdBal11; Decimal)
         {
             Caption = 'YtdBal11';
+            AutoFormatType = 0;
         }
         field(93; YtdBal12; Decimal)
         {
             Caption = 'YtdBal12';
+            AutoFormatType = 0;
         }
         field(94; YTDEstimated; Decimal)
         {
             Caption = 'YTDEstimated';
+            AutoFormatType = 0;
         }
     }
 

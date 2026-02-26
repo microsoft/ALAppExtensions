@@ -65,6 +65,7 @@ table 1867 "C5 InvenItemGroup"
         }
         field(14; ProfitMarginPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Profit margin';
         }
         field(15; InterimInflowAcc; Text[10])

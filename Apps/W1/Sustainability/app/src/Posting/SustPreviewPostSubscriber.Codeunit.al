@@ -29,6 +29,8 @@ codeunit 6226 "Sust. Preview Post. Subscriber"
         SustLedgEntry: Record "Sustainability Ledger Entry";
         SustValueEntry: Record "Sustainability Value Entry";
     begin
+        if (DocNoFilter = '') and (PostingDateFilter = '') then
+            exit;
         if SustLedgEntry.ReadPermission() then begin
             SustLedgEntry.Reset();
             SustLedgEntry.SetFilter("Document No.", DocNoFilter);

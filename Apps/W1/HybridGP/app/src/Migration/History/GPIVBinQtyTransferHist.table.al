@@ -61,6 +61,7 @@ table 4035 "GPIVBinQtyTransferHist"
         }
         field(11; SERLTQTY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Serial/Lot QTY';
             DataClassification = CustomerContent;
         }
@@ -71,6 +72,7 @@ table 4035 "GPIVBinQtyTransferHist"
         }
         field(13; DTSEQNUM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Date SEQ Number';
             DataClassification = CustomerContent;
         }
@@ -91,6 +93,7 @@ table 4035 "GPIVBinQtyTransferHist"
         }
         field(17; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Note Index';
             DataClassification = CustomerContent;
         }

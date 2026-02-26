@@ -1,0 +1,4 @@
+{
+  "message":"VAT_TOTAL_VALUE",
+  "statusCode":"400"
+}

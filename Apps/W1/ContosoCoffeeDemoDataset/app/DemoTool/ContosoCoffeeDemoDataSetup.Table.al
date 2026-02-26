@@ -41,11 +41,13 @@ table 4768 "Contoso Coffee Demo Data Setup"
         }
         field(5; "Price Factor"; Decimal)
         {
+            AutoFormatType = 0;
             InitValue = 1;
             Caption = 'Price Factor';
         }
         field(6; "Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Rounding Precision';
             InitValue = 0.01;
         }

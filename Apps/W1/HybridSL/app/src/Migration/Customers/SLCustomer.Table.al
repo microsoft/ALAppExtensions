@@ -144,6 +144,7 @@ table 47012 "SL Customer"
         field(33; CrLmt; Decimal)
         {
             Caption = 'CrLmt';
+            AutoFormatType = 0;
         }
         field(34; Crtd_DateTime; DateTime)
         {
@@ -276,18 +277,22 @@ table 47012 "SL Customer"
         field(66; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(67; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(68; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(69; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(70; S4Future07; DateTime)
         {
@@ -332,6 +337,7 @@ table 47012 "SL Customer"
         field(80; ShipPctMax; Decimal)
         {
             Caption = 'ShipPctMax';
+            AutoFormatType = 0;
         }
         field(81; SICCode1; Text[4])
         {
@@ -416,6 +422,7 @@ table 47012 "SL Customer"
         field(101; TradeDisc; Decimal)
         {
             Caption = 'TradeDisc';
+            AutoFormatType = 0;
         }
         field(102; User1; Text[30])
         {
@@ -428,10 +435,12 @@ table 47012 "SL Customer"
         field(104; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(105; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(106; User5; Text[10])
         {

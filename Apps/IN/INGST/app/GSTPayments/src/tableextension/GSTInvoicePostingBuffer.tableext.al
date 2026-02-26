@@ -15,6 +15,8 @@ tableextension 18245 "GST Invoice Posting Buffer" extends "Invoice Posting Buffe
         }
         field(18245; "FA Non-Availment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'FA Non-Availment Amount';
             DataClassification = CustomerContent;
         }
@@ -25,6 +27,8 @@ tableextension 18245 "GST Invoice Posting Buffer" extends "Invoice Posting Buffe
         }
         field(18247; "FA Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'FA Custom Duty Amount';
             DataClassification = CustomerContent;
         }

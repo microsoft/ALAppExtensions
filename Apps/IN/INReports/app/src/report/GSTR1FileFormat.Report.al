@@ -141,6 +141,7 @@ report 18049 "GSTR-1 File Format"
                     }
                     field(B2CLimit; B2CLimit)
                     {
+                        AutoFormatType = 0;
                         Caption = 'B2C Limit';
                         ToolTip = 'Specifies the Invoice Value for B2CL or B2CS. For example , 250000.';
                         ApplicationArea = Basic, Suite;

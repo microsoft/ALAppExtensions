@@ -27,11 +27,15 @@ table 18201 "Dist. Component Amount"
         }
         field(3; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
         field(4; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -49,6 +53,7 @@ table 18201 "Dist. Component Amount"
         }
         field(7; "Distribution %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distribution %';
             DataClassification = CustomerContent;
         }
@@ -74,11 +79,15 @@ table 18201 "Dist. Component Amount"
         }
         field(11; "Debit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Debit Amount';
             DataClassification = CustomerContent;
         }
         field(12; "Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Amount';
             DataClassification = CustomerContent;
         }

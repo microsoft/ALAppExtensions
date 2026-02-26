@@ -225,6 +225,8 @@ page 31181 "Purch. Advance Letter CZZ"
                 }
                 field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApply())
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Suggested Amount to Apply (LCY)';
                     ApplicationArea = Basic, Suite;
                     Editable = false;

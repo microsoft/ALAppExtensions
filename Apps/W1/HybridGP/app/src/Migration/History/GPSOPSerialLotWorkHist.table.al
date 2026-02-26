@@ -41,6 +41,7 @@ table 4074 "GPSOPSerialLotWorkHist"
         }
         field(7; SERLTQTY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Serial/Lot QTY';
             DataClassification = CustomerContent;
         }
@@ -56,11 +57,13 @@ table 4074 "GPSOPSerialLotWorkHist"
         }
         field(10; DTSEQNUM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Date SEQ Number';
             DataClassification = CustomerContent;
         }
         field(11; UNITCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
         }

@@ -14,6 +14,8 @@ pageextension 18724 "Posted Purch. Cr Memo Stats." extends "Purch. Credit Memo S
         {
             field("TDS Amount"; TDSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 Caption = 'TDS Amount';

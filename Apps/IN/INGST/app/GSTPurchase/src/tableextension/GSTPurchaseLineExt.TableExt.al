@@ -45,6 +45,8 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         }
         field(18084; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Custom Duty Amount';
             DataClassification = CustomerContent;
             MinValue = 0;
@@ -63,6 +65,8 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         }
         field(18086; "GST Assessable Value"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Assessable Value';
             MinValue = 0;
             DataClassification = CustomerContent;
@@ -155,12 +159,14 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         }
         field(18118; "Qty. to Reject (Rework)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Reject (Rework)';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(18119; "Qty. Rejected (Rework)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. Rejected (Rework)';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -173,6 +179,7 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         }
         field(18121; "Qty. to Reject (C.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Reject (C.E.)';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -185,6 +192,7 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         }
         field(18122; "Qty. to Reject (V.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Reject (V.E.)';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -197,6 +205,7 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         }
         field(18123; "Qty. Rejected (C.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. Rejected (C.E.)';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -210,6 +219,7 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         }
         field(18124; "Qty. Rejected (V.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. Rejected (V.E.)';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -217,6 +227,7 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         }
         field(18125; "Deliver Comp. For"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Deliver Comp. For';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 3;

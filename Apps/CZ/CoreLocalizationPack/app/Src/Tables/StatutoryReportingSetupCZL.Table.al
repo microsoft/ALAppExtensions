@@ -57,12 +57,16 @@ table 31105 "Statutory Reporting Setup CZL"
         }
         field(16; "Equity Capital"; Decimal)
         {
+            AutoFormatExpression = '';
+            AutoFormatType = 2;
             Caption = 'Equity Capital';
             DataClassification = CustomerContent;
             BlankZero = true;
         }
         field(17; "Paid Equity Capital"; Decimal)
         {
+            AutoFormatExpression = '';
+            AutoFormatType = 2;
             Caption = 'Paid Equity Capital';
             DataClassification = CustomerContent;
             BlankZero = true;
@@ -114,6 +118,8 @@ table 31105 "Statutory Reporting Setup CZL"
         }
         field(41; "Simplified Tax Document Limit"; Decimal)
         {
+            AutoFormatExpression = '';
+            AutoFormatType = 2;
             Caption = 'Simplified Tax Document Limit';
             DataClassification = CustomerContent;
         }

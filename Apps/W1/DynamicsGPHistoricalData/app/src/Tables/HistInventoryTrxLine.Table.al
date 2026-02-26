@@ -53,14 +53,19 @@ table 40907 "Hist. Inventory Trx. Line"
         }
         field(11; "Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
         }
         field(12; "Unit Cost"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Unit Cost';
         }
         field(13; "Ext. Cost"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Ext. Cost';
         }
         field(14; "Location Code"; Code[35])

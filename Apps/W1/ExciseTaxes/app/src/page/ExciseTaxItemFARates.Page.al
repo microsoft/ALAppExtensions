@@ -33,13 +33,13 @@ page 7412 "Excise Tax Item/FA Rates"
                 {
                     ToolTip = 'Specifies the Item or Fixed Asset number.';
                 }
-                field("Tax Rate %"; Rec."Tax Rate %")
+                field("Excise Duty"; Rec."Excise Duty")
                 {
-                    ToolTip = 'Specifies the tax rate percentage.';
+                    ToolTip = 'Specifies the excise duty.';
                 }
                 field("Effective From Date"; Rec."Effective From Date")
                 {
-                    ToolTip = 'Specifies when this tax rate becomes effective.';
+                    ToolTip = 'Specifies when this excise duty becomes effective.';
                 }
             }
         }

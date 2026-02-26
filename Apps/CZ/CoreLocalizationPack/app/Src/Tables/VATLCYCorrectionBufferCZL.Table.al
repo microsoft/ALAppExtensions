@@ -49,12 +49,14 @@ table 11727 "VAT LCY Correction Buffer CZL"
         }
         field(8; "VAT Base"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             Caption = 'VAT Base';
             Editable = false;
         }
         field(9; "VAT Amount"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             Caption = 'VAT Amount';
             Editable = false;
@@ -97,6 +99,7 @@ table 11727 "VAT LCY Correction Buffer CZL"
         }
         field(41; "VAT %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT %';
             DecimalPlaces = 0 : 5;
             Editable = false;
@@ -105,12 +108,14 @@ table 11727 "VAT LCY Correction Buffer CZL"
         }
         field(50; "VAT Correction Amount"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             Caption = 'VAT Correction Amount';
             Editable = false;
         }
         field(55; "Corrected VAT Amount"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             Caption = 'Corrected VAT Amount';
 

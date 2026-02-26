@@ -35,6 +35,8 @@ table 18321 "Posted GST Liability Adj."
         }
         field(4; "Adjustment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Adjustment Amount';
             DataClassification = CustomerContent;
         }
@@ -129,16 +131,21 @@ table 18321 "Posted GST Liability Adj."
         }
         field(20; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
         field(21; "GST %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST %';
             DataClassification = CustomerContent;
         }
         field(22; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
@@ -180,6 +187,7 @@ table 18321 "Posted GST Liability Adj."
         }
         field(30; "GST Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Rounding Precision';
             DataClassification = CustomerContent;
         }

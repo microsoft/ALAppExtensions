@@ -4,13 +4,18 @@
   "publisher": "Microsoft",
   "brief": "Get accurate addresses in United Kingdom based on post codes",
   "description": "This extension connects to an external service to verify and get the correct address based on a local address database. Whenever you specify a customer, vendor, contact, or any address in the United Kingdom, this extension helps you make verify that you got the right address.",
-  "version": "28.0.0.0",
+  "version": "29.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "logo": "ExtensionLogo.png",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
   "dependencies": [],
   "idRanges": [
     {
@@ -28,13 +33,8 @@
   "features": [
     "TranslationFile"
   ],
-  "resourceExposurePolicy": {
-    "allowDebugging": true,
-    "allowDownloadingSource": true,
-    "includeSourceInSymbolFile": true
-  },
   "screenshots": [],
   "platform": "28.0.0.0",
   "target": "Cloud",
-  "application": "28.0.0.0"
+  "application": "29.0.0.0"
 }

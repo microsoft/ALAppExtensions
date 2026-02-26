@@ -46,10 +46,12 @@ table 1897 "C5 LedTrans"
         }
         field(9; AmountMST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount LCY';
         }
         field(10; AmountCur; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount in cur.';
         }
         field(11; Currency; Code[3])
@@ -62,10 +64,12 @@ table 1897 "C5 LedTrans"
         }
         field(13; VatAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT amount LCY';
         }
         field(14; Qty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty';
         }
         field(15; TransType; Option)
@@ -92,6 +96,7 @@ table 1897 "C5 LedTrans"
         }
         field(20; Amount2; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount in';
         }
         field(21; LockAmount2; Option)

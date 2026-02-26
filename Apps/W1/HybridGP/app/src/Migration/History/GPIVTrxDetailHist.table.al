@@ -20,6 +20,7 @@ table 4051 "GPIVTrxDetailHist"
         }
         field(3; LNSEQNBR; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Line SEQ Number';
             DataClassification = CustomerContent;
         }
@@ -41,11 +42,13 @@ table 4051 "GPIVTrxDetailHist"
         }
         field(7; RCPTQTY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt QTY';
             DataClassification = CustomerContent;
         }
         field(8; RCPTEXCT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Extended Cost';
             DataClassification = CustomerContent;
         }

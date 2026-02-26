@@ -1,0 +1,4 @@
+{
+  "code": "MESSAGE_THROTTLED_OUT",
+  "message": "The request for the API is throttled as you have exceeded your quota."
+}

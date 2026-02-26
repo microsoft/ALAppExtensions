@@ -35,6 +35,7 @@ table 31012 "Advance Letter Link Buffer CZZ"
         }
         field(5; Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount';
             DataClassification = CustomerContent;
             MinValue = 0;

@@ -5,7 +5,9 @@
 
 namespace Microsoft.DemoData.Localization;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.DemoTool;
+using Microsoft.eServices.EDocument.DemoData;
 
 codeunit 10545 "E-Doc. Demodata GB"
 {
@@ -18,17 +20,18 @@ codeunit 10545 "E-Doc. Demodata GB"
     begin
         if Module <> Enum::"Contoso Demo Data Module"::"E-Document Contoso Module" then
             exit;
-        EDocumentModule(ContosoDemoDataLevel);
+        if ContosoDemoDataLevel = ContosoDemoDataLevel::"Transactional Data" then
+            DefineLocalGLAccountInEDocumentsModuleSetup();
     end;
 
-    local procedure EDocumentModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    local procedure DefineLocalGLAccountInEDocumentsModuleSetup()
+    var
+        EDocumentModuleSetup: Record "E-Document Module Setup";
+        CreateGBGLAccounts: Codeunit "Create GB GL Accounts";
     begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Transactional Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Demo EDocs GB");
-                    Codeunit.Run(Codeunit::"Create E-Doc Sample Inv. GB");
-                end;
-        end;
+        EDocumentModuleSetup.InitEDocumentModuleSetup();
+        EDocumentModuleSetup."Recurring Expense G/L Acc. No" := CreateGBGLAccounts.ITServices();
+        EDocumentModuleSetup."Delivery Expense G/L Acc. No" := CreateGBGLAccounts.FreightFeesForGoods();
+        EDocumentModuleSetup.Modify();
     end;
 }

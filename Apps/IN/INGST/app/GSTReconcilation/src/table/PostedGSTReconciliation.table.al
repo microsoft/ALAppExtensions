@@ -40,23 +40,31 @@ table 18284 "Posted GST Reconciliation"
         }
         field(6; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
         field(7; "GST Prev. Period B/F Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Prev. Period B/F Amount';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(8; "GST Amount Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Amount Utilized';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(9; "GST Prev. Period C/F Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Prev. Period C/F Amount';
             DataClassification = CustomerContent;
             Editable = false;

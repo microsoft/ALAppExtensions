@@ -68,6 +68,7 @@ table 31254 "Iss. Bank Statement Header CZB"
         }
         field(8; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;
@@ -76,6 +77,8 @@ table 31254 "Iss. Bank Statement Header CZB"
 #pragma warning disable AA0232
         field(9; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             CalcFormula = sum("Iss. Bank Statement Line CZB".Amount where("Bank Statement No." = field("No.")));
             Caption = 'Amount';
             Editable = false;
@@ -84,6 +87,8 @@ table 31254 "Iss. Bank Statement Header CZB"
 #pragma warning restore
         field(10; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Iss. Bank Statement Line CZB"."Amount (LCY)" where("Bank Statement No." = field("No.")));
             Caption = 'Amount (LCY)';
             Editable = false;
@@ -91,6 +96,8 @@ table 31254 "Iss. Bank Statement Header CZB"
         }
         field(11; Debit; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             CalcFormula = - sum("Iss. Bank Statement Line CZB".Amount where("Bank Statement No." = field("No."), Positive = const(false)));
             Caption = 'Debit';
             Editable = false;
@@ -98,6 +105,8 @@ table 31254 "Iss. Bank Statement Header CZB"
         }
         field(12; "Debit (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = - sum("Iss. Bank Statement Line CZB"."Amount (LCY)" where("Bank Statement No." = field("No."), Positive = const(false)));
             Caption = 'Debit (LCY)';
             Editable = false;
@@ -105,6 +114,8 @@ table 31254 "Iss. Bank Statement Header CZB"
         }
         field(13; Credit; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             CalcFormula = sum("Iss. Bank Statement Line CZB".Amount where("Bank Statement No." = field("No."), Positive = const(true)));
             Caption = 'Credit';
             Editable = false;
@@ -112,6 +123,8 @@ table 31254 "Iss. Bank Statement Header CZB"
         }
         field(14; "Credit (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Iss. Bank Statement Line CZB"."Amount (LCY)" where("Bank Statement No." = field("No."), Positive = const(true)));
             Caption = 'Credit (LCY)';
             Editable = false;
@@ -132,6 +145,7 @@ table 31254 "Iss. Bank Statement Header CZB"
         }
         field(21; "Bank Statement Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Bank Statement Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;
@@ -166,36 +180,48 @@ table 31254 "Iss. Bank Statement Header CZB"
         }
         field(60; "Check Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Check Amount';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(65; "Check Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Check Amount (LCY)';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(70; "Check Debit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Check Debit';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(75; "Check Debit (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Check Debit (LCY)';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(80; "Check Credit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Check Credit';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(85; "Check Credit (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Check Credit (LCY)';
             Editable = false;
             DataClassification = CustomerContent;

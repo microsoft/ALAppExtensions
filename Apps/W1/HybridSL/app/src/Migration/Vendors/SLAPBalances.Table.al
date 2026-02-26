@@ -31,6 +31,7 @@ table 47046 "SL AP_Balances"
         field(5; CurrBal; Decimal)
         {
             Caption = 'CurrBal';
+            AutoFormatType = 0;
         }
         field(6; CuryID; Text[4])
         {
@@ -39,66 +40,82 @@ table 47046 "SL AP_Balances"
         field(7; CYBox00; Decimal)
         {
             Caption = 'CYBox00';
+            AutoFormatType = 0;
         }
         field(8; CYBox01; Decimal)
         {
             Caption = 'CYBox01';
+            AutoFormatType = 0;
         }
         field(9; CYBox02; Decimal)
         {
             Caption = 'CYBox02';
+            AutoFormatType = 0;
         }
         field(10; CYBox03; Decimal)
         {
             Caption = 'CYBox03';
+            AutoFormatType = 0;
         }
         field(11; CYBox04; Decimal)
         {
             Caption = 'CYBox04';
+            AutoFormatType = 0;
         }
         field(12; CYBox05; Decimal)
         {
             Caption = 'CYBox05';
+            AutoFormatType = 0;
         }
         field(13; CYBox06; Decimal)
         {
             Caption = 'CYBox06';
+            AutoFormatType = 0;
         }
         field(14; CYBox07; Decimal)
         {
             Caption = 'CYBox07';
+            AutoFormatType = 0;
         }
         field(15; CYBox08; Decimal)
         {
             Caption = 'CYBox08';
+            AutoFormatType = 0;
         }
         field(16; CYBox09; Decimal)
         {
             Caption = 'CYBox09';
+            AutoFormatType = 0;
         }
         field(17; CYBox10; Decimal)
         {
             Caption = 'CYBox10';
+            AutoFormatType = 0;
         }
         field(18; CYBox11; Decimal)
         {
             Caption = 'CYBox11';
+            AutoFormatType = 0;
         }
         field(19; CYBox12; Decimal)
         {
             Caption = 'CYBox12';
+            AutoFormatType = 0;
         }
         field(20; CYBox13; Decimal)
         {
             Caption = 'CYBox13';
+            AutoFormatType = 0;
         }
         field(21; CYBox14; Decimal)
         {
             Caption = 'CYBox14';
+            AutoFormatType = 0;
         }
         field(22; CYBox15; Decimal)
         {
             Caption = 'CYBox15';
+            AutoFormatType = 0;
         }
         field(23; CYFor01; Text[3])
         {
@@ -107,10 +124,12 @@ table 47046 "SL AP_Balances"
         field(24; CYInterest; Decimal)
         {
             Caption = 'CYInterest';
+            AutoFormatType = 0;
         }
         field(25; FutureBal; Decimal)
         {
             Caption = 'FutureBal';
+            AutoFormatType = 0;
         }
         field(26; LastChkDate; DateTime)
         {
@@ -139,66 +158,82 @@ table 47046 "SL AP_Balances"
         field(32; NYBox00; Decimal)
         {
             Caption = 'NYBox00';
+            AutoFormatType = 0;
         }
         field(33; NYBox01; Decimal)
         {
             Caption = 'NYBox01';
+            AutoFormatType = 0;
         }
         field(34; NYBox02; Decimal)
         {
             Caption = 'NYBox02';
+            AutoFormatType = 0;
         }
         field(35; NYBox03; Decimal)
         {
             Caption = 'NYBox03';
+            AutoFormatType = 0;
         }
         field(36; NYBox04; Decimal)
         {
             Caption = 'NYBox04';
+            AutoFormatType = 0;
         }
         field(37; NYBox05; Decimal)
         {
             Caption = 'NYBox05';
+            AutoFormatType = 0;
         }
         field(38; NYBox06; Decimal)
         {
             Caption = 'NYBox06';
+            AutoFormatType = 0;
         }
         field(39; NYBox07; Decimal)
         {
             Caption = 'NYBox07';
+            AutoFormatType = 0;
         }
         field(40; NYBox08; Decimal)
         {
             Caption = 'NYBox08';
+            AutoFormatType = 0;
         }
         field(41; NYBox09; Decimal)
         {
             Caption = 'NYBox09';
+            AutoFormatType = 0;
         }
         field(42; NYBox10; Decimal)
         {
             Caption = 'NYBox10';
+            AutoFormatType = 0;
         }
         field(43; NYBox11; Decimal)
         {
             Caption = 'NYBox11';
+            AutoFormatType = 0;
         }
         field(44; NYBox12; Decimal)
         {
             Caption = 'NYBox12';
+            AutoFormatType = 0;
         }
         field(45; NYBox13; Decimal)
         {
             Caption = 'NYBox13';
+            AutoFormatType = 0;
         }
         field(46; NYBox14; Decimal)
         {
             Caption = 'NYBox14';
+            AutoFormatType = 0;
         }
         field(47; NYBox15; Decimal)
         {
             Caption = 'NYBox15';
+            AutoFormatType = 0;
         }
         field(48; NYFor01; Text[3])
         {
@@ -207,6 +242,7 @@ table 47046 "SL AP_Balances"
         field(49; NYInterest; Decimal)
         {
             Caption = 'NYInterest';
+            AutoFormatType = 0;
         }
         field(50; PerNbr; Text[6])
         {
@@ -223,18 +259,22 @@ table 47046 "SL AP_Balances"
         field(53; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(54; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(55; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(56; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(57; S4Future07; DateTime)
         {
@@ -271,10 +311,12 @@ table 47046 "SL AP_Balances"
         field(65; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(66; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(67; User5; Text[10])
         {

@@ -26,6 +26,7 @@ table 40916 "Hist. Recv. Trx. SerialLot"
         }
         field(5; "Serial/Lot Qty."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Serial/Lot Qty.';
         }
         field(6; "Date Received"; Date)
@@ -34,10 +35,12 @@ table 40916 "Hist. Recv. Trx. SerialLot"
         }
         field(7; "Date Sequence No."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Date Sequence No.';
         }
         field(8; "Unit Cost"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
         }
         field(9; "No."; Code[35])
@@ -50,10 +53,12 @@ table 40916 "Hist. Recv. Trx. SerialLot"
         }
         field(11; "Line Item Sequence"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Line Item Sequence';
         }
         field(12; "Component Sequence"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component Sequence';
         }
         field(13; "Serial/Lot Seq. Number"; Integer)

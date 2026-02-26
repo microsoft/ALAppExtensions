@@ -49,18 +49,24 @@ report 18747 "Update Challan Register"
                     Caption = 'Options';
                     field("Interest Amount"; InterestAmount)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Interest Amount';
                         ToolTip = 'Specifies the value of interest payable.';
                         ApplicationArea = Basic, Suite;
                     }
                     field("Others"; OtherFee)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Others';
                         ToolTip = 'Specifies the value of other charges payable.';
                         ApplicationArea = Basic, Suite;
                     }
                     field(Fee; LateFee)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Fee';
                         ToolTip = 'Specifies the value of fees payable.';
                         ApplicationArea = Basic, Suite;

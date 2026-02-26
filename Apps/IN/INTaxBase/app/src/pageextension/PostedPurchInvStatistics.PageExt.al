@@ -15,6 +15,8 @@ pageextension 18569 "Posted Purch. Inv. Statistics" extends "Purchase Invoice St
             field("Total Amount"; TotalInclTaxAmount)
             {
                 ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Editable = false;
                 ToolTip = 'Specifies the amount, including Tax amount. On the General fast tab, this is the amount posted to the vendor account for all the lines in the purchase order if you post the purchase order as invoiced.';
                 Caption = 'Net Total';

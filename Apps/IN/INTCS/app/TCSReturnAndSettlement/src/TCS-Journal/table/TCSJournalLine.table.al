@@ -145,6 +145,7 @@ table 18870 "TCS Journal Line"
         field(11; Amount; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -158,6 +159,7 @@ table 18870 "TCS Journal Line"
         field(12; "Debit Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             BlankZero = true;
             DataClassification = CustomerContent;
 
@@ -174,6 +176,7 @@ table 18870 "TCS Journal Line"
         field(13; "Credit Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             BlankZero = true;
             DataClassification = CustomerContent;
 
@@ -190,6 +193,7 @@ table 18870 "TCS Journal Line"
         field(14; "Balance (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }
@@ -285,6 +289,8 @@ table 18870 "TCS Journal Line"
         }
         field(28; "TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -305,6 +311,7 @@ table 18870 "TCS Journal Line"
         }
         field(32; "TCS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Editable = false;
 
@@ -332,16 +339,22 @@ table 18870 "TCS Journal Line"
         }
         field(33; "TCS Amt Incl Surcharge"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(34; "Bal. TCS Including SHECESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(35; "eCess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -353,11 +366,14 @@ table 18870 "TCS Journal Line"
         }
         field(36; "Surcharge %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(37; "Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -369,6 +385,7 @@ table 18870 "TCS Journal Line"
         }
         field(39; "TCS % Applied"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -398,6 +415,8 @@ table 18870 "TCS Journal Line"
         }
         field(41; "TCS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
@@ -421,11 +440,14 @@ table 18870 "TCS Journal Line"
         }
         field(46; "Balance Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(47; "Surcharge % Applied"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -457,35 +479,47 @@ table 18870 "TCS Journal Line"
         }
         field(48; "Surcharge Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(49; "Balance TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(50; "eCESS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(51; "eCESS on TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(52; "Total TCS Incl. SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(53; "eCESS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(54; "eCESS % Applied"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -517,10 +551,14 @@ table 18870 "TCS Journal Line"
         }
         field(55; "Balance eCESS on TCS Amt"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(56; "Bal. SHE Cess on TCS Amt"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(57; "Pay TCS"; Boolean)
@@ -536,24 +574,31 @@ table 18870 "TCS Journal Line"
         {
             DataClassification = CustomerContent;
             AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(60; "SHE Cess % on TCS"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(61; "SHE Cess on TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(62; "SHE Cess Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(63; "SHE Cess % Applied"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -585,6 +630,8 @@ table 18870 "TCS Journal Line"
         }
         field(64; "TCS Base Amount Applied"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
 
             trigger OnValidate()

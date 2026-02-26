@@ -25,6 +25,7 @@ tableextension 31265 "G/L Entry CZA" extends "G/L Entry"
         field(11785; "Amount to Apply CZA"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount to Apply';
 
             trigger OnValidate()
@@ -49,7 +50,8 @@ tableextension 31265 "G/L Entry CZA" extends "G/L Entry"
         }
         field(11788; "Applied Amount CZA"; Decimal)
         {
-
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = - sum("Detailed G/L Entry CZA".Amount where("G/L Entry No." = field("Entry No."),
                                                                   "Posting Date" = field("Date Filter CZA")));
             Caption = 'Applied Amount';

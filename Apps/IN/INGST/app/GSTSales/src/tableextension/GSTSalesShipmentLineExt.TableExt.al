@@ -62,6 +62,8 @@ tableextension 18155 "GST Sales Shipment Line Ext" extends "Sales Shipment Line"
         }
         field(18150; "GST Assessable Value (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value (LCY)';
             DataClassification = CustomerContent;
         }
@@ -82,11 +84,15 @@ tableextension 18155 "GST Sales Shipment Line Ext" extends "Sales Shipment Line"
         }
         field(18155; "Unit Price Incl. of Tax"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Unit Price Incl. of Tax';
             DataClassification = CustomerContent;
         }
         field(18156; "Total UPIT Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Total UPIT Amount';
             DataClassification = CustomerContent;
         }

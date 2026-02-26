@@ -24,6 +24,7 @@ table 4104 "GP Item Transactions"
         }
         field(4; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DataClassification = CustomerContent;
         }
@@ -49,16 +50,19 @@ table 4104 "GP Item Transactions"
         }
         field(9; UnitCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
         }
         field(10; CurrentCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Current Cost';
             DataClassification = CustomerContent;
         }
         field(11; StandardCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Standard Cost';
             DataClassification = CustomerContent;
         }

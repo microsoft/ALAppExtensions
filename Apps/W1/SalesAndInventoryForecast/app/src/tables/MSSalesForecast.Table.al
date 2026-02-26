@@ -24,9 +24,11 @@ table 1850 "MS - Sales Forecast"
         }
         field(3; Quantity; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(4; Delta; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(5; "Forecast Data"; Option)
         {
@@ -34,6 +36,7 @@ table 1850 "MS - Sales Forecast"
         }
         field(6; "Variance %"; Decimal)
         {
+            AutoFormatType = 0;
         }
     }
 

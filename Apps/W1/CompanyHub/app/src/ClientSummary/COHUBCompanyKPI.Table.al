@@ -407,16 +407,22 @@ table 1151 "COHUB Company KPI"
 
         field(511; "Cash Accounts Balance Decimal"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
 
         field(512; "Overdue Purch. Inv. Amt. Dec."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
 
         field(513; "Overdue Sales Inv. Amt. Dec."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
     }

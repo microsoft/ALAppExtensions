@@ -25,6 +25,7 @@ table 1895 "C5 ExchRate"
         }
         field(4; ExchRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exch. rate';
         }
         field(5; FromDate; Date)

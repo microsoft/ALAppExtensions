@@ -12,10 +12,14 @@ tableextension 6808 "WHT VAT Amount Line Ext" extends "VAT Amount Line"
         }
         field(6785; "WHT VAT Realized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Realized';
         }
         field(6786; "WHT Amount Paid"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount Paid';
         }
         field(6787; "WHT VAT Base (ACY)"; Decimal)

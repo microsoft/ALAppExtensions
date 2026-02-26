@@ -296,22 +296,22 @@
     },
     {
       "id": "AA0471",
-      "action": "None",
+      "action": "Warning",
       "justification": "AutoformatType should be defined for decimal fields in Page objects to ensure proper formatting behavior."
     },
     {
       "id": "AA0472",
-      "action": "None",
+      "action": "Warning",
       "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
     },
     {
       "id": "AA0473",
-      "action": "None",
+      "action": "Warning",
       "justification": "AutoformatType should be defined for decimal fields in Table objects to ensure proper formatting behavior."
     },
     {
       "id": "AA0474",
-      "action": "None",
+      "action": "Warning",
       "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
     },
     {

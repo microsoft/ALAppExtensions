@@ -57,11 +57,13 @@ table 4069 "GPSOPDepositHist"
         }
         field(10; AMNTPAID; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount Paid';
             DataClassification = CustomerContent;
         }
         field(11; OAMTPAID; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Amount Paid';
             DataClassification = CustomerContent;
         }
@@ -132,11 +134,13 @@ table 4069 "GPSOPDepositHist"
         }
         field(25; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exchange Rate';
             DataClassification = CustomerContent;
         }
         field(26; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Denomination Exchange Rate';
             DataClassification = CustomerContent;
         }

@@ -126,6 +126,7 @@ table 31256 "Payment Order Header CZB"
         }
         field(8; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;
@@ -142,6 +143,8 @@ table 31256 "Payment Order Header CZB"
 #pragma warning disable AA0232
         field(9; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             CalcFormula = sum("Payment Order Line CZB".Amount where("Payment Order No." = field("No."), "Skip Payment" = const(false)));
             Caption = 'Amount';
             Editable = false;
@@ -150,6 +153,8 @@ table 31256 "Payment Order Header CZB"
 #pragma warning restore
         field(10; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Payment Order Line CZB"."Amount (LCY)" where("Payment Order No." = field("No."), "Skip Payment" = const(false)));
             Caption = 'Amount (LCY)';
             Editable = false;
@@ -157,6 +162,8 @@ table 31256 "Payment Order Header CZB"
         }
         field(11; Debit; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             CalcFormula = sum("Payment Order Line CZB".Amount where("Payment Order No." = field("No."), Positive = const(true), "Skip Payment" = const(false)));
             Caption = 'Debit';
             Editable = false;
@@ -164,6 +171,8 @@ table 31256 "Payment Order Header CZB"
         }
         field(12; "Debit (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Payment Order Line CZB"."Amount (LCY)" where("Payment Order No." = field("No."), Positive = const(true), "Skip Payment" = const(false)));
             Caption = 'Debit (LCY)';
             Editable = false;
@@ -171,6 +180,8 @@ table 31256 "Payment Order Header CZB"
         }
         field(13; Credit; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             CalcFormula = - sum("Payment Order Line CZB".Amount where("Payment Order No." = field("No."), Positive = const(false), "Skip Payment" = const(false)));
             Caption = 'Credit';
             Editable = false;
@@ -178,6 +189,8 @@ table 31256 "Payment Order Header CZB"
         }
         field(14; "Credit (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = - sum("Payment Order Line CZB"."Amount (LCY)" where("Payment Order No." = field("No."), Positive = const(false), "Skip Payment" = const(false)));
             Caption = 'Credit (LCY)';
             Editable = false;
@@ -215,6 +228,7 @@ table 31256 "Payment Order Header CZB"
         }
         field(21; "Payment Order Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Payment Order Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;
@@ -230,6 +244,8 @@ table 31256 "Payment Order Header CZB"
         }
         field(25; "Amount (Pay.Order Curr.)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             CalcFormula = sum("Payment Order Line CZB"."Amount (Paym. Order Currency)" where("Payment Order No." = field("No."), "Skip Payment" = const(false)));
             Caption = 'Amount (Payment Order Currency)';
             Editable = false;

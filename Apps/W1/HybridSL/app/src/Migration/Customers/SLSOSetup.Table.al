@@ -188,6 +188,7 @@ table 47013 "SL SOSetup"
         field(44; CreditGracePct; Decimal)
         {
             Caption = 'CreditGracePct';
+            AutoFormatType = 0;
         }
         field(45; CreditNoOrdEntry; Integer)
         {
@@ -464,18 +465,22 @@ table 47013 "SL SOSetup"
         field(113; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(114; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(115; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(116; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(117; S4Future07; DateTime)
         {
@@ -556,10 +561,12 @@ table 47013 "SL SOSetup"
         field(136; User5; Decimal)
         {
             Caption = 'User5';
+            AutoFormatType = 0;
         }
         field(137; User6; Decimal)
         {
             Caption = 'User6';
+            AutoFormatType = 0;
         }
         field(138; User7; Text[10])
         {

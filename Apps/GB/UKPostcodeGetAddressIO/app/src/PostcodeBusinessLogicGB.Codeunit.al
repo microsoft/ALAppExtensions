@@ -233,7 +233,8 @@ codeunit 9099 "Postcode Business Logic GB"
         if Configured then
             ServiceConnection.Status := ServiceConnection.Status::Enabled
         else
-            ServiceConnection.Status := ServiceConnection.Status::Disabled;
+           if ServiceConnection.Status = ServiceConnection.Status::" " then
+               ServiceConnection.Status := ServiceConnection.Status::Disabled;
 
         if not PostcodeServiceConfig.FindFirst() then begin
             PostcodeServiceConfig.Init();

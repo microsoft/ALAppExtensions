@@ -32,14 +32,17 @@ table 47004 SLGLAcctBalByPeriod
         field(5; PERBAL; Decimal)
         {
             Caption = 'Period Balance';
+            AutoFormatType = 0;
         }
         field(6; DEBITAMT; Decimal)
         {
             Caption = 'Debit Amount';
+            AutoFormatType = 0;
         }
         field(7; CREDITAMT; Decimal)
         {
             Caption = 'Credit Amount';
+            AutoFormatType = 0;
         }
     }
     keys

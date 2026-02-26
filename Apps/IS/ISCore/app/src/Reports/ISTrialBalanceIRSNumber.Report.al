@@ -24,13 +24,13 @@ report 14605 "IS Trial Balance - IRS Number"
             column(TodayFormatted; Format(Today, 0, 4))
             {
             }
-            column(PeriodText; 'Period:  ' + PeriodText)
+            column(PeriodText; PeriodCaptionLbl + ':  ' + PeriodText)
             {
             }
             column(CompanyName; COMPANYPROPERTY.DisplayName())
             {
             }
-            column(GLFilter; "G/L Account".TableName + ': ' + GLFilter)
+            column(GLFilter; GLAccountCaptionLbl + ': ' + GLFilter)
             {
             }
             column(EmptyString; '')
@@ -139,4 +139,6 @@ report 14605 "IS Trial Balance - IRS Number"
         DebitCaptionLbl: Label 'Debit';
         CreditCaptionLbl: Label 'Credit';
         IRSNumberCaptionLbl: Label 'IRS Number';
+        PeriodCaptionLbl: Label 'Period';
+        GLAccountCaptionLbl: Label 'G/L Account';
 }

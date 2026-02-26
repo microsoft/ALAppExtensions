@@ -53,6 +53,8 @@ page 11704 "VAT Stmt. Form. Drill-Down CZL"
                 }
                 field(Amount; Amount)
                 {
+                    AutoFormatExpression = '';
+                    AutoFormatType = 1;
                     Caption = 'Amount';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the amount of the VAT statement line.';

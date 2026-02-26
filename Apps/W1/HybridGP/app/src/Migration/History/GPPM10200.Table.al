@@ -57,42 +57,52 @@ table 40142 "GP PM10200"
         }
         field(13; APPLDAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(14; DISTKNAM; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(15; DISAVTKN; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(16; WROFAMNT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(17; ORAPPAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(18; ORDISTKN; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(19; ORDATKN; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(20; ORWROFAM; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(21; APTOEXRATE; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(22; APTODENRATE; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(23; APTORTCLCMETH; Integer)
@@ -125,42 +135,52 @@ table 40142 "GP PM10200"
         }
         field(30; APFRMAPLYAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(31; APFRMDISCTAKEN; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(32; APFRMDISCAVAIL; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(33; APFRMWROFAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(34; ActualApplyToAmount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(35; ActualDiscTakenAmount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(36; ActualDiscAvailTaken; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(37; ActualWriteOffAmount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(38; APFRMEXRATE; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(39; APFRMDENRATE; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(40; APFRMRTCLCMETH; Integer)
@@ -173,10 +193,12 @@ table 40142 "GP PM10200"
         }
         field(42; PPSAMDED; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(43; GSTDSAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(44; TAXDTLID; Text[15])
@@ -189,66 +211,82 @@ table 40142 "GP PM10200"
         }
         field(46; TEN99AMNT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(47; RLGANLOS; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(48; APYFRMRNDAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(49; APYTORNDAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(50; APYTORNDDISC; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(51; OAPYFRMRNDAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(52; OAPYTORNDAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(53; OAPYTORNDDISC; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(54; Settled_Gain_CreditCurrT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(55; Settled_Loss_CreditCurrT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(56; Settled_Gain_DebitCurrTr; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(57; Settled_Loss_DebitCurrTr; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(58; Settled_Gain_DebitDiscAv; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(59; Settled_Loss_DebitDiscAv; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(60; Revaluation_Status; Integer)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(61; Credit1099Amount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(62; DEFTEN99TYPE; Integer)

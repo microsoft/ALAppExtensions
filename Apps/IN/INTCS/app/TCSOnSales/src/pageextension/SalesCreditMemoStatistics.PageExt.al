@@ -14,6 +14,8 @@ pageextension 18848 "Sales Credit Memo Statistics" extends "Sales Credit Memo St
         {
             field("TCS Amount"; TCSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 Caption = 'TCS Amount';

@@ -49,6 +49,8 @@ table 18205 "GST Payment Buffer"
         }
         field(7; "Payment Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Liability';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -63,24 +65,32 @@ table 18205 "GST Payment Buffer"
         }
         field(8; "GST TDS Credit Available"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS Credit Available';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(9; "GST TCS Credit Available"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TCS Credit Available';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(10; "Net Payment Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Net Payment Liability';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(11; "Credit Availed"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Availed';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -94,12 +104,16 @@ table 18205 "GST Payment Buffer"
         }
         field(12; "Distributed Credit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Distributed Credit';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(13; "Total Credit Available"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Credit Available';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -107,6 +121,8 @@ table 18205 "GST Payment Buffer"
         }
         field(14; "Credit Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Utilized';
             DataClassification = SystemMetadata;
             MinValue = 0;
@@ -118,6 +134,8 @@ table 18205 "GST Payment Buffer"
         }
         field(15; "Payment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Amount';
             DataClassification = SystemMetadata;
             MinValue = 0;
@@ -129,6 +147,8 @@ table 18205 "GST Payment Buffer"
         }
         field(16; Interest; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Interest';
             DataClassification = SystemMetadata;
             MinValue = 0;
@@ -151,6 +171,8 @@ table 18205 "GST Payment Buffer"
         }
         field(18; Penalty; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Penalty';
             DataClassification = SystemMetadata;
             MinValue = 0;
@@ -173,6 +195,8 @@ table 18205 "GST Payment Buffer"
         }
         field(20; Fees; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Fees';
             DataClassification = SystemMetadata;
             MinValue = 0;
@@ -195,6 +219,8 @@ table 18205 "GST Payment Buffer"
         }
         field(22; Others; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Others';
             DataClassification = SystemMetadata;
             MinValue = 0;
@@ -250,18 +276,24 @@ table 18205 "GST Payment Buffer"
         }
         field(27; "Surplus Credit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Surplus Credit';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(28; "Surplus Cr. Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Surplus Cr. Utilized';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(29; "Carry Forward"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Carry Forward';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -290,12 +322,16 @@ table 18205 "GST Payment Buffer"
         }
         field(41; "Payment Liability - Rev. Chrg."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Liability - Rev. Chrg.';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(42; "Payment Amount - Rev. Chrg."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Amount - Rev. Chrg.';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -307,12 +343,16 @@ table 18205 "GST Payment Buffer"
         }
         field(43; "Unadjutsed Credit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Unadjutsed Credit';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(45; "Unadjutsed Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Unadjutsed Liability';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -324,12 +364,16 @@ table 18205 "GST Payment Buffer"
         }
         field(46; "Total Payment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Payment Amount';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(47; "GST TDS Credit Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS Credit Utilized';
             DataClassification = SystemMetadata;
 
@@ -340,6 +384,8 @@ table 18205 "GST Payment Buffer"
         }
         field(48; "GST TCS Credit Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TCS Credit Utilized';
             DataClassification = SystemMetadata;
 
@@ -350,18 +396,24 @@ table 18205 "GST Payment Buffer"
         }
         field(49; "GST TDS Credit Unutilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS Credit Unutilized';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(50; "GST TCS Credit Unutilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TCS Credit Unutilized';
             DataClassification = SystemMetadata;
             Editable = false;
         }
         field(51; "GST TCS Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TCS Liability';
             Editable = false;
             DataClassification = SystemMetadata;

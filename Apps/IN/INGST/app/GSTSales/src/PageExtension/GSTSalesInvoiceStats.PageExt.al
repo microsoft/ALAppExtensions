@@ -14,6 +14,8 @@ pageextension 18164 "GST Sales Invoice Stats." extends "Sales Statistics"
         {
             field("GST Amount"; GSTAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the amount of GST that is included in the total amount.';

@@ -74,6 +74,8 @@ page 31137 "EET Simple Registration CZL"
                 }
                 field(TotalSalesAmount; TotalSalesAmount)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     ApplicationArea = Basic, Suite;
                     Caption = 'Total Sales Amount';
                     ToolTip = 'Specifies the total amount of cash document.';
@@ -121,6 +123,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Sales Amount';
                         ToolTip = 'Specifies Sales Amount (VAT Rate Basic)';
 
@@ -133,6 +136,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'VAT Base';
                         ToolTip = 'Specifies the VAT base amount.';
 
@@ -145,6 +149,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'VAT Amount';
                         ToolTip = 'Specifies the base VAT amount.';
 
@@ -156,6 +161,7 @@ page 31137 "EET Simple Registration CZL"
                     field("VATRate[1]"; VATRate[1])
                     {
                         ApplicationArea = Basic, Suite;
+                        AutoFormatType = 0;
                         Caption = 'VAT %';
                         DecimalPlaces = 0 : 2;
                         MaxValue = 100;
@@ -171,6 +177,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Amount - Art.90';
                         Importance = Additional;
                         ToolTip = 'Specifies the base amount under paragraph 90th.';
@@ -188,6 +195,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Sales Amount';
                         ToolTip = 'Specifies Sales Amount (VAT Rate Reduced)';
 
@@ -200,6 +208,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'VAT Base';
                         ToolTip = 'Specifies the reduced VAT base amount.';
 
@@ -212,6 +221,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'VAT Amount';
                         ToolTip = 'Specifies the reduced VAT amount.';
 
@@ -223,6 +233,7 @@ page 31137 "EET Simple Registration CZL"
                     field("VATRate[2]"; VATRate[2])
                     {
                         ApplicationArea = Basic, Suite;
+                        AutoFormatType = 0;
                         Caption = 'VAT %';
                         DecimalPlaces = 0 : 2;
                         MaxValue = 100;
@@ -238,6 +249,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Amount - Art.90';
                         Importance = Additional;
                         ToolTip = 'Specifies the reduced amount under paragraph 90th.';
@@ -255,6 +267,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Sales Amount';
                         ToolTip = 'Specifies Sales Amount (VAT Rate Reduced 2)';
 
@@ -267,6 +280,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'VAT Base';
                         ToolTip = 'Specifies the reduced VAT base amount.';
 
@@ -279,6 +293,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'VAT Amount';
                         ToolTip = 'Specifies the reduced VAT amount 2.';
 
@@ -289,6 +304,7 @@ page 31137 "EET Simple Registration CZL"
                     }
                     field("VATRate[3]"; VATRate[3])
                     {
+                        AutoFormatType = 0;
                         ApplicationArea = Basic, Suite;
                         Caption = 'VAT %';
                         DecimalPlaces = 0 : 2;
@@ -305,6 +321,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Amount - Art.90';
                         Importance = Additional;
                         ToolTip = 'Specifies the reduced VAT base amount.';
@@ -322,6 +339,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Amount - Art.89';
                         Importance = Additional;
                         ToolTip = 'Specifies the amount under paragraph 89th.';
@@ -335,6 +353,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Amount Exempted From VAT';
                         Importance = Additional;
                         ToolTip = 'Specifies the amount of cash document VAT-exempt.';
@@ -348,6 +367,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Amt. For Subseq. Draw/Settle';
                         Importance = Additional;
                         ToolTip = 'Specifies the amount of the payments for subsequent drawdown or settlement.';
@@ -361,6 +381,7 @@ page 31137 "EET Simple Registration CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Amt. Subseq. Drawn/Settled';
                         Importance = Additional;
                         ToolTip = 'Specifies the amount of the subsequent drawing or settlement.';

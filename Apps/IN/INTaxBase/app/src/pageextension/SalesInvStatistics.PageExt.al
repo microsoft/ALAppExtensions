@@ -15,6 +15,8 @@ pageextension 18572 "Sales Inv. Statistics" extends "Sales Statistics"
             field("Total Amount"; TotalInclTaxAmount)
             {
                 ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Editable = false;
                 ToolTip = 'Specifies the amount, including Tax amount. On the General fast tab, this is the amount posted to the customer account for all the lines in the sales order if you post the sales order as invoiced.';
                 Caption = 'Net Total';

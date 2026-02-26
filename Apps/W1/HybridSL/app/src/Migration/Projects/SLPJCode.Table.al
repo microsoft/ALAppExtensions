@@ -52,6 +52,7 @@ table 47060 "SL PJCode"
         field(10; data4; Decimal)
         {
             Caption = 'data4';
+            AutoFormatType = 0;
         }
         field(11; lupd_datetime; DateTime)
         {

@@ -41,38 +41,47 @@ table 47015 "SL Inventory"
         field(5; BMIDirStdCost; Decimal)
         {
             Caption = 'BMIDirStdCost';
+            AutoFormatType = 0;
         }
         field(6; BMIFOvhStdCost; Decimal)
         {
             Caption = 'BMIFOvhStdCost';
+            AutoFormatType = 0;
         }
         field(7; BMILastCost; Decimal)
         {
             Caption = 'BMILastCost';
+            AutoFormatType = 0;
         }
         field(8; BMIPDirStdCost; Decimal)
         {
             Caption = 'BMIPDirStdCost';
+            AutoFormatType = 0;
         }
         field(9; BMIPFOvhStdCost; Decimal)
         {
             Caption = 'BMIPFOvhStdCost';
+            AutoFormatType = 0;
         }
         field(10; BMIPStdCost; Decimal)
         {
             Caption = 'BMIPStdCost';
+            AutoFormatType = 0;
         }
         field(11; BMIPVOvhStdCost; Decimal)
         {
             Caption = 'BMIPVOvhStdCost';
+            AutoFormatType = 0;
         }
         field(12; BMIStdCost; Decimal)
         {
             Caption = 'BMIStdCost';
+            AutoFormatType = 0;
         }
         field(13; BMIVOvhStdCost; Decimal)
         {
             Caption = 'BMIVOvhStdCost';
+            AutoFormatType = 0;
         }
         field(14; BOLCode; Text[10])
         {
@@ -121,10 +130,12 @@ table 47015 "SL Inventory"
         field(25; CuryListPrice; Decimal)
         {
             Caption = 'CuryListPrice';
+            AutoFormatType = 0;
         }
         field(26; CuryMinPrice; Decimal)
         {
             Caption = 'CuryMinPrice';
+            AutoFormatType = 0;
         }
         field(27; CustomFtr; Integer)
         {
@@ -177,6 +188,7 @@ table 47015 "SL Inventory"
         field(39; DirStdCost; Decimal)
         {
             Caption = 'DirStdCost';
+            AutoFormatType = 0;
         }
         field(40; DiscAcct; Text[10])
         {
@@ -193,6 +205,7 @@ table 47015 "SL Inventory"
         field(43; EOQ; Decimal)
         {
             Caption = 'EOQ';
+            AutoFormatType = 0;
         }
         field(44; ExplInvoice; Integer)
         {
@@ -217,6 +230,7 @@ table 47015 "SL Inventory"
         field(49; FOvhStdCost; Decimal)
         {
             Caption = 'FOvhStdCost';
+            AutoFormatType = 0;
         }
         field(50; FrtAcct; Text[10])
         {
@@ -253,6 +267,7 @@ table 47015 "SL Inventory"
         field(58; IRDaysSupply; Decimal)
         {
             Caption = 'IRDaysSupply';
+            AutoFormatType = 0;
         }
         field(59; IRDemandID; Text[10])
         {
@@ -273,10 +288,12 @@ table 47015 "SL Inventory"
         field(63; IRLinePtQty; Decimal)
         {
             Caption = 'IRLinePtQty';
+            AutoFormatType = 0;
         }
         field(64; IRMinOnHand; Decimal)
         {
             Caption = 'IRMinOnHand';
+            AutoFormatType = 0;
         }
         field(65; IRModelInvtID; Text[30])
         {
@@ -305,14 +322,17 @@ table 47015 "SL Inventory"
         field(71; IRServiceLevel; Decimal)
         {
             Caption = 'IRServiceLevel';
+            AutoFormatType = 0;
         }
         field(72; IRSftyStkDays; Decimal)
         {
             Caption = 'IRSftyStkDays';
+            AutoFormatType = 0;
         }
         field(73; IRSftyStkPct; Decimal)
         {
             Caption = 'IRSftyStkPct';
+            AutoFormatType = 0;
         }
         field(74; IRSftyStkPolicy; Text[1])
         {
@@ -329,6 +349,7 @@ table 47015 "SL Inventory"
         field(77; IRTargetOrdReq; Decimal)
         {
             Caption = 'IRTargetOrdReq';
+            AutoFormatType = 0;
         }
         field(78; IRTransferSiteID; Text[10])
         {
@@ -345,10 +366,12 @@ table 47015 "SL Inventory"
         field(81; LastBookQty; Decimal)
         {
             Caption = 'LastBookQty';
+            AutoFormatType = 0;
         }
         field(82; LastCost; Decimal)
         {
             Caption = 'LastCost';
+            AutoFormatType = 0;
         }
         field(83; LastCountDate; DateTime)
         {
@@ -361,18 +384,22 @@ table 47015 "SL Inventory"
         field(85; LastStdCost; Decimal)
         {
             Caption = 'LastStdCost';
+            AutoFormatType = 0;
         }
         field(86; LastVarAmt; Decimal)
         {
             Caption = 'LastVarAmt';
+            AutoFormatType = 0;
         }
         field(87; LastVarPct; Decimal)
         {
             Caption = 'LastVarPct';
+            AutoFormatType = 0;
         }
         field(88; LastVarQty; Decimal)
         {
             Caption = 'LastVarQty';
+            AutoFormatType = 0;
         }
         field(89; LCVarianceAcct; Text[10])
         {
@@ -385,6 +412,7 @@ table 47015 "SL Inventory"
         field(91; LeadTime; Decimal)
         {
             Caption = 'LeadTime';
+            AutoFormatType = 0;
         }
         field(92; LinkSpecId; Integer)
         {
@@ -437,6 +465,7 @@ table 47015 "SL Inventory"
         field(104; MaxOnHand; Decimal)
         {
             Caption = 'MaxOnHand';
+            AutoFormatType = 0;
         }
         field(105; MfgClassID; Text[10])
         {
@@ -445,10 +474,12 @@ table 47015 "SL Inventory"
         field(106; MfgLeadTime; Decimal)
         {
             Caption = 'MfgLeadTime';
+            AutoFormatType = 0;
         }
         field(107; MinGrossProfit; Decimal)
         {
             Caption = 'MinGrossProfit';
+            AutoFormatType = 0;
         }
         field(108; MoveClass; Text[10])
         {
@@ -469,6 +500,7 @@ table 47015 "SL Inventory"
         field(112; PDirStdCost; Decimal)
         {
             Caption = 'PDirStdCost';
+            AutoFormatType = 0;
         }
         field(113; PerNbr; Text[6])
         {
@@ -477,6 +509,7 @@ table 47015 "SL Inventory"
         field(114; PFOvhStdCost; Decimal)
         {
             Caption = 'PFOvhStdCost';
+            AutoFormatType = 0;
         }
         field(115; PPVAcct; Text[10])
         {
@@ -501,6 +534,7 @@ table 47015 "SL Inventory"
         field(120; PStdCost; Decimal)
         {
             Caption = 'PStdCost';
+            AutoFormatType = 0;
         }
         field(121; PStdCostDate; DateTime)
         {
@@ -509,22 +543,27 @@ table 47015 "SL Inventory"
         field(122; PVOvhStdCost; Decimal)
         {
             Caption = 'PVOvhStdCost';
+            AutoFormatType = 0;
         }
         field(123; ReordPt; Decimal)
         {
             Caption = 'ReordPt';
+            AutoFormatType = 0;
         }
         field(124; ReOrdPtCalc; Decimal)
         {
             Caption = 'ReOrdPtCalc';
+            AutoFormatType = 0;
         }
         field(125; ReordQty; Decimal)
         {
             Caption = 'ReordQty';
+            AutoFormatType = 0;
         }
         field(126; ReOrdQtyCalc; Decimal)
         {
             Caption = 'ReOrdQtyCalc';
+            AutoFormatType = 0;
         }
         field(127; ReplMthd; Text[1])
         {
@@ -553,18 +592,22 @@ table 47015 "SL Inventory"
         field(133; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(134; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(135; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(136; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(137; S4Future07; DateTime)
         {
@@ -597,10 +640,12 @@ table 47015 "SL Inventory"
         field(144; SafetyStk; Decimal)
         {
             Caption = 'SafetyStk';
+            AutoFormatType = 0;
         }
         field(145; SafetyStkCalc; Decimal)
         {
             Caption = 'SafetyStkCalc';
+            AutoFormatType = 0;
         }
         field(146; Selected; Integer)
         {
@@ -633,6 +678,7 @@ table 47015 "SL Inventory"
         field(153; StdCost; Decimal)
         {
             Caption = 'StdCost';
+            AutoFormatType = 0;
         }
         field(154; StdCostDate; DateTime)
         {
@@ -641,6 +687,7 @@ table 47015 "SL Inventory"
         field(155; StkBasePrc; Decimal)
         {
             Caption = 'StkBasePrc';
+            AutoFormatType = 0;
         }
         field(156; StkItem; Integer)
         {
@@ -649,10 +696,12 @@ table 47015 "SL Inventory"
         field(157; StkRvsdPrc; Decimal)
         {
             Caption = 'StkRvsdPrc';
+            AutoFormatType = 0;
         }
         field(158; StkTaxBasisPrc; Decimal)
         {
             Caption = 'StkTaxBasisPrc';
+            AutoFormatType = 0;
         }
         field(159; StkUnit; Text[6])
         {
@@ -661,10 +710,12 @@ table 47015 "SL Inventory"
         field(160; StkVol; Decimal)
         {
             Caption = 'StkVol';
+            AutoFormatType = 0;
         }
         field(161; StkWt; Decimal)
         {
             Caption = 'StkWt';
+            AutoFormatType = 0;
         }
         field(162; StkWtUnit; Text[6])
         {
@@ -705,6 +756,7 @@ table 47015 "SL Inventory"
         field(171; Turns; Decimal)
         {
             Caption = 'Turns';
+            AutoFormatType = 0;
         }
         field(172; UPCCode; Text[30])
         {
@@ -713,6 +765,7 @@ table 47015 "SL Inventory"
         field(173; UsageRate; Decimal)
         {
             Caption = 'UsageRate';
+            AutoFormatType = 0;
         }
         field(174; User1; Text[30])
         {
@@ -725,10 +778,12 @@ table 47015 "SL Inventory"
         field(176; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(177; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(178; User5; Text[10])
         {
@@ -753,6 +808,7 @@ table 47015 "SL Inventory"
         field(183; VOvhStdCost; Decimal)
         {
             Caption = 'VOvhStdCost';
+            AutoFormatType = 0;
         }
         field(184; WarrantyDays; Integer)
         {
@@ -761,6 +817,7 @@ table 47015 "SL Inventory"
         field(185; YTDUsage; Decimal)
         {
             Caption = 'YTDUsage';
+            AutoFormatType = 0;
         }
     }
 

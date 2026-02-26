@@ -27,12 +27,18 @@ table 1077 "MS - PayPal Transaction"
         }
         field(8; "Gross Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
         field(9; "Net Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
         field(10; "Fee Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
         field(11; "Payer E-mail"; Text[127])
         {

@@ -115,6 +115,7 @@ tableextension 18144 "GST Sales Cr.Memo Header Ext" extends "Sales Cr.Memo Heade
         }
         field(18157; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
         }

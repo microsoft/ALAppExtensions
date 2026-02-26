@@ -25,6 +25,7 @@ table 4850 "Automatic Account Header"
         }
         field(3; Balance; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = Sum("Automatic Account Line"."Allocation %" WHERE("Automatic Acc. No." = FIELD("No.")));
             Caption = 'Balance';
             FieldClass = FlowField;

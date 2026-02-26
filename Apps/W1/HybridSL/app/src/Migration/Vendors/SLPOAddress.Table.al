@@ -78,15 +78,19 @@ table 47055 "SL POAddress"
         }
         field(21; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(22; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(23; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(24; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(25; S4Future07; DateTime)
         {
@@ -135,9 +139,11 @@ table 47055 "SL POAddress"
         }
         field(40; User3; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(41; User4; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(42; User5; Text[10])
         {

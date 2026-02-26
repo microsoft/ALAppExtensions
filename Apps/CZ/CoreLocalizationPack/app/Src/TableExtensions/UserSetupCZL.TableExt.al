@@ -129,6 +129,11 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
             Caption = 'Allow Orig. Doc. VAT Date Changing';
             DataClassification = CustomerContent;
         }
+        field(11789; "Allow Ext.Doc.No. Changing CZL"; Boolean)
+        {
+            Caption = 'Allow External Document No. Changing';
+            DataClassification = CustomerContent;
+        }
     }
 
     trigger OnDelete()

@@ -51,6 +51,7 @@ codeunit 148190 "Sust. Value Entry Test"
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
         CO2eMustNotBeZeroErr: Label 'The CO2e fields must have a value that is not 0.';
+        SustLedgerEntryMustNotBeFoundErr: Label 'Sustainability Ledger Entry must not be found with External Document No. filter in Find Entries';
 
     [Test]
     procedure VerifySustainabilityValueEntryShouldBeCreatedWhenPurchDocumentIsPosted()
@@ -4310,6 +4311,91 @@ codeunit 148190 "Sust. Value Entry Test"
         VerifySustValueEntryForProductionOrder(ProductionOrder, ProdOrderComponent."Item No.", -ExpectedCO2eOnLot[2]);
     end;
 
+    [Test]
+    [HandlerFunctions('NavigateFindEntriesHandlerForExternalDocumentNo')]
+    procedure VerifyFindEntriesCorrectResultsWithExternalDocumentNoSearch()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        SustainabilityAccount: Record "Sustainability Account";
+        Navigate: Page Navigate;
+        EmissionCH4: Decimal;
+        EmissionCO2: Decimal;
+        EmissionN2O: Decimal;
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        ExternalDocNo: Code[35];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 620888] Verify Find Entries returns correct results when searching posted invoices by External Document No.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update Sustainability Account No.,Emission CO2,Emission CH4,Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify();
+
+        PurchaseHeader.CalcFields("Amount Including VAT");
+        PurchaseHeader.Validate("Doc. Amount VAT", PurchaseHeader."Amount Including VAT");
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Post a Purchase Document.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Store External Document No. for search criteria.
+        ExternalDocNo := LibraryRandom.RandText(5);
+
+        // [GIVEN] Create another Purchase Document with External Document No. and without sustainability details.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader.Validate("Vendor Invoice No.", ExternalDocNo);
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Modify();
+
+        PurchaseHeader.CalcFields("Amount Including VAT");
+        PurchaseHeader.Validate("Doc. Amount Incl. VAT", PurchaseHeader."Amount Including VAT");
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Post a Purchase Document.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Find Entries with External Document No. search for External Document No. and expected number of Sustainability Ledger Entries should be 0.
+        LibraryVariableStorage.Enqueue(ExternalDocNo);
+        LibraryVariableStorage.Enqueue('');
+        Navigate.Run();
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);
@@ -5017,6 +5103,24 @@ codeunit 148190 "Sust. Value Entry Test"
 
         SalesOrderStatisticsPage."Total CO2e".AssertEquals(TotalCO2e);
         SalesOrderStatisticsPage."Posted Total CO2e".AssertEquals(PostedTotalCO2e);
+    end;
+
+    [PageHandler]
+    procedure NavigateFindEntriesHandlerForExternalDocumentNo(var Navigate: TestPage Navigate)
+    var
+        ExternalDocNo: Text;
+        ExpectedRecord: Text;
+    begin
+        ExternalDocNo := LibraryVariableStorage.DequeueText();
+        ExpectedRecord := LibraryVariableStorage.DequeueText();
+
+        Navigate.ExtDocNo.SetValue(ExternalDocNo);
+        Navigate.Find.Invoke();
+
+        //[THEN] Verify Sustainability Ledger Entry results must not exist since External Document No. is not stored in Sustainability Ledger Entry.
+        Navigate.Filter.SetFilter("Table ID", Format(Database::"Sustainability Ledger Entry"));
+        Assert.AreEqual(false, Navigate.First(), SustLedgerEntryMustNotBeFoundErr);
+        Navigate.OK().Invoke();
     end;
 
     [ModalPageHandler]

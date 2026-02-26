@@ -117,15 +117,19 @@ table 47056 "SL SOAddress"
         }
         field(34; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(35; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(36; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(37; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(38; S4Future07; DateTime)
         {
@@ -195,9 +199,11 @@ table 47056 "SL SOAddress"
         }
         field(60; User3; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(61; User4; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(62; User5; Text[10])
         {

@@ -16,6 +16,7 @@ table 47023 "SL APAdjust"
         field(1; AdjAmt; Decimal)
         {
             Caption = 'AdjAmt';
+            AutoFormatType = 0;
         }
         field(2; AdjBatNbr; Text[10])
         {
@@ -24,6 +25,7 @@ table 47023 "SL APAdjust"
         field(3; AdjBkupWthld; Decimal)
         {
             Caption = 'AdjBkupWthld';
+            AutoFormatType = 0;
         }
         field(4; AdjdDocType; Text[2])
         {
@@ -32,6 +34,7 @@ table 47023 "SL APAdjust"
         field(5; AdjDiscAmt; Decimal)
         {
             Caption = 'AdjDiscAmt';
+            AutoFormatType = 0;
         }
         field(6; AdjdRefNbr; Text[10])
         {
@@ -76,10 +79,12 @@ table 47023 "SL APAdjust"
         field(16; CuryAdjdAmt; Decimal)
         {
             Caption = 'CuryAdjdAmt';
+            AutoFormatType = 0;
         }
         field(17; CuryAdjdBkupWthld; Decimal)
         {
             Caption = 'CuryAdjdBkupWthld';
+            AutoFormatType = 0;
         }
         field(18; CuryAdjdCuryId; Text[4])
         {
@@ -88,6 +93,7 @@ table 47023 "SL APAdjust"
         field(19; CuryAdjdDiscAmt; Decimal)
         {
             Caption = 'CuryAdjdDiscAmt';
+            AutoFormatType = 0;
         }
         field(20; CuryAdjdMultDiv; Text[1])
         {
@@ -96,22 +102,27 @@ table 47023 "SL APAdjust"
         field(21; CuryAdjdRate; Decimal)
         {
             Caption = 'CuryAdjdRate';
+            AutoFormatType = 0;
         }
         field(22; CuryAdjgAmt; Decimal)
         {
             Caption = 'CuryAdjgAmt';
+            AutoFormatType = 0;
         }
         field(23; CuryAdjgBkupWthld; Decimal)
         {
             Caption = 'CuryAdjgBkupWthld';
+            AutoFormatType = 0;
         }
         field(24; CuryAdjgDiscAmt; Decimal)
         {
             Caption = 'CuryAdjgDiscAmt';
+            AutoFormatType = 0;
         }
         field(25; CuryRGOLAmt; Decimal)
         {
             Caption = 'CuryRGOLAmt';
+            AutoFormatType = 0;
         }
         field(26; DateAppl; DateTime)
         {
@@ -148,18 +159,22 @@ table 47023 "SL APAdjust"
         field(34; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(35; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(36; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(37; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(38; S4Future07; DateTime)
         {
@@ -196,10 +211,12 @@ table 47023 "SL APAdjust"
         field(46; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(47; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(48; User5; Text[10])
         {

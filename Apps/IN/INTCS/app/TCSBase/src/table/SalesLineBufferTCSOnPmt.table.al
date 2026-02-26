@@ -76,26 +76,35 @@ table 18815 "Sales Line Buffer TCS On Pmt."
         }
         field(12; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(13; "Unit Price"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(14; "Line Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(15; "Line Discount Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(16; "Inv. Discount Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = CustomerContent;
         }
@@ -107,11 +116,15 @@ table 18815 "Sales Line Buffer TCS On Pmt."
         }
         field(18; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(19; "Total GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = CustomerContent;
         }
@@ -122,6 +135,8 @@ table 18815 "Sales Line Buffer TCS On Pmt."
         }
         field(21; "Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = CustomerContent;
         }

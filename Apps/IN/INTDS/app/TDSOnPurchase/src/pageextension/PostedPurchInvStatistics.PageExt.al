@@ -14,6 +14,8 @@ pageextension 18716 "Posted Purch. Inv Statistics" extends "Purchase Invoice Sta
         {
             field("TDS Amount"; TDSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 Caption = 'TDS Amount';

@@ -49,19 +49,22 @@ pageextension 7414 "Excise Journal Line Ext" extends "Sustainability Excise Jour
             {
                 ApplicationArea = All;
                 Visible = EnableExciseTax;
+                CaptionClass = GetCaptionClass(Rec.FieldNo("Quantity for Excise Tax"));
                 Editable = false;
                 ToolTip = 'Specifies the quantity for excise tax calculation.';
             }
-            field("Tax Rate %"; Rec."Tax Rate %")
+            field("Excise Duty"; Rec."Excise Duty")
             {
                 ApplicationArea = All;
                 Visible = EnableExciseTax;
-                ToolTip = 'Specifies the tax rate percentage applied to this journal line.';
+                CaptionClass = GetCaptionClass(Rec.FieldNo("Excise Duty"));
+                ToolTip = 'Specifies the excise duty applied to this journal line.';
             }
             field("Tax Amount"; Rec."Tax Amount")
             {
                 ApplicationArea = All;
                 Visible = EnableExciseTax;
+                CaptionClass = GetCaptionClass(Rec.FieldNo("Tax Amount"));
                 ToolTip = 'Specifies the calculated excise tax amount for this journal line.';
             }
         }
@@ -98,4 +101,42 @@ pageextension 7414 "Excise Journal Line Ext" extends "Sustainability Excise Jour
             }
         }
     }
+
+    var
+        ExciseCaptionTxt: Label '%1 (%2)', Comment = '%1 = Field Caption, %2 = Report Caption';
+
+    local procedure GetCaptionClass(FieldNo: Integer): Text
+    var
+        SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
+        ExciseTaxType: Record "Excise Tax Type";
+    begin
+        if not SustainabilityExciseJnlBatch.Get(Rec.GetRangeMax("Journal Template Name"), CurrentJournalBatchName) then
+            exit;
+
+        GetExciseTaxType(ExciseTaxType, SustainabilityExciseJnlBatch."Excise Tax Type Filter");
+
+        case FieldNo of
+            Rec.FieldNo("Quantity for Excise Tax"):
+                if ExciseTaxType."Report Caption" <> '' then
+                    exit(StrSubstNo(ExciseCaptionTxt, Rec.FieldCaption("Quantity for Excise Tax"), ExciseTaxType."Report Caption"))
+                else
+                    exit(Rec.FieldCaption("Quantity for Excise Tax"));
+            Rec.FieldNo("Excise Duty"):
+                if ExciseTaxType."Report Caption" <> '' then
+                    exit(StrSubstNo(ExciseCaptionTxt, Rec.FieldCaption("Excise Duty"), ExciseTaxType."Report Caption"))
+                else
+                    exit(Rec.FieldCaption("Excise Duty"));
+            Rec.FieldNo("Tax Amount"):
+                if ExciseTaxType."Report Caption" <> '' then
+                    exit(StrSubstNo(ExciseCaptionTxt, Rec.FieldCaption("Tax Amount"), ExciseTaxType."Report Caption"))
+                else
+                    exit(Rec.FieldCaption("Tax Amount"));
+        end;
+    end;
+
+    local procedure GetExciseTaxType(var ExciseTaxType: Record "Excise Tax Type"; ExciseTaxTypeCode: Code[20])
+    begin
+        if not ExciseTaxType.Get(ExciseTaxTypeCode) then
+            exit;
+    end;
 }

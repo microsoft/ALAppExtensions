@@ -41,18 +41,26 @@ table 5024 "Service Declaration Line"
         }
         field(8; "Sales Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Sales Amount';
         }
         field(9; "Purchase Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Purchase Amount';
         }
         field(10; "Sales Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Sales Amount (LCY)';
         }
         field(11; "Purchase Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Purchase Amount (LCY)';
         }
         field(12; "Item Charge No."; Code[20])

@@ -40,6 +40,7 @@ table 47059 "SL PJAddr"
         field(7; ad_id07; Decimal)
         {
             Caption = 'ad_id07';
+            AutoFormatType = 0;
         }
         field(8; ad_id08; DateTime)
         {
@@ -140,10 +141,12 @@ table 47059 "SL PJAddr"
         field(32; user3; Decimal)
         {
             Caption = 'user3';
+            AutoFormatType = 0;
         }
         field(33; user4; Decimal)
         {
             Caption = 'user4';
+            AutoFormatType = 0;
         }
     }
 

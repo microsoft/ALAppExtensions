@@ -68,6 +68,8 @@ tableextension 18808 "Gen. Journal Line" extends "Gen. Journal Line"
         }
         field(18811; "TCS On Recpt. Of Pmt. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TCS On Recpt. Of Pmt. Amount';
             DataClassification = CustomerContent;
 
