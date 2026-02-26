@@ -1530,7 +1530,9 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         SalesHeader: Record "Sales Header";
     begin
         CreateSalesHeader(SalesHeader, DocumentType);
+        SalesHeader.SetHideValidationDialog(true);
         SalesHeader.Validate("Sell-to Contact", '');
+        SalesHeader.SetHideValidationDialog(false);
         SalesHeader.Modify(true);
         CreateSalesLine(SalesHeader, LineType, false);
         exit(SalesHeader."No.");
@@ -1609,6 +1611,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         SalesHeader.Validate("Ship-to City", PostCode.City);
         SalesHeader.Validate("Sell-to Address", LibraryUtility.GenerateGUID());
         SalesHeader.Validate("Sell-to City", PostCode.City);
+        SalesHeader.Validate("Sell-to Phone No.", LibraryUtility.GenerateRandomPhoneNo());
         SalesHeader.Validate("Your Reference", LibraryUtility.GenerateRandomText(20));
         SalesHeader.Validate("Payment Terms Code", PaymentTermsCode);
         SalesHeader.Validate("Payment Method Code", PaymentMethod.Code);
