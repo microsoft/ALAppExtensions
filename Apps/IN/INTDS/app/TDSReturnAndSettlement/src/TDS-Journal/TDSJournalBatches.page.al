@@ -61,6 +61,7 @@ page 18748 "TDS Journal Batches"
                 field("No. of Lines"; Rec."No. of Lines")
                 {
                     Visible = false;
+                    ApplicationArea = Basic, Suite;
                     trigger OnDrillDown()
                     begin
                         TDSJnlManagement.TemplateSelectionFromTaxBatch(Rec);

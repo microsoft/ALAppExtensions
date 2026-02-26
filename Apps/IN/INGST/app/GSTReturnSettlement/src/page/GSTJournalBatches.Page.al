@@ -70,6 +70,7 @@ page 18327 "GST Journal Batches"
                 field("No. of Lines"; Rec."No. of Lines")
                 {
                     Visible = false;
+                    ApplicationArea = Basic, Suite;
                     trigger OnDrillDown()
                     begin
                         GSTJnlManagement.TemplateSelectionFromGSTBatch(Rec)
