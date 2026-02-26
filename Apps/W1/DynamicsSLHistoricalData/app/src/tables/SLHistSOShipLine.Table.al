@@ -22,10 +22,12 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(3; AvgCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'AvgCost';
         }
         field(4; BMICost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMICost';
         }
         field(5; BMICuryID; Text[4])
@@ -38,6 +40,7 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(7; BMIExtPriceInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMIExtPriceInvc';
         }
         field(8; BMIMultDiv; Text[1])
@@ -46,6 +49,7 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(9; BMIRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMIRate';
         }
         field(10; BMIRtTp; Text[6])
@@ -54,6 +58,7 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(11; BMISlsPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMISlsPrice';
         }
         field(12; ChainDisc; Text[15])
@@ -62,10 +67,12 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(13; CmmnPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CmmnPct';
         }
         field(14; CnvFact; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CnvFact';
         }
         field(15; COGSAcct; Text[10])
@@ -78,10 +85,12 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(17; CommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CommCost';
         }
         field(18; Cost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cost';
         }
         field(19; CpnyID; Text[10])
@@ -102,66 +111,82 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(23; CuryCommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCommCost';
         }
         field(24; CuryCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCost';
         }
         field(25; CuryListPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryListPrice';
         }
         field(26; CurySlsPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CurySlsPrice';
         }
         field(27; CuryTaxAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt00';
         }
         field(28; CuryTaxAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt01';
         }
         field(29; CuryTaxAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt02';
         }
         field(30; CuryTaxAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt03';
         }
         field(31; CuryTotCommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotCommCost';
         }
         field(32; CuryTotCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotCost';
         }
         field(33; CuryTotInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotInvc';
         }
         field(34; CuryTotMerch; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotMerch';
         }
         field(35; CuryTxblAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt00';
         }
         field(36; CuryTxblAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt01';
         }
         field(37; CuryTxblAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt02';
         }
         field(38; CuryTxblAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt03';
         }
         field(39; Descr; Text[60])
@@ -178,6 +203,7 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(42; DiscPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DiscPct';
         }
         field(43; DiscSub; Text[24])
@@ -234,6 +260,7 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(56; ListPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ListPrice';
         }
         field(57; LotSerCntr; Integer)
@@ -274,6 +301,7 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(66; OrigBO; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OrigBO';
         }
         field(67; OrigINBatNbr; Text[10])
@@ -302,26 +330,32 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(73; QtyBO; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyBO';
         }
         field(74; QtyFuture; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyFuture';
         }
         field(75; QtyOrd; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyOrd';
         }
         field(76; QtyPick; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyPick';
         }
         field(77; QtyPrevShip; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyPrevShip';
         }
         field(78; QtyShip; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyShip';
         }
         field(79; RebateID; Text[10])
@@ -346,18 +380,22 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(84; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(85; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(86; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(87; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(88; S4Future07; DateTime)
@@ -398,6 +436,7 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(97; ShipWght; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ShipWght';
         }
         field(98; SiteID; Text[10])
@@ -414,6 +453,7 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(101; SlsPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'SlsPrice';
         }
         field(102; SlsPriceID; Text[15])
@@ -442,18 +482,22 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(108; TaxAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt00';
         }
         field(109; TaxAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt01';
         }
         field(110; TaxAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt02';
         }
         field(111; TaxAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt03';
         }
         field(112; TaxCat; Text[10])
@@ -482,34 +526,42 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(118; TotCommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotCommCost';
         }
         field(119; TotCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotCost';
         }
         field(120; TotInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotInvc';
         }
         field(121; TotMerch; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotMerch';
         }
         field(122; TxblAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt00';
         }
         field(123; TxblAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt01';
         }
         field(124; TxblAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt02';
         }
         field(125; TxblAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt03';
         }
         field(126; UnitDesc; Text[6])
@@ -542,10 +594,12 @@ table 42816 "SL Hist. SOShipLine"
         }
         field(133; User5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User5';
         }
         field(134; User6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User6';
         }
         field(135; User7; Text[10])

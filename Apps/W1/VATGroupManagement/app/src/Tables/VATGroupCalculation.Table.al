@@ -52,6 +52,7 @@ table 4701 "VAT Group Calculation"
         field(7; Amount; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Amount';
             Editable = false;

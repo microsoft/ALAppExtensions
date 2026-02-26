@@ -13,6 +13,7 @@ table 11027 "Elec. VAT Decl. Buffer"
         }
         field(2; Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount';
         }
     }

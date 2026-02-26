@@ -42,6 +42,8 @@ page 31176 "Sales Adv. Letter FactBox CZZ"
             }
             field("VAT Base Amount"; -VATBaseAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Caption = 'VAT Base Amount';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies VAT base amount.';
@@ -49,6 +51,8 @@ page 31176 "Sales Adv. Letter FactBox CZZ"
             }
             field("VAT Base Amount (LCY)"; -VATBaseAmountLCY)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'VAT Base Amount (LCY)';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies VAT base amount (LCY).';
@@ -56,6 +60,8 @@ page 31176 "Sales Adv. Letter FactBox CZZ"
             }
             field("VAT Amount"; -VATAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Caption = 'VAT Amount';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies VAT amount.';
@@ -63,6 +69,8 @@ page 31176 "Sales Adv. Letter FactBox CZZ"
             }
             field("VAT Amount (LCY)"; -VATAmountLCY)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'VAT Amount (LCY)';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies VAT amount (LCY).';

@@ -35,6 +35,7 @@ table 11510 "Swiss QR-Bill Buffer"
         }
         field(3; Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount';
         }
         field(4; Currency; Code[10])

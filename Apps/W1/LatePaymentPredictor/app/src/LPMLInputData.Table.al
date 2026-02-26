@@ -34,22 +34,27 @@ table 1951 "LP ML Input Data"
 
         field(6; "Ratio Paid Late/Paid Invoices"; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(7; "Total Paid Invoices Amount"; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(8; "Total Paid Late Inv. Amount"; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(9; "Ratio PaidLateAmnt/PaidAmnt"; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(10; "Average Days Late"; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(11; "No. Outstanding Inv."; Integer)
@@ -62,21 +67,26 @@ table 1951 "LP ML Input Data"
 
         field(13; "Ratio NoOutstngLate/NoOutstng"; Decimal)
         {
+            AutoFormatType = 0;
         }
         field(14; "Total Outstng Invoices Amt."; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(15; "Total Outstng Late Inv. Amt."; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(16; "Ratio AmtLate/Amt Outstng Inv"; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(17; "Average Outstanding Days Late"; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(18; "Bill-to Customer No."; Code[20])
@@ -85,6 +95,7 @@ table 1951 "LP ML Input Data"
 
         field(19; "Base Amount"; Decimal)
         {
+            AutoFormatType = 0;
         }
 
         field(20; "Posting Date"; Date)
@@ -117,6 +128,7 @@ table 1951 "LP ML Input Data"
 
         field(101; "Confidence"; Decimal)
         {
+            AutoFormatType = 0;
         }
     }
 

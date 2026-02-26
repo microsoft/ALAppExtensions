@@ -329,7 +329,7 @@ codeunit 11148 "Create AT GL Account"
         ContosoGLAccount.InsertGLAccount(TradeGoodsOverheadExpenses(), TradeGoodsOverheadExpensesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(TradeGoodsPurchaseVarianceAccount(), TradeGoodsPurchaseVarianceAccountName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(DiscountReceivedTrade(), DiscountReceivedTradeName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(DeliveryExpensesTrade(), DeliveryExpensesTradeName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
+        ContosoGLAccount.InsertGLAccount(DeliveryExpensesTrade(), DeliveryExpensesTradeName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting, '', CreatePostingGroup.MiscPostingGroup(), 0, '', Enum::"General Posting Type"::Purchase, '', CreareVATPostingGrpAT.VAT20(), true, false, false);
         ContosoGLAccount.InsertGLAccount(DiscountReceivedRawMaterials(), DiscountReceivedRawMaterialsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(DeliveryExpensesRawMaterial(), DeliveryExpensesRawMaterialName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(TotalTradeGoods(), TotalTradeGoodsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"End-Total", '', '', 0, '5005..5099', Enum::"General Posting Type"::" ", '', '', false, false, false);
@@ -1041,6 +1041,8 @@ codeunit 11148 "Create AT GL Account"
         ContosoGLAccount.AddAccountForLocalization(SBKName(), '9850');
         ContosoGLAccount.AddAccountForLocalization(ProfitAndLossStatementName(), '9890');
         ContosoGLAccount.AddAccountForLocalization(TOTALEQUITYRESERVESName(), '9999');
+
+        Codeunit.Run(Codeunit::"Create Deferral Template AT");
 
         AddGLAccountForAT();
     end;
@@ -6433,7 +6435,7 @@ codeunit 11148 "Create AT GL Account"
         CapacityVarianceLbl: Label 'Capacity variance', MaxLength = 100;
         SubcontractedVarianceLbl: Label 'Subcontracted variance', MaxLength = 100;
         CapOverheadVarianceLbl: Label 'Cap. overhead variance', MaxLength = 100;
-        ManufacturingOverheadVarianceLbl: Label 'Manufacturing overhead variance', MaxLength = 100;       
+        ManufacturingOverheadVarianceLbl: Label 'Manufacturing overhead variance', MaxLength = 100;
 #endif
         TotalVarianceLbl: Label 'Total variance', MaxLength = 100;
         ConsumptionLbl: Label 'Consumption', MaxLength = 100;

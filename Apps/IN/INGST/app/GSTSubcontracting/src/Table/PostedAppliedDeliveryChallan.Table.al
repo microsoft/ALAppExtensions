@@ -72,18 +72,21 @@ table 18472 "Posted Applied DeliveryChallan"
         }
         field(10; "Qty. to Receive"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Receive';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(11; "Qty. to Consume"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Consume';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(12; "Qty. to Return (C.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Return (C.E.)';
             DecimalPlaces = 0 : 3;
             Editable = true;
@@ -91,6 +94,7 @@ table 18472 "Posted Applied DeliveryChallan"
         }
         field(13; "Qty. To Return (V.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. To Return (V.E.)';
             DecimalPlaces = 0 : 3;
             Editable = true;

@@ -152,6 +152,7 @@ tableextension 18447 "GST Service Cr.Memo Header" extends "Service Cr.Memo Heade
         }
         field(18465; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
             MinValue = 0;

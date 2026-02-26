@@ -90,14 +90,17 @@ table 42817 "SL Hist. SOShipLot"
         }
         field(20; QtyPick; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyPick';
         }
         field(21; QtyPickStock; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyPickStock';
         }
         field(22; QtyShip; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyShip';
         }
         field(23; RMADisposition; Text[3])
@@ -114,18 +117,22 @@ table 42817 "SL Hist. SOShipLot"
         }
         field(26; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(27; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(28; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(29; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(30; S4Future07; DateTime)
@@ -182,10 +189,12 @@ table 42817 "SL Hist. SOShipLot"
         }
         field(43; User5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User5';
         }
         field(44; User6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User6';
         }
         field(45; User7; Text[10])

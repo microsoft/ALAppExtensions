@@ -47,6 +47,7 @@ tableextension 31262 "Item Ledger Entry CZA" extends "Item Ledger Entry"
         }
         field(31007; "Currency Factor CZA"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DecimalPlaces = 0 : 15;
             DataClassification = CustomerContent;

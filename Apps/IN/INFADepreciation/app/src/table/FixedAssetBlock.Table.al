@@ -44,6 +44,7 @@ table 18632 "Fixed Asset Block"
         }
         field(4; "Depreciation %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Depreciation %';
             MinValue = 0;
             DataClassification = CustomerContent;
@@ -55,6 +56,7 @@ table 18632 "Fixed Asset Block"
         }
         field(5; "Add. Depreciation %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Add. Depreciation %';
             MinValue = 0;
             DataClassification = CustomerContent;
@@ -71,6 +73,8 @@ table 18632 "Fixed Asset Block"
         }
         field(7; "Book Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             FieldClass = FlowField;
             CalcFormula = sum("FA Ledger Entry".Amount where(
                 "FA Block Code" = field("Code"),

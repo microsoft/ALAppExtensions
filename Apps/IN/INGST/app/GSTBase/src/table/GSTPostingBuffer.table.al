@@ -54,21 +54,25 @@ table 18006 "GST Posting Buffer"
         }
         field(8; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Base Amount';
             DataClassification = SystemMetadata;
         }
         field(9; "GST %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST %';
             DataClassification = SystemMetadata;
         }
         field(10; "GST Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Amount';
             DataClassification = SystemMetadata;
         }
         field(11; "Interim Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Interim Amount';
             DataClassification = SystemMetadata;
         }
@@ -116,6 +120,7 @@ table 18006 "GST Posting Buffer"
         }
         field(19; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Custom Duty Amount';
             DataClassification = SystemMetadata;
         }
@@ -132,6 +137,7 @@ table 18006 "GST Posting Buffer"
         }
         field(22; "GST Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Amount (LCY)';
             DataClassification = SystemMetadata;
         }

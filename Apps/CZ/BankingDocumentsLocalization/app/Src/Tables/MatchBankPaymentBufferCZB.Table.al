@@ -57,11 +57,13 @@ table 31260 "Match Bank Payment Buffer CZB"
         }
         field(20; "Remaining Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Remaining Amount';
             DataClassification = SystemMetadata;
         }
         field(21; "Remaining Amt. Incl. Discount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Remaining Amt. Incl. Discount';
             DataClassification = SystemMetadata;
         }

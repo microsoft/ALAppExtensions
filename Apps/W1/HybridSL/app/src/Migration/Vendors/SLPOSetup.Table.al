@@ -140,6 +140,7 @@ table 47048 "SL POSetup"
         field(32; InvtCarryingCost; Decimal)
         {
             Caption = 'InvtCarryingCost';
+            AutoFormatType = 0;
         }
         field(33; LastBatNbr; Text[10])
         {
@@ -224,18 +225,22 @@ table 47048 "SL POSetup"
         field(53; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(54; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(55; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(56; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(57; S4Future07; DateTime)
         {
@@ -264,6 +269,7 @@ table 47048 "SL POSetup"
         field(63; SetupCost; Decimal)
         {
             Caption = 'SetupCost';
+            AutoFormatType = 0;
         }
         field(64; SetupID; Text[2])
         {
@@ -332,10 +338,12 @@ table 47048 "SL POSetup"
         field(80; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(81; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(82; User5; Text[10])
         {

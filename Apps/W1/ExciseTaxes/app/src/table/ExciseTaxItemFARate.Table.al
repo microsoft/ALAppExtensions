@@ -51,12 +51,12 @@ table 7413 "Excise Tax Item/FA Rate"
                     ValidateSourceNo();
             end;
         }
-        field(4; "Tax Rate %"; Decimal)
+        field(4; "Excise Duty"; Decimal)
         {
-            Caption = 'Tax Rate %';
+            AutoFormatType = 0;
+            Caption = 'Excise Duty';
             DecimalPlaces = 2 : 5;
             MinValue = 0;
-            MaxValue = 100;
         }
         field(5; "Effective From Date"; Date)
         {
@@ -133,16 +133,16 @@ table 7413 "Excise Tax Item/FA Rate"
             "Source No." := FixedAsset."No.";
     end;
 
-    procedure GetEffectiveTaxRate(TaxTypeCode: Code[20]; SourceType: Enum "Excise Source Type"; SourceNo: Code[20]; EffectiveDate: Date; var TaxRate: Decimal): Boolean
+    procedure GetEffectiveExciseDuty(TaxTypeCode: Code[20]; SourceType: Enum "Excise Source Type"; SourceNo: Code[20]; EffectiveDate: Date; var ExciseDuty: Decimal): Boolean
     begin
-        if FindTaxRate(TaxTypeCode, SourceType, SourceNo, EffectiveDate, TaxRate) then
+        if FindExciseDuty(TaxTypeCode, SourceType, SourceNo, EffectiveDate, ExciseDuty) then
             exit(true);
 
-        if FindTaxRate(TaxTypeCode, SourceType, '', EffectiveDate, TaxRate) then
+        if FindExciseDuty(TaxTypeCode, SourceType, '', EffectiveDate, ExciseDuty) then
             exit(true);
     end;
 
-    local procedure FindTaxRate(TaxTypeCode: Code[20]; SourceType: Enum "Excise Source Type"; SourceNo: Code[20]; EffectiveDate: Date; var TaxRate: Decimal): Boolean
+    local procedure FindExciseDuty(TaxTypeCode: Code[20]; SourceType: Enum "Excise Source Type"; SourceNo: Code[20]; EffectiveDate: Date; var ExciseDuty: Decimal): Boolean
     var
         ExciseTaxItemFARate: Record "Excise Tax Item/FA Rate";
     begin
@@ -154,7 +154,7 @@ table 7413 "Excise Tax Item/FA Rate"
         if not ExciseTaxItemFARate.FindLast() then
             exit(false);
 
-        TaxRate := ExciseTaxItemFARate."Tax Rate %";
+        ExciseDuty := ExciseTaxItemFARate."Excise Duty";
         exit(true);
     end;
 

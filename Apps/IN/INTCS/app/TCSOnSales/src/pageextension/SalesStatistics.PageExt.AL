@@ -15,6 +15,8 @@ pageextension 18845 "Sales Statistics" extends "Sales Statistics"
         {
             field("TCS Amount"; TCSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 Caption = 'TCS Amount';

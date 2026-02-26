@@ -75,36 +75,43 @@ table 40103 "GP POPPOLine"
         }
         field(13; UMQTYINB; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'UMQTYINB';
             DataClassification = CustomerContent;
         }
         field(14; QTYORDER; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTYORDER';
             DataClassification = CustomerContent;
         }
         field(15; QTYCANCE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTYCANCE';
             DataClassification = CustomerContent;
         }
         field(16; QTYCMTBASE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTYCMTBASE';
             DataClassification = CustomerContent;
         }
         field(17; QTYUNCMTBASE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTYUNCMTBASE';
             DataClassification = CustomerContent;
         }
         field(18; UNITCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'UNITCOST';
             DataClassification = CustomerContent;
         }
         field(19; EXTDCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'EXTDCOST';
             DataClassification = CustomerContent;
         }
@@ -146,46 +153,55 @@ table 40103 "GP POPPOLine"
         }
         field(27; POLNEARY_1; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_1';
             DataClassification = CustomerContent;
         }
         field(28; POLNEARY_2; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_2';
             DataClassification = CustomerContent;
         }
         field(29; POLNEARY_3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_3';
             DataClassification = CustomerContent;
         }
         field(30; POLNEARY_4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_4';
             DataClassification = CustomerContent;
         }
         field(31; POLNEARY_5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_5';
             DataClassification = CustomerContent;
         }
         field(32; POLNEARY_6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_6';
             DataClassification = CustomerContent;
         }
         field(33; POLNEARY_7; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_7';
             DataClassification = CustomerContent;
         }
         field(34; POLNEARY_8; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_8';
             DataClassification = CustomerContent;
         }
         field(35; POLNEARY_9; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POLNEARY_9';
             DataClassification = CustomerContent;
         }
@@ -226,11 +242,13 @@ table 40103 "GP POPPOLine"
         }
         field(42; QTY_Canceled_Orig; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY_Canceled_Orig';
             DataClassification = CustomerContent;
         }
         field(43; OPOSTSUB; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OPOSTSUB';
             DataClassification = CustomerContent;
         }
@@ -261,6 +279,7 @@ table 40103 "GP POPPOLine"
         }
         field(49; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'XCHGRATE';
             DataClassification = CustomerContent;
         }
@@ -271,16 +290,19 @@ table 40103 "GP POPPOLine"
         }
         field(51; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DENXRATE';
             DataClassification = CustomerContent;
         }
         field(52; ORUNTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORUNTCST';
             DataClassification = CustomerContent;
         }
         field(53; OREXTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OREXTCST';
             DataClassification = CustomerContent;
         }
@@ -365,21 +387,25 @@ table 40103 "GP POPPOLine"
         }
         field(69; TAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TAXAMNT';
             DataClassification = CustomerContent;
         }
         field(70; ORTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORTAXAMT';
             DataClassification = CustomerContent;
         }
         field(71; BCKTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BCKTXAMT';
             DataClassification = CustomerContent;
         }
         field(72; OBTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OBTAXAMT';
             DataClassification = CustomerContent;
         }
@@ -400,11 +426,13 @@ table 40103 "GP POPPOLine"
         }
         field(76; BackoutTradeDiscTax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BackoutTradeDiscTax';
             DataClassification = CustomerContent;
         }
         field(77; OrigBackoutTradeDiscTax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OrigBackoutTradeDiscTax';
             DataClassification = CustomerContent;
         }
@@ -535,6 +563,7 @@ table 40103 "GP POPPOLine"
         }
         field(103; QTYCommittedInBaseOrig; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTYCommittedInBaseOrig';
             DataClassification = CustomerContent;
         }

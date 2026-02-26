@@ -67,6 +67,7 @@ table 18479 "Sub Order Component List"
         }
         field(10; "Prod. Order Qty."; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = Sum("Prod. Order Component"."Expected Quantity"
                 where(Status = const(Released),
                 "Prod. Order No." = field("Production Order No."),
@@ -79,6 +80,7 @@ table 18479 "Sub Order Component List"
         }
         field(11; "Quantity To Send"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity To Send';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -92,12 +94,14 @@ table 18479 "Sub Order Component List"
         }
         field(12; "Quantity (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity (Base)';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(13; "Quantity To Send (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity To Send (Base)';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -109,6 +113,7 @@ table 18479 "Sub Order Component List"
         }
         field(20; "Scrap %"; Decimal)
         {
+            AutoFormatType = 0;
             BlankNumbers = BlankNeg;
             Caption = 'Scrap %';
             DecimalPlaces = 0 : 5;
@@ -131,6 +136,7 @@ table 18479 "Sub Order Component List"
         }
         field(45; "Quantity per"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity per';
             DecimalPlaces = 0 : 5;
             DataClassification = EndUserIdentifiableInformation;
@@ -173,6 +179,7 @@ table 18479 "Sub Order Component List"
         }
         field(52; "Total Qty at Vendor Location"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = Sum(
                 "Item Ledger Entry"."Remaining Quantity"
                 where("Location Code" = field("Vendor Location"),
@@ -184,6 +191,7 @@ table 18479 "Sub Order Component List"
         }
         field(53; "Total Scrap Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Scrap Quantity';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -199,6 +207,7 @@ table 18479 "Sub Order Component List"
         }
         field(54; "Qty. at Vendor Location"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = Sum(
                 "Item Ledger Entry"."Remaining Quantity"
                 where("Entry Type" = const(Transfer),
@@ -214,6 +223,7 @@ table 18479 "Sub Order Component List"
         }
         field(55; "Qty. for Rework"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. for Rework';
             DecimalPlaces = 0 : 3;
             Editable = false;
@@ -238,6 +248,7 @@ table 18479 "Sub Order Component List"
         }
         field(58; "Qty. per Unit of Measure"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. per Unit of Measure';
             DecimalPlaces = 0 : 5;
             Editable = false;

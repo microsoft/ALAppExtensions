@@ -16,6 +16,7 @@ table 47011 "SL ARSetup"
         field(1; AnnFinChrg; Decimal)
         {
             Caption = 'AnnFinChrg';
+            AutoFormatType = 0;
         }
         field(2; ArAcct; Text[10])
         {
@@ -216,6 +217,7 @@ table 47011 "SL ARSetup"
         field(51; MinFinChrg; Decimal)
         {
             Caption = 'MinFinChrg';
+            AutoFormatType = 0;
         }
         field(52; Nbr0803Docs; Integer)
         {
@@ -228,10 +230,12 @@ table 47011 "SL ARSetup"
         field(54; NSFChrg; Decimal)
         {
             Caption = 'NSFChrg';
+            AutoFormatType = 0;
         }
         field(55; OverLimitAmt; Decimal)
         {
             Caption = 'OverLimitAmt';
+            AutoFormatType = 0;
         }
         field(56; OverLimitType; Text[1])
         {
@@ -296,18 +300,22 @@ table 47011 "SL ARSetup"
         field(71; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(72; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(73; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(74; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(75; S4Future07; DateTime)
         {
@@ -340,6 +348,7 @@ table 47011 "SL ARSetup"
         field(82; SBLimit; Decimal)
         {
             Caption = 'SBLimit';
+            AutoFormatType = 0;
         }
         field(83; SetupId; Text[2])
         {
@@ -368,10 +377,12 @@ table 47011 "SL ARSetup"
         field(89; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(90; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(91; User5; Text[10])
         {

@@ -34,6 +34,8 @@ table 20336 "Transaction Posting Buffer"
         }
         field(6; Amount; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Amount';
         }
@@ -72,6 +74,7 @@ table 20336 "Transaction Posting Buffer"
         }
         field(13; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Currency Factor';
         }
@@ -127,6 +130,8 @@ table 20336 "Transaction Posting Buffer"
         }
         field(24; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Amount (LCY)';
         }

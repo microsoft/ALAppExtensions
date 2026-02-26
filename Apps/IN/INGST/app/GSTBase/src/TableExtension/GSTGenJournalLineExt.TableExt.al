@@ -121,6 +121,7 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
         }
         field(18020; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
             MinValue = 0;
@@ -226,11 +227,15 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
         }
         field(18040; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Custom Duty Amount';
             DataClassification = CustomerContent;
         }
         field(18041; "GST Assessable Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Assessable Value';
             DataClassification = CustomerContent;
         }
@@ -252,6 +257,8 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
         }
         field(18045; "Custom Duty Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Custom Duty Amount (LCY)';
             DataClassification = CustomerContent;
         }
@@ -344,23 +351,30 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
         }
         field(18062; "Amount Excl. GST"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount Excl. GST';
             DataClassification = CustomerContent;
         }
         field(18064; "GST TDS/TCS %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST TDS/TCS %';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(18065; "GST TDS/TCS Base Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS/TCS Base Amount (LCY)';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(18066; "GST TDS/TCS Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS/TCS Amount (LCY)';
             DataClassification = CustomerContent;
             Editable = false;
@@ -383,6 +397,8 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
         }
         field(18069; "GST TDS/TCS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST TDS/TCS Base Amount';
             DataClassification = CustomerContent;
         }
@@ -419,6 +435,8 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
         }
         field(18076; "GST Assessable Value Sale(LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value Sale(LCY)';
             DataClassification = CustomerContent;
         }
@@ -473,6 +491,8 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
         }
         field(18074; "FA Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'FA Custom Duty Amount';
             DataClassification = CustomerContent;
         }
@@ -483,6 +503,8 @@ tableextension 18004 "GST Gen. Journal Line Ext" extends "Gen. Journal Line"
         }
         field(18078; "FA Non-Availment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'FA Non-Availment Amount';
             DataClassification = CustomerContent;
         }

@@ -19,6 +19,8 @@ tableextension 11781 "General Ledger Setup CZP" extends "General Ledger Setup"
         }
         field(11741; "Cash Payment Limit (LCY) CZP"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Cash Payment Limit (LCY)';
             DecimalPlaces = 0 : 2;
             MinValue = 0;

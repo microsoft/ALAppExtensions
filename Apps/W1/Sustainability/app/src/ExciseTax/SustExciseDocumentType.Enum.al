@@ -6,6 +6,7 @@ namespace Microsoft.Sustainability.ExciseTax;
 
 enum 6229 "Sust. Excise Document Type"
 {
+    Extensible = true;
     Caption = 'Excise Document Type';
 
     value(0; " ")

@@ -73,18 +73,22 @@ table 41002 "GP GL30000"
         }
         field(43; DEBITAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(44; CRDTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(45; ORDBTAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(46; ORCRDAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(66; DEX_ROW_ID; Integer)

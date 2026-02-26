@@ -38,6 +38,7 @@ table 42823 "SL Hist. GLTran Archive"
         }
         field(7; CrAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CrAmt';
         }
         field(8; Crtd_DateTime; DateTime)
@@ -54,10 +55,12 @@ table 42823 "SL Hist. GLTran Archive"
         }
         field(11; CuryCrAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCrAmt';
         }
         field(12; CuryDrAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryDrAmt';
         }
         field(13; CuryEffDate; Date)
@@ -74,6 +77,7 @@ table 42823 "SL Hist. GLTran Archive"
         }
         field(16; CuryRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRate';
         }
         field(17; CuryRateType; Text[6])
@@ -82,6 +86,7 @@ table 42823 "SL Hist. GLTran Archive"
         }
         field(18; DrAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DrAmt';
         }
         field(19; EmployeeID; Text[10])
@@ -194,6 +199,7 @@ table 42823 "SL Hist. GLTran Archive"
         }
         field(46; Qty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty';
         }
         field(47; RefNbr; Text[10])
@@ -218,18 +224,22 @@ table 42823 "SL Hist. GLTran Archive"
         }
         field(53; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(54; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(55; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(56; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(57; S4Future07; Date)
@@ -282,6 +292,7 @@ table 42823 "SL Hist. GLTran Archive"
         }
         field(70; Units; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Units';
         }
         field(71; User1; Text[30])
@@ -294,10 +305,12 @@ table 42823 "SL Hist. GLTran Archive"
         }
         field(74; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(75; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(76; User5; Text[10])
@@ -323,6 +336,9 @@ table 42823 "SL Hist. GLTran Archive"
         key(Key1; Module, BatNbr, LineNbr)
         {
             Clustered = true;
+        }
+        key(Key2; Acct, Module, BatNbr, LineNbr)
+        {
         }
     }
 }

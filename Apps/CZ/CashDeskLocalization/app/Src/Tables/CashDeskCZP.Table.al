@@ -289,6 +289,7 @@ table 11744 "Cash Desk CZP"
         }
         field(59; "Balance (LCY)"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             CalcFormula = Sum("Bank Account Ledger Entry"."Amount (LCY)" where("Bank Account No." = field("No."),
                                                                                 "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
@@ -311,6 +312,7 @@ table 11744 "Cash Desk CZP"
         }
         field(61; "Net Change (LCY)"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             CalcFormula = Sum("Bank Account Ledger Entry"."Amount (LCY)" where("Bank Account No." = field("No."),
                                                                                 "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
@@ -334,6 +336,7 @@ table 11744 "Cash Desk CZP"
         }
         field(96; "Balance at Date (LCY)"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             CalcFormula = Sum("Bank Account Ledger Entry"."Amount (LCY)" where("Bank Account No." = field("No."),
                                                                                 "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
@@ -371,6 +374,7 @@ table 11744 "Cash Desk CZP"
         }
         field(99; "Debit Amount (LCY)"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             BlankZero = true;
             CalcFormula = Sum("Bank Account Ledger Entry"."Debit Amount (LCY)" where("Bank Account No." = field("No."),
@@ -383,6 +387,7 @@ table 11744 "Cash Desk CZP"
         }
         field(100; "Credit Amount (LCY)"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             BlankZero = true;
             CalcFormula = Sum("Bank Account Ledger Entry"."Credit Amount (LCY)" where("Bank Account No." = field("No."),
@@ -416,6 +421,8 @@ table 11744 "Cash Desk CZP"
         }
         field(122; "Max. Balance"; Decimal)
         {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
             Caption = 'Max. Balance';
             DataClassification = CustomerContent;
         }
@@ -508,6 +515,7 @@ table 11744 "Cash Desk CZP"
         }
         field(260; "Amount Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount Rounding Precision';
             DataClassification = CustomerContent;
             DecimalPlaces = 2 : 2;
@@ -528,11 +536,15 @@ table 11744 "Cash Desk CZP"
         }
         field(267; "Cash Receipt Limit"; Decimal)
         {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
             Caption = 'Cash Receipt Limit';
             DataClassification = CustomerContent;
         }
         field(268; "Cash Withdrawal Limit"; Decimal)
         {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
             Caption = 'Cash Withdrawal Limit';
             DataClassification = CustomerContent;
         }
@@ -629,14 +641,14 @@ table 11744 "Cash Desk CZP"
         if "No." = '' then begin
             GeneralLedgerSetup.Get();
             GeneralLedgerSetup.TestField("Cash Desk Nos. CZP");
-                "No. Series" := GeneralLedgerSetup."Cash Desk Nos. CZP";
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
+            "No. Series" := GeneralLedgerSetup."Cash Desk Nos. CZP";
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series");
+            CashDesk.ReadIsolation(ReadIsolation::ReadUncommitted);
+            CashDesk.SetLoadFields("No.");
+            while CashDesk.Get("No.") do
                 "No." := NoSeries.GetNextNo("No. Series");
-                CashDesk.ReadIsolation(ReadIsolation::ReadUncommitted);
-                CashDesk.SetLoadFields("No.");
-                while CashDesk.Get("No.") do
-                    "No." := NoSeries.GetNextNo("No. Series");
         end;
         DimensionManagement.UpdateDefaultDim(Database::"Cash Desk CZP", "No.", "Global Dimension 1 Code", "Global Dimension 2 Code");
 
@@ -758,7 +770,7 @@ table 11744 "Cash Desk CZP"
 
     procedure CalcBalance(): Decimal
     begin
-        exit(CalcOpenedReceipts() + CalcOpenedWithdrawals() + CalcPostedReceipts() + CalcPostedWithdrawals());
+        exit(CalcPostedReceipts() + CalcPostedWithdrawals() + CalcOpenedReceipts() + CalcOpenedWithdrawals());
     end;
 
     procedure CalcOpenedWithdrawals(): Decimal

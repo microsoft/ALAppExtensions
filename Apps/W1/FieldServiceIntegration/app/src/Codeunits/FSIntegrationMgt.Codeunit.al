@@ -413,6 +413,8 @@ codeunit 6615 "FS Integration Mgt."
                 ServiceConnection.Status := ServiceConnection.Status::Connected
             else
                 ServiceConnection.Status := ServiceConnection.Status::Error;
+
+        CRMIntegrationManagement.CheckCRMConnectionURL(FSConnectionSetup."Server Address");
         ServiceConnection.InsertServiceConnectionExtended(
           ServiceConnection, RecRef.RecordId, FSConnectionSetup.TableCaption(), FSConnectionSetup."Server Address", Page::"FS Connection Setup", Page::"FS Connection Setup Wizard");
     end;

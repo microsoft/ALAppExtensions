@@ -61,61 +61,73 @@ table 4077 "GPSOPTrxAmountsHist"
         }
         field(11; UNITCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
         }
         field(12; ORUNTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Unit Cost';
             DataClassification = CustomerContent;
         }
         field(13; UNITPRCE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Price';
             DataClassification = CustomerContent;
         }
         field(14; ORUNTPRC; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Unit Price';
             DataClassification = CustomerContent;
         }
         field(15; XTNDPRCE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Extended Price';
             DataClassification = CustomerContent;
         }
         field(16; OXTNDPRC; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Extended Price';
             DataClassification = CustomerContent;
         }
         field(17; REMPRICE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Remaining Price';
             DataClassification = CustomerContent;
         }
         field(18; OREPRICE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Remaining Price';
             DataClassification = CustomerContent;
         }
         field(19; EXTDCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Extended Cost';
             DataClassification = CustomerContent;
         }
         field(20; OREXTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Extended Cost';
             DataClassification = CustomerContent;
         }
         field(21; MRKDNAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Markdown Amount';
             DataClassification = CustomerContent;
         }
         field(22; ORMRKDAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Markdown Amount';
             DataClassification = CustomerContent;
         }
@@ -183,186 +195,223 @@ table 4077 "GPSOPTrxAmountsHist"
         }
         field(35; BKTSLSAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Sales Amount';
             DataClassification = CustomerContent;
         }
         field(36; ORBKTSLS; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Sales Amount';
             DataClassification = CustomerContent;
         }
         field(37; TAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Amount';
             DataClassification = CustomerContent;
         }
         field(38; ORTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Tax Amount';
             DataClassification = CustomerContent;
         }
         field(39; TXBTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Taxable Tax Amount';
             DataClassification = CustomerContent;
         }
         field(40; OTAXTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Taxable Tax Amount';
             DataClassification = CustomerContent;
         }
         field(41; BSIVCTTL; Boolean)
         {
+            AutoFormatType = 0;
             Caption = 'Based On Invoice Total';
             DataClassification = CustomerContent;
         }
         field(42; TRDISAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Trade Discount Amount';
             DataClassification = CustomerContent;
         }
         field(43; ORTDISAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Trade Discount Amount';
             DataClassification = CustomerContent;
         }
         field(44; DISCSALE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Available Sales';
             DataClassification = CustomerContent;
         }
         field(45; ORDAVSLS; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Discount Available Sales';
             DataClassification = CustomerContent;
         }
         field(46; QUANTITY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY';
             DataClassification = CustomerContent;
         }
         field(47; ATYALLOC; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Allocated';
             DataClassification = CustomerContent;
         }
         field(48; QTYINSVC; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY In Service';
             DataClassification = CustomerContent;
         }
         field(49; QTYINUSE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY In Use';
             DataClassification = CustomerContent;
         }
         field(50; QTYDMGED; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Damaged';
             DataClassification = CustomerContent;
         }
         field(51; QTYRTRND; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Returned';
             DataClassification = CustomerContent;
         }
         field(52; QTYONHND; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY On Hand';
             DataClassification = CustomerContent;
         }
         field(53; QTYCANCE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Canceled';
             DataClassification = CustomerContent;
         }
         field(54; QTYCANOT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Canceled Other';
             DataClassification = CustomerContent;
         }
         field(55; QTYORDER; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Ordered';
             DataClassification = CustomerContent;
         }
         field(56; QTYPRBAC; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Prev Back Ordered';
             DataClassification = CustomerContent;
         }
         field(57; QTYPRBOO; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Prev BO On Order';
             DataClassification = CustomerContent;
         }
         field(58; QTYPRINV; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Prev Invoiced';
             DataClassification = CustomerContent;
         }
         field(59; QTYPRORD; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Prev Ordered';
             DataClassification = CustomerContent;
         }
         field(60; QTYPRVRECVD; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Prev Received';
             DataClassification = CustomerContent;
         }
         field(61; QTYRECVD; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Received';
             DataClassification = CustomerContent;
         }
         field(62; QTYREMAI; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Remaining';
             DataClassification = CustomerContent;
         }
         field(63; QTYREMBO; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Remaining On BO';
             DataClassification = CustomerContent;
         }
         field(64; QTYTBAOR; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY To Back Order';
             DataClassification = CustomerContent;
         }
         field(65; QTYTOINV; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY To Invoice';
             DataClassification = CustomerContent;
         }
         field(66; QTYTORDR; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY To Order';
             DataClassification = CustomerContent;
         }
         field(67; QTYFULFI; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Fulfilled';
             DataClassification = CustomerContent;
         }
         field(68; QTYSLCTD; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Selected';
             DataClassification = CustomerContent;
         }
         field(69; QTYBSUOM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY In Base U Of M';
             DataClassification = CustomerContent;
         }
         field(70; EXTQTYAL; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Existing Qty Available';
             DataClassification = CustomerContent;
         }
         field(71; EXTQTYSEL; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Existing Qty Selected';
             DataClassification = CustomerContent;
         }
@@ -573,6 +622,7 @@ table 4077 "GPSOPTrxAmountsHist"
         }
         field(112; CONTLNSEQNBR; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Contract Line SEQ Number';
             DataClassification = CustomerContent;
         }

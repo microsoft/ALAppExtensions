@@ -57,24 +57,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
     #region SalesInvoice
     [Test]
-    procedure CheckSalesInvoiceInZUGFeRDFormatVATRegNoNotMandatoryWithCustomerReference();
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        // [SCENARIO] When Buyer Reference is Customer Reference, VAT Registration No. is not required if customer has E-Invoice Routing No.
-        Initialize();
-
-        // [GIVEN] Buyer Reference is Customer Reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
-
-        // [GIVEN] Sales Invoice for a customer with E-Invoice Routing No. but without VAT Registration No.
-        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithCustomerWithoutVATRegNo("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
-
-        // [WHEN/THEN] Check does not throw an error - VAT Registration No. is not required
-        CheckSalesHeader(SalesHeader);
-    end;
-
-    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyHeaderData();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -1493,11 +1475,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type");
-    begin
-        CreateSalesHeader(SalesHeader, DocumentType, CreateCustomer());
-    end;
-
-    local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type"; CustomerNo: Code[20]);
     var
         PostCode: Record "Post Code";
         PaymentMethod: Record "Payment Method";
@@ -1506,7 +1483,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         LibraryERM.FindPostCode(PostCode);
         PaymentTermsCode := LibraryERM.FindPaymentTermsCode();
         LibraryERM.FindPaymentMethod(PaymentMethod);
-        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CreateCustomer());
         SalesHeader.Validate("Sell-to Contact", SalesHeader."No.");
         SalesHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
         SalesHeader.Validate("Bill-to City", PostCode.City);
@@ -1672,19 +1649,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     begin
         SourceDocumentHeader.GetTable(SalesHeader);
         ZUGFeRDFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
-    end;
-
-    local procedure CreateSalesDocumentWithCustomerWithoutVATRegNo(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
-    var
-        Customer: Record Customer;
-        SalesHeader: Record "Sales Header";
-    begin
-        Customer.Get(CreateCustomer());
-        Customer."VAT Registration No." := '';
-        Customer.Modify(true);
-        CreateSalesHeader(SalesHeader, DocumentType, Customer."No.");
-        CreateSalesLine(SalesHeader, LineType, false);
-        exit(SalesHeader."No.");
     end;
 
     local procedure ExportInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);

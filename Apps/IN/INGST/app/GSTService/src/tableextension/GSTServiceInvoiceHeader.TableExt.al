@@ -152,6 +152,7 @@ tableextension 18445 "GST Service Invoice Header" extends "Service Invoice Heade
         }
         field(18465; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
             MinValue = 0;

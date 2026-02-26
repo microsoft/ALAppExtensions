@@ -73,6 +73,7 @@ table 1861 "C5 VendTable"
         }
         field(15; FixedDiscPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Fixed discount';
         }
         field(16; DiscGroup; Code[10])
@@ -181,30 +182,37 @@ table 1861 "C5 VendTable"
         }
         field(40; Balance; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Balance';
         }
         field(41; Balance30; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '0-30 days';
         }
         field(42; Balance60; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '31-60 days';
         }
         field(43; Balance90; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '61-90 days';
         }
         field(44; Balance120; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '91-120 days';
         }
         field(45; Balance120Plus; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'More than 120 days';
         }
         field(46; AmountDue; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Due';
         }
         field(47; CalculationDate; Date)
@@ -213,10 +221,12 @@ table 1861 "C5 VendTable"
         }
         field(48; BalanceMax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Max. balance';
         }
         field(49; BalanceMST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Balance LCY';
         }
         field(50; SearchName; Text[30])

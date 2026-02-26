@@ -13,12 +13,16 @@ tableextension 18393 "GST Transfer Receipt Line Ext" extends "Transfer Receipt L
     {
         field(18390; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Custom Duty Amount';
             MinValue = 0;
         }
         field(18391; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Amount';
             Editable = false;
@@ -49,12 +53,16 @@ tableextension 18393 "GST Transfer Receipt Line Ext" extends "Transfer Receipt L
         }
         field(18396; "GST Assessable Value"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value';
             DataClassification = CustomerContent;
             MinValue = 0;
         }
         field(18397; "Unit Price"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Unit Price';
             DataClassification = CustomerContent;
         }

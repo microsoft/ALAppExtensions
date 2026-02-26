@@ -9,6 +9,7 @@ using Microsoft.CRM.Team;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.FixedAsset;
@@ -141,11 +142,15 @@ table 11738 "Posted Cash Document Line CZP"
         }
         field(20; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount';
             DataClassification = CustomerContent;
         }
         field(21; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
             DataClassification = CustomerContent;
         }
@@ -226,6 +231,7 @@ table 11738 "Posted Cash Document Line CZP"
         field(55; "VAT Base Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Base Amount (LCY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -233,6 +239,7 @@ table 11738 "Posted Cash Document Line CZP"
         field(56; "Amount Including VAT (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount Including VAT (LCY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -240,6 +247,7 @@ table 11738 "Posted Cash Document Line CZP"
         field(57; "VAT Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Amount (LCY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -254,6 +262,7 @@ table 11738 "Posted Cash Document Line CZP"
         }
         field(60; "VAT %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT %';
             DecimalPlaces = 0 : 5;
             Editable = false;
@@ -267,6 +276,8 @@ table 11738 "Posted Cash Document Line CZP"
         }
         field(62; "VAT Difference (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Difference (LCY)';
             DataClassification = CustomerContent;
         }
@@ -355,6 +366,7 @@ table 11738 "Posted Cash Document Line CZP"
         }
         field(110; "Non-Deductible VAT %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Non-Deductible VAT %';
             DecimalPlaces = 0 : 5;
             Editable = false;
@@ -362,6 +374,7 @@ table 11738 "Posted Cash Document Line CZP"
         }
         field(111; "Non-Deductible VAT Base"; Decimal)
         {
+            AutoFormatType = 1;
             AutoFormatExpression = Rec."Currency Code";
             Caption = 'Non-Deductible VAT Base';
             Editable = false;
@@ -369,6 +382,7 @@ table 11738 "Posted Cash Document Line CZP"
         }
         field(112; "Non-Deductible VAT Amount"; Decimal)
         {
+            AutoFormatType = 1;
             AutoFormatExpression = Rec."Currency Code";
             Caption = 'Non-Deductible VAT Amount';
             Editable = false;
@@ -376,34 +390,40 @@ table 11738 "Posted Cash Document Line CZP"
         }
         field(113; "Non-Deductible VAT Base LCY"; Decimal)
         {
-            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Non-Deductible VAT Base LCY';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(114; "Non-Deductible VAT Amount LCY"; Decimal)
         {
-            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Non-Deductible VAT Amount LCY';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(115; "Non-Deductible VAT Base ACY"; Decimal)
         {
-            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'Non-Deductible VAT Base ACY';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(116; "Non-Deductible VAT Amount ACY"; Decimal)
         {
-            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'Non-Deductible VAT Amount ACY';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(117; "Non-Deductible VAT Diff."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Non-Deductible VAT Difference';
             Editable = false;
             DataClassification = CustomerContent;
@@ -430,6 +450,7 @@ table 11738 "Posted Cash Document Line CZP"
         field(1004; "Project Quantity"; Decimal)
         {
             AccessByPermission = TableData Job = R;
+            AutoFormatType = 0;
             Caption = 'Project Quantity';
             Editable = false;
             DecimalPlaces = 0 : 5;
@@ -482,6 +503,7 @@ table 11738 "Posted Cash Document Line CZP"
     }
 
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
         DimensionManagement: Codeunit DimensionManagement;
 
     procedure ShowDimensions()
@@ -490,6 +512,13 @@ table 11738 "Posted Cash Document Line CZP"
     begin
         DimensionManagement.ShowDimensionSet("Dimension Set ID", StrSubstNo(ThreePlaceholdersTok, TableCaption, "Cash Document No.", "Line No."));
     end;
+
+    local procedure GetAdditionalReportingCurrency(): Code[10]
+    begin
+        GeneralLedgerSetup.GetRecordOnce();
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
+    end;
+
 #if not CLEAN27
     [Obsolete('The statistics action will be replaced with the CashDocumentStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ExtStatistics()

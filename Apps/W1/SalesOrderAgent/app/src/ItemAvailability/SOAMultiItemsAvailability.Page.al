@@ -147,15 +147,17 @@ page 4410 "SOA Multi Items Availability"
                 field(LocationFilter; LocationFilter)
                 {
                     Caption = 'Location Filter';
-                    ToolTip = 'Specifies the location(-s) that will be used to filter the amounts in the window.';
+                    ToolTip = 'Specifies the location that will be used to filter the amounts in the window.';
 
                     trigger OnLookup(var Text: Text): Boolean
                     var
+                        Location: Record Location;
                         LocationList: Page "Location List";
                     begin
                         LocationList.LookupMode(true);
                         if LocationList.RunModal() = Action::LookupOK then begin
-                            Text := LocationList.GetSelectionFilter();
+                            LocationList.GetRecord(Location);
+                            Text := Location.Code;
                             exit(true);
                         end;
                     end;
@@ -252,7 +254,7 @@ page 4410 "SOA Multi Items Availability"
                 {
                     Caption = 'Availability Level';
                     ToolTip = 'Specifies the level of item availability.';
-                    Visible = (not IsAgentSession) or (IsAgentSession and not IncludeCapableToPromiseItems);
+                    Visible = (not IsAgentSession) or (IsAgentSession and OptionsVisible and not IncludeCapableToPromiseItems);
                 }
                 field(UnitCost; UnitCost)
                 {
@@ -983,7 +985,7 @@ page 4410 "SOA Multi Items Availability"
 
         if Customer.Get(CustNo) and (Customer."Language Code" <> '') then
             exit(Customer."Language Code");
-            
+
         exit('');
     end;
 

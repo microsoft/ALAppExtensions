@@ -826,6 +826,7 @@ table 6240 "Sust. Excise Jnl. Line"
     local procedure ValidateSustainabilityExciseJournalLineByField(SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line"; CurrentFieldNo: Integer)
     var
         SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
+        IsHandled: Boolean;
     begin
         case CurrentFieldNo of
             SustainabilityExciseJnlLine.FieldNo("Entry Type"),
@@ -834,14 +835,17 @@ table 6240 "Sust. Excise Jnl. Line"
                    (SustainabilityExciseJnlLine."Entry Type" <> SustainabilityExciseJnlLine."Entry Type"::" ") or
                    (SustainabilityExciseJnlLine."Document Type" <> SustainabilityExciseJnlLine."Document Type"::Journal) and
                    (SustainabilityExciseJnlLine."Entry Type" = SustainabilityExciseJnlLine."Entry Type"::" ")
-                then
-                    Error(
-                        UnsupportedEntryErr,
-                        SustainabilityExciseJnlLine.FieldCaption("Entry Type"),
-                        SustainabilityExciseJnlLine."Entry Type"::" ",
-                        SustainabilityExciseJnlLine.FieldCaption("Document Type"),
-                        SustainabilityExciseJnlLine."Document Type"::Journal);
-
+                then begin
+                    IsHandled := false;
+                    OnValidateSustainabilityExciseJournalLineByFieldOnBeforeShowUnsupportedEntryError(SustainabilityExciseJnlLine, CurrentFieldNo, IsHandled);
+                    if not IsHandled then
+                        Error(
+                            UnsupportedEntryErr,
+                            SustainabilityExciseJnlLine.FieldCaption("Entry Type"),
+                            SustainabilityExciseJnlLine."Entry Type"::" ",
+                            SustainabilityExciseJnlLine.FieldCaption("Document Type"),
+                            SustainabilityExciseJnlLine."Document Type"::Journal);
+                end;
             SustainabilityExciseJnlLine.FieldNo("Emission Cost per Unit"),
             SustainabilityExciseJnlLine.FieldNo("Total Emission Cost"),
             SustainabilityExciseJnlLine.FieldNo("CO2e Emission per Unit"):
@@ -942,6 +946,11 @@ table 6240 "Sust. Excise Jnl. Line"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromFixedAsset(var ExciseJournalLine: Record "Sust. Excise Jnl. Line"; FixedAsset: Record "Fixed Asset")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateSustainabilityExciseJournalLineByFieldOnBeforeShowUnsupportedEntryError(var ExciseJournalLine: Record "Sust. Excise Jnl. Line"; CurrentFieldNo: Integer; var IsHandled: Boolean)
     begin
     end;
 }

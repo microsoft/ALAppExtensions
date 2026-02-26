@@ -96,26 +96,22 @@ codeunit 148087 "MTDTestReturns"
         // [SCENARIO 258181] Rounding of "total" fields on Subpage 10532 "MTD Return Details" of PAG 738 "VAT Return Period Card"
         Initialize();
         InitDummyVATReturn(DummyMTDReturnDetails);
-        with DummyMTDReturnDetails do
-            MockVATReturnDetail(DummyMTDReturnDetails, 'A', 1.11, 2.22, 3.33, 4.44, 5.55, 6.66, 7.77, 8.88, 9.99, true);
+        MockVATReturnDetail(DummyMTDReturnDetails, 'A', 1.11, 2.22, 3.33, 4.44, 5.55, 6.66, 7.77, 8.88, 9.99, true);
         MockAndGetVATPeriod(VATReturnPeriod, DummyMTDReturnDetails);
 
         VATReturnPeriodCard.OpenEdit();
         VATReturnPeriodCard.Filter.SetFilter("Start Date", Format(VATReturnPeriod."Start Date"));
         VATReturnPeriodCard.Filter.SetFilter("End Date", Format(VATReturnPeriod."End Date"));
-        with VATReturnPeriodCard.pageSubmittedVATReturns do begin
-            Assert.IsFalse(Editable(), '');
-            "VAT Due Sales".AssertEquals(Format(1.11));
-            "VAT Due Sales".AssertEquals(Format(1.11));
-            "VAT Due Acquisitions".AssertEquals(Format(2.22));
-            "Total VAT Due".AssertEquals(Format(3.33));
-            "VAT Reclaimed Curr Period".AssertEquals(Format(4.44));
-            "Net VAT Due".AssertEquals(Format(5.55));
-            "Total Value Sales Excl. VAT".AssertEquals(Format(7));
-            "Total Value Purchases Excl.VAT".AssertEquals(Format(8));
-            "Total Value Goods Suppl. ExVAT".AssertEquals(Format(9));
-            "Total Acquisitions Excl. VAT".AssertEquals(Format(10));
-        end;
+        Assert.IsFalse(VATReturnPeriodCard.pageSubmittedVATReturns.Editable(), '');
+        VATReturnPeriodCard.pageSubmittedVATReturns."VAT Due Sales".AssertEquals(Format(1.11));
+        VATReturnPeriodCard.pageSubmittedVATReturns."VAT Due Acquisitions".AssertEquals(Format(2.22));
+        VATReturnPeriodCard.pageSubmittedVATReturns."Total VAT Due".AssertEquals(Format(3.33));
+        VATReturnPeriodCard.pageSubmittedVATReturns."VAT Reclaimed Curr Period".AssertEquals(Format(4.44));
+        VATReturnPeriodCard.pageSubmittedVATReturns."Net VAT Due".AssertEquals(Format(5.55));
+        VATReturnPeriodCard.pageSubmittedVATReturns."Total Value Sales Excl. VAT".AssertEquals(Format(6.66));
+        VATReturnPeriodCard.pageSubmittedVATReturns."Total Value Purchases Excl.VAT".AssertEquals(Format(7.77));
+        VATReturnPeriodCard.pageSubmittedVATReturns."Total Value Goods Suppl. ExVAT".AssertEquals(Format(8.88));
+        VATReturnPeriodCard.pageSubmittedVATReturns."Total Acquisitions Excl. VAT".AssertEquals(Format(9.99));
         VATReturnPeriodCard.Close();
     end;
 

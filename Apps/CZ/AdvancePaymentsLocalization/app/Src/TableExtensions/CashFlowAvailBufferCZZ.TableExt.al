@@ -12,11 +12,13 @@ tableextension 31043 "Cash Flow Avail. Buffer CZZ" extends "Cash Flow Availabili
     {
         field(11702; "Sales Advances CZZ"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Sales Advances';
             DataClassification = SystemMetadata;
         }
         field(11703; "Purchase Advances CZZ"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Purchase Advances';
             DataClassification = SystemMetadata;
         }

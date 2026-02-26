@@ -15,6 +15,8 @@ pageextension 18571 "sales Ord. Statistics" extends "Sales Order Statistics"
             field("Total Amount"; TotalInclTaxAmount)
             {
                 ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Editable = false;
                 ToolTip = 'Specifies the amount, including Tax amount. On the General fast tab, this is the amount posted to the customer account for all the lines in the sales order if you post the sales order as invoiced.';
                 Caption = 'Net Total';
@@ -25,6 +27,8 @@ pageextension 18571 "sales Ord. Statistics" extends "Sales Order Statistics"
             field("Partial Inv. Amount"; PartailInclInvTaxAmount)
             {
                 ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Editable = false;
                 ToolTip = 'Specifies the amount, including Tax amount. On the Invoicing fast tab, this is the amount posted to the customer account for all the lines in the sales order if you post the sales order as invoiced.';
                 Caption = 'Net Total';
@@ -35,6 +39,8 @@ pageextension 18571 "sales Ord. Statistics" extends "Sales Order Statistics"
             field("Partial Ship. Amount"; PartialInclShptTaxAmount)
             {
                 ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Editable = false;
                 ToolTip = 'Specifies the amount, including Tax amount. On the General fast tab, this is the amount posted to the customer account for all the lines in the sales order if you post the sales order as Shipped.';
                 Caption = 'Net Total';

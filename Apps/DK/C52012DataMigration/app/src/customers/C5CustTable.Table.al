@@ -73,6 +73,7 @@ table 1860 "C5 CustTable"
         }
         field(15; FixedDiscPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Fixed discount pct.';
         }
         field(16; Approved; Option)
@@ -168,30 +169,37 @@ table 1860 "C5 CustTable"
         }
         field(37; Balance; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Balance';
         }
         field(38; Balance30; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '0-30 days';
         }
         field(39; Balance60; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '31-60 days';
         }
         field(40; Balance90; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '61-90 days';
         }
         field(41; Balance120; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '91-120 days';
         }
         field(42; Balance120Plus; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'More than 120 days';
         }
         field(43; AmountDue; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Due';
         }
         field(44; CalculationDate; Date)
@@ -200,10 +208,12 @@ table 1860 "C5 CustTable"
         }
         field(45; BalanceMax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Max. balance';
         }
         field(46; BalanceMST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Balance LCY';
         }
         field(47; SearchName; Text[30])

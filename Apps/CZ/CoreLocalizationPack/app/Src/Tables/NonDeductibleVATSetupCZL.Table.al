@@ -28,6 +28,7 @@ table 11713 "Non-Deductible VAT Setup CZL"
         }
         field(3; "Advance Coefficient"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Advance Coefficient';
             DecimalPlaces = 0 : 1;
             MinValue = 0;
@@ -40,6 +41,7 @@ table 11713 "Non-Deductible VAT Setup CZL"
         }
         field(4; "Settlement Coefficient"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Settlement Coefficient';
             DecimalPlaces = 0 : 1;
             MinValue = 0;

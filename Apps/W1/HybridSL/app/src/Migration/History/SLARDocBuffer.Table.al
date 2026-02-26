@@ -24,6 +24,7 @@ table 47074 "SL ARDoc Buffer"
         field(3; ApplAmt; Decimal)
         {
             Caption = 'ApplAmt';
+            AutoFormatType = 0;
         }
         field(4; ApplBatNbr; Text[10])
         {
@@ -64,10 +65,12 @@ table 47074 "SL ARDoc Buffer"
         field(13; CmmnAmt; Decimal)
         {
             Caption = 'CmmnAmt';
+            AutoFormatType = 0;
         }
         field(14; CmmnPct; Decimal)
         {
             Caption = 'CmmnPct';
+            AutoFormatType = 0;
         }
         field(15; ContractID; Text[10])
         {
@@ -96,26 +99,32 @@ table 47074 "SL ARDoc Buffer"
         field(21; CuryApplAmt; Decimal)
         {
             Caption = 'CuryApplAmt';
+            AutoFormatType = 0;
         }
         field(22; CuryClearAmt; Decimal)
         {
             Caption = 'CuryClearAmt';
+            AutoFormatType = 0;
         }
         field(23; CuryCmmnAmt; Decimal)
         {
             Caption = 'CuryCmmnAmt';
+            AutoFormatType = 0;
         }
         field(24; CuryDiscApplAmt; Decimal)
         {
             Caption = 'CuryDiscApplAmt';
+            AutoFormatType = 0;
         }
         field(25; CuryDiscBal; Decimal)
         {
             Caption = 'CuryDiscBal';
+            AutoFormatType = 0;
         }
         field(26; CuryDocBal; Decimal)
         {
             Caption = 'CuryDocBal';
+            AutoFormatType = 0;
         }
         field(27; CuryEffDate; Date)
         {
@@ -132,10 +141,12 @@ table 47074 "SL ARDoc Buffer"
         field(30; CuryOrigDocAmt; Decimal)
         {
             Caption = 'CuryOrigDocAmt';
+            AutoFormatType = 0;
         }
         field(31; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
+            AutoFormatType = 0;
         }
         field(32; CuryRateType; Text[6])
         {
@@ -144,38 +155,47 @@ table 47074 "SL ARDoc Buffer"
         field(33; CuryStmtBal; Decimal)
         {
             Caption = 'CuryStmtBal';
+            AutoFormatType = 0;
         }
         field(34; CuryTaxTot00; Decimal)
         {
             Caption = 'CuryTaxTot00';
+            AutoFormatType = 0;
         }
         field(35; CuryTaxTot01; Decimal)
         {
             Caption = 'CuryTaxTot01';
+            AutoFormatType = 0;
         }
         field(36; CuryTaxTot02; Decimal)
         {
             Caption = 'CuryTaxTot02';
+            AutoFormatType = 0;
         }
         field(37; CuryTaxTot03; Decimal)
         {
             Caption = 'CuryTaxTot03';
+            AutoFormatType = 0;
         }
         field(38; CuryTxblTot00; Decimal)
         {
             Caption = 'CuryTxblTot00';
+            AutoFormatType = 0;
         }
         field(39; CuryTxblTot01; Decimal)
         {
             Caption = 'CuryTxblTot01';
+            AutoFormatType = 0;
         }
         field(40; CuryTxblTot02; Decimal)
         {
             Caption = 'CuryTxblTot02';
+            AutoFormatType = 0;
         }
         field(41; CuryTxblTot03; Decimal)
         {
             Caption = 'CuryTxblTot03';
+            AutoFormatType = 0;
         }
         field(42; CustId; Text[15])
         {
@@ -192,10 +212,12 @@ table 47074 "SL ARDoc Buffer"
         field(45; DiscApplAmt; Decimal)
         {
             Caption = 'DiscApplAmt';
+            AutoFormatType = 0;
         }
         field(46; DiscBal; Decimal)
         {
             Caption = 'DiscBal';
+            AutoFormatType = 0;
         }
         field(47; DiscDate; Date)
         {
@@ -204,6 +226,7 @@ table 47074 "SL ARDoc Buffer"
         field(48; DocBal; Decimal)
         {
             Caption = 'DocBal';
+            AutoFormatType = 0;
         }
         field(49; DocClass; Text[1])
         {
@@ -292,6 +315,7 @@ table 47074 "SL ARDoc Buffer"
         field(74; OrigDocAmt; Decimal)
         {
             Caption = 'OrigDocAmt';
+            AutoFormatType = 0;
         }
         field(75; OrigDocNbr; Text[10])
         {
@@ -328,6 +352,7 @@ table 47074 "SL ARDoc Buffer"
         field(83; RGOLAmt; Decimal)
         {
             Caption = 'RGOLAmt';
+            AutoFormatType = 0;
         }
         field(84; Rlsed; Integer)
         {
@@ -344,18 +369,22 @@ table 47074 "SL ARDoc Buffer"
         field(87; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(88; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(89; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(90; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(91; S4Future07; Date)
         {
@@ -400,6 +429,7 @@ table 47074 "SL ARDoc Buffer"
         field(101; StmtBal; Decimal)
         {
             Caption = 'StmtBal';
+            AutoFormatType = 0;
         }
         field(102; StmtDate; Date)
         {
@@ -444,18 +474,22 @@ table 47074 "SL ARDoc Buffer"
         field(112; TaxTot00; Decimal)
         {
             Caption = 'TaxTot00';
+            AutoFormatType = 0;
         }
         field(113; TaxTot01; Decimal)
         {
             Caption = 'TaxTot01';
+            AutoFormatType = 0;
         }
         field(114; TaxTot02; Decimal)
         {
             Caption = 'TaxTot02';
+            AutoFormatType = 0;
         }
         field(115; TaxTot03; Decimal)
         {
             Caption = 'TaxTot03';
+            AutoFormatType = 0;
         }
         field(116; Terms; Text[2])
         {
@@ -464,18 +498,22 @@ table 47074 "SL ARDoc Buffer"
         field(117; TxblTot00; Decimal)
         {
             Caption = 'TxblTot00';
+            AutoFormatType = 0;
         }
         field(118; TxblTot01; Decimal)
         {
             Caption = 'TxblTot01';
+            AutoFormatType = 0;
         }
         field(119; TxblTot02; Decimal)
         {
             Caption = 'TxblTot02';
+            AutoFormatType = 0;
         }
         field(120; TxblTot03; Decimal)
         {
             Caption = 'TxblTot03';
+            AutoFormatType = 0;
         }
         field(121; User1; Text[30])
         {
@@ -488,10 +526,12 @@ table 47074 "SL ARDoc Buffer"
         field(123; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(124; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(125; User5; Text[10])
         {

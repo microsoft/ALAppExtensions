@@ -505,6 +505,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Invt. Movement Temp. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow VAT Date Changing CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow Orig Doc VAT Date Ch CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow Ext.Doc.No. Changing CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("G/L Correction CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Amount Line", VATAmountLine.FieldNo("VAT Base (LCY) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Amount Line", VATAmountLine.FieldNo("VAT Amount (LCY) CZL"));

@@ -141,6 +141,7 @@ table 40113 "GP PM00200"
         }
         field(34; MINORDER; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(35; PYMTRMID; Text[21])
@@ -157,6 +158,7 @@ table 40113 "GP PM00200"
         }
         field(38; MINPYDLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(39; MXIAFVND; Integer)
@@ -165,6 +167,7 @@ table 40113 "GP PM00200"
         }
         field(40; MAXINDLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(41; COMMENT1; Text[31])
@@ -185,6 +188,7 @@ table 40113 "GP PM00200"
         }
         field(45; CRLMTDLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(46; PYMNTPRI; Text[3])
@@ -225,6 +229,7 @@ table 40113 "GP PM00200"
         }
         field(55; MXWOFAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(56; SBPPSDED; Boolean)
@@ -317,6 +322,7 @@ table 40113 "GP PM00200"
         }
         field(78; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(79; CHEKBKID; Text[15])

@@ -12,6 +12,8 @@ tableextension 6797 "WHT Check Ledg. Entry Ext" extends "Check Ledger Entry"
     {
         field(6784; "Withholding Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec.GetCurrencyCodeFromBank();
             Caption = 'Withholding Tax Amount';
             DataClassification = CustomerContent;
         }
@@ -22,6 +24,8 @@ tableextension 6797 "WHT Check Ledg. Entry Ext" extends "Check Ledger Entry"
         }
         field(6786; "WHT Interest Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec.GetCurrencyCodeFromBank();
             Caption = 'Interest Amount';
             DataClassification = CustomerContent;
         }

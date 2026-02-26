@@ -28,18 +28,21 @@ page 31269 "Banking Doc. Statistics CZB"
                     ShowCaption = false;
                     field(BegBalance; BegBalance)
                     {
+                        AutoFormatType = 0;
                         Caption = 'Beginig Balance';
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies the beginig balance of banking document.';
                     }
                     field(Amount; Amount)
                     {
+                        AutoFormatType = 0;
                         Caption = 'Amount';
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies the total amount for banking document lines.';
                     }
                     field(EndBalance; EndBalance)
                     {
+                        AutoFormatType = 0;
                         Caption = 'Ending Balance';
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies the ending balance of banking document.';

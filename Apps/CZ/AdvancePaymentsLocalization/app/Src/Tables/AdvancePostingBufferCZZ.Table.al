@@ -30,10 +30,12 @@ table 31013 "Advance Posting Buffer CZZ"
         }
         field(7; Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount';
         }
         field(8; "VAT Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Amount';
         }
         field(12; "VAT Calculation Type"; Enum "Tax Calculation Type")
@@ -42,21 +44,25 @@ table 31013 "Advance Posting Buffer CZZ"
         }
         field(14; "VAT Base Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Base Amount';
         }
         field(20; "Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
         }
         field(21; "VAT Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Amount (LCY)';
         }
         field(22; "VAT Base Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Base Amount (LCY)';
         }
         field(25; "Amount (ACY)"; Decimal)
@@ -79,6 +85,7 @@ table 31013 "Advance Posting Buffer CZZ"
         }
         field(32; "VAT %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT %';
             DecimalPlaces = 1 : 1;
         }
@@ -88,6 +95,7 @@ table 31013 "Advance Posting Buffer CZZ"
         }
         field(40; "Non-Deductible VAT %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Non-Deductible VAT %"';
             DecimalPlaces = 0 : 5;
             Editable = false;
@@ -95,21 +103,25 @@ table 31013 "Advance Posting Buffer CZZ"
         field(41; "Non-Deductible VAT Base"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Non-Deductible VAT Base';
         }
         field(42; "Non-Deductible VAT Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Non-Deductible VAT Amount';
         }
         field(43; "Non-Deductible VAT Base ACY"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
             Caption = 'Non-Deductible VAT Base ACY';
         }
         field(44; "Non-Deductible VAT Amount ACY"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
             Caption = 'Non-Deductible VAT Amount ACY';
         }
     }

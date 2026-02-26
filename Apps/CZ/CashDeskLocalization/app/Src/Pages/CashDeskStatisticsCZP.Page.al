@@ -21,6 +21,8 @@ page 31152 "Cash Desk Statistics CZP"
                 Caption = 'General';
                 field(BalanceToDate; BalanceToDate)
                 {
+                    AutoFormatExpression = Rec."Currency Code";
+                    AutoFormatType = 1;
                     ApplicationArea = Basic, Suite;
                     Caption = 'Start Balance';
                     ToolTip = 'Specifies the cash desk''s start balanc denominated in the applicable foreign currency.';
@@ -42,6 +44,8 @@ page 31152 "Cash Desk Statistics CZP"
                         Caption = 'Released';
                         field(RelReceipt; ReleasedReceipt)
                         {
+                            AutoFormatExpression = Rec."Currency Code";
+                            AutoFormatType = 1;
                             ApplicationArea = Basic, Suite;
                             Caption = 'Receipts';
                             ToolTip = 'Specifies quantity of receipts.';
@@ -57,6 +61,8 @@ page 31152 "Cash Desk Statistics CZP"
                         }
                         field("-RelWithdrawal"; -ReleasedWithdrawal)
                         {
+                            AutoFormatExpression = Rec."Currency Code";
+                            AutoFormatType = 1;
                             ApplicationArea = Basic, Suite;
                             Caption = 'Withdrawals';
                             ToolTip = 'Specifies quantity of withdrawals.';
@@ -76,6 +82,8 @@ page 31152 "Cash Desk Statistics CZP"
                         Caption = 'Posted';
                         field(PostReceipt; PostedReceipt)
                         {
+                            AutoFormatExpression = Rec."Currency Code";
+                            AutoFormatType = 1;
                             Caption = 'Posted Receipt';
                             ApplicationArea = Basic, Suite;
                             ToolTip = 'Specifies the amount of posted receipts.';
@@ -90,6 +98,8 @@ page 31152 "Cash Desk Statistics CZP"
                         }
                         field(PostWithdrawal; -PostedWithdrawal)
                         {
+                            AutoFormatExpression = Rec."Currency Code";
+                            AutoFormatType = 1;
                             Caption = 'Posted Withdrawal';
                             ApplicationArea = Basic, Suite;
                             ToolTip = 'Specifies the amount of posted withdrawals.';
@@ -110,6 +120,8 @@ page 31152 "Cash Desk Statistics CZP"
                 Caption = 'Total';
                 field(BalanceTotal; BalanceTotal)
                 {
+                    AutoFormatExpression = Rec."Currency Code";
+                    AutoFormatType = 1;
                     ApplicationArea = Basic, Suite;
                     Caption = 'End Balance';
                     ToolTip = 'Specifies the amount of end balance cash desk.';

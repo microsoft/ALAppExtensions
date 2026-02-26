@@ -28,6 +28,8 @@ tableextension 18634 "FA Ledger Entry Ext" extends "FA Ledger Entry"
         }
         field(18634; "Add. Depreciation Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Add. Depreciation Amount';
             DataClassification = CustomerContent;
         }

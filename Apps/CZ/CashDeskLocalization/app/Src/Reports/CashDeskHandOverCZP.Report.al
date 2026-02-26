@@ -105,6 +105,8 @@ report 11729 "Cash Desk Hand Over CZP"
                     }
                     field(BalanceCZP; Balance)
                     {
+                        AutoFormatExpression = CashDeskCZP."Currency Code";
+                        AutoFormatType = 1;
                         ApplicationArea = Basic, Suite;
                         Caption = 'Balance';
                         ToolTip = 'Specifies the cash desk card''s current balance denominated in the applicable foreign currency.';

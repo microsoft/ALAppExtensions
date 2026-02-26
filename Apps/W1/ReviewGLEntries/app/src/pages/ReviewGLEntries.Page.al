@@ -110,6 +110,8 @@ page 22207 "Review G/L Entries"
                 }
                 field(RemainingAmount; RemainingAmount)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     ApplicationArea = Basic, Suite;
                     Caption = 'Remaining Amount';
                     Editable = false;
@@ -155,6 +157,7 @@ page 22207 "Review G/L Entries"
                 {
                     ApplicationArea = Basic, Suite;
                     AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Debit (LCY)';
                     Editable = false;
                     ToolTip = 'Specifies the accumulated debit amount of all the lines applied to this line.';
@@ -163,6 +166,7 @@ page 22207 "Review G/L Entries"
                 {
                     ApplicationArea = Basic, Suite;
                     AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Credit (LCY)';
                     Editable = false;
                     ToolTip = 'Specifies the accumulated credit amount of all the lines applied to this line.';
@@ -171,6 +175,7 @@ page 22207 "Review G/L Entries"
                 {
                     ApplicationArea = Basic, Suite;
                     AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Balance';
                     Editable = false;
                     ToolTip = 'Specifies the accumulated balance of all the lines applied to this line.';

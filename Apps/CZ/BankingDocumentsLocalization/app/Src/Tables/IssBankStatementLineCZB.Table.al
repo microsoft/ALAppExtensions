@@ -87,8 +87,9 @@ table 31255 "Iss. Bank Statement Line CZB"
         }
         field(12; "Amount (LCY)"; Decimal)
         {
-            Caption = 'Amount (LCY)';
             AutoFormatType = 1;
+            AutoFormatExpression = '';
+            Caption = 'Amount (LCY)';
             DataClassification = CustomerContent;
         }
         field(17; Positive; Boolean)
@@ -124,6 +125,7 @@ table 31255 "Iss. Bank Statement Line CZB"
         }
         field(27; "Bank Statement Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Bank Statement Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;

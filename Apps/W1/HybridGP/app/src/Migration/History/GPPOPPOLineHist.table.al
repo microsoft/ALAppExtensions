@@ -72,26 +72,31 @@ table 4058 "GPPOPPOLineHist"
         }
         field(13; UMQTYINB; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'U Of M QTY In Base';
             DataClassification = CustomerContent;
         }
         field(14; QTYORDER; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Ordered';
             DataClassification = CustomerContent;
         }
         field(15; QTYCANCE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Canceled';
             DataClassification = CustomerContent;
         }
         field(16; UNITCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
         }
         field(17; EXTDCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Extended Cost';
             DataClassification = CustomerContent;
         }
@@ -133,46 +138,55 @@ table 4058 "GPPOPPOLineHist"
         }
         field(25; POLNEARY_1; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
         field(26; POLNEARY_2; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
         field(27; POLNEARY_3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
         field(28; POLNEARY_4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
         field(29; POLNEARY_5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
         field(30; POLNEARY_6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
         field(31; POLNEARY_7; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
         field(32; POLNEARY_8; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
         field(33; POLNEARY_9; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Line Note ID Array';
             DataClassification = CustomerContent;
         }
@@ -215,11 +229,13 @@ table 4058 "GPPOPPOLineHist"
         }
         field(41; ORUNTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Unit Cost';
             DataClassification = CustomerContent;
         }
         field(42; OREXTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Extended Cost';
             DataClassification = CustomerContent;
         }
@@ -294,21 +310,25 @@ table 4058 "GPPOPPOLineHist"
         }
         field(56; TAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Amount';
             DataClassification = CustomerContent;
         }
         field(57; ORTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Tax Amount';
             DataClassification = CustomerContent;
         }
         field(58; BCKTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Tax Amount';
             DataClassification = CustomerContent;
         }
         field(59; OBTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Tax Amount';
             DataClassification = CustomerContent;
         }

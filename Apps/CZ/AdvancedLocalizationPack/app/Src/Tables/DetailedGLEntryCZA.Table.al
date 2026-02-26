@@ -57,6 +57,8 @@ table 31283 "Detailed G/L Entry CZA"
         }
         field(8; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             DataClassification = CustomerContent;
         }

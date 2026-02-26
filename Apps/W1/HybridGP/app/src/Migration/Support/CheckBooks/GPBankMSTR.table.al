@@ -69,6 +69,7 @@ table 40100 "GP Bank MSTR"
         }
         field(16; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(17; DDTRANUM; Text[9])

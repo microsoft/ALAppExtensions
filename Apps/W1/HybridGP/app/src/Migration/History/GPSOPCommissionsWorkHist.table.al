@@ -40,21 +40,25 @@ table 4068 "GPSOPCommissionsWorkHist"
         }
         field(7; COMMAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Commission Amount';
             DataClassification = CustomerContent;
         }
         field(8; OCOMMAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Commission Amount';
             DataClassification = CustomerContent;
         }
         field(9; NCOMAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Non-Commissioned Amount';
             DataClassification = CustomerContent;
         }
         field(10; ORNCMAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Non-Commissioned Amount';
             DataClassification = CustomerContent;
         }
@@ -65,21 +69,25 @@ table 4068 "GPSOPCommissionsWorkHist"
         }
         field(12; ACTSLAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Actual Sale Amount';
             DataClassification = CustomerContent;
         }
         field(13; ORSLSAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Sales Amount';
             DataClassification = CustomerContent;
         }
         field(14; CMMSLAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Commission Sale Amount';
             DataClassification = CustomerContent;
         }
         field(15; ORCOSAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Commission Sales Amount';
             DataClassification = CustomerContent;
         }

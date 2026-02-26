@@ -52,10 +52,12 @@ table 47081 "SL PJEmpPjt Buffer"
         field(10; ep_id06; Decimal)
         {
             Caption = 'ep_id06';
+            AutoFormatType = 0;
         }
         field(11; ep_id07; Decimal)
         {
             Caption = 'ep_id07';
+            AutoFormatType = 0;
         }
         field(12; ep_id08; Date)
         {
@@ -80,6 +82,7 @@ table 47081 "SL PJEmpPjt Buffer"
         field(17; labor_rate; Decimal)
         {
             Caption = 'labor_rate';
+            AutoFormatType = 0;
         }
         field(18; lupd_datetime; DateTime)
         {
@@ -112,10 +115,12 @@ table 47081 "SL PJEmpPjt Buffer"
         field(25; user3; Decimal)
         {
             Caption = 'user3';
+            AutoFormatType = 0;
         }
         field(26; user4; Decimal)
         {
             Caption = 'user4';
+            AutoFormatType = 0;
         }
     }
 

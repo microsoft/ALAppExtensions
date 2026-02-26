@@ -30,8 +30,8 @@ codeunit 10684 "Elec. VAT Create Content"
         ElecVATLoggingMgt: Codeunit "Elec. VAT Logging Mgt.";
         MessageOutStream: OutStream;
     begin
-        VATStatementReportLine.SetRange("VAT Report Config. Code", "VAT Report Config. Code");
-        VATStatementReportLine.SetRange("VAT Report No.", "No.");
+        VATStatementReportLine.SetRange("VAT Report Config. Code", Rec."VAT Report Config. Code");
+        VATStatementReportLine.SetRange("VAT Report No.", Rec."No.");
         VATStatementReportLine.FindSet();
         repeat
             TempVATStatementReportLine := VATStatementReportLine;
@@ -40,9 +40,9 @@ codeunit 10684 "Elec. VAT Create Content"
         CLEAR(TempBlob);
         TempBlob.CreateOutStream(MessageOutStream, TEXTENCODING::UTF8);
         MessageOutStream.WriteText(CreateVATReportLinesNodeContent(TempVATStatementReportLine));
-        if VATReportArchive.Get("VAT Report Config. Code", "No.") then
+        if VATReportArchive.Get(Rec."VAT Report Config. Code", Rec."No.") then
             VATReportArchive.Delete(true);
-        VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code", "No.", TempBlob);
+        VATReportArchive.ArchiveSubmissionMessage(Rec."VAT Report Config. Code", Rec."No.", TempBlob);
         ElecVATLoggingMgt.RemoveSubmissionDocAttachments(Rec);
         ElecVATLoggingMgt.AttachXmlSubmissionToVATRepHeader(TempBlob, Rec, 'mvamelding');
         Commit();
@@ -203,7 +203,7 @@ codeunit 10684 "Elec. VAT Create Content"
 
     local procedure GetPeriodTypeInNorwegian(VATReportHeader: Record "VAT Report Header"): Text
     begin
-        Case VATReportHeader."Period Type" of
+        case VATReportHeader."Period Type" of
             VATReportHeader."Period Type"::"Bi-Monthly":
                 exit('skattleggingsperiodeToMaaneder');
             VATReportHeader."Period Type"::"Half-Year":
@@ -218,14 +218,14 @@ codeunit 10684 "Elec. VAT Create Content"
                 exit('skattleggingsperiodeUke');
             VATReportHeader."Period Type"::Year:
                 exit('skattleggingsperiodeAar');
-        End;
+        end;
     end;
 
     local procedure GetPeriodTextInNorwegian(VATReportHeader: Record "VAT Report Header"): Text
     var
         PeriodText: Text;
     begin
-        Case VATReportHeader."Period Type" of
+        case VATReportHeader."Period Type" of
             VATReportHeader."Period Type"::"Bi-Monthly", VATReportHeader."Period Type"::"Half-Year", VATReportHeader."Period Type"::Quarter:
                 exit(
                     GetMonthNameInNorwegian(Date2DMY(VATReportHeader."Start Date", 2)) + '-' +
@@ -245,12 +245,12 @@ codeunit 10684 "Elec. VAT Create Content"
                 exit(WeekLbl + ' ' + Format(VATReportHeader."Period No."));
             VATReportHeader."Period Type"::Year:
                 exit(YearlyLbl);
-        End;
+        end;
     end;
 
     local procedure GetMonthNameInNorwegian(MonthNumber: Integer): Text
     begin
-        case MonthNumber Of
+        case MonthNumber of
             1:
                 exit('januar');
             2:

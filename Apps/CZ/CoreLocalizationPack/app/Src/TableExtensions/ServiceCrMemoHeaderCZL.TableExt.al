@@ -84,6 +84,7 @@ tableextension 11736 "Service Cr.Memo Header CZL" extends "Service Cr.Memo Heade
         }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;
@@ -92,6 +93,7 @@ tableextension 11736 "Service Cr.Memo Header CZL" extends "Service Cr.Memo Heade
         }
         field(11775; "VAT Currency Code CZL"; Code[10])
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Code';
             DataClassification = CustomerContent;
             TableRelation = Currency;

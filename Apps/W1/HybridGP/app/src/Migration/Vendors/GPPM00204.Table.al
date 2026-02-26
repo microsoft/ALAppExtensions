@@ -27,6 +27,7 @@ table 40139 "GP PM00204"
         }
         field(6; TEN99AMNT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(7; TEN99FRNORUSDTL; Text[41])

@@ -80,6 +80,7 @@ table 18467 "Applied Delivery Challan Entry"
         }
         field(11; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DecimalPlaces = 0 : 3;
             Editable = false;

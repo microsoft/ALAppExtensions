@@ -15,6 +15,8 @@ pageextension 18842 "Sales Order Statistics" extends "Sales Order Statistics"
         {
             field("TCS Amount"; TCSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the total TCS amount that has been calculated for all the lines in the sales document.';
@@ -25,6 +27,8 @@ pageextension 18842 "Sales Order Statistics" extends "Sales Order Statistics"
         {
             field("TCS Amt"; PartialInvTCSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'TCS Amount';
                 ToolTip = 'Specifies the total TCS amount that has been calculated for all the lines in the sales document.';
                 ApplicationArea = Basic, Suite;
@@ -35,6 +39,8 @@ pageextension 18842 "Sales Order Statistics" extends "Sales Order Statistics"
         {
             field("TCS Ship Amt"; PartialShptTCSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'TCS Amount';
                 ToolTip = 'Specifies the total TCS amount that has been calculated for all the lines in the sales document.';
                 ApplicationArea = Basic, Suite;

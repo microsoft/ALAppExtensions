@@ -63,15 +63,21 @@ table 10018 "IRS 1096 Form Header"
         }
         field(12; "Calc. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Calculated Amount';
             Editable = false;
         }
         field(13; "Total Amount To Report"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Amount To Report';
         }
         field(14; "Calc. Adjustment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Calculacted Adjustment Amount';
             Editable = false;
         }

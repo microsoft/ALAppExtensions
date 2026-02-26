@@ -62,6 +62,7 @@ table 18470 "GST Liability Line"
         }
         field(10; "Prod. BOM Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Prod. BOM Quantity';
             FieldClass = FlowField;
             CalcFormula = SUM("Prod. Order Component"."Expected Quantity" WHERE
@@ -72,16 +73,19 @@ table 18470 "GST Liability Line"
         }
         field(11; "Quantity To Send"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity To Send';
             DataClassification = CustomerContent;
         }
         field(12; "Quantity (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity (Base)';
             DataClassification = CustomerContent;
         }
         field(13; "Quantity To Send (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity To Send (Base)';
             DataClassification = CustomerContent;
         }
@@ -118,6 +122,7 @@ table 18470 "GST Liability Line"
         }
         field(20; "Scrap %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Scrap %';
             DataClassification = CustomerContent;
         }
@@ -160,21 +165,25 @@ table 18470 "GST Liability Line"
         }
         field(40; "Length"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Length';
             DataClassification = CustomerContent;
         }
         field(41; "Width"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Width';
             DataClassification = CustomerContent;
         }
         field(42; "Weight"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Weight';
             DataClassification = CustomerContent;
         }
         field(43; "Depth"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Depth';
             DataClassification = CustomerContent;
         }
@@ -187,6 +196,7 @@ table 18470 "GST Liability Line"
         }
         field(45; "Quantity Per"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Per';
             DataClassification = CustomerContent;
         }
@@ -225,6 +235,7 @@ table 18470 "GST Liability Line"
         }
         field(52; "Quantity at Vendor Location"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity at Vendor Location';
             FieldClass = FlowField;
             CalcFormula = Sum("Item Ledger Entry"."Remaining Quantity" WHERE
@@ -233,6 +244,7 @@ table 18470 "GST Liability Line"
         }
         field(53; "Total Scrap Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Scrap Quantity';
             DataClassification = CustomerContent;
         }
@@ -248,11 +260,13 @@ table 18470 "GST Liability Line"
         }
         field(56; "Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DataClassification = CustomerContent;
         }
         field(57; "Remaining Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Remaining Quantity';
             FieldClass = FlowField;
             CalcFormula = Sum("Item Ledger Entry"."Remaining Quantity" WHERE
@@ -266,6 +280,7 @@ table 18470 "GST Liability Line"
         }
         field(58; "Components in Rework Qty."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Components in Rework Qty.';
             DataClassification = CustomerContent;
         }
@@ -334,18 +349,24 @@ table 18470 "GST Liability Line"
         }
         field(104; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(105; "Total GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total GST Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(106; "GST Liability Created"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Liability Created';
             DataClassification = CustomerContent;
         }
