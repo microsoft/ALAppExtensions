@@ -24,14 +24,17 @@ table 47033 "SL POTran"
         field(3; AddlCost; Decimal)
         {
             Caption = 'AddlCost';
+            AutoFormatType = 0;
         }
         field(4; AddlCostPct; Decimal)
         {
             Caption = 'AddlCostPct';
+            AutoFormatType = 0;
         }
         field(5; AddlCostVouch; Decimal)
         {
             Caption = 'AddlCostVouch';
+            AutoFormatType = 0;
         }
         field(6; AlternateID; Text[30])
         {
@@ -64,6 +67,7 @@ table 47033 "SL POTran"
         field(13; BMIExtCost; Decimal)
         {
             Caption = 'BMIExtCost';
+            AutoFormatType = 0;
         }
         field(14; BMIMultDiv; Text[1])
         {
@@ -72,6 +76,7 @@ table 47033 "SL POTran"
         field(15; BMIRate; Decimal)
         {
             Caption = 'BMIRate';
+            AutoFormatType = 0;
         }
         field(16; BMIRtTp; Text[6])
         {
@@ -80,14 +85,17 @@ table 47033 "SL POTran"
         field(17; BMITranAmt; Decimal)
         {
             Caption = 'BMITranAmt';
+            AutoFormatType = 0;
         }
         field(18; BMIUnitCost; Decimal)
         {
             Caption = 'BMIUnitCost';
+            AutoFormatType = 0;
         }
         field(19; BMIUnitPrice; Decimal)
         {
             Caption = 'BMIUnitPrice';
+            AutoFormatType = 0;
         }
         field(20; BOMLineRef; Text[5])
         {
@@ -100,10 +108,12 @@ table 47033 "SL POTran"
         field(22; CnvFact; Decimal)
         {
             Caption = 'CnvFact';
+            AutoFormatType = 0;
         }
         field(23; CostVouched; Decimal)
         {
             Caption = 'CostVouched';
+            AutoFormatType = 0;
         }
         field(24; CpnyID; Text[10])
         {
@@ -124,18 +134,22 @@ table 47033 "SL POTran"
         field(28; CuryAddlCost; Decimal)
         {
             Caption = 'CuryAddlCost';
+            AutoFormatType = 0;
         }
         field(29; CuryAddlCostVouch; Decimal)
         {
             Caption = 'CuryAddlCostVouch';
+            AutoFormatType = 0;
         }
         field(30; CuryCostVouched; Decimal)
         {
             Caption = 'CuryCostVouched';
+            AutoFormatType = 0;
         }
         field(31; CuryExtCost; Decimal)
         {
             Caption = 'CuryExtCost';
+            AutoFormatType = 0;
         }
         field(32; CuryID; Text[4])
         {
@@ -148,14 +162,17 @@ table 47033 "SL POTran"
         field(34; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
+            AutoFormatType = 0;
         }
         field(35; CuryTranAmt; Decimal)
         {
             Caption = 'CuryTranAmt';
+            AutoFormatType = 0;
         }
         field(36; CuryUnitCost; Decimal)
         {
             Caption = 'CuryUnitCost';
+            AutoFormatType = 0;
         }
         field(37; DrCr; Text[1])
         {
@@ -164,10 +181,12 @@ table 47033 "SL POTran"
         field(38; ExtCost; Decimal)
         {
             Caption = 'ExtCost';
+            AutoFormatType = 0;
         }
         field(39; ExtWeight; Decimal)
         {
             Caption = 'ExtWeight';
+            AutoFormatType = 0;
         }
         field(40; FlatRateLineNbr; Integer)
         {
@@ -276,14 +295,17 @@ table 47033 "SL POTran"
         field(66; Qty; Decimal)
         {
             Caption = 'Qty';
+            AutoFormatType = 0;
         }
         field(67; QtyVouched; Decimal)
         {
             Caption = 'QtyVouched';
+            AutoFormatType = 0;
         }
         field(68; RcptConvFact; Decimal)
         {
             Caption = 'RcptConvFact';
+            AutoFormatType = 0;
         }
         field(69; RcptDate; DateTime)
         {
@@ -308,6 +330,7 @@ table 47033 "SL POTran"
         field(74; RcptQty; Decimal)
         {
             Caption = 'RcptQty';
+            AutoFormatType = 0;
         }
         field(75; RcptUnitDescr; Text[6])
         {
@@ -332,18 +355,22 @@ table 47033 "SL POTran"
         field(80; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(81; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(82; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(83; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(84; S4Future07; DateTime)
         {
@@ -428,6 +455,7 @@ table 47033 "SL POTran"
         field(104; TranAmt; Decimal)
         {
             Caption = 'TranAmt';
+            AutoFormatType = 0;
         }
         field(105; TranDate; DateTime)
         {
@@ -444,6 +472,7 @@ table 47033 "SL POTran"
         field(108; UnitCost; Decimal)
         {
             Caption = 'UnitCost';
+            AutoFormatType = 0;
         }
         field(109; UnitDescr; Text[6])
         {
@@ -456,6 +485,7 @@ table 47033 "SL POTran"
         field(111; UnitWeight; Decimal)
         {
             Caption = 'UnitWeight';
+            AutoFormatType = 0;
         }
         field(112; User1; Text[30])
         {
@@ -468,10 +498,12 @@ table 47033 "SL POTran"
         field(114; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(115; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(116; User5; Text[10])
         {

@@ -274,6 +274,7 @@ table 31257 "Payment Order Line CZB"
         {
             Caption = 'Amount (LCY)';
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -629,6 +630,7 @@ table 31257 "Payment Order Line CZB"
         }
         field(27; "Payment Order Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Payment Order Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;
@@ -709,6 +711,7 @@ table 31257 "Payment Order Line CZB"
         {
             Caption = 'Original Amount (LCY)';
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Editable = false;
             DataClassification = CustomerContent;
         }

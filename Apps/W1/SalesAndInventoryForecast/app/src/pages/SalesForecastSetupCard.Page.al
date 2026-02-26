@@ -94,6 +94,7 @@ page 1853 "Sales Forecast Setup Card"
                 }
                 field("Variance %"; Rec."Variance %")
                 {
+                    AutoFormatType = 0;
                     ApplicationArea = Basic, Suite;
                     Importance = Additional;
                     ToolTip = 'Specifies the range of deviation, plus or minus, that you''ll accept in the forecast. Lower percentages represent more accurate forecasts, and are typically between 20 and 40. Forecasts outside the range are considered inaccurate, and do not display.';
@@ -128,6 +129,7 @@ page 1853 "Sales Forecast Setup Card"
                 }
                 field("Used Processing Time (Seconds)"; GetMLTotalProcessingTime())
                 {
+                    AutoFormatType = 0;
                     ApplicationArea = Basic, Suite;
                     Caption = 'Used Processing Time (Seconds)';
                     ToolTip = 'Specifies how many seconds of processing time have been used. You cannot change this value.';

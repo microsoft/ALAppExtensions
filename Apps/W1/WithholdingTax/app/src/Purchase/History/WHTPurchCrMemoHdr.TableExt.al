@@ -18,6 +18,8 @@ tableextension 6799 "WHT Purch. Cr. Memo Hdr." extends "Purch. Cr. Memo Hdr."
         }
         field(6790; "Rem. Wthldg. Tax Pre. Amt(LCY)"; Decimal)
         {
+            AutoFormatType = 0;
+            AutoFormatExpression = '';
             CalcFormula = sum("Withholding Tax Entry"."Remaining Unrealized Amount" where("Document Type" = const("Credit Memo"),
                                                                                           "Document No." = field("No.")));
             Caption = 'Rem. Withholding Tax Prepaid Amount (LCY)';
@@ -26,6 +28,8 @@ tableextension 6799 "WHT Purch. Cr. Memo Hdr." extends "Purch. Cr. Memo Hdr."
         }
         field(6791; "Paid Wthldg. Tax Pre. Amt(LCY)"; Decimal)
         {
+            AutoFormatType = 0;
+            AutoFormatExpression = '';
             CalcFormula = sum("Withholding Tax Entry".Amount where("Document Type" = const(Refund),
                                                                    "Document No." = field("No.")));
             Caption = 'Paid Withholding Tax Prepaid Amount (LCY)';
@@ -34,6 +38,8 @@ tableextension 6799 "WHT Purch. Cr. Memo Hdr." extends "Purch. Cr. Memo Hdr."
         }
         field(6792; "Tot. Wthldg. Tax Pre. Amt(LCY)"; Decimal)
         {
+            AutoFormatType = 0;
+            AutoFormatExpression = '';
             CalcFormula = sum("Withholding Tax Entry"."Unrealized Amount" where("Document Type" = const("Credit Memo"),
                                                                                 "Document No." = field("No.")));
             Caption = 'Total Withholding Tax Prepaid Amount (LCY)';

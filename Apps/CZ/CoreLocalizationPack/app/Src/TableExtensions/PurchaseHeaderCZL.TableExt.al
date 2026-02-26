@@ -200,6 +200,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         }
         field(11750; "Additional Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Additional Currency Factor';
             DecimalPlaces = 0 : 15;
             MinValue = 0;
@@ -207,6 +208,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;

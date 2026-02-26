@@ -27,6 +27,8 @@ page 31159 "Currency Nominal Values CZP"
                 }
                 field("Nominal Value"; Rec."Nominal Value")
                 {
+                    AutoFormatType = 2;
+                    AutoFormatExpression = '';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies usable nominal value for currency.';
                 }

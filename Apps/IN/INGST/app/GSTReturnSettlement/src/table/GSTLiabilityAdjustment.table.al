@@ -71,12 +71,16 @@ table 18319 "GST Liability Adjustment"
         }
         field(11; "Adjustment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Adjustment Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(12; "Total GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Detailed GST Ledger Entry"."GST Amount"
                 where(
                     "Document No." = field("Document No."),
@@ -87,6 +91,8 @@ table 18319 "GST Liability Adjustment"
         }
         field(13; "Total GST Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Detailed GST Ledger Entry"."GST Amount"
                 where(
                     "Document No." = field("Document No."),
@@ -98,6 +104,8 @@ table 18319 "GST Liability Adjustment"
         }
         field(14; "Total GST Liability Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Detailed GST Ledger Entry"."GST Amount"
                 where(
                     "Document No." = field("Document No."),

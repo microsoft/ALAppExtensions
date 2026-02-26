@@ -61,21 +61,25 @@ table 40138 "GP POP10110"
         }
         field(14; QTYORDER; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTYORDER';
             DataClassification = CustomerContent;
         }
         field(15; QTYCANCE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTYCANCE';
             DataClassification = CustomerContent;
         }
         field(18; UNITCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'UNITCOST';
             DataClassification = CustomerContent;
         }
         field(19; EXTDCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'EXTDCOST';
             DataClassification = CustomerContent;
         }
@@ -111,6 +115,7 @@ table 40138 "GP POP10110"
         }
         field(49; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'XCHGRATE';
             DataClassification = CustomerContent;
         }

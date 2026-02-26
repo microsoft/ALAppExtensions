@@ -80,58 +80,72 @@ table 47075 "SL APTran Buffer"
         field(17; CuryPOExtPrice; Decimal)
         {
             Caption = 'CuryPOExtPrice';
+            AutoFormatType = 0;
         }
         field(18; CuryPOUnitPrice; Decimal)
         {
             Caption = 'CuryPOUnitPrice';
+            AutoFormatType = 0;
         }
         field(19; CuryPPV; Decimal)
         {
             Caption = 'CuryPPV';
+            AutoFormatType = 0;
         }
         field(20; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
+            AutoFormatType = 0;
         }
         field(21; CuryTaxAmt00; Decimal)
         {
             Caption = 'CuryTaxAmt00';
+            AutoFormatType = 0;
         }
         field(22; CuryTaxAmt01; Decimal)
         {
             Caption = 'CuryTaxAmt01';
+            AutoFormatType = 0;
         }
         field(23; CuryTaxAmt02; Decimal)
         {
             Caption = 'CuryTaxAmt02';
+            AutoFormatType = 0;
         }
         field(24; CuryTaxAmt03; Decimal)
         {
             Caption = 'CuryTaxAmt03';
+            AutoFormatType = 0;
         }
         field(25; CuryTranAmt; Decimal)
         {
             Caption = 'CuryTranAmt';
+            AutoFormatType = 0;
         }
         field(26; CuryTxblAmt00; Decimal)
         {
             Caption = 'CuryTxblAmt00';
+            AutoFormatType = 0;
         }
         field(27; CuryTxblAmt01; Decimal)
         {
             Caption = 'CuryTxblAmt01';
+            AutoFormatType = 0;
         }
         field(28; CuryTxblAmt02; Decimal)
         {
             Caption = 'CuryTxblAmt02';
+            AutoFormatType = 0;
         }
         field(29; CuryTxblAmt03; Decimal)
         {
             Caption = 'CuryTxblAmt03';
+            AutoFormatType = 0;
         }
         field(30; CuryUnitPrice; Decimal)
         {
             Caption = 'CuryUnitPrice';
+            AutoFormatType = 0;
         }
         field(31; DrCr; Text[1])
         {
@@ -172,6 +186,7 @@ table 47075 "SL APTran Buffer"
         field(40; JobRate; Decimal)
         {
             Caption = 'JobRate';
+            AutoFormatType = 0;
         }
         field(41; JrnlType; Text[3])
         {
@@ -248,6 +263,7 @@ table 47075 "SL APTran Buffer"
         field(59; POExtPrice; Decimal)
         {
             Caption = 'POExtPrice';
+            AutoFormatType = 0;
         }
         field(60; POLineRef; Text[5])
         {
@@ -260,14 +276,17 @@ table 47075 "SL APTran Buffer"
         field(62; POQty; Decimal)
         {
             Caption = 'POQty';
+            AutoFormatType = 0;
         }
         field(63; POUnitPrice; Decimal)
         {
             Caption = 'POUnitPrice';
+            AutoFormatType = 0;
         }
         field(64; PPV; Decimal)
         {
             Caption = 'PPV';
+            AutoFormatType = 0;
         }
         field(65; ProjectID; Text[16])
         {
@@ -276,10 +295,12 @@ table 47075 "SL APTran Buffer"
         field(66; Qty; Decimal)
         {
             Caption = 'Qty';
+            AutoFormatType = 0;
         }
         field(67; QtyVar; Decimal)
         {
             Caption = 'QtyVar';
+            AutoFormatType = 0;
         }
         field(68; RcptLineRef; Text[5])
         {
@@ -292,6 +313,7 @@ table 47075 "SL APTran Buffer"
         field(70; RcptQty; Decimal)
         {
             Caption = 'RcptQty';
+            AutoFormatType = 0;
         }
         field(71; "RecordID"; Integer)
         {
@@ -316,18 +338,22 @@ table 47075 "SL APTran Buffer"
         field(76; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(77; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(78; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(79; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(80; S4Future07; Date)
         {
@@ -384,18 +410,22 @@ table 47075 "SL APTran Buffer"
         field(93; TaxAmt00; Decimal)
         {
             Caption = 'TaxAmt00';
+            AutoFormatType = 0;
         }
         field(94; TaxAmt01; Decimal)
         {
             Caption = 'TaxAmt01';
+            AutoFormatType = 0;
         }
         field(95; TaxAmt02; Decimal)
         {
             Caption = 'TaxAmt02';
+            AutoFormatType = 0;
         }
         field(96; TaxAmt03; Decimal)
         {
             Caption = 'TaxAmt03';
+            AutoFormatType = 0;
         }
         field(97; TaxCalced; Text[1])
         {
@@ -428,6 +458,7 @@ table 47075 "SL APTran Buffer"
         field(104; TranAmt; Decimal)
         {
             Caption = 'TranAmt';
+            AutoFormatType = 0;
         }
         field(105; TranClass; Text[1])
         {
@@ -448,18 +479,22 @@ table 47075 "SL APTran Buffer"
         field(109; TxblAmt00; Decimal)
         {
             Caption = 'TxblAmt00';
+            AutoFormatType = 0;
         }
         field(110; TxblAmt01; Decimal)
         {
             Caption = 'TxblAmt01';
+            AutoFormatType = 0;
         }
         field(111; TxblAmt02; Decimal)
         {
             Caption = 'TxblAmt02';
+            AutoFormatType = 0;
         }
         field(112; TxblAmt03; Decimal)
         {
             Caption = 'TxblAmt03';
+            AutoFormatType = 0;
         }
         field(113; UnitDesc; Text[10])
         {
@@ -468,6 +503,7 @@ table 47075 "SL APTran Buffer"
         field(114; UnitPrice; Decimal)
         {
             Caption = 'UnitPrice';
+            AutoFormatType = 0;
         }
         field(115; User1; Text[30])
         {
@@ -480,10 +516,12 @@ table 47075 "SL APTran Buffer"
         field(117; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(118; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(119; User5; Text[10])
         {

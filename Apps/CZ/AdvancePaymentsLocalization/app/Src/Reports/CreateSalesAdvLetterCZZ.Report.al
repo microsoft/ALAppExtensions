@@ -36,6 +36,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
                     }
                     field(AdvPer; AdvancePer)
                     {
+                        AutoFormatType = 0;
                         ApplicationArea = Basic, Suite;
                         Caption = 'Advance Letter %';
                         ToolTip = 'Specifies advance letter %.';
@@ -50,6 +51,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
                     }
                     field(AdvAmount; AdvanceAmount)
                     {
+                        AutoFormatType = 0;
                         ApplicationArea = Basic, Suite;
                         Caption = 'Advance Letter Amount';
                         ToolTip = 'Specifies advance letter amount.';

@@ -58,6 +58,7 @@ table 4093 "GP Customer"
         }
         field(10; CRLMTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Credit Limit Amount';
             DataClassification = CustomerContent;
         }
@@ -83,6 +84,7 @@ table 4093 "GP Customer"
         }
         field(15; AMOUNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount';
             DataClassification = CustomerContent;
         }

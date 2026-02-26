@@ -61,10 +61,12 @@ table 47066 "SL PJEmpPjt"
         field(10; ep_id06; Decimal)
         {
             Caption = 'ep_id06';
+            AutoFormatType = 0;
         }
         field(11; ep_id07; Decimal)
         {
             Caption = 'ep_id07';
+            AutoFormatType = 0;
         }
         field(12; ep_id08; DateTime)
         {
@@ -89,6 +91,7 @@ table 47066 "SL PJEmpPjt"
         field(17; labor_rate; Decimal)
         {
             Caption = 'labor_rate';
+            AutoFormatType = 0;
         }
         field(18; lupd_datetime; DateTime)
         {
@@ -121,10 +124,12 @@ table 47066 "SL PJEmpPjt"
         field(25; user3; Decimal)
         {
             Caption = 'user3';
+            AutoFormatType = 0;
         }
         field(26; user4; Decimal)
         {
             Caption = 'user4';
+            AutoFormatType = 0;
         }
     }
 

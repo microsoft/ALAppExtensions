@@ -46,6 +46,8 @@ table 40913 "Hist. Payables Apply"
         }
         field(10; "Document Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Document Amount';
         }
         field(11; "Currency Code"; Code[10])
@@ -54,26 +56,38 @@ table 40913 "Hist. Payables Apply"
         }
         field(12; "Disc. Taken Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Disc. Taken Amount';
         }
         field(13; "Write Off Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Write Off Amount';
         }
         field(14; "Orig. Applied Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Orig. Applied Amount';
         }
         field(15; "Orig. Discount Taken Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Orig. Discount Taken Amount';
         }
         field(16; "Orig. Discount Available Taken"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Orig. Discount Available Taken';
         }
         field(17; "Orig. Write Off Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Orig. Write Off Amount';
         }
         field(18; "Apply To Post Date"; Date)
@@ -94,58 +108,86 @@ table 40913 "Hist. Payables Apply"
         }
         field(22; "Apply From Apply Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Apply From Apply Amount';
         }
         field(23; "Apply From Disc. Taken Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Apply From Discount Taken Amount';
         }
         field(24; "Apply From Disc. Avail. Taken"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Apply From Discount Available Taken';
         }
         field(25; "Apply From Write Off Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Apply From Write Off Amount';
         }
         field(26; "Actual Apply To Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Actual Apply To Amount';
         }
         field(27; "Actual Discount Taken Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Actual Discount Taken Amount';
         }
         field(28; "Actual Disc. Available Taken"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Actual Discount Available Taken';
         }
         field(29; "Actual Write Off Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Actual Write Off Amount';
         }
         field(30; "Apply From Exchange Rate"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Apply From Exchange Rate';
         }
         field(31; "Apply From Denom. Exch. Rate"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Apply From Denomination Exchange Rate';
         }
         field(32; "PPS Amount Deducted"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'PPS Amount Deducted';
         }
         field(33; "GST Discount Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Discount Amount';
         }
         field(34; "1099 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = '1099 Amount';
         }
         field(35; "Credit 1099 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Credit 1099 Amount';
         }
     }

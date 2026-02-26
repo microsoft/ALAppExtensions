@@ -20,6 +20,8 @@ pageextension 4704 "VAT Rep. Stmt. Sub. Extension" extends "VAT Report Statement
             }
             field("Group Amount"; Rec.Amount - Rec."Representative Amount")
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Caption = 'Group Amount';
                 ToolTip = 'Specifies the group VAT amount for the specified box number without the representative amount.';

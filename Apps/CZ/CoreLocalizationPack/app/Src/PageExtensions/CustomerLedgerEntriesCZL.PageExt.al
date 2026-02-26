@@ -78,6 +78,8 @@ pageextension 31015 "Customer Ledger Entries CZL" extends "Customer Ledger Entri
         {
             field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApplyCZL())
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'Suggested Amount to Apply (LCY)';
                 ApplicationArea = Basic, Suite;
                 Editable = false;

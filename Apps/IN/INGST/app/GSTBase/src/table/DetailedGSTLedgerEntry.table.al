@@ -112,16 +112,21 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(16; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
         field(17; "GST %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST %';
             DataClassification = CustomerContent;
         }
         field(18; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
@@ -132,11 +137,14 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(20; "Amount Loaded on Item"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount Loaded on Item';
             DataClassification = CustomerContent;
         }
         field(21; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DataClassification = CustomerContent;
         }
@@ -228,6 +236,7 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(39; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DecimalPlaces = 1 : 6;
             DataClassification = CustomerContent;
@@ -259,6 +268,7 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(45; "GST Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Rounding Precision';
             DataClassification = CustomerContent;
         }
@@ -359,12 +369,16 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(64; "Remaining Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Remaining Base Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(65; "Remaining GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Remaining GST Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -403,11 +417,14 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(72; "GST Assessable Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Assessable Value';
             DataClassification = CustomerContent;
         }
         field(73; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
             Editable = false;
@@ -425,16 +442,22 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(76; "AdjustmentBase Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'AdjustmentBase Amount';
             DataClassification = CustomerContent;
         }
         field(77; "Adjustment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Adjustment Amount';
             DataClassification = CustomerContent;
         }
         field(78; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Custom Duty Amount';
             DataClassification = CustomerContent;
         }
@@ -446,6 +469,7 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(80; "Remaining Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Remaining Quantity';
         }
@@ -466,36 +490,48 @@ table 18001 "Detailed GST Ledger Entry"
         }
         field(84; "CAJ %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CAJ %';
             DataClassification = CustomerContent;
         }
         field(85; "CAJ Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'CAJ Amount';
             DataClassification = CustomerContent;
         }
         field(86; "CAJ % Permanent Reversal"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CAJ % Permanent Reversal';
             DataClassification = CustomerContent;
         }
         field(87; "CAJ Amount Permanent Reversal"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'CAJ Amount Permanent Reversal';
             DataClassification = CustomerContent;
         }
         field(88; "Remaining CAJ Adj. Base Amt"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Remaining CAJ Adj. Base Amt';
             DataClassification = CustomerContent;
         }
         field(89; "Remaining CAJ Adj. Amt"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Remaining CAJ Adj. Amt';
             DataClassification = CustomerContent;
         }
         field(90; "CAJ Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'CAJ Base Amount';
             DataClassification = CustomerContent;
         }

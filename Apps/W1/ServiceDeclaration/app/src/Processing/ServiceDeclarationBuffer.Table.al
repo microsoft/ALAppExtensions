@@ -29,10 +29,14 @@ table 5025 "Service Declaration Buffer"
         }
         field(10; "Sales Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Sales Amount';
         }
         field(11; "Purchase Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Purchase Amount';
         }
     }

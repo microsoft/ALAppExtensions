@@ -40,6 +40,8 @@ page 18663 "Update TDS Certificate Details"
             }
             field(CertificateAmount; CertificateAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'Certificate TDS  Amount';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specify the TDS certificate amount as per the TDS certificate.';

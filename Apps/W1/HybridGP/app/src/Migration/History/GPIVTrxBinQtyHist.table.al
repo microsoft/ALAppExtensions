@@ -20,6 +20,7 @@ table 4050 "GPIVTrxBinQtyHist"
         }
         field(3; LNSEQNBR; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Line SEQ Number';
             DataClassification = CustomerContent;
         }
@@ -56,6 +57,7 @@ table 4050 "GPIVTrxBinQtyHist"
         }
         field(10; QTYSLCTD; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY Selected';
             DataClassification = CustomerContent;
         }

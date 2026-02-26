@@ -42,6 +42,7 @@ table 18353 "Service Transfer Rcpt. Line"
         }
         field(5; "Transfer Price"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Transfer Price';
             DataClassification = CustomerContent;
             Editable = false;
@@ -102,6 +103,7 @@ table 18353 "Service Transfer Rcpt. Line"
         }
         field(17; "GST Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Rounding Precision';
             DataClassification = CustomerContent;
             Editable = false;

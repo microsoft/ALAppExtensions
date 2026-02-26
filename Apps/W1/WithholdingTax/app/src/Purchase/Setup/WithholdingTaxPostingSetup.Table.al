@@ -27,6 +27,7 @@ table 6786 "Withholding Tax Posting Setup"
         }
         field(3; "Withholding Tax %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Withholding Tax %';
             DecimalPlaces = 0 : 5;
             MaxValue = 100;
@@ -41,12 +42,6 @@ table 6786 "Withholding Tax Posting Setup"
         {
             Caption = 'Payable Withholding Tax Account Code';
             TableRelation = "G/L Account";
-        }
-        field(7; "Withholding Tax Report"; Option)
-        {
-            Caption = 'Withholding Tax Report';
-            OptionCaption = ' ,Por Ngor Dor 1,Por Ngor Dor 2,Por Ngor Dor 3,Por Ngor Dor 53,Por Ngor Dor 54';
-            OptionMembers = " ","Por Ngor Dor 1","Por Ngor Dor 2","Por Ngor Dor 3","Por Ngor Dor 53","Por Ngor Dor 54";
         }
         field(8; "Wthldg. Tax Rep Line No Series"; Code[20])
         {
@@ -106,6 +101,8 @@ table 6786 "Withholding Tax Posting Setup"
         }
         field(24; "Wthldg. Tax Min. Inv. Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Withholding Tax Minimum Invoice Amount';
         }
         field(25; "Wthldg. Tax Calculation Rule"; Option)

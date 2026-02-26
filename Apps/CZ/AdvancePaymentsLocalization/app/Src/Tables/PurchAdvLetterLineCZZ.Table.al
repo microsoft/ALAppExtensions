@@ -91,6 +91,8 @@ table 31011 "Purch. Adv. Letter Line CZZ"
         }
         field(15; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Amount';
             DataClassification = CustomerContent;
 
@@ -105,6 +107,8 @@ table 31011 "Purch. Adv. Letter Line CZZ"
         }
         field(16; "VAT Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'VAT Amount';
             DataClassification = CustomerContent;
 
@@ -136,6 +140,8 @@ table 31011 "Purch. Adv. Letter Line CZZ"
         }
         field(17; "Amount Including VAT"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Amount Including VAT';
             DataClassification = CustomerContent;
 
@@ -154,24 +160,31 @@ table 31011 "Purch. Adv. Letter Line CZZ"
         }
         field(20; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(21; "VAT Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Amount (LCY)';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(22; "Amount Including VAT (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount Including VAT (LCY)';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(25; "VAT %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT %';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 5;

@@ -14,6 +14,8 @@ pageextension 18103 "GST Posted Purch. Inv Stats." extends "Purchase Invoice Sta
         {
             field("GST Amount"; GSTAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 Caption = 'GST Amount';

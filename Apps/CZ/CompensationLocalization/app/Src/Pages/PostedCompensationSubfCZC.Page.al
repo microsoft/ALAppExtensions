@@ -144,6 +144,8 @@ page 31278 "Posted Compensation Subf. CZC"
                 ShowCaption = false;
                 field(CompensationBalanceLCY; CompensationBalanceLCY)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Compensation Balance (LCY)';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the sum of amount compensation lines. The amount is in the local currency.';
@@ -151,6 +153,8 @@ page 31278 "Posted Compensation Subf. CZC"
                 }
                 field(CompensationValueLCY; CompensationValueLCY)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Compensation Value (LCY)';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the sum of positive amount compensation lines. The amount is in the local currency.';
@@ -158,6 +162,8 @@ page 31278 "Posted Compensation Subf. CZC"
                 }
                 field(BalanceLCY; BalanceLCY)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Balance (LCY)';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the ledger entries remaining amount. The amount is in the local currency.';

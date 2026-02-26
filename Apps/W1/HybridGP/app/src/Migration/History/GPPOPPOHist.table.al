@@ -87,31 +87,37 @@ table 4057 "GPPOPPOHist"
         }
         field(16; REMSUBTO; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Remaining Subtotal';
             DataClassification = CustomerContent;
         }
         field(17; SUBTOTAL; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Subtotal';
             DataClassification = CustomerContent;
         }
         field(18; TRDISAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Trade Discount Amount';
             DataClassification = CustomerContent;
         }
         field(20; FRTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Freight Amount';
             DataClassification = CustomerContent;
         }
         field(21; MSCCHAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Misc Charges Amount';
             DataClassification = CustomerContent;
         }
         field(22; TAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Amount';
             DataClassification = CustomerContent;
         }
@@ -127,6 +133,7 @@ table 4057 "GPPOPPOHist"
         }
         field(25; MINORDER; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Minimum Order';
             DataClassification = CustomerContent;
         }
@@ -227,6 +234,7 @@ table 4057 "GPPOPPOHist"
         }
         field(45; DSCDLRAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Dollar Amount';
             DataClassification = CustomerContent;
         }
@@ -237,6 +245,7 @@ table 4057 "GPPOPPOHist"
         }
         field(47; DISAMTAV; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Amount Available';
             DataClassification = CustomerContent;
         }
@@ -272,76 +281,91 @@ table 4057 "GPPOPPOHist"
         }
         field(54; PONOTIDS_1; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(55; PONOTIDS_2; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(56; PONOTIDS_3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(57; PONOTIDS_4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(58; PONOTIDS_5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(59; PONOTIDS_6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(60; PONOTIDS_7; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(61; PONOTIDS_8; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(62; PONOTIDS_9; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(63; PONOTIDS_10; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(64; PONOTIDS_11; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(65; PONOTIDS_12; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(66; PONOTIDS_13; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(67; PONOTIDS_14; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
         field(68; PONOTIDS_15; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PO Note ID Array';
             DataClassification = CustomerContent;
         }
@@ -357,6 +381,7 @@ table 4057 "GPPOPPOHist"
         }
         field(71; CANCSUB; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Canceled Subtotal';
             DataClassification = CustomerContent;
         }
@@ -382,6 +407,7 @@ table 4057 "GPPOPPOHist"
         }
         field(76; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -403,6 +429,7 @@ table 4057 "GPPOPPOHist"
         }
         field(80; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Denomination Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -414,46 +441,55 @@ table 4057 "GPPOPPOHist"
         }
         field(82; OREMSUBT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Remaining Subtotal';
             DataClassification = CustomerContent;
         }
         field(83; ORSUBTOT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Subtotal';
             DataClassification = CustomerContent;
         }
         field(84; Originating_Canceled_Sub; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Canceled Subtotal';
             DataClassification = CustomerContent;
         }
         field(85; ORTDISAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Trade Discount Amount';
             DataClassification = CustomerContent;
         }
         field(86; ORFRTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Freight Amount';
             DataClassification = CustomerContent;
         }
         field(87; OMISCAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Misc Charges Amount';
             DataClassification = CustomerContent;
         }
         field(88; ORTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Tax Amount';
             DataClassification = CustomerContent;
         }
         field(89; ORDDLRAT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Discount Dollar Amount';
             DataClassification = CustomerContent;
         }
         field(90; ODISAMTAV; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Discount Amount Available';
             DataClassification = CustomerContent;
         }
@@ -522,51 +558,61 @@ table 4057 "GPPOPPOHist"
         }
         field(103; FRTTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(104; ORFRTTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(105; MSCTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Misc Tax Amount';
             DataClassification = CustomerContent;
         }
         field(106; ORMSCTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Misc Tax Amount';
             DataClassification = CustomerContent;
         }
         field(107; BCKTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Tax Amount';
             DataClassification = CustomerContent;
         }
         field(108; OBTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Tax Amount';
             DataClassification = CustomerContent;
         }
         field(109; BackoutFreightTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(110; OrigBackoutFreightTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(111; BackoutMiscTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Misc Tax Amount';
             DataClassification = CustomerContent;
         }
         field(112; OrigBackoutMiscTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Misc Tax Amount';
             DataClassification = CustomerContent;
         }
@@ -663,6 +709,7 @@ table 4057 "GPPOPPOHist"
         }
         field(131; BLNKTLINEEXTQTYSUM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Blanket Line Ext Qty';
             DataClassification = CustomerContent;
         }
@@ -692,11 +739,13 @@ table 4057 "GPPOPPOHist"
         }
         field(136; PrepaymentAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Prepayment Amount';
             DataClassification = CustomerContent;
         }
         field(137; OriginatingPrepaymentAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Prepayment Amount';
             DataClassification = CustomerContent;
         }

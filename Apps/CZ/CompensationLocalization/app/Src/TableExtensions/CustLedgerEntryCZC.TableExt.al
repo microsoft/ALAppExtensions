@@ -13,6 +13,8 @@ tableextension 31271 "Cust. Ledger Entry CZC" extends "Cust. Ledger Entry"
     {
         field(31060; "Compensation Amount (LCY) CZC"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Compensation Amount (LCY) CZC';
             FieldClass = FlowField;
             CalcFormula = sum("Compensation Line CZC"."Amount (LCY)" where("Source Type" = const(Customer), "Source Entry No." = field("Entry No.")));

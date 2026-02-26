@@ -29,31 +29,37 @@ table 4060 "GPPOPReceiptApply"
         }
         field(5; QTYSHPPD; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Shipped';
             DataClassification = CustomerContent;
         }
         field(6; QTYINVCD; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Invoiced';
             DataClassification = CustomerContent;
         }
         field(7; QTYREJ; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Rejected';
             DataClassification = CustomerContent;
         }
         field(8; QTYMATCH; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Matched';
             DataClassification = CustomerContent;
         }
         field(9; QTYRESERVED; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Reserved';
             DataClassification = CustomerContent;
         }
         field(10; QTYINVRESERVE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Invoice Reserve';
             DataClassification = CustomerContent;
         }
@@ -65,11 +71,13 @@ table 4060 "GPPOPReceiptApply"
         }
         field(12; UMQTYINB; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'U Of M QTY In Base';
             DataClassification = CustomerContent;
         }
         field(13; OLDCUCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Old Current Cost';
             DataClassification = CustomerContent;
         }
@@ -90,11 +98,13 @@ table 4060 "GPPOPReceiptApply"
         }
         field(17; ORCPTCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Receipt Cost';
             DataClassification = CustomerContent;
         }
         field(18; OSTDCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Standard Cost';
             DataClassification = CustomerContent;
         }
@@ -147,21 +157,25 @@ table 4060 "GPPOPReceiptApply"
         }
         field(28; PCHRPTCT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Purchase Receipt Cost';
             DataClassification = CustomerContent;
         }
         field(29; SPRCPTCT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Split Receipt Cost';
             DataClassification = CustomerContent;
         }
         field(30; OREXTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Extended Cost';
             DataClassification = CustomerContent;
         }
         field(31; RUPPVAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Remaining UPPV Amount';
             DataClassification = CustomerContent;
         }
@@ -182,6 +196,7 @@ table 4060 "GPPOPReceiptApply"
         }
         field(35; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Note Index';
             DataClassification = CustomerContent;
         }
@@ -197,6 +212,7 @@ table 4060 "GPPOPReceiptApply"
         }
         field(38; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -208,6 +224,7 @@ table 4060 "GPPOPReceiptApply"
         }
         field(40; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Denomination Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -233,6 +250,7 @@ table 4060 "GPPOPReceiptApply"
         }
         field(45; Total_Landed_Cost_Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Landed Cost Amount';
             DataClassification = CustomerContent;
         }
@@ -244,16 +262,19 @@ table 4060 "GPPOPReceiptApply"
         }
         field(47; Posted_LC_PPV_Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Posted LC PPV Amount';
             DataClassification = CustomerContent;
         }
         field(48; QTYREPLACED; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Replaced';
             DataClassification = CustomerContent;
         }
         field(49; QTYINVADJ; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Invoice Adjustment';
             DataClassification = CustomerContent;
         }

@@ -304,18 +304,22 @@ table 47009 "SL GLSetup"
         field(73; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(74; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(75; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(76; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(77; S4Future07; DateTime)
         {
@@ -372,10 +376,12 @@ table 47009 "SL GLSetup"
         field(90; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(91; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(92; User5; Text[10])
         {

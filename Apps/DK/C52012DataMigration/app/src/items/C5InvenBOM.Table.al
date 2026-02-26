@@ -14,11 +14,20 @@ table 1898 "C5 InvenBOM"
         field(1; RecId; Integer) { }
         field(2; LastChanged; Date) { }
         field(3; BOMItemNumber; Code[20]) { }
-        field(4; LineNumber; Decimal) { }
+        field(4; LineNumber; Decimal)
+        {
+            AutoFormatType = 0;
+        }
         field(5; ItemNumber; Code[20]) { }
-        field(6; Qty; Decimal) { }
+        field(6; Qty; Decimal)
+        {
+            AutoFormatType = 0;
+        }
         field(7; Position; Text[10]) { }
-        field(8; LeadTime; Decimal) { }
+        field(8; LeadTime; Decimal)
+        {
+            AutoFormatType = 0;
+        }
         field(9; Resource; Text[10]) { }
         field(10; InvenLocation; Text[10]) { }
         field(11; Comment; Text[30]) { }

@@ -37,6 +37,7 @@ table 4851 "Automatic Account Line"
         }
         field(4; "Allocation %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Allocation %';
         }
         field(5; "Shortcut Dimension 1 Code"; Code[20])

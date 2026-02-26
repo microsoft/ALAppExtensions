@@ -13,6 +13,8 @@ tableextension 31280 "Cust. Ledger Entry CZB" extends "Cust. Ledger Entry"
 #pragma warning disable AA0232
         field(11790; "Amount on Pmt. Order (LCY) CZB"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = - sum("Iss. Payment Order Line CZB"."Amount (LCY)" where(Type = const(Customer), "Applies-to C/V/E Entry No." = field("Entry No."), Status = const(" ")));
             Caption = 'Amount on Payment Order (LCY)';
             Editable = false;

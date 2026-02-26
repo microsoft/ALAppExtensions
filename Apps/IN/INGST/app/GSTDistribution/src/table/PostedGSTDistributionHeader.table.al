@@ -89,6 +89,8 @@ table 18207 "Posted GST Distribution Header"
         }
         field(18; "Total Amout Applied for Dist."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Amout Applied for Dist.';
             DataClassification = CustomerContent;
         }

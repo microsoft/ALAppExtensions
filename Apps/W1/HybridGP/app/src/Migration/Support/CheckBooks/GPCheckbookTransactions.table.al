@@ -12,6 +12,7 @@ table 40101 "GP Checkbook Transactions"
     {
         field(1; CMRECNUM; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(2; sRecNum; Text[21])
@@ -45,6 +46,7 @@ table 40101 "GP Checkbook Transactions"
         }
         field(9; TRXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(10; CURNCYID; Text[15])
@@ -69,10 +71,12 @@ table 40101 "GP Checkbook Transactions"
         }
         field(15; RECONUM; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(16; ClrdAmt; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(17; clearedate; Date)
@@ -97,6 +101,7 @@ table 40101 "GP Checkbook Transactions"
         }
         field(22; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(23; AUDITTRAIL; Text[13])
@@ -145,10 +150,12 @@ table 40101 "GP Checkbook Transactions"
         }
         field(34; ORIGAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(35; Checkbook_Amount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(36; RATETPID; Text[15])
@@ -161,6 +168,7 @@ table 40101 "GP Checkbook Transactions"
         }
         field(38; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(39; EXCHDATE; Date)
@@ -189,6 +197,7 @@ table 40101 "GP Checkbook Transactions"
         }
         field(45; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(46; MCTRXSTT; Integer)
@@ -197,6 +206,7 @@ table 40101 "GP Checkbook Transactions"
         }
         field(47; Xfr_Record_Number; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(48; EFTFLAG; Boolean)

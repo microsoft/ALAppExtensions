@@ -28,6 +28,8 @@ table 31113 "Acc. Schedule Result Value CZL"
         }
         field(4; Value; Decimal)
         {
+            AutoFormatExpression = '';
+            AutoFormatType = 2;
             Caption = 'Value';
             DataClassification = CustomerContent;
 

@@ -27,15 +27,6 @@ codeunit 11734 "Update Rel.Vend.Ledg.Entry CZZ"
         RelatedVendorLedgerEntry.SetFilter("Entry No.", '<>%1', Rec."Entry No.");
         if RelatedVendorLedgerEntry.FindSet() then
             repeat
-                RelatedVendorLedgerEntry."Specific Symbol CZL" := Rec."Specific Symbol CZL";
-                RelatedVendorLedgerEntry."Variable Symbol CZL" := Rec."Variable Symbol CZL";
-                RelatedVendorLedgerEntry."Constant Symbol CZL" := Rec."Constant Symbol CZL";
-                RelatedVendorLedgerEntry."Bank Account Code CZL" := Rec."Bank Account Code CZL";
-                RelatedVendorLedgerEntry."Bank Account No. CZL" := Rec."Bank Account No. CZL";
-                RelatedVendorLedgerEntry."Transit No. CZL" := Rec."Transit No. CZL";
-                RelatedVendorLedgerEntry."IBAN CZL" := Rec."IBAN CZL";
-                RelatedVendorLedgerEntry."SWIFT Code CZL" := Rec."SWIFT Code CZL";
-                RelatedVendorLedgerEntry."VAT Date CZL" := Rec."VAT Date CZL";
                 RelatedVendorLedgerEntry."External Document No." := Rec."External Document No.";
                 Codeunit.Run(Codeunit::"Vend. Entry-Edit", RelatedVendorLedgerEntry);
             until RelatedVendorLedgerEntry.Next() = 0;

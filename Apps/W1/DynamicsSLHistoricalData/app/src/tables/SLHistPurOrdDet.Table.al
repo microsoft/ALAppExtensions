@@ -14,6 +14,7 @@ table 42812 "SL Hist. PurOrdDet"
     {
         field(1; AddlCostPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'AddlCostPct';
         }
         field(2; AllocCntr; Integer)
@@ -42,18 +43,22 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(8; CnvFact; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CnvFact';
         }
         field(9; CostReceived; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CostReceived';
         }
         field(10; CostReturned; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CostReturned';
         }
         field(11; CostVouched; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CostVouched';
         }
         field(12; CpnyID; Text[10])
@@ -74,18 +79,22 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(16; CuryCostReceived; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCostReceived';
         }
         field(17; CuryCostReturned; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCostReturned';
         }
         field(18; CuryCostVouched; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCostVouched';
         }
         field(19; CuryExtCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryExtCost';
         }
         field(20; CuryID; Text[4])
@@ -98,50 +107,62 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(22; CuryRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRate';
         }
         field(23; CuryTaxAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt00';
         }
         field(24; CuryTaxAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt01';
         }
         field(25; CuryTaxAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt02';
         }
         field(26; CuryTaxAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt03';
         }
         field(27; CuryTxblAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt00';
         }
         field(28; CuryTxblAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt01';
         }
         field(29; CuryTxblAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt02';
         }
         field(30; CuryTxblAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt03';
         }
         field(31; CuryUnitCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryUnitCost';
         }
         field(32; ExtCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ExtCost';
         }
         field(33; ExtWeight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ExtWeight';
         }
         field(34; FlatRateLineNbr; Integer)
@@ -250,18 +271,22 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(60; QtyOrd; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyOrd';
         }
         field(61; QtyRcvd; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyRcvd';
         }
         field(62; QtyReturned; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyReturned';
         }
         field(63; QtyVouched; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyVouched';
         }
         field(64; RcptPctAct; Text[1])
@@ -270,10 +295,12 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(65; RcptPctMax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptPctMax';
         }
         field(66; RcptPctMin; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptPctMin';
         }
         field(67; RcptStage; Text[1])
@@ -306,18 +333,22 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(74; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(75; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(76; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(77; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(78; S4Future07; DateTime)
@@ -422,18 +453,22 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(103; TaxAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt00';
         }
         field(104; TaxAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt01';
         }
         field(105; TaxAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt02';
         }
         field(106; TaxAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt03';
         }
         field(107; TaxCalced; Text[1])
@@ -470,22 +505,27 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(115; TxblAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt00';
         }
         field(116; TxblAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt01';
         }
         field(117; TxblAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt02';
         }
         field(118; TxblAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt03';
         }
         field(119; UnitCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'UnitCost';
         }
         field(120; UnitMultDiv; Text[1])
@@ -494,6 +534,7 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(121; UnitWeight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'UnitWeight';
         }
         field(122; User1; Text[30])
@@ -506,10 +547,12 @@ table 42812 "SL Hist. PurOrdDet"
         }
         field(124; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(125; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(126; User5; Text[10])

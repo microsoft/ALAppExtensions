@@ -727,6 +727,8 @@ page 18554 "Cash Payment Voucher"
                         field(DisplayTotalDebit; GetTotalDebitAmt())
                         {
                             ApplicationArea = Basic, Suite;
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Debit';
                             Editable = false;
                             ToolTip = 'Specifies the total debit amount in the Cash Payment Voucher.';
@@ -740,6 +742,8 @@ page 18554 "Cash Payment Voucher"
                         field(DisplayTotalCredit; GetTotalCreditAmt())
                         {
                             ApplicationArea = Basic, Suite;
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Credit';
                             Editable = false;
                             ToolTip = 'Specifies the total credit amount in the Cash Payment Voucher.';
@@ -753,6 +757,7 @@ page 18554 "Cash Payment Voucher"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Balance';
                             Editable = false;
                             ToolTip = 'Specifies the balance that has accumulated in the Cash Payment Voucher on the line where the cursor is.';
@@ -767,6 +772,7 @@ page 18554 "Cash Payment Voucher"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Balance';
                             Editable = false;
                             ToolTip = 'Specifies the total balance in the Cash Payment Voucher.';

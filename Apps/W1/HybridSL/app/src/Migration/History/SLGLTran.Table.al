@@ -49,6 +49,7 @@ table 47050 "SL GLTran"
         field(7; CrAmt; Decimal)
         {
             Caption = 'CrAmt';
+            AutoFormatType = 0;
         }
         field(8; Crtd_DateTime; DateTime)
         {
@@ -65,10 +66,12 @@ table 47050 "SL GLTran"
         field(11; CuryCrAmt; Decimal)
         {
             Caption = 'CuryCrAmt';
+            AutoFormatType = 0;
         }
         field(12; CuryDrAmt; Decimal)
         {
             Caption = 'CuryDrAmt';
+            AutoFormatType = 0;
         }
         field(13; CuryEffDate; DateTime)
         {
@@ -85,6 +88,7 @@ table 47050 "SL GLTran"
         field(16; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
+            AutoFormatType = 0;
         }
         field(17; CuryRateType; Text[6])
         {
@@ -93,6 +97,7 @@ table 47050 "SL GLTran"
         field(18; DrAmt; Decimal)
         {
             Caption = 'DrAmt';
+            AutoFormatType = 0;
         }
         field(19; EmployeeID; Text[10])
         {
@@ -205,6 +210,7 @@ table 47050 "SL GLTran"
         field(46; Qty; Decimal)
         {
             Caption = 'Qty';
+            AutoFormatType = 0;
         }
         field(47; RefNbr; Text[10])
         {
@@ -229,18 +235,22 @@ table 47050 "SL GLTran"
         field(53; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(54; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(55; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(56; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(57; S4Future07; DateTime)
         {
@@ -293,6 +303,7 @@ table 47050 "SL GLTran"
         field(70; Units; Decimal)
         {
             Caption = 'Units';
+            AutoFormatType = 0;
         }
         field(71; User1; Text[30])
         {
@@ -305,10 +316,12 @@ table 47050 "SL GLTran"
         field(74; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(75; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(76; User5; Text[10])
         {

@@ -89,31 +89,37 @@ table 40102 "GP POPPOHeader"
         }
         field(16; REMSUBTO; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'REMSUBTO';
             DataClassification = CustomerContent;
         }
         field(17; SUBTOTAL; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'SUBTOTAL';
             DataClassification = CustomerContent;
         }
         field(18; TRDISAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TRDISAMT';
             DataClassification = CustomerContent;
         }
         field(19; FRTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'FRTAMNT';
             DataClassification = CustomerContent;
         }
         field(20; MSCCHAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'MSCCHAMT';
             DataClassification = CustomerContent;
         }
         field(21; TAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TAXAMNT';
             DataClassification = CustomerContent;
         }
@@ -129,6 +135,7 @@ table 40102 "GP POPPOHeader"
         }
         field(24; MINORDER; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'MINORDER';
             DataClassification = CustomerContent;
         }
@@ -229,6 +236,7 @@ table 40102 "GP POPPOHeader"
         }
         field(44; DSCDLRAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DSCDLRAM';
             DataClassification = CustomerContent;
         }
@@ -239,6 +247,7 @@ table 40102 "GP POPPOHeader"
         }
         field(46; DISAMTAV; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DISAMTAV';
             DataClassification = CustomerContent;
         }
@@ -279,76 +288,91 @@ table 40102 "GP POPPOHeader"
         }
         field(54; PONOTIDS_1; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_1';
             DataClassification = CustomerContent;
         }
         field(55; PONOTIDS_2; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_2';
             DataClassification = CustomerContent;
         }
         field(56; PONOTIDS_3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_3';
             DataClassification = CustomerContent;
         }
         field(57; PONOTIDS_4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_4';
             DataClassification = CustomerContent;
         }
         field(58; PONOTIDS_5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_5';
             DataClassification = CustomerContent;
         }
         field(59; PONOTIDS_6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_6';
             DataClassification = CustomerContent;
         }
         field(60; PONOTIDS_7; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_7';
             DataClassification = CustomerContent;
         }
         field(61; PONOTIDS_8; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_8';
             DataClassification = CustomerContent;
         }
         field(62; PONOTIDS_9; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_9';
             DataClassification = CustomerContent;
         }
         field(63; PONOTIDS_10; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_10';
             DataClassification = CustomerContent;
         }
         field(64; PONOTIDS_11; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_11';
             DataClassification = CustomerContent;
         }
         field(65; PONOTIDS_12; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_12';
             DataClassification = CustomerContent;
         }
         field(66; PONOTIDS_13; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_13';
             DataClassification = CustomerContent;
         }
         field(67; PONOTIDS_14; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_14';
             DataClassification = CustomerContent;
         }
         field(68; PONOTIDS_15; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PONOTIDS_15';
             DataClassification = CustomerContent;
         }
@@ -359,6 +383,7 @@ table 40102 "GP POPPOHeader"
         }
         field(70; CANCSUB; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CANCSUB';
             DataClassification = CustomerContent;
         }
@@ -384,6 +409,7 @@ table 40102 "GP POPPOHeader"
         }
         field(75; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'XCHGRATE';
             DataClassification = CustomerContent;
         }
@@ -404,6 +430,7 @@ table 40102 "GP POPPOHeader"
         }
         field(79; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DENXRATE';
             DataClassification = CustomerContent;
         }
@@ -414,46 +441,55 @@ table 40102 "GP POPPOHeader"
         }
         field(81; OREMSUBT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OREMSUBT';
             DataClassification = CustomerContent;
         }
         field(82; ORSUBTOT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORSUBTOT';
             DataClassification = CustomerContent;
         }
         field(83; Originating_Canceled_Sub; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating_Canceled_Sub';
             DataClassification = CustomerContent;
         }
         field(84; ORTDISAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORTDISAM';
             DataClassification = CustomerContent;
         }
         field(85; ORFRTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORFRTAMT';
             DataClassification = CustomerContent;
         }
         field(86; OMISCAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OMISCAMT';
             DataClassification = CustomerContent;
         }
         field(87; ORTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORTAXAMT';
             DataClassification = CustomerContent;
         }
         field(88; ORDDLRAT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORDDLRAT';
             DataClassification = CustomerContent;
         }
         field(89; ODISAMTAV; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ODISAMTAV';
             DataClassification = CustomerContent;
         }
@@ -464,11 +500,13 @@ table 40102 "GP POPPOHeader"
         }
         field(91; ONORDAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ONORDAMT';
             DataClassification = CustomerContent;
         }
         field(92; ORORDAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORORDAMT';
             DataClassification = CustomerContent;
         }
@@ -577,51 +615,61 @@ table 40102 "GP POPPOHeader"
         }
         field(113; FRTTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'FRTTXAMT';
             DataClassification = CustomerContent;
         }
         field(114; ORFRTTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORFRTTAX';
             DataClassification = CustomerContent;
         }
         field(115; MSCTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'MSCTXAMT';
             DataClassification = CustomerContent;
         }
         field(116; ORMSCTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ORMSCTAX';
             DataClassification = CustomerContent;
         }
         field(117; BCKTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BCKTXAMT';
             DataClassification = CustomerContent;
         }
         field(118; OBTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OBTAXAMT';
             DataClassification = CustomerContent;
         }
         field(119; BackoutFreightTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BackoutFreightTaxAmt';
             DataClassification = CustomerContent;
         }
         field(120; OrigBackoutFreightTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OrigBackoutFreightTaxAmt';
             DataClassification = CustomerContent;
         }
         field(121; BackoutMiscTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BackoutMiscTaxAmt';
             DataClassification = CustomerContent;
         }
         field(122; OrigBackoutMiscTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OrigBackoutMiscTaxAmt';
             DataClassification = CustomerContent;
         }
@@ -632,11 +680,13 @@ table 40102 "GP POPPOHeader"
         }
         field(124; BackoutTradeDiscTax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BackoutTradeDiscTax';
             DataClassification = CustomerContent;
         }
         field(125; OrigBackoutTradeDiscTax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OrigBackoutTradeDiscTax';
             DataClassification = CustomerContent;
         }
@@ -727,6 +777,7 @@ table 40102 "GP POPPOHeader"
         }
         field(143; BLNKTLINEEXTQTYSUM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BLNKTLINEEXTQTYSUM';
             DataClassification = CustomerContent;
         }
@@ -760,11 +811,13 @@ table 40102 "GP POPPOHeader"
         }
         field(149; PrepaymentAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PrepaymentAmount';
             DataClassification = CustomerContent;
         }
         field(150; OriginatingPrepaymentAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OriginatingPrepaymentAmt';
             DataClassification = CustomerContent;
         }

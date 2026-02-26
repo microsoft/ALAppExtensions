@@ -85,16 +85,21 @@ table 18245 "GST TDS/TCS Entry"
         }
         field(13; "GST TDS/TCS Base Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS/TCS Base Amount (LCY)';
             DataClassification = CustomerContent;
         }
         field(14; "GST TDS/TCS Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS/TCS Amount (LCY)';
             DataClassification = CustomerContent;
         }
         field(15; "GST TDS/TCS %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST TDS/TCS %';
             DataClassification = CustomerContent;
         }
@@ -141,6 +146,7 @@ table 18245 "GST TDS/TCS Entry"
         }
         field(24; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
         }

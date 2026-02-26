@@ -179,10 +179,12 @@ table 47049 "SL Vendor"
         field(42; RcptPctMax; Decimal)
         {
             Caption = 'RcptPctMax';
+            AutoFormatType = 0;
         }
         field(43; RcptPctMin; Decimal)
         {
             Caption = 'RcptPctMin';
+            AutoFormatType = 0;
         }
         field(44; RecipientName2; Text[40])
         {
@@ -247,18 +249,22 @@ table 47049 "SL Vendor"
         field(59; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(60; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(61; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(62; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(63; S4Future07; DateTime)
         {
@@ -351,10 +357,12 @@ table 47049 "SL Vendor"
         field(85; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(86; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(87; User5; Text[10])
         {

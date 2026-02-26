@@ -33,6 +33,7 @@ tableextension 11513 "Swiss QR-Bill Purchase Header" extends "Purchase Header"
         }
         field(11504; "Swiss QR-Bill Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount';
             DataClassification = CustomerContent;
         }

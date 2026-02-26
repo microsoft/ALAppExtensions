@@ -13,17 +13,23 @@ tableextension 18392 "GST Transfer Line Ext" extends "Transfer Line"
     {
         field(18390; "Transfer Price"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Transfer Price';
         }
         field(18391; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Custom Duty Amount';
             MinValue = 0;
         }
         field(18392; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Amount';
             Editable = false;
@@ -57,18 +63,24 @@ tableextension 18392 "GST Transfer Line Ext" extends "Transfer Line"
         }
         field(18397; "GST Assessable Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value';
             DataClassification = CustomerContent;
             MinValue = 0;
         }
         field(18398; "Amount Added to Inventory"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount Added to Inventory';
-            Editable = False;
+            Editable = false;
             DataClassification = CustomerContent;
         }
         field(18399; "Charges to Transfer"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Charges to Transfer';
             DataClassification = CustomerContent;
             Editable = false;

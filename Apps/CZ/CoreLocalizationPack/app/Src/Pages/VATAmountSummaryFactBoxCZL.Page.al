@@ -24,12 +24,15 @@ page 31046 "VAT Amount Summary FactBox CZL"
             {
                 field(VATRate; VATRate)
                 {
+                    AutoFormatType = 0;
                     Caption = 'VAT %';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the relevant VAT rate.';
                 }
                 field(VATAmountTotal; VATAmountTotal)
                 {
+                    AutoFormatExpression = '';
+                    AutoFormatType = 1;
                     Caption = 'Corrected VAT Amount';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the corrected VAT amount total per VAT rate.';

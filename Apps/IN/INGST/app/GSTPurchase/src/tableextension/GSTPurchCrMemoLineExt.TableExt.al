@@ -37,6 +37,8 @@ tableextension 18086 "GST Purch. Cr. Memo Line Ext." extends "Purch. Cr. Memo Li
         }
         field(18084; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Custom Duty Amount';
             DataClassification = CustomerContent;
             MinValue = 0;
@@ -49,6 +51,8 @@ tableextension 18086 "GST Purch. Cr. Memo Line Ext." extends "Purch. Cr. Memo Li
         }
         field(18086; "GST Assessable Value"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value';
             MinValue = 0;
             DataClassification = CustomerContent;

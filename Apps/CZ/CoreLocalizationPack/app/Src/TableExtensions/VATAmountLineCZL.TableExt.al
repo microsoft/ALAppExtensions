@@ -21,6 +21,7 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
     {
         field(11782; "VAT Base (LCY) CZL"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             Caption = 'VAT Base (LCY)';
             DataClassification = CustomerContent;
@@ -28,6 +29,7 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
         }
         field(11783; "VAT Amount (LCY) CZL"; Decimal)
         {
+            AutoFormatExpression = '';
             AutoFormatType = 1;
             Caption = 'VAT Amount (LCY)';
             DataClassification = CustomerContent;
@@ -71,8 +73,7 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
         CurrencyAdditional: Record Currency;
         TempTotalVATAmountLine: Record "VAT Amount Line" temporary;
         TempVATEntry: Record "VAT Entry" temporary;
-        Factor: Decimal;
-        FactorAdditionalCurrency: Decimal;
+        CurrExchRate: Decimal;
         SingleLine: Boolean;
     begin
         if Rec.IsEmpty() then
@@ -99,24 +100,16 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
                     Rec."Additional-Currency Amount CZL" := TempTotalVATAmountLine."Additional-Currency Amount CZL";
                     Rec."Additional-Currency Base CZL" := TempTotalVATAmountLine."Additional-Currency Base CZL";
                 end else begin
-                    if (TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount") = 0 then
-                        Factor := VATCurrFactor
-                    else
-                        Factor := (TempTotalVATAmountLine."VAT Base (LCY) CZL" + TempTotalVATAmountLine."VAT Amount (LCY) CZL") /
-                            (TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount");
-                    Rec."VAT Base (LCY) CZL" := Round((Rec."VAT Base" * Factor), Currency."Amount Rounding Precision");
-                    Rec."VAT Amount (LCY) CZL" := Round((Rec."VAT Amount" * Factor), Currency."Amount Rounding Precision");
+                    CurrExchRate := CalcCurrExchRate(TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount", TempTotalVATAmountLine."VAT Base (LCY) CZL" + TempTotalVATAmountLine."VAT Amount (LCY) CZL");
+                    Rec."VAT Base (LCY) CZL" := Round((Rec."VAT Base" * CurrExchRate), Currency."Amount Rounding Precision");
+                    Rec."VAT Amount (LCY) CZL" := Round((Rec."VAT Amount" * CurrExchRate), Currency."Amount Rounding Precision");
                     TempTotalVATAmountLine."VAT Base (LCY) CZL" -= Rec."VAT Base (LCY) CZL";
                     TempTotalVATAmountLine."VAT Amount (LCY) CZL" -= Rec."VAT Amount (LCY) CZL";
 
                     if GetAdditionalCurrencyCode() <> '' then begin
-                        if (TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount") = 0 then
-                            FactorAdditionalCurrency := VATCurrFactor
-                        else
-                            FactorAdditionalCurrency := (TempTotalVATAmountLine."Additional-Currency Base CZL" + TempTotalVATAmountLine."Additional-Currency Amount CZL") /
-                                (TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount");
-                        Rec."Additional-Currency Base CZL" := Round((Rec."VAT Base" * FactorAdditionalCurrency), CurrencyAdditional."Amount Rounding Precision");
-                        Rec."Additional-Currency Amount CZL" := Round((Rec."VAT Amount" * FactorAdditionalCurrency), CurrencyAdditional."Amount Rounding Precision");
+                        CurrExchRate := CalcCurrExchRate(TempTotalVATAmountLine."VAT Base" + TempTotalVATAmountLine."VAT Amount", TempTotalVATAmountLine."Additional-Currency Base CZL" + TempTotalVATAmountLine."Additional-Currency Amount CZL");
+                        Rec."Additional-Currency Base CZL" := Round((Rec."VAT Base" * CurrExchRate), CurrencyAdditional."Amount Rounding Precision");
+                        Rec."Additional-Currency Amount CZL" := Round((Rec."VAT Amount" * CurrExchRate), CurrencyAdditional."Amount Rounding Precision");
                         TempTotalVATAmountLine."Additional-Currency Base CZL" -= Rec."Additional-Currency Base CZL";
                         TempTotalVATAmountLine."Additional-Currency Amount CZL" -= Rec."Additional-Currency Amount CZL";
                     end;
@@ -124,6 +117,15 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
                 end;
                 Rec.Modify();
             until Rec.Next() = 0;
+    end;
+
+    local procedure CalcCurrExchRate(Amount: Decimal; AmountLCY: Decimal): Decimal
+    begin
+        if Amount <> 0 then
+            exit(AmountLCY / Amount);
+        if VATCurrFactor <> 0 then
+            exit(1 / VATCurrFactor);
+        exit(1);
     end;
 
     local procedure GetDocumentVATEntryBuffer(Variant: Variant; var TempVATEntry: Record "VAT Entry")
@@ -250,7 +252,6 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
         VATEntry.SetRange("Document Type", DocumentType);
         VATEntry.SetRange("Document No.", DocumentNo);
         VATEntry.SetRange("Posting Date", PostingDate);
-        VATEntry.SetRange("Source Code", SourceCode);
         OnCopyDocumentVATEntriesToBufferOnAfterSetVATEntryFilterCZL(TransactionNo, DocumentType, DocumentNo, PostingDate, SourceCode, VATEntry);
         if VATEntry.FindSet() then
             repeat

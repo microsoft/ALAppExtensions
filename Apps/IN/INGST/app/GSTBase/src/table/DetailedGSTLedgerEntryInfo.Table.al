@@ -103,7 +103,8 @@ table 18016 "Detailed GST Ledger Entry Info"
         }
         field(17; "Amount to Customer/Vendor"; Decimal)
         {
-            Caption = 'Amount to Customer/Vendor';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(18; "Adv. Pmt. Adjustment"; Boolean)
@@ -141,6 +142,8 @@ table 18016 "Detailed GST Ledger Entry Info"
         }
         field(26; "Delivery Challan Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Delivery Challan Amount';
         }
@@ -156,6 +159,7 @@ table 18016 "Detailed GST Ledger Entry Info"
         }
         field(29; "Cess Amount Per Unit Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cess Amount Per Unit Factor';
             DataClassification = CustomerContent;
         }
@@ -167,6 +171,7 @@ table 18016 "Detailed GST Ledger Entry Info"
         }
         field(31; "Cess Factor Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cess Factor Quantity';
             DataClassification = CustomerContent;
         }
@@ -324,11 +329,13 @@ table 18016 "Detailed GST Ledger Entry Info"
         }
         field(61; "GST Base Amount FCY"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Base Amount FCY';
             DataClassification = CustomerContent;
         }
         field(62; "GST Amount FCY"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Amount FCY';
             DataClassification = CustomerContent;
         }

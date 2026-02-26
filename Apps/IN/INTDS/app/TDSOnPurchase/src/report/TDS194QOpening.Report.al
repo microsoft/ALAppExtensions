@@ -123,12 +123,16 @@ report 18716 "TDS 194Q Opening"
                     field(PurchaseAmount; PurchaseAmount)
                     {
                         ApplicationArea = All;
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'Purchase Amount';
                         ToolTip = 'Specifies the purchase amount that needs to be posted as vendor opening entry for 194Q.';
                     }
                     field(TDSThresholdAmount; TDSThresholdAmount)
                     {
                         ApplicationArea = All;
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         Caption = 'TDS Threshold Amount';
                         Editable = false;
                         ToolTip = 'Specifies the TDS threshold amount that is defined on the TDS rate for TDS section code.';

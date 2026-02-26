@@ -717,6 +717,8 @@ page 18555 "Cash Receipt Voucher"
 
                         field(DisplayTotalDebit; GetTotalDebitAmt())
                         {
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             ApplicationArea = Basic, Suite;
                             Caption = 'Total Debit';
                             Editable = false;
@@ -731,6 +733,8 @@ page 18555 "Cash Receipt Voucher"
                         field(DisplayTotalCredit; GetTotalCreditAmt())
                         {
                             ApplicationArea = Basic, Suite;
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Credit';
                             Editable = false;
                             ToolTip = 'Specifies the total credit amount in the Cash Receipt Voucher.';
@@ -744,6 +748,7 @@ page 18555 "Cash Receipt Voucher"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Balance';
                             Editable = false;
                             ToolTip = 'Specifies the balance that has accumulated in the Cash Receipt Voucher on the line where the cursor is.';
@@ -758,6 +763,7 @@ page 18555 "Cash Receipt Voucher"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Balance';
                             Editable = false;
                             ToolTip = 'Specifies the total balance in the Cash Receipt Voucher.';

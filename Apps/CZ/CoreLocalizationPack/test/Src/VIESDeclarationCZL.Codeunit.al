@@ -233,10 +233,8 @@ codeunit 148067 "VIES Declaration CZL"
     [HandlerFunctions('SuggestVIESDeclarationRequestPageHandler')]
     procedure ExportVIESDeclarationReleased()
     var
-        TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL" temporary;
         TempXMLBuffer: Record "XML Buffer" temporary;
         TempBlob: Codeunit "Temp Blob";
-        VIESDeclarationCZL: XmlPort "VIES Declaration CZL";
         OutStream: OutStream;
         InStream: InStream;
     begin
@@ -269,18 +267,9 @@ codeunit 148067 "VIES Declaration CZL"
         ReleaseVIESDeclarationCZL.Run(VIESDeclarationHeaderCZL);
 
         // [WHEN] Export VIES Declaration
-        VIESDeclarationLineCZL.SetRange("VIES Declaration No.", VIESDeclarationHeaderCZL."No.");
-        if VIESDeclarationLineCZL.FindSet() then
-            repeat
-                TempVIESDeclarationLineCZL := VIESDeclarationLineCZL;
-                TempVIESDeclarationLineCZL.Insert();
-            until VIESDeclarationLineCZL.Next() = 0;
-
+        VIESDeclarationHeaderCZL.SetRecFilter();
         TempBlob.CreateOutStream(OutStream);
-        VIESDeclarationCZL.SetHeader(VIESDeclarationHeaderCZL);
-        VIESDeclarationCZL.SetLines(TempVIESDeclarationLineCZL);
-        VIESDeclarationCZL.SetDestination(OutStream);
-        VIESDeclarationCZL.Export();
+        Xmlport.Export(XmlPort::"VIES Declaration CZL", OutStream, VIESDeclarationHeaderCZL);
 
         // [THEN] Exported XML document will exist
         TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
@@ -366,10 +355,8 @@ codeunit 148067 "VIES Declaration CZL"
     [HandlerFunctions('SuggestVIESDeclarationRequestPageHandler,GetLineForCorrectionModalPageHandler')]
     procedure ExportVIESDeclarationCorrective()
     var
-        TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL" temporary;
         TempXMLBuffer: Record "XML Buffer" temporary;
         TempBlob: Codeunit "Temp Blob";
-        VIESDeclarationCZL: XmlPort "VIES Declaration CZL";
         OutStream: OutStream;
         InStream: InStream;
     begin
@@ -416,18 +403,9 @@ codeunit 148067 "VIES Declaration CZL"
         ReleaseVIESDeclarationCZL.Run(VIESDeclarationHeaderCZL);
 
         // [WHEN] Export corrective VIES Declaration
-        VIESDeclarationLineCZL.SetRange("VIES Declaration No.", VIESDeclarationHeaderCZL."No.");
-        if VIESDeclarationLineCZL.FindSet() then
-            repeat
-                TempVIESDeclarationLineCZL := VIESDeclarationLineCZL;
-                TempVIESDeclarationLineCZL.Insert();
-            until VIESDeclarationLineCZL.Next() = 0;
-
+        VIESDeclarationHeaderCZL.SetRecFilter();
         TempBlob.CreateOutStream(OutStream);
-        VIESDeclarationCZL.SetHeader(VIESDeclarationHeaderCZL);
-        VIESDeclarationCZL.SetLines(TempVIESDeclarationLineCZL);
-        VIESDeclarationCZL.SetDestination(OutStream);
-        VIESDeclarationCZL.Export();
+        Xmlport.Export(XmlPort::"VIES Declaration CZL", OutStream, VIESDeclarationHeaderCZL);
 
         // [THEN] Exported XML document will exist
         TempBlob.CreateInStream(InStream, TextEncoding::UTF8);

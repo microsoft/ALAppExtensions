@@ -38,6 +38,8 @@ tableextension 18082 "GST Purchase Line Archive Ext" extends "Purchase Line Arch
         }
         field(18084; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Custom Duty Amount';
             DataClassification = CustomerContent;
             MinValue = 0;
@@ -50,6 +52,8 @@ tableextension 18082 "GST Purchase Line Archive Ext" extends "Purchase Line Arch
         }
         field(18086; "GST Assessable Value"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Assessable Value';
             MinValue = 0;
             DataClassification = CustomerContent;

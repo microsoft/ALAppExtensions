@@ -29,6 +29,7 @@ table 4063 "GPPOPSerialLotHist"
         }
         field(5; SERLTQTY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Serial/Lot QTY';
             DataClassification = CustomerContent;
         }
@@ -39,11 +40,13 @@ table 4063 "GPPOPSerialLotHist"
         }
         field(7; DTSEQNUM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Date SEQ Number';
             DataClassification = CustomerContent;
         }
         field(8; UNITCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
         }

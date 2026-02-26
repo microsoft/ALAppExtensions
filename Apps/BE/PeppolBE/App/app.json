@@ -1,0 +1,42 @@
+{
+  "id": "e56642d4-5b38-4de1-8cf4-b2ed9513971a",
+  "name": "PEPPOL BE",
+  "publisher": "Microsoft",
+  "description": "PEPPOL BIS 3.0 Belgium localization for electronic invoicing with Belgium-specific VAT registration formatting.",
+  "brief": "Belgium localization for PEPPOL BIS 3.0 electronic invoicing.",
+  "version": "29.0.0.0",
+  "logo": "ExtensionLogo.png",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2104024",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206603",
+  "propagateDependencies": true,
+  "dependencies": [
+    {
+      "id": "e1966889-b5fb-4fda-a84c-ea71b590e1a9",
+      "name": "PEPPOL",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    }
+  ],
+  "internalsVisibleTo": [],
+  "platform": "28.0.0.0",
+  "idRanges": [
+    {
+      "from": 37310,
+      "to": 37350
+    }
+  ],
+  "application": "29.0.0.0",
+  "features": [
+    "NoImplicitWith",
+    "TranslationFile"
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
+}

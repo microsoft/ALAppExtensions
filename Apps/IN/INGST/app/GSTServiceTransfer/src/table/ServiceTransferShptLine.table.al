@@ -42,6 +42,8 @@ table 18355 "Service Transfer Shpt. Line"
         }
         field(5; "Transfer Price"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Transfer Price';
             DataClassification = CustomerContent;
             Editable = false;
@@ -102,6 +104,7 @@ table 18355 "Service Transfer Shpt. Line"
         }
         field(17; "GST Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Rounding Precision';
             DataClassification = CustomerContent;
             Editable = false;

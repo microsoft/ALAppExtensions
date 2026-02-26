@@ -43,12 +43,16 @@ table 18749 "TDS Challan Register"
         }
         field(6; "TDS Interest Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS Interest Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(7; "TDS Others"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS Others';
             DataClassification = CustomerContent;
             Editable = false;
@@ -66,30 +70,40 @@ table 18749 "TDS Challan Register"
         }
         field(10; "Total TDS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total TDS Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(11; "Total Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Surcharge Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(12; "Total eCess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total eCess Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(13; "Total Invoice Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Invoice Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(14; "Total TDS Including SHE Cess"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total TDS Including SHE Cess';
             DataClassification = CustomerContent;
             Editable = false;
@@ -142,11 +156,15 @@ table 18749 "TDS Challan Register"
         }
         field(24; "Last TDS Others"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Last TDS Others';
             DataClassification = CustomerContent;
         }
         field(25; "Last TDS Interest"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Last TDS Interest';
             DataClassification = CustomerContent;
         }
@@ -196,6 +214,8 @@ table 18749 "TDS Challan Register"
         }
         field(33; "Total SHE Cess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total SHE Cess Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -207,6 +227,8 @@ table 18749 "TDS Challan Register"
         }
         field(35; "TDS Fee"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS Fee';
             DataClassification = CustomerContent;
             Editable = false;

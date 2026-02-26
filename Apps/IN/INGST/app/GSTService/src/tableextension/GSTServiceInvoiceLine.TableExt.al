@@ -58,6 +58,8 @@ tableextension 18446 "GST Service Invoice Line" extends "Service Invoice Line"
         }
         field(18448; "GST Assessable Value (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value (LCY)';
             DataClassification = CustomerContent;
         }

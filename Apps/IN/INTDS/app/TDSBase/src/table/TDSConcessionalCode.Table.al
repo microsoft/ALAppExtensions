@@ -61,6 +61,8 @@ table 18688 "TDS Concessional Code"
         }
         field(7; "Certificate Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Certificate Value';
             DataClassification = CustomerContent;
 
@@ -72,11 +74,15 @@ table 18688 "TDS Concessional Code"
         }
         field(8; "Remaining Certificate Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Remaining Certificate Value';
             DataClassification = CustomerContent;
         }
         field(9; "Used Certificate Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Used Certificate Value';
             DataClassification = CustomerContent;
         }

@@ -55,6 +55,7 @@ table 4703 "VAT Group Submission Line"
         {
             DataClassification = CustomerContent;
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
         }
     }

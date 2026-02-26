@@ -34,22 +34,27 @@ table 1880 "C5 InvenPriceGroup"
         }
         field(6; Roundoff1; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Round 1';
         }
         field(7; Roundoff10; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Round 10';
         }
         field(8; Roundoff100; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Round 100';
         }
         field(9; Roundoff1000; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Round 1000';
         }
         field(10; Roundoff1000Plus; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Round 1000 Plus';
         }
     }

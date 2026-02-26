@@ -120,12 +120,16 @@ page 31192 "Preview Adv. VAT Entries CZZ"
                 Caption = 'Total VAT';
                 field(TotalVATBase; TotalVATBase)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Total VAT Base';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies total VAT Base in local currency after posting document.';
                 }
                 field(TotalVATAmount; TotalVATAmount)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Total VAT Amount';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies total VAT Amount in local currency after posting document.';

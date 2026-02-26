@@ -53,6 +53,8 @@ table 18689 "TDS Entry"
         }
         field(8; "TDS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS Base Amount';
             Editable = false;
             DataClassification = CustomerContent;
@@ -65,48 +67,60 @@ table 18689 "TDS Entry"
         }
         field(10; "TDS %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TDS %';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(11; "TDS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS Amount';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(12; "Surcharge %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Surcharge %';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(13; "Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Surcharge Amount';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(14; "eCess %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'eCess %';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(15; "eCess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'eCess Amount';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(16; "SHE Cess %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'SHE Cess %';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(17; "SHE Cess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'SHE Cess Amount';
             Editable = false;
             DataClassification = CustomerContent;
@@ -150,6 +164,8 @@ table 18689 "TDS Entry"
         }
         field(27; "Invoice Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Invoice Amount';
             Editable = false;
             DataClassification = CustomerContent;
@@ -237,6 +253,8 @@ table 18689 "TDS Entry"
         }
         field(43; "TDS Amount Including Surcharge"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS Amount Including Surcharge';
             Editable = false;
             DataClassification = CustomerContent;
@@ -249,12 +267,15 @@ table 18689 "TDS Entry"
         }
         field(46; "Adjusted TDS %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Adjusted TDS %';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(47; "Bal. TDS Including SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Bal. TDS Including SHE CESS';
             DataClassification = CustomerContent;
             Editable = false;
@@ -279,31 +300,41 @@ table 18689 "TDS Entry"
         }
         field(51; "Remaining Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Remaining Surcharge Amount';
             DataClassification = CustomerContent;
         }
         field(52; "Remaining TDS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Remaining TDS Amount';
             DataClassification = CustomerContent;
         }
         field(53; "Adjusted Surcharge %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Adjusted Surcharge %';
             DataClassification = CustomerContent;
         }
         field(55; "TDS Line Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS Line Amount';
             DataClassification = CustomerContent;
         }
         field(56; "Total TDS Including SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total TDS Including SHE CESS';
             DataClassification = CustomerContent;
         }
         field(57; "Adjusted eCESS %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Adjusted eCESS %';
             DataClassification = CustomerContent;
         }
@@ -370,11 +401,14 @@ table 18689 "TDS Entry"
         }
         field(71; "Adjusted SHE CESS %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Adjusted SHE CESS %';
             DataClassification = CustomerContent;
         }
         field(72; "Original TDS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Original TDS Base Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -387,6 +421,8 @@ table 18689 "TDS Entry"
         }
         field(75; "Payment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Amount';
             DataClassification = CustomerContent;
         }
@@ -397,10 +433,13 @@ table 18689 "TDS Entry"
         }
         field(81; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(85; "Surcharge Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Surcharge Base Amount';
         }
@@ -431,6 +470,8 @@ table 18689 "TDS Entry"
         }
         field(92; "Original Invoice Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Editable = false;
         }

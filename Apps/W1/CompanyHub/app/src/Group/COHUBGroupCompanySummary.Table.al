@@ -455,18 +455,24 @@ table 1156 "COHUB Group Company Summary"
 
         field(92; "Cash Accounts Balance Decimal"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             FieldClass = FlowField;
             CalcFormula = lookup("COHUB Company KPI"."Cash Accounts Balance Decimal" where("Enviroment No." = field("Enviroment No."), "Company Name" = field("Company Name")));
         }
 
         field(93; "Overdue Purch. Inv Amt Decimal"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             FieldClass = FlowField;
             CalcFormula = lookup("COHUB Company KPI"."Overdue Purch. Inv. Amt. Dec." where("Enviroment No." = field("Enviroment No."), "Company Name" = field("Company Name")));
         }
 
         field(94; "Overdue Sales Inv. Amt. Dec."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             FieldClass = FlowField;
             CalcFormula = lookup("COHUB Company KPI"."Overdue Sales Inv. Amt. Dec." where("Enviroment No." = field("Enviroment No."), "Company Name" = field("Company Name")));
         }

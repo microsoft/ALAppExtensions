@@ -39,6 +39,8 @@ table 11754 "Unrel. Payer Service Setup CZL"
         }
         field(82; "Public Bank Acc.Check Limit"; Decimal)
         {
+            AutoFormatExpression = '';
+            AutoFormatType = 2;
             BlankZero = true;
             Caption = 'Public Bank Account Check Limit';
             MinValue = 0;

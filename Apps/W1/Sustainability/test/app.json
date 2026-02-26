@@ -2,7 +2,7 @@
   "id": "6723f320-28a1-40cc-bf4d-d4dce362cb39",
   "name": "Sustainability Tests",
   "publisher": "Microsoft",
-  "version": "28.0.0.0",
+  "version": "29.0.0.0",
   "brief": "Tests for Microsoft Sustainability app.",
   "description": "Tests for Microsoft Sustainability app.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -16,43 +16,43 @@
       "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
       "name": "Sustainability",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
       "name": "Tests-TestLibraries",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
       "name": "Library Variable Storage",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "e4e86220-cac0-4ec3-b853-7c2fa610399d",
       "name": "Power BI Report embeddings for Dynamics 365 Business Central",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "b4e48c9c-0deb-49a4-ae70-662b33565b1b",
       "name": "PowerBI Reports Test Library",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "40860557-a18d-42ad-aecb-22b7dd80dc80",
       "publisher": "Microsoft",
       "name": "Permissions Mock",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     }
   ],
   "internalsVisibleTo": [],
   "screenshots": [],
   "platform": "28.0.0.0",
-  "application": "28.0.0.0",
+  "application": "29.0.0.0",
   "idRanges": [
     {
       "from": 148180,

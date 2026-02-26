@@ -681,6 +681,8 @@ codeunit 13405 "Create FI GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(PROFITLOSSFORTHEFINANCIALYEARName(), '9999');
 
         ModifyGLAccountForW1();
+
+        Codeunit.Run(Codeunit::"Create Deferral Template FI");
     end;
 
     local procedure ModifyGLAccountForW1()

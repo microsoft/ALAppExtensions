@@ -68,34 +68,50 @@ table 40904 "Hist. Receivables Document"
         }
         field(15; "Orig. Trx. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Orig. Trx. Amount';
         }
         field(16; "Current Trx. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Current Trx. Amount';
         }
         field(17; "Sales Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Sales Amount';
         }
         field(18; "Cost Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Cost Amount';
         }
         field(19; "Freight Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Freight Amount';
         }
         field(20; "Misc. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Misc. Amount';
         }
         field(21; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Tax Amount';
         }
         field(22; "Disc. Taken Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Disc. Taken Amount';
         }
         field(23; "Customer Purchase No."; Code[35])
@@ -116,10 +132,14 @@ table 40904 "Hist. Receivables Document"
         }
         field(27; "Cash Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Cash Amount';
         }
         field(28; "Commission Dollar Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Commission Dollar Amount';
         }
         field(29; "Invoice Paid Off Date"; Date)
@@ -132,6 +152,8 @@ table 40904 "Hist. Receivables Document"
         }
         field(31; "Write Off Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Write Off Amount';
         }
     }

@@ -49,6 +49,8 @@ page 4704 "VAT Group Member Calculation"
                 }
                 field(Amount; Rec.Amount)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the VAT amount for the specified box number.';
                 }
@@ -57,6 +59,8 @@ page 4704 "VAT Group Member Calculation"
             {
                 field(Total; Total)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     ToolTip = 'Specifies the total amount for the specified box number aggregated from all the group member returns.';

@@ -14,6 +14,8 @@ pageextension 18849 "Sales Invoice Statistics" extends "Sales Invoice Statistics
         {
             field("TCS Amount"; TCSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 Caption = 'TCS Amount';

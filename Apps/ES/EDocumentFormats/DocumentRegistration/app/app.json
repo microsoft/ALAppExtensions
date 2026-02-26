@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "Regulation introduced by the Spanish Tax Agency (AEAT)",
   "description": "Regulation introduced by the Spanish Tax Agency (AEAT) under Royal Decree 1007/2023, as part of the Anti-Fraud Law 11/2021. It mandates the use of tamper-proof, traceable, and auditable invoicing systems to combat tax fraud.",
-  "version": "28.0.0.0",
+  "version": "29.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2299409",
@@ -16,7 +16,7 @@
       "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
       "name": "E-Document Core",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     }
   ],
   "internalsVisibleTo": [
@@ -47,5 +47,5 @@
     "includeSourceInSymbolFile": true
   },
   "target": "OnPrem",
-  "application": "28.0.0.0"
+  "application": "29.0.0.0"
 }

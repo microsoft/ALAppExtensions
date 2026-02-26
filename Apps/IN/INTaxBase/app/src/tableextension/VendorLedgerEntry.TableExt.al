@@ -14,6 +14,8 @@ tableextension 18551 "Vendor Ledger Entry" extends "Vendor Ledger Entry"
         }
         field(18544; "Total TDS Including SHE CESS"; decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             DataClassification = EndUserIdentifiableInformation;
         }
     }

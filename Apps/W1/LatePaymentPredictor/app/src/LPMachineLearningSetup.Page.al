@@ -51,12 +51,14 @@ page 1950 "LP Machine Learning Setup"
 
                 field(ThresholdModelQuality; Rec."Model Quality Threshold")
                 {
+                    AutoFormatType = 0;
                     ToolTip = 'Specifies the minimum model quality you require. The value is a percentage between zero and one, and indicates how accurate predictions will be. Typically, this field is useful when you create a custom model. If the quality of a model is below this threshold, it will not be used.';
                     ApplicationArea = Basic, Suite;
                 }
 
                 field(ModelQuality; ModelQualityVal)
                 {
+                    AutoFormatType = 0;
                     Caption = 'Model Quality';
                     Enabled = false;
                     ToolTip = 'Specifies the quality value for the model you are using. For custom models, the predictive experiment determines this value when training the model. The value is a percentage between zero and one, and indicates how accurate predictions will be.';
@@ -69,6 +71,7 @@ page 1950 "LP Machine Learning Setup"
                 Caption = 'Usage';
                 field(Remaining; RemainingTime)
                 {
+                    AutoFormatType = 0;
                     Enabled = false;
                     Caption = 'Remaining Compute Time';
                     ToolTip = 'Specifies the number of seconds of compute time that you have not yet used.';
@@ -76,6 +79,7 @@ page 1950 "LP Machine Learning Setup"
                 }
                 field(Original; AzureAIUsage.GetResourceLimit(AzureAIService))
                 {
+                    AutoFormatType = 0;
                     Enabled = false;
                     Caption = 'Original Compute Time';
                     ToolTip = 'Specifies the number of seconds of compute time that was originally available for the standard model, or the model for your custom experiment.';

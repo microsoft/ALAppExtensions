@@ -18,6 +18,7 @@ table 40110 "GP MC40200"
         }
         field(3; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(4; CRNCYDSC; Text[31])

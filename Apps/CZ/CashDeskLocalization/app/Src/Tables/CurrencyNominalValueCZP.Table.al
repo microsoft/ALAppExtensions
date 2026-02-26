@@ -21,6 +21,8 @@ table 11742 "Currency Nominal Value CZP"
         }
         field(2; "Nominal Value"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             BlankZero = true;
             Caption = 'Value';
             DecimalPlaces = 0 : 2;

@@ -125,6 +125,7 @@ table 40114 "GP RM00101"
         }
         field(30; CRLMTAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(31; CRLMTPER; Integer)
@@ -133,6 +134,7 @@ table 40114 "GP RM00101"
         }
         field(32; CRLMTPAM; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(33; CURNCYID; Text[15])
@@ -157,6 +159,7 @@ table 40114 "GP RM00101"
         }
         field(38; MINPYDLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(39; MINPYPCT; Integer)
@@ -173,6 +176,7 @@ table 40114 "GP RM00101"
         }
         field(42; FINCHDLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(43; MXWOFTYP; Integer)
@@ -181,6 +185,7 @@ table 40114 "GP RM00101"
         }
         field(44; MXWROFAM; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(45; COMMENT1; Text[31])
@@ -317,6 +322,7 @@ table 40114 "GP RM00101"
         }
         field(78; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(79; CREATDDT; DateTime)

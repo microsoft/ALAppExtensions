@@ -49,6 +49,7 @@ table 1950 "LP Machine Learning Setup"
 
         field(5; "My Model Quality"; Decimal)
         {
+            AutoFormatType = 0;
             Editable = false;
             MinValue = 0;
             MaxValue = 1;
@@ -56,6 +57,7 @@ table 1950 "LP Machine Learning Setup"
 
         field(6; "Standard Model Quality"; Decimal)
         {
+            AutoFormatType = 0;
             Editable = false;
             MinValue = 0;
             MaxValue = 1;
@@ -63,6 +65,7 @@ table 1950 "LP Machine Learning Setup"
 
         field(7; "Model Quality Threshold"; Decimal)
         {
+            AutoFormatType = 0;
             MinValue = 0;
             MaxValue = 1;
             Caption = 'Model Quality Threshold';

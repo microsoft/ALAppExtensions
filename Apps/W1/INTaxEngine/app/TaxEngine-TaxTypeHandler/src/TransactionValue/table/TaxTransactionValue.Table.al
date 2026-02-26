@@ -50,11 +50,14 @@ table 20261 "Tax Transaction Value"
         }
         field(7; "Percent"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Percent';
         }
         field(9; "Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Amount';
         }
@@ -117,6 +120,8 @@ table 20261 "Tax Transaction Value"
         }
         field(21; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Amount (LCY)';
         }
@@ -128,6 +133,7 @@ table 20261 "Tax Transaction Value"
         }
         field(23; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Currency Factor';
         }

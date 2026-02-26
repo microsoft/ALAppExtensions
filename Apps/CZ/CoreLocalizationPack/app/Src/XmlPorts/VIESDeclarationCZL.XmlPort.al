@@ -23,7 +23,6 @@ xmlport 31061 "VIES Declaration CZL"
                 tableelement(header; "VIES Declaration Header CZL")
                 {
                     XmlName = 'VetaD';
-                    UseTemporary = true;
                     textattribute(dph)
                     {
                         XmlName = 'k_uladis';
@@ -252,7 +251,8 @@ xmlport 31061 "VIES Declaration CZL"
                 tableelement(Line; "VIES Declaration Line CZL")
                 {
                     XmlName = 'VetaR';
-                    UseTemporary = true;
+                    LinkTable = header;
+                    LinkFields = "VIES Declaration No." = field("No.");
                     MinOccurs = Zero;
                     textattribute(cancelcode)
                     {
@@ -288,13 +288,19 @@ xmlport 31061 "VIES Declaration CZL"
                         Occurrence = Optional;
                         XmlName = 'pln_hodnota';
                     }
+
+                    trigger OnPreXmlItem()
+                    begin
+                        Line.SetFilter("Trade Type", '<>%1', Line."Trade Type"::" ");
+                    end;
+
                     trigger OnAfterGetRecord()
                     begin
                         if FormType = 'N' then
                             CancelCode := Line.GetCancelCode();
                         SupplyCode := Line.GetTradeRole();
                         VATRegNo := Line.GetVATRegNo();
-                        if not ShowAmtInAddCurrency then
+                        if not Header."Export Amt.inAdd.-CurrencyAmt." then
                             Amount := Format(Line."Amount (LCY)", 0, 9)
                         else
                             Amount := Format(Line."Additional-Currency Amount", 0, 9);
@@ -303,7 +309,8 @@ xmlport 31061 "VIES Declaration CZL"
                 tableelement(CallOfStockLine; "VIES Declaration Line CZL")
                 {
                     XmlName = 'VetaS';
-                    UseTemporary = true;
+                    LinkTable = header;
+                    LinkFields = "VIES Declaration No." = field("No.");
                     MinOccurs = Zero;
                     fieldattribute(coslineno; CallOfStockLine."Report Line Number")
                     {
@@ -330,6 +337,12 @@ xmlport 31061 "VIES Declaration CZL"
                         Occurrence = Optional;
                         XmlName = 'k_stat';
                     }
+
+                    trigger OnPreXmlItem()
+                    begin
+                        CallOfStockLine.SetRange("Trade Type", CallOfStockLine."Trade Type"::" ");
+                    end;
+
                     trigger OnAfterGetRecord()
                     begin
                         cosvatregno := CallOfStockLine.GetVATRegNo();
@@ -340,12 +353,15 @@ xmlport 31061 "VIES Declaration CZL"
             }
         }
     }
+#if not CLEAN28
+    [Obsolete('This function is not used anymore, because the xmlport no longer uses temporary records.', '28.0')]
     procedure SetHeader(NewVIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL")
     begin
         Header := NewVIESDeclarationHeaderCZL;
         Header.Insert();
     end;
 
+    [Obsolete('This function is not used anymore, because the xmlport no longer uses temporary records.', '28.0')]
     procedure SetLines(var TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL")
     begin
         DeleteVIESLines(Line);
@@ -356,6 +372,7 @@ xmlport 31061 "VIES Declaration CZL"
         TempVIESDeclarationLineCZL.SetRange("Trade Type", TempVIESDeclarationLineCZL."Trade Type"::" ");
         CallOfStockLine.Copy(TempVIESDeclarationLineCZL, true);
     end;
+#endif
 
     procedure GetOfficialData(CompanyOfficialCode: Code[20]; var OfficialLastName: Text[30]; var OfficialFirstName: Text[30]; var OfficialJobTitle: Text[30]; var OfficialPhoneNo: Text[30])
     var
@@ -368,23 +385,27 @@ xmlport 31061 "VIES Declaration CZL"
         OfficialJobTitle := CompanyOfficialCZL."Job Title";
         OfficialPhoneNo := CompanyOfficialCZL."Phone No.";
     end;
-
+#if not CLEAN28
     local procedure DeleteVIESLines(var TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL" temporary)
     begin
         TempVIESDeclarationLineCZL.Reset();
         TempVIESDeclarationLineCZL.DeleteAll();
     end;
 
+    [Obsolete('This function is not used anymore. The "Export Amt.inAdd.-CurrencyAmt." field from VIES Declaration Header is used instead.', '28.0')]
     procedure SetShowAmtInAddCurrency(SetAmtInAddCurrency: Boolean)
     begin
         ShowAmtInAddCurrency := SetAmtInAddCurrency;
     end;
+#endif
 
     local procedure FormatDate(Date: Date): Text
     begin
         exit(Format(Date, 0, '<Day,2>.<Month,2>.<Year4>'));
     end;
+#if not CLEAN28
 
     var
         ShowAmtInAddCurrency: Boolean;
+#endif
 }

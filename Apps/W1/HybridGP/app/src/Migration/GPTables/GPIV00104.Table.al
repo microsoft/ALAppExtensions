@@ -23,6 +23,7 @@ table 41007 "GP IV00104"
         }
         field(5; CMPITQTY; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(6; CMPSERNM; Boolean)

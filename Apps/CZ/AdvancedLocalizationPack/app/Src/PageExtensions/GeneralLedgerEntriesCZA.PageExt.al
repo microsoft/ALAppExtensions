@@ -20,6 +20,8 @@ pageextension 31241 "General Ledger Entries CZA" extends "General Ledger Entries
             }
             field(RemainingAmountCZAField; Rec.RemainingAmountCZA())
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Caption = 'Remaining Amount';
                 Editable = false;

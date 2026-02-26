@@ -40,6 +40,7 @@ tableextension 7418 "Excise Fixed Asset Ext" extends "Fixed Asset"
 
         field(7413; "Quantity for Excise Tax"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity for Excise Tax';
             DecimalPlaces = 0 : 5;
             MinValue = 0;

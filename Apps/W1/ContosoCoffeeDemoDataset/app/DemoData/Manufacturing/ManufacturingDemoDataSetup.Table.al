@@ -97,11 +97,13 @@ table 4760 "Manufacturing Demo Data Setup"
         }
         field(38; "Price Factor"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             InitValue = 1;
         }
         field(39; "Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Rounding Precision';
             InitValue = 0.01;

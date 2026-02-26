@@ -30,6 +30,9 @@ codeunit 9403 "IPC Provider"
     var
         IdealPostcodesConfig: Record "IPC Config";
     begin
+        if IsConfigured then
+            exit;
+
         if ServiceKey <> MyServiceKeyTok then
             exit;
 
@@ -148,7 +151,8 @@ codeunit 9403 "IPC Provider"
         if Configured then
             ServiceConnection.Status := ServiceConnection.Status::Enabled
         else
-            ServiceConnection.Status := ServiceConnection.Status::Disabled;
+            if ServiceConnection.Status = ServiceConnection.Status::" " then
+                ServiceConnection.Status := ServiceConnection.Status::Disabled;
 
         if not PostcodeServiceConfig.FindFirst() then begin
             PostcodeServiceConfig.Init();

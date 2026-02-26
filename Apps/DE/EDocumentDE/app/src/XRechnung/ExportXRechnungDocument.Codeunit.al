@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using Microsoft.Bank.BankAccount;
 using Microsoft.CRM.Team;
 using Microsoft.eServices.EDocument;
 using Microsoft.Finance.Currency;
@@ -159,7 +158,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertAccountingSupplierParty(SalesInvoiceHeader."Responsibility Center", SalesInvoiceHeader."Salesperson Code", RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesInvoiceHeader);
         InsertDelivery(RootXMLNode, SalesInvoiceHeader);
-        InsertPaymentMeans(RootXMLNode, '58', 'PayeeFinancialAccount', SalesInvoiceHeader."Company Bank Account Code");
+        InsertPaymentMeans(RootXMLNode, '68', 'PayeeFinancialAccount', SalesInvoiceHeader."Company Bank Account Code");
         InsertPaymentTerms(RootXMLNode, SalesInvoiceHeader."Payment Terms Code");
         InsertVATAmounts(SalesInvLine, LineVATAmount, LineAmount, LineDiscAmount, SalesInvoiceHeader."Prices Including VAT", Currency);
         InsertInvDiscountAllowanceCharge(LineAmounts, SalesInvLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
@@ -204,7 +203,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertAccountingSupplierParty(SalesCrMemoHeader."Responsibility Center", SalesCrMemoHeader."Salesperson Code", RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesCrMemoHeader);
         InsertDelivery(RootXMLNode, SalesCrMemoHeader);
-        InsertPaymentMeans(RootXMLNode, '58', '', SalesCrMemoHeader."Company Bank Account Code");
+        InsertPaymentMeans(RootXMLNode, '68', '', SalesCrMemoHeader."Company Bank Account Code");
         InsertPaymentTerms(RootXMLNode, SalesCrMemoHeader."Payment Terms Code");
         InsertVATAmounts(SalesCrMemoLine, LineVATAmount, LineAmount, LineDiscAmount, SalesCrMemoHeader."Prices Including VAT", Currency);
         InsertInvDiscountAllowanceCharge(LineAmounts, SalesCrMemoLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
@@ -234,7 +233,6 @@ codeunit 13916 "Export XRechnung Document"
     begin
         GetSetups();
         PEPPOLMgt.TransferHeaderToSalesInvoiceHeader(ServiceInvoiceHeader, SalesInvoiceHeader);
-        SalesInvoiceHeader."Company Bank Account Code" := ServiceInvoiceHeader."Company Bank Account Code";
         ServiceInvoiceLine.SetRange("Document No.", ServiceInvoiceHeader."No.");
         if ServiceInvoiceLine.FindSet() then
             repeat
@@ -260,7 +258,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertAccountingSupplierParty(SalesInvoiceHeader."Responsibility Center", SalesInvoiceHeader."Salesperson Code", RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesInvoiceHeader);
         InsertDelivery(RootXMLNode, SalesInvoiceHeader);
-        InsertPaymentMeans(RootXMLNode, '58', 'PayeeFinancialAccount', SalesInvoiceHeader."Company Bank Account Code");
+        InsertPaymentMeans(RootXMLNode, '68', 'PayeeFinancialAccount', SalesInvoiceHeader."Company Bank Account Code");
         InsertPaymentTerms(RootXMLNode, SalesInvoiceHeader."Payment Terms Code");
         InsertVATAmounts(TempSalesInvLine, LineVATAmount, LineAmount, LineDiscAmount, SalesInvoiceHeader."Prices Including VAT", Currency);
         InsertInvDiscountAllowanceCharge(LineAmounts, TempSalesInvLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
@@ -290,7 +288,6 @@ codeunit 13916 "Export XRechnung Document"
     begin
         GetSetups();
         PEPPOLMgt.TransferHeaderToSalesCrMemoHeader(ServiceCrMemoHeader, SalesCrMemoHeader);
-        SalesCrMemoHeader."Company Bank Account Code" := ServiceCrMemoHeader."Company Bank Account Code";
         ServiceCrMemoLine.SetRange("Document No.", ServiceCrMemoHeader."No.");
         if ServiceCrMemoLine.FindSet() then
             repeat
@@ -315,7 +312,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertAccountingSupplierParty(SalesCrMemoHeader."Responsibility Center", SalesCrMemoHeader."Salesperson Code", RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesCrMemoHeader);
         InsertDelivery(RootXMLNode, SalesCrMemoHeader);
-        InsertPaymentMeans(RootXMLNode, '58', '', SalesCrMemoHeader."Company Bank Account Code");
+        InsertPaymentMeans(RootXMLNode, '68', '', SalesCrMemoHeader."Company Bank Account Code");
         InsertPaymentTerms(RootXMLNode, SalesCrMemoHeader."Payment Terms Code");
         InsertVATAmounts(TempSalesCrMemoLine, LineVATAmount, LineAmount, LineDiscAmount, SalesCrMemoHeader."Prices Including VAT", Currency);
         InsertInvDiscountAllowanceCharge(LineAmounts, TempSalesCrMemoLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
@@ -539,23 +536,22 @@ codeunit 13916 "Export XRechnung Document"
     local procedure InsertPayeeFinancialAccount(var PaymentMeansElement: XmlElement; PayeeFinancialAccount: Text[30]; CompanyBankAccountCode: Code[20]);
     var
         PayeeFinancialAccountElement: XmlElement;
-        IBAN: Text[50];
-        SWIFTCode: Code[20];
     begin
         PayeeFinancialAccountElement := XmlElement.Create(PayeeFinancialAccount, XmlNamespaceCAC);
-        GetBankAccountPaymentDetails(CompanyBankAccountCode, IBAN, SWIFTCode);
-        PayeeFinancialAccountElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, GetIBAN(IBAN)));
-        if SWIFTCode <> '' then
-            InsertFinancialInstitutionBranch(PayeeFinancialAccountElement, SWIFTCode);
+        if CompanyBankAccountCode <> '' then
+            PayeeFinancialAccountElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, CompanyBankAccountCode))
+        else
+            PayeeFinancialAccountElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, CompanyInformation."Bank Account No."));
+        InsertFinancialInstitutionBranch(PayeeFinancialAccountElement);
         PaymentMeansElement.Add(PayeeFinancialAccountElement);
     end;
 
-    local procedure InsertFinancialInstitutionBranch(var RootElement: XmlElement; SWIFTCode: Code[20]);
+    local procedure InsertFinancialInstitutionBranch(var RootElement: XmlElement);
     var
         FinancialInstitutionBranchElement: XmlElement;
     begin
         FinancialInstitutionBranchElement := XmlElement.Create('FinancialInstitutionBranch', XmlNamespaceCAC);
-        FinancialInstitutionBranchElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, GetIBAN(SWIFTCode)));
+        FinancialInstitutionBranchElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, CompanyInformation."Bank Branch No."));
         RootElement.Add(FinancialInstitutionBranchElement);
     end;
 
@@ -824,8 +820,7 @@ codeunit 13916 "Export XRechnung Document"
         if CustomerGLN <> '' then
             InsertPartyIdentification(PartyElement, CustomerGLN)
         else
-            if VATRegNo <> '' then
-                InsertPartyIdentification(PartyElement, GetVATRegistrationNo(VATRegNo, PostalAddress."Country/Region Code"));
+            InsertPartyIdentification(PartyElement, GetVATRegistrationNo(VATRegNo, PostalAddress."Country/Region Code"));
 
         InsertPartyName(PartyElement, PartyName);
         InsertAddress(PartyElement, 'PostalAddress', PostalAddress);
@@ -1452,33 +1447,6 @@ codeunit 13916 "Export XRechnung Document"
         CompanyInformation.Get();
         GeneralLedgerSetup.Get();
         OnAfterGetSetups(CompanyInformation, GeneralLedgerSetup);
-    end;
-
-    local procedure GetIBAN(IBAN: Text[50]) IBANFormatted: Text[50]
-    begin
-        // Format IBAN to remove spaces and ensure it is in uppercase
-        if IBAN = '' then
-            exit('');
-        IBANFormatted := UpperCase(DelChr(IBAN, '=', ' '));
-        exit(CopyStr(IBANFormatted, 1, 50));
-    end;
-
-    local procedure GetBankAccountPaymentDetails(BankAccountCode: Code[20]; var IBAN: Text[50]; var SWIFTCode: Code[20])
-    var
-        BankAccount: Record "Bank Account";
-    begin
-        Clear(IBAN);
-        Clear(SWIFTCode);
-
-        if BankAccountCode <> '' then
-            if BankAccount.Get(BankAccountCode) then begin
-                IBAN := BankAccount.IBAN;
-                SWIFTCode := BankAccount."SWIFT Code";
-                exit;
-            end;
-
-        IBAN := CompanyInformation.IBAN;
-        SWIFTCode := CompanyInformation."SWIFT Code";
     end;
     #endregion
 

@@ -176,10 +176,12 @@ table 10682 "SAF-T Export Header"
         }
         field(51; "Total G/L Entry Debit"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total G/L Entry Debit';
         }
         field(52; "Total G/L Entry Credit"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total G/L Entry Credit';
         }
         field(53; "Version"; Enum "SAF-T Version")

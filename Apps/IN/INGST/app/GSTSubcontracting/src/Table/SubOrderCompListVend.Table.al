@@ -67,6 +67,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(10; "Expected Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = Sum(
                 "Prod. Order Component"."Expected Quantity"
                 where(Status = const(Released),
@@ -80,6 +81,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(12; "Quantity (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity (Base)';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -91,6 +93,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(20; "Scrap %"; Decimal)
         {
+            AutoFormatType = 0;
             BlankNumbers = BlankNeg;
             Caption = 'Scrap %';
             DecimalPlaces = 0 : 5;
@@ -114,6 +117,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(45; "Quantity per"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity per';
             DecimalPlaces = 0 : 5;
             DataClassification = EndUserIdentifiableInformation;
@@ -156,6 +160,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(52; "Quantity at Vendor Location"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = Sum(
                 "Item Ledger Entry"."Remaining Quantity"
                 where("Entry Type" = const(Transfer),
@@ -171,6 +176,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(53; "Total Scrap Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Scrap Quantity';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -186,18 +192,21 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(54; "Qty. Received"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. Received';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(55; "Qty. Received (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. Received (Base)';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(56; "Qty. to Receive"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Receive';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -209,6 +218,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(57; "Qty. to Consume"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Consume';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -223,6 +233,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(59; "Qty. to Return (C.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Return (C.E.)';
             DecimalPlaces = 0 : 3;
             Editable = false;
@@ -236,6 +247,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(60; "Qty. To Return (V.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. To Return (V.E.)';
             DecimalPlaces = 0 : 3;
             Editable = false;
@@ -248,6 +260,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(61; "Qty. Consumed"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = - Sum(
                 "Item Ledger Entry".Quantity
                 where("Entry Type" = const(Consumption),
@@ -267,6 +280,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(63; "Quantity Dispatched"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = - Sum(
                 "Item Ledger Entry".Quantity
                 where("Entry Type" = const(Transfer),
@@ -282,6 +296,8 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(64; "Charge Recoverable"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             CalcFormula = - Sum(
                 "Value Entry"."Cost Amount (Actual)"
                 where("Item Ledger Entry Type" = const("Negative Adjmt."),
@@ -297,6 +313,8 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(65; "Debit Note Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Debit Note Amount';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
@@ -357,6 +375,7 @@ table 18478 "Sub Order Comp. List Vend"
         }
         field(89; "Qty. per Unit of Measure"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. per Unit of Measure';
             DecimalPlaces = 0 : 5;
             Editable = false;

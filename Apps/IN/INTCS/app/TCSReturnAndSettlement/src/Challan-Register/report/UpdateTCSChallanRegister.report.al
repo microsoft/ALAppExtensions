@@ -48,18 +48,24 @@ report 18871 "Update TCS Challan Register"
                     Caption = 'Options';
                     field(InterestAmt; InterestAmount)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         ApplicationArea = Basic, Suite;
                         Caption = 'Interest Amount';
                         ToolTip = 'Specifies the value of interest payable.';
                     }
                     field(OthersAmt; OtherAmount)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         ApplicationArea = Basic, Suite;
                         Caption = 'Others';
                         ToolTip = 'Specifies the value of other charges payable.';
                     }
                     field(TCSFees; LateFee)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         ApplicationArea = Basic, Suite;
                         Caption = 'Fee';
                         ToolTip = 'Specifies the value of fees payable.';

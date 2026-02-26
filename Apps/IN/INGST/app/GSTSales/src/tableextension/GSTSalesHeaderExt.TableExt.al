@@ -115,6 +115,7 @@ tableextension 18147 "GST Sales Header Ext" extends "Sales Header"
         }
         field(18157; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
         }

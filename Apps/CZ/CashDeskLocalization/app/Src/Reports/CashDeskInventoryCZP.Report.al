@@ -131,6 +131,7 @@ report 11726 "Cash Desk Inventory CZP"
                             ShowCaption = false;
                             field(NominalValue1; NominalValue[1])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -139,6 +140,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue2; NominalValue[2])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -147,6 +149,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue3; NominalValue[3])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -155,6 +158,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue4; NominalValue[4])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -163,6 +167,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue5; NominalValue[5])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -171,6 +176,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue6; NominalValue[6])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -179,6 +185,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue7; NominalValue[7])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -187,6 +194,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue8; NominalValue[8])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -195,6 +203,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue9; NominalValue[9])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -203,6 +212,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue10; NominalValue[10])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -289,6 +299,7 @@ report 11726 "Cash Desk Inventory CZP"
                             ShowCaption = false;
                             field(NominalValue11; NominalValue[11])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -297,6 +308,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue12; NominalValue[12])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -305,6 +317,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue13; NominalValue[13])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -313,6 +326,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue14; NominalValue[14])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -321,6 +335,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue15; NominalValue[15])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -329,6 +344,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue16; NominalValue[16])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -337,6 +353,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue17; NominalValue[17])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -345,6 +362,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue18; NominalValue[18])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -353,6 +371,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue19; NominalValue[19])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;
@@ -361,6 +380,7 @@ report 11726 "Cash Desk Inventory CZP"
                             }
                             field(NominalValue20; NominalValue[20])
                             {
+                                AutoFormatType = 0;
                                 Caption = 'Value';
                                 ApplicationArea = Basic, Suite;
                                 BlankZero = true;

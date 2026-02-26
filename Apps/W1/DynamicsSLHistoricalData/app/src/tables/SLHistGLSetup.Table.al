@@ -302,18 +302,22 @@ table 42822 "SL Hist. GLSetup"
         }
         field(73; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(74; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(75; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(76; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(77; S4Future07; DateTime)
@@ -370,10 +374,12 @@ table 42822 "SL Hist. GLSetup"
         }
         field(90; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(91; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(92; User5; Text[10])

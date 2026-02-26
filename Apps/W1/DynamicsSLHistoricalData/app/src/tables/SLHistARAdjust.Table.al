@@ -14,6 +14,7 @@ table 42803 "SL Hist. ARAdjust"
     {
         field(1; AdjAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'AdjAmt';
         }
         field(2; AdjBatNbr; Text[10])
@@ -26,6 +27,7 @@ table 42803 "SL Hist. ARAdjust"
         }
         field(4; AdjDiscAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'AdjDiscAmt';
         }
         field(5; AdjdRefNbr; Text[10])
@@ -62,6 +64,7 @@ table 42803 "SL Hist. ARAdjust"
         }
         field(13; CuryAdjdAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjdAmt';
         }
         field(14; CuryAdjdCuryId; Text[4])
@@ -70,6 +73,7 @@ table 42803 "SL Hist. ARAdjust"
         }
         field(15; CuryAdjdDiscAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjdDiscAmt';
         }
         field(16; CuryAdjdMultDiv; Text[1])
@@ -78,18 +82,22 @@ table 42803 "SL Hist. ARAdjust"
         }
         field(17; CuryAdjdRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjdRate';
         }
         field(18; CuryAdjgAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjgAmt';
         }
         field(19; CuryAdjgDiscAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjgDiscAmt';
         }
         field(20; CuryRGOLAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRGOLAmt';
         }
         field(21; CustId; Text[15])
@@ -138,18 +146,22 @@ table 42803 "SL Hist. ARAdjust"
         }
         field(32; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(33; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(34; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(35; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(36; S4Future07; DateTime)
@@ -190,10 +202,12 @@ table 42803 "SL Hist. ARAdjust"
         }
         field(45; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(46; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(47; User5; Text[10])

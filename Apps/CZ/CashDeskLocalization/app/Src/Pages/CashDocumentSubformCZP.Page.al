@@ -162,6 +162,8 @@ page 31161 "Cash Document Subform CZP"
                 }
                 field(RelatedAmountToApplyField; RelatedAmountToApply)
                 {
+                    AutoFormatExpression = '';
+                    AutoFormatType = 1;
                     Caption = 'Related Amount to Apply (LCY)';
                     ApplicationArea = Basic, Suite;
                     Editable = false;

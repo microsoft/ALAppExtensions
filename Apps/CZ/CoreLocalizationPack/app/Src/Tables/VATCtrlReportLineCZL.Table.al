@@ -111,6 +111,7 @@ table 31107 "VAT Ctrl. Report Line CZL"
         field(35; Base; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Base';
             Editable = false;
             DataClassification = CustomerContent;
@@ -118,6 +119,7 @@ table 31107 "VAT Ctrl. Report Line CZL"
         field(36; Amount; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             Editable = false;
             DataClassification = CustomerContent;

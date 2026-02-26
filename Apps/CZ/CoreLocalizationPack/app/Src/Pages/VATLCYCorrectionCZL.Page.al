@@ -152,6 +152,8 @@ page 31025 "VAT LCY Correction CZL"
                         Caption = 'Total VAT Base';
                         field(DisplayTotalVATBase; TotalVATBase)
                         {
+                            AutoFormatExpression = '';
+                            AutoFormatType = 1;
                             ApplicationArea = Basic, Suite;
                             Caption = 'Total VAT Base';
                             ShowCaption = false;
@@ -164,6 +166,8 @@ page 31025 "VAT LCY Correction CZL"
                         Caption = 'Total VAT Amount';
                         field(DisplayTotalVATAmount; TotalVATAmount)
                         {
+                            AutoFormatExpression = '';
+                            AutoFormatType = 1;
                             ApplicationArea = Basic, Suite;
                             Caption = 'Total VAT Amount';
                             Editable = false;
@@ -175,6 +179,8 @@ page 31025 "VAT LCY Correction CZL"
                         Caption = 'Total Corrected VAT Amount';
                         field(DisplayTotalCorrectedVATAmount; TotalCorrectedVATAmount)
                         {
+                            AutoFormatExpression = '';
+                            AutoFormatType = 1;
                             ApplicationArea = Basic, Suite;
                             Caption = 'Corrected VAT Amount';
                             Editable = false;
@@ -186,6 +192,8 @@ page 31025 "VAT LCY Correction CZL"
                         Caption = 'Total VAT Correction Amount';
                         field(DisplayTotalVATCorrectionAmount; TotalVATCorrectionAmount)
                         {
+                            AutoFormatExpression = '';
+                            AutoFormatType = 1;
                             ApplicationArea = Basic, Suite;
                             Caption = 'Total VAT Amount';
                             Editable = false;

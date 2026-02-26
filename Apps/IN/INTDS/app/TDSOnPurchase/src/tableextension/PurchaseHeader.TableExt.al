@@ -32,6 +32,8 @@ tableextension 18717 "Purchase Header" extends "Purchase Header"
         }
         field(18717; "Remaining TDS Cert. Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Remaining TDS Cert. Value';
             Editable = false;
             DataClassification = CustomerContent;

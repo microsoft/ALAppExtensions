@@ -45,61 +45,73 @@ table 4075 "GPSOPTaxesWorkHist"
         }
         field(8; STAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Sales Tax Amount';
             DataClassification = CustomerContent;
         }
         field(9; ORSLSTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Sales Tax Amount';
             DataClassification = CustomerContent;
         }
         field(10; FRTTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(11; ORFRTTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(12; MSCTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Misc Tax Amount';
             DataClassification = CustomerContent;
         }
         field(13; ORMSCTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Misc Tax Amount';
             DataClassification = CustomerContent;
         }
         field(14; TAXDTSLS; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Detail Total Sales';
             DataClassification = CustomerContent;
         }
         field(15; ORTOTSLS; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Total Sales';
             DataClassification = CustomerContent;
         }
         field(16; TDTTXSLS; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Detail Total Taxable Sales';
             DataClassification = CustomerContent;
         }
         field(17; ORTXSLS; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Total Taxable Sales';
             DataClassification = CustomerContent;
         }
         field(18; TXDTOTTX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Detail Total Tax Potential';
             DataClassification = CustomerContent;
         }
         field(19; OTTAXPON; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Total Tax Potential';
             DataClassification = CustomerContent;
         }
@@ -120,6 +132,7 @@ table 4075 "GPSOPTaxesWorkHist"
         }
         field(23; TXDTLPCTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Detail Percent or Amount';
             DataClassification = CustomerContent;
         }
