@@ -108,6 +108,14 @@ table 18869 "TCS Journal Batch"
                 end;
             end;
         }
+        field(40; "No. of Lines"; Integer)
+        {
+            CalcFormula = count("TCS Journal Line" where("Journal Template Name" = field("Journal Template Name"), "Journal Batch Name" = field(Name)));
+            Caption = 'No. of Lines';
+            Editable = false;
+            FieldClass = FlowField;
+            ToolTip = 'Specifies the number of lines in this journal batch.';
+        }
     }
 
     keys
