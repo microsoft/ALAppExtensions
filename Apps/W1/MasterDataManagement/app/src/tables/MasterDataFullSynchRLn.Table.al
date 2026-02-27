@@ -84,8 +84,8 @@ table 7233 "Master Data Full Synch. R. Ln."
         field(10; "Job Queue Entry Status"; Option)
         {
             Caption = 'Job Queue Entry Status';
-            OptionCaption = 'Ready,In Process,Error,On Hold,Finished,On Hold with Inactivity Timeout,Waiting';
-            OptionMembers = Ready,"In Process",Error,"On Hold",Finished,"On Hold with Inactivity Timeout",Waiting;
+            OptionCaption = ' ,Ready,In Process,Error,On Hold,Finished,On Hold with Inactivity Timeout,Waiting';
+            OptionMembers = " ",Ready,"In Process",Error,"On Hold",Finished,"On Hold with Inactivity Timeout",Waiting;
 
             trigger OnValidate()
             begin
