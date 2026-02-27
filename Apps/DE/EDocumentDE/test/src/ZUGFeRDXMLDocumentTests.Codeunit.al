@@ -205,6 +205,63 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyBuyerContactWithAllFields();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 556034] Export posted sales invoice with all buyer contact fields populated
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with contact, phone, and email.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with all buyer contact fields
+        VerifyBuyerContactData(SalesInvoiceHeader, TempXMLBuffer, true, true, true);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyBuyerContactWithoutPhone();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 556034] Export posted sales invoice without buyer phone number
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice without phone number.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithoutPhone("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with contact and email, but no phone
+        VerifyBuyerContactData(SalesInvoiceHeader, TempXMLBuffer, true, false, true);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyBuyerContactWithoutContactName();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 556034] Export posted sales invoice without buyer contact name
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice without contact name.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithoutContact("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with phone and email, but no contact name
+        VerifyBuyerContactData(SalesInvoiceHeader, TempXMLBuffer, false, true, true);
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyPaymentMeans();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -1303,6 +1360,22 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostSalesDocumentWithoutPhone(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithoutPhone(DocumentType, LineType));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreateAndPostSalesDocumentWithoutContact(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithoutContact(DocumentType, LineType));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
     local procedure CreateAndPostSalesDocumentWithTwoLines(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
@@ -1423,6 +1496,30 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         exit(CreateSalesDocumentWithLine(DocumentType, LineType, InvoiceDiscount, ''));
     end;
 
+    local procedure CreateSalesDocumentWithoutPhone(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType);
+        SalesHeader.Validate("Sell-to Phone No.", '');
+        SalesHeader.Modify(true);
+        CreateSalesLine(SalesHeader, LineType, false);
+        exit(SalesHeader."No.");
+    end;
+
+    local procedure CreateSalesDocumentWithoutContact(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType);
+        SalesHeader.SetHideValidationDialog(true);
+        SalesHeader.Validate("Sell-to Contact", '');
+        SalesHeader.SetHideValidationDialog(false);
+        SalesHeader.Modify(true);
+        CreateSalesLine(SalesHeader, LineType, false);
+        exit(SalesHeader."No.");
+    end;
+
     local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean; RespCenterCode: Code[20]): Code[20]
     var
         SalesHeader: Record "Sales Header";
@@ -1491,6 +1588,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         SalesHeader.Validate("Ship-to City", PostCode.City);
         SalesHeader.Validate("Sell-to Address", LibraryUtility.GenerateGUID());
         SalesHeader.Validate("Sell-to City", PostCode.City);
+        SalesHeader.Validate("Sell-to Phone No.", LibraryUtility.GenerateRandomPhoneNo());
         SalesHeader.Validate("Your Reference", LibraryUtility.GenerateRandomText(20));
         SalesHeader.Validate("Payment Terms Code", PaymentTermsCode);
         SalesHeader.Validate("Payment Method Code", PaymentMethod.Code);
@@ -1844,6 +1942,41 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         Path := DocumentPartyTok + '/ram:SpecifiedTaxRegistration/ram:ID';
         Assert.AreEqual(GetVATRegistrationNo(SalesInvoiceHeader."VAT Registration No.", CompanyInformation."Country/Region Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyBuyerContactData(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary; ExpectContactName: Boolean; ExpectPhone: Boolean; ExpectEmail: Boolean);
+    var
+        DocumentBuyerContactTok: Label '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:DefinedTradeContact', Locked = true;
+        Path: Text;
+        NodeValue: Text;
+    begin
+        // Check if DefinedTradeContact element exists when any field is populated
+        if ExpectContactName or ExpectPhone or ExpectEmail then
+            Assert.IsTrue(NodeExistsByPath(TempXMLBuffer, DocumentBuyerContactTok), 'DefinedTradeContact element should exist when contact fields are populated');
+
+        // Verify PersonName
+        Path := DocumentBuyerContactTok + '/ram:PersonName';
+        if ExpectContactName then begin
+            NodeValue := GetNodeByPathWithError(TempXMLBuffer, Path);
+            Assert.AreEqual(SalesInvoiceHeader."Sell-to Contact", NodeValue, StrSubstNo(IncorrectValueErr, Path));
+        end else
+            Assert.IsFalse(NodeExistsByPath(TempXMLBuffer, Path), 'PersonName should not exist when contact name is empty');
+
+        // Verify TelephoneUniversalCommunication/CompleteNumber
+        Path := DocumentBuyerContactTok + '/ram:TelephoneUniversalCommunication/ram:CompleteNumber';
+        if ExpectPhone then begin
+            NodeValue := GetNodeByPathWithError(TempXMLBuffer, Path);
+            Assert.AreEqual(SalesInvoiceHeader."Sell-to Phone No.", NodeValue, StrSubstNo(IncorrectValueErr, Path));
+        end else
+            Assert.IsFalse(NodeExistsByPath(TempXMLBuffer, Path), 'TelephoneUniversalCommunication/CompleteNumber should not exist when phone is empty');
+
+        // Verify EmailURIUniversalCommunication/URIID
+        Path := DocumentBuyerContactTok + '/ram:EmailURIUniversalCommunication/ram:URIID';
+        if ExpectEmail then begin
+            NodeValue := GetNodeByPathWithError(TempXMLBuffer, Path);
+            Assert.AreEqual(SalesInvoiceHeader."Sell-to E-Mail", NodeValue, StrSubstNo(IncorrectValueErr, Path));
+        end else
+            Assert.IsFalse(NodeExistsByPath(TempXMLBuffer, Path), 'EmailURIUniversalCommunication/URIID should not exist when email is empty');
     end;
 
     local procedure VerifyBuyerData(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -2294,6 +2427,14 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         if TempXMLBuffer.FindFirst() then
             exit(TempXMLBuffer.Value);
         Error('Node not found: %1', XPath);
+    end;
+
+    local procedure NodeExistsByPath(var TempXMLBuffer: Record "XML Buffer" temporary; XPath: Text): Boolean
+    begin
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, XPath);
+        exit(TempXMLBuffer.FindFirst());
     end;
 
     local procedure GetLastNodeByPathWithError(var TempXMLBuffer: Record "XML Buffer" temporary; XPath: Text): Text
