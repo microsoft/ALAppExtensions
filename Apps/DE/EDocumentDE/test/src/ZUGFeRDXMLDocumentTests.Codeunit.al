@@ -237,8 +237,38 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [WHEN] Export ZUGFeRD Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
 
-        // [THEN] ZUGFeRD Electronic Document is created with bank informarion as payment means
+        // [THEN] ZUGFeRD Electronic Document is created with bank information as payment means
         VerifyPaymentMeans(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement', SalesInvoiceHeader."Currency Code");
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyBankAccountPaymentMeans();
+    var
+        BankAccount: Record "Bank Account";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        BankAccountIBAN: Code[50];
+        BankAccountSWIFT: Code[20];
+    begin
+        // [SCENARIO 496414] Export posted sales invoice uses Bank Account IBAN and SWIFT Code when Company Bank Account Code is specified
+        Initialize();
+
+        // [GIVEN] Create Bank Account with specific IBAN and SWIFT Code
+        BankAccountIBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        BankAccountSWIFT := LibraryUtility.GenerateGUID();
+        LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount.IBAN := BankAccountIBAN;
+        BankAccount."SWIFT Code" := BankAccountSWIFT;
+        BankAccount.Modify(true);
+
+        // [GIVEN] Create and Post Sales Invoice with Bank Account Code
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithBankAccount("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, BankAccount."No."));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document uses Bank Account IBAN and SWIFT Code
+        VerifyPaymentMeans(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement', BankAccountIBAN, BankAccountSWIFT);
     end;
 
     [Test]
@@ -574,8 +604,38 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [WHEN] Export ZUGFeRD Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
 
-        // [THEN] ZUGFeRD Electronic Document is created with bank informarion as payment means
+        // [THEN] ZUGFeRD Electronic Document is created with bank information as payment means
         VerifyPaymentMeans(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement', SalesCrMemoHeader."Currency Code");
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatVerifyBankAccountPaymentMeans();
+    var
+        BankAccount: Record "Bank Account";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        BankAccountIBAN: Code[50];
+        BankAccountSWIFT: Code[20];
+    begin
+        // [SCENARIO 496414] Export posted sales credit memo uses Bank Account IBAN and SWIFT Code when Company Bank Account Code is specified
+        Initialize();
+
+        // [GIVEN] Create Bank Account with specific IBAN and SWIFT Code
+        BankAccountIBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        BankAccountSWIFT := LibraryUtility.GenerateGUID();
+        LibraryERM.CreateBankAccount(BankAccount);
+        BankAccount.IBAN := BankAccountIBAN;
+        BankAccount."SWIFT Code" := BankAccountSWIFT;
+        BankAccount.Modify(true);
+
+        // [GIVEN] Create and Post Sales Credit Memo with Bank Account Code
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithBankAccount("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, BankAccount."No."));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document uses Bank Account IBAN and SWIFT Code
+        VerifyPaymentMeans(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement', BankAccountIBAN, BankAccountSWIFT);
     end;
 
     [Test]
@@ -1345,6 +1405,17 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostSalesDocumentWithBankAccount(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; BankAccountCode: Code[20]): Code[20];
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType);
+        SalesHeader.Validate("Company Bank Account Code", BankAccountCode);
+        SalesHeader.Modify(true);
+        CreateSalesLine(SalesHeader, LineType, false);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
     local procedure CreateAndPostServiceDocument(): Code[20]
     var
         ServiceHeader: Record "Service Header";
@@ -1929,6 +2000,20 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Assert.AreEqual('58', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount/ram:IBANID';
         Assert.AreEqual(GetIBAN(CompanyInformation.IBAN), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyPaymentMeans(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text; ExpectedIBAN: Code[50]; ExpectedSWIFT: Code[20])
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/ram:SpecifiedTradeSettlementPaymentMeans/ram:TypeCode';
+        Assert.AreEqual('58', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount/ram:IBANID';
+        Assert.AreEqual(GetIBAN(ExpectedIBAN), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        if ExpectedSWIFT <> '' then begin
+            Path := DocumentTok + '/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeeSpecifiedCreditorFinancialInstitution/ram:BICID';
+            Assert.AreEqual(GetIBAN(ExpectedSWIFT), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        end;
     end;
 
     local procedure VerifyPaymentTerms(PaymentTermsCode: Code[10]; DueDate: Date; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
