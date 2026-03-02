@@ -73,6 +73,12 @@ table 6383 "Outlook Setup"
             ToolTip = 'Specifies whether the customer has given consent to the privacy notice.';
             DataClassification = SystemMetadata;
         }
+        field(6; "Outlook Category Id"; Text[2048])
+        {
+            Caption = 'Outlook Category';
+            ToolTip = 'Specifies the Outlook category that will be set when an email has been processed by the connector.';
+            DataClassification = CustomerContent;
+        }
         field(16; "Enabled At"; DateTime)
         {
             Caption = 'Enabled At';

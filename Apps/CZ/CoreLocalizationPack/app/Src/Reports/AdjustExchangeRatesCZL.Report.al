@@ -2135,6 +2135,7 @@ report 31004 "Adjust Exchange Rates CZL"
         end;
 
         if Post then begin
+            VarGenJournalLine."Zero Src. Curr. Amount" := true;
             OnPostGenJnlLineOnBeforeGenJnlPostLineRun(GenJnlPostLine, VarGenJournalLine, DimensionSetEntry);
             GenJnlPostLine.Run(VarGenJournalLine);
             exit(GenJnlPostLine.GetNextTransactionNo());

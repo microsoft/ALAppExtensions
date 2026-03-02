@@ -22,7 +22,7 @@ pageextension 6787 "Withholding Purch Ord Subform" extends "Purchase Order Subfo
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the Withholding Tax Product Posting Group is assigned from the Product Entity selected in Purchase Line.';
-                Visible = false;
+                Visible = true;
             }
         }
     }

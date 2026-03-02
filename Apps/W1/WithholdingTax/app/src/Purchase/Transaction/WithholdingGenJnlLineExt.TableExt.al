@@ -6,7 +6,9 @@ namespace Microsoft.WithholdingTax;
 
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
+#if not CLEAN29
 using Microsoft.Purchases.Vendor;
+#endif
 
 tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
 {
@@ -154,8 +156,15 @@ tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
         field(6803; "WHT Actual Vendor No."; Code[20])
         {
             Caption = 'Actual Vendor No.';
+#if not CLEAN29
             TableRelation = Vendor;
+#endif
             DataClassification = CustomerContent;
+#if not CLEAN29
+            ObsoleteState = Pending;
+            ObsoleteTag = '29.0';
+            ObsoleteReason = 'This field has been removed and is no longer required.';
+#endif
         }
     }
 

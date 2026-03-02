@@ -50,6 +50,11 @@ tableextension 6799 "WHT Purch. Cr. Memo Hdr." extends "Purch. Cr. Memo Hdr."
         {
             Caption = 'Actual Vendor No.';
             DataClassification = CustomerContent;
+#if not CLEAN29
+            ObsoleteState = Pending;
+            ObsoleteTag = '29.0';
+            ObsoleteReason = 'This field has been removed and is no longer required.';
+#endif
         }
         field(6794; "WHT Printed Tax Document"; Boolean)
         {
