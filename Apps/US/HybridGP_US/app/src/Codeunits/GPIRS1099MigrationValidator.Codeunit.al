@@ -66,7 +66,7 @@ codeunit 42006 "GP IRS1099 Migration Validator"
 
                         if TaxAmount > 0 then begin
                             Clear(VendorLedgerEntry);
-                            VendorLedgerEntry.SetLoadFields(Description, Amount);
+                            VendorLedgerEntry.SetLoadFields(Description);
                             VendorLedgerEntry.SetRange("Vendor No.", VendorNo);
                             VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Payment);
                             VendorLedgerEntry.SetRange(Description, IRS1099Code);

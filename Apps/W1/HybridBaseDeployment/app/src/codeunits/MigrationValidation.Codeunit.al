@@ -165,6 +165,7 @@ codeunit 40032 "Migration Validation"
     end;
 
     procedure PrepareValidation()
+    var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
         IntelligentCloudSetup.Get();
@@ -197,9 +198,9 @@ codeunit 40032 "Migration Validation"
     local procedure SendStartValidationResultMessage(MessageText: Text; IsError: Boolean; ShouldShowMessage: Boolean)
     begin
         if IsError then
-            Session.LogMessage('', MessageText, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok)
+            Session.LogMessage('0000SEU', MessageText, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok)
         else
-            Session.LogMessage('', MessageText, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
+            Session.LogMessage('0000SEV', MessageText, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
 
         if ShouldShowMessage and GuiAllowed() then
             Message(MessageText);
