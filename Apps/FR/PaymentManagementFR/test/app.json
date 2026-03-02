@@ -2,7 +2,7 @@
   "id": "ed0f7522-50bb-4838-a1ed-a9f4d1b3d9d7",
   "name": "Payment Management FR-Tests",
   "publisher": "Microsoft",
-  "version": "28.0.0.0",
+  "version": "29.0.0.0",
   "brief": "Tests for Payment Management FR extension.",
   "description": "Tests for Payment Management FR extension.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,24 +16,24 @@
       "id": "24f54185-e697-4e03-bae0-f134f2d69673",
       "publisher": "Microsoft",
       "name": "Payment Management FR",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
       "name": "Tests-TestLibraries",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
       "publisher": "Microsoft",
       "name": "Library Variable Storage",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     }
   ],
   "screenshots": [],
   "platform": "28.0.0.0",
-  "application": "28.0.0.0",
+  "application": "29.0.0.0",
   "idRanges": [
     {
       "from": 144000,

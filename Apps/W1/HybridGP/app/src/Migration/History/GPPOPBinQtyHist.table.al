@@ -45,6 +45,7 @@ table 4054 "GPPOPBinQtyHist"
         }
         field(8; QUANTITY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY';
             DataClassification = CustomerContent;
         }

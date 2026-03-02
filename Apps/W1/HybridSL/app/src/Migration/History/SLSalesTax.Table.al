@@ -171,6 +171,7 @@ table 47058 "SL SalesTax"
         }
         field(40; "NewTaxRate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'NewTaxRate';
         }
         field(41; "NoteId"; Integer)
@@ -179,6 +180,7 @@ table 47058 "SL SalesTax"
         }
         field(42; "OldTaxRate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OldTaxRate';
         }
         field(43; "OPTaxPtDate"; Text[1])
@@ -211,6 +213,7 @@ table 47058 "SL SalesTax"
         }
         field(50; "RateAboveMax"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RateAboveMax';
         }
         field(51; "S4Future01"; Text[30])
@@ -223,18 +226,22 @@ table 47058 "SL SalesTax"
         }
         field(53; "S4Future03"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(54; "S4Future04"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(55; "S4Future05"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(56; "S4Future06"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(57; "S4Future07"; DateTime)
@@ -303,6 +310,7 @@ table 47058 "SL SalesTax"
         }
         field(73; "TaxRate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxRate';
         }
         field(74; "TaxRvsdDate"; DateTime)
@@ -315,14 +323,17 @@ table 47058 "SL SalesTax"
         }
         field(76; "TxblAdjPct"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAdjPct';
         }
         field(77; "TxblMax"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblMax';
         }
         field(78; "TxblMin"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblMin';
         }
         field(79; "TxblMinMaxCuryID"; Text[4])
@@ -339,10 +350,12 @@ table 47058 "SL SalesTax"
         }
         field(82; "User3"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(83; "User4"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(84; "User5"; Text[10])

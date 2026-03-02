@@ -2029,7 +2029,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
     local procedure CreateVendorNoWithoutABN(VATBusPostingGroup: Code[20]; GenBusPostingGroup: Code[20]; WHTBusPostingGroup: Code[20]) VendorNo: Code[20]
     begin
         VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATBusPostingGroup);
-        UpdateVendor(VendorNo, false, '', GenBusPostingGroup, WHTBusPostingGroup);
+        UpdateVendor(VendorNo, GenBusPostingGroup, WHTBusPostingGroup);
     end;
 
     local procedure CreateCurrencyWithExchangeRate(): Code[10]
@@ -2354,7 +2354,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         GLAccount.Modify(true);
     end;
 
-    local procedure UpdateVendor(VendorNo: Code[20]; Registered: Boolean; ABN: Text[11]; GenBusPostingGroup: Code[20]; WHTBusPostingGroup: Code[20])
+    local procedure UpdateVendor(VendorNo: Code[20]; GenBusPostingGroup: Code[20]; WHTBusPostingGroup: Code[20])
     var
         Vendor: Record Vendor;
     begin
@@ -2362,8 +2362,6 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         Vendor."Gen. Bus. Posting Group" := GenBusPostingGroup;
         Vendor."Withholding Tax Liable" := true;
         Vendor."Wthldg. Tax Bus. Post. Group" := WHTBusPostingGroup;
-        Vendor."WHT Registered" := Registered;
-        Vendor."WHT ABN" := ABN;
         Vendor.Modify();
     end;
 

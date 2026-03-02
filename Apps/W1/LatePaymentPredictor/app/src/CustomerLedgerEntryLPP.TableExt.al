@@ -20,6 +20,7 @@ tableextension 1952 CustomerLedgerEntryLPP extends "Cust. Ledger Entry"
         }
         field(1302; "Prediction Confidence %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Prediction Confidence %';
         }

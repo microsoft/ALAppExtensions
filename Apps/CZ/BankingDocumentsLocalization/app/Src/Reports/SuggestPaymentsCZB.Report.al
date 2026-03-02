@@ -196,7 +196,7 @@ report 31280 "Suggest Payments CZB"
                 var
                     EmpEntriesTxt: Label 'Processing Employee Entries...';
                 begin
-                    if EmployeeType = EmployeeType::Nothing then
+                    if EmplType = EmplType::Nothing then
                         CurrReport.Break();
                     if StopPayments then
                         CurrReport.Break();
@@ -205,6 +205,8 @@ report 31280 "Suggest Payments CZB"
                     WindowDialog.Open(EmpEntriesTxt);
                     DialogOpen := true;
 
+                    if EmplType = EmplType::OnlyPayables then
+                        SetRange(Positive, true);
                     SetRange("Posting Date", 0D, LastDueDateToPayReq);
                     if EmployeeNoFilter <> '' then
                         SetFilter("Employee No.", EmployeeNoFilter);
@@ -253,6 +255,8 @@ report 31280 "Suggest Payments CZB"
                     }
                     field(AmountAvailableCZB; AmountAvailable)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = '';
                         ApplicationArea = Basic, Suite;
                         Caption = 'Available Amount (LCY)';
                         ToolTip = 'Specifies the max. amount. The amount is in the local currency.';
@@ -335,12 +339,47 @@ report 31280 "Suggest Payments CZB"
                             exit(true);
                         end;
                     }
+#if not CLEAN28
                     field(EmployeeTypeCZB; EmployeeType)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Employee Payables';
                         OptionCaption = 'All Entries,No Suggest';
                         ToolTip = 'Specifies payment suggestion of employee entries.';
+                        Visible = false;
+                        Enabled = false;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Use EmplType instead.';
+                        ObsoleteTag = '28.0';
+
+                        trigger OnValidate()
+                        begin
+                            case EmployeeType of
+                                EmployeeType::All:
+                                    EmplType := EmplType::All;
+                                EmployeeType::Nothing:
+                                    EmplType := EmplType::Nothing;
+                            end;
+                        end;
+                    }
+#endif
+                    field(EmplTypeCZB; EmplType)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Employee Payables';
+                        OptionCaption = 'Only Payables,All Entries,No Suggest';
+                        ToolTip = 'Specifies payment suggestion of employee entries.';
+#if not CLEAN28
+                        trigger OnValidate()
+                        begin
+                            case EmplType of
+                                EmplType::All:
+                                    EmployeeType := EmployeeType::All;
+                                EmplType::Nothing:
+                                    EmployeeType := EmployeeType::Nothing;
+                            end;
+                        end;
+#endif
                     }
                     field(EmployeeNoFilterCZB; EmployeeNoFilter)
                     {
@@ -442,7 +481,11 @@ report 31280 "Suggest Payments CZB"
         PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
         PaymentOrderLineCZB: Record "Payment Order Line CZB";
         CustomerType, VendorType : Option OnlyBalance,OnlyPayables,All,Nothing;
+        EmplType: Option OnlyPayables,All,Nothing;
+#if not CLEAN28
+        [Obsolete('Use EmplType instead.', '28.0')]
         EmployeeType: Option All,Nothing;
+#endif
         WindowDialog: Dialog;
         LastDueDateToPayReq: Date;
         KeepBank, SkipNonWork, UsePaymentDisc, StopPayments, SkipBlocked, IsSkippedBlocked, DialogOpen : Boolean;

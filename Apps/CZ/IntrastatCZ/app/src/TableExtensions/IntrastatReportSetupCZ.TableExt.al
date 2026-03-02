@@ -93,6 +93,8 @@ tableextension 31326 "Intrastat Report Setup CZ" extends "Intrastat Report Setup
         }
         field(31320; "Min. Tol. Fair Market Value CZ"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Minimum Tolerance from Fair Market Value (%)';
             DataClassification = CustomerContent;
             MinValue = 0;

@@ -100,6 +100,7 @@ table 18468 "Delivery Challan Header"
         }
         field(17; "Quantity for rework"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity for rework';
             DecimalPlaces = 0 : 3;
             Editable = false;
@@ -132,10 +133,10 @@ table 18468 "Delivery Challan Header"
         InitRecord();
         if "No." = '' then begin
             PurchSetup.TestField("Posted Delivery Challan Nos.");
-                "No. Series" := PurchSetup."Posted Delivery Challan Nos.";
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
-                "No." := NoSeries.GetNextNo("No. Series", Today());
+            "No. Series" := PurchSetup."Posted Delivery Challan Nos.";
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series", Today());
         end;
     end;
 

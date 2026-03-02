@@ -9,7 +9,7 @@ using Microsoft.FixedAssets.Ledger;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
-using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.History;
 using Microsoft.Sustainability.ExciseTax;
 
 codeunit 7412 "Excise Tax Calculation"
@@ -222,19 +222,6 @@ codeunit 7412 "Excise Tax Calculation"
         end;
     end;
 
-    local procedure GetPartnerNo(FALedgerEntry: Record "FA Ledger Entry"): Code[20]
-    var
-        VendorLedgerEntry: Record "Vendor Ledger Entry";
-    begin
-        if FALedgerEntry."Document Type" <> FALedgerEntry."Document Type"::Invoice then
-            exit;
-
-        VendorLedgerEntry.SetRange("Document No.", FALedgerEntry."Document No.");
-        VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
-        if VendorLedgerEntry.FindFirst() then
-            exit(VendorLedgerEntry."Vendor No.");
-    end;
-
     local procedure InitializeExciseJournalLine(var ExciseJnlLine: Record "Sust. Excise Jnl. Line"; ExciseJnlBatch: Record "Sust. Excise Journal Batch"; PostingDate: Date; LineNo: Integer);
     var
         NoSeriesBatch: Codeunit "No. Series - Batch";
@@ -245,7 +232,6 @@ codeunit 7412 "Excise Tax Calculation"
         ExciseJnlLine."Line No." := LineNo;
         ExciseJnlLine."Posting Date" := PostingDate;
         ExciseJnlLine."Document No." := NoSeriesBatch.GetNextNo(ExciseJnlBatch."No Series", ExciseJnlLine."Posting Date");
-        ExciseJnlLine."Document Type" := ExciseJnlLine."Document Type"::Journal;
         ExciseJnlLine."Source Code" := ExciseJnlBatch."Source Code";
         ExciseJnlLine."Reason Code" := ExciseJnlBatch."Reason Code";
     end;
@@ -256,11 +242,42 @@ codeunit 7412 "Excise Tax Calculation"
         PartnerNo: Code[20];
     begin
         GetPartnerDetailFromILE(ItemLedgerEntry, PartnerType, PartnerNo);
-        ExciseJnlLine.Description := ItemLedgerEntry.Description;
+        if ItemLedgerEntry.Description = '' then
+            ExciseJnlLine.Description := ExciseJournalBatch.Description
+        else
+            ExciseJnlLine.Description := ItemLedgerEntry.Description;
+
         ExciseJnlLine."Excise Tax Type" := TaxType;
         ExciseJnlLine."Excise Entry Type" := EntryType;
+
+        case EntryType of
+            EntryType::Purchase,
+            EntryType::Sale,
+            EntryType::"Positive Adjmt.",
+            EntryType::"Negative Adjmt.":
+                case ItemLedgerEntry."Document Type" of
+                    ItemLedgerEntry."Document Type"::"Purchase Invoice",
+                    ItemLedgerEntry."Document Type"::"Purchase Receipt",
+                    ItemLedgerEntry."Document Type"::"Sales Invoice",
+                    ItemLedgerEntry."Document Type"::"Sales Shipment":
+                        ExciseJnlLine.Validate("Document Type", ExciseJnlLine."Document Type"::Invoice);
+                    ItemLedgerEntry."Document Type"::"Purchase Credit Memo",
+                    ItemLedgerEntry."Document Type"::"Purchase Return Shipment",
+                    ItemLedgerEntry."Document Type"::"Sales Credit Memo",
+                    ItemLedgerEntry."Document Type"::"Sales Return Receipt":
+                        ExciseJnlLine.Validate("Document Type", ExciseJnlLine."Document Type"::"Credit Memo");
+                    else
+                        ExciseJnlLine.Validate("Document Type", ExciseJnlLine."Document Type"::Journal);
+                end;
+            EntryType::Output:
+                ExciseJnlLine.Validate("Document Type", ExciseJnlLine."Document Type"::"Production Order");
+            EntryType::"Assembly Output":
+                ExciseJnlLine.Validate("Document Type", ExciseJnlLine."Document Type"::"Assembly Order");
+        end;
+
         ExciseJnlLine.Validate("Partner Type", PartnerType);
         ExciseJnlLine.Validate("Partner No.", PartnerNo);
+        ExciseJnlLine.Validate("Country/Region Code", ItemLedgerEntry."Country/Region Code");
         ExciseJnlLine.Validate("Source Type", ExciseJnlLine."Source Type"::Item);
         ExciseJnlLine.Validate("Source No.", ItemLedgerEntry."Item No.");
         ExciseJnlLine.Validate("Source Qty.", Abs(ItemLedgerEntry.Quantity));
@@ -269,15 +286,58 @@ codeunit 7412 "Excise Tax Calculation"
 
     local procedure UpdateExciseJournalLineFromFALedgerEntry(var ExciseJnlLine: Record "Sust. Excise Jnl. Line"; FALedgerEntry: Record "FA Ledger Entry"; TaxType: Code[20]; EntryType: Enum "Excise Entry Type")
     begin
-        ExciseJnlLine.Description := FALedgerEntry.Description;
+        if FALedgerEntry.Description = '' then
+            ExciseJnlLine.Description := ExciseJournalBatch.Description
+        else
+            ExciseJnlLine.Description := FALedgerEntry.Description;
         ExciseJnlLine."Excise Tax Type" := TaxType;
         ExciseJnlLine."Excise Entry Type" := EntryType;
-        ExciseJnlLine.Validate("Partner Type", ExciseJnlLine."Partner Type"::Vendor);
-        ExciseJnlLine.Validate("Partner No.", GetPartnerNo(FALedgerEntry));
+
+        case FALedgerEntry."Document Type" of
+            FALedgerEntry."Document Type"::Invoice:
+                begin
+                    ExciseJnlLine.Validate("Document Type", ExciseJnlLine."Document Type"::Invoice);
+                    UpdateExciseJournalFromPurchaseInvoice(ExciseJnlLine, FALedgerEntry."Document No.");
+                end;
+            FALedgerEntry."Document Type"::"Credit Memo":
+                begin
+                    ExciseJnlLine.Validate("Document Type", ExciseJnlLine."Document Type"::"Credit Memo");
+                    UpdateExciseJournalFromPurchaseCreditMemo(ExciseJnlLine, FALedgerEntry."Document No.");
+                end;
+            else
+                ExciseJnlLine.Validate("Document Type", ExciseJnlLine."Document Type"::Journal);
+        end;
+
         ExciseJnlLine.Validate("Source Type", ExciseJnlLine."Source Type"::"Fixed Asset");
         ExciseJnlLine.Validate("Source No.", FALedgerEntry."FA No.");
         ExciseJnlLine.Validate("Source Qty.", 1);
         ExciseJnlLine."FA Ledger Entry No." := FALedgerEntry."Entry No.";
+    end;
+
+    local procedure UpdateExciseJournalFromPurchaseInvoice(var SustExciseJournalLine: Record "Sust. Excise Jnl. Line"; DocumentNo: Code[20])
+    var
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+    begin
+        PurchaseInvoiceHeader.SetLoadFields("Buy-from Vendor No.", "Buy-from Country/Region Code");
+        if not PurchaseInvoiceHeader.Get(DocumentNo) then
+            exit;
+
+        SustExciseJournalLine.Validate("Partner Type", SustExciseJournalLine."Partner Type"::Vendor);
+        SustExciseJournalLine.Validate("Partner No.", PurchaseInvoiceHeader."Buy-from Vendor No.");
+        SustExciseJournalLine.Validate("Country/Region Code", PurchaseInvoiceHeader."Buy-from Country/Region Code");
+    end;
+
+    local procedure UpdateExciseJournalFromPurchaseCreditMemo(var SustExciseJournalLine: Record "Sust. Excise Jnl. Line"; DocumentNo: Code[20])
+    var
+        PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+    begin
+        PurchaseCrMemoHeader.SetLoadFields("Buy-from Vendor No.", "Buy-from Country/Region Code");
+        if not PurchaseCrMemoHeader.Get(DocumentNo) then
+            exit;
+
+        SustExciseJournalLine.Validate("Partner Type", SustExciseJournalLine."Partner Type"::Vendor);
+        SustExciseJournalLine.Validate("Partner No.", PurchaseCrMemoHeader."Buy-from Vendor No.");
+        SustExciseJournalLine.Validate("Country/Region Code", PurchaseCrMemoHeader."Buy-from Country/Region Code");
     end;
 
     local procedure ExciseJournalLineExist(ItemLedgerEntry: Record "Item Ledger Entry"): Boolean

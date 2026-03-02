@@ -38,6 +38,7 @@ table 4094 "GP Customer Transactions"
         }
         field(6; CURTRXAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Transaction Amount';
             DataClassification = CustomerContent;
         }

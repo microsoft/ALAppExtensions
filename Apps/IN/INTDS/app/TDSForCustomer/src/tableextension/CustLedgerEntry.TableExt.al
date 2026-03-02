@@ -20,6 +20,8 @@ tableextension 18663 "Cust. Ledger Entry" extends "Cust. Ledger Entry"
         }
         field(18663; "TDS Certificate Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(18664; "Financial Year"; Integer)

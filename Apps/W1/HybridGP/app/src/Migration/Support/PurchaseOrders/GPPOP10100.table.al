@@ -121,6 +121,7 @@ table 40137 "GP POP10100"
         }
         field(75; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'XCHGRATE';
             DataClassification = CustomerContent;
         }

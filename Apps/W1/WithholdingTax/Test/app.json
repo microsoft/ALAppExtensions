@@ -2,7 +2,7 @@
   "id": "7f7f9808-d7e9-4ea8-b72d-4a7159881ed1",
   "name": "Withholding Tax Tests",
   "publisher": "Microsoft",
-  "version": "28.0.0.0",
+  "version": "29.0.0.0",
   "brief": "Tests for Microsoft Withholding Tax app.",
   "description": "Tests for Microsoft Withholding Tax app.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -16,25 +16,25 @@
       "id": "c31ee575-3fc7-4388-98ee-d75aa2fc5f87",
       "name": "Withholding Tax",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
       "name": "Tests-TestLibraries",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
       "name": "Library Variable Storage",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     }
   ],
   "internalsVisibleTo": [],
   "screenshots": [],
   "platform": "28.0.0.0",
-  "application": "28.0.0.0",
+  "application": "29.0.0.0",
   "idRanges": [
     {
       "from": 148320,

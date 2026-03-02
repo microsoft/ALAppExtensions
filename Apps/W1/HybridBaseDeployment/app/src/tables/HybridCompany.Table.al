@@ -50,6 +50,7 @@ table 4005 "Hybrid Company"
         }
         field(4; "Estimated Size"; Decimal)
         {
+            AutoFormatType = 0;
             Description = 'The size in GB of the company data to be migrated';
             DataClassification = SystemMetadata;
         }

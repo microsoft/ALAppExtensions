@@ -58,10 +58,10 @@ page 7415 "Excise Tax Type Card"
                 RunObject = Page "Excise Tax Entry Permissions";
                 RunPageLink = "Excise Tax Type Code" = field(Code);
             }
-            action("Tax Rates")
+            action("Item/FA Rates")
             {
-                Caption = 'Tax Rates';
-                ToolTip = 'Configure tax rates for specific items, fixed assets.';
+                Caption = 'Item/FA Rates';
+                ToolTip = 'Configure tax rates for specific items and fixed assets.';
                 Image = Setup;
                 RunObject = Page "Excise Tax Item/FA Rates";
                 RunPageLink = "Excise Tax Type Code" = field(Code);
@@ -72,7 +72,7 @@ page 7415 "Excise Tax Type Card"
             actionref("Configure Rates_Promoted"; "Configure Rates")
             {
             }
-            actionref("Tax Rates_Promoted"; "Tax Rates")
+            actionref("Item/FA Rates_Promoted"; "Item/FA Rates")
             {
             }
         }

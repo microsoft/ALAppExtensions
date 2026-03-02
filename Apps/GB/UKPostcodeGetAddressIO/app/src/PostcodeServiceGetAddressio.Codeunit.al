@@ -37,6 +37,9 @@ codeunit 9092 "Postcode Service GetAddress.io"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Postcode Service Manager", 'OnCheckIsServiceConfigured', '', false, false)]
     procedure RegisterServiceOnDiscoverActive(ServiceKey: Text; var IsConfigured: Boolean)
     begin
+        if IsConfigured then
+            exit;
+
         if ServiceKey <> ServiceIdentifierMsg then
             exit;
 

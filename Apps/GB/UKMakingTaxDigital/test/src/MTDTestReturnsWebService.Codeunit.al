@@ -15,6 +15,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     var
+        MTDHttpClientMockService: Codeunit MTDHttpClientMockService;
         LibraryMakingTaxDigital: Codeunit "Library - Making Tax Digital";
         LibraryRandom: Codeunit "Library - Random";
         LibraryUtility: Codeunit "Library - Utility";
@@ -30,7 +31,7 @@ codeunit 148085 "MTDTestReturnsWebService"
         ConfirmSubmitQst: Label 'When you submit this VAT information you are making a legal declaration that the information is true and complete. A false declaration can result in prosecution. Do you want to continue?';
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Negative_DisabledOutput()
     var
@@ -48,7 +49,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Negative_Reason()
     var
@@ -69,7 +70,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Negative_BlankedJsonResponse()
     var
@@ -85,7 +86,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Negative_WrongJsonResponse()
     var
@@ -101,7 +102,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_New_DisabledOutput()
     var
@@ -119,7 +120,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_New_UI()
     var
@@ -138,7 +139,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_New_ExpiredToken()
     var
@@ -160,7 +161,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_UpToDate()
     var
@@ -181,7 +182,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_PeriodKey()
     var
@@ -202,7 +203,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_VATDueSales()
     var
@@ -223,7 +224,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_VATDueAcquisitions()
     var
@@ -244,7 +245,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalVATDue()
     var
@@ -265,7 +266,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_VATReclaimedCurrPeriod()
     var
@@ -286,7 +287,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_NetVATDue()
     var
@@ -307,7 +308,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalValueSalesExclVAT()
     var
@@ -328,7 +329,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalValuePurchasesExclVAT()
     var
@@ -349,7 +350,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalValueGoodsSupplExVAT()
     var
@@ -370,7 +371,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Modified_TotalAcquisitionsExclVAT()
     var
@@ -391,7 +392,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATReturns_Error404NotFound()
     var
@@ -410,7 +411,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure SubmitVATReturns_Negative_Reason()
     var
@@ -435,7 +436,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure SubmitVATReturns_Positive_BlankedJsonResponse()
     var
@@ -455,7 +456,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure SubmitVATReturns_Positive_WrongJsonResponse()
     var
@@ -475,7 +476,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure SubmitVATReturns_Positive_JsonResponse()
     var
@@ -498,7 +499,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure SubmitVATReturns_ExpiredToken()
     var
@@ -523,7 +524,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure SubmitVATReturns_Timeout()
     var
@@ -548,7 +549,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure MarkSubmittedVATReturnAsAccepted()
     var
@@ -570,7 +571,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('ConfirmHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure VATReturn_SubmitReturnContent_SubmittedNotAccepted()
     var
@@ -595,7 +596,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('ConfirmHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure VATReturn_SubmitReturnContent_SubmittedAndAcceptedLater()
     var
@@ -620,6 +621,7 @@ codeunit 148085 "MTDTestReturnsWebService"
     begin
         LibraryVariableStorage.Clear();
         ClearRecords();
+        MTDHttpClientMockService.ClearUnauthorizedVRNCalls();
 
         if IsInitialized then
             exit;
@@ -955,5 +957,12 @@ codeunit 148085 "MTDTestReturnsWebService"
     [ModalPageHandler]
     procedure MTDWebClientFPHeaders_MPH(var MTDWebClientFPHeaders: TestPage "MTD Web Client FP Headers")
     begin
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        MTDHttpClientMockService.HandleRequest(Request, Response);
+        exit(false);
     end;
 }

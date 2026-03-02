@@ -123,6 +123,7 @@ tableextension 18146 "GST Sales Header Archive Ext" extends "Sales Header Archiv
         }
         field(18157; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
             Editable = false;

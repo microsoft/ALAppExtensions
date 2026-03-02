@@ -78,6 +78,7 @@ table 4096 "GP Vendor"
         }
         field(14; AMOUNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount';
             DataClassification = CustomerContent;
         }

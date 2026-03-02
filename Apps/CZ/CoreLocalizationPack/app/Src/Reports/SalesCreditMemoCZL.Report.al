@@ -596,7 +596,7 @@ report 31190 "Sales Credit Memo CZL"
                 Clear(ExchRateText);
                 if "Currency Code" <> '' then begin
                     CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
-                    CalculatedExchRate := Round(1 / "Currency Factor" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                    CalculatedExchRate := Round(1 / "VAT Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
                     ExchRateText := StrSubstNo(ExchRateLbl, CalculatedExchRate, "General Ledger Setup"."LCY Code",
                                         CurrencyExchangeRate."Exchange Rate Amount", "Currency Code");
                     if "Currency Code" = "General Ledger Setup"."LCY Code" then

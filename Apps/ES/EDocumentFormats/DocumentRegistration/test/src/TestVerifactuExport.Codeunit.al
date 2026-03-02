@@ -1321,6 +1321,7 @@ codeunit 148004 "Test Verifactu Export"
 
         // [WHEN] First invoice is exported
         ExportInvoice(SalesInvoiceHeader1, XMLText);
+        SetVerifactuDocSubmissionId(SalesInvoiceHeader1."No.", 'SUB-001');
         Commit();
 
         // [THEN] First invoice contains PrimerRegistro in Encadenamiento
@@ -1330,6 +1331,7 @@ codeunit 148004 "Test Verifactu Export"
         Assert.IsTrue(XMLText.Contains('Huella'), 'Encadenamiento should contain Huella');
 
         // [WHEN] Second invoice is exported
+        XMLText := '';
         ExportInvoice(SalesInvoiceHeader2, XMLText);
 
         // [THEN] Second invoice contains RegistroAnterior in Encadenamiento
@@ -1546,6 +1548,7 @@ codeunit 148004 "Test Verifactu Export"
 
         // [WHEN] First invoice is exported
         ExportInvoice(SalesInvoiceHeader1, XMLText1);
+        SetVerifactuDocSubmissionId(SalesInvoiceHeader1."No.", 'SUB-001');
         Commit();
 
         // [THEN] First invoice contains PrimerRegistro element
@@ -1553,6 +1556,7 @@ codeunit 148004 "Test Verifactu Export"
 
         // [WHEN] Second invoice is exported
         ExportInvoice(SalesInvoiceHeader2, XMLText2);
+        SetVerifactuDocSubmissionId(SalesInvoiceHeader2."No.", 'SUB-002');
         Commit();
 
         // [THEN] Second invoice contains RegistroAnterior with reference to first invoice
@@ -1583,6 +1587,7 @@ codeunit 148004 "Test Verifactu Export"
 
         CreatePostedSalesCreditMemo(SalesCrMemoHeader, SalesInvoiceHeader1."No.", Customer."No.", LibraryRandom.RandDecInRange(500, 2000, 2));
         ExportCreditMemo(SalesCrMemoHeader, XMLText);
+        SetVerifactuDocSubmissionId(SalesCrMemoHeader."No.", 'SUB-003');
         Commit();
 
         // [GIVEN] Another posted sales invoice "I2"
@@ -1594,6 +1599,181 @@ codeunit 148004 "Test Verifactu Export"
         // [THEN] Second invoice contains RegistroAnterior with reference to credit memo
         Assert.IsTrue(XMLText.Contains('RegistroAnterior'), 'Invoice should contain RegistroAnterior');
         Assert.IsTrue(XMLText.Contains(SalesCrMemoHeader."No."), 'Invoice should reference credit memo number');
+    end;
+
+    [Test]
+    procedure FindLastRegDocUsesSubmissionIdForChaining()
+    var
+        SalesInvoiceHeader1: Record "Sales Invoice Header";
+        SalesInvoiceHeader2: Record "Sales Invoice Header";
+        VerifactuDocument: Record "Verifactu Document";
+        Customer: Record Customer;
+        XMLText: Text;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 622600] Document chaining uses Submission Id to find last registered document
+        Initialize();
+        VerifactuDocument.DeleteAll();
+
+        // [GIVEN] Posted sales invoice "I1" exported and submitted (has Submission Id)
+        LibrarySales.CreateCustomerWithCountryCodeAndVATRegNo(Customer);
+        CreatePostedSalesInvoice(SalesInvoiceHeader1, Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+        ExportInvoice(SalesInvoiceHeader1, XMLText);
+        Commit();
+        SetVerifactuDocSubmissionId(SalesInvoiceHeader1."No.", 'SUB-001');
+
+        // [GIVEN] Posted sales invoice "I2"
+        CreatePostedSalesInvoice(SalesInvoiceHeader2, Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+
+        // [WHEN] Export procedure is invoked for invoice "I2"
+        ExportInvoice(SalesInvoiceHeader2, XMLText);
+
+        // [THEN] XML contains RegistroAnterior referencing invoice "I1"
+        Assert.IsTrue(XMLText.Contains('RegistroAnterior'), 'XML should contain RegistroAnterior when previous doc has Submission Id');
+        Assert.IsTrue(XMLText.Contains(SalesInvoiceHeader1."No."), 'RegistroAnterior should reference first invoice number');
+    end;
+
+    [Test]
+    procedure FindLastRegDocShowsPrimerRegistroWhenNoSubmittedDocs()
+    var
+        SalesInvoiceHeader1: Record "Sales Invoice Header";
+        SalesInvoiceHeader2: Record "Sales Invoice Header";
+        VerifactuDocument: Record "Verifactu Document";
+        Customer: Record Customer;
+        XMLText: Text;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 622600] Export shows PrimerRegistro when no documents have been submitted (no Submission Id)
+        Initialize();
+        VerifactuDocument.DeleteAll();
+
+        // [GIVEN] Posted sales invoice "I1" exported but NOT submitted (no Submission Id)
+        LibrarySales.CreateCustomerWithCountryCodeAndVATRegNo(Customer);
+        CreatePostedSalesInvoice(SalesInvoiceHeader1, Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+        ExportInvoice(SalesInvoiceHeader1, XMLText);
+        Commit();
+
+        // [GIVEN] Posted sales invoice "I2"
+        CreatePostedSalesInvoice(SalesInvoiceHeader2, Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+
+        // [WHEN] Export procedure is invoked for invoice "I2"
+        ExportInvoice(SalesInvoiceHeader2, XMLText);
+
+        // [THEN] XML contains PrimerRegistro since no previous doc has Submission Id
+        Assert.IsTrue(XMLText.Contains('PrimerRegistro'), 'XML should contain PrimerRegistro when no docs have Submission Id');
+        Assert.IsFalse(XMLText.Contains('RegistroAnterior'), 'XML should not contain RegistroAnterior when no docs have Submission Id');
+    end;
+
+    [Test]
+    procedure FindLastRegDocSkipsDocsWithoutSubmissionId()
+    var
+        SalesInvoiceHeader: array[3] of Record "Sales Invoice Header";
+        VerifactuDocument: Record "Verifactu Document";
+        Customer: Record Customer;
+        XMLText: Text;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 622600] Document chaining skips documents without Submission Id even if they have a hash
+        Initialize();
+        VerifactuDocument.DeleteAll();
+
+        // [GIVEN] Posted sales invoice "I1" exported with Submission Id
+        LibrarySales.CreateCustomerWithCountryCodeAndVATRegNo(Customer);
+        CreatePostedSalesInvoice(SalesInvoiceHeader[1], Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+        ExportInvoice(SalesInvoiceHeader[1], XMLText);
+        Commit();
+        SetVerifactuDocSubmissionId(SalesInvoiceHeader[1]."No.", 'SUB-001');
+
+        // [GIVEN] Posted sales invoice "I2" exported but WITHOUT Submission Id
+        CreatePostedSalesInvoice(SalesInvoiceHeader[2], Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+        ExportInvoice(SalesInvoiceHeader[2], XMLText);
+        Commit();
+
+        // [GIVEN] Posted sales invoice "I3"
+        CreatePostedSalesInvoice(SalesInvoiceHeader[3], Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+
+        // [WHEN] Export procedure is invoked for invoice "I3"
+        ExportInvoice(SalesInvoiceHeader[3], XMLText);
+
+        // [THEN] XML contains RegistroAnterior referencing "I1" (skipping "I2" which has no Submission Id)
+        Assert.IsTrue(XMLText.Contains('RegistroAnterior'), 'XML should contain RegistroAnterior');
+        Assert.IsTrue(XMLText.Contains(SalesInvoiceHeader[1]."No."), 'RegistroAnterior should reference I1 which has Submission Id');
+    end;
+
+    [Test]
+    procedure FindLastRegDocReferencesLastBySubmissionId()
+    var
+        SalesInvoiceHeader: array[3] of Record "Sales Invoice Header";
+        VerifactuDocument: Record "Verifactu Document";
+        Customer: Record Customer;
+        XMLText: Text;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 622600] Document chaining references the document with the last Submission Id
+        Initialize();
+        VerifactuDocument.DeleteAll();
+
+        // [GIVEN] Posted sales invoice "I1" exported with Submission Id
+        LibrarySales.CreateCustomerWithCountryCodeAndVATRegNo(Customer);
+        CreatePostedSalesInvoice(SalesInvoiceHeader[1], Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+        ExportInvoice(SalesInvoiceHeader[1], XMLText);
+        Commit();
+        SetVerifactuDocSubmissionId(SalesInvoiceHeader[1]."No.", 'SUB-001');
+
+        // [GIVEN] Posted sales invoice "I2" exported with Submission Id
+        CreatePostedSalesInvoice(SalesInvoiceHeader[2], Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+        ExportInvoice(SalesInvoiceHeader[2], XMLText);
+        Commit();
+        SetVerifactuDocSubmissionId(SalesInvoiceHeader[2]."No.", 'SUB-002');
+
+        // [GIVEN] Third posted sales invoice "I3"
+        CreatePostedSalesInvoice(SalesInvoiceHeader[3], Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+
+        // [WHEN] Export procedure is invoked for invoice "I3"
+        ExportInvoice(SalesInvoiceHeader[3], XMLText);
+
+        // [THEN] XML contains RegistroAnterior referencing "I2" (last by Submission Id)
+        Assert.IsTrue(XMLText.Contains('RegistroAnterior'), 'XML should contain RegistroAnterior');
+        Assert.IsTrue(XMLText.Contains(SalesInvoiceHeader[2]."No."), 'RegistroAnterior should reference I2 which has the last Submission Id');
+    end;
+
+    [Test]
+    procedure FindLastRegDocChainsAcrossDocTypesWithSubmissionId()
+    var
+        SalesInvoiceHeader1: Record "Sales Invoice Header";
+        SalesInvoiceHeader2: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        VerifactuDocument: Record "Verifactu Document";
+        Customer: Record Customer;
+        XMLText: Text;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 622600] Document chaining works across document types using Submission Id
+        Initialize();
+        VerifactuDocument.DeleteAll();
+
+        // [GIVEN] Posted sales invoice "I1" exported with Submission Id
+        LibrarySales.CreateCustomerWithCountryCodeAndVATRegNo(Customer);
+        CreatePostedSalesInvoice(SalesInvoiceHeader1, Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+        ExportInvoice(SalesInvoiceHeader1, XMLText);
+        Commit();
+        SetVerifactuDocSubmissionId(SalesInvoiceHeader1."No.", 'SUB-001');
+
+        // [GIVEN] Posted sales credit memo "CM" exported with Submission Id
+        CreatePostedSalesCreditMemo(SalesCrMemoHeader, SalesInvoiceHeader1."No.", Customer."No.", LibraryRandom.RandDecInRange(500, 2000, 2));
+        ExportCreditMemo(SalesCrMemoHeader, XMLText);
+        Commit();
+        SetVerifactuDocSubmissionId(SalesCrMemoHeader."No.", 'SUB-002');
+
+        // [GIVEN] Another posted sales invoice "I2"
+        CreatePostedSalesInvoice(SalesInvoiceHeader2, Customer."No.", LibraryRandom.RandDecInRange(1000, 5000, 2), LibraryRandom.RandIntInRange(10, 25));
+
+        // [WHEN] Export procedure is invoked for invoice "I2"
+        ExportInvoice(SalesInvoiceHeader2, XMLText);
+
+        // [THEN] XML contains RegistroAnterior referencing credit memo "CM"
+        Assert.IsTrue(XMLText.Contains('RegistroAnterior'), 'XML should contain RegistroAnterior');
+        Assert.IsTrue(XMLText.Contains(SalesCrMemoHeader."No."), 'RegistroAnterior should reference credit memo which is the last submitted doc');
     end;
     #endregion
 
@@ -1692,6 +1872,7 @@ codeunit 148004 "Test Verifactu Export"
         SourceDocumentLines.Open(Database::"Sales Invoice Line");
         EDocument."Document No." := SalesInvoiceHeader."No.";
         EDocument."Document Type" := EDocument."Document Type"::"Sales Invoice";
+        EDocument.Insert();
         Verifactu.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         ReadXMLFromBlob(TempBlob, XMLText);
     end;
@@ -1708,6 +1889,7 @@ codeunit 148004 "Test Verifactu Export"
         SourceDocumentLines.Open(Database::"Sales Cr.Memo Line");
         EDocument."Document No." := SalesCrMemoHeader."No.";
         EDocument."Document Type" := EDocument."Document Type"::"Sales Credit Memo";
+        EDocument.Insert();
         Verifactu.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         ReadXMLFromBlob(TempBlob, XMLText);
     end;
@@ -1724,6 +1906,7 @@ codeunit 148004 "Test Verifactu Export"
         SourceDocumentLines.Open(Database::"Service Invoice Line");
         EDocument."Document No." := ServiceInvoiceHeader."No.";
         EDocument."Document Type" := EDocument."Document Type"::"Service Invoice";
+        EDocument.Insert();
         Verifactu.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         ReadXMLFromBlob(TempBlob, XMLText);
     end;
@@ -1740,6 +1923,7 @@ codeunit 148004 "Test Verifactu Export"
         SourceDocumentLines.Open(Database::"Service Cr.Memo Line");
         EDocument."Document No." := ServiceCrMemoHeader."No.";
         EDocument."Document Type" := EDocument."Document Type"::"Service Credit Memo";
+        EDocument.Insert();
         Verifactu.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         ReadXMLFromBlob(TempBlob, XMLText);
     end;
@@ -2107,6 +2291,17 @@ codeunit 148004 "Test Verifactu Export"
         GLAccount.Validate("VAT Prod. Posting Group", VATPostingSetup."VAT Prod. Posting Group");
         GLAccount.Modify(true);
         exit(GLAccount."No.");
+    end;
+
+    local procedure SetVerifactuDocSubmissionId(SourceDocumentNo: Code[20]; SubmissionId: Text[100])
+    var
+        VerifactuDocument: Record "Verifactu Document";
+    begin
+        VerifactuDocument.SetCurrentKey("Source Document Type", "Source Document No.");
+        VerifactuDocument.SetRange("Source Document No.", SourceDocumentNo);
+        VerifactuDocument.FindLast();
+        VerifactuDocument."Submission Id" := SubmissionId;
+        VerifactuDocument.Modify();
     end;
 
     local procedure VerifyXMLContainsVATBreakdown(XMLText: Text; VATRate: Decimal)

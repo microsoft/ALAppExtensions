@@ -26,7 +26,7 @@ tableextension 22211 "G/L Entry Review" extends "G/L Entry"
         {
             Caption = 'Reviewed Date';
             FieldClass = FlowField;
-            CalcFormula = lookup("G/L Entry Review Log".SystemModifiedAt where("G/L Entry No." = field("Entry No.")));
+            CalcFormula = lookup("G/L Entry Review Log".SystemCreatedAt where("G/L Entry No." = field("Entry No.")));
             ToolTip = 'Specifies the date and time when the G/L entry was reviewed.';
         }
         field(22215; "Reviewed Identifier"; Integer)
@@ -38,6 +38,8 @@ tableextension 22211 "G/L Entry Review" extends "G/L Entry"
         }
         field(22217; "Reviewed Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Reviewed Amount';
             FieldClass = FlowField;
             CalcFormula = sum("G/L Entry Review Log"."Reviewed Amount" where("G/L Entry No." = field("Entry No.")));
@@ -45,6 +47,8 @@ tableextension 22211 "G/L Entry Review" extends "G/L Entry"
         }
         field(22218; "Amount to Review"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount to Review';
             BlankZero = true;
             DataClassification = CustomerContent;

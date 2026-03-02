@@ -19,6 +19,8 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
         }
         field(11780; "Net Change (VAT Date) CZL"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Net Change (VAT Date)';
             Editable = false;
             FieldClass = Flowfield;
@@ -28,11 +30,12 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                     "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                     "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
                                                     "VAT Reporting Date" = field("Date Filter")));
-            AutoFormatType = 1;
             BlankZero = true;
         }
         field(11781; "Debit Amount (VAT Date) CZL"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Debit Amount (VAT Date)';
             Editable = false;
             FieldClass = Flowfield;
@@ -42,11 +45,12 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                             "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                             "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
                                                             "VAT Reporting Date" = field("Date Filter")));
-            AutoFormatType = 1;
             BlankZero = true;
         }
         field(11782; "Credit Amount (VAT Date) CZL"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Amount (VAT Date)';
             Editable = false;
             FieldClass = Flowfield;
@@ -56,7 +60,6 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                             "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                             "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
                                                             "VAT Reporting Date" = field("Date Filter")));
-            AutoFormatType = 1;
             BlankZero = true;
         }
         field(11783; "Net Change ACY (VAT Date) CZL"; Decimal)

@@ -54,6 +54,7 @@ tableextension 18631 "Depreciation Book Ext" extends "Depreciation Book"
         }
         field(18635; "Depr. Reduction %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Depr. Reduction %';
             DataClassification = CustomerContent;
             MinValue = 0;

@@ -50,6 +50,7 @@ table 31249 "Tax Depreciation Group CZF"
         }
         field(22; "No. of Depreciation Months"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'No. of Depreciation Months';
             BlankZero = true;
             DataClassification = CustomerContent;
@@ -61,12 +62,14 @@ table 31249 "Tax Depreciation Group CZF"
         }
         field(23; "Min. Months After Appreciation"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Min. Months After Appreciation';
             BlankZero = true;
             DataClassification = CustomerContent;
         }
         field(31; "Straight First Year"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Straight First Year';
             DecimalPlaces = 2 : 5;
             BlankZero = true;
@@ -74,6 +77,7 @@ table 31249 "Tax Depreciation Group CZF"
         }
         field(32; "Straight Next Years"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Straight Next Years';
             DecimalPlaces = 2 : 5;
             BlankZero = true;
@@ -81,6 +85,7 @@ table 31249 "Tax Depreciation Group CZF"
         }
         field(33; "Straight Appreciation"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Straight Appreciation';
             DecimalPlaces = 2 : 5;
             BlankZero = true;
@@ -88,6 +93,7 @@ table 31249 "Tax Depreciation Group CZF"
         }
         field(41; "Declining First Year"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Declining First Year';
             DecimalPlaces = 2 : 5;
             BlankZero = true;
@@ -95,6 +101,7 @@ table 31249 "Tax Depreciation Group CZF"
         }
         field(42; "Declining Next Years"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Declining Next Years';
             DecimalPlaces = 2 : 5;
             BlankZero = true;
@@ -102,6 +109,7 @@ table 31249 "Tax Depreciation Group CZF"
         }
         field(43; "Declining Appreciation"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Declining Appreciation';
             DecimalPlaces = 2 : 5;
             BlankZero = true;
@@ -109,6 +117,7 @@ table 31249 "Tax Depreciation Group CZF"
         }
         field(44; "Declining Depr. Increase %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Declining Depr. Increase %';
             DecimalPlaces = 2 : 5;
             BlankZero = true;

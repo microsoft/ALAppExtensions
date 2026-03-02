@@ -48,10 +48,12 @@ table 47082 "SL PJEQRate Buffer"
         field(9; ec_id06; Decimal)
         {
             Caption = 'ec_id06';
+            AutoFormatType = 0;
         }
         field(10; ec_id07; Decimal)
         {
             Caption = 'ec_id07';
+            AutoFormatType = 0;
         }
         field(11; ec_id08; DateTime)
         {
@@ -88,10 +90,12 @@ table 47082 "SL PJEQRate Buffer"
         field(19; ec_id16; Decimal)
         {
             Caption = 'ec_id16';
+            AutoFormatType = 0;
         }
         field(20; ec_id17; Decimal)
         {
             Caption = 'ec_id17';
+            AutoFormatType = 0;
         }
         field(21; ec_id18; DateTime)
         {
@@ -136,14 +140,17 @@ table 47082 "SL PJEQRate Buffer"
         field(31; rate1; Decimal)
         {
             Caption = 'rate1';
+            AutoFormatType = 0;
         }
         field(32; rate2; Decimal)
         {
             Caption = 'rate2';
+            AutoFormatType = 0;
         }
         field(33; rate3; Decimal)
         {
             Caption = 'rate3';
+            AutoFormatType = 0;
         }
         field(34; unit_of_measure; Text[10])
         {

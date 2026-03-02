@@ -53,7 +53,6 @@ codeunit 4582 "SOA Retrieve Emails"
         Processed: Integer;
         ProcessLimit: Integer;
         TelemetryDimensions: Dictionary of [Text, Text];
-        StartDateTime: DateTime;
     begin
         if not SOASetupCU.CheckSOASetupStillValid(SOASetup) then
             exit;
@@ -103,14 +102,9 @@ codeunit 4582 "SOA Retrieve Emails"
         if not SOAEmail.FindSet() then
             exit;
 
-        StartDateTime := CurrentDateTime();
         repeat
-            AddEmailToAgentTask(SOASetup, SOAEmail);
-            // Prevent locks from being held for too long
-            if CurrentDateTime() - StartDateTime > 25000 then begin
-                Commit();
-                StartDateTime := CurrentDateTime();
-            end;
+            Commit();
+            OnAddEmailToAgentTask(SOASetup, SOAEmail);
 
             Processed += 1;
             if Processed >= ProcessLimit then begin
@@ -120,6 +114,7 @@ codeunit 4582 "SOA Retrieve Emails"
                 break;
             end;
         until SOAEmail.Next() = 0;
+        Commit();
     end;
 
     local procedure UpdateSOAEarliestSyncAt(var SOASetup: Record "SOA Setup"; EmailsProcessed: Integer)
@@ -183,7 +178,6 @@ codeunit 4582 "SOA Retrieve Emails"
 
     procedure AddEmailToNewAgentTask(var SOASetup: Record "SOA Setup"; var EmailInbox: Record "Email Inbox"; var SOAEmail: Record "SOA Email")
     var
-        AgentTaskRecord: Record "Agent Task";
         AgentTaskMessage: Record "Agent Task Message";
         AgentTaskBuilder: Codeunit "Agent Task Builder";
         AgentMessageBuilder: Codeunit "Agent Task Message Builder";
@@ -195,7 +189,7 @@ codeunit 4582 "SOA Retrieve Emails"
     begin
         EmailMessage.Get(EmailInbox."Message Id");
         MessageText := StrSubstNo(MessageTemplateLbl, EmailMessage.GetSubject(), EmailMessage.GetBody());
-        AgentTaskTitle := CopyStr(StrSubstNo(AgentTaskTitleLbl, EmailInbox."Sender Name"), 1, MaxStrLen(AgentTaskRecord.Title));
+        AgentTaskTitle := GetAgentTaskTitle(EmailInbox."Sender Name");
 
         AgentMessageBuilder.Initialize(EmailInbox."Sender Address", MessageText)
             .SetMessageExternalID(EmailInbox."External Message Id")
@@ -329,9 +323,27 @@ codeunit 4582 "SOA Retrieve Emails"
         FeatureTelemetry.LogUsage('0000NGP', SOASetupCU.GetFeatureName(), TelemetryEmailAddedToExistingTaskLbl, TelemetryDimensions);
     end;
 
+    internal procedure GetAgentTaskTitle(SenderName: Text[250]): Text[150]
+    var
+        BlankAgentTaskRecord: Record "Agent Task";
+    begin
+        exit(CopyStr(StrSubstNo(AgentTaskTitleLbl, SenderName), 1, MaxStrLen(BlankAgentTaskRecord.Title)));
+    end;
+
+    [InternalEvent(false, true)]
+    local procedure OnAddEmailToAgentTask(SOASetup: Record "SOA Setup"; var SOAEmail: Record "SOA Email")
+    begin
+    end;
+
     [InternalEvent(false, true)]
     local procedure OnAfterProcessEmail(EmailInboxId: BigInteger)
     begin
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"SOA Retrieve Emails", 'OnAddEmailToAgentTask', '', false, false)]
+    local procedure OnAddEmailToAgentTaskSubscriber(SOASetup: Record "SOA Setup"; var SOAEmail: Record "SOA Email")
+    begin
+        AddEmailToAgentTask(SOASetup, SOAEmail);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"SOA Retrieve Emails", 'OnAfterProcessEmail', '', false, false)]

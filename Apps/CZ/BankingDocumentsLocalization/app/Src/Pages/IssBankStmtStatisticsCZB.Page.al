@@ -31,12 +31,16 @@ page 31291 "Iss. Bank Stmt. Statistics CZB"
                     }
                     field(Amount; -Rec.Amount)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = Rec."Currency Code";
                         Caption = 'Amount';
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies the total amount for banking document lines.';
                     }
                     field(EndingBalance; BankAccount."Balance at Date" + Rec.Amount)
                     {
+                        AutoFormatType = 1;
+                        AutoFormatExpression = Rec."Currency Code";
                         Caption = 'Ending Balance';
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies the ending balance of banking document.';

@@ -20,6 +20,7 @@ table 4081 "GPIVLotAttributeHist"
         }
         field(3; LNSEQNBR; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Line SEQ Number';
             DataClassification = CustomerContent;
         }

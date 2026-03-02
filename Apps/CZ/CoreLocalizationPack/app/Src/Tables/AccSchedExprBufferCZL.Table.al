@@ -23,6 +23,8 @@ table 31098 "Acc. Sched. Expr. Buffer CZL"
         }
         field(3; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             DataClassification = SystemMetadata;
         }

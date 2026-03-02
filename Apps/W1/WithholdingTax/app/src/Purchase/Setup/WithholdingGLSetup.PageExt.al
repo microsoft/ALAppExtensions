@@ -17,10 +17,11 @@ pageextension 6788 "Withholding GL Setup" extends "General Ledger Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if your company must use withholding tax.';
             }
-            field("Min. Wthldg. Tax Calc Inv. Amt"; Rec."Min. Wthldg. Tax Calc Inv. Amt")
+            field("Round Amount for WHT Calc"; Rec."Round Amount Wthldg. Tax Calc")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies Min. Withholding Tax Calc Inv. Amt';
+                ToolTip = 'Specifies if payments applied to withholding tax entries will be rounded. The original withholding tax entries will not be modified.';
+                Caption = 'Round Payment Amount for Withholding Tax';
             }
         }
     }

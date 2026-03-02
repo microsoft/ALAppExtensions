@@ -1,0 +1,15 @@
+{
+	"liabilities": [
+		{
+			"taxPeriod":
+				{
+					"from": "2020-01-01",
+					"to": "2020-03-31"
+				},
+			"type": "VAT Return Debit Charge",
+			"originalAmount": 1234.56,
+			"outstandingAmount": 2345.67,
+			"due": "2020-05-07"
+		}
+	]
+}

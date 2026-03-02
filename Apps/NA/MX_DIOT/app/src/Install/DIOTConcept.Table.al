@@ -68,6 +68,7 @@ table 27030 "DIOT Concept"
 
         field(6; "Non-Deductible Pct"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Non-Deductible percent';
             MinValue = 0;
 

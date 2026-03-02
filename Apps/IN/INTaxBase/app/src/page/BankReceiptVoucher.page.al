@@ -713,6 +713,8 @@ page 18553 "Bank Receipt Voucher"
 
                         field(DisplayTotalDebit; GetTotalDebitAmt())
                         {
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             ApplicationArea = Basic, Suite;
                             Caption = 'Total Debit';
                             Editable = false;
@@ -726,6 +728,8 @@ page 18553 "Bank Receipt Voucher"
 
                         field(DisplayTotalCredit; GetTotalCreditAmt())
                         {
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             ApplicationArea = Basic, Suite;
                             Caption = 'Total Credit';
                             Editable = false;
@@ -740,6 +744,7 @@ page 18553 "Bank Receipt Voucher"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Balance';
                             Editable = false;
                             ToolTip = 'Specifies the balance that has accumulated in the Bank Receipt Voucher on the line where the cursor is.';
@@ -754,6 +759,7 @@ page 18553 "Bank Receipt Voucher"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Balance';
                             Editable = false;
                             ToolTip = 'Specifies the total balance in the Bank Receipt Voucher.';

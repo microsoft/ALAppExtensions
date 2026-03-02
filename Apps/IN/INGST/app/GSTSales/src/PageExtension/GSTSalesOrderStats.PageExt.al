@@ -15,6 +15,8 @@ pageextension 18163 "GST Sales Order Stats." extends "Sales Order Statistics"
         {
             field("GST Amount"; GSTAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the amount of GST that is included in the total amount.';
@@ -25,6 +27,8 @@ pageextension 18163 "GST Sales Order Stats." extends "Sales Order Statistics"
         {
             field("Inv. GST Amount"; PartialInvGSTAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'GST Amount';
                 ToolTip = 'Specifies the amount of GST that is partial amount of total.';
                 ApplicationArea = Basic, Suite;
@@ -35,6 +39,8 @@ pageextension 18163 "GST Sales Order Stats." extends "Sales Order Statistics"
         {
             field("Inv. GST Amt"; PartialShptGSTAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'GST Amount';
                 ToolTip = 'Specifies the amount of GST that is partial amount of total.';
                 ApplicationArea = Basic, Suite;

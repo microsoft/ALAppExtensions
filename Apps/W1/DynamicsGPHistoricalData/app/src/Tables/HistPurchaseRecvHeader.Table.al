@@ -51,26 +51,38 @@ table 40908 "Hist. Purchase Recv. Header"
         }
         field(11; "Subtotal"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Subtotal';
         }
         field(12; "Trade Discount Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Trade Discount Amount';
         }
         field(13; "Freight Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Freight Amount';
         }
         field(14; "Misc. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Misc. Amount';
         }
         field(15; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Tax Amount';
         }
         field(16; "1099 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = '1099 Amount';
         }
         field(17; "Payment Terms ID"; Text[50])
@@ -79,14 +91,20 @@ table 40908 "Hist. Purchase Recv. Header"
         }
         field(18; "Discount Percent Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Discount Percent Amount';
         }
         field(19; "Discount Dollar Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Discount Dollar Amount';
         }
         field(20; "Discount Available Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Discount Available Amount';
         }
         field(21; "Discount Date"; Date)
@@ -127,6 +145,8 @@ table 40908 "Hist. Purchase Recv. Header"
         }
         field(30; "Prepayment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Prepayment Amount';
         }
     }

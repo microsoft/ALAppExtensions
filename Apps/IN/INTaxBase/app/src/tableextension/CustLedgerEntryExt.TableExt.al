@@ -14,6 +14,8 @@ tableextension 18553 "Cust. Ledger Entry Ext." extends "Cust. Ledger Entry"
         }
         field(18544; "Total TCS Including SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             DataClassification = CustomerContent;
         }
     }

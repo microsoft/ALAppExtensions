@@ -61,14 +61,17 @@ table 47054 "SL AccountTransactions"
         field(12; Balance; Decimal)
         {
             Caption = 'Balance';
+            AutoFormatType = 0;
         }
         field(13; DebitAmount; Decimal)
         {
             Caption = 'Debit Amount';
+            AutoFormatType = 0;
         }
         field(14; CreditAmount; Decimal)
         {
             Caption = 'Credit Amount';
+            AutoFormatType = 0;
         }
         field(15; Sub; Text[24])
         {

@@ -100,6 +100,8 @@ table 11732 "Cash Document Header CZP"
         }
         field(7; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount';
             CalcFormula = Sum("Cash Document Line CZP".Amount where("Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.")));
             Editable = false;
@@ -107,6 +109,8 @@ table 11732 "Cash Document Header CZP"
         }
         field(8; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
             CalcFormula = Sum("Cash Document Line CZP"."Amount (LCY)" where("Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.")));
             Editable = false;
@@ -203,6 +207,7 @@ table 11732 "Cash Document Header CZP"
         }
         field(25; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
 
@@ -261,6 +266,8 @@ table 11732 "Cash Document Header CZP"
         }
         field(50; "Released Amount"; Decimal)
         {
+            AutoFormatExpression = "Currency Code";
+            AutoFormatType = 1;
             Caption = 'Released Amount';
             Editable = false;
             DataClassification = CustomerContent;
@@ -285,6 +292,8 @@ table 11732 "Cash Document Header CZP"
         }
         field(55; "VAT Base Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = Sum("Cash Document Line CZP"."VAT Base Amount (LCY)" where("Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.")));
             Caption = 'VAT Base Amount (LCY)';
             Editable = false;
@@ -292,6 +301,8 @@ table 11732 "Cash Document Header CZP"
         }
         field(56; "Amount Including VAT (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = Sum("Cash Document Line CZP"."Amount Including VAT (LCY)" where("Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.")));
             Caption = 'Amount Including VAT (LCY)';
             Editable = false;
@@ -1166,9 +1177,7 @@ table 11732 "Cash Document Header CZP"
 
     procedure SignAmount(): Integer
     begin
-        if "Document Type" = "Document Type"::Receipt then
-            exit(-1);
-        exit(1);
+        exit("Document Type" = "Document Type"::Receipt ? -1 : 1);
     end;
 
     procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)

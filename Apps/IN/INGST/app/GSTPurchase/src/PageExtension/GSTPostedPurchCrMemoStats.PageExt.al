@@ -14,6 +14,8 @@ pageextension 18104 "GST Posted Purch Cr Memo Stats" extends "Purch. Credit Memo
         {
             field("GST Amount"; GSTAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 Caption = 'GST Amount';

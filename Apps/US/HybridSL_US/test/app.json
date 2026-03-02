@@ -2,7 +2,7 @@
   "id": "5f85a491-a6f4-4303-88ed-95a577849f91",
   "name": "Dynamics SL Migration - US Tests",
   "publisher": "Microsoft",
-  "version": "28.0.0.0",
+  "version": "29.0.0.0",
   "brief": "Tests for migrating Microsoft Dynamics SL Vendor 1099 Data to Dynamics 365 Business Central",
   "description": "Tests for the Dynamics SL Migration - US extension.",
   "resourceFolders": [
@@ -15,31 +15,31 @@
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2285106",
   "logo": "ExtensionLogo.png",
   "platform": "28.0.0.0",
-  "application": "28.0.0.0",
+  "application": "29.0.0.0",
   "dependencies": [
     {
       "id": "237981b4-9e3c-437c-9b92-988aae978e8f",
       "publisher": "Microsoft",
       "name": "Dynamics SL Migration",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "2c75580e-ca19-49be-899b-d0b59fc3f2f3",
       "publisher": "Microsoft",
       "name": "Dynamics SL Migration - US",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "b696b4c9-637c-49d1-a806-763ff8f0a20e",
       "name": "IRS Forms",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
       "publisher": "Microsoft",
       "name": "Library Assert",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     }
   ],
   "screenshots": [],

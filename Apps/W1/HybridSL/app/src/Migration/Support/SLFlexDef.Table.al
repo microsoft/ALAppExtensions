@@ -260,10 +260,12 @@ table 47043 "SL FlexDef"
         field(62; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(63; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(64; Validate00; Integer)
         {

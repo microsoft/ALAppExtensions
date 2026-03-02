@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "E-Document formats for Germany.",
   "description": "This app provides support for various e-document formats used in German localization, for example XRechnung 3.0.2. It integrates with E-documents app to meet German business requirements.",
-  "version": "28.0.0.0",
+  "version": "29.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2305711",
@@ -16,7 +16,7 @@
       "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
       "name": "E-Document Core",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     }
   ],
   "screenshots": [],
@@ -36,7 +36,7 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "28.0.0.0",
+  "application": "29.0.0.0",
   "target": "OnPrem",
   "features": [
     "TranslationFile"

@@ -66,6 +66,7 @@ tableextension 18391 "GST Transfer Header Ext" extends "Transfer Header"
         }
         field(18401; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
         }

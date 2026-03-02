@@ -15,6 +15,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     var
+        MTDHttpClientMockService: Codeunit MTDHttpClientMockService;
         LibraryMakingTaxDigital: Codeunit "Library - Making Tax Digital";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit Assert;
@@ -25,7 +26,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
         RetrieveVATPaymentsTxt: Label 'Retrieve VAT Payments.', Locked = true;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_Negative_DisabledOutput()
     var
@@ -43,7 +44,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_Negative_Reason()
     var
@@ -65,7 +66,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_Negative_BlankedJsonResponse()
     var
@@ -81,7 +82,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_Negative_WrongJsonResponse()
     var
@@ -97,7 +98,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneNew_DisabledOutput()
     var
@@ -115,7 +116,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneNew_ExpiredToken()
     var
@@ -137,7 +138,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('GetMTDRecords_RPH,MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('GetMTDRecords_RPH,MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneNewPmtWithDate_UI()
     var
@@ -158,7 +159,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneNewPmtWithoutDate()
     var
@@ -174,7 +175,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneUpToDatePmtWithDate()
     var
@@ -191,7 +192,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneUpToDatePmtWithoutDate()
     var
@@ -208,7 +209,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneModifiedPmtWithDate()
     var
@@ -225,7 +226,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_OneModifiedPmtWithoutDate()
     var
@@ -242,7 +243,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoNewPmtWithDates()
     var
@@ -258,7 +259,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoNewPmtWithoutDates()
     var
@@ -274,7 +275,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoNewPmtWithOnlyFirstDate()
     var
@@ -290,7 +291,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoNewPmtWithOnlySecondDate()
     var
@@ -306,7 +307,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoUpToDatePmt()
     var
@@ -324,7 +325,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoModifiedPmt()
     var
@@ -342,7 +343,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoPmtInclOneNew()
     var
@@ -359,7 +360,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoPmtInclOneModified()
     var
@@ -377,7 +378,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MessageHandler,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure GetVATPaymentsAndShowResult_TwoPmtInclOneNewAndOneModified()
     var
@@ -397,6 +398,7 @@ codeunit 148082 "MTDTestPaymentsWebService"
     begin
         LibraryVariableStorage.Clear();
         ClearRecords();
+        MTDHttpClientMockService.ClearUnauthorizedVRNCalls();
 
         if IsInitialized then
             exit;
@@ -616,5 +618,12 @@ codeunit 148082 "MTDTestPaymentsWebService"
     [ModalPageHandler]
     procedure MTDWebClientFPHeaders_MPH(var MTDWebClientFPHeaders: TestPage "MTD Web Client FP Headers")
     begin
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        MTDHttpClientMockService.HandleRequest(Request, Response);
+        exit(false);
     end;
 }

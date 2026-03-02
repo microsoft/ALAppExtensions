@@ -24,6 +24,8 @@ tableextension 31301 "Item CZ" extends Item
         }
         field(31310; "Fair Market Value CZ"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Fair Market Value';
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the price which the system compares with the sales or purchase price from the item ledger entries with this value when generating Intrastat line suggestions. If the calculated tolerance is equal to or greater than the Minimum Tolerance from Fair Market Value (%) defined in the Intrastat Report Setup, the system will use this fair market value in the suggested lines instead of the actual sales or purchase price.';

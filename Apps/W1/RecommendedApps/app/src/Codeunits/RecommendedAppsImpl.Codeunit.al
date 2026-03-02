@@ -23,6 +23,7 @@ codeunit 4751 "Recommended Apps Impl."
             Comment = '%1 = App Id; %2 = Http StatusCode';
         AppExistURLLbl: Label 'https://appsource.microsoft.com/view/app/pubid.%1|aid.%2|pappid.%3/?version=2017-04-24', Locked = true;
         AppSourceURLNotFoundErrLbl: Label 'Cannot get the AppSource URL.';
+        UserAgentLbl: Label 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', Locked = true;
 
     [NonDebuggable]
     procedure InsertApp(Id: Guid; SortingId: Integer; Name: Text[250]; Publisher: Text[250]; ShortDescription: Text[250]; LongDescription: Text[2048];
@@ -211,6 +212,7 @@ codeunit 4751 "Recommended Apps Impl."
         LogoURL: Text;
         ErrMsg: Text;
     begin
+        HttpClient.DefaultRequestHeaders().Add('User-Agent', UserAgentLbl);
         HttpClient.Get(StrSubstNo(AppExistURLLbl, PubId, AId, PAppId), HttpResponseMessage);
         StatusCode := HttpResponseMessage.HttpStatusCode();
 

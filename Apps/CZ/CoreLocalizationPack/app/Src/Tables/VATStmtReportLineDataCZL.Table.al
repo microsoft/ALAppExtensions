@@ -72,6 +72,8 @@ table 11718 "VAT Stmt. Report Line Data CZL"
         }
         field(20; "Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             Editable = false;
         }

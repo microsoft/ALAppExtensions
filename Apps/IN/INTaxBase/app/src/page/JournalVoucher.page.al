@@ -721,6 +721,8 @@ page 18557 "Journal Voucher"
                         field(DisplayTotalDebit; GetTotalDebitAmt())
                         {
                             ApplicationArea = Basic, Suite;
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Debit';
                             Editable = false;
                             ToolTip = 'Specifies the total debit amount in the Journal Voucher.';
@@ -734,6 +736,8 @@ page 18557 "Journal Voucher"
                         field(DisplayTotalCredit; GetTotalCreditAmt())
                         {
                             ApplicationArea = Basic, Suite;
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Credit';
                             Editable = false;
                             ToolTip = 'Specifies the total credit amount in the Journal Voucher.';
@@ -747,6 +751,7 @@ page 18557 "Journal Voucher"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Balance';
                             Editable = false;
                             ToolTip = 'Specifies the balance that has accumulated in the Journal Voucher on the line where the cursor is.';
@@ -761,6 +766,7 @@ page 18557 "Journal Voucher"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Total Balance';
                             Editable = false;
                             ToolTip = 'Specifies the total balance in the Journal Voucher.';

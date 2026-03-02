@@ -55,6 +55,7 @@ tableextension 18395 "GST Trans. Receipt Header Ext" extends "Transfer Receipt H
         }
         field(18398; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
         }

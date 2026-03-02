@@ -36,6 +36,7 @@ table 47040 "SL Payment Terms"
         field(6; DSCPCTAM; Decimal)
         {
             Caption = 'Discount Percent Amount';
+            AutoFormatType = 0;
         }
         field(7; Descr; Text[30])
         {

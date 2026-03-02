@@ -25,10 +25,12 @@ table 1888 "C5 InvenPrice"
         }
         field(4; Price; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Price';
         }
         field(5; PriceUnit; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit';
         }
         field(6; Currency; Code[3])
@@ -41,6 +43,7 @@ table 1888 "C5 InvenPrice"
         }
         field(8; ContributionRatio; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Contrib. ratio';
         }
         field(9; Date_; Date)

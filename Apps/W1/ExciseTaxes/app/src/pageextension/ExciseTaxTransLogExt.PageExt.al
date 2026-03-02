@@ -40,10 +40,10 @@ pageextension 7416 "Excise Tax Trans Log Ext" extends "Sust. Excise Taxes Trans.
                 ApplicationArea = All;
                 ToolTip = 'Specifies the quantity for tax calculation.';
             }
-            field("Tax Rate %"; Rec."Tax Rate %")
+            field("Excise Duty"; Rec."Excise Duty")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the tax rate percentage.';
+                ToolTip = 'Specifies the excise duty.';
             }
             field("Tax Amount"; Rec."Tax Amount")
             {

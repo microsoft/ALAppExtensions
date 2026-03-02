@@ -118,6 +118,7 @@ page 18317 "GST Credit Adjustment"
                 }
                 field(AdjustmentPerc2; AdjustmentPerc)
                 {
+                    AutoFormatType = 0;
                     Caption = 'Adjustment %';
                     ApplicationArea = Basic, Suite;
                     MaxValue = 100;

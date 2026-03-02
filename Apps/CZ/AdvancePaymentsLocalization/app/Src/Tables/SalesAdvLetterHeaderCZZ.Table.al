@@ -713,6 +713,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         }
         field(71; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;
@@ -769,12 +770,15 @@ table 31004 "Sales Adv. Letter Header CZZ"
         {
             Caption = 'Amount Including VAT';
             Editable = false;
+            AutoFormatType = 1;
             AutoFormatExpression = "Currency Code";
             FieldClass = FlowField;
             CalcFormula = sum("Sales Adv. Letter Line CZZ"."Amount Including VAT" where("Document No." = field("No.")));
         }
         field(201; "Amount Including VAT (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount Including VAT (LCY)';
             Editable = false;
             FieldClass = FlowField;
@@ -782,6 +786,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
         }
         field(205; "To Pay"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'To Pay Amount';
             Editable = false;
             FieldClass = FlowField;
@@ -789,6 +795,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
         }
         field(206; "To Pay (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'To Pay Amount (LCY)';
             Editable = false;
             FieldClass = FlowField;
@@ -796,6 +804,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
         }
         field(210; "To Use"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'To Use Amount';
             Editable = false;
             FieldClass = FlowField;
@@ -803,6 +813,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
         }
         field(211; "To Use (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'To Use Amount (LCY)';
             Editable = false;
             FieldClass = FlowField;

@@ -34,30 +34,6 @@ tableextension 6796 "Withholding Purch Setup Ext" extends "Purchases & Payables 
             Caption = 'Print Withholding Docs. on Credit Memo';
             DataClassification = CustomerContent;
         }
-        field(6788; "WHT Posted Tax Invoice Nos."; Code[20])
-        {
-            Caption = 'Posted Tax Invoice Nos.';
-            TableRelation = "No. Series";
-            DataClassification = CustomerContent;
-        }
-        field(6789; "WHT Posted Tax Credit Memo Nos"; Code[20])
-        {
-            Caption = 'Posted Tax Credit Memo Nos';
-            TableRelation = "No. Series";
-            DataClassification = CustomerContent;
-        }
-        field(6790; "WHT Posted Non Tax Inv. Nos."; Code[20])
-        {
-            Caption = 'Posted Non Tax Invoice Nos.';
-            TableRelation = "No. Series";
-            DataClassification = CustomerContent;
-        }
-        field(6791; "WHT Pstd. Non Tax Cr. Memo Nos"; Code[20])
-        {
-            Caption = 'Posted Non Tax Credit Memo Nos';
-            TableRelation = "No. Series";
-            DataClassification = CustomerContent;
-        }
         field(6792; "WHT Enable Vend. GST Amt.(ACY)"; Boolean)
         {
             Caption = 'Enable Vendor GST Amount (ACY)';

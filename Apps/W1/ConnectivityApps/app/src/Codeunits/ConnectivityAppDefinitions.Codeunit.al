@@ -52,7 +52,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Micro Apps';
         AppDescription := 'Fully integrate your Bank with Business Central: automatically import and process your bank transactions.';
         AppProviderSupportURL := 'https://micro-apps.com/banking-nl/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.microapps%7CAID.banking-nl%7CPAPPID.62bbfa1b-2fec-4a2b-beaf-be2c79b47000';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.microapps%7CAID.banking-nl%7CPAPPID.62bbfa1b-2fec-4a2b-beaf-be2c79b47000';
         AppApprovedFor := 'NL';
         AppWorksOn := 'NL';
 
@@ -80,7 +80,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'SwissSalary Ltd.';
         AppDescription := 'This app allows you to create payments for a processed payroll without opening your e-banking. Grant the app access to one or several of your bank accounts of a supported financial institution and pay the payroll with just a few clicks.';
         AppProviderSupportURL := 'https://swisssalary.ch/en/products/swisssalary-apps/banking-apps';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.swisssalary%7CAID.swisssalary-banking%7CPAPPID.15b7c820-da20-4340-a051-099c5a96b437';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.swisssalary%7CAID.swisssalary-banking%7CPAPPID.15b7c820-da20-4340-a051-099c5a96b437';
         AppApprovedFor := 'CH';
         AppWorksOn := 'CH';
 
@@ -110,7 +110,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Continia Software';
         AppDescription := 'Connect your online bank to Business Central. With Continia Payment Management, you can pay your vendors, match customer payments, and reconcile statements directly from Business Central - fully integrated and secure without having to log into your online bank. Payment Management offers direct integration to most banks in the Netherlands, such as: ABN-Amro, ING, Rabobank, ASN Bank, Bunq, Knab, RegioBank, SNS, Triodos Bank. Start a free trial by downloading the app, or visit the Continia website for more information.';
         AppProviderSupportURL := 'https://www.continia.com/inspiration/solution-usage/connect-your-banks-to-business-central/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.continia365%7CAID.continia-payment-management-365-nl%7CPAPPID.ec587884-e9e3-48ac-97ca-3f2bdd40bb2e';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.continia365%7CAID.continia-payment-management-365-nl%7CPAPPID.ec587884-e9e3-48ac-97ca-3f2bdd40bb2e';
         AppApprovedFor := 'NL';
         AppWorksOn := 'NL';
 
@@ -138,7 +138,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Continia Software';
         AppDescription := 'Connect your online bank to Business Central. With Continia Payment Management, you can pay your vendors, match customer payments, and reconcile statements directly from Business Central - fully integrated and secure without having to log into your online bank. Payment Management offers direct integration to most banks in Denmark, such as: Danske Bank, Nordea, Sydbank, Handelsbanken, SparNord, Jyske Bank, SEB, Arbejdernes Landsbank, All Savings banks. Start a free trial by downloading the app, or visit the Continia website for more information.';
         AppProviderSupportURL := 'https://www.continia.com/inspiration/solution-usage/connect-your-banks-to-business-central/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.continia365%7CAID.c7577a9d-eec1-44cd-85f9-800529a2f90d%7CPAPPID.1dafd1ac-6218-4a6e-9bd7-3dec0f14a072';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.continia365%7CAID.c7577a9d-eec1-44cd-85f9-800529a2f90d%7CPAPPID.1dafd1ac-6218-4a6e-9bd7-3dec0f14a072';
         AppApprovedFor := 'DK';
         AppWorksOn := 'DK';
 
@@ -166,7 +166,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Continia Software';
         AppDescription := 'Connect your online bank to Business Central. With Continia Payment Management, you can pay your vendors, match customer payments, and reconcile statements directly from Business Central - fully integrated and secure without having to log into your online bank. Payment Management offers direct integration to most banks in Norway, such as: DNB, Handelsbanken, Nordea, SpareBank 1, Sparebanken Vest, Danske Bank. Start a free trial by downloading the app, or visit the Continia website for more information.';
         AppProviderSupportURL := 'https://www.continia.com/inspiration/solution-usage/connect-your-banks-to-business-central/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.continia365%7CAID.continia-payment-management-365-no%7CPAPPID.9f6c9dd2-64ac-488c-85bc-9bd05a0b42a3';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.continia365%7CAID.continia-payment-management-365-no%7CPAPPID.9f6c9dd2-64ac-488c-85bc-9bd05a0b42a3';
         AppApprovedFor := 'NO';
         AppWorksOn := 'NO';
 
@@ -194,7 +194,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'InnoQubit Software';
         AppDescription := 'Manage your banks directly from Business Central. In order to make financial management easier, this app allows you import bank transactions and execute payments in an easy and secure way, without leaving your Business Central environment.';
         AppProviderSupportURL := 'https://innovaonline.es/banking/bank';
-        AppSourceUrl := 'https://appsource.microsoft.com/es-es/product/dynamics-365-business-central/PUBID.innoqubitsoftwaresl1638027829374%7CAID.iq-banking%7CPAPPID.80d82476-426c-4812-be05-bfcbaf777868';
+        AppSourceUrl := 'https://marketplace.microsoft.com/es-es/product/dynamics-365-business-central/PUBID.innoqubitsoftwaresl1638027829374%7CAID.iq-banking%7CPAPPID.80d82476-426c-4812-be05-bfcbaf777868';
         AppApprovedFor := 'ES';
         AppWorksOn := 'ES';
 
@@ -222,7 +222,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Wise';
         AppDescription := 'Wise Banking provides the user with secure communication with all commercial banks of Iceland. It does this by using the banking standards of the Icelandic banks (IOBS). With Wise Banking the user can therefore safely manage bank accounts, automatic bank reconciliation, outgoing payments and currency and exchange rates directly from Business Central.';
         AppProviderSupportURL := 'https://wise.is/en/solutions/wisebusiness/wise-banking/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wiselausnirehf1587117975659%7CAID.wisebanking%7CPAPPID.6a580fed-3f05-40d3-bd61-652c7af0622f?tab=Overview';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.wiselausnirehf1587117975659%7CAID.wisebanking%7CPAPPID.6a580fed-3f05-40d3-bd61-652c7af0622f?tab=Overview';
         AppApprovedFor := 'IS';
         AppWorksOn := 'IS';
 
@@ -250,7 +250,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'IDYN B.V.';
         AppDescription := 'Automate your banking processes across 2,000+ connected banks in BC, without exchanging files. Streamline your banking transactions including automatic settlements for your incoming payments and initiate payments from within BC. Direct Banking integrates seamlessly with BC, allowing you to manage your financial tasks directly within the system without having to switch between different applications. Direct Banking integrates with most banks in Europe: HSBC, ING, BNP Paribas, Deutsche Bank, Rabobank, Nordea Bank. Contact us for a free trial via sales@idyn.nl or click on the link to our website.';
         AppProviderSupportURL := 'https://idyn.nl/solutions/direct-banking';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking%7CPAPPID.1b3790da-e8ba-4a11-92a9-c70e37b4f831';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking%7CPAPPID.1b3790da-e8ba-4a11-92a9-c70e37b4f831';
         AppApprovedFor := 'NL,BE,DE';
         AppWorksOn := 'W1,NL,BE,DE';
 
@@ -284,7 +284,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Softera Baltic';
         AppDescription := 'Bank statement import & reconciliation.';
         AppProviderSupportURL := 'https://bankfeed.com/banks/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.74689c09-2ed3-4e69-a2e8-c9310a271b9a';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.74689c09-2ed3-4e69-a2e8-c9310a271b9a';
         AppApprovedFor := 'LT,DK,HU,GB,ES,LV,DE,RO,IE,US,EE,CZ,PL';
         AppWorksOn := 'W1,DK,GB,ES,DE,US,CZ';
 
@@ -321,7 +321,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Sumango AS';
         AppDescription := 'Connect Business central to your bank. Sumango AutoBank streamlines, simplifies, and expands functionality to your payment handling, receivables, and reconciliation of your bank transactions. The solution is built with a direct integration to your bank - no more file handling in business central or in your online banking solution. AutoBank supports handling of all currencies interchangeably, including the SEPA standard.';
         AppProviderSupportURL := 'https://oseberg.atlassian.net/wiki/spaces/Autobank/pages/2342191252/Integrated+banks';
-        AppSourceUrl := 'https://appsource.microsoft.com/nb-NO/product/dynamics-365-business-central/PUBID.sumango_as%7CAID.sumango_autobank%7CPAPPID.52508c8d-fb2b-49da-9657-f49859fd43cc';
+        AppSourceUrl := 'https://marketplace.microsoft.com/nb-NO/product/dynamics-365-business-central/PUBID.sumango_as%7CAID.sumango_autobank%7CPAPPID.52508c8d-fb2b-49da-9657-f49859fd43cc';
         AppApprovedFor := 'NO,SE';
         AppWorksOn := 'NO,SE';
 
@@ -350,7 +350,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Yavrio';
         AppDescription := 'Yavrio Open Banking uses industry-standard Open Banking technology to connect directly with your Bank Accounts. Using bank-grade security, you can draw down live feeds directly into Business Central, with no files required, and push payments directly from BC onto the Bank.';
         AppProviderSupportURL := 'https://yavr.io/bank-coverage/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.yavrioltd1647526263468%7CAID.yavrio_open_banking%7CPAPPID.3d686c04-e1b1-435e-bea4-862c2c203ca7';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.yavrioltd1647526263468%7CAID.yavrio_open_banking%7CPAPPID.3d686c04-e1b1-435e-bea4-862c2c203ca7';
         AppApprovedFor := 'GB,US,DE';
         AppWorksOn := 'GB,US,DE';
 
@@ -379,7 +379,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'EOS Solutions';
         AppDescription := 'Connect to bank accounts through open banking standard, get bank statements and balances, reconcile bank transactions through a permanent connection between ERP and bank databases.';
         AppProviderSupportURL := 'https://docs.eos-solutions.it/en/docs/apps-func/ex016-open-banking.html';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.eos_solutions%7CAID.ex016_openbanking%7CPAPPID.f1d1f2b1-cdd0-42c7-834e-19fb56af6cec?tab=Overview';
+        AppSourceUrl := 'https://marketplace.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.eos_solutions%7CAID.ex016_openbanking%7CPAPPID.f1d1f2b1-cdd0-42c7-834e-19fb56af6cec?tab=Overview';
         AppApprovedFor := 'IT';
         AppWorksOn := 'IT';
 

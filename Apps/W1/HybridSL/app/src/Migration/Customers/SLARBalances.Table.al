@@ -16,50 +16,62 @@ table 47010 "SL AR_Balances"
         field(1; AccruedRevAgeBal00; Decimal)
         {
             Caption = 'AccruedRevAgeBal00';
+            AutoFormatType = 0;
         }
         field(2; AccruedRevAgeBal01; Decimal)
         {
             Caption = 'AccruedRevAgeBal01';
+            AutoFormatType = 0;
         }
         field(3; AccruedRevAgeBal02; Decimal)
         {
             Caption = 'AccruedRevAgeBal02';
+            AutoFormatType = 0;
         }
         field(4; AccruedRevAgeBal03; Decimal)
         {
             Caption = 'AccruedRevAgeBal03';
+            AutoFormatType = 0;
         }
         field(5; AccruedRevAgeBal04; Decimal)
         {
             Caption = 'AccruedRevAgeBal04';
+            AutoFormatType = 0;
         }
         field(6; AccruedRevBal; Decimal)
         {
             Caption = 'AccruedRevBal';
+            AutoFormatType = 0;
         }
         field(7; AgeBal00; Decimal)
         {
             Caption = 'AgeBal00';
+            AutoFormatType = 0;
         }
         field(8; AgeBal01; Decimal)
         {
             Caption = 'AgeBal01';
+            AutoFormatType = 0;
         }
         field(9; AgeBal02; Decimal)
         {
             Caption = 'AgeBal02';
+            AutoFormatType = 0;
         }
         field(10; AgeBal03; Decimal)
         {
             Caption = 'AgeBal03';
+            AutoFormatType = 0;
         }
         field(11; AgeBal04; Decimal)
         {
             Caption = 'AgeBal04';
+            AutoFormatType = 0;
         }
         field(12; AvgDayToPay; Decimal)
         {
             Caption = 'AvgDayToPay';
+            AutoFormatType = 0;
         }
         field(13; CpnyID; Text[10])
         {
@@ -68,6 +80,7 @@ table 47010 "SL AR_Balances"
         field(14; CrLmt; Decimal)
         {
             Caption = 'CrLmt';
+            AutoFormatType = 0;
         }
         field(15; Crtd_DateTime; DateTime)
         {
@@ -84,6 +97,7 @@ table 47010 "SL AR_Balances"
         field(18; CurrBal; Decimal)
         {
             Caption = 'CurrBal';
+            AutoFormatType = 0;
         }
         field(19; CuryID; Text[4])
         {
@@ -92,6 +106,7 @@ table 47010 "SL AR_Balances"
         field(20; CuryPromoBal; Decimal)
         {
             Caption = 'CuryPromoBal';
+            AutoFormatType = 0;
         }
         field(21; CustID; Text[15])
         {
@@ -100,6 +115,7 @@ table 47010 "SL AR_Balances"
         field(22; FutureBal; Decimal)
         {
             Caption = 'FutureBal';
+            AutoFormatType = 0;
         }
         field(23; LastActDate; DateTime)
         {
@@ -120,26 +136,32 @@ table 47010 "SL AR_Balances"
         field(27; LastStmtBal00; Decimal)
         {
             Caption = 'LastStmtBal00';
+            AutoFormatType = 0;
         }
         field(28; LastStmtBal01; Decimal)
         {
             Caption = 'LastStmtBal01';
+            AutoFormatType = 0;
         }
         field(29; LastStmtBal02; Decimal)
         {
             Caption = 'LastStmtBal02';
+            AutoFormatType = 0;
         }
         field(30; LastStmtBal03; Decimal)
         {
             Caption = 'LastStmtBal03';
+            AutoFormatType = 0;
         }
         field(31; LastStmtBal04; Decimal)
         {
             Caption = 'LastStmtBal04';
+            AutoFormatType = 0;
         }
         field(32; LastStmtBegBal; Decimal)
         {
             Caption = 'LastStmtBegBal';
+            AutoFormatType = 0;
         }
         field(33; LastStmtDate; DateTime)
         {
@@ -160,6 +182,7 @@ table 47010 "SL AR_Balances"
         field(37; NbrInvcPaid; Decimal)
         {
             Caption = 'NbrInvcPaid';
+            AutoFormatType = 0;
         }
         field(38; NoteID; Integer)
         {
@@ -168,6 +191,7 @@ table 47010 "SL AR_Balances"
         field(39; PaidInvcDays; Decimal)
         {
             Caption = 'PaidInvcDays';
+            AutoFormatType = 0;
         }
         field(40; PerNbr; Text[6])
         {
@@ -176,6 +200,7 @@ table 47010 "SL AR_Balances"
         field(41; PromoBal; Decimal)
         {
             Caption = 'PromoBal';
+            AutoFormatType = 0;
         }
         field(42; S4Future01; Text[30])
         {
@@ -188,18 +213,22 @@ table 47010 "SL AR_Balances"
         field(44; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(45; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(46; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(47; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(48; S4Future07; DateTime)
         {
@@ -228,14 +257,17 @@ table 47010 "SL AR_Balances"
         field(54; TotOpenOrd; Decimal)
         {
             Caption = 'TotOpenOrd';
+            AutoFormatType = 0;
         }
         field(55; TotPrePay; Decimal)
         {
             Caption = 'TotPrePay';
+            AutoFormatType = 0;
         }
         field(56; TotShipped; Decimal)
         {
             Caption = 'TotShipped';
+            AutoFormatType = 0;
         }
         field(57; User1; Text[30])
         {
@@ -248,10 +280,12 @@ table 47010 "SL AR_Balances"
         field(59; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(60; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(61; User5; Text[10])
         {

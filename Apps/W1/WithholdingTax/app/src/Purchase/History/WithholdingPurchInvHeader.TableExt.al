@@ -18,6 +18,8 @@ tableextension 6798 "Withholding Purch. Inv. Header" extends "Purch. Inv. Header
         }
         field(6790; "Rem. Wthldg. Tax Pre. Amt(LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Withholding Tax Entry"."Remaining Unrealized Amount" where("Document Type" = const(Invoice),
                                                                                           "Document No." = field("No.")));
             Caption = 'Rem. Withholding Tax Prepaid Amount (LCY)';
@@ -26,6 +28,8 @@ tableextension 6798 "Withholding Purch. Inv. Header" extends "Purch. Inv. Header
         }
         field(6791; "Paid Wthldg. Tax Pre. Amt(LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Withholding Tax Entry".Amount where("Document Type" = const(Payment),
                                                                    "Document No." = field("No.")));
             Caption = 'Paid Withholding Tax Prepaid Amount (LCY)';
@@ -34,6 +38,8 @@ tableextension 6798 "Withholding Purch. Inv. Header" extends "Purch. Inv. Header
         }
         field(6792; "Tot. Wthldg. Tax Pre. Amt(LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Withholding Tax Entry"."Unrealized Amount" where("Document Type" = const(Invoice),
                                                                                 "Document No." = field("No.")));
             Caption = 'Total Withholding Tax Prepaid Amount (LCY)';

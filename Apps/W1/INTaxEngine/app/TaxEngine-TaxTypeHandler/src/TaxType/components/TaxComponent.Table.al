@@ -57,6 +57,7 @@ table 20246 "Tax Component"
         }
         field(20; "Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Rounding Precision';
             DecimalPlaces = 0 : 5;

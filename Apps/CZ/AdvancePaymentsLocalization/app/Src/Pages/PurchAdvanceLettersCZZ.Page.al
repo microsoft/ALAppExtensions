@@ -168,6 +168,8 @@ page 31180 "Purch. Advance Letters CZZ"
                 {
                     Caption = 'Suggested Amount to Apply (LCY)';
                     ApplicationArea = Basic, Suite;
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Editable = false;
                     ToolTip = 'Specifies the total Amount (LCY) suggested to apply.';
                     Visible = false;

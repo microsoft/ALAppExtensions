@@ -429,7 +429,7 @@ codeunit 148079 "Banking Documents CZB"
         ReqPageParams[2] := 1 + 1;       // Type Currency (Payment Order)
         ReqPageParams[3] := 1 + 0;       // Vendor Payables (Only Payable Balance)
         ReqPageParams[4] := 1 + 3;       // Customer Payables (No Suggest)
-        ReqPageParams[5] := 1 + 1;       // Employee Payables (No Suggest)
+        ReqPageParams[5] := 1 + 2;       // Employee Payables (No Suggest)
 
         SuggestPayments(PaymentOrderHeaderCZB, ReqPageParams);
     end;
@@ -468,7 +468,7 @@ codeunit 148079 "Banking Documents CZB"
         LibraryVariableStorage.Dequeue(FieldValueVariant);
         SuggestPaymentsCZB.CustomerTypeCZB.SetValue(SuggestPaymentsCZB.CustomerTypeCZB.GetOption(FieldValueVariant));
         LibraryVariableStorage.Dequeue(FieldValueVariant);
-        SuggestPaymentsCZB.EmployeeTypeCZB.SetValue(SuggestPaymentsCZB.EmployeeTypeCZB.GetOption(FieldValueVariant));
+        SuggestPaymentsCZB.EmplTypeCZB.SetValue(SuggestPaymentsCZB.EmplTypeCZB.GetOption(FieldValueVariant));
         SuggestPaymentsCZB.OK().Invoke();
     end;
 

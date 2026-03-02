@@ -13,6 +13,7 @@ tableextension 18468 "Subcon Prod.Order Component" extends "Prod. Order Componen
     {
         field(18451; "Qty. To Consume"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. To Consume';
             DataClassification = EndUserIdentifiableInformation;
         }

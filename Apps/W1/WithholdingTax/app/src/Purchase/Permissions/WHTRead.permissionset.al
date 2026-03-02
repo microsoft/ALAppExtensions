@@ -12,10 +12,6 @@ permissionset 6785 "WHT - Read"
     Assignable = true;
 
     Permissions =
-        tabledata "WHT Purch. Tax Cr. Memo Hdr." = R,
-        tabledata "WHT Purch. Tax Cr. Memo Line" = R,
-        tabledata "WHT Purch. Tax Inv. Header" = R,
-        tabledata "WHT Purch. Tax Inv. Line" = R,
         tabledata "Temp Withholding Tax Entry" = R,
         tabledata "Wthldg. Tax Bus. Post. Group" = R,
         tabledata "Withholding Tax Cert. Buffer" = R,

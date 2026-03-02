@@ -67,21 +67,25 @@ table 4072 "GPSOPPaymentWorkHist"
         }
         field(12; AMNTPAID; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount Paid';
             DataClassification = CustomerContent;
         }
         field(13; OAMTPAID; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Amount Paid';
             DataClassification = CustomerContent;
         }
         field(14; AMNTREMA; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount Remaining';
             DataClassification = CustomerContent;
         }
         field(15; OAMNTREM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Amount Remaining';
             DataClassification = CustomerContent;
         }

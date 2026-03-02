@@ -9,6 +9,7 @@ table 40109 "GP CM20600"
     {
         field(1; Xfr_Record_Number; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(2; CMXFRNUM; Text[21])
@@ -17,10 +18,12 @@ table 40109 "GP CM20600"
         }
         field(3; CMFRMRECNUM; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(4; CMTORECNUM; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(5; CMFRMSTATUS; Integer)
@@ -45,6 +48,7 @@ table 40109 "GP CM20600"
         }
         field(10; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(11; DEX_ROW_ID; Integer)

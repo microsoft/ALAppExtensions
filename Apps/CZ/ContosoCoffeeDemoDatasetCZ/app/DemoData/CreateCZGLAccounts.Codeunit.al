@@ -6,6 +6,7 @@
 namespace Microsoft.DemoData.Localization;
 
 using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.FixedAsset;
 using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoData.Jobs;
@@ -13,6 +14,8 @@ using Microsoft.DemoData.Manufacturing;
 using Microsoft.DemoData.Service;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.FixedAssets.Journal;
 
 codeunit 31212 "Create CZ GL Accounts"
 {
@@ -129,5 +132,20 @@ codeunit 31212 "Create CZ GL Accounts"
     local procedure SkipAccountCategoryValidation(var GLAccount: Record "G/L Account"; var Category: Enum "G/L Account Category"; var SubCategory: Text[80])
     begin
         Category := Enum::"G/L Account Category"::" ";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", OnBeforeInsertEvent, '', false, false)]
+    local procedure OnBeforeInsertGenJournalLineCZ(var Rec: Record "Gen. Journal Line")
+    var
+        CreateFAJnlTemplate: Codeunit "Create FA Jnl. Template";
+        CreateGLAccountCZ: Codeunit "Create G/L Account CZ";
+    begin
+        if (Rec."Journal Template Name" = CreateFAJnlTemplate.Assets())
+            and (Rec."Journal Batch Name" = CreateFAJnlTemplate.Default())
+            and (Rec."Account Type" = Enum::"Gen. Journal Account Type"::"Fixed Asset")
+            and (Rec."Bal. Account Type" = Enum::"Gen. Journal Account Type"::"G/L Account")
+            and (Rec."FA Posting Type" = Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost")
+        then
+            Rec.Validate("Bal. Account No.", CreateGLAccountCZ.Cashtransfer());
     end;
 }

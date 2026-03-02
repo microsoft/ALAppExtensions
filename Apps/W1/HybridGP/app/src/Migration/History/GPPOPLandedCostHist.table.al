@@ -34,6 +34,7 @@ table 4056 "GPPOPLandedCostHist"
         }
         field(6; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Note Index';
             DataClassification = CustomerContent;
         }
@@ -55,6 +56,7 @@ table 4056 "GPPOPLandedCostHist"
         }
         field(10; Vendor_Note_Index; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Vendor Note Index';
             DataClassification = CustomerContent;
         }
@@ -65,6 +67,7 @@ table 4056 "GPPOPLandedCostHist"
         }
         field(12; Currency_Note_Index; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Note Index';
             DataClassification = CustomerContent;
         }
@@ -85,6 +88,7 @@ table 4056 "GPPOPLandedCostHist"
         }
         field(16; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -106,6 +110,7 @@ table 4056 "GPPOPLandedCostHist"
         }
         field(20; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Denomination Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -155,6 +160,7 @@ table 4056 "GPPOPLandedCostHist"
         }
         field(29; Orig_Landed_Cost_Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Landed Cost Amount';
             DataClassification = CustomerContent;
         }
@@ -165,11 +171,13 @@ table 4056 "GPPOPLandedCostHist"
         }
         field(31; Total_Landed_Cost_Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Landed Cost Amount';
             DataClassification = CustomerContent;
         }
         field(32; Orig_TotalLandedCostAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Total Landed Cost Amount';
             DataClassification = CustomerContent;
         }
@@ -186,6 +194,7 @@ table 4056 "GPPOPLandedCostHist"
         }
         field(35; Orig_UnapportionedAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Unapportioned Amount';
             DataClassification = CustomerContent;
         }

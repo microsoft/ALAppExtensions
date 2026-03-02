@@ -78,21 +78,27 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(12; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Base Amount';
             DataClassification = SystemMetadata;
         }
         field(13; "GST %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST %';
             DataClassification = SystemMetadata;
         }
         field(14; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Amount';
             DataClassification = SystemMetadata;
         }
         field(15; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DataClassification = SystemMetadata;
         }
@@ -110,11 +116,15 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(18; "GST Input/Output Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Input/Output Credit Amount';
             DataClassification = SystemMetadata;
         }
         field(19; "Amount Loaded on Item"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount Loaded on Item';
             DataClassification = SystemMetadata;
         }
@@ -270,6 +280,8 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(48; "Charge To Cust/Vend"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Charge To Cust/Vend';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -281,12 +293,14 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(50; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = SystemMetadata;
             DecimalPlaces = 1 : 6;
         }
         field(51; "GST Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Rounding Precision';
             DataClassification = SystemMetadata;
         }
@@ -297,16 +311,22 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(53; "GST Base Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount (LCY)';
             DataClassification = SystemMetadata;
         }
         field(54; "GST Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Amount (LCY)';
             DataClassification = SystemMetadata;
         }
         field(55; "TDS/TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'TDS/TCS Amount';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -330,26 +350,36 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(59; "Delivery Challan Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Delivery Challan Amount';
             DataClassification = SystemMetadata;
         }
         field(60; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Custom Duty Amount';
             DataClassification = SystemMetadata;
         }
         field(61; "GST Assessable Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Assessable Value';
             DataClassification = SystemMetadata;
         }
         field(62; "Custom Duty Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Custom Duty Amount (LCY)';
             DataClassification = SystemMetadata;
         }
         field(63; "GST Assessable Value (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value (LCY)';
             DataClassification = SystemMetadata;
         }
@@ -360,6 +390,7 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(67; "Cess Amount Per Unit Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cess Amount Per Unit Factor';
             DataClassification = SystemMetadata;
         }
@@ -371,11 +402,14 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(69; "Cess Factor Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cess Factor Quantity';
             DataClassification = SystemMetadata;
         }
         field(70; "Cess Amt Per Unit Factor (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Cess Amt Per Unit Factor (LCY)';
             DataClassification = SystemMetadata;
         }
@@ -402,6 +436,7 @@ table 18000 "Detailed GST Entry Buffer"
         }
         field(75; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = SystemMetadata;
         }

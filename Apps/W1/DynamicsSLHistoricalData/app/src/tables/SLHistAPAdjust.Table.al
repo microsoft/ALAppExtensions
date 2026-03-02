@@ -14,6 +14,7 @@ table 42800 "SL Hist. APAdjust"
     {
         field(1; AdjAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'AdjAmt';
         }
         field(2; AdjBatNbr; Text[10])
@@ -22,6 +23,7 @@ table 42800 "SL Hist. APAdjust"
         }
         field(3; AdjBkupWthld; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'AdjBkupWthld';
         }
         field(4; AdjdDocType; Text[2])
@@ -30,6 +32,7 @@ table 42800 "SL Hist. APAdjust"
         }
         field(5; AdjDiscAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'AdjDiscAmt';
         }
         field(6; AdjdRefNbr; Text[10])
@@ -74,10 +77,12 @@ table 42800 "SL Hist. APAdjust"
         }
         field(16; CuryAdjdAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjdAmt';
         }
         field(17; CuryAdjdBkupWthld; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjdBkupWthld';
         }
         field(18; CuryAdjdCuryId; Text[4])
@@ -86,6 +91,7 @@ table 42800 "SL Hist. APAdjust"
         }
         field(19; CuryAdjdDiscAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjdDiscAmt';
         }
         field(20; CuryAdjdMultDiv; Text[1])
@@ -94,22 +100,27 @@ table 42800 "SL Hist. APAdjust"
         }
         field(21; CuryAdjdRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjdRate';
         }
         field(22; CuryAdjgAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjgAmt';
         }
         field(23; CuryAdjgBkupWthld; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjgBkupWthld';
         }
         field(24; CuryAdjgDiscAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryAdjgDiscAmt';
         }
         field(25; CuryRGOLAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRGOLAmt';
         }
         field(26; DateAppl; DateTime)
@@ -146,18 +157,22 @@ table 42800 "SL Hist. APAdjust"
         }
         field(34; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(35; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(36; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(37; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(38; S4Future07; DateTime)
@@ -194,10 +209,12 @@ table 42800 "SL Hist. APAdjust"
         }
         field(46; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(47; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(48; User5; Text[10])

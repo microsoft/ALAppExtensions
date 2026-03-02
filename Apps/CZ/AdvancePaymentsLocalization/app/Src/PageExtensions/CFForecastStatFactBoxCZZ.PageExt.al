@@ -15,6 +15,8 @@ pageextension 31196 "CF Forecast Stat. FactBox CZZ" extends "CF Forecast Statist
         {
             field(SalesAdvancesCZZ; Rec.CalcSourceTypeAmount(Enum::"Cash Flow Source Type"::"Sales Advance Letters CZZ"))
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'Sales Advances';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies an amount of sales advances.';
@@ -26,6 +28,8 @@ pageextension 31196 "CF Forecast Stat. FactBox CZZ" extends "CF Forecast Statist
             }
             field(PurchaseAdvancesCZZ; Rec.CalcSourceTypeAmount(Enum::"Cash Flow Source Type"::"Purchase Advance Letters CZZ"))
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'Purchase Advances';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies an amount of purchase advances.';

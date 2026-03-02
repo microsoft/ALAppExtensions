@@ -51,10 +51,12 @@ table 1894 "C5 VendTrans"
         }
         field(10; AmountMST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount in LCY';
         }
         field(11; AmountCur; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount in currency';
         }
         field(12; Currency; Code[3])
@@ -67,6 +69,7 @@ table 1894 "C5 VendTrans"
         }
         field(14; VatAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT amount';
         }
         field(15; Approved; Option)
@@ -81,6 +84,7 @@ table 1894 "C5 VendTrans"
         }
         field(17; CashDiscAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cash discount';
         }
         field(18; CashDiscDate; Date)
@@ -98,18 +102,22 @@ table 1894 "C5 VendTrans"
         }
         field(21; ExchRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exch. rate';
         }
         field(22; RESERVED3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RESERVED3';
         }
         field(23; RESERVED4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RESERVED4';
         }
         field(24; PostedDiffAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Diff. posted';
         }
         field(25; InvoiceNumber; Text[20])
@@ -156,6 +164,7 @@ table 1894 "C5 VendTrans"
         }
         field(35; ExchRateTri; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tri rate';
         }
         field(36; Centre; Code[10])

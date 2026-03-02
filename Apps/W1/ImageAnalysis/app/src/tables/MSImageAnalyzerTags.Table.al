@@ -19,6 +19,7 @@ table 2028 "MS - Image Analyzer Tags"
 
         field(2; "Tag Confidence"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Confidence Score (%)';
         }
 

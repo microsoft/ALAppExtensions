@@ -48,6 +48,7 @@ tableextension 10035 "IRS 1099 Vendor Ledger Entry" extends "Vendor Ledger Entry
             begin
                 IRS1099FormDocument.CheckIfVendLedgEntryAllowed(Rec."Entry No.");
                 "IRS 1099 Subject For Reporting" := "IRS 1099 Form Box No." <> '';
+                IRS1099VendorFormBox.UpdatePurchDocFormBoxNoFromVendLedgEntry(Rec);
             end;
         }
         field(10034; "IRS 1099 Reporting Amount"; Decimal)
@@ -80,6 +81,7 @@ tableextension 10035 "IRS 1099 Vendor Ledger Entry" extends "Vendor Ledger Entry
 
     var
         IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
+        IRS1099VendorFormBox: Codeunit "IRS 1099 Vendor Form Box";
         IRSReportingAmountCannotBeMoreThanAmountErr: Label 'IRS Reporting Amount cannot be more than Amount';
         MustBePositiveErr: Label 'must be positive';
         MustBeNegativeErr: Label 'must be negative';

@@ -34,6 +34,8 @@ page 31220 "Cash Doc. Statistics CZP"
                 field(AmountExclVAT; AmountExclVAT)
                 {
                     ApplicationArea = Basic, Suite;
+                    AutoFormatExpression = Rec."Currency Code";
+                    AutoFormatType = 1;
                     Caption = 'Amount Excluding VAT';
                     DrillDown = false;
                     Editable = false;
@@ -51,6 +53,8 @@ page 31220 "Cash Doc. Statistics CZP"
                 field(AmountInclVAT; AmountInclVAT)
                 {
                     ApplicationArea = Basic, Suite;
+                    AutoFormatExpression = Rec."Currency Code";
+                    AutoFormatType = 1;
                     Caption = 'Amount Including VAT';
                     DrillDown = false;
                     Editable = false;
@@ -59,6 +63,8 @@ page 31220 "Cash Doc. Statistics CZP"
                 field(AmountExclVATLCY; AmountExclVATLCY)
                 {
                     ApplicationArea = Basic, Suite;
+                    AutoFormatExpression = '';
+                    AutoFormatType = 1;
                     Caption = 'Amount Excluding VAT (LCY)';
                     DrillDown = false;
                     Editable = false;
@@ -76,6 +82,8 @@ page 31220 "Cash Doc. Statistics CZP"
                 field(AmountInclVATLCY; AmountInclVATLCY)
                 {
                     ApplicationArea = Basic, Suite;
+                    AutoFormatExpression = '';
+                    AutoFormatType = 1;
                     Caption = 'Amount Including VAT (LCY)';
                     DrillDown = false;
                     Editable = false;

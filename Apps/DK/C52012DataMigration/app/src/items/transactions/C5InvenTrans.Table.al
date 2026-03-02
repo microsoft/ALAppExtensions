@@ -38,22 +38,27 @@ table 1890 "C5 InvenTrans"
         }
         field(7; Qty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty';
         }
         field(8; DutyAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Duty amount';
         }
         field(9; Discount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount';
         }
         field(10; AmountMST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount in LCY';
         }
         field(11; AmountCur; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount in currency';
         }
         field(12; Currency; Code[3])
@@ -100,6 +105,7 @@ table 1890 "C5 InvenTrans"
         }
         field(22; CostAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cost value in LCY';
         }
         field(23; SerialNumber; Code[20])
@@ -108,18 +114,22 @@ table 1890 "C5 InvenTrans"
         }
         field(24; SettledQty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Settled qty';
         }
         field(25; SettledAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Settled amount';
         }
         field(26; InvestTax; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Invest. duty';
         }
         field(27; PostedDiffAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Adjustment';
         }
         field(28; Open; Option)
@@ -159,6 +169,7 @@ table 1890 "C5 InvenTrans"
         }
         field(36; DiscAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Disc. amount';
         }
         field(37; LedgerAccount; Text[10])
@@ -171,6 +182,7 @@ table 1890 "C5 InvenTrans"
         }
         field(39; CommissionAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Commission amount';
         }
         field(40; CommissionSettled; Option)
@@ -184,6 +196,7 @@ table 1890 "C5 InvenTrans"
         }
         field(42; ProjCostPLPosted; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'P/L posted in project';
         }
         field(43; ProjCostPLAcc; Text[10])
@@ -200,6 +213,7 @@ table 1890 "C5 InvenTrans"
         }
         field(46; ProfitLossAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Loss/Profit';
         }
         field(47; DEL_DutyCode; Text[10])
@@ -208,14 +222,17 @@ table 1890 "C5 InvenTrans"
         }
         field(48; ExchRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exch. rate';
         }
         field(49; ExchRateTri; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tri rate';
         }
         field(50; DELETED; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Deleted';
         }
         field(51; Centre; Code[10])
@@ -228,14 +245,17 @@ table 1890 "C5 InvenTrans"
         }
         field(53; LineNumber; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Orig linenumber';
         }
         field(54; ReversedQty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Reversed quantity';
         }
         field(55; ReversedAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Reversed amount';
         }
         field(56; TmpFunction; Integer)

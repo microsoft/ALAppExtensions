@@ -26,22 +26,32 @@ table 11795 "Adj. Exchange Rate Buffer CZL"
         }
         field(3; AdjBase; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'AdjBase';
         }
         field(4; AdjBaseLCY; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'AdjBaseLCY';
         }
         field(5; AdjAmount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'AdjAmount';
         }
         field(6; TotalGainsAmount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TotalGainsAmount';
         }
         field(7; TotalLossesAmount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TotalLossesAmount';
         }
         field(8; "Dimension Entry No."; Integer)

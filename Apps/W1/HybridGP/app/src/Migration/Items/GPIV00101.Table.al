@@ -21,10 +21,12 @@ table 40116 "GP IV00101"
         }
         field(7; STNDCOST; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(8; CURRCOST; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(9; ITEMSHWT; Integer)

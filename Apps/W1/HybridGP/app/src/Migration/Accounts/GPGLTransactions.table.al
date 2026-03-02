@@ -30,16 +30,19 @@ table 4091 "GP GLTransactions"
         }
         field(6; DEBITAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Debit Amount';
             DataClassification = CustomerContent;
         }
         field(7; CRDTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Credit Amount';
             DataClassification = CustomerContent;
         }
         field(8; PERDBLNC; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Period Balance';
             DataClassification = CustomerContent;
         }

@@ -33,6 +33,7 @@ table 47021 "SL APDoc"
         field(3; ApplyAmt; Decimal)
         {
             Caption = 'Apply Amount';
+            AutoFormatType = 0;
         }
         field(4; ApplyDate; DateTime)
         {
@@ -53,6 +54,7 @@ table 47021 "SL APDoc"
         field(8; BWAmt; Decimal)
         {
             Caption = 'BW Amount';
+            AutoFormatType = 0;
         }
         field(9; CashAcct; Text[10])
         {
@@ -65,6 +67,7 @@ table 47021 "SL APDoc"
         field(11; ClearAmt; Decimal)
         {
             Caption = 'ClearAmt';
+            AutoFormatType = 0;
         }
         field(12; ClearDate; DateTime)
         {
@@ -97,18 +100,22 @@ table 47021 "SL APDoc"
         field(19; CuryBWAmt; Decimal)
         {
             Caption = 'CuryBWAmt';
+            AutoFormatType = 0;
         }
         field(20; CuryDiscBal; Decimal)
         {
             Caption = 'CuryDiscBal';
+            AutoFormatType = 0;
         }
         field(21; CuryDiscTkn; Decimal)
         {
             Caption = 'CuryDiscTkn';
+            AutoFormatType = 0;
         }
         field(22; CuryDocBal; Decimal)
         {
             Caption = 'CuryDocBal';
+            AutoFormatType = 0;
         }
         field(23; CuryEffDate; DateTime)
         {
@@ -125,14 +132,17 @@ table 47021 "SL APDoc"
         field(26; CuryOrigDocAmt; Decimal)
         {
             Caption = 'CuryOrigDocAmt';
+            AutoFormatType = 0;
         }
         field(27; CuryPmtAmt; Decimal)
         {
             Caption = 'CuryPmtAmt';
+            AutoFormatType = 0;
         }
         field(28; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
+            AutoFormatType = 0;
         }
         field(29; CuryRateType; Text[6])
         {
@@ -141,34 +151,42 @@ table 47021 "SL APDoc"
         field(30; CuryTaxTot00; Decimal)
         {
             Caption = 'CuryTaxTot00';
+            AutoFormatType = 0;
         }
         field(31; CuryTaxTot01; Decimal)
         {
             Caption = 'CuryTaxTot01';
+            AutoFormatType = 0;
         }
         field(32; CuryTaxTot02; Decimal)
         {
             Caption = 'CuryTaxTot02';
+            AutoFormatType = 0;
         }
         field(33; CuryTaxTot03; Decimal)
         {
             Caption = 'CuryTaxTot03';
+            AutoFormatType = 0;
         }
         field(34; CuryTxblTot00; Decimal)
         {
             Caption = 'CuryTxblTot00';
+            AutoFormatType = 0;
         }
         field(35; CuryTxblTot01; Decimal)
         {
             Caption = 'CuryTxblTot01';
+            AutoFormatType = 0;
         }
         field(36; CuryTxblTot02; Decimal)
         {
             Caption = 'CuryTxblTot02';
+            AutoFormatType = 0;
         }
         field(37; CuryTxblTot03; Decimal)
         {
             Caption = 'CuryTxblTot03';
+            AutoFormatType = 0;
         }
         field(38; Cycle; Integer)
         {
@@ -185,6 +203,7 @@ table 47021 "SL APDoc"
         field(41; DiscBal; Decimal)
         {
             Caption = 'DiscBal';
+            AutoFormatType = 0;
         }
         field(42; DiscDate; DateTime)
         {
@@ -193,6 +212,7 @@ table 47021 "SL APDoc"
         field(43; DiscTkn; Decimal)
         {
             Caption = 'DiscTkn';
+            AutoFormatType = 0;
         }
         field(44; Doc1099; Integer)
         {
@@ -201,6 +221,7 @@ table 47021 "SL APDoc"
         field(45; DocBal; Decimal)
         {
             Caption = 'DocBal';
+            AutoFormatType = 0;
         }
         field(46; DocClass; Text[1])
         {
@@ -237,6 +258,7 @@ table 47021 "SL APDoc"
         field(54; FreightAmt; Decimal)
         {
             Caption = 'FreightAmt';
+            AutoFormatType = 0;
         }
         field(55; InstallNbr; Integer)
         {
@@ -289,6 +311,7 @@ table 47021 "SL APDoc"
         field(67; OrigDocAmt; Decimal)
         {
             Caption = 'OrigDocAmt';
+            AutoFormatType = 0;
         }
         field(68; PayDate; DateTime)
         {
@@ -317,6 +340,7 @@ table 47021 "SL APDoc"
         field(74; PmtAmt; Decimal)
         {
             Caption = 'PmtAmt';
+            AutoFormatType = 0;
         }
         field(75; PmtID; Text[10])
         {
@@ -353,6 +377,7 @@ table 47021 "SL APDoc"
         field(83; RGOLAmt; Decimal)
         {
             Caption = 'RGOLAmt';
+            AutoFormatType = 0;
         }
         field(84; Rlsed; Integer)
         {
@@ -369,18 +394,22 @@ table 47021 "SL APDoc"
         field(87; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(88; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(89; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(90; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(91; S4Future07; DateTime)
         {
@@ -457,18 +486,22 @@ table 47021 "SL APDoc"
         field(109; TaxTot00; Decimal)
         {
             Caption = 'TaxTot00';
+            AutoFormatType = 0;
         }
         field(110; TaxTot01; Decimal)
         {
             Caption = 'TaxTot01';
+            AutoFormatType = 0;
         }
         field(111; TaxTot02; Decimal)
         {
             Caption = 'TaxTot02';
+            AutoFormatType = 0;
         }
         field(112; TaxTot03; Decimal)
         {
             Caption = 'TaxTot03';
+            AutoFormatType = 0;
         }
         field(113; Terms; Text[2])
         {
@@ -477,18 +510,22 @@ table 47021 "SL APDoc"
         field(114; TxblTot00; Decimal)
         {
             Caption = 'TxblTot00';
+            AutoFormatType = 0;
         }
         field(115; TxblTot01; Decimal)
         {
             Caption = 'TxblTot01';
+            AutoFormatType = 0;
         }
         field(116; TxblTot02; Decimal)
         {
             Caption = 'TxblTot02';
+            AutoFormatType = 0;
         }
         field(117; TxblTot03; Decimal)
         {
             Caption = 'TxblTot03';
+            AutoFormatType = 0;
         }
         field(118; User1; Text[30])
         {
@@ -501,10 +538,12 @@ table 47021 "SL APDoc"
         field(120; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(121; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(122; User5; Text[10])
         {

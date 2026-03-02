@@ -96,18 +96,22 @@ table 47006 "SL Account"
         field(21; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(22; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(23; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(24; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(25; S4Future07; DateTime)
         {
@@ -156,10 +160,12 @@ table 47006 "SL Account"
         field(36; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(37; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(38; User5; Text[10])
         {

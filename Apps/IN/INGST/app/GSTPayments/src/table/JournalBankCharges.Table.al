@@ -45,6 +45,7 @@ table 18247 "Journal Bank Charges"
         }
         field(5; "Amount"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Amount';
         }
@@ -55,6 +56,8 @@ table 18247 "Journal Bank Charges"
         }
         field(7; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
             DataClassification = CustomerContent;
             Editable = false;
@@ -95,6 +98,7 @@ table 18247 "Journal Bank Charges"
         }
         field(14; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
         }

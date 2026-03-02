@@ -84,6 +84,7 @@ table 31246 "FA Extended Posting Group CZF"
         field(41; "Allocated Book Value % (Gain)"; Decimal)
 #pragma warning restore AA0232
         {
+            AutoFormatType = 0;
             CalcFormula = sum("FA Allocation"."Allocation %" where(Code = field("FA Posting Group Code"),
                                                                     "Allocation Type" = const("Book Value (Gain)"),
                                                                     "Reason/Maintenance Code CZF" = field(Code)));
@@ -94,6 +95,7 @@ table 31246 "FA Extended Posting Group CZF"
         }
         field(42; "Allocated Book Value % (Loss)"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = sum("FA Allocation"."Allocation %" where(Code = field("FA Posting Group Code"),
                                                                     "Allocation Type" = const("Book Value (Loss)"),
                                                                     "Reason/Maintenance Code CZF" = field(Code)));
@@ -104,6 +106,7 @@ table 31246 "FA Extended Posting Group CZF"
         }
         field(50; "Allocated Maintenance %"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = sum("FA Allocation"."Allocation %" where(Code = field("FA Posting Group Code"),
                                                                     "Allocation Type" = const(Maintenance),
                                                                     "Reason/Maintenance Code CZF" = field(Code)));

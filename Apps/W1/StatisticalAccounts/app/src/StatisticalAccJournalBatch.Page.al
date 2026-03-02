@@ -36,6 +36,15 @@ page 2630 "Statistical Acc. Journal Batch"
                     Editable = false;
                     ToolTip = 'Specifies the account name that the entry on the journal line will be posted to.';
                 }
+                field("No. of Lines"; Rec."No. of Lines")
+                {
+                    Visible = false;
+                    ApplicationArea = All;
+                    trigger OnDrillDown()
+                    begin
+                        OpenWorksheet();
+                    end;
+                }
             }
         }
     }

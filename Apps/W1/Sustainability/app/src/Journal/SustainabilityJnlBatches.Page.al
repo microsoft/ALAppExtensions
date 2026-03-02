@@ -38,6 +38,18 @@ page 6216 "Sustainability Jnl. Batches"
                 {
                     ToolTip = 'Specifies the reason code for the journal batch.';
                 }
+                field("No. of Lines"; Rec."No. of Lines")
+                {
+                    Visible = false;
+                    trigger OnDrillDown()
+                    var
+                        SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
+                        SustainabilityJournalMgt: Codeunit "Sustainability Journal Mgt.";
+                    begin
+                        SustainabilityJnlTemplate.Get(Rec."Journal Template Name");
+                        SustainabilityJournalMgt.OpenJournalPageFromBatch(Rec, SustainabilityJnlTemplate);
+                    end;
+                }
             }
         }
     }

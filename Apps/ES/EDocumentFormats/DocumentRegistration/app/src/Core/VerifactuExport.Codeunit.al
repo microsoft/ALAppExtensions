@@ -1001,9 +1001,9 @@ codeunit 10778 "Verifactu Export"
     var
         VerifactuDocument: Record "Verifactu Document";
     begin
-        VerifactuDocument.SetLoadFields("Source Document No.", "Verifactu Posting Date", "Verifactu Hash");
-        VerifactuDocument.SetCurrentKey("Verifactu Hash");
-        VerifactuDocument.SetFilter("Verifactu Hash", '<>%1', '');
+        VerifactuDocument.SetLoadFields("Source Document No.", "Verifactu Posting Date", "Verifactu Hash", "Submission Id");
+        VerifactuDocument.SetCurrentKey("Submission Id");
+        VerifactuDocument.SetFilter("Submission Id", '<>%1', '');
         if not VerifactuDocument.FindLast() then
             exit;
 

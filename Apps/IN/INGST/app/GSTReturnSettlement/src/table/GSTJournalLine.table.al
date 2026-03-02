@@ -260,6 +260,7 @@ table 18325 "GST Journal Line"
         field(13; Amount; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Amount';
             DataClassification = CustomerContent;
 
@@ -272,6 +273,7 @@ table 18325 "GST Journal Line"
         field(14; "Debit Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             BlankZero = true;
             Caption = 'Debit Amount';
             DataClassification = CustomerContent;
@@ -287,7 +289,7 @@ table 18325 "GST Journal Line"
         field(15; "Credit Amount"; Decimal)
         {
             AutoFormatType = 1;
-            BlankZero = true;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Credit Amount';
             DataClassification = CustomerContent;
 
@@ -423,32 +425,42 @@ table 18325 "GST Journal Line"
         }
         field(33; "Original Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Original Quantity';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(34; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
         field(35; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
         field(36; "Total GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Total GST Amount';
             DataClassification = CustomerContent;
         }
         field(37; "Total ITC Amount Available"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Total ITC Amount Available';
             DataClassification = CustomerContent;
         }
         field(38; "Quantity to be Adjusted"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity to be Adjusted';
             DataClassification = CustomerContent;
 
@@ -480,16 +492,22 @@ table 18325 "GST Journal Line"
         }
         field(39; "Amount of Adjustment"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Amount of Adjustment';
             DataClassification = CustomerContent;
         }
         field(40; "Input Credit/Output Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Input Credit/Output Tax Amount';
             DataClassification = CustomerContent;
         }
         field(41; "Amount to be Loaded on Invento"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency.Code;
             Caption = 'Amount to be Loaded on Invento';
             DataClassification = CustomerContent;
         }
@@ -505,6 +523,7 @@ table 18325 "GST Journal Line"
         }
         field(44; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DataClassification = CustomerContent;
         }

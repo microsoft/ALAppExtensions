@@ -17,14 +17,20 @@ table 31118 "G/L Account Adjust. Buffer CZL"
         }
         field(2; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
         }
         field(10; "Debit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Debit Amount';
         }
         field(11; "Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Amount';
         }
         field(15; Description; Text[100])

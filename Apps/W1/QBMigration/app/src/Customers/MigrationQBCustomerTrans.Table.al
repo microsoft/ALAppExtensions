@@ -37,6 +37,7 @@ table 1913 "MigrationQB CustomerTrans"
         }
         field(7; Amount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Amount';
         }

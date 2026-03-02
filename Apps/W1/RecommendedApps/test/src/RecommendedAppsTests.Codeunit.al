@@ -24,7 +24,7 @@ codeunit 139527 "Recommended Apps Tests"
         // [WHEN] There are no recommended apps
         RecommendedAppsTable.DeleteAll();
 
-        // [WHEN] A new recommended app is inserted with wrong infpo
+        // [WHEN] A new recommended app is inserted with wrong info
         AppId := CreateGuid();
 
         asserterror RecommendedApps.InsertApp(
@@ -46,7 +46,7 @@ codeunit 139527 "Recommended Apps Tests"
         // [WHEN] There are no recommended apps
         RecommendedAppsTable.DeleteAll();
 
-        // [WHEN] A new recommended app is inserted with wrong infpo
+        // [WHEN] A new recommended app is inserted with wrong info
         AppId := CreateGuid();
 
         asserterror RecommendedApps.InsertApp(

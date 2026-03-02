@@ -15,7 +15,7 @@ using Microsoft.Sales.Customer;
 table 6790 "Temp Withholding Tax Entry"
 {
     Caption = 'Temp Withholding Tax Entry';
-    LookupPageID = "Withholding Tax Entry";
+    LookupPageID = "Withholding Tax Entries";
     DataClassification = CustomerContent;
 
     fields
@@ -61,6 +61,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(8; Base; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Base';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -68,6 +69,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(9; Amount; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -146,6 +148,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(22; "Unrealized Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Unrealized Amount';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -153,6 +156,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(23; "Unrealized Base"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Unrealized Base';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -160,6 +164,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(24; "Remaining Unrealized Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Remaining Unrealized Amount';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -167,6 +172,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(25; "Remaining Unrealized Base"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Remaining Unrealized Base';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -215,6 +221,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(32; "Base (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Base (LCY)';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -222,6 +229,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(33; "Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -244,6 +252,7 @@ table 6790 "Temp Withholding Tax Entry"
         }
         field(36; "Withholding Tax %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Withholding Tax %';
             DataClassification = SystemMetadata;
             DecimalPlaces = 0 : 5;
@@ -270,6 +279,7 @@ table 6790 "Temp Withholding Tax Entry"
         field(39; "Withholding Tax Difference"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Withholding Tax Difference';
             DataClassification = SystemMetadata;
             Editable = false;
@@ -347,6 +357,8 @@ table 6790 "Temp Withholding Tax Entry"
         }
         field(57; "Payment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Payment Amount';
             DataClassification = SystemMetadata;
         }

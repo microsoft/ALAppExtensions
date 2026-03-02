@@ -43,6 +43,8 @@ table 31115 "Cross Application Buffer CZL"
         }
         field(30; "Amount (LCY)"; Decimal)
         {
+            AutoFormatExpression = '';
+            AutoFormatType = 2;
             Caption = 'Amount (LCY)';
         }
     }

@@ -41,6 +41,8 @@ table 40905 "Hist. Payables Document"
         }
         field(8; "Document Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Document Amount';
         }
         field(9; "Currency Code"; Code[10])
@@ -49,10 +51,14 @@ table 40905 "Hist. Payables Document"
         }
         field(10; "Current Trx. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Current Trx. Amount';
         }
         field(11; "Disc. Taken Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Disc. Taken Amount';
         }
         field(12; "Batch No."; Code[35])
@@ -89,18 +95,26 @@ table 40905 "Hist. Payables Document"
         }
         field(20; "Misc. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Misc. Amount';
         }
         field(21; "Freight Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Freight Amount';
         }
         field(22; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Tax Amount';
         }
         field(23; "Total Payments"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Total Payments';
         }
         field(24; Voided; Boolean)
@@ -118,14 +132,20 @@ table 40905 "Hist. Payables Document"
         }
         field(27; "1099 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = '1099 Amount';
         }
         field(28; "Write Off Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Write Off Amount';
         }
         field(29; "Trade Discount Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Trade Discount Amount';
         }
         field(30; "Payment Terms ID"; Text[50])

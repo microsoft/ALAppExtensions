@@ -16,6 +16,7 @@ table 47087 "SL LotSerMst Buffer"
         field(1; Cost; Decimal)
         {
             Caption = 'Cost';
+            AutoFormatType = 0;
         }
         field(2; Crtd_DateTime; DateTime)
         {
@@ -68,74 +69,92 @@ table 47087 "SL LotSerMst Buffer"
         field(14; OrigQty; Decimal)
         {
             Caption = 'OrigQty';
+            AutoFormatType = 0;
         }
         field(15; PrjINQtyAlloc; Decimal)
         {
             Caption = 'PrjINQtyAlloc';
+            AutoFormatType = 0;
         }
         field(16; PrjINQtyAllocIN; Decimal)
         {
             Caption = 'PrjINQtyAllocIN';
+            AutoFormatType = 0;
         }
         field(17; PrjINQtyAllocPORet; Decimal)
         {
             Caption = 'PrjINQtyAllocPORet';
+            AutoFormatType = 0;
         }
         field(18; PrjINQtyAllocSO; Decimal)
         {
             Caption = 'PrjINQtyAllocSO';
+            AutoFormatType = 0;
         }
         field(19; PrjINQtyShipNotInv; Decimal)
         {
             Caption = 'PrjINQtyShipNotInv';
+            AutoFormatType = 0;
         }
         field(20; QtyAlloc; Decimal)
         {
             Caption = 'QtyAlloc';
+            AutoFormatType = 0;
         }
         field(21; QtyAllocBM; Decimal)
         {
             Caption = 'QtyAllocBM';
+            AutoFormatType = 0;
         }
         field(22; QtyAllocIN; Decimal)
         {
             Caption = 'QtyAllocIN';
+            AutoFormatType = 0;
         }
         field(23; QtyAllocOther; Decimal)
         {
             Caption = 'QtyAllocOther';
+            AutoFormatType = 0;
         }
         field(24; QtyAllocPORet; Decimal)
         {
             Caption = 'QtyAllocPORet';
+            AutoFormatType = 0;
         }
         field(25; QtyAllocProjIN; Decimal)
         {
             Caption = 'QtyAllocProjIN';
+            AutoFormatType = 0;
         }
         field(26; QtyAllocSD; Decimal)
         {
             Caption = 'QtyAllocSD';
+            AutoFormatType = 0;
         }
         field(27; QtyAllocSO; Decimal)
         {
             Caption = 'QtyAllocSO';
+            AutoFormatType = 0;
         }
         field(28; QtyAvail; Decimal)
         {
             Caption = 'QtyAvail';
+            AutoFormatType = 0;
         }
         field(29; QtyOnHand; Decimal)
         {
             Caption = 'QtyOnHand';
+            AutoFormatType = 0;
         }
         field(30; QtyShipNotInv; Decimal)
         {
             Caption = 'QtyShipNotInv';
+            AutoFormatType = 0;
         }
         field(31; QtyWORlsedDemand; Decimal)
         {
             Caption = 'QtyWORlsedDemand';
+            AutoFormatType = 0;
         }
         field(32; RcptDate; Date)
         {
@@ -152,18 +171,22 @@ table 47087 "SL LotSerMst Buffer"
         field(35; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(36; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(37; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(38; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(39; S4Future07; Date)
         {
@@ -192,6 +215,7 @@ table 47087 "SL LotSerMst Buffer"
         field(45; ShipConfirmQty; Decimal)
         {
             Caption = 'ShipConfirmQty';
+            AutoFormatType = 0;
         }
         field(46; ShipContCode; Text[20])
         {
@@ -228,10 +252,12 @@ table 47087 "SL LotSerMst Buffer"
         field(54; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(55; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(56; User5; Text[10])
         {

@@ -61,6 +61,8 @@ table 18318 "GST Credit Adjustment Journal"
         }
         field(8; "Total GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total GST Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -85,6 +87,8 @@ table 18318 "GST Credit Adjustment Journal"
         }
         field(13; "Total GST Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total GST Credit Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -104,6 +108,7 @@ table 18318 "GST Credit Adjustment Journal"
         }
         field(16; "Adjustment %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Adjustment %';
             DataClassification = CustomerContent;
             MinValue = 0;
@@ -131,6 +136,8 @@ table 18318 "GST Credit Adjustment Journal"
         }
         field(17; "Adjustment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Adjustment Amount';
             DataClassification = CustomerContent;
             MinValue = 0;
@@ -243,12 +250,15 @@ table 18318 "GST Credit Adjustment Journal"
         }
         field(31; "Available Adjustment %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Available Adjustment %';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(32; "Available Adjustment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Available Adjustment Amount';
             DataClassification = CustomerContent;
             Editable = false;

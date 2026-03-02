@@ -19,6 +19,8 @@ tableextension 6788 "Withholding Purch. Header Ext" extends "Purchase Header"
         }
         field(6785; "Withholding Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Withholding Tax Amount';
             DataClassification = CustomerContent;
             Editable = false;

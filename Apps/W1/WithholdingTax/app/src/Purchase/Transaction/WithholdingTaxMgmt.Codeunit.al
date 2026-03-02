@@ -55,6 +55,9 @@ codeunit 6785 "Withholding Tax Mgmt."
         ReasonCode: Code[10];
         GenBusPostGrp: Code[20];
         GenProdPostGrp: Code[20];
+        OnesText: array[20] of Text[30];
+        TensText: array[10] of Text[30];
+        ExponentText: array[5] of Text[30];
         TotalInvoiceAmount: Decimal;
         TotalInvoiceAmountLCY: Decimal;
         AppliedBase: Decimal;
@@ -74,6 +77,40 @@ codeunit 6785 "Withholding Tax Mgmt."
         WithholdingMinInvNotConsistentErr: Label 'You cannot post a transaction using different Withholding Tax minimum invoice amounts on lines.';
         DiffWithholdingPostGroupsErr: Label 'The Withholding Tax posting groups are different and thus the entries cannot be apply.';
         MissingRevenueTypeErr: Label 'The Withholding Tax Entry you are trying to process contains WHT Revenue Type `%1`. Please add this value to your Withholding Revenue Types and post again.', Comment = '%1 = Withholding Revenue Type';
+        MustbeNegativeLbl: Label 'must be positive.';
+        OneLbl: Label 'ONE';
+        TwoLbl: Label 'TWO';
+        ThreeLbl: Label 'THREE';
+        FourLbl: Label 'FOUR';
+        FiveLbl: Label 'FIVE';
+        SixLbl: Label 'SIX';
+        SevenLbl: Label 'SEVEN';
+        EightLbl: Label 'EIGHT';
+        NineLbl: Label 'NINE';
+        TenLbl: Label 'TEN';
+        ElevenLbl: Label 'ELEVEN';
+        TwelveLbl: Label 'TWELVE';
+        ThirteenLbl: Label 'THIRTEEN';
+        FourteenLbl: Label 'FOURTEEN';
+        FifteenLbl: Label 'FIFTEEN';
+        SixteenLbl: Label 'SIXTEEN';
+        SeventeenLbl: Label 'SEVENTEEN';
+        EighteenLbl: Label 'EIGHTEEN';
+        NinteenLbl: Label 'NINETEEN';
+        TwentyLbl: Label 'TWENTY';
+        ThirtyLbl: Label 'THIRTY';
+        FortyLbl: Label 'FORTY';
+        FiftyLbl: Label 'FIFTY';
+        SixtyLbl: Label 'SIXTY';
+        SeventyLbl: Label 'SEVENTY';
+        EightyLbl: Label 'EIGHTY';
+        NinetyLbl: Label 'NINETY';
+        ThousandLbl: Label 'THOUSAND';
+        MillionLbl: Label 'MILLION';
+        BillionLbl: Label 'BILLION';
+        HundredLbl: Label 'HUNDRED';
+        ZeroLbl: Label 'ZERO';
+        AndLbl: Label 'AND';
 
     procedure CheckApplicationPurchWithholdingTax(var PurchHeader: Record "Purchase Header")
     var
@@ -166,8 +203,6 @@ codeunit 6785 "Withholding Tax Mgmt."
         GLSetup.Get();
         if GLSetup."Enable Withholding Tax" then begin
             Vendor.Get(PurchInvHeader."Pay-to Vendor No.");
-            if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-                exit;
 
             TotalInvoiceAmount := 0;
             TotalInvoiceAmountLCY := 0;
@@ -330,8 +365,6 @@ codeunit 6785 "Withholding Tax Mgmt."
         GLSetup.Get();
         if GLSetup."Enable Withholding Tax" then begin
             Vendor.Get(PurchCreditHeader."Pay-to Vendor No.");
-            if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-                exit;
 
             TotalInvoiceAmount := 0;
             TotalInvoiceAmountLCY := 0;
@@ -525,8 +558,7 @@ codeunit 6785 "Withholding Tax Mgmt."
         GLSetup.Get();
         if GLSetup."Enable Withholding Tax" then begin
             Vendor.Get(GenJnlLine."Account No.");
-            if Vendor."WHT ABN" <> '' then
-                exit;
+
             if CheckWithholdingCalculationRule(GenJnlLine."Amount (LCY)", WithholdingPostingSetup) then
                 exit;
         end;
@@ -692,7 +724,6 @@ codeunit 6785 "Withholding Tax Mgmt."
                     WithholdingTaxEntry."Rem Realized Amount" := WithholdingTaxEntry.Amount;
                     WithholdingTaxEntry."Rem Realized Base" := WithholdingTaxEntry.Base;
                     WithholdingTaxEntry."Original Document No." := DocNo;
-                    WithholdingTaxEntry."Withholding Tax Report" := WithholdingPostingSetup."Withholding Tax Report";
 
                     if ((WithholdingReportLineNo = '') and
                         (WithholdingPostingSetup."Wthldg. Tax Rep Line No Series" <> ''))
@@ -1951,7 +1982,6 @@ codeunit 6785 "Withholding Tax Mgmt."
         WithholdingTaxEntry2."Payment Amount" := PaymentAmount1;
         WithholdingTaxEntry2."Transaction Type" := WithholdingTaxEntry2."Transaction Type"::Purchase;
         WithholdingPostingSetup.Get(TempWithholdingTaxEntry."Wthldg. Tax Bus. Post. Group", TempWithholdingTaxEntry."Wthldg. Tax Prod. Post. Group");
-        WithholdingTaxEntry2."Withholding Tax Report" := WithholdingPostingSetup."Withholding Tax Report";
 
         if TempGenJnlLine."WHT Certificate Printed" then begin
             WithholdingTaxEntry2."Wthldg. Tax Report Line No" := TempGenJnlLine."Wthldg. Tax Report Line No.";
@@ -2124,11 +2154,8 @@ codeunit 6785 "Withholding Tax Mgmt."
     begin
         GLSetup.Get();
 
-        if GLSetup."Enable Withholding Tax" then begin
+        if GLSetup."Enable Withholding Tax" then
             Vendor.Get(PurchInvHeader."Pay-to Vendor No.");
-            if Vendor."WHT ABN" <> '' then
-                exit;
-        end;
 
         PurchLine.Reset();
         PurchLine.SetCurrentKey("Document Type", "Document No.", "Wthldg. Tax Bus. Post. Group", "Wthldg. Tax Prod. Post. Group");
@@ -2203,11 +2230,8 @@ codeunit 6785 "Withholding Tax Mgmt."
     begin
         GLSetup.Get();
 
-        if GLSetup."Enable Withholding Tax" then begin
+        if GLSetup."Enable Withholding Tax" then
             Vendor.Get(PurchCrMemoHeader."Pay-to Vendor No.");
-            if Vendor."WHT ABN" <> '' then
-                exit;
-        end;
 
         PurchLine.Reset();
         PurchLine.SetCurrentKey("Document Type", "Document No.", "Wthldg. Tax Bus. Post. Group", "Wthldg. Tax Prod. Post. Group");
@@ -2397,9 +2421,9 @@ codeunit 6785 "Withholding Tax Mgmt."
             exit;
 
         GLSetup.Get();
-
-        if IsForeignVendor(GenJnlLine) then
+        if not GLSetup."Enable Withholding Tax" then
             exit;
+
 
         ExitLoop := false;
         TotalWithholdingTaxAmount := 0;
@@ -2894,15 +2918,10 @@ codeunit 6785 "Withholding Tax Mgmt."
     begin
         GLSetup.Get();
         if GLSetup."Enable Withholding Tax" then
-            if GenJnlLine."Bill-to/Pay-to No." = '' then begin
-                Vendor.Get(GenJnlLine."Account No.");
-                if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-                    exit;
-            end else begin
+            if GenJnlLine."Bill-to/Pay-to No." = '' then
+                Vendor.Get(GenJnlLine."Account No.")
+            else
                 Vendor.Get(GenJnlLine."Bill-to/Pay-to No.");
-                if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-                    exit;
-            end;
 
         WithholdingTaxAmount := 0;
         TotalWithholdingTaxBase := 0;
@@ -3546,30 +3565,6 @@ codeunit 6785 "Withholding Tax Mgmt."
         exit(Decimal2);
     end;
 
-    local procedure IsForeignVendor(GenJnlLine: Record "Gen. Journal Line"): Boolean
-    var
-        GLSetup: Record "General Ledger Setup";
-        Vendor: Record Vendor;
-    begin
-        GLSetup.Get();
-        if not GLSetup."Enable Withholding Tax" then
-            exit(false);
-
-        if GenJnlLine."Bill-to/Pay-to No." = '' then begin
-            if GenJnlLine."Account Type" = GenJnlLine."Account Type"::Vendor then
-                Vendor.Get(GenJnlLine."Account No.");
-        end else
-            if (GenJnlLine."Bal. Account Type" = GenJnlLine."Bal. Account Type"::Vendor) or
-               (GenJnlLine."Account Type" = GenJnlLine."Account Type"::Vendor)
-            then
-                Vendor.Get(GenJnlLine."Bill-to/Pay-to No.");
-
-        if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-            exit(true);
-
-        exit(false);
-    end;
-
     procedure PrintWHTSlips(var GLReg: Record "G/L Register"; ScheduleInJobQueue: Boolean)
     var
         GLEntry: Record "G/L Entry";
@@ -3725,16 +3720,10 @@ codeunit 6785 "Withholding Tax Mgmt."
         GLSetup.Get();
         if GLSetup."Enable Withholding Tax" then
             if GenJnlLine."Bill-to/Pay-to No." = '' then begin
-                if GenJnlLine."Account Type" = GenJnlLine."Account Type"::Vendor then begin
+                if GenJnlLine."Account Type" = GenJnlLine."Account Type"::Vendor then
                     Vendor.Get(GenJnlLine."Account No.");
-                    if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-                        exit;
-                end;
-            end else begin
+            end else
                 Vendor.Get(GenJnlLine."Bill-to/Pay-to No.");
-                if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-                    exit;
-            end;
 
         ExitLoop := false;
 
@@ -3904,15 +3893,10 @@ codeunit 6785 "Withholding Tax Mgmt."
     begin
         GLSetup.Get();
         if GLSetup."Enable Withholding Tax" then
-            if GenJnlLine."Bill-to/Pay-to No." = '' then begin
-                Vendor.Get(GenJnlLine."Account No.");
-                if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-                    exit;
-            end else begin
+            if GenJnlLine."Bill-to/Pay-to No." = '' then
+                Vendor.Get(GenJnlLine."Account No.")
+            else
                 Vendor.Get(GenJnlLine."Bill-to/Pay-to No.");
-                if (Vendor."WHT ABN" <> '') or Vendor."WHT Foreign Vend" then
-                    exit;
-            end;
 
         case Source of
             Source::Vendor:
@@ -4123,7 +4107,6 @@ codeunit 6785 "Withholding Tax Mgmt."
                                 WithholdingTaxEntry2."Payment Amount" := PaymentAmount1;
                                 WithholdingTaxEntry2."Transaction Type" := WithholdingTaxEntry2."Transaction Type"::Purchase;
                                 WithholdingPostingSetup.Get(WithholdingTaxEntry."Wthldg. Tax Bus. Post. Group", WithholdingTaxEntry."Wthldg. Tax Prod. Post. Group");
-                                WithholdingTaxEntry2."Withholding Tax Report" := WithholdingPostingSetup."Withholding Tax Report";
 
                                 if GenJnlLine."WHT Certificate Printed" then begin
                                     WithholdingTaxEntry2."Wthldg. Tax Report Line No" := GenJnlLine."Wthldg. Tax Report Line No.";
@@ -4334,7 +4317,7 @@ codeunit 6785 "Withholding Tax Mgmt."
         GenJnlLine3."System-Created Entry" := true; // Payment Method Code
         GLSetup.Get();
 
-        if (Oldest = true) or GLSetup."Manual Sales Wthldg. Tax Calc." then
+        if Oldest then
             if TType = TType::Purchase then begin
                 case WithholdingPostingSetup."Bal. Payable Account Type" of
                     WithholdingPostingSetup."Bal. Payable Account Type"::"Bank Account":
@@ -4735,15 +4718,10 @@ codeunit 6785 "Withholding Tax Mgmt."
     begin
         GLSetup.Get();
         if GLSetup."Enable Withholding Tax" then
-            if GenJnlLine."Bill-to/Pay-to No." = '' then begin
-                Vendor.Get(GenJnlLine."Account No.");
-                if Vendor."WHT ABN" <> '' then
-                    exit;
-            end else begin
+            if GenJnlLine."Bill-to/Pay-to No." = '' then
+                Vendor.Get(GenJnlLine."Account No.")
+            else
                 Vendor.Get(GenJnlLine."Bill-to/Pay-to No.");
-                if Vendor."WHT ABN" <> '' then
-                    exit;
-            end;
 
         PaymentAmount := GenJnlLine.Amount;
         PaymentAmount1 := GenJnlLine.Amount;
@@ -4876,10 +4854,6 @@ codeunit 6785 "Withholding Tax Mgmt."
                     if GenJnlLine."Source Currency Code" <> WithholdingTaxEntry."Currency Code" then
                         Error(CurrencyCodeSameErr);
 
-                    GLSetup.Get();
-                    if GLSetup."Manual Sales Wthldg. Tax Calc." and not GenJnlLine."Withholding Tax Payment" then
-                        AppldAmount := 0;
-
                     if AppldAmount = 0 then
                         exit(WithholdingTaxEntry2."Entry No.");
 
@@ -4913,7 +4887,6 @@ codeunit 6785 "Withholding Tax Mgmt."
                                 WithholdingTaxEntry2.Amount := Round(WithholdingTaxEntry2.Base * WithholdingTaxEntry2."Withholding Tax %" / 100);
                                 WithholdingTaxEntry2."Transaction Type" := WithholdingTaxEntry2."Transaction Type"::Purchase;
                                 WithholdingPostingSetup.Get(WithholdingTaxEntry."Wthldg. Tax Bus. Post. Group", WithholdingTaxEntry."Wthldg. Tax Prod. Post. Group");
-                                WithholdingTaxEntry2."Withholding Tax Report" := WithholdingPostingSetup."Withholding Tax Report";
 
                                 if GenJnlLine."WHT Certificate Printed" then begin
                                     WithholdingTaxEntry2."Wthldg. Tax Report Line No" := GenJnlLine."Wthldg. Tax Report Line No.";
@@ -5009,5 +4982,101 @@ codeunit 6785 "Withholding Tax Mgmt."
         else
             if GenJnlLine."Bal. Account Type" = GenJnlLine."Bal. Account Type"::Vendor then
                 exit(GenJnlLine."Bal. Account No.");
+    end;
+
+    procedure InitTextVariable()
+    begin
+        OnesText[1] := OneLbl;
+        OnesText[2] := TwoLbl;
+        OnesText[3] := ThreeLbl;
+        OnesText[4] := FourLbl;
+        OnesText[5] := FiveLbl;
+        OnesText[6] := SixLbl;
+        OnesText[7] := SevenLbl;
+        OnesText[8] := EightLbl;
+        OnesText[9] := NineLbl;
+        OnesText[10] := TenLbl;
+        OnesText[11] := ElevenLbl;
+        OnesText[12] := TwelveLbl;
+        OnesText[13] := ThirteenLbl;
+        OnesText[14] := FourteenLbl;
+        OnesText[15] := FifteenLbl;
+        OnesText[16] := SixteenLbl;
+        OnesText[17] := SeventeenLbl;
+        OnesText[18] := EighteenLbl;
+        OnesText[19] := NinteenLbl;
+
+        TensText[1] := '';
+        TensText[2] := TwentyLbl;
+        TensText[3] := ThirtyLbl;
+        TensText[4] := FortyLbl;
+        TensText[5] := FiftyLbl;
+        TensText[6] := SixtyLbl;
+        TensText[7] := SeventyLbl;
+        TensText[8] := EightyLbl;
+        TensText[9] := NinetyLbl;
+
+        ExponentText[1] := '';
+        ExponentText[2] := ThousandLbl;
+        ExponentText[3] := MillionLbl;
+        ExponentText[4] := BillionLbl;
+    end;
+
+    procedure FormatNoText(var NoText: array[2] of Text[80]; No: Decimal; CurrencyCode: Code[10])
+    var
+        PrintExponent: Boolean;
+        Ones: Integer;
+        Tens: Integer;
+        Hundreds: Integer;
+        Exponent: Integer;
+        NoTextIndex: Integer;
+    begin
+        Clear(NoText);
+        NoTextIndex := 1;
+        NoText[1] := '****';
+
+        if No < 1 then
+            AddToNoText(NoText, NoTextIndex, PrintExponent, ZeroLbl)
+        else
+            for Exponent := 4 downto 1 do begin
+                PrintExponent := false;
+                Ones := No div Power(1000, Exponent - 1);
+                Hundreds := Ones div 100;
+                Tens := (Ones mod 100) div 10;
+                Ones := Ones mod 10;
+                if Hundreds > 0 then begin
+                    AddToNoText(NoText, NoTextIndex, PrintExponent, OnesText[Hundreds]);
+                    AddToNoText(NoText, NoTextIndex, PrintExponent, HundredLbl);
+                end;
+                if Tens >= 2 then begin
+                    AddToNoText(NoText, NoTextIndex, PrintExponent, TensText[Tens]);
+                    if Ones > 0 then
+                        AddToNoText(NoText, NoTextIndex, PrintExponent, OnesText[Ones]);
+                end else
+                    if (Tens * 10 + Ones) > 0 then
+                        AddToNoText(NoText, NoTextIndex, PrintExponent, OnesText[Tens * 10 + Ones]);
+                if PrintExponent and (Exponent > 1) then
+                    AddToNoText(NoText, NoTextIndex, PrintExponent, ExponentText[Exponent]);
+                No := No - (Hundreds * 100 + Tens * 10 + Ones) * Power(1000, Exponent - 1);
+            end;
+
+        AddToNoText(NoText, NoTextIndex, PrintExponent, AndLbl);
+        AddToNoText(NoText, NoTextIndex, PrintExponent, Format(No * 100) + '/100');
+
+        if CurrencyCode <> '' then
+            AddToNoText(NoText, NoTextIndex, PrintExponent, CurrencyCode);
+    end;
+
+    local procedure AddToNoText(var NoText: array[2] of Text[80]; var NoTextIndex: Integer; var PrintExponent: Boolean; AddText: Text[30])
+    begin
+        PrintExponent := true;
+
+        while StrLen(NoText[NoTextIndex] + ' ' + AddText) > MaxStrLen(NoText[1]) do begin
+            NoTextIndex := NoTextIndex + 1;
+            if NoTextIndex > ArrayLen(NoText) then
+                Error(MustbeNegativeLbl, AddText);
+        end;
+
+        NoText[NoTextIndex] := DelChr(NoText[NoTextIndex] + ' ' + AddText, '<');
     end;
 }

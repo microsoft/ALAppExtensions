@@ -152,6 +152,7 @@ tableextension 18470 "GST Service Header Archive" extends "Service Header Archiv
         }
         field(18465; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
             MinValue = 0;

@@ -33,23 +33,26 @@ tableextension 7414 "Excise Taxes Trans. Log Ext" extends "Sust. Excise Taxes Tr
         }
         field(7415; "Quantity for Excise Tax"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity for Excise Tax';
             DecimalPlaces = 0 : 5;
             MinValue = 0;
             Editable = false;
             DataClassification = CustomerContent;
         }
-        field(7416; "Tax Rate %"; Decimal)
+        field(7416; "Excise Duty"; Decimal)
         {
-            Caption = 'Tax Rate %';
+            AutoFormatType = 0;
+            Caption = 'Excise Duty';
             DecimalPlaces = 2 : 5;
             MinValue = 0;
-            MaxValue = 100;
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(7417; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Tax Amount';
             DataClassification = CustomerContent;
             Editable = false;

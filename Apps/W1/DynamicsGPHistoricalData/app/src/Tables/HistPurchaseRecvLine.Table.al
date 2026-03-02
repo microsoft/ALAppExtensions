@@ -43,6 +43,7 @@ table 40909 "Hist. Purchase Recv. Line"
         }
         field(9; "Base UofM Qty."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Base UofM Qty.';
         }
         field(10; "Actual Ship Date"; Date)
@@ -55,14 +56,20 @@ table 40909 "Hist. Purchase Recv. Line"
         }
         field(12; "Unit Cost"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Unit Cost';
         }
         field(13; "Ext. Cost"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Ext. Cost';
         }
         field(14; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Tax Amount';
         }
         field(15; "Location Code"; Code[35])
@@ -79,34 +86,48 @@ table 40909 "Hist. Purchase Recv. Line"
         }
         field(18; "Orig. Unit Cost"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Orig. Unit Cost';
         }
         field(19; "Orig. Ext. Cost"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Orig. Ext. Cost';
         }
         field(20; "Orig. Disc. Taken Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Orig. Disc. Taken Amount';
         }
         field(21; "Orig. Trade Disc. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Orig. Trade Disc. Amount';
         }
         field(22; "Orig. Freight Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Orig. Freight Amount';
         }
         field(23; "Orig. Misc. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Orig. Misc. Amount';
         }
         field(24; "Quantity Shipped"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Shipped';
         }
         field(25; "Quantity Invoiced"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity Invoiced';
         }
     }

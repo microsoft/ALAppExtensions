@@ -41,10 +41,12 @@ table 1911 "MigrationQB Account"
         }
         field(9; CurrentBalance; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(10; CurrentBalanceWithSubAccounts; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(11; Id; Text[15])

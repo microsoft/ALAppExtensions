@@ -19,11 +19,13 @@ table 31116 "Enhanced Currency Buffer CZL"
         field(2; "Total Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Total Amount';
         }
         field(3; "Total Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Amount (LCY)';
         }
         field(4; Counter; Integer)
@@ -32,10 +34,14 @@ table 31116 "Enhanced Currency Buffer CZL"
         }
         field(5; "Total Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Total Credit Amount';
         }
         field(6; "Total Debit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Total Debit Amount';
         }
     }

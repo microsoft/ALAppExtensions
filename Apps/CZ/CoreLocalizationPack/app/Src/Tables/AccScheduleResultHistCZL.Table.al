@@ -35,11 +35,15 @@ table 31114 "Acc. Schedule Result Hist. CZL"
         }
         field(10; "New Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'New Value';
             DataClassification = CustomerContent;
         }
         field(11; "Old Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Old Value';
             DataClassification = CustomerContent;
         }

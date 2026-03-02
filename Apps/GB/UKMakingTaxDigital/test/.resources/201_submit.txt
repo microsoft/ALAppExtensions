@@ -1,0 +1,6 @@
+{
+	"processingDate": "2020-01-20T08:20:27.895+0000",
+	"paymentIndicator": "BANK",
+	"formBundleNumber": "123456789012",
+	"chargeRefNumber": "abcdefghijklmnop"
+}

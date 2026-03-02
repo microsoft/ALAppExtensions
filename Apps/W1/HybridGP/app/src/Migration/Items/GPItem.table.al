@@ -44,21 +44,25 @@ table 4095 "GP Item"
         }
         field(8; CurrentCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Current Cost';
             DataClassification = CustomerContent;
         }
         field(9; StandardCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Standard Cost';
             DataClassification = CustomerContent;
         }
         field(10; UnitListPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit List Price';
             DataClassification = CustomerContent;
         }
         field(11; ShipWeight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Shipping Weight';
             DataClassification = CustomerContent;
         }
@@ -69,6 +73,7 @@ table 4095 "GP Item"
         }
         field(13; QuantityOnHand; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity on Hand';
             DataClassification = CustomerContent;
         }

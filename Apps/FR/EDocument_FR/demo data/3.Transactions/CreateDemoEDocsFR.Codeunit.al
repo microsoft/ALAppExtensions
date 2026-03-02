@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -17,6 +18,9 @@ codeunit 10911 "Create Demo EDocs FR"
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by Create E-Doc. Sample Invoices Codeunit';
+    ObsoleteTag = '28.0';
 
     var
         ContosoInboundEDocument: Codeunit "Contoso Inbound E-Document";
@@ -114,3 +118,4 @@ codeunit 10911 "Create Demo EDocs FR"
     end;
 
 }
+#endif

@@ -29,6 +29,7 @@ table 20132 "Script Symbol Value"
         }
         field(101; "Number Value"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = SystemMetadata;
             Caption = 'Number Value';
         }

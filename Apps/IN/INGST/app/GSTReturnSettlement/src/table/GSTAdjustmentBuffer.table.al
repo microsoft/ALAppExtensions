@@ -92,16 +92,21 @@ table 18326 "GST Adjustment Buffer"
         }
         field(12; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
         field(13; "GST %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST %';
             DataClassification = CustomerContent;
         }
         field(14; "GST Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
@@ -112,11 +117,14 @@ table 18326 "GST Adjustment Buffer"
         }
         field(16; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DataClassification = CustomerContent;
         }
         field(17; "Amount Loaded on Inventory"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Amount Loaded on Inventory';
             DataClassification = CustomerContent;
         }
@@ -148,6 +156,8 @@ table 18326 "GST Adjustment Buffer"
         }
         field(23; "Amount to be Adjusted"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Amount to be Adjusted';
             DataClassification = CustomerContent;
         }

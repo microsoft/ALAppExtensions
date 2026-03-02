@@ -107,6 +107,8 @@ table 18511 "Charge Group Line"
         }
         field(100; "Value"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Value';
             DataClassification = CustomerContent;
         }

@@ -81,6 +81,7 @@ table 18204 "GST Distribution Line"
         }
         field(24; "Distribution %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distribution %';
             DataClassification = CustomerContent;
 
@@ -115,6 +116,8 @@ table 18204 "GST Distribution Line"
         }
         field(27; "Distribution Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Distribution Amount';
             DataClassification = CustomerContent;
             Editable = false;

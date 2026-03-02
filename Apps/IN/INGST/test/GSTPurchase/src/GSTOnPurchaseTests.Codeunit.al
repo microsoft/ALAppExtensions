@@ -1312,6 +1312,36 @@ codeunit 18131 "GST On Purchase Tests"
         CreateAndPostDistributionDocument(DocType::"Credit Memo", DistGSTCredit::Availment, RcptGSTCredit::Availment, true);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ApplyDistributionEntries,ConfirmationHandler,DimensionHandler,NoSeriesHandler')]
+    procedure PostInterStateInvDistributionITCToITCWithLocationDistNoWithCreditMemo()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        GSTVendorType: Enum "GST Vendor Type";
+        LineType: Enum "Purchase Line Type";
+        DocumentType: Enum "Purchase Document Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocType: Enum "BankCharges DocumentType";
+        DistGSTCredit: Enum "GST Credit";
+        RcptGSTCredit: Enum "GST Credit";
+    begin
+        // [SCENARIO]ISD Distribution Posting Error for Credit Memo with Availment Credit Type
+        // [FEATURE] [ITC Distribution] [InterState Input Distribution]
+
+        // [GIVEN] Created GST Setup and tax rates for registered Vendor where input tax credit is available with GST Group Code type is Service
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, false, false);
+        InitializeShareStep(true, false, false);
+        UpdateInputServiceDistributer(true);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Purchase Order with GST and Line Type as Services for Interstate Transactions.
+        CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        // [THEN] Create and Post Distribution Document with Document type Inoivce and Distribution GST Credit is Availment and Receipt GST Credit is Availment
+        CreateAndPostDistributionDocumentNo(DocType::"Credit Memo", DistGSTCredit::Availment, RcptGSTCredit::Availment, false);
+    end;
+
     local procedure VerifyTaxTransactionValueExist(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20])
     var
         PurchaseLineArchive: Record "Purchase Line Archive";

@@ -31,6 +31,7 @@ tableextension 31251 "Item Journal Line CZA" extends "Item Journal Line"
         }
         field(31007; "Currency Factor CZA"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DecimalPlaces = 0 : 15;
             DataClassification = CustomerContent;

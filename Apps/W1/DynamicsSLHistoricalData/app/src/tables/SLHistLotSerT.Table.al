@@ -115,6 +115,7 @@ table 42807 "SL Hist. LotSerT"
         }
         field(24; Qty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty';
         }
         field(25; RcptNbr; Text[10])
@@ -147,18 +148,22 @@ table 42807 "SL Hist. LotSerT"
         }
         field(32; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(33; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(34; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(35; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(36; S4Future07; DateTime)
@@ -223,10 +228,12 @@ table 42807 "SL Hist. LotSerT"
         }
         field(51; UnitCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'UnitCost';
         }
         field(52; UnitPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'UnitPrice';
         }
         field(53; User1; Text[30])
@@ -239,10 +246,12 @@ table 42807 "SL Hist. LotSerT"
         }
         field(55; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(56; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(57; User5; Text[10])

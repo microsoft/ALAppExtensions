@@ -72,10 +72,12 @@ table 47044 "SL SegDef"
         field(15; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(16; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
     }
 

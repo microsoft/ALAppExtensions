@@ -67,36 +67,47 @@ table 18283 "Periodic GSTR-2A Data"
         }
         field(13; "Taxable Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Taxable Value';
             DataClassification = CustomerContent;
         }
         field(14; "Component 1 Rate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component 1 Rate';
             DataClassification = CustomerContent;
         }
         field(15; "Component 1 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Component 1 Amount';
             DataClassification = CustomerContent;
         }
         field(16; "Component 2 Rate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component 2 Rate';
             DataClassification = CustomerContent;
         }
         field(17; "Component 2 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Component 2 Amount';
             DataClassification = CustomerContent;
         }
         field(18; "Component 3 Rate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component 3 Rate';
             DataClassification = CustomerContent;
         }
         field(19; "Component 3 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Component 3 Amount';
             DataClassification = CustomerContent;
         }
@@ -122,6 +133,8 @@ table 18283 "Periodic GSTR-2A Data"
         }
         field(24; "Revised Document Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Revised Document Value';
             DataClassification = CustomerContent;
         }
@@ -137,6 +150,8 @@ table 18283 "Periodic GSTR-2A Data"
         }
         field(27; "Revised Taxable Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Revised Taxable Value';
             DataClassification = CustomerContent;
         }
@@ -157,6 +172,8 @@ table 18283 "Periodic GSTR-2A Data"
         }
         field(31; "Differential Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Differential Value';
             DataClassification = CustomerContent;
         }
@@ -167,6 +184,8 @@ table 18283 "Periodic GSTR-2A Data"
         }
         field(33; "Value on TDS has been Deducted"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Value on TDS has been Deducted';
             DataClassification = CustomerContent;
         }
@@ -177,11 +196,15 @@ table 18283 "Periodic GSTR-2A Data"
         }
         field(35; "Gross Value of Supplies"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Gross Value of Supplies';
             DataClassification = CustomerContent;
         }
         field(36; "Tax Value on TCS has Deducted"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Tax Value on TCS has Deducted';
             DataClassification = CustomerContent;
         }
@@ -207,51 +230,66 @@ table 18283 "Periodic GSTR-2A Data"
         }
         field(41; "Component 4 Rate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component 4 Rate';
             DataClassification = CustomerContent;
         }
         field(42; "Component 4 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Component 4 Amount';
             DataClassification = CustomerContent;
         }
         field(43; "Component 5 Rate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component 5 Rate';
             DataClassification = CustomerContent;
         }
         field(44; "Component 5 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Component 5 Amount';
             DataClassification = CustomerContent;
         }
         field(45; "Component 6 Rate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component 6 Rate';
             DataClassification = CustomerContent;
         }
         field(46; "Component 6 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Component 6 Amount';
             DataClassification = CustomerContent;
         }
         field(47; "Component 7 Rate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component 7 Rate';
             DataClassification = CustomerContent;
         }
         field(48; "Component 7 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Component 7 Amount';
             DataClassification = CustomerContent;
         }
         field(49; "Component 8 Rate"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Component 8 Rate';
             DataClassification = CustomerContent;
         }
         field(50; "Component 8 Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Component 8 Amount';
             DataClassification = CustomerContent;
         }

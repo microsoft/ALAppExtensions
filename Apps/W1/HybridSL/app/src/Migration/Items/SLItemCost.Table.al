@@ -25,6 +25,7 @@ table 47020 "SL ItemCost"
         field(1; BMITotCost; Decimal)
         {
             Caption = 'BMITotCost';
+            AutoFormatType = 0;
         }
         field(2; CostIdentity; Integer)
         {
@@ -69,34 +70,42 @@ table 47020 "SL ItemCost"
         field(12; Qty; Decimal)
         {
             Caption = 'Qty';
+            AutoFormatType = 0;
         }
         field(13; QtyAllocBM; Decimal)
         {
             Caption = 'QtyAllocBM';
+            AutoFormatType = 0;
         }
         field(14; QtyAllocIN; Decimal)
         {
             Caption = 'QtyAllocIN';
+            AutoFormatType = 0;
         }
         field(15; QtyAllocOther; Decimal)
         {
             Caption = 'QtyAllocOther';
+            AutoFormatType = 0;
         }
         field(16; QtyAllocPORet; Decimal)
         {
             Caption = 'QtyAllocPORet';
+            AutoFormatType = 0;
         }
         field(17; QtyAllocSD; Decimal)
         {
             Caption = 'QtyAllocSD';
+            AutoFormatType = 0;
         }
         field(18; QtyAvail; Decimal)
         {
             Caption = 'QtyAvail';
+            AutoFormatType = 0;
         }
         field(19; QtyShipNotInv; Decimal)
         {
             Caption = 'QtyShipNotInv';
+            AutoFormatType = 0;
         }
         field(20; RcptDate; DateTime)
         {
@@ -117,18 +126,22 @@ table 47020 "SL ItemCost"
         field(24; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(25; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(26; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(27; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(28; S4Future07; DateTime)
         {
@@ -165,10 +178,12 @@ table 47020 "SL ItemCost"
         field(36; TotCost; Decimal)
         {
             Caption = 'TotCost';
+            AutoFormatType = 0;
         }
         field(37; UnitCost; Decimal)
         {
             Caption = 'UnitCost';
+            AutoFormatType = 0;
         }
         field(38; User1; Text[30])
         {
@@ -181,10 +196,12 @@ table 47020 "SL ItemCost"
         field(40; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(41; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(42; User5; Text[10])
         {

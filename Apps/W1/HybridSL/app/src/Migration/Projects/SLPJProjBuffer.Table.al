@@ -32,6 +32,7 @@ table 47078 "SL PJProj Buffer"
         field(5; billcuryfixedrate; Decimal)
         {
             Caption = 'billcuryfixedrate';
+            AutoFormatType = 0;
         }
         field(6; billcuryid; Text[4])
         {
@@ -168,10 +169,12 @@ table 47078 "SL PJProj Buffer"
         field(39; pm_id06; Decimal)
         {
             Caption = 'pm_id06';
+            AutoFormatType = 0;
         }
         field(40; pm_id07; Decimal)
         {
             Caption = 'pm_id07';
+            AutoFormatType = 0;
         }
         field(41; pm_id08; Date)
         {
@@ -216,6 +219,7 @@ table 47078 "SL PJProj Buffer"
         field(51; pm_id38; Decimal)
         {
             Caption = 'pm_id38';
+            AutoFormatType = 0;
         }
         field(52; pm_id39; Date)
         {
@@ -248,6 +252,7 @@ table 47078 "SL PJProj Buffer"
         field(59; ProjCuryBudRate; Decimal)
         {
             Caption = 'ProjCuryBudRate';
+            AutoFormatType = 0;
         }
         field(60; ProjCuryRevenueRec; Text[1])
         {
@@ -280,18 +285,22 @@ table 47078 "SL PJProj Buffer"
         field(67; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(68; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(69; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(70; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(71; S4Future07; Date)
         {
@@ -420,10 +429,12 @@ table 47078 "SL PJProj Buffer"
         field(102; user3; Decimal)
         {
             Caption = 'user3';
+            AutoFormatType = 0;
         }
         field(103; user4; Decimal)
         {
             Caption = 'user4';
+            AutoFormatType = 0;
         }
     }
 

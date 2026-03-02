@@ -20,6 +20,7 @@ table 47016 "SL InventoryADG"
         field(2; BatchSize; Decimal)
         {
             Caption = 'BatchSize';
+            AutoFormatType = 0;
         }
         field(3; BOLClass; Text[20])
         {
@@ -48,6 +49,7 @@ table 47016 "SL InventoryADG"
         field(9; Density; Decimal)
         {
             Caption = 'Density';
+            AutoFormatType = 0;
         }
         field(10; DensityUOM; Text[5])
         {
@@ -56,6 +58,7 @@ table 47016 "SL InventoryADG"
         field(11; Depth; Decimal)
         {
             Caption = 'Depth';
+            AutoFormatType = 0;
         }
         field(12; DepthUOM; Text[5])
         {
@@ -64,6 +67,7 @@ table 47016 "SL InventoryADG"
         field(13; Diameter; Decimal)
         {
             Caption = 'Diameter';
+            AutoFormatType = 0;
         }
         field(14; DiameterUOM; Text[5])
         {
@@ -72,6 +76,7 @@ table 47016 "SL InventoryADG"
         field(15; Gauge; Decimal)
         {
             Caption = 'Gauge';
+            AutoFormatType = 0;
         }
         field(16; GaugeUOM; Text[5])
         {
@@ -80,6 +85,7 @@ table 47016 "SL InventoryADG"
         field(17; Height; Decimal)
         {
             Caption = 'Height';
+            AutoFormatType = 0;
         }
         field(18; HeightUOM; Text[5])
         {
@@ -92,6 +98,7 @@ table 47016 "SL InventoryADG"
         field(20; Len; Decimal)
         {
             Caption = 'Len';
+            AutoFormatType = 0;
         }
         field(21; LenUOM; Text[5])
         {
@@ -100,6 +107,7 @@ table 47016 "SL InventoryADG"
         field(22; ListPrice; Decimal)
         {
             Caption = 'ListPrice';
+            AutoFormatType = 0;
         }
         field(23; LUpd_DateTime; DateTime)
         {
@@ -116,6 +124,7 @@ table 47016 "SL InventoryADG"
         field(26; MinPrice; Decimal)
         {
             Caption = 'MinPrice';
+            AutoFormatType = 0;
         }
         field(27; NoteID; Integer)
         {
@@ -144,6 +153,7 @@ table 47016 "SL InventoryADG"
         field(33; PackCnvFact; Decimal)
         {
             Caption = 'PackCnvFact';
+            AutoFormatType = 0;
         }
         field(34; PackMethod; Text[2])
         {
@@ -168,6 +178,7 @@ table 47016 "SL InventoryADG"
         field(39; RetailPrice; Decimal)
         {
             Caption = 'RetailPrice';
+            AutoFormatType = 0;
         }
         field(40; RoyaltyCode; Text[10])
         {
@@ -184,18 +195,22 @@ table 47016 "SL InventoryADG"
         field(43; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(44; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(45; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(46; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(47; S4Future07; DateTime)
         {
@@ -224,6 +239,7 @@ table 47016 "SL InventoryADG"
         field(53; SCHeight; Decimal)
         {
             Caption = 'SCHeight';
+            AutoFormatType = 0;
         }
         field(54; SCHeightUOM; Text[6])
         {
@@ -232,6 +248,7 @@ table 47016 "SL InventoryADG"
         field(55; SCLen; Decimal)
         {
             Caption = 'SCLen';
+            AutoFormatType = 0;
         }
         field(56; SCLenUOM; Text[6])
         {
@@ -240,6 +257,7 @@ table 47016 "SL InventoryADG"
         field(57; SCVolume; Decimal)
         {
             Caption = 'SCVolume';
+            AutoFormatType = 0;
         }
         field(58; SCVolumeUOM; Text[6])
         {
@@ -248,6 +266,7 @@ table 47016 "SL InventoryADG"
         field(59; SCWeight; Decimal)
         {
             Caption = 'SCWeight';
+            AutoFormatType = 0;
         }
         field(60; SCWeightUOM; Text[6])
         {
@@ -256,6 +275,7 @@ table 47016 "SL InventoryADG"
         field(61; SCWidth; Decimal)
         {
             Caption = 'SCWidth';
+            AutoFormatType = 0;
         }
         field(62; SCWidthUOM; Text[6])
         {
@@ -268,10 +288,12 @@ table 47016 "SL InventoryADG"
         field(64; StdGrossWt; Decimal)
         {
             Caption = 'StdGrossWt';
+            AutoFormatType = 0;
         }
         field(65; StdTareWt; Decimal)
         {
             Caption = 'StdTareWt';
+            AutoFormatType = 0;
         }
         field(66; Style; Text[20])
         {
@@ -300,10 +322,12 @@ table 47016 "SL InventoryADG"
         field(72; User5; Decimal)
         {
             Caption = 'User5';
+            AutoFormatType = 0;
         }
         field(73; User6; Decimal)
         {
             Caption = 'User6';
+            AutoFormatType = 0;
         }
         field(74; User7; Text[10])
         {
@@ -320,6 +344,7 @@ table 47016 "SL InventoryADG"
         field(77; Volume; Decimal)
         {
             Caption = 'Volume';
+            AutoFormatType = 0;
         }
         field(78; VolUOM; Text[6])
         {
@@ -328,6 +353,7 @@ table 47016 "SL InventoryADG"
         field(79; Weight; Decimal)
         {
             Caption = 'Weight';
+            AutoFormatType = 0;
         }
         field(80; WeightUOM; Text[6])
         {
@@ -336,6 +362,7 @@ table 47016 "SL InventoryADG"
         field(81; Width; Decimal)
         {
             Caption = 'Width';
+            AutoFormatType = 0;
         }
         field(82; WidthUOM; Text[5])
         {

@@ -40,12 +40,14 @@ table 18390 "GST Tracking Entry"
         }
         field(18394; "Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(18395; "Remaining Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Remaining Quantity';
             Editable = false;
             DataClassification = CustomerContent;

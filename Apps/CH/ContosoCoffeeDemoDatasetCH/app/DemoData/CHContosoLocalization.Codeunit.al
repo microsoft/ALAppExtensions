@@ -168,6 +168,8 @@ codeunit 11620 "CH Contoso Localization"
                         FinanceModuleSetup.InitRecord();
                         CreateCHVATPostingGroups.CreateVATProductPostingGroup();
                     end;
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account CH");
                     BindSubscription(CreateCHAccScheduleLine);
                     BindSubscription(CreateCHCurrency);
                     BindSubscription(CreateCHCurrencyExRate);

@@ -16,6 +16,7 @@ table 47031 "SL PurOrdDet"
         field(1; AddlCostPct; Decimal)
         {
             Caption = 'AddlCostPct';
+            AutoFormatType = 0;
         }
         field(2; AllocCntr; Integer)
         {
@@ -44,18 +45,22 @@ table 47031 "SL PurOrdDet"
         field(8; CnvFact; Decimal)
         {
             Caption = 'CnvFact';
+            AutoFormatType = 0;
         }
         field(9; CostReceived; Decimal)
         {
             Caption = 'CostReceived';
+            AutoFormatType = 0;
         }
         field(10; CostReturned; Decimal)
         {
             Caption = 'CostReturned';
+            AutoFormatType = 0;
         }
         field(11; CostVouched; Decimal)
         {
             Caption = 'CostVouched';
+            AutoFormatType = 0;
         }
         field(12; CpnyID; Text[10])
         {
@@ -76,18 +81,22 @@ table 47031 "SL PurOrdDet"
         field(16; CuryCostReceived; Decimal)
         {
             Caption = 'CuryCostReceived';
+            AutoFormatType = 0;
         }
         field(17; CuryCostReturned; Decimal)
         {
             Caption = 'CuryCostReturned';
+            AutoFormatType = 0;
         }
         field(18; CuryCostVouched; Decimal)
         {
             Caption = 'CuryCostVouched';
+            AutoFormatType = 0;
         }
         field(19; CuryExtCost; Decimal)
         {
             Caption = 'CuryExtCost';
+            AutoFormatType = 0;
         }
         field(20; CuryID; Text[4])
         {
@@ -100,50 +109,62 @@ table 47031 "SL PurOrdDet"
         field(22; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
+            AutoFormatType = 0;
         }
         field(23; CuryTaxAmt00; Decimal)
         {
             Caption = 'CuryTaxAmt00';
+            AutoFormatType = 0;
         }
         field(24; CuryTaxAmt01; Decimal)
         {
             Caption = 'CuryTaxAmt01';
+            AutoFormatType = 0;
         }
         field(25; CuryTaxAmt02; Decimal)
         {
             Caption = 'CuryTaxAmt02';
+            AutoFormatType = 0;
         }
         field(26; CuryTaxAmt03; Decimal)
         {
             Caption = 'CuryTaxAmt03';
+            AutoFormatType = 0;
         }
         field(27; CuryTxblAmt00; Decimal)
         {
             Caption = 'CuryTxblAmt00';
+            AutoFormatType = 0;
         }
         field(28; CuryTxblAmt01; Decimal)
         {
             Caption = 'CuryTxblAmt01';
+            AutoFormatType = 0;
         }
         field(29; CuryTxblAmt02; Decimal)
         {
             Caption = 'CuryTxblAmt02';
+            AutoFormatType = 0;
         }
         field(30; CuryTxblAmt03; Decimal)
         {
             Caption = 'CuryTxblAmt03';
+            AutoFormatType = 0;
         }
         field(31; CuryUnitCost; Decimal)
         {
             Caption = 'CuryUnitCost';
+            AutoFormatType = 0;
         }
         field(32; ExtCost; Decimal)
         {
             Caption = 'ExtCost';
+            AutoFormatType = 0;
         }
         field(33; ExtWeight; Decimal)
         {
             Caption = 'ExtWeight';
+            AutoFormatType = 0;
         }
         field(34; FlatRateLineNbr; Integer)
         {
@@ -252,18 +273,22 @@ table 47031 "SL PurOrdDet"
         field(60; QtyOrd; Decimal)
         {
             Caption = 'QtyOrd';
+            AutoFormatType = 0;
         }
         field(61; QtyRcvd; Decimal)
         {
             Caption = 'QtyRcvd';
+            AutoFormatType = 0;
         }
         field(62; QtyReturned; Decimal)
         {
             Caption = 'QtyReturned';
+            AutoFormatType = 0;
         }
         field(63; QtyVouched; Decimal)
         {
             Caption = 'QtyVouched';
+            AutoFormatType = 0;
         }
         field(64; RcptPctAct; Text[1])
         {
@@ -272,10 +297,12 @@ table 47031 "SL PurOrdDet"
         field(65; RcptPctMax; Decimal)
         {
             Caption = 'RcptPctMax';
+            AutoFormatType = 0;
         }
         field(66; RcptPctMin; Decimal)
         {
             Caption = 'RcptPctMin';
+            AutoFormatType = 0;
         }
         field(67; RcptStage; Text[1])
         {
@@ -308,18 +335,22 @@ table 47031 "SL PurOrdDet"
         field(74; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(75; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(76; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(77; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(78; S4Future07; DateTime)
         {
@@ -424,18 +455,22 @@ table 47031 "SL PurOrdDet"
         field(103; TaxAmt00; Decimal)
         {
             Caption = 'TaxAmt00';
+            AutoFormatType = 0;
         }
         field(104; TaxAmt01; Decimal)
         {
             Caption = 'TaxAmt01';
+            AutoFormatType = 0;
         }
         field(105; TaxAmt02; Decimal)
         {
             Caption = 'TaxAmt02';
+            AutoFormatType = 0;
         }
         field(106; TaxAmt03; Decimal)
         {
             Caption = 'TaxAmt03';
+            AutoFormatType = 0;
         }
         field(107; TaxCalced; Text[1])
         {
@@ -472,22 +507,27 @@ table 47031 "SL PurOrdDet"
         field(115; TxblAmt00; Decimal)
         {
             Caption = 'TxblAmt00';
+            AutoFormatType = 0;
         }
         field(116; TxblAmt01; Decimal)
         {
             Caption = 'TxblAmt01';
+            AutoFormatType = 0;
         }
         field(117; TxblAmt02; Decimal)
         {
             Caption = 'TxblAmt02';
+            AutoFormatType = 0;
         }
         field(118; TxblAmt03; Decimal)
         {
             Caption = 'TxblAmt03';
+            AutoFormatType = 0;
         }
         field(119; UnitCost; Decimal)
         {
             Caption = 'UnitCost';
+            AutoFormatType = 0;
         }
         field(120; UnitMultDiv; Text[1])
         {
@@ -496,6 +536,7 @@ table 47031 "SL PurOrdDet"
         field(121; UnitWeight; Decimal)
         {
             Caption = 'UnitWeight';
+            AutoFormatType = 0;
         }
         field(122; User1; Text[30])
         {
@@ -508,10 +549,12 @@ table 47031 "SL PurOrdDet"
         field(124; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(125; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(126; User5; Text[10])
         {

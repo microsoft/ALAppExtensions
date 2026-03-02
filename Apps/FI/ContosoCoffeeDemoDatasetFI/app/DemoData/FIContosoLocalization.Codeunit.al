@@ -25,6 +25,8 @@ codeunit 13414 "FI Contoso Localization"
     var
         CreatePurchaseOrderFI: Codeunit "Create Purchase Order FI";
     begin
+        if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+            Codeunit.Run(Codeunit::"Create Allocation Account FI");
         if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Historical Data" then
             CreatePurchaseOrderFI.UpdateInvoiceMessage();
     end;

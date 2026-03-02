@@ -120,10 +120,12 @@ table 47014 "SL INSetup"
         field(27; DfltInvtLeadTime; Decimal)
         {
             Caption = 'DfltInvtLeadTime';
+            AutoFormatType = 0;
         }
         field(28; DfltInvtMfgLeadTime; Decimal)
         {
             Caption = 'DfltInvtMfgLeadTime';
+            AutoFormatType = 0;
         }
         field(29; DfltInvtSub; Text[24])
         {
@@ -464,6 +466,7 @@ table 47014 "SL INSetup"
         field(113; MinGrossProfit; Decimal)
         {
             Caption = 'MinGrossProfit';
+            AutoFormatType = 0;
         }
         field(114; MultWhse; Integer)
         {
@@ -544,18 +547,22 @@ table 47014 "SL INSetup"
         field(133; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(134; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(135; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(136; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(137; S4Future07; DateTime)
         {
@@ -632,10 +639,12 @@ table 47014 "SL INSetup"
         field(155; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(156; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(157; User5; Text[10])
         {

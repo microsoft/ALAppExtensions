@@ -30,6 +30,8 @@ table 22218 "G/L Entry Review Log"
         }
         field(5; "Reviewed Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the amount that was reviewed for the G/L entry.';
         }

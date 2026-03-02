@@ -225,28 +225,13 @@ codeunit 148003 "Library - Tax CZL"
 
     procedure ExportVIESDeclaration(VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"): Text
     var
-        VIESDeclarationLineCZL: Record "VIES Declaration Line CZL";
-        TempVIESDeclarationLineCZL: Record "VIES Declaration Line CZL" temporary;
         TempBlob: Codeunit "Temp Blob";
         FileManagement: Codeunit "File Management";
-        VIESDeclarationCZL: XMLport "VIES Declaration CZL";
         BlobOutStream: OutStream;
     begin
-        TempVIESDeclarationLineCZL.DeleteAll();
-        TempVIESDeclarationLineCZL.Reset();
-        VIESDeclarationLineCZL.SetRange("VIES Declaration No.", VIESDeclarationHeaderCZL."No.");
-        if VIESDeclarationLineCZL.FindSet() then
-            repeat
-                TempVIESDeclarationLineCZL := VIESDeclarationLineCZL;
-                TempVIESDeclarationLineCZL.Insert();
-            until VIESDeclarationLineCZL.Next() = 0;
-
+        VIESDeclarationHeaderCZL.SetRecFilter();
         TempBlob.CreateOutStream(BlobOutStream);
-        VIESDeclarationCZL.SetHeader(VIESDeclarationHeaderCZL);
-        VIESDeclarationCZL.SetLines(TempVIESDeclarationLineCZL);
-        VIESDeclarationCZL.SetDestination(BlobOutStream);
-        VIESDeclarationCZL.Export();
-
+        Xmlport.Export(XmlPort::"VIES Declaration CZL", BlobOutStream, VIESDeclarationHeaderCZL);
         exit(FileManagement.BLOBExport(TempBlob, 'Default.xml', false));
     end;
 

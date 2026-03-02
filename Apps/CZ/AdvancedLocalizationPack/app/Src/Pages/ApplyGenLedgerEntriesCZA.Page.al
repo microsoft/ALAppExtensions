@@ -72,6 +72,8 @@ page 31287 "Apply Gen. Ledger Entries CZA"
                 field(ApplyingRemainingAmountField; ApplyingRemainingAmount)
                 {
                     ApplicationArea = Basic, Suite;
+                    AutoFormatType = 1;
+                    AutoFOrmatExpression = '';
                     Caption = 'Remaining Amount';
                     Editable = false;
                     ToolTip = 'Specifies the remaining amount of general ledger entries';
@@ -130,6 +132,8 @@ page 31287 "Apply Gen. Ledger Entries CZA"
                 field("Amount to Apply"; Rec."Amount to Apply CZA")
                 {
                     ApplicationArea = Basic, Suite;
+                    AutoFormatType = 1;
+                    AutoFOrmatExpression = '';
                     ToolTip = 'Specifies the amount to apply.';
 
                     trigger OnValidate()
@@ -147,12 +151,16 @@ page 31287 "Apply Gen. Ledger Entries CZA"
                 field("Applied Amount"; Rec."Applied Amount CZA")
                 {
                     ApplicationArea = Basic, Suite;
+                    AutoFormatType = 1;
+                    AutoFOrmatExpression = '';
                     Editable = false;
                     ToolTip = 'Specifies the applied amount for the general ledger entry.';
                 }
                 field(RemainingAmountField; Remaining)
                 {
                     ApplicationArea = Basic, Suite;
+                    AutoFormatType = 1;
+                    AutoFOrmatExpression = '';
                     Caption = 'Remaining Amount';
                     ToolTip = 'Specifies the remaining amount of general ledger entries';
                     Visible = false;
@@ -199,6 +207,7 @@ page 31287 "Apply Gen. Ledger Entries CZA"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Amount to Apply';
                             Editable = false;
                             ShowCaption = false;
@@ -212,6 +221,7 @@ page 31287 "Apply Gen. Ledger Entries CZA"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Available Amount';
                             Editable = false;
                             ToolTip = 'Specifies the amount of the journal entry that you have selected as the applying entry.';
@@ -224,6 +234,7 @@ page 31287 "Apply Gen. Ledger Entries CZA"
                         {
                             ApplicationArea = Basic, Suite;
                             AutoFormatType = 1;
+                            AutoFormatExpression = '';
                             Caption = 'Balance';
                             Editable = false;
                             ToolTip = 'Specifies the description of the entry to be applied.';

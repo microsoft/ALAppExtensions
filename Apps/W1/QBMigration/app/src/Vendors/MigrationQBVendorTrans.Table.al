@@ -37,11 +37,13 @@ table 1915 "MigrationQB VendorTrans"
         }
         field(7; Amount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Amount';
         }
         field(8; OpenAmount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(9; TransType; Option)

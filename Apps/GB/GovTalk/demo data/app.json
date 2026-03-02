@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "First party application for GovTalk",
   "description": "Provides functionality for GovTalk",
-  "version": "28.0.0.0",
+  "version": "29.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
@@ -16,13 +16,13 @@
       "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
       "name": "Contoso Coffee Demo Dataset",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     },
     {
       "id": "80672d74-d90a-4eb0-8f90-5b9bcea58dca",
       "name": "GovTalk",
       "publisher": "Microsoft",
-      "version": "28.0.0.0"
+      "version": "29.0.0.0"
     }
   ],
   "screenshots": [],
@@ -38,7 +38,7 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "28.0.0.0",
+  "application": "29.0.0.0",
   "target": "OnPrem",
   "features": [
     "NoImplicitWith",

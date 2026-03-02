@@ -48,6 +48,7 @@ table 47032 "SL POReceipt"
         field(9; CuryFreight; Decimal)
         {
             Caption = 'CuryFreight';
+            AutoFormatType = 0;
         }
         field(10; CuryID; Text[4])
         {
@@ -60,6 +61,7 @@ table 47032 "SL POReceipt"
         field(12; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
+            AutoFormatType = 0;
         }
         field(13; CuryRateType; Text[6])
         {
@@ -68,18 +70,22 @@ table 47032 "SL POReceipt"
         field(14; CuryRcptAmt; Decimal)
         {
             Caption = 'CuryRcptAmt';
+            AutoFormatType = 0;
         }
         field(15; CuryRcptAmtTot; Decimal)
         {
             Caption = 'CuryRcptAmtTot';
+            AutoFormatType = 0;
         }
         field(16; CuryRcptCtrlAmt; Decimal)
         {
             Caption = 'CuryRcptCtrlAmt';
+            AutoFormatType = 0;
         }
         field(17; CuryRcptItemTotal; Decimal)
         {
             Caption = 'CuryRcptItemTotal';
+            AutoFormatType = 0;
         }
         field(18; DfltFromPO; Text[1])
         {
@@ -92,6 +98,7 @@ table 47032 "SL POReceipt"
         field(20; Freight; Decimal)
         {
             Caption = 'Freight';
+            AutoFormatType = 0;
         }
         field(21; InBal; Integer)
         {
@@ -144,18 +151,22 @@ table 47032 "SL POReceipt"
         field(33; RcptAmt; Decimal)
         {
             Caption = 'RcptAmt';
+            AutoFormatType = 0;
         }
         field(34; RcptAmtTot; Decimal)
         {
             Caption = 'RcptAmtTot';
+            AutoFormatType = 0;
         }
         field(35; RcptCtrlAmt; Decimal)
         {
             Caption = 'RcptCtrlAmt';
+            AutoFormatType = 0;
         }
         field(36; RcptCtrlQty; Decimal)
         {
             Caption = 'RcptCtrlQty';
+            AutoFormatType = 0;
         }
         field(37; RcptDate; DateTime)
         {
@@ -164,6 +175,7 @@ table 47032 "SL POReceipt"
         field(38; RcptItemTotal; Decimal)
         {
             Caption = 'RcptItemTotal';
+            AutoFormatType = 0;
         }
         field(39; RcptNbr; Text[10])
         {
@@ -172,10 +184,12 @@ table 47032 "SL POReceipt"
         field(40; RcptQty; Decimal)
         {
             Caption = 'RcptQty';
+            AutoFormatType = 0;
         }
         field(41; RcptQtyTot; Decimal)
         {
             Caption = 'RcptQtyTot';
+            AutoFormatType = 0;
         }
         field(42; RcptType; Text[1])
         {
@@ -204,18 +218,22 @@ table 47032 "SL POReceipt"
         field(48; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(49; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(50; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(51; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(52; S4Future07; DateTime)
         {
@@ -264,10 +282,12 @@ table 47032 "SL POReceipt"
         field(63; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(64; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(65; User5; Text[10])
         {

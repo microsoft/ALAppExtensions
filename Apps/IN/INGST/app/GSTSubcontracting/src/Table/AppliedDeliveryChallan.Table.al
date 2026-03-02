@@ -116,6 +116,7 @@ table 18466 "Applied Delivery Challan"
         }
         field(10; "Qty. to Receive"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Receive';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -138,6 +139,7 @@ table 18466 "Applied Delivery Challan"
         }
         field(11; "Qty. to Consume"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Consume';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -162,6 +164,7 @@ table 18466 "Applied Delivery Challan"
         }
         field(12; "Qty. to Return (C.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. to Return (C.E.)';
             DecimalPlaces = 0 : 3;
             Editable = true;
@@ -187,6 +190,7 @@ table 18466 "Applied Delivery Challan"
         }
         field(13; "Qty. To Return (V.E.)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. To Return (V.E.)';
             DecimalPlaces = 0 : 3;
             Editable = true;

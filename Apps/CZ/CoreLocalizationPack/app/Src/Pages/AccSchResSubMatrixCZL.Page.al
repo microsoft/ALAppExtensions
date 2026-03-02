@@ -33,6 +33,8 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
                 }
                 field(Field1; Value[1])
                 {
+                    AutoFormatExpression = '';
+                    AutoFormatType = 2;
                     ApplicationArea = All;
                     BlankZero = true;
                     CaptionClass = '3,' + MATRIX_CaptionSet[1];
@@ -52,6 +54,8 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
                 }
                 field(Field2; Value[2])
                 {
+                    AutoFormatExpression = '';
+                    AutoFormatType = 2;
                     ApplicationArea = All;
                     BlankZero = true;
                     CaptionClass = '3,' + MATRIX_CaptionSet[2];
@@ -71,6 +75,8 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
                 }
                 field(Field3; Value[3])
                 {
+                    AutoFormatExpression = '';
+                    AutoFormatType = 2;
                     ApplicationArea = All;
                     BlankZero = true;
                     CaptionClass = '3,' + MATRIX_CaptionSet[3];
@@ -90,6 +96,8 @@ page 31207 "Acc. Sch. Res. Sub. Matrix CZL"
                 }
                 field(Field4; Value[4])
                 {
+                    AutoFormatExpression = '';
+                    AutoFormatType = 2;
                     ApplicationArea = All;
                     BlankZero = true;
                     CaptionClass = '3,' + MATRIX_CaptionSet[4];

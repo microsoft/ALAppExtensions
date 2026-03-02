@@ -44,6 +44,7 @@ table 4062 "GPPOPReceiptLineHist"
         }
         field(8; UMQTYINB; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'U Of M QTY In Base';
             DataClassification = CustomerContent;
         }
@@ -69,11 +70,13 @@ table 4062 "GPPOPReceiptLineHist"
         }
         field(13; UNITCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
         }
         field(14; EXTDCOST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Extended Cost';
             DataClassification = CustomerContent;
         }
@@ -84,41 +87,49 @@ table 4062 "GPPOPReceiptLineHist"
         }
         field(16; RcptLineNoteIDArray_1; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReceiptLine Note ID Array 1';
             DataClassification = CustomerContent;
         }
         field(17; RcptLineNoteIDArray_2; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReceiptLine Note ID Array 2';
             DataClassification = CustomerContent;
         }
         field(18; RcptLineNoteIDArray_3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReceiptLine Note ID Array 3';
             DataClassification = CustomerContent;
         }
         field(19; RcptLineNoteIDArray_4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReceiptLine Note ID Array 4';
             DataClassification = CustomerContent;
         }
         field(20; RcptLineNoteIDArray_5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReceiptLine Note ID Array 5';
             DataClassification = CustomerContent;
         }
         field(21; RcptLineNoteIDArray_6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReceiptLine Note ID Array 6';
             DataClassification = CustomerContent;
         }
         field(22; RcptLineNoteIDArray_7; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReceiptLine Note ID Array 7';
             DataClassification = CustomerContent;
         }
         field(23; RcptLineNoteIDArray_8; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ReceiptLine Note ID Array 8';
             DataClassification = CustomerContent;
         }
@@ -173,11 +184,13 @@ table 4062 "GPPOPReceiptLineHist"
         }
         field(33; ORUNTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Unit Cost';
             DataClassification = CustomerContent;
         }
         field(34; OREXTCST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Extended Cost';
             DataClassification = CustomerContent;
         }
@@ -225,21 +238,25 @@ table 4062 "GPPOPReceiptLineHist"
         }
         field(43; TAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Amount';
             DataClassification = CustomerContent;
         }
         field(44; ORTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Tax Amount';
             DataClassification = CustomerContent;
         }
         field(45; BCKTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Tax Amount';
             DataClassification = CustomerContent;
         }
         field(46; OBTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Tax Amount';
             DataClassification = CustomerContent;
         }
@@ -315,31 +332,37 @@ table 4062 "GPPOPReceiptLineHist"
         }
         field(61; OriginatingPrepaymentAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Prepayment Amount';
             DataClassification = CustomerContent;
         }
         field(62; ORDISTKN; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Discount Taken Amount';
             DataClassification = CustomerContent;
         }
         field(63; ORTDISAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Trade Discount Amount';
             DataClassification = CustomerContent;
         }
         field(64; ORFRTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Freight Amount';
             DataClassification = CustomerContent;
         }
         field(65; ORMISCAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Misc Amount';
             DataClassification = CustomerContent;
         }
         field(66; OriginatingPPTaxAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Prepayment Tax Amount';
             DataClassification = CustomerContent;
         }

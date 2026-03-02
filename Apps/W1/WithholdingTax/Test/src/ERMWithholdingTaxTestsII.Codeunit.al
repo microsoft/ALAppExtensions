@@ -745,7 +745,6 @@ codeunit 148322 "ERM Withholding Tax Tests II"
     begin
         LibraryPurchase.CreateVendor(Vendor);
         Vendor.Validate("VAT Bus. Posting Group", VATBusPostingGroup);
-        Vendor.Validate("WHT ABN", '');
         Vendor.Validate("Withholding Tax Liable", true);
         Vendor.Validate("Wthldg. Tax Bus. Post. Group", WHTBusinessPostingGroup);
         Vendor.Modify(true);

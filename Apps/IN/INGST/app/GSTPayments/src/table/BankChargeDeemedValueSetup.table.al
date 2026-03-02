@@ -20,11 +20,13 @@ table 18244 "Bank Charge Deemed Value Setup"
         }
         field(2; "Lower Limit"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Lower Limit';
             DataClassification = CustomerContent;
         }
         field(3; "Upper Limit"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Upper Limit';
             DataClassification = CustomerContent;
             NotBlank = true;
@@ -36,18 +38,21 @@ table 18244 "Bank Charge Deemed Value Setup"
         }
         field(5; "Min. Deemed Value"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Min. Deemed Value';
             DataClassification = CustomerContent;
             MinValue = 0;
         }
         field(6; "Max. Deemed Value"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Max. Deemed Value';
             DataClassification = CustomerContent;
             MinValue = 0;
         }
         field(7; "Deemed %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Deemed %';
             DataClassification = CustomerContent;
             MinValue = 0;
@@ -55,6 +60,7 @@ table 18244 "Bank Charge Deemed Value Setup"
         }
         field(8; "Fixed Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Fixed Amount';
             DataClassification = CustomerContent;
             MinValue = 0;

@@ -6,6 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Setup;
 using System.TestLibraries.Utilities;
@@ -1291,6 +1292,92 @@ codeunit 148010 "IRS 1099 Document Tests"
             IRS1099FormDocLine."Include In 1099",
             'Include In 1099 should be FALSE when Amount is below Minimum Reportable Amount');
         IRS1099FormDocHeader.Delete(true);
+    end;
+
+    [Test]
+    procedure IRS1099CodeInPurchInvHeaderUpdatedWhenChangedInVendLedgEntry()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VendorLedgEntry: Record "Vendor Ledger Entry";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        VendNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: array[2] of Code[20];
+        InvNo: Code[20];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 611578] IRS 1099 Form Box No. in Purch. Inv. Header is updated when changed in the Vendor Ledger Entry
+        Initialize();
+
+        // [GIVEN] IRS Reporting Period for WorkDate with Form "F" and two Form Boxes "FB1" and "FB2"
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo :=
+            LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate(), WorkDate());
+        FormBoxNo[1] :=
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), WorkDate(), FormNo);
+        FormBoxNo[2] :=
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), WorkDate(), FormNo);
+
+        // [GIVEN] Vendor "V" with IRS 1099 setup pointing to Form Box "FB1"
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), WorkDate(), FormNo, FormBoxNo[1]);
+
+        // [GIVEN] Posted purchase invoice for vendor "V"
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(), 1, 1);
+        InvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Change "IRS 1099 Form Box No." in the Vendor Ledger Entry to "FB2"
+        LibraryERM.FindVendorLedgerEntry(VendorLedgEntry, VendorLedgEntry."Document Type"::Invoice, InvNo);
+        VendorLedgEntry.Validate("IRS 1099 Form Box No.", FormBoxNo[2]);
+        VendorLedgEntry.Modify(true);
+
+        // [THEN] "IRS 1099 Form Box No." in the related Purch. Inv. Header is updated to "FB2"
+        PurchInvHeader.Get(InvNo);
+        Assert.AreEqual(FormBoxNo[2], PurchInvHeader."IRS 1099 Form Box No.", 'IRS 1099 Form Box No. in Purch. Inv. Header should be updated');
+    end;
+
+    [Test]
+    procedure IRS1099CodeInPurchCrMemoHeaderUpdatedWhenChangedInVendLedgEntry()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VendorLedgEntry: Record "Vendor Ledger Entry";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        VendNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: array[2] of Code[20];
+        CrMemoNo: Code[20];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 611578] IRS 1099 Form Box No. in Purch. Cr. Memo Hdr. is updated when changed in the Vendor Ledger Entry
+        Initialize();
+
+        // [GIVEN] IRS Reporting Period for WorkDate with Form "F" and two Form Boxes "FB1" and "FB2"
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo :=
+            LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate(), WorkDate());
+        FormBoxNo[1] :=
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), WorkDate(), FormNo);
+        FormBoxNo[2] :=
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), WorkDate(), FormNo);
+
+        // [GIVEN] Vendor "V" with IRS 1099 setup pointing to Form Box "FB1"
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), WorkDate(), FormNo, FormBoxNo[1]);
+
+        // [GIVEN] Posted purchase credit memo for vendor "V"
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", VendNo);
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(), 1, 1);
+        CrMemoNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Change "IRS 1099 Form Box No." in the Vendor Ledger Entry to "FB2"
+        LibraryERM.FindVendorLedgerEntry(VendorLedgEntry, VendorLedgEntry."Document Type"::"Credit Memo", CrMemoNo);
+        VendorLedgEntry.Validate("IRS 1099 Form Box No.", FormBoxNo[2]);
+        VendorLedgEntry.Modify(true);
+
+        // [THEN] "IRS 1099 Form Box No." in the related Purch. Cr. Memo Hdr. is updated to "FB2"
+        PurchCrMemoHdr.Get(CrMemoNo);
+        Assert.AreEqual(FormBoxNo[2], PurchCrMemoHdr."IRS 1099 Form Box No.", 'IRS 1099 Form Box No. in Purch. Cr. Memo Hdr. should be updated');
     end;
 
     local procedure Initialize()

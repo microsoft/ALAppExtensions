@@ -48,42 +48,56 @@ table 18209 "Posted Settlement Entries"
         }
         field(7; "Payment Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Liability';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(8; "GST TDS Credit Available"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS Credit Available';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(9; "GST TCS Credit Available"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TCS Credit Available';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(10; "Net Payment Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Net Payment Liability';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(11; "Credit Availed"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Availed';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(12; "Distributed Credit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Distributed Credit';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(13; "Total Credit Available"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Credit Available';
             DataClassification = CustomerContent;
             Editable = false;
@@ -91,12 +105,16 @@ table 18209 "Posted Settlement Entries"
         }
         field(14; "Credit Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Utilized';
             DataClassification = CustomerContent;
             MinValue = 0;
         }
         field(15; "Payment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -104,6 +122,8 @@ table 18209 "Posted Settlement Entries"
         }
         field(16; Interest; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Interest';
             DataClassification = CustomerContent;
             Editable = false;
@@ -118,6 +138,8 @@ table 18209 "Posted Settlement Entries"
         }
         field(18; Penalty; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Penalty';
             DataClassification = CustomerContent;
             Editable = false;
@@ -132,6 +154,8 @@ table 18209 "Posted Settlement Entries"
         }
         field(20; Fees; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Fees';
             DataClassification = CustomerContent;
             Editable = false;
@@ -146,6 +170,8 @@ table 18209 "Posted Settlement Entries"
         }
         field(22; Others; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Others';
             DataClassification = CustomerContent;
             Editable = false;
@@ -183,18 +209,24 @@ table 18209 "Posted Settlement Entries"
         }
         field(27; "Surplus Credit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Surplus Credit';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(28; "Surplus Cr. Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Surplus Cr. Utilized';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(29; "Carry Forward"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Carry Forward';
             DataClassification = CustomerContent;
             Editable = false;
@@ -225,18 +257,24 @@ table 18209 "Posted Settlement Entries"
         }
         field(41; "Payment Liability - Rev. Chrg."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Liability - Rev. Chrg.';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(42; "Payment Amount - Rev. Chrg."; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Amount - Rev. Chrg.';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(43; "UnAdjutsed Credit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'UnAdjutsed Credit';
             DataClassification = CustomerContent;
             Editable = false;
@@ -250,41 +288,55 @@ table 18209 "Posted Settlement Entries"
         }
         field(45; "Unadjutsed Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Unadjutsed Liability';
             DataClassification = CustomerContent;
         }
         field(46; "Total Payment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Payment Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(47; "GST TDS Credit Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS Credit Utilized';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(48; "GST TCS Credit Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TCS Credit Utilized';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(49; "GST TDS Credit Unutilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TDS Credit Unutilized';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(50; "GST TCS Credit Unutilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TCS Credit Unutilized';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(51; "GST TCS Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST TCS Liability';
             DataClassification = CustomerContent;
             Editable = false;

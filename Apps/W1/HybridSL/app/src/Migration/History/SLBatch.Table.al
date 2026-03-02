@@ -52,6 +52,7 @@ table 47027 "SL Batch"
         field(10; clearamt; Decimal)
         {
             Caption = 'clearamt';
+            AutoFormatType = 0;
         }
         field(11; Cleared; Integer)
         {
@@ -76,26 +77,32 @@ table 47027 "SL Batch"
         field(16; CrTot; Decimal)
         {
             Caption = 'CrTot';
+            AutoFormatType = 0;
         }
         field(17; CtrlTot; Decimal)
         {
             Caption = 'CtrlTot';
+            AutoFormatType = 0;
         }
         field(18; CuryCrTot; Decimal)
         {
             Caption = 'CuryCrTot';
+            AutoFormatType = 0;
         }
         field(19; CuryCtrlTot; Decimal)
         {
             Caption = 'CuryCtrlTot';
+            AutoFormatType = 0;
         }
         field(20; CuryDepositAmt; Decimal)
         {
             Caption = 'CuryDepositAmt';
+            AutoFormatType = 0;
         }
         field(21; CuryDrTot; Decimal)
         {
             Caption = 'CuryDrTot';
+            AutoFormatType = 0;
         }
         field(22; CuryEffDate; DateTime)
         {
@@ -112,6 +119,7 @@ table 47027 "SL Batch"
         field(25; CuryRate; Decimal)
         {
             Caption = 'CuryRate';
+            AutoFormatType = 0;
         }
         field(26; CuryRateType; Text[6])
         {
@@ -132,6 +140,7 @@ table 47027 "SL Batch"
         field(30; DepositAmt; Decimal)
         {
             Caption = 'DepositAmt';
+            AutoFormatType = 0;
         }
         field(31; Descr; Text[30])
         {
@@ -140,6 +149,7 @@ table 47027 "SL Batch"
         field(32; DrTot; Decimal)
         {
             Caption = 'DrTot';
+            AutoFormatType = 0;
         }
         field(33; EditScrnNbr; Text[5])
         {
@@ -216,18 +226,22 @@ table 47027 "SL Batch"
         field(51; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(52; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(53; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(54; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(55; S4Future07; DateTime)
         {
@@ -272,10 +286,12 @@ table 47027 "SL Batch"
         field(66; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(67; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(68; User5; Text[10])
         {

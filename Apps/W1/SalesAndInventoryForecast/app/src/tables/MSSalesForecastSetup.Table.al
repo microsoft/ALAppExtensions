@@ -64,6 +64,7 @@ table 1853 "MS - Sales Forecast Setup"
         }
         field(9; "Variance %"; Decimal)
         {
+            AutoFormatType = 0;
             InitValue = 35;
             MaxValue = 100;
             MinValue = 1;
@@ -87,11 +88,13 @@ table 1853 "MS - Sales Forecast Setup"
         }
         field(13; Limit; Decimal)
         {
+            AutoFormatType = 0;
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(14; "Processing Time"; Decimal)
         {
+            AutoFormatType = 0;
             Editable = false;
             DataClassification = CustomerContent;
         }

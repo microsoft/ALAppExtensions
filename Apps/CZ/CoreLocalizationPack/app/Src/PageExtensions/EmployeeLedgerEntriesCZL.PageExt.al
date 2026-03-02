@@ -33,6 +33,8 @@ pageextension 31100 "Employee Ledger Entries CZL" extends "Employee Ledger Entri
         {
             field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApplyCZL())
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 Caption = 'Suggested Amount to Apply (LCY)';
                 ApplicationArea = Basic, Suite;
                 Editable = false;

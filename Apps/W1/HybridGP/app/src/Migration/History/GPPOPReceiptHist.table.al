@@ -60,31 +60,37 @@ table 4061 "GPPOPReceiptHist"
         }
         field(11; SUBTOTAL; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Subtotal';
             DataClassification = CustomerContent;
         }
         field(12; TRDISAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Trade Discount Amount';
             DataClassification = CustomerContent;
         }
         field(14; FRTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Freight Amount';
             DataClassification = CustomerContent;
         }
         field(15; MISCAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Misc Amount';
             DataClassification = CustomerContent;
         }
         field(16; TAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Amount';
             DataClassification = CustomerContent;
         }
         field(17; TEN99AMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '1099 Amount';
             DataClassification = CustomerContent;
         }
@@ -100,11 +106,13 @@ table 4061 "GPPOPReceiptHist"
         }
         field(20; DSCDLRAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Dollar Amount';
             DataClassification = CustomerContent;
         }
         field(21; DISAVAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Available Amount';
             DataClassification = CustomerContent;
         }
@@ -131,41 +139,49 @@ table 4061 "GPPOPReceiptHist"
         }
         field(26; RCPTNOTE_1; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Note ID Array 1';
             DataClassification = CustomerContent;
         }
         field(27; RCPTNOTE_2; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Note ID Array 2';
             DataClassification = CustomerContent;
         }
         field(28; RCPTNOTE_3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Note ID Array 3';
             DataClassification = CustomerContent;
         }
         field(29; RCPTNOTE_4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Note ID Array 4';
             DataClassification = CustomerContent;
         }
         field(30; RCPTNOTE_5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Note ID Array 5';
             DataClassification = CustomerContent;
         }
         field(31; RCPTNOTE_6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Note ID Array 6';
             DataClassification = CustomerContent;
         }
         field(32; RCPTNOTE_7; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Note ID Array 7';
             DataClassification = CustomerContent;
         }
         field(33; RCPTNOTE_8; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Receipt Note ID Array 8';
             DataClassification = CustomerContent;
         }
@@ -231,6 +247,7 @@ table 4061 "GPPOPReceiptHist"
         }
         field(46; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -252,6 +269,7 @@ table 4061 "GPPOPReceiptHist"
         }
         field(50; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Denomination Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -263,41 +281,49 @@ table 4061 "GPPOPReceiptHist"
         }
         field(52; ORSUBTOT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Subtotal';
             DataClassification = CustomerContent;
         }
         field(53; ORTDISAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Trade Discount Amount';
             DataClassification = CustomerContent;
         }
         field(54; ORFRTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Freight Amount';
             DataClassification = CustomerContent;
         }
         field(55; ORMISCAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Misc Amount';
             DataClassification = CustomerContent;
         }
         field(56; ORTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Tax Amount';
             DataClassification = CustomerContent;
         }
         field(57; OR1099AM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating 1099 Amount';
             DataClassification = CustomerContent;
         }
         field(58; ORDDLRAT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Discount Dollar Amount';
             DataClassification = CustomerContent;
         }
         field(59; ORDAVAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Discount Available Amount';
             DataClassification = CustomerContent;
         }
@@ -308,6 +334,7 @@ table 4061 "GPPOPReceiptHist"
         }
         field(61; WITHHAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Withholding Amount';
             DataClassification = CustomerContent;
         }
@@ -355,31 +382,37 @@ table 4061 "GPPOPReceiptHist"
         }
         field(70; FRTTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(71; ORFRTTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(72; MSCTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Misc Tax Amount';
             DataClassification = CustomerContent;
         }
         field(73; ORMSCTAX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Misc Tax Amount';
             DataClassification = CustomerContent;
         }
         field(74; BCKTXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Tax Amount';
             DataClassification = CustomerContent;
         }
         field(75; OBTAXAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Tax Amount';
             DataClassification = CustomerContent;
         }
@@ -390,21 +423,25 @@ table 4061 "GPPOPReceiptHist"
         }
         field(77; BackoutFreightTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(78; OrigBackoutFreightTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Freight Tax Amount';
             DataClassification = CustomerContent;
         }
         field(79; BackoutMiscTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Misc Tax Amount';
             DataClassification = CustomerContent;
         }
         field(80; OrigBackoutMiscTaxAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Backout Misc Tax Amount';
             DataClassification = CustomerContent;
         }
@@ -430,6 +467,7 @@ table 4061 "GPPOPReceiptHist"
         }
         field(85; Total_Landed_Cost_Amount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Landed Cost Amount';
             DataClassification = CustomerContent;
         }
@@ -476,31 +514,37 @@ table 4061 "GPPOPReceiptHist"
         }
         field(94; PrepaymentAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Prepayment Amount';
             DataClassification = CustomerContent;
         }
         field(95; OriginatingPrepaymentAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Prepayment Amount';
             DataClassification = CustomerContent;
         }
         field(96; DISTKNAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Taken Amount';
             DataClassification = CustomerContent;
         }
         field(97; ORDISTKN; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Discount Taken Amount';
             DataClassification = CustomerContent;
         }
         field(98; DISAVTKN; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Available Taken';
             DataClassification = CustomerContent;
         }
         field(99; ORDATKN; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Discount Available Taken';
             DataClassification = CustomerContent;
         }

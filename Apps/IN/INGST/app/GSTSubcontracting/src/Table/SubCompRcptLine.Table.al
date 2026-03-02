@@ -63,6 +63,7 @@ table 18475 "Sub. Comp. Rcpt. Line"
         }
         field(15; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DecimalPlaces = 0 : 5;
             Description = '1';
@@ -71,18 +72,21 @@ table 18475 "Sub. Comp. Rcpt. Line"
         field(22; "Direct Unit Cost"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Direct Unit Cost';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(23; "Unit Cost (LCY)"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Unit Cost (LCY)';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(31; "Unit Price (LCY)"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Unit Price (LCY)';
             DataClassification = EndUserIdentifiableInformation;
         }
@@ -98,7 +102,7 @@ table 18475 "Sub. Comp. Rcpt. Line"
         }
         field(100; "Unit Cost"; Decimal)
         {
-            AutoFormatType = 2;
+            AutoFormatType = 0;
             Caption = 'Unit Cost';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
@@ -132,6 +136,7 @@ table 18475 "Sub. Comp. Rcpt. Line"
         }
         field(5404; "Qty. per Unit of Measure"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. per Unit of Measure';
             DecimalPlaces = 0 : 5;
             Editable = false;
@@ -145,12 +150,14 @@ table 18475 "Sub. Comp. Rcpt. Line"
         }
         field(5415; "Quantity (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity (Base)';
             DecimalPlaces = 0 : 5;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(5461; "Qty. Invoiced (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. Invoiced (Base)';
             DecimalPlaces = 0 : 5;
             Editable = false;

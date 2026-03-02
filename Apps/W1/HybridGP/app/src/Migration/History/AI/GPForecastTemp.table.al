@@ -31,6 +31,7 @@ table 4031 "GPForecastTemp"
         }
         field(4; Amount; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Document Amount';
         }
