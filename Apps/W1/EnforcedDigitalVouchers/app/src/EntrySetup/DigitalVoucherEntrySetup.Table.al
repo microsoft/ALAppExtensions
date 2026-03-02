@@ -36,7 +36,7 @@ table 5579 "Digital Voucher Entry Setup"
         {
             trigger OnValidate()
             var
-                GenerateAutoMustBeEnabledErr: Label 'Generate Automatically must be enabled when %1 is %2.', Comment = '%1 - check type field caption, %2 - check type value';
+                GenerateAutoMustBeEnabledErr: Label 'Generate Automatically must be enabled when %1 is %2.', Comment = '%1 - Check type field caption, %2 - Check type value';
             begin
                 if ("Check Type" = "Check Type"::"E-Document") and (not "Generate Automatically") then
                     Error(GenerateAutoMustBeEnabledErr, FieldCaption("Check Type"), "Check Type"::"E-Document");
