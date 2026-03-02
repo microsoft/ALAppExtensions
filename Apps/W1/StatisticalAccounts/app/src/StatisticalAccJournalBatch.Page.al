@@ -38,8 +38,8 @@ page 2630 "Statistical Acc. Journal Batch"
                 }
                 field("No. of Lines"; Rec."No. of Lines")
                 {
+                    ApplicationArea = Basic, Suite;
                     Visible = false;
-                    ApplicationArea = All;
                     trigger OnDrillDown()
                     begin
                         OpenWorksheet();

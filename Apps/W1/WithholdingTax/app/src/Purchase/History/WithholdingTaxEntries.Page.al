@@ -213,11 +213,17 @@ page 6788 "Withholding Tax Entries"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the Document Date from the applied Withholding Tax Entry is stored for applying the Withholding Tax Entry table.';
                 }
+#if not CLEAN29
                 field("Actual Vendor No."; Rec."Actual Vendor No.")
                 {
                     ApplicationArea = Basic, Suite;
+                    Visible = false;
                     ToolTip = 'Specifies the Actual Vendor No. from which Invoices or Journals is copied.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '29.0';
+                    ObsoleteReason = 'This field has been removed and is no longer required.';
                 }
+#endif
                 field("Withholding Certificate No."; Rec."Wthldg. Tax Certificate No.")
                 {
                     ApplicationArea = Basic, Suite;

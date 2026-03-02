@@ -33,11 +33,13 @@ table 10777 "Verifactu Setup"
                 SIISetup: Record "SII Setup";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 ConfirmMgt: Codeunit "Confirm Management";
+                Verifactu: Codeunit Verifactu;
                 VerifactuSetupConsentProvidedLbl: Label 'Verifactu Setup - consent provided by UserSecurityId %1.', Locked = true;
             begin
                 if Enabled and ("Certificate Code" = '') then
                     Error(CannotEnableWithoutCertificateErr);
                 if Enabled then begin
+                    Verifactu.CheckCompanyInformation();
                     if SIISetup.IsEnabled() then
                         if ConfirmMgt.GetResponseOrDefault(DisableSIIQst, false) then begin
                             SIISetup.Enabled := false;

@@ -54,8 +54,8 @@ page 18871 "TCS Journal Batches"
                 }
                 field("No. of Lines"; Rec."No. of Lines")
                 {
-                    Visible = false;
                     ApplicationArea = Basic, Suite;
+                    Visible = false;
                     trigger OnDrillDown()
                     begin
                         TCSAdjustment.TemplateSelectionFromTCSBatch(Rec);

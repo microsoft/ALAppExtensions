@@ -5,7 +5,9 @@
 namespace Microsoft.WithholdingTax;
 
 using Microsoft.Purchases.Document;
+#if not CLEAN29
 using Microsoft.Purchases.Vendor;
+#endif
 
 tableextension 6788 "Withholding Purch. Header Ext" extends "Purchase Header"
 {
@@ -28,8 +30,15 @@ tableextension 6788 "Withholding Purch. Header Ext" extends "Purchase Header"
         field(6793; "WHT Actual Vendor No."; Code[20])
         {
             Caption = 'Actual Vendor No.';
+#if not CLEAN29
             TableRelation = Vendor;
+#endif
             DataClassification = CustomerContent;
+#if not CLEAN29
+            ObsoleteState = Pending;
+            ObsoleteTag = '29.0';
+            ObsoleteReason = 'This field has been removed and is no longer required.';
+#endif
         }
     }
 }

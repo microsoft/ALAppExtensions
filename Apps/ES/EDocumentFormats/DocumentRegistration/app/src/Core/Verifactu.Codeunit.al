@@ -5,6 +5,8 @@
 namespace Microsoft.EServices.EDocument.Verifactu;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 using System.Utilities;
 
 codeunit 10776 "Verifactu" implements "E-Document"
@@ -21,6 +23,23 @@ codeunit 10776 "Verifactu" implements "E-Document"
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
+        CheckCompanyInformation();
+    end;
+
+    procedure CheckCompanyInformation()
+    var
+        CompanyInformation: Record "Company Information";
+        PostCode: Record "Post Code";
+        PostCodeNotFoundErr: Label 'The Post Code %1 for City %2 from Company Information was not found.', Comment = '%1 = Post Code, %2 = City';
+        TimeZoneMissingErr: Label 'The Time Zone is not specified for Post Code %1. Set up the Time Zone on the Post Codes page.', Comment = '%1 = Post Code';
+    begin
+        CompanyInformation.Get();
+        CompanyInformation.TestField("Post Code");
+        CompanyInformation.TestField(City);
+        if not PostCode.Get(CompanyInformation."Post Code", CompanyInformation.City) then
+            Error(PostCodeNotFoundErr, CompanyInformation."Post Code", CompanyInformation.City);
+        if PostCode."Time Zone" = '' then
+            Error(TimeZoneMissingErr, PostCode.Code);
     end;
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")

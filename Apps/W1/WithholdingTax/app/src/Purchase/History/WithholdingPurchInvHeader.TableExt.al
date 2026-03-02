@@ -50,6 +50,11 @@ tableextension 6798 "Withholding Purch. Inv. Header" extends "Purch. Inv. Header
         {
             Caption = 'Actual Vendor No.';
             DataClassification = CustomerContent;
+#if not CLEAN29
+            ObsoleteState = Pending;
+            ObsoleteTag = '29.0';
+            ObsoleteReason = 'This field has been removed and is no longer required.';
+#endif
         }
         field(6794; "WHT Printed Tax Document"; Boolean)
         {

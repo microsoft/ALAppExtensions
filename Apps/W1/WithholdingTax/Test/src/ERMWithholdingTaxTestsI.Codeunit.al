@@ -1782,6 +1782,58 @@ codeunit 148321 "ERM Withholding Tax Tests I"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure VerifyExternalDocumentNoAndBaseAmountOnWithholdingTaxEntry()
+    var
+        WithholdingTaxPostingSetup: Record "Withholding Tax Posting Setup";
+        VATPostingSetup: Record "VAT Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: array[2] of Record "Purchase Line";
+        WHTEntry: Record "Withholding Tax Entry";
+        GeneralPostingSetup: Record "General Posting Setup";
+        VendorNo: Code[20];
+        GLAccountNo: Code[20];
+        PostedDocumentNo: Code[20];
+        UnrealizedBase: Decimal;
+    begin
+        // [SCENARIO 285194] - Test to verify after Posting Purchase Invoice with WHT, WHT Entry - External Document No. is populated with Vendor Invoice No. and Unrealized Base is correctly calculated.
+        Initialize();
+
+        // [GIVEN] WHT Posting Setup has been created.
+        UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
+        LibraryERM.FindZeroVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
+        LibraryWithholdingTax.CreateWHTPostingSetupWithPayableGLAccounts(WithholdingTaxPostingSetup);
+        LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
+
+        // [GIVEN] Create Vendor and GL Account with Posting Setup.
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WithholdingTaxPostingSetup."Wthldg. Tax Bus. Post. Group");
+        GLAccountNo := CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WithholdingTaxPostingSetup."Wthldg. Tax Prod. Post. Group");
+
+        // [GIVEN] Create Purchase Invoice with two lines with WHT and WHT Absorb Base
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo);
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryRandom.RandText(30));
+        PurchaseHeader.Modify();
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine[1], PurchaseHeader, PurchaseLine[1].Type::"G/L Account", GLAccountNo, 1);
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine[2], PurchaseHeader, PurchaseLine[2].Type::"G/L Account", GLAccountNo, 10);
+        PurchaseLine[2].Validate("Withholding Tax Absorb Base", 600);
+        PurchaseLine[2].Modify();
+
+        // [WHEN] Post Purchase Invoice.
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Verify WHT Entry - External Document No. is populated with Vendor Invoice No. and Unrealized Base is correctly calculated.                
+        WHTEntry.SetRange("Document No.", PostedDocumentNo);
+        Assert.RecordCount(WHTEntry, 1);
+        WHTEntry.FindFirst();
+        UnrealizedBase := PurchaseLine[1].Amount + PurchaseLine[2]."Withholding Tax Absorb Base";
+        Assert.AreNearlyEqual(
+          UnrealizedBase, WHTEntry."Unrealized Base", LibraryERM.GetAmountRoundingPrecision(),
+          StrSubstNo(AmountErr, WHTEntry.FieldCaption("Unrealized Base"), UnrealizedBase));
+        Assert.AreEqual(PurchaseHeader."Vendor Invoice No.", WHTEntry."External Document No.", WHTEntry.FieldCaption("External Document No."));
+        Assert.AreEqual(PurchaseHeader."Pay-to Country/Region Code", WHTEntry."Country/Region Code", WHTEntry.FieldCaption("Country/Region Code"));
+    end;
+
+    [Test]
     [HandlerFunctions('UnapplyVendorEntriesPageHandler,ConfirmHandler,MessageHandler')]
     [Scope('OnPrem')]
     procedure UnapplyVendorLedgerEntryAmountOnGLEntry()
