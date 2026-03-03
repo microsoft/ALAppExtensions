@@ -36,7 +36,7 @@ page 30094 "APIV2 - Approval Entries"
                 {
                     Caption = 'Entry No.';
                 }
-                field(tableID; Rec."Table ID")
+                field(tableId; Rec."Table ID")
                 {
                     Caption = 'Table ID';
                 }
