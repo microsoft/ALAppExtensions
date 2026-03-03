@@ -43,6 +43,14 @@ page 30081 "APIV2 - Aut. Sec. Gr. Members"
                     Editable = false;
                     Caption = 'Security Group Name';
                 }
+                field(userName; Rec."User Name")
+                {
+                    Caption = 'User Name';
+                }
+                field(userFullName; Rec."User Full Name")
+                {
+                    Caption = 'User Full Name';
+                }
             }
         }
     }
