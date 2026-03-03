@@ -64,11 +64,11 @@ page 30094 "APIV2 - Approval Entries"
                 {
                     Caption = 'Approval Code';
                 }
-                field(salespersPurchCode; Rec."Salespers./Purch. Code")
+                field(salespersonPurchaserCode; Rec."Salespers./Purch. Code")
                 {
                     Caption = 'Salesperson/Purchaser Code';
                 }
-                field(salespersPurchName; Rec."Salespers./Purch. Name")
+                field(salespersonPurchaserName; Rec."Salespers./Purch. Name")
                 {
                     Caption = 'Salesperson/Purchaser Name';
                 }
