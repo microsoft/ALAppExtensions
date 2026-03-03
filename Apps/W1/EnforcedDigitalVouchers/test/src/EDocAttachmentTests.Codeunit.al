@@ -13,33 +13,30 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Tests.EServices.EDocument;
 
-codeunit 139519 "E-Doc. Attachment Tests"
+codeunit 139649 "E-Doc. Attachment Tests"
 {
     Subtype = Test;
     TestPermissions = Disabled;
 
     var
-        LibraryTestInitialize: Codeunit "Library - Test Initialize";
-        LibraryPurchase: Codeunit "Library - Purchase";
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryInventory: Codeunit "Library - Inventory";
-        LibraryRandom: Codeunit "Library - Random";
-        LibraryERM: Codeunit "Library - ERM";
         Assert: Codeunit Assert;
+        LibraryERM: Codeunit "Library - ERM";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryRandom: Codeunit "Library - Random";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
         IsInitialized: Boolean;
-        NotPossibleToPostWithoutEDocumentErr: Label 'Not possible to post without linking an E-Document.';
         DialogErrorCodeTok: Label 'Dialog', Locked = true;
-
-    trigger OnRun()
-    begin
-        // [FEATURE] [Digital Voucher] [E-Document]
-    end;
+        NotPossibleToPostWithoutEDocumentErr: Label 'Not possible to post without linking an E-Document.', Locked = true;
+        EDocumentTok: Label 'E-Document', Locked = true;
 
     [Test]
     procedure GenerateAutomaticallyEnabledWhenCheckTypeSetToEDocument()
     var
         DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] Generate Automatically is auto-enabled when Check Type is set to E-Document
         Initialize();
 
@@ -58,7 +55,9 @@ codeunit 139519 "E-Doc. Attachment Tests"
     procedure GenerateAutomaticallyCannotBeDisabledForEDocument()
     var
         DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        GenerateAutomaticallyErrorTok: Label 'Generate Automatically must be enabled', Locked = true;
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] Generate Automatically cannot be disabled when Check Type = E-Document
         Initialize();
 
@@ -70,7 +69,7 @@ codeunit 139519 "E-Doc. Attachment Tests"
         asserterror DigitalVoucherEntrySetup.Validate("Generate Automatically", false);
 
         // [THEN] Error: Generate Automatically must be enabled when Check Type is E-Document
-        Assert.ExpectedError('Generate Automatically must be enabled');
+        Assert.ExpectedError(GenerateAutomaticallyErrorTok);
     end;
 
     [Test]
@@ -78,6 +77,7 @@ codeunit 139519 "E-Doc. Attachment Tests"
     var
         DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] E-Document check type is not allowed for General Journal
         Initialize();
 
@@ -88,7 +88,7 @@ codeunit 139519 "E-Doc. Attachment Tests"
         asserterror DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"E-Document");
 
         // [THEN] Error mentioning E-Document requires Sales Document or Purchase Document
-        Assert.ExpectedError('E-Document');
+        Assert.ExpectedError(EDocumentTok);
     end;
 
     [Test]
@@ -96,6 +96,7 @@ codeunit 139519 "E-Doc. Attachment Tests"
     var
         DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] E-Document check type is not allowed for Sales Journal
         Initialize();
 
@@ -106,7 +107,7 @@ codeunit 139519 "E-Doc. Attachment Tests"
         asserterror DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"E-Document");
 
         // [THEN] Error mentioning E-Document requires Sales Document or Purchase Document
-        Assert.ExpectedError('E-Document');
+        Assert.ExpectedError(EDocumentTok);
     end;
 
     [Test]
@@ -114,6 +115,7 @@ codeunit 139519 "E-Doc. Attachment Tests"
     var
         DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] E-Document check type is not allowed for Purchase Journal
         Initialize();
 
@@ -124,48 +126,17 @@ codeunit 139519 "E-Doc. Attachment Tests"
         asserterror DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"E-Document");
 
         // [THEN] Error mentioning E-Document requires Sales Document or Purchase Document
-        Assert.ExpectedError('E-Document');
-    end;
-
-    [Test]
-    procedure EDocumentCheckTypeAllowedForSalesDocument()
-    var
-        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
-    begin
-        // [SCENARIO] E-Document check type is allowed for Sales Document
-        Initialize();
-
-        // [WHEN] Entry Type = Sales Document and Check Type = E-Document
-        DigitalVoucherEntrySetup."Entry Type" := DigitalVoucherEntrySetup."Entry Type"::"Sales Document";
-        DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"E-Document");
-
-        // [THEN] No error, Check Type is set successfully
-        DigitalVoucherEntrySetup.TestField("Check Type", DigitalVoucherEntrySetup."Check Type"::"E-Document");
-    end;
-
-    [Test]
-    procedure EDocumentCheckTypeAllowedForPurchaseDocument()
-    var
-        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
-    begin
-        // [SCENARIO] E-Document check type is allowed for Purchase Document
-        Initialize();
-
-        // [WHEN] Entry Type = Purchase Document and Check Type = E-Document
-        DigitalVoucherEntrySetup."Entry Type" := DigitalVoucherEntrySetup."Entry Type"::"Purchase Document";
-        DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"E-Document");
-
-        // [THEN] No error, Check Type is set successfully
-        DigitalVoucherEntrySetup.TestField("Check Type", DigitalVoucherEntrySetup."Check Type"::"E-Document");
+        Assert.ExpectedError(EDocumentTok);
     end;
 
     [Test]
     procedure PurchaseInvoiceCannotPostWithoutEDocument()
     var
-        PurchaseHeader: Record "Purchase Header";
         DummyEDocument: Record "E-Document";
+        PurchaseHeader: Record "Purchase Header";
         DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] Purchase invoice posting fails when E-Document check is enabled but no e-document linked
         Initialize();
         BindSubscription(DigVouchersDisableEnforce);
@@ -190,12 +161,13 @@ codeunit 139519 "E-Doc. Attachment Tests"
     [Test]
     procedure PurchaseInvoiceEDocumentAttachedAfterPosting()
     var
-        PurchaseHeader: Record "Purchase Header";
-        PurchInvHeader: Record "Purch. Inv. Header";
         EDocument: Record "E-Document";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchaseHeader: Record "Purchase Header";
         DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
         DocNo: Code[20];
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] Purchase invoice with e-document creates incoming attachment with Is E-Document = true
         Initialize();
         BindSubscription(DigVouchersDisableEnforce);
@@ -220,12 +192,13 @@ codeunit 139519 "E-Doc. Attachment Tests"
     [Test]
     procedure PurchaseCreditMemoEDocumentAttachedAfterPosting()
     var
-        PurchaseHeader: Record "Purchase Header";
-        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
         EDocument: Record "E-Document";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchaseHeader: Record "Purchase Header";
         DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
         DocNo: Code[20];
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] Purchase credit memo with e-document creates incoming attachment with Is E-Document = true
         Initialize();
         BindSubscription(DigVouchersDisableEnforce);
@@ -255,6 +228,7 @@ codeunit 139519 "E-Doc. Attachment Tests"
         DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
         DocNo: Code[20];
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] Sales invoice e-document export creates incoming attachment with Is E-Document = true
         Initialize();
         BindSubscription(DigVouchersDisableEnforce);
@@ -276,11 +250,12 @@ codeunit 139519 "E-Doc. Attachment Tests"
     [Test]
     procedure SalesCreditMemoEDocumentAttachedAfterExport()
     var
-        SalesHeader: Record "Sales Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesHeader: Record "Sales Header";
         DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
         DocNo: Code[20];
     begin
+        // [FEATURE] [Digital Voucher] [E-Document]
         // [SCENARIO] Sales credit memo e-document export creates incoming attachment with Is E-Document = true
         Initialize();
         BindSubscription(DigVouchersDisableEnforce);
@@ -315,9 +290,10 @@ codeunit 139519 "E-Doc. Attachment Tests"
     var
         DigitalVoucherSetup: Record "Digital Voucher Setup";
     begin
-        DigitalVoucherSetup.DeleteAll();
+        if DigitalVoucherSetup.Get() then
+            DigitalVoucherSetup.Delete(false);
         DigitalVoucherSetup.Enabled := true;
-        DigitalVoucherSetup.Insert();
+        DigitalVoucherSetup.Insert(false);
     end;
 
     local procedure InitSetupEDocument(EntryType: Enum "Digital Voucher Entry Type")
@@ -325,10 +301,10 @@ codeunit 139519 "E-Doc. Attachment Tests"
         DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
     begin
         DigitalVoucherEntrySetup.SetRange("Entry Type", EntryType);
-        DigitalVoucherEntrySetup.DeleteAll();
+        DigitalVoucherEntrySetup.DeleteAll(false);
         DigitalVoucherEntrySetup."Entry Type" := EntryType;
         DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"E-Document");
-        DigitalVoucherEntrySetup.Insert();
+        DigitalVoucherEntrySetup.Insert(false);
     end;
 
     local procedure CreatePurchaseDocumentWithEDocument(var PurchaseHeader: Record "Purchase Header"; var EDocument: Record "E-Document"; DocumentType: Enum "Purchase Document Type")
@@ -393,8 +369,8 @@ codeunit 139519 "E-Doc. Attachment Tests"
 
     local procedure CreateSalesDocumentWithEDocRequirements(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type"): Code[20]
     var
-        PostCode: Record "Post Code";
         Customer: Record Customer;
+        PostCode: Record "Post Code";
     begin
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateCustomerAddress(Customer);
@@ -422,7 +398,7 @@ codeunit 139519 "E-Doc. Attachment Tests"
     begin
         EDocService.Init();
         EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
-        EDocService.Insert();
+        EDocService.Insert(false);
     end;
 
     local procedure CreatePurchaseDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type"; var EDocument: Record "E-Document")

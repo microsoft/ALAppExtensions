@@ -27,7 +27,7 @@ table 5579 "Digital Voucher Entry Setup"
             begin
                 if "Check Type" = "Check Type"::"E-Document" then begin
                     if not ("Entry Type" in ["Entry Type"::"Sales Document", "Entry Type"::"Purchase Document"]) then
-                        Error(CheckTypeRequiresSalesOrPurchaseErr, FieldCaption("Check Type"), "Check Type"::"E-Document", FieldCaption("Entry Type"), "Entry Type"::"Sales Document", "Entry Type"::"Purchase Document");
+                        Error(CheckTypeEDocErr, FieldCaption("Check Type"), "Check Type"::"E-Document", FieldCaption("Entry Type"), "Entry Type"::"Sales Document", "Entry Type"::"Purchase Document");
                     "Generate Automatically" := true;
                 end;
             end;

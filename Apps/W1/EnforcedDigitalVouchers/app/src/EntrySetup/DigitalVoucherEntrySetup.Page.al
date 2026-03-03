@@ -6,13 +6,13 @@ namespace Microsoft.EServices.EDocument;
 
 page 5579 "Digital Voucher Entry Setup"
 {
+    AboutText = 'Here you can select the line with a certain entry type and setup the type of the digital voucher''s check you want to perform.';
+    AboutTitle = 'About setup of digital vouchers for each entry type';
+    ApplicationArea = Basic, Suite;
+    DelayedInsert = true;
     PageType = List;
     SourceTable = "Digital Voucher Entry Setup";
-    AboutTitle = 'About setup of digital vouchers for each entry type';
-    AboutText = 'Here you can select the line with a certain entry type and setup the type of the digital voucher''s check you want to perform.';
-    ApplicationArea = Basic, Suite;
     UsageCategory = Administration;
-    DelayedInsert = true;
 
     layout
     {
@@ -23,26 +23,16 @@ page 5579 "Digital Voucher Entry Setup"
                 field("Entry Type"; Rec."Entry Type")
                 {
                     ToolTip = 'Specifies the entry type.';
-                    trigger OnValidate()
-                    begin
-                        UpdateGenerateAutomaticallyEditable();
-                    end;
                 }
                 field("Check Type"; Rec."Check Type")
                 {
-                    ToolTip = 'Specifies the check type.';
-                    AboutTitle = 'Enter the check type';
                     AboutText = 'In case of check type None you can post this type of entry without any digital voucher. In case of check type Attachment you need to have an attachment to your entry. In case of check type Attachment or Note you can either have an attachment or a note for your entry.';
-
-                    trigger OnValidate()
-                    begin
-                        UpdateGenerateAutomaticallyEditable();
-                    end;
+                    AboutTitle = 'Enter the check type';
+                    ToolTip = 'Specifies the check type.';
                 }
                 field("Generate Automatically"; Rec."Generate Automatically")
                 {
                     ToolTip = 'Specifies if the digital voucher needs to be generated automatically.';
-                    Editable = GenerateAutomaticallyEditable;
                 }
                 field("Skip If Manually Added"; Rec."Skip If Manually Added")
                 {
@@ -59,9 +49,9 @@ page 5579 "Digital Voucher Entry Setup"
                 Visible = VoucherEntryTypeDescription <> '';
                 field(VoucherEntryTypeDescriptionControl; VoucherEntryTypeDescription)
                 {
-                    ShowCaption = false;
                     Editable = false;
                     MultiLine = true;
+                    ShowCaption = false;
                     ToolTip = 'Specifies the description of the voucher entry type.';
                 }
             }
@@ -74,14 +64,14 @@ page 5579 "Digital Voucher Entry Setup"
         {
             action(SourceCodes)
             {
+                AboutText = 'If you post a journal line, the connected source code identifies the entry type - general journal, sales journal, purchase journal, etc.';
+                AboutTitle = 'About source codes';
                 Caption = 'Source Codes';
                 Image = ViewSourceDocumentLine;
-                Scope = Repeater;
-                ToolTip = 'Specifies the connected source codes.';
-                AboutTitle = 'About source codes';
-                AboutText = 'If you post a journal line, the connected source code identifies the entry type - general journal, sales journal, purchase journal, etc.';
                 RunObject = Page "Voucher Entry Source Codes";
                 RunPageLink = "Entry Type" = field("Entry Type");
+                Scope = Repeater;
+                ToolTip = 'Specifies the connected source codes.';
             }
         }
         area(Promoted)
@@ -89,23 +79,19 @@ page 5579 "Digital Voucher Entry Setup"
             group(Category_Process)
             {
                 Caption = 'Process';
-                actionref(SourceCodes_Promoted; SourceCodes)
-                {
-
-                }
+                actionref(SourceCodes_Promoted; SourceCodes) { }
             }
         }
     }
 
     var
         OpenedFromWizard: Boolean;
-        GenerateAutomaticallyEditable: Boolean;
-        VoucherEntryTypeDescription: Text;
         GeneralJournalEntryDescriptionTxt: Label 'Specifies postings you are doing from the General Journal for all Account Types excluding those related to Customer and Vendor. By choosing one of those options, you will change control of the posting process. If you select the Customer as the Account Type, the system will check your setup related to the Sales Journal. If you select the Vendor as the Account Type, the system will check your setup related to the Purchase Journal.';
-        SalesJournalEntryDescriptionTxt: Label 'Specifies posting you are doing from the Sales Journal and the General Journal with the Customer selected as the Account Type.';
+        PurchaseDocumentEntryDescriptionTxt: Label 'Specifies postings you are doing from the purchase documents.';
         PurchaseJournalEntryDescriptionTxt: Label 'Specifies posting you are doing from the Purchase Journal and the General Journal with the Vendor selected as the Account Type.';
         SalesDocumentEntryDescriptionTxt: Label 'Specifies postings you are doing from the sales documents.';
-        PurchaseDocumentEntryDescriptionTxt: Label 'Specifies postings you are doing from the purchase documents.';
+        SalesJournalEntryDescriptionTxt: Label 'Specifies posting you are doing from the Sales Journal and the General Journal with the Customer selected as the Account Type.';
+        VoucherEntryTypeDescription: Text;
 
     trigger OnOpenPage()
     var
@@ -118,13 +104,11 @@ page 5579 "Digital Voucher Entry Setup"
     trigger OnAfterGetRecord()
     begin
         SetVoucherEntryTypeDescription();
-        UpdateGenerateAutomaticallyEditable();
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
         SetVoucherEntryTypeDescription();
-        UpdateGenerateAutomaticallyEditable();
     end;
 
     procedure SetOpenFromGuide()
@@ -153,11 +137,6 @@ page 5579 "Digital Voucher Entry Setup"
             else
                 VoucherEntryTypeDescription := '';
         end;
-    end;
-
-    local procedure UpdateGenerateAutomaticallyEditable()
-    begin
-        GenerateAutomaticallyEditable := Rec."Check Type" <> Rec."Check Type"::"E-Document";
     end;
 
     [IntegrationEvent(false, false)]
