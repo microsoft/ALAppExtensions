@@ -27,7 +27,7 @@ page 30058 "APIV2 - User Permission Sets"
     {
         area(Content)
         {
-            repeater(Control1)
+            repeater(Group)
             {
                 field(id; Rec.SystemId)
                 {

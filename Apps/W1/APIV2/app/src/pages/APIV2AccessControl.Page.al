@@ -26,7 +26,7 @@ page 2149 "APIV2 - Access Control"
     {
         area(Content)
         {
-            repeater(Control1)
+            repeater(Group)
             {
                 field(id; Rec.SystemId)
                 {

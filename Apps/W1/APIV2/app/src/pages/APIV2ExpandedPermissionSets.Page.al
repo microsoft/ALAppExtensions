@@ -22,13 +22,14 @@ page 20766 "APIV2 Expanded Permission Sets"
     DataAccessIntent = ReadOnly;
     PageType = API;
     SourceTable = "Expanded Permission";
+    SourceTableView = where(Ap = filter('<> Exclude'));
     ODataKeyFields = SystemId;
 
     layout
     {
         area(Content)
         {
-            repeater(Control1)
+            repeater(Group)
             {
                 field(id; Rec.SystemId)
                 {
