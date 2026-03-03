@@ -151,10 +151,16 @@ codeunit 5579 "Digital Voucher Impl."
             Database::"Purch. Inv. Header":
                 begin
                     RecRef.SetTable(PurchInvHeader);
-                    AttachDigitalVoucherFromReportPDF(
-                        ReportSelections.Usage::"P.Invoice", RecRef, true,
-                        PurchInvHeader."Posting Date", PurchInvHeader."No.", Database::Vendor,
-                        PurchInvHeader."Pay-to Vendor No.", report::"Purchase - Invoice");
+                    if PurchInvHeader."Self-Billing Invoice" then
+                        AttachDigitalVoucherFromReportPDF(
+                            ReportSelections.Usage::"P.Self Billing Invoice", RecRef, true,
+                            PurchInvHeader."Posting Date", PurchInvHeader."No.", Database::Vendor,
+                            PurchInvHeader."Pay-to Vendor No.", report::"Self Billing Invoice")
+                    else
+                        AttachDigitalVoucherFromReportPDF(
+                            ReportSelections.Usage::"P.Invoice", RecRef, true,
+                            PurchInvHeader."Posting Date", PurchInvHeader."No.", Database::Vendor,
+                            PurchInvHeader."Pay-to Vendor No.", report::"Purchase - Invoice");
                     RestoreNoPrintedToOriginal(RecRef, PurchInvHeader.FieldNo("No. Printed"), PurchInvHeader."No. Printed");
                 end;
             Database::"Purch. Cr. Memo Hdr.":

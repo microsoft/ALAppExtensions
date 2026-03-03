@@ -16,6 +16,7 @@ using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Finance.TaxEngine.UseCaseBuilder;
 using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Journal;
 using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Location;
@@ -1205,6 +1206,46 @@ codeunit 18001 "GST Base Validation"
     begin
         CheckGSTVendorType(PurchLine, IsHandled);
     end;
+
+    //FA Reclass. Journal Validations - Subscribers
+    [EventSubscriber(ObjectType::Table, Database::"FA Reclass. Journal Line", 'OnAfterValidateEvent', 'From Location Code', false, false)]
+    local procedure OnAfterValidateFromLocationCode(var Rec: Record "FA Reclass. Journal Line")
+    begin
+        ValidateFromLocationCode(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"FA Reclass. Journal Line", 'OnAfterValidateEvent', 'To Location Code', false, false)]
+    local procedure OnAfterValidateToLocationCode(var Rec: Record "FA Reclass. Journal Line")
+    begin
+        ValidateToLocationCode(Rec);
+    end;
+
+    local procedure ValidateFromLocationCode(Rec: Record "FA Reclass. Journal Line")
+    var
+        Location: Record Location;
+    begin
+        if not Location.Get(Rec."From Location Code") then
+            exit;
+
+        if Location."GST Input Service Distributor" then
+            Location.TestField("GST Input Service Distributor", false);
+
+        Location.TestField("GST Registration No.");
+    end;
+
+    local procedure ValidateToLocationCode(Rec: Record "FA Reclass. Journal Line")
+    var
+        Location: Record Location;
+    begin
+        if not Location.Get(Rec."To Location Code") then
+            exit;
+
+        if Location."GST Input Service Distributor" then
+            Location.TestField("GST Input Service Distributor", false);
+
+        Location.TestField("GST Registration No.");
+    end;
+
 
     local procedure CheckGSTVendorType(PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
     var

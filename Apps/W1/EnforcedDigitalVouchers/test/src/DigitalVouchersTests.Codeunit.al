@@ -1954,8 +1954,8 @@ codeunit 139515 "Digital Vouchers Tests"
         CustomReportSelection.DeleteAll();
 
         ReportSelections.Init();
-        ReportSelections.Usage := ReportSelections.Usage::"P.Invoice";
-        ReportSelections."Report ID" := REPORT::"Purchase - Invoice";
+        ReportSelections.Usage := ReportSelections.Usage::"P.Self Billing Invoice";
+        ReportSelections."Report ID" := REPORT::"Self Billing Invoice";
         if ReportSelections.Insert() then;
     end;
 

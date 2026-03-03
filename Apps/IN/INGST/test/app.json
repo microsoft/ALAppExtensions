@@ -46,6 +46,12 @@
       "publisher": "Microsoft",
       "name": "India Tax Base Tests",
       "version": "29.0.0.0"
+    },
+    {
+      "id": "1150dd8d-51da-485a-bd4a-1ee98d78c21a",
+      "publisher": "Microsoft",
+      "name": "Fixed Asset Depreciation for India",
+      "version": "29.0.0.0"
     }
   ],
   "screenshots": [],

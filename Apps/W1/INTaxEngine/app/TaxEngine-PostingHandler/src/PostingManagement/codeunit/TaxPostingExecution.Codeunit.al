@@ -258,49 +258,50 @@ codeunit 20344 "Tax Posting Execution"
 
         TaxPostingSetup.SetRange("Case ID", UseCase.ID);
         TaxPostingSetup.SetRange("Component ID", ComponentID);
-        TaxPostingSetup.FindFirst();
-        if not IsNullGuid(TaxPostingSetup."Table Filter ID") then
-            SymbolStore.ApplyTableFilters(
-                SourceRecRef,
-                UseCase.ID,
-                EmptyGuid,
-                RecRef,
-                TaxPostingSetup."Table Filter ID");
+        if TaxPostingSetup.FindFirst() then begin
+            if not IsNullGuid(TaxPostingSetup."Table Filter ID") then
+                SymbolStore.ApplyTableFilters(
+                    SourceRecRef,
+                    UseCase.ID,
+                    EmptyGuid,
+                    RecRef,
+                    TaxPostingSetup."Table Filter ID");
 
-        if not RecRef.FindFirst() then
-            Error(TaxPostingSetupDoesNotExistErr, UseCase.Description, RecRef.Caption(), RecRef.GetFilters());
+            if not RecRef.FindFirst() then
+                Error(TaxPostingSetupDoesNotExistErr, UseCase.Description, RecRef.Caption(), RecRef.GetFilters());
 
-        PostingImpact := TaxPostingSetup."Accounting Impact";
-        if TaxPostingSetup."Account Source Type" = TaxPostingSetup."Account Source Type"::Field then begin
-            TaxPostingSetup.TestField("Field ID");
-            RecRef.Field(TaxPostingSetup."Field ID").TestField();
-            GlAccNo := RecRef.Field(TaxPostingSetup."Field ID").Value();
-        end else begin
-            SymbolStore.GetLookupValue(
-                SourceRecRef,
-                UseCase.ID,
-                EmptyGuid,
-                TaxPostingSetup."Account Lookup ID",
-                AccountNoVariant);
-
-            GlAccNo := AccountNoVariant;
-        end;
-
-        if TaxPostingSetup."Reverse Charge" then begin
-            ReverseCharge := true;
-            if TaxPostingSetup."Reversal Account Source Type" = TaxPostingSetup."Reversal Account Source Type"::Field then begin
-                TaxPostingSetup.TestField("Reverse Charge Field ID");
-                RecRef.Field(TaxPostingSetup."Reverse Charge Field ID").TestField();
-                ReverseGlAcc := RecRef.Field(TaxPostingSetup."Reverse Charge Field ID").Value();
+            PostingImpact := TaxPostingSetup."Accounting Impact";
+            if TaxPostingSetup."Account Source Type" = TaxPostingSetup."Account Source Type"::Field then begin
+                TaxPostingSetup.TestField("Field ID");
+                RecRef.Field(TaxPostingSetup."Field ID").TestField();
+                GlAccNo := RecRef.Field(TaxPostingSetup."Field ID").Value();
             end else begin
                 SymbolStore.GetLookupValue(
-                                SourceRecRef,
-                                UseCase.ID,
-                                EmptyGuid,
-                                TaxPostingSetup."Reversal Account Lookup ID",
-                                AccountNoVariant);
+                    SourceRecRef,
+                    UseCase.ID,
+                    EmptyGuid,
+                    TaxPostingSetup."Account Lookup ID",
+                    AccountNoVariant);
 
-                ReverseGlAcc := AccountNoVariant;
+                GlAccNo := AccountNoVariant;
+            end;
+
+            if TaxPostingSetup."Reverse Charge" then begin
+                ReverseCharge := true;
+                if TaxPostingSetup."Reversal Account Source Type" = TaxPostingSetup."Reversal Account Source Type"::Field then begin
+                    TaxPostingSetup.TestField("Reverse Charge Field ID");
+                    RecRef.Field(TaxPostingSetup."Reverse Charge Field ID").TestField();
+                    ReverseGlAcc := RecRef.Field(TaxPostingSetup."Reverse Charge Field ID").Value();
+                end else begin
+                    SymbolStore.GetLookupValue(
+                                    SourceRecRef,
+                                    UseCase.ID,
+                                    EmptyGuid,
+                                    TaxPostingSetup."Reversal Account Lookup ID",
+                                    AccountNoVariant);
+
+                    ReverseGlAcc := AccountNoVariant;
+                end;
             end;
         end;
     end;
