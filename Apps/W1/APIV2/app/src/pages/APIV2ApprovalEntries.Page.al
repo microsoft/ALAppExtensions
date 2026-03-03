@@ -52,7 +52,7 @@ page 30094 "APIV2 - Approval Entries"
                 {
                     Caption = 'Sequence No.';
                 }
-                field(senderID; Rec."Sender ID")
+                field(senderId; Rec."Sender ID")
                 {
                     Caption = 'Sender ID';
                 }
@@ -66,13 +66,13 @@ page 30094 "APIV2 - Approval Entries"
                 }
                 field(salespersPurchCode; Rec."Salespers./Purch. Code")
                 {
-                    Caption = 'Salespers./Purch. Code';
+                    Caption = 'Salesperson/Purchaser Code';
                 }
                 field(salespersPurchName; Rec."Salespers./Purch. Name")
                 {
-                    Caption = 'Salespers./Purch. Name';
+                    Caption = 'Salesperson/Purchaser Name';
                 }
-                field(approverID; Rec."Approver ID")
+                field(approverId; Rec."Approver ID")
                 {
                     Caption = 'Approver ID';
                 }
