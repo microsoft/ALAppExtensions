@@ -186,7 +186,12 @@ codeunit 20341 "Tax Document GL Posting"
         TaxJnlMgmt: Codeunit "Tax Posting Buffer Mgmt.";
         AmountLCYToAdjust: Decimal;
         CommitSupresed: Boolean;
+        IsHandled: Boolean;
     begin
+        OnBeforeAdjustTaxAmountOnGenJnlLine(GenJnlLine, IsHandled);
+        if IsHandled then
+            exit;
+
         AmountLCYToAdjust := TaxJnlMgmt.GetTaxAmount(GenJnlLine."Tax ID");
 
         if IsTaxAdjustmentLine(GenJnlLine, AmountLCYToAdjust) then
@@ -506,6 +511,11 @@ codeunit 20341 "Tax Document GL Posting"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyTaxGenJnlLine(var TaxGenJnlLine: Record "Gen. Journal Line"; var GenJournalLine: Record "Gen. Journal Line"; TransactionPostingBuffer: Record "Transaction Posting Buffer" temporary; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAdjustTaxAmountOnGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
     begin
     end;
 

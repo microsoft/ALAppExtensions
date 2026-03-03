@@ -781,6 +781,7 @@ codeunit 139511 "Intrastat IT Test"
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         IntrastatReportNo: Code[20];
+        CleanupIntrastatReportNo: Code[20];
         DocumentNo: Code[20];
     begin
         // [FEATURE] [Purchase] [Item Charge]
@@ -791,7 +792,7 @@ codeunit 139511 "Intrastat IT Test"
         LibraryPurchase.CreatePurchHeader(
           PurchaseHeader, PurchaseHeader."Document Type"::Order, LibraryIntrastat.CreateVendor(LibraryIntrastat.GetCountryRegionCode()));
         with PurchaseHeader do begin
-            Validate("Posting Date", CalcDate('<+1Y-CM>', WorkDate()));
+            Validate("Posting Date", CalcDate('<+5Y-CM>', WorkDate()));
             Validate("Buy-from Country/Region Code", '');
             Modify(true);
         end;
@@ -800,10 +801,13 @@ codeunit 139511 "Intrastat IT Test"
         // [GIVEN] Item Charge Purchase Line
         LibraryPurchase.AssignPurchChargeToPurchaseLine(PurchaseHeader, PurchaseLine, 1, LibraryRandom.RandDecInRange(100, 200, 2));
 
-        // [GIVEN] Purchase Order is Received and Invoiced on 01.Jan
-        DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
+        // [GIVEN] Pre-existing entries for the period are absorbed by a cleanup report
+        CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", CleanupIntrastatReportNo, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
 
-        // [WHEN] Run Get Entries on Intrastat Report
+        // [GIVEN] Purchase Order is Received and Invoiced on 01.Jan
+        DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Run Get Entries on a second Intrastat Report for the same period
         // [THEN] No Intrastat Report Lines should be created for Item "X"
         CreateIntrastatReportAndSuggestLines(PurchaseHeader."Posting Date", IntrastatReportNo, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
         VerifyIntrastatLineForItemExist(DocumentNo, IntrastatReportNo);

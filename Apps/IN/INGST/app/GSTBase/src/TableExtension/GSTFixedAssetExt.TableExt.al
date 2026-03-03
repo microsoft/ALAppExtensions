@@ -32,5 +32,10 @@ tableextension 18002 "GST Fixed Asset Ext" extends "Fixed Asset"
             Caption = 'Exempted';
             DataClassification = CustomerContent;
         }
+        field(18004; "GST Calc. on Transfer"; Boolean)
+        {
+            Caption = 'GST Calc. by Book Value on Transfer';
+            DataClassification = CustomerContent;
+        }
     }
 }

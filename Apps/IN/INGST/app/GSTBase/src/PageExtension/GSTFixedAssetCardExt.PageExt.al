@@ -30,6 +30,11 @@ pageextension 18003 "GST Fixed Asset Card Ext" extends "Fixed Asset Card"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the GST calculation is marked as exempted.';
             }
+            field("GST Calc. on Transfer"; Rec."GST Calc. on Transfer")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if the GST calculation by Book Value on Transfer.';
+            }
         }
     }
 }
