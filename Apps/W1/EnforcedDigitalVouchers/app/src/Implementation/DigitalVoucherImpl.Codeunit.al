@@ -358,7 +358,6 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment.SetRange("Document No.", DocumentNo);
         IncomingDocumentAttachment.SetRange("Posting Date", PostingDate);
         IncomingDocumentAttachment.SetContentFromBlob(TempBlob);
-
         if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, TempBlob) then
             exit;
 
