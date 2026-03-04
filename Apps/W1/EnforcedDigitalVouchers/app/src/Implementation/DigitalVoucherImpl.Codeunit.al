@@ -302,6 +302,35 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment.Modify(false);
     end;
 
+    local procedure AttachOutgoingEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant)
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        VoucherEDocumentCheck: Codeunit "Voucher E-Document Check";
+        RecRef: RecordRef;
+        DocNo: Code[20];
+        PostingDate: Date;
+        DocType: Text;
+    begin
+        if not DigitalVoucherFeature.IsFeatureEnabled() then
+            exit;
+
+        GetDigitalVoucherEntrySetup(DigitalVoucherEntrySetup, "Digital Voucher Entry Type"::"Purchase Document");
+        if DigitalVoucherEntrySetup."Check Type" <> DigitalVoucherEntrySetup."Check Type"::"E-Document" then
+            exit;
+
+        if not (EDocument."Document Type" in [
+            EDocument."Document Type"::"Purchase Invoice",
+            EDocument."Document Type"::"Purchase Credit Memo",
+            EDocument."Document Type"::"Purchase Order",
+            EDocument."Document Type"::"Purchase Quote",
+            EDocument."Document Type"::"Purchase Return Order"]) then
+            exit;
+
+        RecRef.GetTable(PostedRecord);
+        DigitalVoucherEntry.GetDocNoAndPostingDateFromRecRef(DocType, DocNo, PostingDate, RecRef);
+        AttachPurchaseEDocument(EDocument, DocNo, PostingDate);
+    end;
+
     local procedure AttachPurchaseEDocument(EDocument: Record "E-Document"; DocumentNo: Code[20]; PostingDate: Date)
     var
         EDocDataStorage: Record "E-Doc. Data Storage";
@@ -311,14 +340,6 @@ codeunit 5579 "Digital Voucher Impl."
         EDocumentFileNameLbl: Label 'E-Document_%1.%2', Comment = '%1 = E-Document Entry No., %2 = File Format', Locked = true;
         FileName: Text[250];
     begin
-        if not (EDocument."Document Type" in [
-            EDocument."Document Type"::"Purchase Invoice",
-            EDocument."Document Type"::"Purchase Credit Memo",
-            EDocument."Document Type"::"Purchase Order",
-            EDocument."Document Type"::"Purchase Quote",
-            EDocument."Document Type"::"Purchase Return Order"]) then
-            exit;
-
         if EDocument."Unstructured Data Entry No." = 0 then
             exit;
 
@@ -819,36 +840,7 @@ codeunit 5579 "Digital Voucher Impl."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Subscribers", OnAfterUpdateToPostedPurchaseEDocument, '', false, false)]
     local procedure EDocumentSubscribers_OnAfterUpdateToPostedPurchaseEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant; DocumentType: Enum "E-Document Type")
     begin
-        AttachOutgoingDocument(EDocument, PostedRecord);
-    end;
-
-    local procedure AttachOutgoingDocument(var EDocument: Record "E-Document"; PostedRecord: Variant)
-    var
-        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
-        VoucherEDocumentCheck: Codeunit "Voucher E-Document Check";
-        RecRef: RecordRef;
-        DocNo: Code[20];
-        PostingDate: Date;
-        DocType: Text;
-    begin
-        if not DigitalVoucherFeature.IsFeatureEnabled() then
-            exit;
-
-        GetDigitalVoucherEntrySetup(DigitalVoucherEntrySetup, "Digital Voucher Entry Type"::"Purchase Document");
-        if DigitalVoucherEntrySetup."Check Type" <> DigitalVoucherEntrySetup."Check Type"::"E-Document" then
-            exit;
-
-        if not (EDocument."Document Type" in [
-            EDocument."Document Type"::"Purchase Invoice",
-            EDocument."Document Type"::"Purchase Credit Memo",
-            EDocument."Document Type"::"Purchase Order",
-            EDocument."Document Type"::"Purchase Quote",
-            EDocument."Document Type"::"Purchase Return Order"]) then
-            exit;
-
-        RecRef.GetTable(PostedRecord);
-        DigitalVoucherEntry.GetDocNoAndPostingDateFromRecRef(DocType, DocNo, PostingDate, RecRef);
-        AttachPurchaseEDocument(EDocument, DocNo, PostingDate);
+        AttachOutgoingEDocument(EDocument, PostedRecord);
     end;
 
     [IntegrationEvent(false, false)]
