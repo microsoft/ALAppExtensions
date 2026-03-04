@@ -6,13 +6,13 @@ namespace Microsoft.EServices.EDocument;
 
 page 5579 "Digital Voucher Entry Setup"
 {
-    AboutText = 'Here you can select the line with a certain entry type and setup the type of the digital voucher''s check you want to perform.';
-    AboutTitle = 'About setup of digital vouchers for each entry type';
-    ApplicationArea = Basic, Suite;
-    DelayedInsert = true;
     PageType = List;
     SourceTable = "Digital Voucher Entry Setup";
+    AboutTitle = 'About setup of digital vouchers for each entry type';
+    AboutText = 'Here you can select the line with a certain entry type and setup the type of the digital voucher''s check you want to perform.';
+    ApplicationArea = Basic, Suite;
     UsageCategory = Administration;
+    DelayedInsert = true;
 
     layout
     {
@@ -26,9 +26,9 @@ page 5579 "Digital Voucher Entry Setup"
                 }
                 field("Check Type"; Rec."Check Type")
                 {
-                    AboutText = 'In case of check type None you can post this type of entry without any digital voucher. In case of check type Attachment you need to have an attachment to your entry. In case of check type Attachment or Note you can either have an attachment or a note for your entry.';
-                    AboutTitle = 'Enter the check type';
                     ToolTip = 'Specifies the check type.';
+                    AboutTitle = 'Enter the check type';
+                    AboutText = 'In case of check type None you can post this type of entry without any digital voucher. In case of check type Attachment you need to have an attachment to your entry. In case of check type Attachment or Note you can either have an attachment or a note for your entry.';
                 }
                 field("Generate Automatically"; Rec."Generate Automatically")
                 {
@@ -49,9 +49,9 @@ page 5579 "Digital Voucher Entry Setup"
                 Visible = VoucherEntryTypeDescription <> '';
                 field(VoucherEntryTypeDescriptionControl; VoucherEntryTypeDescription)
                 {
+                    ShowCaption = false;
                     Editable = false;
                     MultiLine = true;
-                    ShowCaption = false;
                     ToolTip = 'Specifies the description of the voucher entry type.';
                 }
             }
@@ -64,14 +64,14 @@ page 5579 "Digital Voucher Entry Setup"
         {
             action(SourceCodes)
             {
-                AboutText = 'If you post a journal line, the connected source code identifies the entry type - general journal, sales journal, purchase journal, etc.';
-                AboutTitle = 'About source codes';
                 Caption = 'Source Codes';
                 Image = ViewSourceDocumentLine;
-                RunObject = Page "Voucher Entry Source Codes";
-                RunPageLink = "Entry Type" = field("Entry Type");
                 Scope = Repeater;
                 ToolTip = 'Specifies the connected source codes.';
+                AboutTitle = 'About source codes';
+                AboutText = 'If you post a journal line, the connected source code identifies the entry type - general journal, sales journal, purchase journal, etc.';
+                RunObject = Page "Voucher Entry Source Codes";
+                RunPageLink = "Entry Type" = field("Entry Type");
             }
         }
         area(Promoted)
@@ -79,19 +79,22 @@ page 5579 "Digital Voucher Entry Setup"
             group(Category_Process)
             {
                 Caption = 'Process';
-                actionref(SourceCodes_Promoted; SourceCodes) { }
+                actionref(SourceCodes_Promoted; SourceCodes)
+                {
+
+                }
             }
         }
     }
 
     var
         OpenedFromWizard: Boolean;
+        VoucherEntryTypeDescription: Text;
         GeneralJournalEntryDescriptionTxt: Label 'Specifies postings you are doing from the General Journal for all Account Types excluding those related to Customer and Vendor. By choosing one of those options, you will change control of the posting process. If you select the Customer as the Account Type, the system will check your setup related to the Sales Journal. If you select the Vendor as the Account Type, the system will check your setup related to the Purchase Journal.';
-        PurchaseDocumentEntryDescriptionTxt: Label 'Specifies postings you are doing from the purchase documents.';
+        SalesJournalEntryDescriptionTxt: Label 'Specifies posting you are doing from the Sales Journal and the General Journal with the Customer selected as the Account Type.';
         PurchaseJournalEntryDescriptionTxt: Label 'Specifies posting you are doing from the Purchase Journal and the General Journal with the Vendor selected as the Account Type.';
         SalesDocumentEntryDescriptionTxt: Label 'Specifies postings you are doing from the sales documents.';
-        SalesJournalEntryDescriptionTxt: Label 'Specifies posting you are doing from the Sales Journal and the General Journal with the Customer selected as the Account Type.';
-        VoucherEntryTypeDescription: Text;
+        PurchaseDocumentEntryDescriptionTxt: Label 'Specifies postings you are doing from the purchase documents.';
 
     trigger OnOpenPage()
     var
