@@ -25,10 +25,10 @@ codeunit 5588 "Voucher E-Document Check" implements "Digital Voucher Check"
         DigitalVoucherImpl: Codeunit "Digital Voucher Impl.";
         NotPossibleToPostWithoutEDocumentErr: Label 'Not possible to post without linking an E-Document.';
     begin
-        if DigitalVoucherEntryType <> DigitalVoucherEntryType::"Purchase Document" then
+        if not DigitalVoucherFeature.IsFeatureEnabled() then
             exit;
 
-        if not DigitalVoucherFeature.IsFeatureEnabled() then
+        if DigitalVoucherEntryType <> DigitalVoucherEntryType::"Purchase Document" then
             exit;
 
         DigitalVoucherImpl.GetDigitalVoucherEntrySetup(DigitalVoucherEntrySetup, DigitalVoucherEntryType);
