@@ -68,6 +68,9 @@ page 47017 "SL Company Add. Settings List"
                         end;
                     end;
                 }
+                field("Migrate Cash Manager Module"; Rec."Migrate Cash Manager Module")
+                {
+                }
                 field("Migrate Only GL Master"; Rec."Migrate Only GL Master")
                 {
                 }
@@ -78,6 +81,9 @@ page 47017 "SL Company Add. Settings List"
                 {
                 }
                 field("Migrate Only Inventory Master"; Rec."Migrate Only Inventory Master")
+                {
+                }
+                field("Migrate Only CashAcct Master"; Rec."Migrate Only CashAcct Master")
                 {
                 }
                 field("Resource Master Only"; Rec."Resource Master Only")
@@ -195,7 +201,7 @@ page 47017 "SL Company Add. Settings List"
         }
     }
 
-    internal procedure PrepSettingsForFieldUpdate(): Boolean
+    procedure PrepSettingsForFieldUpdate(): Boolean
     begin
         SLCompanyAdditionalSettings.SetFilter(Name, '<>%1', '');
         SLCompanyAdditionalSettings.SetRange("Migration Completed", false);

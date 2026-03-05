@@ -14,33 +14,21 @@ permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL Account Staging" = RIMD,
                   tabledata "SL Account Staging Setup" = RIMD,
                   tabledata "SL AcctHist" = RIMD,
+                  tabledata "SL Address" = RIMD,
                   tabledata "SL APAdjust" = RIMD,
                   tabledata "SL APDoc Buffer" = RIMD,
                   tabledata "SL APSetup" = RIMD,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  tabledata "SL APDoc" = RIMD,
-                  tabledata "SL APTran" = RIMD,
-#pragma warning restore AL0432
-#endif
                   tabledata "SL APTran Buffer" = RIMD,
                   tabledata "SL AP_Balances" = RIMD,
                   tabledata "SL ARAdjust" = RIMD,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  tabledata "SL ARDoc" = RIMD,
-#pragma warning restore AL0432
-#endif
                   tabledata "SL ARDoc Buffer" = RIMD,
                   tabledata "SL ARSetup" = RIMD,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  tabledata "SL ARTran" = RIMD,
-#pragma warning restore AL0432
-#endif
                   tabledata "SL ARTran Buffer" = RIMD,
                   tabledata "SL AR_Balances" = RIMD,
                   tabledata "SL Batch" = RIMD,
+                  tabledata "SL CASetup" = RIMD,
+                  tabledata "SL CashAcct" = RIMD,
+                  tabledata "SL CashSumD" = RIMD,
                   tabledata "SL Codes" = RIMD,
                   tabledata "SL Company Additional Settings" = RIMD,
                   tabledata "SL Company Migration Settings" = RIMD,
@@ -49,11 +37,6 @@ permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL Fiscal Periods" = RIMD,
                   tabledata "SL FlexDef" = RIMD,
                   tabledata "SL GLSetup" = RIMD,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  tabledata "SL GLTran" = RIMD,
-#pragma warning restore AL0432
-#endif
                   tabledata "SL GLTran Buffer" = RIMD,
                   tabledata "SL Hist. Source Error" = RIMD,
                   tabledata "SL Hist. Source Progress" = RIMD,
@@ -65,16 +48,6 @@ permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL ItemSite Buffer" = RIMD,
                   tabledata "SL LotSerMst Buffer" = RIMD,
                   tabledata "SL LotSerT Buffer" = RIMD,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  tabledata "SL INTran" = RIMD,
-                  tabledata "SL Inventory" = RIMD,
-                  tabledata "SL ItemCost" = RIMD,
-                  tabledata "SL ItemSite" = RIMD,
-                  tabledata "SL LotSerMst" = RIMD,
-                  tabledata "SL LotSerT" = RIMD,
-#pragma warning restore AL0432
-#endif
                   tabledata "SL Migration Config" = RIMD,
                   tabledata "SL Migration Error Overview" = RIMD,
                   tabledata "SL Migration Errors" = RIMD,
@@ -88,16 +61,7 @@ permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL PJEquip Buffer" = RIMD,
                   tabledata "SL PJPent Buffer" = RIMD,
                   tabledata "SL PJProj Buffer" = RIMD,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  tabledata "SL PJEquip" = RIMD,
-                  tabledata "SL PJEmpPjt" = RIMD,
-                  tabledata "SL PJEQRate" = RIMD,
-                  tabledata "SL PJEmploy" = RIMD,
-                  tabledata "SL PJPent" = RIMD,
-                  tabledata "SL PJProj" = RIMD,
-#pragma warning restore AL0432
-#endif                  
+                  tabledata "SL Post Migration Data Log" = RIMD,
                   tabledata "SL POAddress" = RIMD,
                   tabledata "SL POReceipt" = RIMD,
                   tabledata "SL POSetup" = RIMD,
@@ -122,6 +86,27 @@ permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL Upgrade Settings" = RIMD,
                   tabledata "SL VendClass" = RIMD,
                   tabledata "SL Vendor" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL APDoc" = RIMD,
+                  tabledata "SL APTran" = RIMD,
+                  tabledata "SL ARDoc" = RIMD,
+                  tabledata "SL ARTran" = RIMD,
+                  tabledata "SL GLTran" = RIMD,
+                  tabledata "SL INTran" = RIMD,
+                  tabledata "SL Inventory" = RIMD,
+                  tabledata "SL ItemCost" = RIMD,
+                  tabledata "SL ItemSite" = RIMD,
+                  tabledata "SL LotSerMst" = RIMD,
+                  tabledata "SL LotSerT" = RIMD,
+                  tabledata "SL PJEquip" = RIMD,
+                  tabledata "SL PJEmpPjt" = RIMD,
+                  tabledata "SL PJEQRate" = RIMD,
+                  tabledata "SL PJEmploy" = RIMD,
+                  tabledata "SL PJPent" = RIMD,
+                  tabledata "SL PJProj" = RIMD,
+#pragma warning restore AL0432
+#endif
                   tabledata SLGLAcctBalByPeriod = RIMD,
                   tabledata "SL Period List Work Table" = RIMD;
 }

@@ -16,6 +16,7 @@ page 47020 "SL Migration Error Overview"
     InsertAllowed = false;
     PageType = List;
     SourceTable = "SL Migration Error Overview";
+    UsageCategory = Administration;
 
     layout
     {

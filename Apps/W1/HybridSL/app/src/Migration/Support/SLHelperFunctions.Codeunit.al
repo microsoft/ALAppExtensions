@@ -113,6 +113,35 @@ codeunit 47023 "SL Helper Functions"
         end;
     end;
 
+    procedure GetDimSetIDByFullSubaccount(Subaccount: Text[24]): Integer
+    var
+        SLAccountMigrator: Codeunit "SL Account Migrator";
+        SLPopulateAccountHistory: Codeunit "SL Populate Account History";
+        SubSegment_1: Code[20];
+        SubSegment_2: Code[20];
+        SubSegment_3: Code[20];
+        SubSegment_4: Code[20];
+        SubSegment_5: Code[20];
+        SubSegment_6: Code[20];
+        SubSegment_7: Code[20];
+        SubSegment_8: Code[20];
+        DimSetID: Integer;
+        NbrOfSegments: Integer;
+    begin
+        NbrOfSegments := SLPopulateAccountHistory.GetNumberOfSegments();
+        SubSegment_1 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 1, NbrOfSegments);
+        SubSegment_2 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 2, NbrOfSegments);
+        SubSegment_3 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 3, NbrOfSegments);
+        SubSegment_4 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 4, NbrOfSegments);
+        SubSegment_5 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 5, NbrOfSegments);
+        SubSegment_6 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 6, NbrOfSegments);
+        SubSegment_7 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 7, NbrOfSegments);
+        SubSegment_8 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 8, NbrOfSegments);
+
+        DimSetID := SLAccountMigrator.CreateDimSetFromSubSegments(SubSegment_1, SubSegment_2, SubSegment_3, SubSegment_4, SubSegment_5, SubSegment_6, SubSegment_7, SubSegment_8);
+        exit(DimSetID);
+    end;
+
     procedure GetMigrationTypeTxt(): Text[250]
     begin
         exit(CopyStr(MigrationTypeTxt, 1, MaxStrLen(MigrationTypeTxt)));
@@ -987,6 +1016,15 @@ codeunit 47023 "SL Helper Functions"
         SLConfiguration.Modify();
     end;
 
+    internal procedure CreateBankAccounts()
+    var
+        SLCashManagerMigrator: Codeunit "SL Cash Manager Migrator";
+    begin
+        SLCashManagerMigrator.MigrateCashManagerModule();
+        Session.LogMessage('0000BAC', 'Created Bank Accounts', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetBankAccountsCreated();
+    end;
+
     internal procedure CreateProjectData()
     var
         SLProjectMigrator: Codeunit "SL Project Migrator";
@@ -1139,7 +1177,22 @@ codeunit 47023 "SL Helper Functions"
             if not ProjectDataCreated() then
                 CreateProjectData();
 
+        if SLCompanyAdditionalSettings.GetCashManagerModuleEnabled() then
+            if not CashManagerDataCreated() then
+                CreateBankAccounts();
+
         exit(SLConfiguration.IsAllPostMigationDataCreated());
+    end;
+
+    procedure LogPostMigrationDataMessage(PostMigrationType: Code[30]; TableRef: Text[30]; MessageCode: Text[100]; MessageText: Text[250])
+    var
+        SLPostMigrationDataLog: Record "SL Post Migration Data Log";
+    begin
+        SLPostMigrationDataLog."Post Migration Type" := PostMigrationType;
+        SLPostMigrationDataLog."Table Reference" := TableRef;
+        SLPostMigrationDataLog."Message Code" := MessageCode;
+        SLPostMigrationDataLog."Message Text" := MessageText;
+        SLPostMigrationDataLog.Insert();
     end;
 
     internal procedure CheckMigrationStatus()
@@ -1189,10 +1242,23 @@ codeunit 47023 "SL Helper Functions"
         exit(SLConfiguration."Locations Created");
     end;
 
+    internal procedure CashManagerDataCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Cash Manager Data Created");
+    end;
+
     internal procedure ProjectDataCreated(): Boolean
     begin
         SLConfiguration.GetSingleInstance();
         exit(SLConfiguration."Project Data Created");
+    end;
+
+    internal procedure SetBankAccountsCreated()
+    begin
+        SLConfiguration.GetSingleInstance();
+        SLConfiguration."Cash Manager Data Created" := true;
+        SLConfiguration.Modify();
     end;
 
     internal procedure SetProjectDataCreated()

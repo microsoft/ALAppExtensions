@@ -88,6 +88,10 @@ table 47017 "SL Migration Config"
         {
             InitValue = false;
         }
+        field(23; "Cash Manager Data Created"; Boolean)
+        {
+            InitValue = false;
+        }
     }
 
     keys

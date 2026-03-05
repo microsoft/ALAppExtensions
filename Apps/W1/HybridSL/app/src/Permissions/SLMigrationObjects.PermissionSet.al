@@ -16,33 +16,21 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Account Staging Setup" = X,
                   table "SL AccountTransactions" = X,
                   table "SL AcctHist" = X,
+                  table "SL Address" = X,
                   table "SL APAdjust" = X,
                   table "SL APDoc Buffer" = X,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  table "SL APDoc" = X,
-                  table "SL APTran" = X,
-#pragma warning restore AL0432
-#endif
                   table "SL APTran Buffer" = X,
                   table "SL APSetup" = X,
                   table "SL AP_Balances" = X,
                   table "SL ARAdjust" = X,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  table "SL ARDoc" = X,
-#pragma warning restore AL0432
-#endif
                   table "SL ARDoc Buffer" = X,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  table "SL ARTran" = X,
-#pragma warning restore AL0432
-#endif
                   table "SL ARTran Buffer" = X,
                   table "SL ARSetup" = X,
                   table "SL AR_Balances" = X,
                   table "SL Batch" = X,
+                  table "SL CASetup" = X,
+                  table "SL CashAcct" = X,
+                  table "SL CashSumD" = X,
                   table "SL Codes" = X,
                   table "SL Company Additional Settings" = X,
                   table "SL Company Migration Settings" = X,
@@ -51,11 +39,6 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Fiscal Periods" = X,
                   table "SL FlexDef" = X,
                   table "SL GLSetup" = X,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  table "SL GLTran" = X,
-#pragma warning restore AL0432
-#endif
                   table "SL GLTran Buffer" = X,
                   table "SL Hist. Source Error" = X,
                   table "SL Hist. Source Progress" = X,
@@ -67,16 +50,6 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL ItemSite Buffer" = X,
                   table "SL LotSerMst Buffer" = X,
                   table "SL LotSerT Buffer" = X,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  table "SL INTran" = X,
-                  table "SL Inventory" = X,
-                  table "SL ItemCost" = X,
-                  table "SL ItemSite" = X,
-                  table "SL LotSerMst" = X,
-                  table "SL LotSerT" = X,
-#pragma warning restore AL0432
-#endif
                   table "SL Migration Config" = X,
                   table "SL Migration Error Overview" = X,
                   table "SL Migration Errors" = X,
@@ -91,16 +64,7 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL PJEquip Buffer" = X,
                   table "SL PJPent Buffer" = X,
                   table "SL PJProj Buffer" = X,
-#if not CLEAN28
-#pragma warning disable AL0432
-                  table "SL PJEmploy" = X,
-                  table "SL PJEmpPjt" = X,
-                  table "SL PJEQRate" = X,
-                  table "SL PJEquip" = X,
-                  table "SL PJPent" = X,
-                  table "SL PJProj" = X,
-#pragma warning restore AL0432
-#endif                  
+                  table "SL Post Migration Data Log" = X,
                   table "SL POAddress" = X,
                   table "SL POReceipt" = X,
                   table "SL POSetup" = X,
@@ -126,6 +90,27 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL VendClass" = X,
                   table "SL Vendor" = X,
                   table SLGLAcctBalByPeriod = X,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  table "SL APDoc" = X,
+                  table "SL APTran" = X,
+                  table "SL ARDoc" = X,
+                  table "SL ARTran" = X,
+                  table "SL GLTran" = X,
+                  table "SL INTran" = X,
+                  table "SL Inventory" = X,
+                  table "SL ItemCost" = X,
+                  table "SL ItemSite" = X,
+                  table "SL LotSerMst" = X,
+                  table "SL LotSerT" = X,
+                  table "SL PJEmploy" = X,
+                  table "SL PJEmpPjt" = X,
+                  table "SL PJEQRate" = X,
+                  table "SL PJEquip" = X,
+                  table "SL PJPent" = X,
+                  table "SL PJProj" = X,
+#pragma warning restore AL0432
+#endif            
                   codeunit "SL Account Migrator" = X,
                   codeunit "SL Cloud Migration" = X,
                   codeunit "SL Customer Migrator" = X,

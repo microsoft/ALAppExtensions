@@ -476,6 +476,35 @@ table 47061 "SL Company Additional Settings"
             InitValue = false;
             ToolTip = 'Specify whether to include Resources with a Status of Hold.';
         }
+        field(39; "Migrate Cash Manager Module"; Boolean)
+        {
+            Caption = 'Cash Manager Module';
+            InitValue = false;
+            ToolTip = 'Specify whether to migrate the Cash Manager module.';
+
+            trigger OnValidate()
+            begin
+                if not Rec."Migrate Cash Manager Module" then
+                    Rec.Validate("Migrate Only CashAcct Master", false);
+            end;
+        }
+        field(40; "Migrate Only CashAcct Master"; Boolean)
+        {
+            Caption = 'Cash Account Only';
+            InitValue = false;
+            ToolTip = 'Specify whether to migrate Cash Account master data only. Cash Account balances will not be migrated';
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Only CashAcct Master" then begin
+                    if not Rec."Migrate Cash Manager Module" then
+                        Rec.Validate("Migrate Cash Manager Module", true)
+                end else
+                    if not Rec."Migrate GL Module" then
+                        if Rec."Migrate Receivables Module" then
+                            Rec.Validate("Migrate GL Module", true);
+            end;
+        }
     }
 
     keys
@@ -530,6 +559,12 @@ table 47061 "SL Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Include Project Module");
+    end;
+
+    internal procedure GetCashManagerModuleEnabled(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Cash Manager Module");
     end;
 
     // Inactives
@@ -629,6 +664,12 @@ table 47061 "SL Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Include Hold Status Resources");
+    end;
+
+    internal procedure GetMigrateOnlyCashAcctMaster(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Only CashAcct Master");
     end;
 
     // Posting
@@ -743,7 +784,8 @@ table 47061 "SL Company Additional Settings"
             and not Rec."Migrate Inventory Module"
             and not Rec."Migrate Payables Module"
             and not Rec."Migrate Receivables Module"
-            and not Rec."Include Project Module");
+            and not Rec."Include Project Module"
+            and not Rec."Migrate Cash Manager Module");
     end;
 
     var

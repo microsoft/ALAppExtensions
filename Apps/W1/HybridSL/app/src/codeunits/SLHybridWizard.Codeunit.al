@@ -286,6 +286,11 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL PJEQRate Buffer", 'PJEQRate');
         UpdateOrInsertRecord(Database::"SL PJPent Buffer", 'PJPent');
         UpdateOrInsertRecord(Database::"SL PJProj Buffer", 'PJProj');
+        // Cash Manager
+        UpdateOrInsertRecord(Database::"SL Address", 'Address');
+        UpdateOrInsertRecord(Database::"SL CASetup", 'CASetup');
+        UpdateOrInsertRecord(Database::"SL CashAcct", 'CashAcct');
+        UpdateOrInsertRecord(Database::"SL CashSumD", 'CashSumD');
     end;
 
     internal procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
