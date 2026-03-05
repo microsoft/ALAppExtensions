@@ -16,25 +16,4 @@ tableextension 31329 "Transfer Header CZ" extends "Transfer Header"
             DataClassification = CustomerContent;
         }
     }
-
-#if not CLEAN26
-    [Obsolete('Pending removal. Use CheckIntrastatMandatoryFields from Intrastat Core extension instead.', '26.0')]
-    procedure CheckIntrastatMandatoryFieldsCZ()
-    var
-        IntrastatReportSetup: Record "Intrastat Report Setup";
-    begin
-        if not IntrastatReportSetup.Get() then
-            exit;
-        if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItemsCZL() then begin
-            if IntrastatReportSetup."Transaction Type Mandatory CZ" then
-                TestField("Transaction Type");
-            if IntrastatReportSetup."Transaction Spec. Mandatory CZ" then
-                TestField("Transaction Specification");
-            if IntrastatReportSetup."Transport Method Mandatory CZ" then
-                TestField("Transport Method");
-            if IntrastatReportSetup."Shipment Method Mandatory CZ" then
-                TestField("Shipment Method Code");
-        end;
-    end;
-#endif
 }

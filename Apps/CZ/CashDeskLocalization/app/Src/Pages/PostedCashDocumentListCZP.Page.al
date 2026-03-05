@@ -191,29 +191,6 @@ page 31167 "Posted Cash Document List CZP"
                 {
                 }
             }
-#if not CLEAN26
-            group(Category_Report)
-            {
-                Caption = 'Report';
-                ObsoleteTag = '22.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This group has been removed.';
-                Visible = false;
-
-                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
-                {
-                    ObsoleteTag = '26.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This action has been removed.';
-                }
-                actionref(PrintPromoted; "&Print")
-                {
-                    ObsoleteTag = '26.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This action has been removed.';
-                }
-            }
-#endif
             group(Category_Category8)
             {
                 Caption = 'Print';

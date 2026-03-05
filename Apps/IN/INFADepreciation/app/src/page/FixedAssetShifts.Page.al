@@ -27,24 +27,6 @@ page 18633 "Fixed Asset Shifts"
                     ToolTip = 'Specifies the depreciation book code.';
                     ApplicationArea = FixedAssets;
                 }
-#if not CLEAN26
-                field("FA Posting Group"; Rec."FA Posting Group")
-                {
-                    Editable = false;
-                    ToolTip = 'Specifies the fixed asset posting group.';
-                    ApplicationArea = FixedAssets;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'New field introduced as Fixed Asset Posting Group';
-                    ObsoleteTag = '23.0';
-
-                    trigger OnValidate()
-                    var
-                        FAPostingGroupsErr: Label 'This field has been depricated, use a new field Fixed Asset Posting Group.';
-                    begin
-                        Error(FAPostingGroupsErr);
-                    end;
-                }
-#endif
                 field("Fixed Asset Posting Group"; Rec."Fixed Asset Posting Group")
                 {
                     Editable = false;

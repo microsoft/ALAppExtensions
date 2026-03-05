@@ -953,62 +953,6 @@ codeunit 31302 IntrastatReportManagementCZ
             IsHandled := true;
         end;
     end;
-#if not CLEAN26
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeUpdateGlobalIsIntrastatTransaction', '', false, false)]
-    local procedure CheckIntrastatExcludeOnBeforeUpdateGlobalIsIntrastatTransactionPurchase(PurchaseHeader: Record "Purchase Header"; var Result: Boolean; var IsHandled: Boolean)
-    begin
-        if IsHandled then
-            exit;
-        if PurchaseHeader."Intrastat Exclude CZ" then begin
-            Result := false;
-            IsHandled := true;
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeUpdateGlobalIsIntrastatTransaction', '', false, false)]
-    local procedure CheckIntrastatExcludeOnBeforeUpdateGlobalIsIntrastatTransactionSales(SalesHeader: Record "Sales Header"; var Result: Boolean; var IsHandled: Boolean)
-    begin
-        if IsHandled then
-            exit;
-        if SalesHeader."Intrastat Exclude CZ" then begin
-            Result := false;
-            IsHandled := true;
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeIsIntrastatTransactionCZL', '', false, false)]
-    local procedure CheckIntrastatExcludeOnBeforeIsIntrastatTransactionCZL(ServiceHeader: Record "Service Header"; var Result: Boolean; var IsHandled: Boolean)
-    begin
-        if IsHandled then
-            exit;
-        if ServiceHeader."Intrastat Exclude CZ" then begin
-            Result := false;
-            IsHandled := true;
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Transfer Header", 'OnBeforeUpdateGlobalIsIntrastatTransactionCZL', '', false, false)]
-    local procedure CheckIntrastatExcludeOnBeforeUpdateGlobalIsIntrastatTransactionCZLTransfer(TransferHeader: Record "Transfer Header"; var Result: Boolean; var IsHandled: Boolean)
-    begin
-        if IsHandled then
-            exit;
-        if TransferHeader."Intrastat Exclude CZ" then begin
-            Result := false;
-            IsHandled := true;
-        end;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Direct Trans. Header", 'OnBeforeUpdateGlobalIsIntrastatTransactionCZL', '', false, false)]
-    local procedure CheckIntrastatExcludeOnBeforeUpdateGlobalIsIntrastatTransactionCZLDirectTransfer(DirectTransHeader: Record "Direct Trans. Header"; var Result: Boolean; var IsHandled: Boolean)
-    begin
-        if IsHandled then
-            exit;
-        if DirectTransHeader."Intrastat Exclude CZ" then begin
-            Result := false;
-            IsHandled := true;
-        end;
-    end;
-#endif
     #endregion
 
     #region EU 3-Party Trade functions
