@@ -634,17 +634,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         BuyerTradePartyElement.Add(XmlElement.Create('Name', XmlNamespaceRAM, CustomerName));
 
         // Buyer Contact
-        if PhoneNumber <> '' then begin
-            ContactElement := XmlElement.Create('DefinedTradeContact', XmlNamespaceRAM);
-            ContactElement.Add(XmlElement.Create('PersonName', XmlNamespaceRAM, Contact));
-            ContactElement.Add(XmlElement.Create('TelephoneUniversalCommunication', XmlNamespaceRAM,
-                XmlElement.Create('CompleteNumber', XmlNamespaceRAM, PhoneNumber)));
-            if CustomerEmail <> '' then
-                ContactElement.Add(XmlElement.Create('EmailURIUniversalCommunication', XmlNamespaceRAM,
-                    XmlElement.Create('URIID', XmlNamespaceRAM, CustomerEmail)));
-            BuyerTradePartyElement.Add(ContactElement);
-        end;
-
+        InsertBuyerContact(BuyerTradePartyElement, Contact, PhoneNumber, CustomerEmail);
 
         // Buyer Address
         PostalTradeAddressElement := XmlElement.Create('PostalTradeAddress', XmlNamespaceRAM);
@@ -774,6 +764,29 @@ codeunit 13917 "Export ZUGFeRD Document"
 
         SettlementElement.Add(MonetarySummationElement);
         RootXMLNode.Add(SettlementElement);
+    end;
+
+    local procedure InsertBuyerContact(var BuyerTradePartyElement: XmlElement; ContactName: Text; PhoneNumber: Text; EmailAddress: Text)
+    var
+        ContactElement: XmlElement;
+    begin
+        if (ContactName = '') and (PhoneNumber = '') and (EmailAddress = '') then
+            exit;
+
+        ContactElement := XmlElement.Create('DefinedTradeContact', XmlNamespaceRAM);
+
+        if ContactName <> '' then
+            ContactElement.Add(XmlElement.Create('PersonName', XmlNamespaceRAM, ContactName));
+
+        if PhoneNumber <> '' then
+            ContactElement.Add(XmlElement.Create('TelephoneUniversalCommunication', XmlNamespaceRAM,
+                XmlElement.Create('CompleteNumber', XmlNamespaceRAM, PhoneNumber)));
+
+        if EmailAddress <> '' then
+            ContactElement.Add(XmlElement.Create('EmailURIUniversalCommunication', XmlNamespaceRAM,
+                XmlElement.Create('URIID', XmlNamespaceRAM, EmailAddress)));
+
+        BuyerTradePartyElement.Add(ContactElement);
     end;
 
     local procedure InsertTradeTax(var SettlementElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; var LineAmount: Dictionary of [Decimal, Decimal]; var LineVATAmount: Dictionary of [Decimal, Decimal])
