@@ -22,7 +22,7 @@ codeunit 5580 "Voucher Attachment Check" implements "Digital Voucher Check"
         if (DigitalVoucherEntryType in [DigitalVoucherEntryType::"General Journal", DigitalVoucherEntryType::"Purchase Journal", DigitalVoucherEntryType::"Sales Journal"]) or
            (RecRef.Number() = Database::"Service Header")
         then
-            error(NotPossibleToPostWithoutVoucherErr);
+            Error(NotPossibleToPostWithoutVoucherErr);
         ErrorMessageMgt.LogSimpleErrorMessage(NotPossibleToPostWithoutVoucherErr);
     end;
 
