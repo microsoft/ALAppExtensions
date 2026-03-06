@@ -78,7 +78,7 @@ page 30095 "APIV2 - Approval User Setup"
                 {
                     Caption = 'Substitute';
                 }
-                field(eMail; Rec."E-Mail")
+                field(email; Rec."E-Mail")
                 {
                     Caption = 'E-Mail';
                 }

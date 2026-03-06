@@ -48,9 +48,9 @@ page 30093 "APIV2 - Pstd. Approval Entries"
                 {
                     Caption = 'Sequence No.';
                 }
-                field(senderID; Rec."Sender ID")
+                field(senderId; Rec."Sender ID")
                 {
-                    Caption = 'Sender ID';
+                    Caption = 'Sender Id';
                 }
                 field(senderName; Rec."Sender Full Name")
                 {
@@ -68,9 +68,9 @@ page 30093 "APIV2 - Pstd. Approval Entries"
                 {
                     Caption = 'Salespers./Purch. Name';
                 }
-                field(approverID; Rec."Approver ID")
+                field(approverId; Rec."Approver ID")
                 {
-                    Caption = 'Approver ID';
+                    Caption = 'Approver Id';
                 }
                 field(approverName; Rec."Approver Full Name")
                 {
