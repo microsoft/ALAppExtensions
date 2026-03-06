@@ -14,6 +14,7 @@ codeunit 11034 IntrastatReportDEUpgrade
     trigger OnUpgradePerCompany()
     begin
         UpdateLinesType();
+        UpdateDefaultDataExchangeDef();
     end;
 
     local procedure UpdateLinesType()
@@ -37,8 +38,34 @@ codeunit 11034 IntrastatReportDEUpgrade
         UpgradeTag.SetUpgradeTag(GetIntrastatTypeUpdateTag());
     end;
 
+    local procedure UpdateDefaultDataExchangeDef()
+    var
+        DataExchDef: Record "Data Exch. Def";
+        IntrastatReportManagementDE: Codeunit IntrastatReportManagementDE;
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetIntrastatDERcptPartnerIDRemovalTag()) then
+            exit;
+
+        if DataExchDef.Get('INTRA-2022-DE') then
+            IntrastatReportManagementDE.CreateDefaultDataExchangeDef();
+
+        UpgradeTag.SetUpgradeTag(GetIntrastatDERcptPartnerIDRemovalTag());
+    end;
+
     internal procedure GetIntrastatTypeUpdateTag(): Code[250]
     begin
         exit('MS-481518-IntrastatTypeUpdateDE-20230818');
+    end;
+
+    internal procedure GetIntrastatDERcptPartnerIDRemovalTag(): Code[250]
+    begin
+        exit('MS-622161-IntrastatDERcptPartnerIDRemoval-20260301');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
+    begin
+        PerCompanyUpgradeTags.Add(GetIntrastatDERcptPartnerIDRemovalTag());
     end;
 }

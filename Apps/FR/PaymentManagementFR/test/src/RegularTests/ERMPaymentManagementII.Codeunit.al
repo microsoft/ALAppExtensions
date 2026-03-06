@@ -405,6 +405,41 @@ codeunit 144017 "ERM Payment Management II"
         PaymentHeader.TestField("File Export Completed", false);
     end;
 
+    [Test]
+    [HandlerFunctions('PaymentClassListModalPageHandler,SuggestVendorPaymentsFRRequestPageHandler')]
+    procedure BlockedPaymentVendorExcludedFromSuggestVendorPayments()
+    var
+        Vendor: Record Vendor;
+        PaymentLine: Record "Payment Line FR";
+        PaymentClass: Record "Payment Class FR";
+        PaymentSlip: TestPage "Payment Slip FR";
+        VendorNo: Code[20];
+        PaymentClassCode: Text[30];
+        SummarizePer: Option " ",Vendor,"Due date";
+    begin
+        // [SCENARIO 623072] Blocked vendor with Blocked = Payment is excluded from Suggest Vendor Payments report.
+
+        // [GIVEN] A vendor with a posted purchase invoice, then set as Blocked = Payment.
+        Initialize();
+        VendorNo := CreateAndPostPurchaseInvoice('');
+        Vendor.Get(VendorNo);
+        Vendor.Validate(Blocked, Vendor.Blocked::Payment);
+        Vendor.Modify(true);
+
+        // [GIVEN] A payment slip configured for Vendor suggestions.
+        PaymentClassCode := CreatePaymentSlip(PaymentClass.Suggestions::Vendor, '');
+        OpenPaymentSlip(PaymentSlip, PaymentClassCode);
+        EnqueueValuesForHandler(VendorNo, '', SummarizePer::" ");
+
+        // [WHEN] Suggest Vendor Payments is invoked.
+        PaymentSlip.SuggestVendorPayments.Invoke();
+
+        // [THEN] No payment lines are created for the blocked vendor.
+        PaymentLine.SetRange("Payment Class", PaymentClassCode);
+        PaymentLine.SetRange("Account No.", VendorNo);
+        Assert.RecordIsEmpty(PaymentLine);
+    end;
+
     local procedure Initialize()
     var
         PaymentClass: Record "Payment Class FR";

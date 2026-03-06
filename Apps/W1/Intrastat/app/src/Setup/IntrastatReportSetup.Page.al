@@ -24,15 +24,6 @@ page 4810 "Intrastat Report Setup"
                 field("Report Shipments"; Rec."Report Shipments") { }
                 field("Include Drop Shipment"; Rec."Include Drop Shipment") { }
                 field("Shipments Based On"; Rec."Shipments Based On") { }
-#if not CLEAN26
-                field("VAT No. Based On"; Rec."VAT No. Based On")
-                {
-                    Visible = false;
-                    ObsoleteReason = 'Use "Sales VAT No. Based On" and "Purchase VAT No. Based On" fields instead.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '26.0';
-                }
-#endif
                 field("Sales VAT No. Based On"; Rec."Sales VAT No. Based On") { }
                 field("Purchase VAT No. Based On"; Rec."Purchase VAT No. Based On") { }
                 field("Project VAT No. Based On"; Rec."Project VAT No. Based On") { }

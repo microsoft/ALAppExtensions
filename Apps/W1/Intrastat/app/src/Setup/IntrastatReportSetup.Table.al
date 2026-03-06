@@ -154,13 +154,8 @@ table 4810 "Intrastat Report Setup"
             Caption = 'VAT Reg. No. Based On';
             ToolTip = 'Specifies based on which customer/vendor code VAT number is taken for the Intrastat report.';
             ObsoleteReason = 'Use "Sales VAT No. Based On" and "Purchase VAT No. Based On" fields instead.';
-#if CLEAN26            
             ObsoleteState = Removed;
             ObsoleteTag = '29.0';
-#else            
-            ObsoleteState = Pending;
-            ObsoleteTag = '26.0';
-#endif            
         }
 #endif        
         field(25; "Def. Private Person VAT No."; Text[50])
@@ -284,30 +279,6 @@ table 4810 "Intrastat Report Setup"
             end;
     end;
 
-#if not CLEAN26
-    [Obsolete('Pending removal.', '26.0')]
-    procedure GetPartnerNo(SellTo: Code[20]; BillTo: Code[20]; VATNoBasedToCheck: Enum "Intrastat Report VAT No. Base") PartnerNo: Code[20]
-    begin
-        GetSetup();
-        if VATNoBasedToCheck <> "VAT No. Based On" then
-            exit('');
-#pragma warning disable AL0432
-        exit(GetPartnerNo(SellTo, BillTo));
-#pragma warning restore AL0432
-    end;
-
-    [Obsolete('Pending removal.', '26.0')]
-    procedure GetPartnerNo(SellTo: Code[20]; BillTo: Code[20]) PartnerNo: Code[20]
-    begin
-        GetSetup();
-        case "VAT No. Based On" of
-            "VAT No. Based On"::"Sell-to VAT":
-                PartnerNo := SellTo;
-            "VAT No. Based On"::"Bill-to VAT":
-                PartnerNo := BillTo;
-        end;
-    end;
-#endif
     procedure GetSetup()
     begin
         if not SetupRead then begin

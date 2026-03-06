@@ -47,51 +47,6 @@ page 10030 "IRS Forms Setup"
                     }
                 }
             }
-#if not CLEAN26
-            group(EmailSubject)
-            {
-                Caption = 'Email Subject';
-                Visible = false;
-                ObsoleteReason = 'The group was moved to the new page IRS 1099 Email Content Setup.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '26.0';
-                field("Email Subject"; Rec."Email Subject")
-                {
-                    ShowCaption = false;
-                    Importance = Additional;
-                    ToolTip = 'Specifies the subject of the email with 1099 form that is sent to the vendor.';
-                    Visible = false;
-                    ObsoleteReason = 'The field was moved to the new page IRS 1099 Email Content Setup.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '26.0';
-                }
-            }
-            group(EmailBody)
-            {
-                Caption = 'Email Body';
-                Visible = false;
-                ObsoleteReason = 'The group was moved to the new page IRS 1099 Email Content Setup.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '26.0';
-                field("Email Body"; EmailBody)
-                {
-                    ExtendedDatatype = RichContent;
-                    MultiLine = true;
-                    Importance = Additional;
-                    Caption = 'Email Body';
-                    ToolTip = 'Specifies the body of the email with 1099 form that is sent to the vendor.';
-                    Visible = false;
-                    ObsoleteReason = 'The field was moved to the new page IRS 1099 Email Content Setup.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '26.0';
-
-                    trigger OnValidate()
-                    begin
-                        Rec."Email Body" := CopyStr(EmailBody, 1, MaxStrLen(Rec."Email Body"));
-                    end;
-                }
-            }
-#endif
         }
     }
 
@@ -144,11 +99,6 @@ page 10030 "IRS Forms Setup"
             }
         }
     }
-
-#if not CLEAN26
-    var
-        EmailBody: Text;
-#endif
 
     trigger OnOpenPage()
     var

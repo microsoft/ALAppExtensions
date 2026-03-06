@@ -129,22 +129,6 @@ permissionset 4029 "HybridGP - Objects"
                     query "GP Item Aggregate" = X,
                     codeunit "GP Migration Error Handler" = X,
                     page "GP Migration Error Overview" = X,
-
-#if not CLEAN26
-#pragma warning disable AL0432
-                    page "GP Account" = X,
-                    page "GP Fiscal Periods" = X,
-                    page "GP GLTransactions" = X,
-                    page "GP Customer" = X,
-                    page "GP Customer Transactions" = X,
-                    codeunit "GPForecastHandler" = X,
-                    table "GPForecastTemp" = X,
-                    page "GP Item" = X,
-                    page "GP Posting Accounts" = X,
-                    page "GP Vendor" = X,
-                    page "GP Vendor Transactions" = X,
-#pragma warning restore AL0432
-#endif
                     table "GP Migration Error Overview" = X,
                     table "GP Upgrade Settings" = X,
                     codeunit "Start Data Upgrade" = X,
@@ -157,5 +141,7 @@ permissionset 4029 "HybridGP - Objects"
                     page "GP Payment Terms" = X,
                     table "GP IV00104" = X,
                     table "GP PM00101" = X,
-                    table "GP PM00203" = X;
+                    table "GP PM00203" = X,
+                    table "GP PO Validation Buffer" = X,
+                    codeunit "GP Migration Validator" = X;
 }

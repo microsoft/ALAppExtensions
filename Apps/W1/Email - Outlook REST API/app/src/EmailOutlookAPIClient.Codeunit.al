@@ -9,14 +9,10 @@ using System.Azure.Identity;
 using System.Text;
 using System.Utilities;
 
-#if not CLEAN26
-codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2", "Email - Outlook API Client v3", "Email - Outlook API Client v4", "Email - Outlook API Client v5", "Email - Outlook API Client v6"
-#else
 #if not CLEAN28
 codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2", "Email - Outlook API Client v4", "Email - Outlook API Client v5", "Email - Outlook API Client v6"
 #else
 codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v5", "Email - Outlook API Client v6"
-#endif
 #endif
 {
     var
@@ -144,16 +140,6 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
             SendDraftMail(AccessToken, MessageId);
         end;
     end;
-
-#if not CLEAN26
-    [Obsolete('Replaced by RetrieveEmails with an additional parameter for filters.', '26.0')]
-    procedure RetrieveEmails(AccessToken: SecretText; MarkAsRead: Boolean; OutlookAccount: Record "Email - Outlook Account"): JsonArray
-    var
-        TempFilters: Record "Email Retrieval Filters" temporary;
-    begin
-        exit(RetrieveEmails(AccessToken, OutlookAccount, TempFilters));
-    end;
-#endif
 
     procedure GetMailboxFolders(AccessToken: SecretText; OutlookAccount: Record "Email - Outlook Account"): JsonArray
     var

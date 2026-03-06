@@ -41,26 +41,6 @@ tableextension 31327 "Sales Header CZ" extends "Sales Header"
         IntrastatReportSetup: Record "Intrastat Report Setup";
         IntrastatReportManagementCZ: Codeunit IntrastatReportManagementCZ;
 
-#if not CLEAN26
-    [Obsolete('Pending removal. Use CheckIntrastatMandatoryFields from Intrastat Core extension instead.', '26.0')]
-    procedure CheckIntrastatMandatoryFieldsCZ()
-    begin
-        if not (Ship or Receive) then
-            exit;
-        if not IntrastatReportSetup.Get() then
-            exit;
-        if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItemsCZL() then begin
-            if IntrastatReportSetup."Transaction Type Mandatory CZ" then
-                TestField("Transaction Type");
-            if IntrastatReportSetup."Transaction Spec. Mandatory CZ" then
-                TestField("Transaction Specification");
-            if IntrastatReportSetup."Transport Method Mandatory CZ" then
-                TestField("Transport Method");
-            if IntrastatReportSetup."Shipment Method Mandatory CZ" then
-                TestField("Shipment Method Code");
-        end;
-    end;
-#endif
     procedure GetPartnerBasedOnSetupCZ() Customer: Record Customer
     begin
         exit(IntrastatReportManagementCZ.GetCustomerBasedOnSetup("Sell-to Customer No.", "Bill-to Customer No."));

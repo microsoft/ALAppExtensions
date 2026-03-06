@@ -12,9 +12,6 @@ using Microsoft.Purchases.Comment;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
-#if not CLEAN26
-using Microsoft.Purchases.Setup;
-#endif
 using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
 using Microsoft.Warehouse.Document;
@@ -436,30 +433,6 @@ page 18491 "Subcontracting Order"
                     ShortCutKey = 'Shift+Ctrl+L';
                     ApplicationArea = Basic, Suite;
                 }
-#if not CLEAN26
-                action(Statistics)
-                {
-                    Caption = 'Statistics';
-                    ToolTip = 'Statistics';
-                    Image = Statistics;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    ShortCutKey = 'F7';
-                    ApplicationArea = Basic, Suite;
-                    ObsoleteReason = 'The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '26.0';
-                    trigger OnAction()
-                    begin
-                        PurchSetup.Get();
-                        if PurchSetup."Calc. Inv. Discount" then begin
-                            CurrPage.PurchLines.Page.CalcInvDisc();
-                            Commit();
-                        end;
-                        Rec.OpenPurchaseOrderStatistics();
-                    end;
-                }
-#endif
                 action(PurchaseOrderStatistics)
                 {
                     ApplicationArea = Basic, Suite;
@@ -467,11 +440,7 @@ page 18491 "Subcontracting Order"
                     Enabled = Rec."No." <> '';
                     Image = Statistics;
                     ShortCutKey = 'F7';
-#if CLEAN26
                     Visible = true;
-#else
-                    Visible = false;
-#endif                    
                     ToolTip = 'View statistical information, such as the value of posted entries, for the record.';
                     RunObject = Page "Purchase Order Statistics";
                     RunPageOnRec = true;
@@ -804,9 +773,6 @@ page 18491 "Subcontracting Order"
     end;
 
     var
-#if not CLEAN26
-        PurchSetup: Record "Purchases & Payables Setup";
-#endif
         CopyPurchDoc: Report "Copy Purchase Document";
         MoveNegPurchLines: Report "Move Negative Purchase Lines";
         ReportPrint: Codeunit "Test Report-Print";

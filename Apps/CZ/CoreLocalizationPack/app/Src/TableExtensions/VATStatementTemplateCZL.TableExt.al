@@ -15,13 +15,8 @@ tableextension 11748 "VAT Statement Template CZL" extends "VAT Statement Templat
         {
             Caption = 'XML Format (obsoleted)';
             DataClassification = CustomerContent;
-#if not CLEAN26
-            ObsoleteState = Pending;
-            ObsoleteTag = '26.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '29.0';
-#endif
             ObsoleteReason = 'Replaced by "XML Format CZL" field in VAT Statement Name table.';
         }
 #endif
@@ -71,14 +66,4 @@ tableextension 11748 "VAT Statement Template CZL" extends "VAT Statement Templat
     begin
         VATAttributeCodeMgtCZL.DeleteVATAttributes(Rec);
     end;
-#if not CLEAN26
-
-    [Obsolete('Replaced by InitVATAttributesCZL function in VAT Statement Name table.', '26.0')]
-    procedure InitVATAttributesCZL();
-    begin
-#pragma warning disable AL0432
-        VATAttributeCodeMgtCZL.InitVATAttributes(Rec);
-#pragma warning restore AL0432
-    end;
-#endif
 }
