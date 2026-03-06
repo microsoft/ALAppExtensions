@@ -60,11 +60,11 @@ page 30093 "APIV2 - Pstd. Approval Entries"
                 {
                     Caption = 'Approval Code';
                 }
-                field(salespersPurchCode; Rec."Salespers./Purch. Code")
+                field(salespersonPurchCode; Rec."Salespers./Purch. Code")
                 {
                     Caption = 'Salespers./Purch. Code';
                 }
-                field(salespersPurchName; Rec."Salespers./Purch. Name")
+                field(salespersonPurchName; Rec."Salespers./Purch. Name")
                 {
                     Caption = 'Salespers./Purch. Name';
                 }
