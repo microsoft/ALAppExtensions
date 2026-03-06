@@ -36,9 +36,9 @@ page 30093 "APIV2 - Pstd. Approval Entries"
                 {
                     Caption = 'Entry No.';
                 }
-                field(tableID; Rec."Table ID")
+                field(tableId; Rec."Table ID")
                 {
-                    Caption = 'Table ID';
+                    Caption = 'Table Id';
                 }
                 field(documentNumber; Rec."Document No.")
                 {
@@ -88,9 +88,9 @@ page 30093 "APIV2 - Pstd. Approval Entries"
                 {
                     Caption = 'Last Date-Time Modified';
                 }
-                field(lastModifiedByID; Rec."Last Modified By ID")
+                field(lastModifiedById; Rec."Last Modified By ID")
                 {
-                    Caption = 'Last Modified By ID';
+                    Caption = 'Last Modified By Id';
                 }
                 field(comment; Rec.Comment)
                 {
@@ -124,9 +124,9 @@ page 30093 "APIV2 - Pstd. Approval Entries"
                 {
                     Caption = 'Available Credit Limit (LCY)';
                 }
-                field(recordID; Rec."Posted Record ID")
+                field(recordId; Rec."Posted Record ID")
                 {
-                    Caption = 'Posted Record ID';
+                    Caption = 'Posted Record Id';
                 }
                 field(delegationDateFormula; Rec."Delegation Date Formula")
                 {

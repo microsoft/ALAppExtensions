@@ -34,7 +34,7 @@ page 2147 "APIV2 - Workflow Steps"
                 }
                 field(id; Rec.ID)
                 {
-                    Caption = 'ID';
+                    Caption = 'Id';
                 }
                 field(workflowCode; Rec."Workflow Code")
                 {
@@ -48,13 +48,13 @@ page 2147 "APIV2 - Workflow Steps"
                 {
                     Caption = 'Entry Point';
                 }
-                field(previousWorkflowStepID; Rec."Previous Workflow Step ID")
+                field(previousWorkflowStepId; Rec."Previous Workflow Step ID")
                 {
-                    Caption = 'Previous Workflow Step ID';
+                    Caption = 'Previous Workflow Step Id';
                 }
-                field(nextWorkflowStepID; Rec."Next Workflow Step ID")
+                field(nextWorkflowStepId; Rec."Next Workflow Step ID")
                 {
-                    Caption = 'Next Workflow Step ID';
+                    Caption = 'Next Workflow Step Id';
                 }
                 field(type; Rec.Type)
                 {

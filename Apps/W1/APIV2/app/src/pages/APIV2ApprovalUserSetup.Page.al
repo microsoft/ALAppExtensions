@@ -36,7 +36,7 @@ page 30095 "APIV2 - Approval User Setup"
                 }
                 field(userId; Rec."User ID")
                 {
-                    Caption = 'User ID';
+                    Caption = 'User Id';
                 }
                 field(userFullName; UserFullName)
                 {
@@ -48,7 +48,7 @@ page 30095 "APIV2 - Approval User Setup"
                 }
                 field(approverId; Rec."Approver ID")
                 {
-                    Caption = 'Approver ID';
+                    Caption = 'Approver Id';
                 }
                 field(salesAmountApprovalLimit; Rec."Sales Amount Approval Limit")
                 {

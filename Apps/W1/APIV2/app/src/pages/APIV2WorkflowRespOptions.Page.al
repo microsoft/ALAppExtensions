@@ -33,7 +33,7 @@ page 2146 "APIV2 - Workflow Resp. Options"
                 }
                 field(id; Rec.ID)
                 {
-                    Caption = 'ID';
+                    Caption = 'Id';
                 }
                 field(type; Rec."Type")
                 {
@@ -47,9 +47,9 @@ page 2146 "APIV2 - Workflow Resp. Options"
                 {
                     Caption = 'General Journal Batch Name';
                 }
-                field(notificationUserID; Rec."Notification User ID")
+                field(notificationUserId; Rec."Notification User ID")
                 {
-                    Caption = 'Notification User ID';
+                    Caption = 'Notification User Id';
                 }
                 field(notificationUserLicenseType; Rec."Notification User License Type")
                 {
@@ -115,17 +115,17 @@ page 2146 "APIV2 - Workflow Resp. Options"
                 {
                     Caption = 'Field Caption';
                 }
-                field(approverUserID; Rec."Approver User ID")
+                field(approverUserId; Rec."Approver User ID")
                 {
-                    Caption = 'Approver User ID';
+                    Caption = 'Approver User Id';
                 }
                 field(responseType; Rec."Response Type")
                 {
                     Caption = 'Response Type';
                 }
-                field(responseUserID; Rec."Response User ID")
+                field(responseUserId; Rec."Response User ID")
                 {
-                    Caption = 'Response User ID';
+                    Caption = 'Response User Id';
                 }
                 field(notificationEntryType; Rec."Notification Entry Type")
                 {

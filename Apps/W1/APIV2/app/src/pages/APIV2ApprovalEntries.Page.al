@@ -54,7 +54,7 @@ page 30094 "APIV2 - Approval Entries"
                 }
                 field(senderId; Rec."Sender ID")
                 {
-                    Caption = 'Sender ID';
+                    Caption = 'Sender Id';
                 }
                 field(senderName; Rec."Sender Full Name")
                 {
@@ -74,7 +74,7 @@ page 30094 "APIV2 - Approval Entries"
                 }
                 field(approverId; Rec."Approver ID")
                 {
-                    Caption = 'Approver ID';
+                    Caption = 'Approver Id';
                 }
                 field(approverName; Rec."Approver Full Name")
                 {
@@ -128,9 +128,9 @@ page 30094 "APIV2 - Approval Entries"
                 {
                     Caption = 'Pending Approvals';
                 }
-                field(recordID; Rec."Record ID to Approve")
+                field(recordId; Rec."Record ID to Approve")
                 {
-                    Caption = 'Record ID to Approve';
+                    Caption = 'Record Id to Approve';
                 }
                 field(delegationDateFormula; Rec."Delegation Date Formula")
                 {
@@ -148,9 +148,9 @@ page 30094 "APIV2 - Approval Entries"
                 {
                     Caption = 'Related to Change';
                 }
-                field(workflowStepInstanceID; Rec."Workflow Step Instance ID")
+                field(workflowStepInstanceId; Rec."Workflow Step Instance ID")
                 {
-                    Caption = 'Workflow Step Instance ID';
+                    Caption = 'Workflow Step Instance Id';
                 }
             }
         }
