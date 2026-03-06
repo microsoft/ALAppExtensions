@@ -1146,6 +1146,7 @@ codeunit 13916 "Export XRechnung Document"
     begin
         DocumentAttachment.SetRange("Table ID", TableNo);
         DocumentAttachment.SetRange("No.", DocumentNo);
+        OnInsertAttachmentOnAfterSetFilters(TableNo, DocumentNo, DocumentAttachment);
         if DocumentAttachment.IsEmpty() then
             exit;
 
@@ -1549,6 +1550,11 @@ codeunit 13916 "Export XRechnung Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAddCrMemoLineElement(var CrMemoLineElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertAttachmentOnAfterSetFilters(TableNo: Integer; DocumentNo: Code[20]; var DocumentAttachment: Record "Document Attachment")
     begin
     end;
 }
