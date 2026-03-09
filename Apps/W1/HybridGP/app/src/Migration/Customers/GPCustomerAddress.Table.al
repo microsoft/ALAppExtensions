@@ -2,6 +2,7 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.Sales.Customer;
 using System.Email;
+using Microsoft.Finance.SalesTax;
 
 table 4048 "GP Customer Address"
 {
@@ -80,6 +81,7 @@ table 4048 "GP Customer Address"
         GPSY01200: Record "GP SY01200";
         MailManagement: Codeunit "Mail Management";
         EmailAddress: Text[80];
+        TaxAreaCode: Code[20];
         Exists: Boolean;
     begin
         if Customer.Get(Rec.CUSTNMBR) then begin
@@ -97,7 +99,11 @@ table 4048 "GP Customer Address"
             ShipToAddress."Fax No." := CopyStr(Rec.FAX.TrimEnd(), 1, MaxStrLen(ShipToAddress."Fax No."));
             ShipToAddress."Post Code" := CopyStr(Rec.ZIP.TrimEnd(), 1, MaxStrLen(ShipToAddress."Post Code"));
             ShipToAddress.County := CopyStr(Rec.STATE.TrimEnd(), 1, MaxStrLen(ShipToAddress.County));
-            ShipToAddress."Tax Area Code" := CopyStr(Rec.TAXSCHID.TrimEnd(), 1, MaxStrLen(ShipToAddress."Tax Area Code"));
+
+            TaxAreaCode := CopyStr(Rec.TAXSCHID.TrimEnd(), 1, MaxStrLen(ShipToAddress."Tax Area Code"));
+            CreateTaxAreaIfNeeded(TaxAreaCode);
+
+            ShipToAddress."Tax Area Code" := TaxAreaCode;
 
             if (CopyStr(ShipToAddress."Phone No.", 1, 14) = '00000000000000') then
                 ShipToAddress."Phone No." := '';
@@ -118,6 +124,18 @@ table 4048 "GP Customer Address"
             else
                 ShipToAddress.Modify();
         end;
+    end;
+
+    local procedure CreateTaxAreaIfNeeded(CodeToSet: Code[20])
+    var
+        TaxArea: Record "Tax Area";
+    begin
+        if TaxArea.Get(CodeToSet) then
+            exit;
+
+        Clear(TaxArea);
+        TaxArea.Validate(Code, CodeToSet);
+        TaxArea.Insert(true);
     end;
 
     var

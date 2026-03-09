@@ -370,6 +370,8 @@ codeunit 40125 "GP Populate Combined Tables"
         GPCustomer.TAXSCHID := GPRM00101.TAXSCHID.Trim();
         GPCustomer.UPSZONE := GPRM00101.UPSZONE.Trim();
         GPCustomer.TAXEXMT1 := GPRM00101.TAXEXMT1.Trim();
+        GPCustomer.CUSTCLAS := GPRM00101.CUSTCLAS.Trim();
+        GPCustomer.RMSLSACC := GPRM00101.RMSLSACC;
 #pragma warning restore AA0139   
 
         if GPRM00101.PHONE1.Contains('E+') then
@@ -530,13 +532,14 @@ codeunit 40125 "GP Populate Combined Tables"
     internal procedure PopulateGPVendors()
     var
         GPPM00200Vendor: Record "GP PM00200";
+        GPPM00201VendorSum: Record "GP PM00201";
+        GPSY01200NetAddresses: Record "GP SY01200";
         GPVendor: Record "GP Vendor";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPPM00200Vendor.SetFilter(VENDSTTS, '1|3');
-        if GPCompanyMigrationSettings.Get(CompanyName()) then
-            if GPCompanyMigrationSettings."Migrate Inactive Vendors" then
-                GPPM00200Vendor.SetRange(VENDSTTS);
+        if GPCompanyAdditionalSettings.GetMigrateInactiveVendors() then
+            GPPM00200Vendor.SetRange(VENDSTTS);
 
         if not GPPM00200Vendor.FindSet() then
             exit;
@@ -571,7 +574,10 @@ codeunit 40125 "GP Populate Combined Tables"
         GPVendor.TAXSCHID := GPPM00200Vendor.TAXSCHID.TrimEnd();
         GPVendor.UPSZONE := GPPM00200Vendor.UPSZONE.TrimEnd();
         GPVendor.TXIDNMBR := GPPM00200Vendor.TXIDNMBR.TrimEnd();
-#pragma warning restore AA0139    
+        GPVendor.VNDCLSID := GPPM00200Vendor.VNDCLSID.TrimEnd();
+#pragma warning restore AA0139
+
+        GPVendor.PMPRCHIX := GPPM00200Vendor.PMPRCHIX;
 
         if GPPM00200Vendor.PHNUMBR1.Contains('E+') then
             GPVendor.PHNUMBR1 := '00000000000000'
@@ -647,18 +653,12 @@ codeunit 40125 "GP Populate Combined Tables"
     local procedure ShouldAddItemToStagingTable(var GPIV00101: Record "GP IV00101"): Boolean
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        InActive: Boolean;
     begin
         if not GPCompanyAdditionalSettings.GetMigrateKitItems() then
             if GPIV00101.ITEMTYPE = 3 then
                 exit(false);
 
-        if GPIV00101.ITEMTYPE = 2 then
-            InActive := true
-        else
-            InActive := GPIV00101.INACTIVE;
-
-        if InActive then
+        if GPIV00101.INACTIVE then
             if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
                 exit(false);
 
@@ -674,7 +674,7 @@ codeunit 40125 "GP Populate Combined Tables"
         GPItem: Record "GP Item";
         GPIV00101Inventory: Record "GP IV00101";
     begin
-        UpdateGLSetupUnitRoundingPrecisionIfNeeded();
+        UpdateGLSetupRoundingPrecisionIfNeeded();
 
         if not GPIV00101Inventory.FindSet() then
             exit;
@@ -695,14 +695,21 @@ codeunit 40125 "GP Populate Combined Tables"
         GPIV40201InventoryUom: Record "GP IV40201";
         DummyItem: Record Item;
         GPMC40000: Record "GP MC40000";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         FoundCurrency: Boolean;
     begin
+        GPItem.ITEMNMBR := GPIV00101Inventory.ITEMNMBR;
         GPItem.No := CopyStr(GPIV00101Inventory.ITEMNMBR.TrimEnd(), 1, MaxStrLen(DummyItem."No."));
         GPItem.Description := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.Description));
         GPItem.SearchDescription := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.SearchDescription));
-#pragma warning disable AA0139
-        GPItem.ShortName := GPIV00101Inventory.ITEMNMBR.TrimEnd();
-#pragma warning restore AA0139
+
+        case GPCompanyAdditionalSettings.GetItemDesc2Source() of
+            "GP Item Desc. 2 Source"::"Short Description":
+                GPItem.ShortName := CopyStr(GPIV00101Inventory.ITMSHNAM.TrimEnd(), 1, MaxStrLen(GPItem.ShortName)); // ITMSHNAM = Item Short Name
+            "GP Item Desc. 2 Source"::"Generic Description":
+                GPItem.ShortName := CopyStr(GPIV00101Inventory.ITMGEDSC.TrimEnd(), 1, MaxStrLen(GPItem.ShortName)); // ITMGEDSC = Item Generic Description
+        end;
+
         case GPIV00101Inventory.ITEMTYPE of
             1, 2:
                 GPItem.ItemType := 0;
@@ -768,12 +775,13 @@ codeunit 40125 "GP Populate Combined Tables"
             GPItem.UnitListPrice := GPIV00105inventoryCurr.LISTPRCE;
     end;
 
-    local procedure UpdateGLSetupUnitRoundingPrecisionIfNeeded()
+    local procedure UpdateGLSetupRoundingPrecisionIfNeeded()
     var
         GPIV00101: Record "GP IV00101";
         GeneralLedgerSetup: Record "General Ledger Setup";
         GPItemAggregate: Query "GP Item Aggregate";
         MaxItemPrecision: Decimal;
+        ShouldModify: Boolean;
     begin
         GPItemAggregate.Open();
         GPItemAggregate.Read();
@@ -783,8 +791,16 @@ codeunit 40125 "GP Populate Combined Tables"
         GeneralLedgerSetup.Get();
         if MaxItemPrecision < GeneralLedgerSetup."Unit-Amount Rounding Precision" then begin
             GeneralLedgerSetup."Unit-Amount Rounding Precision" := MaxItemPrecision;
-            GeneralLedgerSetup.Modify();
+            ShouldModify := true;
         end;
+
+        if GeneralLedgerSetup."Inv. Rounding Precision (LCY)" = 0 then begin
+            GeneralLedgerSetup."Inv. Rounding Precision (LCY)" := 0.01;
+            ShouldModify := true;
+        end;
+
+        if ShouldModify then
+            GeneralLedgerSetup.Modify(true);
     end;
 
     internal procedure PopulateGPItemTransactions()

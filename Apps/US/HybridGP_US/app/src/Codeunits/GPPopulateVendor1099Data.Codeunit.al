@@ -88,7 +88,6 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
     var
         GPPM00200: Record "GP PM00200";
     begin
-        GPPM00200.SetRange(TEN99TYPE, 2, 5);
         if not GPPM00200.FindSet() then
             exit;
 
@@ -115,17 +114,13 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
         if IRS1099Code <> '' then
             AssignIRS1099CodeToVendor(Vendor, IRS1099Code);
 
-        if GPPM00200.TXIDNMBR <> '' then
-            Vendor.Validate("Federal ID No.", GPPM00200.TXIDNMBR.TrimEnd());
+        if GPPM00200.TXIDNMBR <> '' then begin
+            Vendor.Validate("Federal ID No.", CopyStr(GPPM00200.TXIDNMBR.TrimEnd(), 1, MaxStrLen(Vendor."Federal ID No.")));
+            Vendor.Modify();
+        end;
 
-        if (IRS1099Code <> '') or (GPPM00200.TXIDNMBR <> '') then begin
-            Vendor.Validate("Tax Identification Type", Vendor."Tax Identification Type"::"Legal Entity");
-            if Vendor.Modify() then
-                AddVendor1099Values(Vendor)
-            else
-                LogLastError(Vendor."No.");
-        end else
-            LogVendorSkipped(Vendor."No.");
+        if GPPM00200.TEN99TYPE > 1 then
+            AddVendor1099Values(Vendor);
     end;
 
     local procedure VendorAlreadyHasIRS1099CodeAssigned(var Vendor: Record Vendor): Boolean

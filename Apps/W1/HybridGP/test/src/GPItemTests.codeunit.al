@@ -486,6 +486,7 @@ codeunit 139662 "GP Item Tests"
     begin
         Clear(GPItem);
         GPItem.No := ItemNoSashBrshTok;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := ItemNoSashBrshTok;
         GPItem.SearchDescription := 'Craftsman Brush 1 1/2\" Sash';
         GPItem.ShortName := ItemNoSashBrshTok;
@@ -504,6 +505,7 @@ codeunit 139662 "GP Item Tests"
 
         Clear(GPItem);
         GPItem.No := ItemNo12345ITEMNUMBERTok;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := '12345ITEMNUMBER!@#$%1234567890';
         GPItem.SearchDescription := 'Item Description !@#123456789012345678901234567890';
         GPItem.ShortName := '12345ITEMNUMBER!@#$%1234567890';
@@ -522,6 +524,7 @@ codeunit 139662 "GP Item Tests"
 
         Clear(GPItem);
         GPItem.No := ItemNoStepLadderTok;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := ItemNoStepLadderTok;
         GPItem.SearchDescription := ItemNoStepLadderTok;
         GPItem.ShortName := ItemNoStepLadderTok;
@@ -540,6 +543,7 @@ codeunit 139662 "GP Item Tests"
 
         Clear(GPItem);
         GPItem.No := ItemNumberItemInactiveTok;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := 'Inactive item';
         GPItem.SearchDescription := 'inactive';
         GPItem.ShortName := 'Inactive item';
@@ -564,6 +568,7 @@ codeunit 139662 "GP Item Tests"
 
         Clear(GPItem);
         GPItem.No := ItemNoItemDiscontinuedTok;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := 'Discontinued item';
         GPItem.SearchDescription := 'discontinued';
         GPItem.ShortName := 'Discontinued item';
@@ -589,6 +594,7 @@ codeunit 139662 "GP Item Tests"
         // Kit and its components
         Clear(GPItem);
         GPItem.No := ItemNoKitTok;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := ItemNoKitTok;
         GPItem.SearchDescription := ItemNoKitTok;
         GPItem.ShortName := ItemNoKitTok;
@@ -611,6 +617,7 @@ codeunit 139662 "GP Item Tests"
 
         Clear(GPItem);
         GPItem.No := ItemNoKitComponentInvTok;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := 'Kit Component Inventory';
         GPItem.SearchDescription := 'Kit component inventory';
         GPItem.ShortName := 'Kit Component Inventory';
@@ -633,6 +640,7 @@ codeunit 139662 "GP Item Tests"
 
         Clear(GPItem);
         GPItem.No := ItemNoKitComponentSvcTok;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := 'Kit Component Service';
         GPItem.SearchDescription := 'Kit component service';
         GPItem.ShortName := 'Kit Component SVC';
