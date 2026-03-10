@@ -2,6 +2,7 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.CRM.Outlook;
 using Microsoft.DataMigration;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Item;
 
@@ -674,7 +675,7 @@ codeunit 40125 "GP Populate Combined Tables"
         GPItem: Record "GP Item";
         GPIV00101Inventory: Record "GP IV00101";
     begin
-        UpdateGLSetupRoundingPrecisionIfNeeded();
+        UpdateGLSetupUnitRoundingPrecisionIfNeeded();
 
         if not GPIV00101Inventory.FindSet() then
             exit;
@@ -775,13 +776,12 @@ codeunit 40125 "GP Populate Combined Tables"
             GPItem.UnitListPrice := GPIV00105inventoryCurr.LISTPRCE;
     end;
 
-    local procedure UpdateGLSetupRoundingPrecisionIfNeeded()
+    local procedure UpdateGLSetupUnitRoundingPrecisionIfNeeded()
     var
         GPIV00101: Record "GP IV00101";
         GeneralLedgerSetup: Record "General Ledger Setup";
         GPItemAggregate: Query "GP Item Aggregate";
         MaxItemPrecision: Decimal;
-        ShouldModify: Boolean;
     begin
         GPItemAggregate.Open();
         GPItemAggregate.Read();
@@ -791,16 +791,8 @@ codeunit 40125 "GP Populate Combined Tables"
         GeneralLedgerSetup.Get();
         if MaxItemPrecision < GeneralLedgerSetup."Unit-Amount Rounding Precision" then begin
             GeneralLedgerSetup."Unit-Amount Rounding Precision" := MaxItemPrecision;
-            ShouldModify := true;
+            GeneralLedgerSetup.Modify();
         end;
-
-        if GeneralLedgerSetup."Inv. Rounding Precision (LCY)" = 0 then begin
-            GeneralLedgerSetup."Inv. Rounding Precision (LCY)" := 0.01;
-            ShouldModify := true;
-        end;
-
-        if ShouldModify then
-            GeneralLedgerSetup.Modify(true);
     end;
 
     internal procedure PopulateGPItemTransactions()
