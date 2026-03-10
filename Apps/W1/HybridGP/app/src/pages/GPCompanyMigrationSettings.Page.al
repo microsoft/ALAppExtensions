@@ -101,6 +101,11 @@ page 40056 "GP Company Migration Settings"
                     Caption = 'Kit Items';
                     ToolTip = 'Specifies the value of the Migrate Kit Items field.';
                 }
+                field("Item Desc. 2 Source"; Rec."Item Desc. 2 Source")
+                {
+                    Caption = 'Item Desc. 2 Src';
+                    ToolTip = 'Specifies whether Short Description or Generic Description populates Item Description 2 field.';
+                }
                 field("Migrate Inactive Vendors"; Rec."Migrate Inactive Vendors")
                 {
                     Caption = 'Inactive Vendors';
