@@ -10,6 +10,7 @@ using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Attachment;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.UOM;
@@ -23,6 +24,7 @@ using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using Microsoft.Service.Test;
 using System.IO;
+using System.Text;
 using System.Utilities;
 
 codeunit 13918 "XRechnung XML Document Tests"
@@ -666,6 +668,32 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
         VerifyAccountingSupplierParty(TempXMLBuffer, '/ubl:Invoice/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
+    end;
+
+    [Test]
+    procedure ExportPostedServiceInvoiceInXRechnungFormatVerifyDocumentAttachments();
+    var
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        CSVText1: Text;
+        CSVText2: Text;
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO] Export posted service invoice creates electronic document in XRechnung format with document attachments embedded
+        Initialize();
+
+        // [GIVEN] Create and Post Service Invoice
+        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+
+        // [GIVEN] Create two CSV document attachments
+        CSVText1 := CreateCSVDocumentAttachment(ServiceInvoiceHeader, 'attachment.csv');
+        CSVText2 := CreateCSVDocumentAttachment(ServiceInvoiceHeader, 'document.csv');
+
+        // [WHEN] Export XRechnung Electronic Document
+        ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document contains 2 AdditionalDocumentReference nodes
+        VerifyCSVAttachments(TempXMLBuffer, 'attachment.csv', CSVText1, 'document.csv', CSVText2);
     end;
     #endregion
 
@@ -2387,6 +2415,113 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.RecordIsNotEmpty(TempXMLBuffer, '');
     end;
 
+    local procedure VerifyCSVAttachments(var TempXMLBuffer: Record "XML Buffer" temporary; FileName1: Text; CSVText1: Text; FileName2: Text; CSVText2: Text)
+    begin
+        // [THEN] XRechnung Electronic Document contains 2 AdditionalDocumentReference nodes
+        VerifyAdditionalDocumentReferenceCount(TempXMLBuffer, 2);
+
+        // [THEN] First attachment is verified in XML with correct ID, MIME type, and content
+        VerifyAttachmentInXML(TempXMLBuffer, FileName1, 'text/csv', CSVText1);
+
+        // [THEN] Second attachment is verified in XML with correct ID, MIME type, and content
+        VerifyAttachmentInXML(TempXMLBuffer, FileName2, 'text/csv', CSVText2);
+    end;
+
+
+    local procedure VerifyAdditionalDocumentReferenceCount(var TempXMLBuffer: Record "XML Buffer" temporary; ExpectedCount: Integer)
+    begin
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, '/ubl:Invoice/cac:AdditionalDocumentReference');
+        Assert.AreEqual(ExpectedCount, TempXMLBuffer.Count, 'Incorrect number of AdditionalDocumentReference nodes');
+    end;
+
+    local procedure VerifyAttachmentInXML(var TempXMLBuffer: Record "XML Buffer" temporary; AttachmentID: Text; ExpectedMIMEType: Text; ExpectedCSVText: Text)
+    var
+        Base64Convert: Codeunit "Base64 Convert";
+        TempXMLBufferAttachment: Record "XML Buffer" temporary;
+        TempXMLBufferChild: Record "XML Buffer" temporary;
+        DecodedText: Text;
+        EncodedContent: Text;
+        ExpectedDescription: Text;
+        AttachmentEntryNo: Integer;
+        EmbeddedDocEntryNo: Integer;
+    begin
+        // Find the AdditionalDocumentReference node with matching ID
+        if not FindAttachmentByID(TempXMLBuffer, AttachmentID, TempXMLBufferAttachment) then
+            Error('AdditionalDocumentReference with ID %1 not found', AttachmentID);
+
+        // Extract file name without extension for DocumentDescription verification
+        ExpectedDescription := CopyStr(AttachmentID, 1, StrPos(AttachmentID, '.') - 1);
+
+        // Verify DocumentDescription (should match file name without extension)
+        TempXMLBufferChild.Copy(TempXMLBuffer, true);
+        TempXMLBufferChild.Reset();
+        TempXMLBufferChild.SetRange("Parent Entry No.", TempXMLBufferAttachment."Entry No.");
+        TempXMLBufferChild.SetRange(Type, TempXMLBufferChild.Type::Element);
+        TempXMLBufferChild.SetRange(Name, 'DocumentDescription');
+        if TempXMLBufferChild.FindFirst() then
+            Assert.AreEqual(ExpectedDescription, TempXMLBufferChild.Value, 'Incorrect DocumentDescription');
+
+        // Find the Attachment child node
+        TempXMLBufferChild.Reset();
+        TempXMLBufferChild.SetRange("Parent Entry No.", TempXMLBufferAttachment."Entry No.");
+        TempXMLBufferChild.SetRange(Type, TempXMLBufferChild.Type::Element);
+        TempXMLBufferChild.SetRange(Name, 'Attachment');
+        if TempXMLBufferChild.FindFirst() then begin
+            AttachmentEntryNo := TempXMLBufferChild."Entry No.";
+
+            // Find EmbeddedDocumentBinaryObject under Attachment
+            TempXMLBufferChild.Reset();
+            TempXMLBufferChild.SetRange("Parent Entry No.", AttachmentEntryNo);
+            TempXMLBufferChild.SetRange(Type, TempXMLBufferChild.Type::Element);
+            TempXMLBufferChild.SetRange(Name, 'EmbeddedDocumentBinaryObject');
+            if TempXMLBufferChild.FindFirst() then begin
+                EncodedContent := TempXMLBufferChild.GetValue();
+                EmbeddedDocEntryNo := TempXMLBufferChild."Entry No.";
+
+                // Get mimeCode attribute
+                TempXMLBufferChild.Reset();
+                TempXMLBufferChild.SetRange("Parent Entry No.", EmbeddedDocEntryNo);
+                TempXMLBufferChild.SetRange(Type, TempXMLBufferChild.Type::Attribute);
+                TempXMLBufferChild.SetRange(Name, 'mimeCode');
+                if TempXMLBufferChild.FindFirst() then
+                    Assert.AreEqual(ExpectedMIMEType, TempXMLBufferChild.Value, 'Incorrect MIME type');
+
+                // Verify decoded content
+                DecodedText := Base64Convert.FromBase64(EncodedContent);
+                Assert.AreEqual(ExpectedCSVText, DecodedText, 'Decoded attachment content does not match original CSV text');
+            end else
+                Error('EmbeddedDocumentBinaryObject not found for attachment %1', AttachmentID);
+        end else
+            Error('Attachment node not found for attachment %1', AttachmentID);
+    end;
+
+    local procedure FindAttachmentByID(var TempXMLBuffer: Record "XML Buffer" temporary; AttachmentID: Text; var TempXMLBufferResult: Record "XML Buffer" temporary): Boolean
+    var
+        TempXMLBufferID: Record "XML Buffer" temporary;
+    begin
+        // Find all AdditionalDocumentReference nodes
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, '/ubl:Invoice/cac:AdditionalDocumentReference');
+        if TempXMLBuffer.FindSet() then
+            repeat
+                // Check if this node has the matching ID child
+                TempXMLBufferID.Copy(TempXMLBuffer, true);
+                TempXMLBufferID.Reset();
+                TempXMLBufferID.SetRange("Parent Entry No.", TempXMLBuffer."Entry No.");
+                TempXMLBufferID.SetRange(Type, TempXMLBufferID.Type::Element);
+                TempXMLBufferID.SetRange(Name, 'ID');
+                if TempXMLBufferID.FindFirst() then
+                    if TempXMLBufferID.Value = AttachmentID then begin
+                        TempXMLBufferResult := TempXMLBuffer;
+                        exit(true);
+                    end;
+            until TempXMLBuffer.Next() = 0;
+        exit(false);
+    end;
+
     local procedure GetCurrencyCode(CurrencyCode: Code[10]): Code[10];
     begin
         if CurrencyCode <> '' then
@@ -2599,6 +2734,39 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(ServiceCrMemoLine."Amount Including VAT" - ServiceCrMemoLine.Amount);
     end;
 
+
+
+    local procedure CreateCSVDocumentAttachment(ServiceInvoiceHeader: Record "Service Invoice Header"; FileName: Text): Text
+    var
+        RecRef: RecordRef;
+    begin
+        RecRef.GetTable(ServiceInvoiceHeader);
+        exit(CreateCSVDocumentAttachment(RecRef, FileName));
+    end;
+
+    local procedure CreateCSVDocumentAttachment(RecRef: RecordRef; FileName: Text): Text
+    var
+        DocumentAttachment: Record "Document Attachment";
+        TempBlob: Codeunit "Temp Blob";
+        TextBuilder: TextBuilder;
+        OutStream: OutStream;
+        CSVText: Text;
+    begin
+        // Build CSV content using TextBuilder
+        TextBuilder.AppendLine('Name,Value');
+        TextBuilder.Append('Item1,100');
+        CSVText := TextBuilder.ToText();
+
+        // Create blob with CSV content
+        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+        OutStream.WriteText(CSVText);
+
+        // Save attachment to the document
+        DocumentAttachment.SaveAttachment(RecRef, FileName, TempBlob);
+
+        exit(CSVText);
+    end;
+
     local procedure GetCurrencyCode(DocumentCurrencyCode: Code[10]; var Currency: Record Currency): Code[10]
     begin
         if DocumentCurrencyCode = '' then begin
@@ -2632,9 +2800,9 @@ codeunit 13918 "XRechnung XML Document Tests"
         CompanyInformation."SWIFT Code" := LibraryUtility.GenerateGUID();
         CompanyInformation."E-Mail" := LibraryUtility.GenerateRandomEmail();
         CompanyInformation.Modify();
-        
+
         GeneralLedgerSetup.Get();
-        
+
         EDocumentService.DeleteAll();
         EDocumentService.Get(LibraryEdocument.CreateService("E-Document Format"::XRechnung, "Service Integration"::"No Integration"));
         Commit();
