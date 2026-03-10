@@ -289,11 +289,16 @@ codeunit 5261 "Audit File Export Mgt."
             OnBeforeScheduleTask(DoNotScheduleTask, TaskID);
             if DoNotScheduleTask then
                 AuditFileExportLine."Task ID" := TaskID
-            else
+            else begin
+                if not IsNullGuid(AuditFileExportLine."Task ID") then
+                    if TaskScheduler.TaskExists(AuditFileExportLine."Task ID") then
+                        TaskScheduler.CancelTask(AuditFileExportLine."Task ID");
+
                 AuditFileExportLine."Task ID" :=
                     TaskScheduler.CreateTask(
                         Codeunit::"Audit Line Export Runner", Codeunit::"Audit File Export Error Handl.", true, CompanyName(),
                         NotBefore, AuditFileExportLine.RecordId());
+            end;
             AuditFileExportLine.Modify(true);
             Commit();
             NoOfJobs += 1;
