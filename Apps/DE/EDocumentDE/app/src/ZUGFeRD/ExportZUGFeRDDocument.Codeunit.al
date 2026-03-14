@@ -145,7 +145,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         DescriptionLbl: Label 'This is the e-invoicing xml document';
     begin
         PDFDocument.Initialize();
-        Name := 'factur-x.xml';
+        Name := 'xrechnung.xml';
         DataType := Enum::"PDF Attach. Data Relationship"::Alternative;
         MimeType := 'text/xml';
         Description := DescriptionLbl;
