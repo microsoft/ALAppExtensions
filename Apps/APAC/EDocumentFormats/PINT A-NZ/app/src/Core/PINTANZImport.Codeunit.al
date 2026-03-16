@@ -201,5 +201,4 @@ codeunit 28007 "PINT A-NZ Import"
         if TempXMLBuffer.FindFirst() then
             exit(TempXMLBuffer.Value);
     end;
-
 }
