@@ -2,7 +2,6 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.CRM.Outlook;
 using Microsoft.DataMigration;
-using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Item;
 
