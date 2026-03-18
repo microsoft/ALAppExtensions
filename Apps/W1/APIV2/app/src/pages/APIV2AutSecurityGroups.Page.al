@@ -42,6 +42,18 @@ page 30082 "APIV2 - Aut. Security Groups"
                     Caption = 'Group Name';
                     Editable = false;
                 }
+                field(groupUserSecurityID; Rec."Group User SID")
+                {
+                    Caption = 'Group User Security Id';
+                }
+                field(groupId; Rec."Group ID")
+                {
+                    Caption = 'Group Id';
+                }
+                field(retrievedSuccessfully; Rec."Retrieved Successfully")
+                {
+                    Caption = 'Retrieved Successfully';
+                }
                 part(securityGroupMembers; "APIV2 - Aut. Sec. Gr. Members")
                 {
                     Caption = 'User Group Member';
@@ -54,6 +66,14 @@ page 30082 "APIV2 - Aut. Security Groups"
                     Caption = 'Security Group Permissions';
                     EntityName = 'userPermission';
                     EntitySetName = 'userPermissions';
+                    SubPageLink = "User Security ID" = field("Group User SID");
+                }
+                part(permissionSets; "APIV2 - Access Control")
+                {
+                    Caption = 'Permission Sets';
+                    EntityName = 'accessControl';
+                    EntitySetName = 'accessControls';
+                    Multiplicity = Many;
                     SubPageLink = "User Security ID" = field("Group User SID");
                 }
             }
