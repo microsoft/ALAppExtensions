@@ -38,6 +38,7 @@ tableextension 6223 "Sust. Analysis View Entry" extends "Analysis View Entry"
         }
         field(6213; "CO2e Emission"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'CO2e Emission';
             DecimalPlaces = 2 : 5;
@@ -45,6 +46,8 @@ tableextension 6223 "Sust. Analysis View Entry" extends "Analysis View Entry"
         }
         field(6214; "Carbon Fee"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Carbon Fee';
             DecimalPlaces = 2 : 5;

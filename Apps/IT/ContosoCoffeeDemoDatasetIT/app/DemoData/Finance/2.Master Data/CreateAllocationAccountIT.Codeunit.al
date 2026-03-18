@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -12,6 +13,9 @@ codeunit 12270 "Create Allocation Account IT"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by Create Allocation Account Codeunit in ContosoCoffeeDemoDataset';
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     var
@@ -46,3 +50,5 @@ codeunit 12270 "Create Allocation Account IT"
         LicensesTok: Label 'LICENSES', MaxLength = 20;
         YearlyLicenseFeeTok: Label 'Yearly license fee, design software', MaxLength = 100;
 }
+
+#endif

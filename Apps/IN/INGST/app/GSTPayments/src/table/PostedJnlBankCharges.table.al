@@ -30,6 +30,8 @@ table 18248 "Posted Jnl. Bank Charges"
         }
         field(3; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             Editable = false;
             MinValue = 0;
@@ -37,6 +39,8 @@ table 18248 "Posted Jnl. Bank Charges"
         }
         field(4; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -120,6 +124,7 @@ table 18248 "Posted Jnl. Bank Charges"
         }
         field(21; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
             Editable = false;

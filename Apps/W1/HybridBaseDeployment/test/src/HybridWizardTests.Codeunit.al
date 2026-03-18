@@ -39,7 +39,6 @@ codeunit 139650 "Hybrid Wizard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmYesHandler')]
     procedure TestWelcomePrivacyAgree()
     var
         HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard";
@@ -61,7 +60,7 @@ codeunit 139650 "Hybrid Wizard Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ProductsPageHandler,ConfirmYesHandler')]
+    [HandlerFunctions('ProductsPageHandler')]
     procedure TestStatusNotCompletedWhenNotFinished()
     var
         GuidedExperience: Codeunit "Guided Experience";
@@ -317,12 +316,6 @@ codeunit 139650 "Hybrid Wizard Tests"
         Assert.IsTrue(HybridCloudSetupWizard.ActionBack.Enabled(), 'Dynamics Product window ActionBack should be enabled.');
         Assert.IsTrue(HybridCloudSetupWizard.ActionNext.Enabled(), 'Dynamics Product window ActionNext should be enabled.');
         Assert.IsFalse(HybridCloudSetupWizard.ActionFinish.Enabled(), 'Dynamics Product window ActionFinish should be disabled.');
-    end;
-
-    [ConfirmHandler]
-    procedure ConfirmYesHandler(Question: Text[1024]; var Reply: Boolean)
-    begin
-        Reply := true;
     end;
 
     [ModalPageHandler]

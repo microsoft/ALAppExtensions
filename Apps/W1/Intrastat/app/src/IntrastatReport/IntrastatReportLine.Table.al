@@ -498,6 +498,10 @@ table 4812 "Intrastat Report Line"
         {
             Editable = false;
         }
+        field(101; "Intrastat Country/Region Code"; Code[10])
+        {
+            Caption = 'Intrastat Country/Region Code';
+        }
     }
 
     keys

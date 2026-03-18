@@ -47,6 +47,14 @@ page 30050 "APIV2 - Jobs"
                     EntitySetName = 'documentAttachments';
                     SubPageLink = "Document Id" = field(SystemId), "Document Type" = const(Job);
                 }
+                part(pdfDocument; "APIV2 - PDF Document")
+                {
+                    Caption = 'PDF Document';
+                    Multiplicity = ZeroOrOne;
+                    EntityName = 'pdfDocument';
+                    EntitySetName = 'pdfDocument';
+                    SubPageLink = "Document Id" = field(SystemId), "Document Type" = const(Job);
+                }
             }
         }
     }

@@ -29,14 +29,16 @@ codeunit 1957 "LPP Update"
             repeat
                 if SalesInvoiceHeader.Get(CustomerLedgerEntries."Document No.") then begin
                     LPMLInputData.SetRange(Number, CustomerLedgerEntries."Document No.");
-                    LPMLInputData.FindFirst();
-                    if LPMLInputData."Is Late" then
-                        CustomerLedgerEntries."Payment Prediction" := CustomerLedgerEntries."Payment Prediction"::Late
-                    else
-                        CustomerLedgerEntries."Payment Prediction" := CustomerLedgerEntries."Payment Prediction"::"On-Time";
-                    CustomerLedgerEntries."Prediction Confidence %" := Round(LPMLInputData.Confidence * 100, 1);
-                    CustomerLedgerEntries."Prediction Confidence" := LPPredictionMgt.GetConfidenceOptionFromConfidencePercent(LPMLInputData.Confidence);
-                    CustomerLedgerEntries.Modify();
+                    if LPMLInputData.FindFirst() then begin
+                        if LPMLInputData."Is Late" then
+                            CustomerLedgerEntries."Payment Prediction" := CustomerLedgerEntries."Payment Prediction"::Late
+                        else
+                            CustomerLedgerEntries."Payment Prediction" := CustomerLedgerEntries."Payment Prediction"::"On-Time";
+                        CustomerLedgerEntries."Prediction Confidence %" := Round(LPMLInputData.Confidence * 100, 1);
+                        CustomerLedgerEntries."Prediction Confidence" := LPPredictionMgt.GetConfidenceOptionFromConfidencePercent(LPMLInputData.Confidence);
+                        CustomerLedgerEntries.Modify();
+                    end else
+                        Session.LogMessage('0000RH7', LPMLInputDataNotFoundTok, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryTok);
                 end;
             until CustomerLedgerEntries.Next() = 0;
         LPMLInputData.DeleteAll();
@@ -45,4 +47,8 @@ codeunit 1957 "LPP Update"
         LPMachineLearningSetup."Last Feature Table Reset" := 0DT; // table will need to be rebuilt
         LPMachineLearningSetup.Modify();
     end;
+
+    var
+        TelemetryCategoryTok: Label 'LatePaymentML', Locked = true;
+        LPMLInputDataNotFoundTok: Label 'LP ML Input Data not found.', Locked = true;
 }

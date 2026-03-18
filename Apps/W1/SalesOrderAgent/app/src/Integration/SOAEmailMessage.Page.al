@@ -313,32 +313,40 @@ page 4404 "SOA Email Message"
     local procedure UpdateContactInformation(EmailAddress: Text)
     var
         SOAFiltersImpl: Codeunit "SOA Filters Impl.";
+        ContactCount: Integer;
     begin
         ContactVisible := false;
         CustomerVisible := false;
         Clear(GlobalContact);
         Clear(GlobalCustomer);
 
-        ContactVisible := FindContact(GlobalContact, EmailAddress);
+        ContactVisible := FindContact(GlobalContact, EmailAddress, ContactCount);
         if ContactVisible then begin
             CustomerVisible := GlobalContact.FindCustomer(GlobalCustomer);
             BlockedStatusVisible := GlobalCustomer.Blocked <> GlobalCustomer.Blocked::" ";
         end;
 
-        if GlobalContact.Name = GlobalCustomer.Name then
-            ContactVisible := false;
+        if CustomerVisible then
+            if GlobalContact.Name = GlobalCustomer.Name then
+                ContactVisible := false;
 
         if (not ContactVisible) and (not CustomerVisible) then
             SOAFiltersImpl.ShowMissingContactNotification(EmailAddress, SOAEmail."Sender Name")
         else
             SOAFiltersImpl.RecallMissingContactNotification();
+
+        if ContactCount >= 2 then
+            SOAFiltersImpl.ShowDuplicateContactNotification(EmailAddress, ContactCount)
+        else
+            SOAFiltersImpl.RecallDuplicateContactNotification();
     end;
 
-    local procedure FindContact(var Contact: Record Contact; EmailAddress: Text): Boolean
+    local procedure FindContact(var Contact: Record Contact; EmailAddress: Text; var ContactCount: Integer): Boolean
     var
         SOAFiltersImpl: Codeunit "SOA Filters Impl.";
     begin
         Contact.SetFilter("E-Mail", SOAFiltersImpl.GetSafeFromEmailFilter(EmailAddress));
+        ContactCount := Contact.Count();
         if not Contact.FindFirst() then
             exit(false);
 

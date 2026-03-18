@@ -1,0 +1,1 @@
+{"errorCode": "415","errorDetail": "Token authentication failed for cobrand/user Stale conversation credentials"}

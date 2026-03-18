@@ -32,6 +32,8 @@ tableextension 18003 "GST General Ledger Setup Ext" extends "General Ledger Setu
         }
         field(18003; "GST Recon. Tolerance"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Recon. Tolerance';
             DataClassification = CustomerContent;
         }

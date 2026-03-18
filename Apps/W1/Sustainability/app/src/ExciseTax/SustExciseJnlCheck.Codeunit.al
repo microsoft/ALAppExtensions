@@ -49,6 +49,7 @@ codeunit 6273 "Sust. Excise Jnl.-Check"
     procedure CheckSustainabilityExciseJournalLine(SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
     var
         SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
+        IsHandled: Boolean;
     begin
         SustainabilityExciseJnlBatch.Get(SustainabilityExciseJnlLine."Journal Template Name", SustainabilityExciseJnlLine."Journal Batch Name");
         SustainabilityExciseJnlLine.TestField("Posting Date", ErrorInfo.Create());
@@ -75,7 +76,9 @@ codeunit 6273 "Sust. Excise Jnl.-Check"
             SustainabilityExciseJnlLine.TestField("Certificate Amount", 0);
         end;
 
-        TestEmissionAmount(SustainabilityExciseJnlLine);
+        OnBeforeTestEmissionAmount(SustainabilityExciseJnlLine, IsHandled);
+        if not IsHandled then
+            TestEmissionAmount(SustainabilityExciseJnlLine);
 
         TestDimensionsForJnlLine(SustainabilityExciseJnlLine);
 
@@ -148,6 +151,11 @@ codeunit 6273 "Sust. Excise Jnl.-Check"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCheckSustainabilityExciseJournalLine(SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeTestEmissionAmount(SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line"; var IsHandled: Boolean)
     begin
     end;
 }

@@ -140,8 +140,8 @@ codeunit 11747 "Guided Experience Handler CZL"
     local procedure RegisterExcelTemplates()
     var
         ExcelTemplateNameTxt: Label 'Excel Templates';
-        ExcelTemplateDescriptionTxt: Label 'Set up a Excel templates into which you can export Account Schedules.';
-        ExcelTemplateKeywordsTxt: Label 'Excel, Template, Account Schedule';
+        ExcelTemplateDescriptionTxt: Label 'Set up a Excel templates into which you can export Financial Reports.';
+        ExcelTemplateKeywordsTxt: Label 'Excel, Template, Financial Report';
     begin
         GuidedExperience.InsertManualSetup(ExcelTemplateNameTxt, ExcelTemplateNameTxt, ExcelTemplateDescriptionTxt,
           2, ObjectType::Page, Page::"Excel Templates CZL", ManualSetupCategory::General, ExcelTemplateKeywordsTxt);

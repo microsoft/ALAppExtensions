@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 table 4005 "Hybrid Company"
@@ -45,6 +50,7 @@ table 4005 "Hybrid Company"
         }
         field(4; "Estimated Size"; Decimal)
         {
+            AutoFormatType = 0;
             Description = 'The size in GB of the company data to be migrated';
             DataClassification = SystemMetadata;
         }

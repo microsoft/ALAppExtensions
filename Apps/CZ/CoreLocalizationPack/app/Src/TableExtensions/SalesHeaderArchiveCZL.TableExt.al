@@ -81,6 +81,7 @@ tableextension 11732 "Sales Header Archive CZL" extends "Sales Header Archive"
         }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;

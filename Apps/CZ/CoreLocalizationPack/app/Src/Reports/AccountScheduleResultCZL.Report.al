@@ -8,7 +8,7 @@ report 31202 "Account Schedule Result CZL"
 {
     DefaultLayout = RDLC;
     RDLCLayout = './Src/Reports/AccountScheduleResult.rdl';
-    Caption = 'Account Schedule Result';
+    Caption = 'Financial Report Result';
 
     dataset
     {
@@ -136,7 +136,7 @@ report 31202 "Account Schedule Result CZL"
     {
         PeriodLbl = 'Period';
         ColumnLayoutLbl = 'Column Layout';
-        AccountScheduleLbl = 'Account Schedule';
+        AccountScheduleLbl = 'Financial Report';
         PageLbl = 'Page';
         ResultDescriptionbl = 'Result Description';
     }

@@ -87,6 +87,7 @@ tableextension 31021 "Posted Gen. Journal Line CZL" extends "Posted Gen. Journal
         }
         field(11776; "VAT Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;

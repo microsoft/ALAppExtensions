@@ -29,6 +29,8 @@ table 10531 "MTD Payment"
         }
         field(5; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
     }

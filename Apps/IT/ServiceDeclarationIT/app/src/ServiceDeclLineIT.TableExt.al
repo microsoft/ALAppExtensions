@@ -85,6 +85,8 @@ tableextension 12216 "Service Decl. Line IT" extends "Service Declaration Line"
         }
         field(12220; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount';
         }
         field(12221; "Source Currency Amount"; Decimal)

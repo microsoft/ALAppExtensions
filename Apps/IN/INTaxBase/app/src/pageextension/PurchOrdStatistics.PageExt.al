@@ -15,6 +15,8 @@ pageextension 18567 "Purch. Ord. Statistics" extends "Purchase Order Statistics"
             field("Total Amount"; TotalInclTaxAmount)
             {
                 ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Editable = false;
                 ToolTip = 'Specifies the amount, including Tax amount. On the General fast tab, this is the amount posted to the vendor account for all the lines in the purchase order if you post the purchase order as invoiced.';
                 Caption = 'Net Total';
@@ -25,6 +27,8 @@ pageextension 18567 "Purch. Ord. Statistics" extends "Purchase Order Statistics"
             field("Partial Inv. Amount"; PartialInclInvTaxAmount)
             {
                 ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Editable = false;
                 ToolTip = 'Specifies the amount, including Tax amount. On the Invoicing fast tab, this is the amount posted to the vendor account for all the lines in the purchase order if you post the purchase order as invoiced.';
                 Caption = 'Net Total';
@@ -35,6 +39,8 @@ pageextension 18567 "Purch. Ord. Statistics" extends "Purchase Order Statistics"
             field("Partial Ship. Amount"; PartialInclRcptTaxAmount)
             {
                 ApplicationArea = Basic, Suite;
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Editable = false;
                 ToolTip = 'Specifies the amount, including Tax amount. On the Shipping fast tab, this is the amount posted to the vendor account for all the lines in the purchase order if you post the purchase order as Shipped.';
                 Caption = 'Net Total';

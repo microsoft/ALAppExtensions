@@ -74,4 +74,29 @@ codeunit 10054 "IRS Forms Facade"
     begin
         IRSFormsOrchestrator.GetIRISXmlImplementation().CreateAcknowledgmentRequestXmlContent(SearchParamType, SearchId, TempBlob);
     end;
+
+    procedure GetTCC(): Text
+    begin
+        exit(IRSFormsOrchestrator.GetIRISConfigurationImplementation().GetTCC());
+    end;
+
+    procedure GetSoftwareId(): Text
+    begin
+        exit(IRSFormsOrchestrator.GetIRISConfigurationImplementation().GetSoftwareId());
+    end;
+
+    procedure GetConsentAppURL(): Text
+    begin
+        exit(IRSFormsOrchestrator.GetIRISConfigurationImplementation().GetConsentAppURL());
+    end;
+
+    procedure GetContactInfo(var ContactName: Text; var ContactEmail: Text; var ContactPhone: Text)
+    begin
+        IRSFormsOrchestrator.GetIRISConfigurationImplementation().GetContactInfo(ContactName, ContactEmail, ContactPhone);
+    end;
+
+    procedure TestMode(): Boolean
+    begin
+        exit(IRSFormsOrchestrator.GetIRISConfigurationImplementation().TestMode());
+    end;
 }

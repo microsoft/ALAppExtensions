@@ -64,18 +64,18 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
                                           VendorNo: Code[20]; IRSReportingPeriod: Record "IRS Reporting Period");
     var
         PmtVendLedgEntry: Record "Vendor Ledger Entry";
+        TempInteger: Record "Integer" temporary;
     begin
         FilterPaymentVendorLedgerEntries(PmtVendLedgEntry, IRSReportingPeriod);
         if PmtVendLedgEntry.FindSet() then
             repeat
-                GetAppliedVendorEntriesFromtPmtEntry(IRS1099VendEntryBuffer, TempIRS1099Form, PmtVendLedgEntry, VendorNo);
+                GetAppliedVendorEntriesFromtPmtEntry(IRS1099VendEntryBuffer, TempIRS1099Form, TempInteger, PmtVendLedgEntry, VendorNo);
             until PmtVendLedgEntry.Next() = 0;
     end;
 
-    local procedure GetAppliedVendorEntriesFromtPmtEntry(var IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer"; var TempIRS1099Form: Record "IRS 1099 Form" temporary; PmtVendLedgEntry: Record "Vendor Ledger Entry"; VendorNo: Code[20])
+    local procedure GetAppliedVendorEntriesFromtPmtEntry(var IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer"; var TempIRS1099Form: Record "IRS 1099 Form" temporary; var TempInteger: Record "Integer" temporary; PmtVendLedgEntry: Record "Vendor Ledger Entry"; VendorNo: Code[20])
     var
         PmtDtldVendLedgEntry, InvDtldVendLedgEntry : Record "Detailed Vendor Ledg. Entry";
-        TempInteger: Record "Integer" temporary;
         PaymentDiscountEntries: List of [Integer];
     begin
         if (VendorNo <> '') and (PmtVendLedgEntry."Vendor No." <> VendorNo) then

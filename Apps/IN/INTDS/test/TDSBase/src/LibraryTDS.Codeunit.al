@@ -19,6 +19,20 @@ codeunit 18786 "Library-TDS"
         AttachConcessionalWithVendor(Vendor."No.", ConcessionalCode.Code, TDSSection.Code);
     end;
 
+    procedure CreateTDSSetupWithConcessionalCertificate(
+        var Vendor: Record Vendor;
+        var TDSPostingSetup: Record "TDS Posting Setup";
+        var ConcessionalCode: Record "Concessional Code")
+    var
+        AssesseeCode: Record "Assessee Code";
+        TDSSection: Record "TDS Section";
+    begin
+        CreateCommonSetup(AssesseeCode, ConcessionalCode);
+        CreateTDSPostingSetupWithSection(TDSPostingSetup, TDSSection);
+        CreateTDSVendor(Vendor, AssesseeCode.Code, TDSSection.Code);
+        AttachConcessionalWithCertificateValue(Vendor."No.", ConcessionalCode.Code, TDSSection.Code);
+    end;
+
     procedure UpdateVendorWithPANWithConcessional(
         var Vendor: Record Vendor;
         ThresholdOverlook: Boolean;
@@ -84,6 +98,25 @@ codeunit 18786 "Library-TDS"
         TDSConcessionalCode.Validate("Concessional Code", ConcessionalCode);
         TDSConcessionalCode.Validate("Certificate No.", LibraryUtility.GenerateRandomCode(TDSConcessionalCode.FieldNo("Certificate No."),
             Database::"TDS Concessional Code"));
+        TDSConcessionalCode.Insert(true);
+    end;
+
+    procedure AttachConcessionalWithCertificateValue(
+        VendorNo: Code[20];
+        ConcessionalCode: Code[10];
+        TDSSection: Code[10])
+    var
+        TDSConcessionalCode: Record "TDS Concessional Code";
+    begin
+        TDSConcessionalCode.Init();
+        TDSConcessionalCode.Validate("Vendor No.", VendorNo);
+        TDSConcessionalCode.Validate(Section, TDSSection);
+        TDSConcessionalCode.Validate("Concessional Code", ConcessionalCode);
+        TDSConcessionalCode.Validate("Certificate No.", LibraryUtility.GenerateRandomCode(TDSConcessionalCode.FieldNo("Certificate No."),
+            Database::"TDS Concessional Code"));
+        TDSConcessionalCode.Validate("Certificate Value", 50000);
+        TDSConcessionalCode."Start Date" := WorkDate();
+        TDSConcessionalCode."End Date" := WorkDate() + 30;
         TDSConcessionalCode.Insert(true);
     end;
 

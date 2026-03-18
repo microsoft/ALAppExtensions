@@ -82,7 +82,6 @@ codeunit 11465 "US Contoso Localization"
                     Codeunit.Run(Codeunit::"Create Tax Area US");
                     Codeunit.Run(Codeunit::"Create Tax Area Line US");
                     Codeunit.Run(Codeunit::"Create Tax Detail US");
-                    Codeunit.Run(Codeunit::"Create Allocation Account US");
                     CreateResourceUS.UpdateResourcesTaxGroup();
                 end;
         end;
@@ -176,6 +175,8 @@ codeunit 11465 "US Contoso Localization"
 
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account US");
                     BindSubscription(CreateAccScheduleLineUS);
                     BindSubscription(CreateCurrencyUS);
                     BindSubscription(CreateGenJnlTemplateUS);
@@ -201,7 +202,8 @@ codeunit 11465 "US Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateItemJournalTemplateUS);
-                    BindSubscription(CreateItemUS);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemUS);
                     BindSubscription(CreateItemChargeUS);
                     BindSubscription(CreateLocationUS);
                 end;
@@ -287,7 +289,8 @@ codeunit 11465 "US Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnbindSubscription(CreateItemJournalTemplateUS);
-                    UnbindSubscription(CreateItemUS);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateItemUS);
                     UnbindSubscription(CreateItemChargeUS);
                     UnbindSubscription(CreateLocationUS);
                 end;

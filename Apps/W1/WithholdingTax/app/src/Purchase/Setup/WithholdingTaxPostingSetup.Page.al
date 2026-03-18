@@ -23,11 +23,13 @@ page 6786 "Withholding Tax Posting Setup"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a Withholding Tax Business Posting group code.';
+                    NotBlank = true;
                 }
                 field("Wthldg. Tax Prod. Post. Group"; Rec."Wthldg. Tax Prod. Post. Group")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a Withholding Tax Product Posting group code.';
+                    NotBlank = true;
                 }
                 field("Wthldg. Tax Calculation Rule"; Rec."Wthldg. Tax Calculation Rule")
                 {
@@ -36,11 +38,14 @@ page 6786 "Withholding Tax Posting Setup"
                 }
                 field("Wthldg. Tax Min. Inv. Amount"; Rec."Wthldg. Tax Min. Inv. Amount")
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the threshold amount for Withholding Tax, below which there will not be any Withholding Tax deduction.';
                 }
                 field("Withholding Tax %"; Rec."Withholding Tax %")
                 {
+                    AutoFormatType = 0;
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the relevant Withholding Tax rate for the particular combination of Withholding Tax Business Posting group and Withholding Tax Product Posting group.';
                 }
@@ -58,11 +63,6 @@ page 6786 "Withholding Tax Posting Setup"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the G/L account number to which you want to post Purchase Withholding for the particular combination of Withholding Tax business and product posting groups.';
-                }
-                field("Withholding Tax Report"; Rec."Withholding Tax Report")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Withholding Tax report type for a particular Business and Product Posting group combination.';
                 }
                 field("Bal. Prepaid Account Type"; Rec."Bal. Prepaid Account Type")
                 {
@@ -93,6 +93,7 @@ page 6786 "Withholding Tax Posting Setup"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the Revenue Type this combination of Withholding Business and Product Posting group belongs to.';
+                    ShowMandatory = true;
                 }
                 field("Purch. Wthldg. Tax Adj. Acc No"; Rec."Purch. Wthldg. Tax Adj. Acc No")
                 {
@@ -113,9 +114,4 @@ page 6786 "Withholding Tax Posting Setup"
             }
         }
     }
-
-    trigger OnInsertRecord(BelowxRec: Boolean): Boolean
-    begin
-        Rec.TestField(Rec."Revenue Type");
-    end;
 }

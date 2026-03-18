@@ -166,11 +166,13 @@ tableextension 6216 "Sust. Purch. Rcpt. Line" extends "Purch. Rcpt. Line"
         }
         field(6238; "Installation Multiplier"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Installation Multiplier';
             DataClassification = CustomerContent;
         }
         field(6239; "Time Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Time Factor';
             MaxValue = 1;
             DataClassification = CustomerContent;

@@ -44,11 +44,15 @@ table 18872 "TCS Challan Register"
         }
         field(6; "TCS Interest Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TCS Interest Amount';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(7; "TCS Others"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TCS Others';
             DataClassification = EndUserIdentifiableInformation;
         }
@@ -65,30 +69,40 @@ table 18872 "TCS Challan Register"
         }
         field(10; "Total TCS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total TCS Amount';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(11; "Total Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Surcharge Amount';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(12; "Total eCess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total eCess Amount';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(13; "Total Invoice Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Invoice Amount';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(14; "Total TCS Including SHE Cess"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total TCS Including SHE Cess';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
@@ -136,11 +150,15 @@ table 18872 "TCS Challan Register"
         }
         field(23; "Last TCS Others"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Last TCS Others';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(24; "Last TCS Interest"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Last TCS Interest';
             DataClassification = EndUserIdentifiableInformation;
         }
@@ -190,6 +208,8 @@ table 18872 "TCS Challan Register"
         }
         field(32; "Total SHE Cess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total SHE Cess Amount';
             Editable = false;
             DataClassification = EndUserIdentifiableInformation;
@@ -201,6 +221,8 @@ table 18872 "TCS Challan Register"
         }
         field(34; "TCS Fee"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TCS Fee';
             DataClassification = EndUserIdentifiableInformation;
         }

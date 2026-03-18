@@ -33,6 +33,12 @@ pageextension 18723 "Purchase invoice" extends "Purchase Invoice"
                     CurrPage.Update(false);
                 end;
             }
+            field("Remaining TDS Cert. Value"; Rec."Remaining TDS Cert. Value")
+            {
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+                ToolTip = 'Displays the remaining TDS Certificate Value for the vendor on this purchase invoice.';
+            }
         }
     }
 }

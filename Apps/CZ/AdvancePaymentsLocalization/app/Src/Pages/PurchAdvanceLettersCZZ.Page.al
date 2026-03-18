@@ -111,17 +111,6 @@ page 31180 "Purch. Advance Letters CZZ"
                     ToolTip = 'Specifies to pay amount.';
                     Visible = false;
                 }
-#if not CLEAN26
-                field("To Pay (LCY)"; Rec."To Pay (LCY)")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies to pay (LCY) amount.';
-                    Visible = false;
-                    ObsoleteTag = '26.0';
-                    ObsoleteReason = 'This field is obsolete and will be removed in a future release.';
-                    ObsoleteState = Pending;
-                }
-#endif
                 field("To Use"; Rec."To Use")
                 {
                     ApplicationArea = Basic, Suite;
@@ -168,6 +157,8 @@ page 31180 "Purch. Advance Letters CZZ"
                 {
                     Caption = 'Suggested Amount to Apply (LCY)';
                     ApplicationArea = Basic, Suite;
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Editable = false;
                     ToolTip = 'Specifies the total Amount (LCY) suggested to apply.';
                     Visible = false;

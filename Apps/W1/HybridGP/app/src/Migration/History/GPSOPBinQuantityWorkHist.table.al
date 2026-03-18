@@ -56,6 +56,7 @@ table 4067 "GPSOPBinQuantityWorkHist"
         }
         field(10; QUANTITY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QTY';
             DataClassification = CustomerContent;
         }

@@ -1,0 +1,12 @@
+{
+  "code":"400_custom_code",
+  "message":"400_custom_msg",
+  "errors":
+    [
+      { "message" : "400_custom_err1_msg" },
+      {
+        "message" : "400_custom_err2_msg",
+        "path" : "400_custom_err2_path"
+      }
+    ]
+}

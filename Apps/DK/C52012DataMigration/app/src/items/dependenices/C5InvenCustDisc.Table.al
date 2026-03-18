@@ -52,6 +52,7 @@ table 1885 "C5 InvenCustDisc"
         }
         field(10; Qty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty';
         }
         field(11; FromDate; Date)
@@ -64,6 +65,7 @@ table 1885 "C5 InvenCustDisc"
         }
         field(13; Rate_; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Rate';
         }
         field(14; SearchAgain; Option)
@@ -82,6 +84,7 @@ table 1885 "C5 InvenCustDisc"
         }
         field(17; PriceUnit; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Price unit';
         }
     }

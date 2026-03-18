@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 using System.Apps;
@@ -158,11 +163,9 @@ table 4009 "Migration Table Mapping"
         EndsWithGuid: Boolean;
         TestGuid: Guid;
     begin
-        TrimmedSourceTableName := SourceTableName.Replace(OpeningSquareBracketLbl, '').Replace(ClosingSquareBracketLbl, '');
-        if TrimmedSourceTableName.StartsWith(DboTok) then
-            TrimmedSourceTableName := CopyStr(TrimmedSourceTableName, StrLen(DboTok) + 1, StrLen(TrimmedSourceTableName) - StrLen(DboTok));
+        TrimmedSourceTableName := TrimSourceTableName(SourceTableName);
 
-        TableDefinition := TrimmedSourceTableName.Split(TableSepartorCharacterTok);
+        TableDefinition := TrimmedSourceTableName.Split(BCTableSeparatorTok);
         if TableDefinition.Count() = 0 then
             exit;
 
@@ -188,14 +191,14 @@ table 4009 "Migration Table Mapping"
             MigrationTableMapping."Source Table Name" := CopyStr(TableDefinition.Get(2), 1, MaxStrLen(MigrationTableMapping."Source Table Name"));
 
         if EndsWithGuid then
-            MigrationTableMapping."Source Table Name" := CopyStr(MigrationTableMapping."Source Table Name" + TableSepartorCharacterTok + TableDefinition.Get(TableDefinition.Count()), 1, MaxStrLen(MigrationTableMapping."Source Table Name"));
+            MigrationTableMapping."Source Table Name" := CopyStr(MigrationTableMapping."Source Table Name" + BCTableSeparatorTok + TableDefinition.Get(TableDefinition.Count()), 1, MaxStrLen(MigrationTableMapping."Source Table Name"));
     end;
 
     local procedure IsTableNamePerCompany(TableName: Text; EndsWithGuid: Boolean): Boolean
     var
         TableDefinition: List of [Text];
     begin
-        TableDefinition := TableName.Split(TableSepartorCharacterTok);
+        TableDefinition := TableName.Split(BCTableSeparatorTok);
         if TableDefinition.Count() < 2 then
             exit(true);
 
@@ -439,6 +442,37 @@ table 4009 "Migration Table Mapping"
         exit(TableMappingsJsonObject);
     end;
 
+    internal procedure TrimSourceTableName(SourceTableName: Text) TrimmedSourceTableName: Text
+    begin
+        TrimmedSourceTableName := SourceTableName.Replace(OpeningSquareBracketLbl, '').Replace(ClosingSquareBracketLbl, '');
+        if TrimmedSourceTableName.StartsWith(DboTok) then
+            TrimmedSourceTableName := CopyStr(TrimmedSourceTableName, StrLen(DboTok) + 1, StrLen(TrimmedSourceTableName) - StrLen(DboTok));
+
+        exit(TrimmedSourceTableName);
+    end;
+
+    internal procedure UpdateObjectsFilter(var PublishedApplication: Record "Published Application"; var AppFilter: Text; var ExtensionsFilter: Text)
+    var
+        ExtensionManagement: Codeunit "Extension Management";
+    begin
+        PublishedApplication.SetRange(Installed, true);
+        if not PublishedApplication.FindSet() then begin
+            Clear(ExtensionsFilter);
+            Clear(AppFilter);
+            exit;
+        end;
+
+        repeat
+            if ExtensionManagement.IsInstalledByPackageId(PublishedApplication."Package ID") then begin
+                AppFilter += '|' + Format(PublishedApplication."Package ID");
+                ExtensionsFilter += ', ' + PublishedApplication.Name;
+            end;
+        until PublishedApplication.Next() = 0;
+
+        AppFilter := AppFilter.TrimStart('|');
+        ExtensionsFilter := ExtensionsFilter.TrimStart(', ');
+    end;
+
     var
         InvalidExtensionPublisherErr: Label 'Extensions from the specified Publisher are not enabled for custom table mapping.';
         InvalidTableNameErr: Label 'This table does not exist in the specified extension.';
@@ -454,7 +488,7 @@ table 4009 "Migration Table Mapping"
         TableMappingDefinitionJsonFileNameTxt: Label 'TableMappingDefinition.json', Locked = true;
         ExportTableMappingsDialogLbl: Label 'Export';
         ImportTableMappingsDialogLbl: Label 'Import';
-        TableSepartorCharacterTok: Label '$', Locked = true;
+        BCTableSeparatorTok: Label '$', Locked = true;
         OpeningSquareBracketLbl: Label '[', Locked = true;
         ClosingSquareBracketLbl: Label ']', Locked = true;
         DboTok: Label 'dbo.', Locked = true;

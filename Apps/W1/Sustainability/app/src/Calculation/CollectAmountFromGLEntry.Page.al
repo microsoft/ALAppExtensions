@@ -68,6 +68,8 @@ page 6224 "Collect Amount from G/L Entry"
                 ShowCaption = false;
                 field(TotalAmount; SustainabilityCalcMgt.GetCollectableGLAmount(Rec, FromDate, ToDate))
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Total Amount';
                     Editable = false;
                     DrillDown = true;

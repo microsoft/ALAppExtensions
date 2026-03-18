@@ -6,6 +6,7 @@ namespace Microsoft.FixedAssets.Journal;
 
 using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.FixedAssets.FixedAsset;
 
 pageextension 18251 "FA GL General" extends "Fixed Asset G/L Journal"
 {
@@ -32,7 +33,16 @@ pageextension 18251 "FA GL General" extends "Fixed Asset G/L Journal"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the GST assessable value on the Journal Line';
                 trigger OnValidate()
+                var
+                    FixedAsset: Record "Fixed Asset";
                 begin
+                    if Rec."Account Type" = Rec."Account Type"::"Fixed Asset" then
+                        FixedAsset.Get(Rec."Account No.")
+                    else
+                        FixedAsset.Get(Rec."Bal. Account No.");
+
+                    FixedAsset.TestField("GST Calc. on Transfer", false);
+
                     CallTaxEngine();
                 end;
             }
@@ -40,6 +50,33 @@ pageextension 18251 "FA GL General" extends "Fixed Asset G/L Journal"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the custom duty amount  on the Journal line.';
+                trigger OnValidate()
+                begin
+                    CallTaxEngine();
+                end;
+            }
+            field("GST Group Code"; Rec."GST Group Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the GST Group Code on the Journal Line';
+                trigger OnValidate()
+                begin
+                    CallTaxEngine();
+                end;
+            }
+            field("HSN/SAC Code"; Rec."HSN/SAC Code")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the HSN/SAC Code on the Journal Line';
+                trigger OnValidate()
+                begin
+                    CallTaxEngine();
+                end;
+            }
+            field("GST Credit"; Rec."GST Credit")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the GST Credit on the Journal Line';
                 trigger OnValidate()
                 begin
                     CallTaxEngine();
@@ -115,6 +152,19 @@ pageextension 18251 "FA GL General" extends "Fixed Asset G/L Journal"
                 begin
                     i := 0;
                     //blank OnAction created as we have a subscriber of this action in "Reference Invoice No. Mgt." codeunit;
+                end;
+            }
+            action(CalculateTax)
+            {
+                Promoted = true;
+                PromotedCategory = Process;
+                ApplicationArea = Basic, Suite;
+                Image = Calculate;
+                ToolTip = 'Calculates the tax amounts based on the tax information provided in the journal line.';
+
+                trigger OnAction()
+                begin
+                    CallTaxEngine();
                 end;
             }
         }

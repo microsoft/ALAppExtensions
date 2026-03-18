@@ -1,4 +1,9 @@
-﻿namespace Microsoft.DataMigration;
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration;
 
 using Microsoft.API.Upgrade;
 using System.Environment;
@@ -187,6 +192,24 @@ page 40063 "Cloud Migration Management"
                                 end;
                             }
                         }
+                        group(MigrationValidationErrors)
+                        {
+                            ShowCaption = false;
+
+                            field("Validation Errors"; ValidationErrors)
+                            {
+                                ApplicationArea = All;
+                                Caption = 'Validation Errors';
+                                Style = Unfavorable;
+                                StyleExpr = (ValidationErrors > 0);
+                                ToolTip = 'Indicates the total number of failed post migration validation tests, for all migrated companies.';
+
+                                trigger OnDrillDown()
+                                begin
+                                    Page.Run(Page::"Migration Validation Errors");
+                                end;
+                            }
+                        }
                     }
                 }
             }
@@ -312,35 +335,10 @@ page 40063 "Cloud Migration Management"
                     WarnAboutNonInitializedCompanies();
                 end;
             }
-#if not CLEAN26
-            action(ResetAllCloudData)
-            {
-                Enabled = IsSuper and IsSetupComplete;
-                Visible = false;
-                ApplicationArea = All;
-                Caption = 'Reset cloud data';
-                ToolTip = 'Resets migration enabled data in the cloud tenant.';
-                Image = Restore;
-                ObsoleteReason = 'This action is being obsoleted. Disable the cloud migration, delete the company and replicate it again. See official documentation for more details.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '26.0';
-
-                trigger OnAction()
-                var
-                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-                begin
-                    if not Dialog.Confirm(ResetCloudDataConfirmQst, false) then
-                        exit;
-
-                    HybridCloudManagement.ResetCloudData();
-                    Message(ResetCompletedTxt);
-                end;
-            }
-#endif
             action(PrepareTables)
             {
                 Enabled = IsSuper and IsSetupComplete;
-                Visible = IsOnPrem;
+                Visible = false;
                 ApplicationArea = All;
                 Caption = 'Prepare tables for replication';
                 ToolTip = 'Gets the candidate tables ready for replication';
@@ -523,10 +521,10 @@ page 40063 "Cloud Migration Management"
             action(ManageCustomTables)
             {
                 Enabled = IsSuper;
-                Visible = not IsOnPrem;
+                Visible = not IsOnPrem and (not HideManageCustomTables);
                 ApplicationArea = All;
-                Caption = 'Manage custom tables';
-                ToolTip = 'Manage custom table mappings for the migration. This functionality can be used to rename the table during replication or to split OnPrem table with customizations to main table and table extensions.';
+                Caption = 'Manage table mappings';
+                ToolTip = 'Manage table mappings for the migration. This functionality can be used to rename the table during replication or to split OnPrem table with customizations to main table and table extensions.';
                 RunObject = page "Migration Table Mapping";
                 RunPageMode = Edit;
                 Image = TransferToGeneralJournal;
@@ -600,10 +598,38 @@ page 40063 "Cloud Migration Management"
                     HybridCloudManagement.ChangeRemovePermissionsFromUsers();
                 end;
             }
-            action(ChangeTheWayDataIsReplicated)
+            action(EnableDisableCustomMigration)
             {
                 Enabled = IsSuper;
                 Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable Custom Migration';
+                ToolTip = 'Enable or disable custom migration functionality. This is the ability to use mappings defined out of the box. Custom migration apps are not affected.';
+                Image = GetEntries;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.EnableDisableCustomMigration();
+                end;
+            }
+            action(ManageTableMappings)
+            {
+                Enabled = IsSuper;
+                Visible = not IsOnPrem and CustomMigrationTablesEnabled;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Manage table mappings';
+                ToolTip = 'Manage table mappings for custom migration.';
+                RunObject = page "Custom Migration Mapping List";
+                RunPageMode = Edit;
+                Image = TransferToLines;
+            }
+
+            action(ChangeTheWayDataIsReplicated)
+            {
+                Enabled = IsSuper;
+                Visible = not IsOnPrem and (not HideChangeTheWayDataIsReplicated);
                 ApplicationArea = Basic, Suite;
                 Caption = 'Change how the data is replicated';
                 ToolTip = 'Allows defining which data is replicated and how. You can include or exclude the tables from the cloud migration and define if a table keeps existing data (delta sync) or replaces the entire table.';
@@ -628,6 +654,21 @@ page 40063 "Cloud Migration Management"
                 ToolTip = 'Allows to skip the API upgrade and run it later after the cloud migration is completed.';
                 Image = ChangeLog;
                 RunObject = page "API Data Upgrade Companies";
+            }
+            action(EnableDisableOnPremDevelopment)
+            {
+                Visible = IsSuper and (IsOnPrem or IsOnPremDevelopmentEnabled);
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable OnPrem Development';
+                ToolTip = 'Enable or disable OnPrem development functionality.';
+                Image = Debug;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.EnableDisableOnPremDevelopment();
+                end;
             }
         }
 
@@ -665,6 +706,9 @@ page 40063 "Cloud Migration Management"
                 actionref(ManageCustomTables_Promoted; ManageCustomTables)
                 {
                 }
+                actionref(ManageTableMappings_Promoted; ManageTableMappings)
+                {
+                }
                 actionref(MapUsers_Promoted; MapUsers)
                 {
                 }
@@ -683,7 +727,6 @@ page 40063 "Cloud Migration Management"
     trigger OnOpenPage()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        EnvironmentInformation: Codeunit "Environment Information";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         IntelligentCloudNotifier: Codeunit "Intelligent Cloud Notifier";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
@@ -697,26 +740,28 @@ page 40063 "Cloud Migration Management"
             SendUserIsNotSuperNotification();
 
         SendRepairDataNotification();
-        IsOnPrem := not EnvironmentInformation.IsSaaS();
+        IsOnPrem := not HybridCloudManagement.IsCloudMigrationUISupported();
+        IsOnPremDevelopmentEnabled := HybridCloudManagement.IsOnPremDevelopmentEnabled();
 
         if (not PermissionManager.IsIntelligentCloud()) and (not IsOnPrem) then
             SendSetupIntelligentCloudNotification();
 
         UpdateTablesStatistics();
         UpdateControlProperties();
+
         CanRunDiagnostic(DiagnosticRunsEnabled);
         CanShowSetupChecklist(SetupChecklistEnabled);
         CanShowMapUsers(MapUsersEnabled);
         UpdateReplicationCompaniesEnabled := true;
         CanShowUpdateReplicationCompanies(UpdateReplicationCompaniesEnabled);
         CanMapCustomTables(CustomTablesEnabled);
-
         if IntelligentCloudSetup.Get() then
             HybridDeployment.Initialize(IntelligentCloudSetup."Product ID");
 
         IntelligentCloudNotifier.ShowICUpdateNotification();
         WarnAboutNonInitializedCompanies();
         UpdateWarningCounts();
+        UpdatePropertiesCustomMigration();
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -727,12 +772,14 @@ page 40063 "Cloud Migration Management"
         HybridCloudManagement.GetLastReplicationSummary(LastHybridReplicationSummary);
         HybridCloudManagement.GetCloudMigrationStatusText(StatusTxt, StatusTxtStyle, MoreInformationTxt);
         UpdateControlProperties();
+        UpdatePropertiesCustomMigration();
     end;
 
     local procedure UpdateTablesStatistics()
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        MigrationValidationError: Record "Migration Validation Error";
         TempHybridReplicationDetail: Record "Hybrid Replication Detail" temporary;
         HybridReplicationStatistics: Codeunit "Hybrid Replication Statistics";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
@@ -756,6 +803,8 @@ page 40063 "Cloud Migration Management"
             HybridReplicationSummary.CalcFields("Companies Not Initialized");
             NotInitializedCompaniesCount := HybridReplicationSummary."Companies Not Initialized";
         end;
+
+        ValidationErrors := MigrationValidationError.Count();
     end;
 
     local procedure UpdateControlProperties()
@@ -777,6 +826,23 @@ page 40063 "Cloud Migration Management"
 
         if not HybridCloudManagement.RecordLinkBufferBlocked() then
             RecordLinkBufferNotEmpty := not ReplicationRecordLinkBuffer.IsEmpty();
+    end;
+
+    local procedure UpdatePropertiesCustomMigration()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not IntelligentCloudSetup.Get() then
+            exit;
+
+        if IntelligentCloudSetup."Custom Migration Provider".AsInteger() = 0 then
+            exit;
+
+        DiagnosticRunsEnabled := false;
+        SetupChecklistEnabled := false;
+        HideManageCustomTables := true;
+        HideChangeTheWayDataIsReplicated := true;
+        CustomMigrationTablesEnabled := true;
     end;
 
     procedure SendRepairDataNotification()
@@ -947,10 +1013,6 @@ page 40063 "Cloud Migration Management"
         RunReplicationTxt: Label 'Data replication has been successfully started. You can track the status on the management page.';
         IntegrationKeyTxt: Label 'Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
         NewIntegrationKeyTxt: Label 'New Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
-#if not CLEAN26
-        ResetCloudDataConfirmQst: Label 'Reset cloud data is being obsoleted. Disable the cloud migration, delete the company and replicate it again. See official documentation for more details.\\If you choose to reset cloud data, all migrated data will be deleted for all companies in the next migration run. Are you sure you want to reset cloud data?';
-        ResetCompletedTxt: Label 'Reset has been successfully run. All migration enabled data will be reset in the next migration run.';
-#endif
         TablesReadyForReplicationMsg: Label 'All tables have been successfully prepared for migration.';
         NonInitializedCompaniesMsg: Label 'One or more companies have been successfully migrated but are not yet initialized. Manage the companies in the Hybrid Companies List page.';
         OpenPageMsg: Label 'Start setup';
@@ -978,6 +1040,7 @@ page 40063 "Cloud Migration Management"
         IsSetupComplete: Boolean;
         IsSuper: Boolean;
         IsOnPrem: Boolean;
+        IsOnPremDevelopmentEnabled: Boolean;
         IsMigratedCompany: Boolean;
         DiagnosticRunsEnabled: Boolean;
         SetupChecklistEnabled: Boolean;
@@ -985,6 +1048,10 @@ page 40063 "Cloud Migration Management"
         AdlSetupEnabled: Boolean;
         UpdateReplicationCompaniesEnabled: Boolean;
         CustomTablesEnabled: Boolean;
+        CustomMigrationTablesEnabled: Boolean;
         LastRefresh: DateTime;
         RecordLinkBufferNotEmpty: Boolean;
+        HideManageCustomTables: Boolean;
+        HideChangeTheWayDataIsReplicated: Boolean;
+        ValidationErrors: Integer;
 }

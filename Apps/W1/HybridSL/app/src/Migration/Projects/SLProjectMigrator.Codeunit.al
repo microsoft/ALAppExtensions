@@ -70,7 +70,7 @@ codeunit 47006 "SL Project Migrator"
         else
             SLPJEmploy.SetRange(emp_status, StatusActiveTxt);
 
-        SLPJEmploy.SetRange(CpnyId, CompanyName);
+        SLPJEmploy.SetRange(CpnyId, GetCpnyID());
         if not SLPJEmploy.FindSet() then
             exit;
         repeat
@@ -80,7 +80,7 @@ codeunit 47006 "SL Project Migrator"
 
         // Active SL PJEquip records only
         SLPJEquip.SetRange(status, StatusActiveTxt);
-        SLPJEquip.SetRange(CpnyId, CompanyName);
+        SLPJEquip.SetRange(CpnyId, GetCpnyID());
         if not SLPJEquip.FindSet() then
             exit;
         repeat
@@ -188,7 +188,7 @@ codeunit 47006 "SL Project Migrator"
         else
             ProjectStatusFilter := StatusActiveTxt;
         SLPJProj.SetFilter(status_pa, ProjectStatusFilter);
-        SLPJProj.SetRange(CpnyId, CompanyName);
+        SLPJProj.SetRange(CpnyId, GetCpnyID());
         if not SLPJProj.FindSet() then
             exit;
         repeat
@@ -314,5 +314,10 @@ codeunit 47006 "SL Project Migrator"
             ProjectTask.Validate("Description", SLPJPent.pjt_entity_desc.TrimEnd());
             ProjectTask.Insert(true);
         until SLPJPent.Next() = 0;
+    end;
+
+    internal procedure GetCpnyID(): Text[10]
+    begin
+        exit(CopyStr(CompanyName(), 1, 10));
     end;
 }

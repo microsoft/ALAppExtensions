@@ -1,6 +1,7 @@
 namespace Microsoft.DataMigration.BC;
 
 using Microsoft.DataMigration;
+using Microsoft.Utilities;
 codeunit 4020 "Hybrid BC Last Wizard"
 {
     var
@@ -149,12 +150,12 @@ codeunit 4020 "Hybrid BC Last Wizard"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Companies IC", 'OnBeforeCreateCompany', '', false, false)]
-    local procedure HandleOnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Option "Evaluation Data","Standard Data","None","Extended Data","Full No Data")
+    local procedure HandleOnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Enum "Company Demo Data Type")
     begin
         if not CanHandle(ProductId) then
             exit;
 
-        CompanyDataType := CompanyDataType::None;
+        CompanyDataType := CompanyDataType::"Create New - No Data";
     end;
 
     local procedure CanHandle(productId: Text): Boolean

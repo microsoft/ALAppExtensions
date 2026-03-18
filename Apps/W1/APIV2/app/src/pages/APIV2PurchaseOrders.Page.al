@@ -538,6 +538,14 @@ page 30066 "APIV2 - Purchase Orders"
                     Caption = 'Last Modified Date';
                     Editable = false;
                 }
+                part(pdfDocument; "APIV2 - PDF Document")
+                {
+                    Caption = 'PDF Document';
+                    Multiplicity = ZeroOrOne;
+                    EntityName = 'pdfDocument';
+                    EntitySetName = 'pdfDocument';
+                    SubPageLink = "Document Id" = field(Id), "Document Type" = const("Purchase Order");
+                }
                 part(attachments; "APIV2 - Attachments")
                 {
                     Caption = 'Attachments';

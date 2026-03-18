@@ -155,48 +155,56 @@ table 31109 "VAT Ctrl. Report Buffer CZL"
         field(60; "Base 1"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Base (base)';
             DataClassification = SystemMetadata;
         }
         field(61; "Amount 1"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Amount (base)';
             DataClassification = SystemMetadata;
         }
         field(62; "Base 2"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Base (reduced)';
             DataClassification = SystemMetadata;
         }
         field(63; "Amount 2"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Amount (reduced)';
             DataClassification = SystemMetadata;
         }
         field(64; "Base 3"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Base (2.reduced)';
             DataClassification = SystemMetadata;
         }
         field(65; "Amount 3"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Amount (2.reduced)';
             DataClassification = SystemMetadata;
         }
         field(70; "Total Base"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Total Base';
             DataClassification = SystemMetadata;
         }
         field(71; "Total Amount"; Decimal)
         {
             AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Total Amount';
             DataClassification = SystemMetadata;
         }

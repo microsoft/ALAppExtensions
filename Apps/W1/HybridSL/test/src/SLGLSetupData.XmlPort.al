@@ -72,6 +72,9 @@ xmlport 147609 "SL GLSetup Data"
                 textelement(FiscalPerEnd12)
                 {
                 }
+                textelement(LedgerID)
+                {
+                }
                 textelement(NbrPer)
                 {
                 }
@@ -98,7 +101,7 @@ xmlport 147609 "SL GLSetup Data"
 
                     SLGLSetup.SetupId := SetupId;
                     Evaluate(SLGLSetup.BegFiscalYr, BegFiscalYr);
-                    SLGLSetup.CpnyId := CpnyId;
+                    SLGLSetup.CpnyId := CopyStr(CpnyId, 1, MaxStrLen(SLGLSetup.CpnyId));
                     SLGLSetup.CpnyName := CpnyName;
                     SLGLSetup.FiscalPerEnd00 := FiscalPerEnd00;
                     SLGLSetup.FiscalPerEnd01 := FiscalPerEnd01;
@@ -113,6 +116,7 @@ xmlport 147609 "SL GLSetup Data"
                     SLGLSetup.FiscalPerEnd10 := FiscalPerEnd10;
                     SLGLSetup.FiscalPerEnd11 := FiscalPerEnd11;
                     SLGLSetup.FiscalPerEnd12 := FiscalPerEnd12;
+                    SLGLSetup.LedgerID := LedgerID;
                     Evaluate(SLGLSetup.NbrPer, NbrPer);
                     Evaluate(SLGLSetup.PerNbr, PerNbr);
                     SLGLSetup.Insert(true);

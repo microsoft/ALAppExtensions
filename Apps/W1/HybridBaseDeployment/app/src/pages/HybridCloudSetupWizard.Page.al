@@ -1,7 +1,13 @@
-﻿namespace Microsoft.DataMigration;
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration;
 
 using System.Environment;
 using System.Environment.Configuration;
+using System.Integration;
 using System.Security.User;
 using System.Telemetry;
 using System.Utilities;
@@ -116,7 +122,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
             }
             group(Step2)
             {
-                Caption = '';
+                ShowCaption = false;
                 Visible = ProductTypeVisible;
                 group("Para2.1")
                 {
@@ -124,7 +130,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                     InstructionalText = 'Select the product that you want to migrate data from';
                     group("Para2.1.1")
                     {
-                        Caption = '';
+                        ShowCaption = false;
 #pragma warning disable AA0218
                         field("Product Name"; TempHybridProductType."Display Name")
                         {
@@ -136,6 +142,8 @@ page 4000 "Hybrid Cloud Setup Wizard"
                             trigger OnAssistEdit()
                             var
                                 HybridProduct: Page "Hybrid Product Types";
+                                CustomMigrationProviderInterface: Interface "Custom Migration Provider";
+                                CustomMigrationTableMappingInterface: Interface "Custom Migration Table Mapping";
                             begin
                                 HybridProduct.SetTableView(TempHybridProductType);
                                 HybridProduct.SetRecord(TempHybridProductType);
@@ -152,6 +160,17 @@ page 4000 "Hybrid Cloud Setup Wizard"
 
                                 HybridCloudManagement.OnGetHybridProductDescription(TempHybridProductType.ID, SelectedProductDescription);
                                 OnSelectedProduct(TempHybridProductType.ID);
+                                if TempHybridProductType."Custom Migration Provider".AsInteger() <> 0 then begin
+                                    CustomMigrationProviderInterface := TempHybridProductType."Custom Migration Provider";
+                                    SelectedProductDescription := CustomMigrationProviderInterface.GetDescription();
+                                    Rec."Custom Migration Provider" := TempHybridProductType."Custom Migration Provider";
+                                    CustomMigrationTableMappingInterface := TempHybridProductType."Custom Migration Provider";
+                                    ReplicationMappingsTableNameTxt := CustomMigrationTableMappingInterface.GetReplicationTableMappingName();
+                                    SetupMappingsTableNameTxt := CustomMigrationTableMappingInterface.GetMigrationSetupTableMappingName();
+                                    SourceCompaniesTableNameTxt := CustomMigrationTableMappingInterface.GetCompaniesTableName();
+                                end else
+                                    Clear(Rec."Custom Migration Provider");
+
                                 SelectedProductDescriptionVisible := SelectedProductDescription <> '';
                                 Rec."Product ID" := TempHybridProductType.ID;
 
@@ -164,7 +183,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
 
                     group("Para2.1.2")
                     {
-                        Caption = '';
+                        ShowCaption = false;
                         Visible = SelectedProductDescriptionVisible;
 
                         field(SelectedProductDescription; SelectedProductDescription)
@@ -177,10 +196,50 @@ page 4000 "Hybrid Cloud Setup Wizard"
                     }
                 }
             }
+            group(Step201)
+            {
+                ShowCaption = false;
+                Visible = CustomMigrationVisible;
+                group("Para201.1")
+                {
+                    Caption = 'Configure custom cloud migration';
+                    InstructionalText = 'Enter the parameters needed for custom cloud migration. It may not be necessary to change these values, consult the official documentation for more information.';
+                    group("Para201.1.1")
+                    {
+                        ShowCaption = false;
+                        field(ReplicationMappingsTableName; ReplicationMappingsTableNameTxt)
+                        {
+                            ApplicationArea = Basic, Suite;
+                            Caption = 'Replication Mappings SQL Table Name';
+                            ToolTip = 'Specifies the SQL table name of the table containing mappings for the tables to be replicated.';
+                        }
+                    }
+                    group("Para201.1.2")
+                    {
+                        ShowCaption = false;
+                        field(SetupMappingsTableName; SetupMappingsTableNameTxt)
+                        {
+                            ApplicationArea = Basic, Suite;
+                            Caption = 'Setup Mappings SQL Table Name';
+                            ToolTip = 'Specifies the SQL name of the table containing mappings for the tables to be copied during Setup.';
+                        }
+                    }
+                    group("Para201.1.3")
+                    {
+                        ShowCaption = false;
+                        field(SourceCompaniesTableName; SourceCompaniesTableNameTxt)
+                        {
+                            ApplicationArea = Basic, Suite;
+                            Caption = 'Companies SQL Table Name';
+                            ToolTip = 'Specifies the SQL name of the table in the source database containing company names.';
+                        }
+                    }
+                }
+            }
 
             group(Step21)
             {
-                Caption = '';
+                ShowCaption = false;
                 Visible = DelegatedAdminStepVisible;
                 group("Para21.1")
                 {
@@ -202,7 +261,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
 
             group(Step3)
             {
-                Caption = '';
+                ShowCaption = false;
                 Visible = SQLServerTypeVisible;
                 group("Para3.1")
                 {
@@ -223,7 +282,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                 }
                 group("Para3.2")
                 {
-                    Caption = '';
+                    ShowCaption = false;
                     InstructionalText = 'Enter the connection string to your SQL database';
                     field(SqlConnectionString; SqlConnectionStringTxt)
                     {
@@ -240,7 +299,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                 }
                 group("Para3.3")
                 {
-                    Caption = '';
+                    ShowCaption = false;
                     InstructionalText = 'If you already have an integration runtime service instance installed and want to reuse it, specify the Integration Runtime; otherwise leave the field empty to create a new Integration Runtime.';
                     Enabled = (Rec."Sql Server Type" = Rec."Sql Server Type"::SQLServer);
                     field(RuntimeName; RuntimeNameTxt)
@@ -260,21 +319,21 @@ page 4000 "Hybrid Cloud Setup Wizard"
             }
             group(Step4)
             {
-                Caption = '';
+                ShowCaption = false;
                 Visible = IRInstructionsVisible;
                 group("Para4.1")
                 {
                     Caption = 'Instructions';
                     group("Para4.1.1")
                     {
-                        Caption = '';
+                        ShowCaption = false;
                         InstructionalText = 'The data migration requires an integration runtime service. The runtime service provides a connection between your on-premises solution and your Business Central cloud tenant.';
 
 #pragma warning disable AA0218, AA0225
                         field(DownloadShir; DownloadShirLinkTxt)
                         {
                             ApplicationArea = Basic, Suite;
-                            Caption = '';
+                            ShowCaption = false;
                             trigger OnDrillDown()
                             begin
                                 Hyperlink(DownloadShirURLTxt);
@@ -301,7 +360,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                 }
                 group("4.2")
                 {
-                    Caption = '';
+                    ShowCaption = false;
 #pragma warning disable AA0218
                     field(RuntimeKey; RuntimeKeyTxt)
                     {
@@ -409,7 +468,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
             }
             group(StepFinish)
             {
-                Caption = '';
+                ShowCaption = false;
                 Visible = DoneVisible;
                 group(AllDone)
                 {
@@ -452,7 +511,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                     HybridCompany: Record "Hybrid Company";
                     HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                 begin
-                    if (Step = Step::Intro) and (not IsSaas) then begin
+                    if (Step = Step::Intro) and (not IsCloudMigrationSupported) then begin
                         NavigateToBusinessCentral();
                         CurrPage.Close();
                     end;
@@ -527,7 +586,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         SkipShowLiveCompaniesWarning: Boolean;
     begin
         FeatureTelemetry.LogUptake('0000JMS', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
-        IsSaas := EnvironmentInformation.IsSaaS();
+        IsCloudMigrationSupported := HybridCloudManagement.IsCloudMigrationUISupported();
 
         if Rec.GetFilter("Product ID") = 'TM' then begin
             IsIntelligentCloud := true;
@@ -550,23 +609,36 @@ page 4000 "Hybrid Cloud Setup Wizard"
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        GuidedExperience: Codeunit "Guided Experience";
-        IntelligentCloudManagement: Page "Intelligent Cloud Management";
         Handled: Boolean;
         CloseWizard: Boolean;
     begin
         if not (CloseAction = Action::OK) then
             exit(true);
 
-        if not IsSaas then
+        if not IsCloudMigrationSupported then
             exit(true);
 
         OnHandleCloseWizard(Handled, CloseWizard);
         if Handled then
             exit(CloseWizard);
 
+        exit(ShowConfirmationDialogAfterSetup());
+    end;
+
+    local procedure ShowConfirmationDialogAfterSetup(): Boolean
+    var
+        IntelligentCloud: Record "Intelligent Cloud";
+        GuidedExperience: Codeunit "Guided Experience";
+        IntelligentCloudManagement: Page "Intelligent Cloud Management";
+    begin
         if not GuidedExperience.Exists("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Hybrid Cloud Setup Wizard") then
-            exit;
+            exit(true);
+
+        if not IntelligentCloud.Get() then
+            exit(true);
+
+        if not IntelligentCloud.Enabled then
+            exit(true);
 
         if GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, PAGE::"Hybrid Cloud Setup Wizard") then begin
             if not Confirm(OpenCloudMigrationPageQst, true) then
@@ -581,6 +653,8 @@ page 4000 "Hybrid Cloud Setup Wizard"
         end else
             if not Confirm(HybridNotSetupQst, false) then
                 exit(false);
+
+        exit(true);
     end;
 
     [IntegrationEvent(false, false)]
@@ -599,11 +673,11 @@ page 4000 "Hybrid Cloud Setup Wizard"
         MediaResources_Done: Record "Media Resources";
         ClientTypeManagement: Codeunit "Client Type Management";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        EnvironmentInformation: Codeunit "Environment Information";
         IsChanged: Boolean;
         TopBannerVisible: Boolean;
         IntroVisible: Boolean;
         ProductTypeVisible: Boolean;
+        CustomMigrationVisible: Boolean;
         SQLServerTypeVisible: Boolean;
         IRInstructionsVisible: Boolean;
         CompanySelectionVisible: Boolean;
@@ -614,11 +688,11 @@ page 4000 "Hybrid Cloud Setup Wizard"
         NextEnabled: Boolean;
         FinishEnabled: Boolean;
         IsRunTimeNameCleared: Boolean;
-        IsSaas: Boolean;
+        IsCloudMigrationSupported: Boolean;
         ChooseAll: Boolean;
         InAgreementWithPolicy: Boolean;
         IsIntelligentCloud: Boolean;
-        Step: Option Intro,DelegatedAdminStep,ProductType,SQLServerType,IRInstructions,CompanySelection,ProductSpecificSettings,Schedule,Done;
+        Step: Option Intro,DelegatedAdminStep,ProductType,CustomMigration,SQLServerType,IRInstructions,CompanySelection,ProductSpecificSettings,Schedule,Done;
         SqlConnectionStringTxt: Text;
         RuntimeNameTxt: Text;
         RuntimeKeyTxt: Text;
@@ -649,6 +723,9 @@ page 4000 "Hybrid Cloud Setup Wizard"
         LearnMoreDatabaseSizeUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2301442', Locked = true;
         CloudMigrationLiveTenantsUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2262423', Locked = true;
         LearnMoreTxt: Label 'Learn more';
+        ReplicationMappingsTableNameTxt: Text;
+        SetupMappingsTableNameTxt: Text;
+        SourceCompaniesTableNameTxt: Text;
 
     local procedure NextStep(Backwards: Boolean)
     var
@@ -675,8 +752,27 @@ page 4000 "Hybrid Cloud Setup Wizard"
                 end;
             Step::ProductType:
                 ShowProductTypeStep(Backwards);
+            Step::CustomMigration:
+                begin
+                    if not ShouldShowCustomMigrationStep() then begin
+                        IncrementStep(Backwards, Step);
+                        NextStep(Backwards);
+                        exit;
+                    end;
+
+                    ShowCustomMigrationStep(Backwards);
+                end;
             Step::SQLServerType:
-                ShowSQLServerTypeStep(Backwards);
+                begin
+                    if HybridCloudManagement.IsOnPremDevelopmentEnabled() then
+                        if (not Backwards) then begin
+                            Step := Step::IRInstructions;
+                            NextStep(Backwards);
+                            exit;
+                        end;
+
+                    ShowSQLServerTypeStep(Backwards);
+                end;
             Step::IRInstructions:
                 if (HybridCloudManagement.CanSkipIRSetup(Rec."Sql Server Type", RuntimeNameTxt)) then begin
                     IncrementStep(Backwards, Step);
@@ -744,11 +840,23 @@ page 4000 "Hybrid Cloud Setup Wizard"
         SQLServerTypeVisible := false;
         IRInstructionsVisible := false;
         CompanySelectionVisible := false;
+        CustomMigrationVisible := false;
 #pragma warning disable AA0206
         ProductSpecificSettingsVisible := false;
 #pragma warning restore
         ScheduleVisible := false;
         DoneVisible := false;
+    end;
+
+    local procedure ShouldShowCustomMigrationStep(): Boolean
+    var
+        CustomMigrationTableMappingInterface: Interface "Custom Migration Table Mapping";
+    begin
+        if Rec."Custom Migration Provider".AsInteger() = 0 then
+            exit(false);
+
+        CustomMigrationTableMappingInterface := Rec."Custom Migration Provider";
+        exit(CustomMigrationTableMappingInterface.ShowConfigureMigrationTablesMappingStep());
     end;
 
     local procedure ShowIntroStep()
@@ -766,6 +874,14 @@ page 4000 "Hybrid Cloud Setup Wizard"
             HybridCloudManagement.OnShowProductTypeStep(TempHybridProductType);
         ResetWizardControls();
         ProductTypeVisible := true;
+    end;
+
+    local procedure ShowCustomMigrationStep(Backwards: Boolean)
+    begin
+        if not Backwards then
+            HybridCloudManagement.OnShowCustomMigrationStep(TempHybridProductType);
+        ResetWizardControls();
+        CustomMigrationVisible := true;
     end;
 
     local procedure ShowSQLServerTypeStep(Backwards: Boolean)
@@ -788,11 +904,23 @@ page 4000 "Hybrid Cloud Setup Wizard"
     local procedure ShowCompanySelectionStep(Backwards: Boolean)
     var
         HybridCompany: Record "Hybrid Company";
+        OnPremMigrationHandler: Codeunit "OnPrem Migration Handler";
+        CustomMigrationProviderInterface: Interface "Custom Migration Provider";
     begin
-        if not Backwards and IsChanged then begin
-            HybridCloudManagement.HandleShowCompanySelectionStep(TempHybridProductType, SqlConnectionStringTxt, Rec.ConvertSqlServerTypeToText(), RuntimeNameTxt);
-            IsChanged := false;
+        if TempHybridProductType."Custom Migration Provider".AsInteger() <> 0 then begin
+            CustomMigrationProviderInterface := TempHybridProductType."Custom Migration Provider";
+            CustomMigrationProviderInterface.SetupMigrationSetupTableMappings();
         end;
+
+        if not Backwards and IsChanged then begin
+            if TempHybridProductType."Custom Migration Provider".AsInteger() <> 0 then
+                HybridCloudManagement.HandleShowCompanySelectionStep(TempHybridProductType, SqlConnectionStringTxt, Rec.ConvertSqlServerTypeToText(), RuntimeNameTxt, SourceCompaniesTableNameTxt, SetupMappingsTableNameTxt, ReplicationMappingsTableNameTxt)
+            else
+                HybridCloudManagement.HandleShowCompanySelectionStep(TempHybridProductType, SqlConnectionStringTxt, Rec.ConvertSqlServerTypeToText(), RuntimeNameTxt);
+            IsChanged := false;
+        end else
+            if HybridCloudManagement.IsOnPremDevelopmentEnabled() then
+                OnPremMigrationHandler.EnableCloudMigration(RuntimeNameTxt);
 
         ResetWizardControls();
         CompanySelectionVisible := true;

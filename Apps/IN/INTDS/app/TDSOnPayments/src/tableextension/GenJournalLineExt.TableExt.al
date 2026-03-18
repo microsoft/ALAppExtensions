@@ -51,6 +51,8 @@ tableextension 18766 "GenJournalLineExt" extends "Gen. Journal Line"
         }
         field(18771; "TDS Invoice Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'TDS Invoice Amount';
             DataClassification = CustomerContent;
         }

@@ -6,6 +6,7 @@ namespace Microsoft.Sustainability.Tests;
 
 using Microsoft.Foundation.Address;
 using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Tracking;
 using Microsoft.Projects.Project.Job;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Purchases.Document;
@@ -36,6 +37,8 @@ codeunit 148218 "Sustainability Service Tests"
         LibraryInventory: Codeunit "Library - Inventory";
         LibrarySustainability: Codeunit "Library - Sustainability";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryUtility: Codeunit "Library - Utility";
+        LibraryItemTracking: Codeunit "Library - Item Tracking";
         IsInitialized: Boolean;
         AccountCodeLbl: Label 'AccountCode%1', Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Comment = '%1 = Number';
@@ -2359,6 +2362,71 @@ codeunit 148218 "Sustainability Service Tests"
         Assert.ExpectedError(CO2eMustNotBeZeroErr);
     end;
 
+    [Test]
+    procedure VerifySustValueEntryForServiceOrderWithLotTrackedItemAndSpecificCarbon()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        Item: Record Item;
+        CO2ePerUnit: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        LotNo: array[2] of Code[50];
+        ExpectedCO2eOnLot: array[2] of Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 546875] Verify Sustainability Value entry should be created when the Service document is posted with Ship and Invoice for Lot Tracked Item.
+        Initialize();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "CO2e Per Unit" and Quantity.
+        CO2ePerUnit := LibraryRandom.RandIntInRange(100, 200);
+        Quantity := LibraryRandom.RandIntInRange(10, 20);
+
+        // [GIVEN] Create an Item.
+        LibraryItemTracking.CreateLotItem(Item);
+        LibrarySustainability.CreateItemWithSpecificCarbonTrackingMethod(Item);
+        AddInventoryForLotTrackedItem(Item, LotNo, ExpectedCO2eOnLot, AccountCode, Quantity);
+
+        // [GIVEN] Create a Service Header.
+        CreateServiceOrderWithItem(ServiceHeader, ServiceLine, LibrarySales.CreateCustomerNo(), '', Item."No.", Quantity);
+        ServiceLine.Validate("Sust. Account No.", AccountCode);
+        ServiceLine.Validate("CO2e Per Unit", CO2ePerUnit);
+        ServiceLine.Modify();
+
+        // [GIVEN] Create Item Tracking for Service Line.
+        CreateServiceLineItemTracking(ServiceLine, '', LotNo[2], ServiceLine.Quantity);
+
+        // [WHEN] Post the Service Order with Ship and Invoice.
+        LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+
+        // [THEN] Verify Sustainability Value entry must be created.
+        SustainabilityValueEntry.SetRange("Document No.", FindServiceInvoiceHeader(ServiceHeader."No."));
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            -ExpectedCO2eOnLot[1],
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), -ExpectedCO2eOnLot[1], SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+
+        SustainabilityLedgerEntry.SetRange("Document No.", FindServiceInvoiceHeader(ServiceHeader."No."));
+        Assert.RecordCount(SustainabilityLedgerEntry, 0);
+    end;
+
     local procedure Initialize()
     var
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
@@ -2681,6 +2749,38 @@ codeunit 148218 "Sustainability Service Tests"
             ServiceCreditMemoLine."Total CO2e",
             StrSubstNo(ValueMustBeEqualErr, ServiceCreditMemoLine.FieldCaption("Total CO2e"), TotalCO2e, ServiceCreditMemoLine.TableCaption()));
     end;
+
+    local procedure AddInventoryForLotTrackedItem(var Item: Record Item; var LotNo: array[2] of Code[50]; var ExpectedCO2eOnLot: array[2] of Decimal; AccountCode: Code[20]; Quantity: Decimal)
+    var
+        Index: Integer;
+    begin
+        for Index := 1 to ArrayLen(LotNo) do
+            LotNo[Index] := LibraryUtility.GenerateGUID();
+
+        for Index := 1 to ArrayLen(ExpectedCO2eOnLot) do
+            ExpectedCO2eOnLot[Index] := LibraryRandom.RandDecInRange(200, 600, 2);
+        LibrarySustainability.PostPositiveAdjustmentWithItemTracking(Item, '', AccountCode, '', Quantity, WorkDate(), '', LotNo[1], ExpectedCO2eOnLot[1]);
+        LibrarySustainability.PostPositiveAdjustmentWithItemTracking(Item, '', AccountCode, '', Quantity, WorkDate(), '', LotNo[2], ExpectedCO2eOnLot[2]);
+    end;
+
+    local procedure CreateServiceLineItemTracking(ServiceLine: Record "Service Line"; SerialNo: Code[50]; LotNo: Code[50]; QtyBase: Decimal)
+    var
+        ReservEntry: Record "Reservation Entry";
+        ItemTrackingSetup: Record "Item Tracking Setup";
+    begin
+        ItemTrackingSetup."Serial No." := SerialNo;
+        ItemTrackingSetup."Lot No." := LotNo;
+        CreateAssemblyHeaderItemTracking(ReservEntry, ServiceLine, ItemTrackingSetup, QtyBase);
+    end;
+
+    local procedure CreateAssemblyHeaderItemTracking(var ReservEntry: Record "Reservation Entry"; ServiceLine: Record "Service Line"; ItemTrackingSetup: Record "Item Tracking Setup"; QtyBase: Decimal)
+    var
+        RecRef: RecordRef;
+    begin
+        RecRef.GetTable(ServiceLine);
+        LibraryItemTracking.ItemTracking(ReservEntry, RecRef, ItemTrackingSetup, QtyBase);
+    end;
+
 
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)

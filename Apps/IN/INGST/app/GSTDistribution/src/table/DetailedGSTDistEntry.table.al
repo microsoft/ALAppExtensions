@@ -111,6 +111,8 @@ table 18200 "Detailed GST Dist. Entry"
         }
         field(20; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
@@ -121,11 +123,14 @@ table 18200 "Detailed GST Dist. Entry"
         }
         field(22; "GST %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST%';
             DataClassification = CustomerContent;
         }
         field(23; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
@@ -156,6 +161,7 @@ table 18200 "Detailed GST Dist. Entry"
         }
         field(29; "Location Distribution %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Location Distribution %';
             DataClassification = CustomerContent;
         }
@@ -171,6 +177,8 @@ table 18200 "Detailed GST Dist. Entry"
         }
         field(32; "Distribution Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Distribution Amount';
             DataClassification = CustomerContent;
         }
@@ -212,6 +220,7 @@ table 18200 "Detailed GST Dist. Entry"
         }
         field(42; "GST Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Rounding Precision';
             DataClassification = CustomerContent;
         }

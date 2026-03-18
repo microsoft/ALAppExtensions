@@ -141,6 +141,8 @@ table 31274 "Posted Compensation Header CZC"
         }
         field(90; "Balance (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             CalcFormula = sum("Posted Compensation Line CZC"."Ledg. Entry Rem. Amt. (LCY)" where("Compensation No." = field("No.")));
             Caption = 'Balance (LCY)';
             Editable = false;
@@ -148,6 +150,8 @@ table 31274 "Posted Compensation Header CZC"
         }
         field(95; "Compensation Balance (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             CalcFormula = sum("Posted Compensation Line CZC"."Amount (LCY)" where("Compensation No." = field("No.")));
             Caption = 'Compensation Balance (LCY)';
             Editable = false;
@@ -155,6 +159,8 @@ table 31274 "Posted Compensation Header CZC"
         }
         field(96; "Compensation Value (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             CalcFormula = sum("Posted Compensation Line CZC"."Amount (LCY)" where("Compensation No." = field("No."), "Amount (LCY)" = filter(> 0)));
             Caption = 'Compensation Value (LCY)';
             Editable = false;

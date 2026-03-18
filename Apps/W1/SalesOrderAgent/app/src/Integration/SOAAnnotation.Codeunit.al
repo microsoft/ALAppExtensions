@@ -196,15 +196,15 @@ codeunit 4399 "SOA Annotation"
             exit; // Message is relevant, no annotation needed
 
         TelemetryDimensions.Add('TaskId', Format(AgentTaskMessage."Task ID"));
+        TelemetryDimensions.Add('MessageId', Format(AgentTaskMessage.ID));
 
         Clear(Annotations);
         Annotations.Code := AnnotationIrrelevantCodeLbl;
         Annotations.Message := CopyStr(StrSubstNo(AnnotationIrrelevantLbl, Agent.GetDisplayName(AgentTaskMessage."Agent User Security ID")), 1, MaxStrLen(Annotations.Message));
         Annotations.Details := CopyStr(IrrelevanceReason, 1, MaxStrLen(Annotations.Details));
         Annotations.Severity := Annotations.Severity::Warning;
-        if Annotations.Insert() then
-            FeatureTelemetry.LogUsage('0000PPH', SOASetupCU.GetFeatureName(), 'Irrelevant message detected for agent.', TelemetryDimensions)
-        else
+        FeatureTelemetry.LogUsage('0000PPH', SOASetupCU.GetFeatureName(), 'Irrelevant message detected for agent.', TelemetryDimensions);
+        if not Annotations.Insert() then
             FeatureTelemetry.LogError('0000PQC', SOASetupCU.GetFeatureName(), 'Irrelevant message detected for agent.', 'Failed to insert annotation for irrelevant message.', GetLastErrorCallStack(), TelemetryDimensions);
     end;
 

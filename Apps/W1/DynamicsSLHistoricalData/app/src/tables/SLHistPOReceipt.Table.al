@@ -46,6 +46,7 @@ table 42809 "SL Hist. POReceipt"
         }
         field(9; CuryFreight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryFreight';
         }
         field(10; CuryID; Text[4])
@@ -58,6 +59,7 @@ table 42809 "SL Hist. POReceipt"
         }
         field(12; CuryRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRate';
         }
         field(13; CuryRateType; Text[6])
@@ -66,18 +68,22 @@ table 42809 "SL Hist. POReceipt"
         }
         field(14; CuryRcptAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRcptAmt';
         }
         field(15; CuryRcptAmtTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRcptAmtTot';
         }
         field(16; CuryRcptCtrlAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRcptCtrlAmt';
         }
         field(17; CuryRcptItemTotal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRcptItemTotal';
         }
         field(18; DfltFromPO; Text[1])
@@ -90,6 +96,7 @@ table 42809 "SL Hist. POReceipt"
         }
         field(20; Freight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Freight';
         }
         field(21; InBal; Integer)
@@ -142,18 +149,22 @@ table 42809 "SL Hist. POReceipt"
         }
         field(33; RcptAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptAmt';
         }
         field(34; RcptAmtTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptAmtTot';
         }
         field(35; RcptCtrlAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptCtrlAmt';
         }
         field(36; RcptCtrlQty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptCtrlQty';
         }
         field(37; RcptDate; DateTime)
@@ -162,6 +173,7 @@ table 42809 "SL Hist. POReceipt"
         }
         field(38; RcptItemTotal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptItemTotal';
         }
         field(39; RcptNbr; Text[10])
@@ -170,10 +182,12 @@ table 42809 "SL Hist. POReceipt"
         }
         field(40; RcptQty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptQty';
         }
         field(41; RcptQtyTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptQtyTot';
         }
         field(42; RcptType; Text[1])
@@ -202,18 +216,22 @@ table 42809 "SL Hist. POReceipt"
         }
         field(48; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(49; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(50; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(51; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(52; S4Future07; DateTime)
@@ -262,10 +280,12 @@ table 42809 "SL Hist. POReceipt"
         }
         field(63; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(64; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(65; User5; Text[10])

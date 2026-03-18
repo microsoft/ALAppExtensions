@@ -22,6 +22,7 @@ table 40915 "Hist. Invt. Trx. SerialLot"
         }
         field(4; "Serial/Lot Qty."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Serial/Lot Qty.';
         }
         field(5; "Document No."; Code[35])
@@ -34,10 +35,12 @@ table 40915 "Hist. Invt. Trx. SerialLot"
         }
         field(7; "Line Sequence Number"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Line Sequence Number';
         }
         field(8; "Serial/Lot Seq. Number"; Integer)
         {
+            AutoFormatType = 0;
             Caption = 'Serial/Lot Seq. Number';
         }
         field(9; "From Bin"; Text[50])

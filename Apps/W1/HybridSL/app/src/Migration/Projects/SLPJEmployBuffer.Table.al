@@ -88,10 +88,12 @@ table 47079 "SL PJEmploy Buffer"
         field(19; em_id06; Decimal)
         {
             Caption = 'em_id06';
+            AutoFormatType = 0;
         }
         field(20; em_id07; Decimal)
         {
             Caption = 'em_id07';
+            AutoFormatType = 0;
         }
         field(21; em_id08; Date)
         {
@@ -136,6 +138,7 @@ table 47079 "SL PJEmploy Buffer"
         field(31; em_id18; Decimal)
         {
             Caption = 'em_id18';
+            AutoFormatType = 0;
         }
         field(32; em_id19; Date)
         {
@@ -168,6 +171,7 @@ table 47079 "SL PJEmploy Buffer"
         field(39; exp_approval_max; Decimal)
         {
             Caption = 'exp_approval_max';
+            AutoFormatType = 0;
         }
         field(40; gl_subacct; Text[24])
         {
@@ -232,18 +236,22 @@ table 47079 "SL PJEmploy Buffer"
         field(55; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(56; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(57; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(58; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(59; S4Future07; Date)
         {
@@ -292,10 +300,12 @@ table 47079 "SL PJEmploy Buffer"
         field(70; user3; Decimal)
         {
             Caption = 'user3';
+            AutoFormatType = 0;
         }
         field(71; user4; Decimal)
         {
             Caption = 'user4';
+            AutoFormatType = 0;
         }
         field(72; user_id; Text[50])
         {
@@ -304,10 +314,12 @@ table 47079 "SL PJEmploy Buffer"
         field(73; VacaTot; Decimal)
         {
             Caption = 'VacaTot';
+            AutoFormatType = 0;
         }
         field(74; VacaBal; Decimal)
         {
             Caption = 'VacaBal';
+            AutoFormatType = 0;
         }
         field(75; VacaProjectID; Text[16])
         {

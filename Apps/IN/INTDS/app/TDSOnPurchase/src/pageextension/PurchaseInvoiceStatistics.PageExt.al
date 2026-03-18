@@ -14,6 +14,8 @@ pageextension 18717 "Purchase Invoice Statistics" extends "Purchase Statistics"
         {
             field("TDS Amount"; TDSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the amount of TDS that is included in the total amount.';

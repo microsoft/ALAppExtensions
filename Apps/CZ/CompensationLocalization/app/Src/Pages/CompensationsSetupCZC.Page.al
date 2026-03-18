@@ -38,6 +38,8 @@ page 31270 "Compensations Setup CZC"
                 }
                 field("Max. Rounding Amount"; Rec."Max. Rounding Amount")
                 {
+                    AutoFormatType = 2;
+                    AutoFormatExpression = '';
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the maximum amount by which compensation entries can be automatically applie.';
                 }

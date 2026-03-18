@@ -194,18 +194,22 @@ table 42818 "SL Hist. SOType"
         }
         field(45; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(46; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(47; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(48; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(49; S4Future07; DateTime)
@@ -286,10 +290,12 @@ table 42818 "SL Hist. SOType"
         }
         field(68; User5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User5';
         }
         field(69; User6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User6';
         }
         field(70; User7; Text[10])

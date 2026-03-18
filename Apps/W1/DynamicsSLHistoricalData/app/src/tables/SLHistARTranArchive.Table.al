@@ -26,10 +26,12 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(4; CmmnPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CmmnPct';
         }
         field(5; CnvFact; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CnvFact';
         }
         field(6; ContractID; Text[10])
@@ -58,6 +60,7 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(12; CuryExtCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryExtCost';
         }
         field(13; CuryId; Text[4])
@@ -70,46 +73,57 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(15; CuryRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRate';
         }
         field(16; CuryTaxAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt00';
         }
         field(17; CuryTaxAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt01';
         }
         field(18; CuryTaxAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt02';
         }
         field(19; CuryTaxAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxAmt03';
         }
         field(20; CuryTranAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTranAmt';
         }
         field(21; CuryTxblAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt00';
         }
         field(22; CuryTxblAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt01';
         }
         field(23; CuryTxblAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt02';
         }
         field(24; CuryTxblAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblAmt03';
         }
         field(25; CuryUnitPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryUnitPrice';
         }
         field(26; CustId; Text[15])
@@ -126,6 +140,7 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(29; ExtCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ExtCost';
         }
         field(30; ExtRefNbr; Text[15])
@@ -150,6 +165,7 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(35; JobRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'JobRate';
         }
         field(36; JrnlType; Text[3])
@@ -218,6 +234,7 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(52; Qty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty';
         }
         field(53; RecordID; Integer)
@@ -242,18 +259,22 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(58; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(59; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(60; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(61; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(62; S4Future07; Date)
@@ -326,18 +347,22 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(79; TaxAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt00';
         }
         field(80; TaxAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt01';
         }
         field(81; TaxAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt02';
         }
         field(82; TaxAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxAmt03';
         }
         field(83; TaxCalced; Text[1])
@@ -370,6 +395,7 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(90; TranAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TranAmt';
         }
         field(91; TranClass; Text[1])
@@ -390,18 +416,22 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(95; TxblAmt00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt00';
         }
         field(96; TxblAmt01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt01';
         }
         field(97; TxblAmt02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt02';
         }
         field(98; TxblAmt03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblAmt03';
         }
         field(99; UnitDesc; Text[6])
@@ -410,6 +440,7 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(100; UnitPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'UnitPrice';
         }
         field(101; User1; Text[30])
@@ -422,10 +453,12 @@ table 42825 "SL Hist. ARTran Archive"
         }
         field(103; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(104; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(105; User5; Text[10])

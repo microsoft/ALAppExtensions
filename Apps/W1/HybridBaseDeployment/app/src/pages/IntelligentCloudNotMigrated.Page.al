@@ -1,5 +1,9 @@
-namespace Microsoft.DataMigration;
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration;
 
 page 4019 "Intelligent Cloud Not Migrated"
 {

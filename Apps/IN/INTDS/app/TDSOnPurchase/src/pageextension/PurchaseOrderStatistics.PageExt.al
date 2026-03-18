@@ -15,6 +15,8 @@ pageextension 18719 "Purchase Order Statistics" extends "Purchase Order Statisti
         {
             field("TDS Amount"; TDSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the amount of TDS that is included in the total amount.';
@@ -25,6 +27,8 @@ pageextension 18719 "Purchase Order Statistics" extends "Purchase Order Statisti
         {
             field("TDS Amt"; PartialInvTDSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Caption = 'TDS Amount';
                 ToolTip = 'Specifies the amount of TDS that is included in the total amount.';
                 ApplicationArea = Basic, Suite;
@@ -35,6 +39,8 @@ pageextension 18719 "Purchase Order Statistics" extends "Purchase Order Statisti
         {
             field("TDS Purch Amt"; PartialRcptTDSAmount)
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = Rec."Currency Code";
                 Caption = 'TDS Amount';
                 ToolTip = 'Specifies the amount of TDS that is included in the total amount.';
                 ApplicationArea = Basic, Suite;

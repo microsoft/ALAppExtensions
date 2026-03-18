@@ -58,6 +58,8 @@ tableextension 18471 "GST Service Line Archive" extends "Service Line Archive"
         }
         field(18448; "GST Assessable Value (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value (LCY)';
             DataClassification = CustomerContent;
         }

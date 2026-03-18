@@ -119,6 +119,8 @@ page 31263 "Payment Order Subform CZB"
                 }
                 field(RelatedAmountToApply; Rec.CalcRelatedAmountToApply())
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     Caption = 'Related Amount to Apply (LCY)';
                     ApplicationArea = Basic, Suite;
                     Editable = false;

@@ -1,6 +1,7 @@
 namespace Microsoft.DataMigration.GP;
 
 using Microsoft.DataMigration;
+using Microsoft.Utilities;
 using System.Environment;
 
 codeunit 4015 "Hybrid GP Wizard"
@@ -50,12 +51,12 @@ codeunit 4015 "Hybrid GP Wizard"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Companies IC", 'OnBeforeCreateCompany', '', false, false)]
-    local procedure HandleOnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Option "Evaluation Data","Standard Data","None","Extended Data","Full No Data")
+    local procedure HandleOnBeforeCreateCompany(ProductId: Text; var CompanyDataType: Enum "Company Demo Data Type")
     begin
         if not CanHandle(ProductId) then
             exit;
 
-        CompanyDataType := CompanyDataType::"Standard Data";
+        CompanyDataType := CompanyDataType::"Production - Setup Data Only";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnGetHybridProductDescription', '', false, false)]
@@ -136,6 +137,7 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridReplicationDetail: Record "Hybrid Replication Detail";
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
         GPMigrationWarnings: Record "GP Migration Warnings";
+        MigrationValidationError: Record "Migration Validation Error";
     begin
         GPCompanyMigrationSettings.Reset();
         if GPCompanyMigrationSettings.FindSet() then
@@ -158,6 +160,9 @@ codeunit 4015 "Hybrid GP Wizard"
 
         if not GPMigrationWarnings.IsEmpty() then
             GPMigrationWarnings.DeleteAll();
+
+        if not MigrationValidationError.IsEmpty() then
+            MigrationValidationError.DeleteAll();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterDeleteEvent', '', false, false)]
@@ -170,6 +175,7 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridReplicationDetail: Record "Hybrid Replication Detail";
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
         GPMigrationWarnings: Record "GP Migration Warnings";
+        MigrationValidationError: Record "Migration Validation Error";
     begin
         if Rec.IsTemporary() then
             exit;
@@ -197,6 +203,10 @@ codeunit 4015 "Hybrid GP Wizard"
         GPMigrationWarnings.SetRange("Company Name", Rec.Name);
         if not GPMigrationWarnings.IsEmpty() then
             GPMigrationWarnings.DeleteAll();
+
+        MigrationValidationError.SetRange("Company Name", Rec.Name);
+        if not MigrationValidationError.IsEmpty() then
+            MigrationValidationError.DeleteAll();
     end;
 
     local procedure ProcessesAreRunning(): Boolean

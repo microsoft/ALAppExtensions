@@ -5,8 +5,10 @@ using Microsoft.Assembly.History;
 using Microsoft.Assembly.Posting;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Setup;
 
 codeunit 6255 "Sust. Assembly Subscriber"
@@ -127,14 +129,41 @@ codeunit 6255 "Sust. Assembly Subscriber"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterPostedAssemblyHeaderModify', '', false, false)]
     local procedure OnAfterPostedAssemblyHeaderModify(var PostedAssemblyHeader: Record "Posted Assembly Header"; AssemblyHeader: Record "Assembly Header")
     begin
-        UpdatePostedSustainabilityEmission(AssemblyHeader."CO2e per Unit", AssemblyHeader."Qty. per Unit of Measure", PostedAssemblyHeader.Quantity, 1, PostedAssemblyHeader."Total CO2e");
-        PostedAssemblyHeader.Modify();
+        UpdateTotalCO2eOnPostedAssemblyHeader(PostedAssemblyHeader);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnBeforePostedAssemblyLineInsert', '', false, false)]
     local procedure OnAfterPostedAssemblyLineInsert(AssemblyLine: Record "Assembly Line"; var PostedAssemblyLine: Record "Posted Assembly Line")
+    var
+        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
+        ItemLedgerEntryDocumentType: Enum "Item Ledger Document Type";
+        TotalCO2eAmount: Decimal;
+        TotalCO2eQuantity: Decimal;
     begin
-        UpdatePostedSustainabilityEmission(AssemblyLine."CO2e per Unit", AssemblyLine."Qty. per Unit of Measure", PostedAssemblyLine.Quantity, 1, PostedAssemblyLine."Total CO2e");
+        if not SustainabilityPostMgt.IsCarbonTrackingSpecificItem(PostedAssemblyLine."No.") then begin
+            UpdatePostedSustainabilityEmission(AssemblyLine."CO2e per Unit", AssemblyLine."Qty. per Unit of Measure", PostedAssemblyLine.Quantity, 1, PostedAssemblyLine."Total CO2e");
+            exit;
+        end;
+
+        SustainabilityPostMgt.GetTotalCO2eAmountFromValueEntry(ItemLedgerEntryDocumentType::"Posted Assembly", PostedAssemblyLine."Document No.",
+                                                               PostedAssemblyLine."Line No.", PostedAssemblyLine."No.", TotalCO2eAmount, TotalCO2eQuantity);
+
+        UpdatePostedSustainabilityEmission(Abs(TotalCO2eAmount / TotalCO2eQuantity), AssemblyLine."Qty. per Unit of Measure", PostedAssemblyLine.Quantity, 1, PostedAssemblyLine."Total CO2e");
+        UpdatePostedCO2eOnAssemblyLine(AssemblyLine, PostedAssemblyLine."Total CO2e");
+    end;
+
+    local procedure UpdatePostedCO2eOnAssemblyLine(var AssemblyLine: Record "Assembly Line"; TotalCO2eAmount: Decimal)
+    var
+        GHGCredit: Boolean;
+        Sign: Integer;
+    begin
+        if AssemblyLine.Type <> AssemblyLine.Type::Item then
+            exit;
+
+        GHGCredit := IsGHGCreditLine(AssemblyLine."No.");
+        Sign := GetPostingSign(0, AssemblyLine.Quantity, GHGCredit);
+        AssemblyLine."Posted Total CO2e" += Sign * TotalCO2eAmount;
+        AssemblyLine.Modify();
     end;
 
     local procedure UpdateDefaultSustAccOnAssemblyHeader(var AssemblyHeader: Record "Assembly Header")
@@ -202,27 +231,28 @@ codeunit 6255 "Sust. Assembly Subscriber"
     local procedure UpdatePostedSustainabilityTotalCO2eOnAssemblyHeader(var AssemblyHeader: Record "Assembly Header"; QtyToOutputBase: Decimal)
     var
         GHGCredit: Boolean;
-        CO2eToPost: Decimal;
         Sign: Integer;
     begin
         if (QtyToOutputBase = 0) then
             exit;
 
         GHGCredit := IsGHGCreditLine(AssemblyHeader."Item No.");
-
         Sign := GetPostingSign(QtyToOutputBase, 0, GHGCredit);
-        CO2eToPost := AssemblyHeader."CO2e per Unit" * QtyToOutputBase * AssemblyHeader."Qty. per Unit of Measure" * Sign;
 
-        AssemblyHeader."Posted Total CO2e" += CO2eToPost;
+        CalculatePostedTotalCO2eFromLines(AssemblyHeader, Sign);
     end;
 
     local procedure UpdatePostedSustainabilityTotalCO2eOnAssemblyLine(var AssemblyLine: Record "Assembly Line"; QtyToConsumeBase: Decimal)
     var
+        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         GHGCredit: Boolean;
         CO2eToPost: Decimal;
         Sign: Integer;
     begin
         if (QtyToConsumeBase = 0) then
+            exit;
+
+        if SustainabilityPostMgt.IsCarbonTrackingSpecificItem(AssemblyLine."No.") then
             exit;
 
         if AssemblyLine.Type = AssemblyLine.Type::Item then
@@ -231,6 +261,34 @@ codeunit 6255 "Sust. Assembly Subscriber"
         Sign := GetPostingSign(0, QtyToConsumeBase, GHGCredit);
         CO2eToPost := AssemblyLine."CO2e per Unit" * QtyToConsumeBase * AssemblyLine."Qty. per Unit of Measure" * Sign;
         AssemblyLine."Posted Total CO2e" += CO2eToPost;
+    end;
+
+    local procedure UpdateTotalCO2eOnPostedAssemblyHeader(var PostedAssemblyHeader: Record "Posted Assembly Header")
+    var
+        PostedAssemblyLine: Record "Posted Assembly Line";
+    begin
+        PostedAssemblyLine.SetRange("Document No.", PostedAssemblyHeader."No.");
+        PostedAssemblyLine.SetRange(Type, PostedAssemblyLine.Type::Item);
+        PostedAssemblyLine.CalcSums("Total CO2e", Quantity);
+        PostedAssemblyHeader."Total CO2e" := PostedAssemblyLine."Total CO2e";
+        if PostedAssemblyLine.Quantity <> 0 then
+            PostedAssemblyHeader."CO2e per Unit" := Abs(PostedAssemblyHeader."Total CO2e" / PostedAssemblyHeader.Quantity)
+        else
+            PostedAssemblyHeader."CO2e per Unit" := 0;
+
+        PostedAssemblyHeader.Modify();
+    end;
+
+    local procedure CalculatePostedTotalCO2eFromLines(var AssemblyHeader: Record "Assembly Header"; Sign: Integer)
+    var
+        AssemblyLine: Record "Assembly Line";
+    begin
+        AssemblyLine.SetLoadFields("Posted Total CO2e", Type);
+        AssemblyLine.SetRange("Document No.", AssemblyHeader."No.");
+        AssemblyLine.SetRange(Type, AssemblyLine.Type::Item);
+        AssemblyLine.SetFilter("Posted Total CO2e", '<>0');
+        AssemblyLine.CalcSums("Posted Total CO2e");
+        AssemblyHeader."Posted Total CO2e" := Sign * Abs(AssemblyLine."Posted Total CO2e");
     end;
 
     local procedure GetPostingSign(QtyToOutPut: Decimal; QtyToConsume: Decimal; GHGCredit: Boolean): Integer

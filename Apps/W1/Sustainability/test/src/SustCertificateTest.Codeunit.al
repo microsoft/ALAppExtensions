@@ -5172,7 +5172,6 @@ codeunit 148187 "Sust. Certificate Test"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandlerYes')]
     procedure VerifyEmissionFieldsMustBeEnabledWhenEnableValueChainTrackingIsEnabled()
     var
         SustainabilitySetup: Record "Sustainability Setup";

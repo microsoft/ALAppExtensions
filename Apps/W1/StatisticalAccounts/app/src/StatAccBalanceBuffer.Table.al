@@ -31,11 +31,15 @@ table 2620 "Stat. Acc. Balance Buffer"
         }
         field(10; "Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             DataClassification = SystemMetadata;
         }
         field(12; "Net Change"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Net Change';
             DataClassification = SystemMetadata;
         }

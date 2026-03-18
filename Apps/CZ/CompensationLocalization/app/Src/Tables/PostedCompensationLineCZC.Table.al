@@ -110,6 +110,7 @@ table 31275 "Posted Compensation Line CZC"
         }
         field(77; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;
@@ -152,6 +153,7 @@ table 31275 "Posted Compensation Line CZC"
         field(90; "Ledg. Entry Original Amt.(LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Ledg. Entry Original Amt.(LCY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -159,18 +161,21 @@ table 31275 "Posted Compensation Line CZC"
         field(95; "Ledg. Entry Rem. Amt. (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Ledg. Entry Rem. Amt. (LCY)';
             DataClassification = CustomerContent;
         }
         field(97; "Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
             DataClassification = CustomerContent;
         }
         field(98; "Remaining Amount (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Remaining Amount (LCY)';
             DataClassification = CustomerContent;
         }

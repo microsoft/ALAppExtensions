@@ -24,14 +24,17 @@ table 1916 "MigrationQB Item"
         }
         field(5; UnitPrice; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(6; PurchaseCost; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(7; QtyOnHand; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(8; Taxable; Boolean)

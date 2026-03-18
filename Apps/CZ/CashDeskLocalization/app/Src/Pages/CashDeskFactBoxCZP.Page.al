@@ -23,6 +23,8 @@ page 31153 "Cash Desk FactBox CZP"
             }
             field(CalcBalance; Rec.CalcBalance())
             {
+                AutoFormatExpression = Rec."Currency Code";
+                AutoFormatType = 1;
                 ApplicationArea = Basic, Suite;
                 Caption = 'Statistics';
                 ToolTip = 'Specifies the total receipts and withdrawals in cash desk.';

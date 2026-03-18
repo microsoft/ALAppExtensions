@@ -14,6 +14,7 @@ tableextension 4703 "VAT Stmt. Rep. Line Extension" extends "VAT Statement Repor
         {
             DataClassification = CustomerContent;
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Representative Amount';
             Editable = false;
         }
@@ -21,6 +22,7 @@ tableextension 4703 "VAT Stmt. Rep. Line Extension" extends "VAT Statement Repor
         {
             DataClassification = CustomerContent;
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Group Amount';
             Editable = false;
         }

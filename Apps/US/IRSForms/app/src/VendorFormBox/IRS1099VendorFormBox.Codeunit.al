@@ -4,9 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+
 codeunit 10037 "IRS 1099 Vendor Form Box"
 {
     Access = Internal;
+    Permissions = TableData "Purch. Cr. Memo Hdr." = rm, tabledata "Purch. Inv. Header" = rm;
 
     procedure SuggestVendorsForFormBoxSetup(PeriodNo: Code[20])
     var
@@ -114,6 +118,27 @@ codeunit 10037 "IRS 1099 Vendor Form Box"
         if CurrIRSReportingPeriodNo = '' then
             exit(false);
         exit(IRS1099VendorFormBoxSetup.Get(CurrIRSReportingPeriodNo, VendNo));
+    end;
+
+    procedure UpdatePurchDocFormBoxNoFromVendLedgEntry(VendorLedgerEntry: Record "Vendor Ledger Entry")
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+    begin
+        if VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice then begin
+            PurchInvHeader.SetLoadFields("IRS 1099 Form Box No.");
+            if PurchInvHeader.Get(VendorLedgerEntry."Document No.") then begin
+                PurchInvHeader."IRS 1099 Form Box No." := VendorLedgerEntry."IRS 1099 Form Box No.";
+                PurchInvHeader.Modify(true);
+            end;
+        end;
+        if VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::"Credit Memo" then begin
+            PurchCrMemoHdr.SetLoadFields("IRS 1099 Form Box No.");
+            if PurchCrMemoHdr.Get(VendorLedgerEntry."Document No.") then begin
+                PurchCrMemoHdr."IRS 1099 Form Box No." := VendorLedgerEntry."IRS 1099 Form Box No.";
+                PurchCrMemoHdr.Modify(true);
+            end;
+        end;
     end;
 
     local procedure ShowIfVendorHas1099CodePrevPeriodButNotCurrNotificationId(): Guid

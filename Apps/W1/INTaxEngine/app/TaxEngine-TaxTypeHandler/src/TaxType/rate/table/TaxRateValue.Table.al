@@ -50,11 +50,13 @@ table 20253 "Tax Rate Value"
         }
         field(8; "Decimal Value"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Decimal Value';
         }
         field(9; "Decimal Value To"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Decimal Value To';
         }

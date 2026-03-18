@@ -6,6 +6,8 @@ namespace Microsoft.EServices.EDocument.Verifactu.Test;
 
 using Microsoft.EServices.EDocument;
 using Microsoft.EServices.EDocument.Verifactu;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 using System.Privacy;
 using System.Security.Encryption;
 
@@ -16,6 +18,7 @@ codeunit 148003 "Test Verifactu Setup"
 
     var
         Assert: Codeunit Assert;
+        LibraryRandom: Codeunit "Library - Random";
         IsInitialized: Boolean;
         DisableSIIQst: Label 'SII setup will be disabled. Do you want to proceed?';
         DisableVerifactuQst: Label 'Verifactu setup will be disabled. Do you want to proceed?';
@@ -48,6 +51,9 @@ codeunit 148003 "Test Verifactu Setup"
     begin
         // [SCENARIO] User enables Verifactu Setup when valid certificate is configured
         Initialize();
+
+        // [GIVEN] Company Information has valid Post Code with Time Zone
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
 
         // [GIVEN] Verifactu Setup record exists
         CreateVerifactuSetup(VerifactuSetup);
@@ -103,6 +109,9 @@ codeunit 148003 "Test Verifactu Setup"
         // [SCENARIO] IsEnabled procedure returns true when setup is enabled
         Initialize();
 
+        // [GIVEN] Company Information has valid Post Code with Time Zone
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
+
         // [GIVEN] Verifactu Setup record exists
         CreateVerifactuSetup(VerifactuSetup);
 
@@ -155,6 +164,9 @@ codeunit 148003 "Test Verifactu Setup"
         // [SCENARIO] User can lookup and select certificate using drilldown
         Initialize();
 
+        // [GIVEN] Company Information has valid Post Code with Time Zone
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
+
         // [GIVEN] Verifactu Setup record exists
         CreateVerifactuSetup(VerifactuSetup);
 
@@ -181,6 +193,9 @@ codeunit 148003 "Test Verifactu Setup"
     begin
         // [SCENARIO] Setup remains disabled when user declines consent
         Initialize();
+
+        // [GIVEN] Company Information has valid Post Code with Time Zone
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
 
         // [GIVEN] Verifactu Setup record exists
         CreateVerifactuSetup(VerifactuSetup);
@@ -212,6 +227,9 @@ codeunit 148003 "Test Verifactu Setup"
         // [SCENARIO] Verifactu Setup can be enabled when SII Setup is disabled
         IsInitialized := false;
         Initialize();
+
+        // [GIVEN] Company Information has valid Post Code with Time Zone
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
 
         // [GIVEN] SII Setup exists and is enabled
         CreateSIISetup(SIISetup, true);
@@ -247,6 +265,9 @@ codeunit 148003 "Test Verifactu Setup"
         IsInitialized := false;
         Initialize();
 
+        // [GIVEN] Company Information has valid Post Code with Time Zone
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
+
         // [GIVEN] SII Setup exists and is enabled
         CreateSIISetup(SIISetup, true);
 
@@ -280,6 +301,9 @@ codeunit 148003 "Test Verifactu Setup"
         // [SCENARIO] SII Setup can be enabled when Verifactu Setup is disabled
         IsInitialized := false;
         Initialize();
+
+        // [GIVEN] Company Information has valid Post Code with Time Zone
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
 
         // [GIVEN] Verifactu Setup exists and is enabled
         CreateVerifactuSetup(VerifactuSetup);
@@ -316,6 +340,9 @@ codeunit 148003 "Test Verifactu Setup"
         IsInitialized := false;
         Initialize();
 
+        // [GIVEN] Company Information has valid Post Code with Time Zone
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
+
         // [GIVEN] Verifactu Setup exists and is enabled
         CreateVerifactuSetup(VerifactuSetup);
         CertCode := CreateCertificate(IsolatedCertificate);
@@ -335,6 +362,83 @@ codeunit 148003 "Test Verifactu Setup"
         Assert.IsFalse(SIISetup.Enabled, 'SII Setup should remain disabled when Verifactu Setup is enabled');
         VerifactuSetup.Get();
         Assert.IsTrue(VerifactuSetup.Enabled, 'Verifactu Setup should remain enabled');
+    end;
+
+    [Test]
+    procedure EnableSetupFailsWhenPostCodeTimeZoneIsBlank()
+    var
+        VerifactuSetup: Record "Verifactu Setup";
+        IsolatedCertificate: Record "Isolated Certificate";
+        CertCode: Code[20];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 622986] Verifactu Setup cannot be enabled when Post Code Time Zone is blank
+        Initialize();
+
+        // [GIVEN] Company Information has Post Code "PC" and City set with blank Time Zone
+        SetupCompanyInfoWithPostCode('');
+
+        // [GIVEN] Verifactu Setup record exists with valid certificate "C"
+        CreateVerifactuSetup(VerifactuSetup);
+        CertCode := CreateCertificate(IsolatedCertificate);
+        VerifactuSetup."Certificate Code" := CertCode;
+        VerifactuSetup.Modify(true);
+
+        // [WHEN] User attempts to enable Verifactu Setup
+        asserterror VerifactuSetup.Validate(Enabled, true);
+
+        // [THEN] Error is raised about missing Time Zone
+        Assert.ExpectedError('Time Zone');
+        Assert.ExpectedErrorCode('Dialog');
+    end;
+
+    [Test]
+    [HandlerFunctions('CustomerConsentConfirmationPageChooseYesModalPageHandler')]
+    procedure EnableSetupSucceedsWithValidCompanyInfo()
+    var
+        VerifactuSetup: Record "Verifactu Setup";
+        IsolatedCertificate: Record "Isolated Certificate";
+        CertCode: Code[20];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 622986] Verifactu Setup enables successfully with valid Company Information
+        Initialize();
+
+        // [GIVEN] Company Information has Post Code "PC" with Time Zone set
+        SetupCompanyInfoWithPostCode('Romance Standard Time');
+
+        // [GIVEN] Verifactu Setup record exists with valid certificate "C"
+        CreateVerifactuSetup(VerifactuSetup);
+        CertCode := CreateCertificate(IsolatedCertificate);
+        VerifactuSetup.Validate("Certificate Code", CertCode);
+        VerifactuSetup.Modify(true);
+
+        // [WHEN] User enables Verifactu Setup
+        VerifactuSetup.Validate(Enabled, true);
+        VerifactuSetup.Modify(true);
+
+        // [THEN] Enabled field is set to true
+        Assert.IsTrue(VerifactuSetup.Enabled, 'Setup should be enabled with valid Company Information');
+    end;
+
+    [Test]
+    procedure CheckCompanyInfoFailsWhenTimeZoneClearedAfterEnable()
+    var
+        Verifactu: Codeunit Verifactu;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 622986] CheckCompanyInformation fails when Post Code Time Zone is cleared after Verifactu was enabled
+        Initialize();
+
+        // [GIVEN] Company Information has Post Code "PC" with blank Time Zone
+        SetupCompanyInfoWithPostCode('');
+
+        // [WHEN] CheckCompanyInformation is called
+        asserterror Verifactu.CheckCompanyInformation();
+
+        // [THEN] Error is raised about missing Time Zone
+        Assert.ExpectedError('Time Zone');
+        Assert.ExpectedErrorCode('Dialog');
     end;
 
     local procedure Initialize()
@@ -390,6 +494,30 @@ codeunit 148003 "Test Verifactu Setup"
     local procedure VerifySetupRecordExists(var VerifactuSetup: Record "Verifactu Setup")
     begin
         Assert.IsTrue(VerifactuSetup.Get(), 'Verifactu Setup record should exist');
+    end;
+
+    local procedure SetupCompanyInfoWithPostCode(TimeZone: Text[180])
+    var
+        CompanyInformation: Record "Company Information";
+        PostCode: Record "Post Code";
+        PostCodeValue: Code[20];
+        CityValue: Text[30];
+    begin
+        PostCodeValue := CopyStr(LibraryRandom.RandText(20), 1, MaxStrLen(PostCodeValue));
+        CityValue := CopyStr(LibraryRandom.RandText(30), 1, MaxStrLen(CityValue));
+
+        CompanyInformation.Get();
+        CompanyInformation."Post Code" := PostCodeValue;
+        CompanyInformation.City := CityValue;
+        CompanyInformation.Modify();
+
+        if PostCode.Get(PostCodeValue, CityValue) then
+            PostCode.Delete();
+        PostCode.Init();
+        PostCode.Code := PostCodeValue;
+        PostCode.City := CityValue;
+        PostCode."Time Zone" := TimeZone;
+        PostCode.Insert();
     end;
 
     [ModalPageHandler]

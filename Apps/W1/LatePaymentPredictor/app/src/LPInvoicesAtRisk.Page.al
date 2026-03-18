@@ -64,6 +64,7 @@ page 1954 "LP - Invoices at Risk"
                 }
                 field("Prediction Confidence %"; Rec."Prediction Confidence %")
                 {
+                    AutoFormatType = 0;
                     ApplicationArea = All;
                     ToolTip = 'Specifies the confidence level of the payment prediction.';
                 }

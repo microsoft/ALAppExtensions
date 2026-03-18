@@ -113,6 +113,7 @@ tableextension 11709 "Item Journal Line CZL" extends "Item Journal Line"
         }
         field(11765; "Additional Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Additional Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;

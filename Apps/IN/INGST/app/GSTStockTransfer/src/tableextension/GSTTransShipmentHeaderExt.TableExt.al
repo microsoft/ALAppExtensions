@@ -31,6 +31,7 @@ tableextension 18396 "GST Trans. Shipment Header Ext" extends "Transfer Shipment
         }
         field(18393; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
         }

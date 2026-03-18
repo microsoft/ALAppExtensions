@@ -60,7 +60,7 @@ codeunit 5205 "Create Country/Region"
         ContosoCountryOrRegion.InsertCountryOrRegion(MY(), MalaysiaLbl, '458', '', '', Enum::"Country/Region Address Format"::"Post Code+City", 1, '', '');
         ContosoCountryOrRegion.InsertCountryOrRegion(MZ(), MozambiqueLbl, '508', '', '', Enum::"Country/Region Address Format"::"Post Code+City", 1, '', '');
         ContosoCountryOrRegion.InsertCountryOrRegion(NG(), NigeriaLbl, '566', '', '', Enum::"Country/Region Address Format"::"City+Post Code", 1, '', '');
-        ContosoCountryOrRegion.InsertCountryOrRegion(NI(), NothernIrelandLbl, CopyStr(GB(), 1, 2), '826', GBNTok, GBNTok, Enum::"Country/Region Address Format"::"City+County+Post Code", 1, '9932', '');
+        ContosoCountryOrRegion.InsertCountryOrRegion(NI(), NorthernIrelandLbl, CopyStr(GB(), 1, 2), '826', XITok, XITok, Enum::"Country/Region Address Format"::"City+County+Post Code", 1, '9932', '');
         ContosoCountryOrRegion.InsertCountryOrRegion(NL(), NetherlandsLbl, '528', NLTok, NLTok, Enum::"Country/Region Address Format"::"Post Code+City", 1, '9944', '');
         ContosoCountryOrRegion.InsertCountryOrRegion(NO(), NorwayLbl, '578', '', '', Enum::"Country/Region Address Format"::"Post Code+City", 1, '0192', '');
         ContosoCountryOrRegion.InsertCountryOrRegion(NZ(), NewZealandLbl, '554', '', '', Enum::"Country/Region Address Format"::"City+Post Code", 1, '', '');
@@ -497,7 +497,7 @@ codeunit 5205 "Create Country/Region"
         VUTok: Label 'VU', MaxLength = 10, Locked = true;
         WSTok: Label 'WS', MaxLength = 10, Locked = true;
         ZATok: Label 'ZA', MaxLength = 10, Locked = true;
-        GBNTok: Label 'GBN', MaxLength = 10, Locked = true;
+        XITok: Label 'XI', MaxLength = 10, Locked = true;
         UnitedArabEmiratesLbl: Label 'United Arab Emirates', MaxLength = 50;
         AustriaLbl: Label 'Austria', MaxLength = 50;
         AustraliaLbl: Label 'Australia', MaxLength = 50;
@@ -540,7 +540,7 @@ codeunit 5205 "Create Country/Region"
         MalaysiaLbl: Label 'Malaysia', MaxLength = 50;
         MozambiqueLbl: Label 'Mozambique', MaxLength = 50;
         NigeriaLbl: Label 'Nigeria', MaxLength = 50;
-        NothernIrelandLbl: Label 'Nothern Ireland', MaxLength = 50;
+        NorthernIrelandLbl: Label 'Northern Ireland', MaxLength = 50;
         NetherlandsLbl: Label 'Netherlands', MaxLength = 50;
         NorwayLbl: Label 'Norway', MaxLength = 50;
         NewZealandLbl: Label 'New Zealand', MaxLength = 50;

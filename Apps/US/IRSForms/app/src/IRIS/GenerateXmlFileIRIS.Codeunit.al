@@ -17,7 +17,7 @@ codeunit 10033 "Generate Xml File IRIS"
 
     var
         Helper: Codeunit "Helper IRIS";
-        KeyVaultClient: Codeunit "Key Vault Client IRIS";
+        IRSFormsFacade: Codeunit "IRS Forms Facade";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         SubmissionIdGlobal: Integer;
         RecordIdGlobal: Integer;
@@ -147,7 +147,7 @@ codeunit 10033 "Generate Xml File IRIS"
         AddTransmitterInfo();
 
         Helper.AppendXmlNode('VendorCd', 'I');
-        Helper.AppendXmlNode('SoftwareId', KeyVaultClient.GetSoftwareId());
+        Helper.AppendXmlNode('SoftwareId', IRSFormsFacade.GetSoftwareId());
 
 
         Helper.AppendXmlNode('TotalIssuerFormCnt', 'N');            // updated after all forms are added
@@ -176,7 +176,7 @@ codeunit 10033 "Generate Xml File IRIS"
         GetMicrosoftData(TIN, CompanyName, StreetAddress, CityName, StateCode, PostCode, ContactName, ContactEmail, ContactPhone);
         Helper.AppendXmlNode('TIN', Helper.FormatTIN(TIN));
         Helper.AppendXmlNode('TINSubmittedTypeCd', 'BUSINESS_TIN');
-        Helper.AppendXmlNode('TransmitterControlCd', KeyVaultClient.GetTCC());
+        Helper.AppendXmlNode('TransmitterControlCd', IRSFormsFacade.GetTCC());
         Helper.AppendXmlNode('ForeignEntityInd', '0');
 
         AddBusinessName(CompanyName);
@@ -328,7 +328,7 @@ codeunit 10033 "Generate Xml File IRIS"
         ContactPerson := Helper.FormatContactPersonName(CompanyInformation."Contact Person");
         PhoneNo := Helper.FormatPhoneNumber(CompanyInformation."Phone No.");
         Email := CompanyInformation."E-Mail";
-        if (ContactPerson = '') and (PhoneNo = '') and (Email = '') then
+        if ContactPerson = '' then
             exit;
 
         Helper.AddParentXmlNode('ContactPersonInformationGrp');
@@ -387,7 +387,7 @@ codeunit 10033 "Generate Xml File IRIS"
 
         AddRecipientDetails(Vendor);
 
-        Helper.AppendXmlNode('RecipientAccountNum', GetVendorBankAccountNo(Vendor));
+        Helper.AppendXmlNode('RecipientAccountNum', Helper.GetVendorBankAccountNo(Vendor));
 
         CalcFormTotalAmounts(TempIRS1099FormDocHeader, TotalAmounts);
         GetFormBoxAmtXmlElemNamesAndValues(TempIRS1099FormDocHeader, TotalAmounts, FormBoxAmtXmlElemNamesValues);
@@ -585,6 +585,7 @@ codeunit 10033 "Generate Xml File IRIS"
     var
         AddressLine1: Text;
         AddressLine2: Text;
+        FormattedStateCode: Text;
     begin
         Helper.AddParentXmlNode(AddressTagName);
         Helper.AddParentXmlNode(Format(Enum::"Address Type IRIS"::USAddress));
@@ -593,7 +594,8 @@ codeunit 10033 "Generate Xml File IRIS"
         Helper.AppendXmlNode('AddressLine1Txt', AddressLine1);
         Helper.AppendXmlNode('AddressLine2Txt', AddressLine2);
         Helper.AppendXmlNode('CityNm', Helper.FormatCityName(CityName, Enum::"Address Type IRIS"::USAddress));
-        Helper.AppendXmlNode('StateAbbreviationCd', Format(StateCode));
+        Helper.MatchStateCode(StateCode, FormattedStateCode);
+        Helper.AppendXmlNode('StateAbbreviationCd', FormattedStateCode);
         Helper.AppendXmlNode('ZIPCd', Helper.FormatZipCode(PostCode));
 
         Helper.CloseParentXmlNode();
@@ -636,7 +638,7 @@ codeunit 10033 "Generate Xml File IRIS"
 
     local procedure GetTestFileIndicator(): Text[1]
     begin
-        if KeyVaultClient.TestMode() then
+        if IRSFormsFacade.TestMode() then
             exit('T');  // T for Test
 
         exit('P');  // P for Production
@@ -672,20 +674,6 @@ codeunit 10033 "Generate Xml File IRIS"
             until TempIRS1099FormDocHeader.Next() = 0;
 
         exit(VendorNos.Keys());
-    end;
-
-    local procedure GetVendorBankAccountNo(var Vendor: Record Vendor) BankAccountNo: Text
-    var
-        VendorBankAccount: Record "Vendor Bank Account";
-    begin
-        if Vendor."Preferred Bank Account Code" <> '' then begin
-            VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code");
-            BankAccountNo := VendorBankAccount.GetBankAccountNo();
-        end;
-
-        BankAccountNo := Helper.FormatText(BankAccountNo);
-        if StrLen(BankAccountNo) > 30 then
-            BankAccountNo := '';
     end;
 
     local procedure CalcFormTotalAmounts(var TempIRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header" temporary; var TotalAmounts: Dictionary of [Text, Decimal])
@@ -835,7 +823,7 @@ codeunit 10033 "Generate Xml File IRIS"
         StateCode := 'WA';
         PostCode := '98052';
 
-        KeyVaultClient.GetContactInfo(ContactName, ContactEmail, ContactPhone);
+        IRSFormsFacade.GetContactInfo(ContactName, ContactEmail, ContactPhone);
     end;
 
     procedure CreateGetStatusRequest(SearchParamType: Enum "Search Param Type IRIS"; SearchId: Text; var TempBlob: Codeunit "Temp Blob")
@@ -846,7 +834,7 @@ codeunit 10033 "Generate Xml File IRIS"
             Error(EmptySearchIdErr);
 
         InitGetStatusDocElement();
-        Helper.AppendXmlNode('TransmitterControlCd', KeyVaultClient.GetTCC());
+        Helper.AppendXmlNode('TransmitterControlCd', IRSFormsFacade.GetTCC());
         Helper.AppendXmlNode('SearchTypeCd', 'S');      // S - Status request (status only)
         Helper.AppendXmlNode('SearchParameterTypeCd', Format(SearchParamType));
         Helper.AppendXmlNode('SearchId', SearchId);
@@ -865,7 +853,7 @@ codeunit 10033 "Generate Xml File IRIS"
             Error(EmptySearchIdErr);
 
         InitGetStatusDocElement();
-        Helper.AppendXmlNode('TransmitterControlCd', KeyVaultClient.GetTCC());
+        Helper.AppendXmlNode('TransmitterControlCd', IRSFormsFacade.GetTCC());
         Helper.AppendXmlNode('SearchTypeCd', 'A');      // A - Acknowledgement request (status and errors)
         Helper.AppendXmlNode('SearchParameterTypeCd', Format(SearchParamType));
         Helper.AppendXmlNode('SearchId', SearchId);

@@ -97,7 +97,6 @@ codeunit 27054 "CA Contoso Localization"
                     Codeunit.Run(Codeunit::"Create CA Column Layout");
                     CreateCATaxArea.UpdateTaxAreaOnCompanyInformation();
                     CreateCAGeneralLedgerSetup.UpdateMaxVATDifferenceAllowedOnGeneralLedgerSetup();
-                    Codeunit.Run(Codeunit::"Create Allocation Account CA");
                 end;
         end;
     end;
@@ -204,6 +203,8 @@ codeunit 27054 "CA Contoso Localization"
                 BindSubscription(CreateCANoSeriesLine);
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account CA");
                     BindSubscription(CreateCAGenJournalTemplate);
                     BindSubscription(CreateCACurrency);
                     BindSubscription(CreateCACurrExchRate);
@@ -224,7 +225,8 @@ codeunit 27054 "CA Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateCAItemJnlTemplate);
-                    BindSubscription(CreateCAItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateCAItem);
                     BindSubscription(CreateCAItemCharge);
                     BindSubscription(CreateCALocation);
                 end;
@@ -289,7 +291,8 @@ codeunit 27054 "CA Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnBindSubscription(CreateCAItemJnlTemplate);
-                    UnBindSubscription(CreateCAItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnBindSubscription(CreateCAItem);
                     UnBindSubscription(CreateCAItemCharge);
                     UnBindSubscription(CreateCALocation);
                 end;

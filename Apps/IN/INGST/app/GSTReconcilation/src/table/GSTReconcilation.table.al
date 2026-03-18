@@ -79,6 +79,8 @@ table 18280 "GST Reconcilation"
         }
         field(6; "GST Recon. Tolerance"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Recon. Tolerance';
             DataClassification = CustomerContent;
         }

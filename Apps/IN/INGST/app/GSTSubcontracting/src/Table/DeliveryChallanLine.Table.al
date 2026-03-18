@@ -55,6 +55,7 @@ table 18469 "Delivery Challan Line"
         }
         field(10; "Prod. BOM Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = Sum(
                 "Prod. Order Component"."Expected Quantity"
                 where(Status = const(Released),
@@ -67,18 +68,21 @@ table 18469 "Delivery Challan Line"
         }
         field(11; "Quantity To Send"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity To Send';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(12; "Quantity (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity (Base)';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(13; "Quantity To Send (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity To Send (Base)';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -116,6 +120,7 @@ table 18469 "Delivery Challan Line"
         }
         field(20; "Scrap %"; Decimal)
         {
+            AutoFormatType = 0;
             BlankNumbers = BlankNeg;
             Caption = 'Scrap %';
             DataClassification = CustomerContent;
@@ -139,6 +144,7 @@ table 18469 "Delivery Challan Line"
         }
         field(40; Length; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Length';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 5;
@@ -150,6 +156,7 @@ table 18469 "Delivery Challan Line"
         }
         field(41; Width; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Width';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 5;
@@ -161,6 +168,7 @@ table 18469 "Delivery Challan Line"
         }
         field(42; Weight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Weight';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 5;
@@ -172,6 +180,7 @@ table 18469 "Delivery Challan Line"
         }
         field(43; Depth; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Depth';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 5;
@@ -206,6 +215,7 @@ table 18469 "Delivery Challan Line"
         }
         field(45; "Quantity per"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity per';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 5;
@@ -252,6 +262,7 @@ table 18469 "Delivery Challan Line"
         }
         field(52; "Quantity at Vendor Location"; Decimal)
         {
+            AutoFormatType = 0;
             CalcFormula = Sum(
                 "Item Ledger Entry"."Remaining Quantity"
                 where("Item No." = field("Item No."),
@@ -262,6 +273,7 @@ table 18469 "Delivery Challan Line"
         }
         field(53; "Total Scrap Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Scrap Quantity';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -283,12 +295,14 @@ table 18469 "Delivery Challan Line"
         }
         field(56; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
         }
         field(57; "Remaining Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             FieldClass = FlowField;
             CalcFormula = Sum(
                 "Item Ledger Entry"."Remaining Quantity"
@@ -302,6 +316,7 @@ table 18469 "Delivery Challan Line"
         }
         field(58; "Components in Rework Qty."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Components in Rework Qty.';
             DecimalPlaces = 0 : 3;
             DataClassification = CustomerContent;
@@ -350,6 +365,8 @@ table 18469 "Delivery Challan Line"
         }
         field(93; "ADC VAT Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'ADC VAT Amount';
             DataClassification = CustomerContent;
             Editable = false;
@@ -385,23 +402,31 @@ table 18469 "Delivery Challan Line"
         }
         field(104; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(105; "Total GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total GST Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(106; "GST Liability Created"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Liability Created';
             DataClassification = CustomerContent;
         }
         field(109; "GST Amount Remaining"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Amount Remaining';
             DataClassification = CustomerContent;
         }

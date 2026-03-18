@@ -15,6 +15,8 @@ pageextension 31198 "Cash Flow Forecast Stat. CZZ" extends "Cash Flow Forecast S
         {
             field(SalesAdvancesCZZ; Rec.CalcSourceTypeAmount(Enum::"Cash Flow Source Type"::"Sales Advance Letters CZZ"))
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Caption = 'Sales Advances';
                 ToolTip = 'Specifies an amount of sales advances';
@@ -26,6 +28,8 @@ pageextension 31198 "Cash Flow Forecast Stat. CZZ" extends "Cash Flow Forecast S
             }
             field(PurchaseAdvancesCZZ; Rec.CalcSourceTypeAmount(Enum::"Cash Flow Source Type"::"Purchase Advance Letters CZZ"))
             {
+                AutoFormatType = 1;
+                AutoFormatExpression = '';
                 ApplicationArea = Basic, Suite;
                 Caption = 'Purchase Advances';
                 ToolTip = 'Specifies an amount of purchase advances';

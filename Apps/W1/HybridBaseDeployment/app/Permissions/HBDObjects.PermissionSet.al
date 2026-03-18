@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.DataMigration;
 
 permissionset 4006 "HBD - Objects"
@@ -9,5 +14,14 @@ permissionset 4006 "HBD - Objects"
     Permissions = page "Hybrid DA Approval" = X,
                   page "Add Migration Table Mappings" = X,
                   table "Hybrid Company Status" = X,
-                  table "Hybrid DA Approval" = X;
+                  table "Hybrid DA Approval" = X,
+                  table "Migration Validation Error" = X,
+                  page "Migration Validation Errors" = X,
+                  codeunit "Migration Validation Assert" = X,
+                  codeunit "Migration Validation" = X,
+                  table "Validation Suite" = X,
+                  table "Validation Suite Line" = X,
+                  page "Migration Validation Results" = X,
+                  table "Validation Progress" = X,
+                  codeunit "Migration Validator Warning" = X;
 }

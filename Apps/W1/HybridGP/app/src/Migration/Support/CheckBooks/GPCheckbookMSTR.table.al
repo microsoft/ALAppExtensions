@@ -53,6 +53,7 @@ table 40099 "GP Checkbook MSTR"
         }
         field(12; MXCHDLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(13; DUPCHNUM; Boolean)
@@ -69,6 +70,7 @@ table 40099 "GP Checkbook MSTR"
         }
         field(16; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(17; CMUSRDF1; Text[21])
@@ -85,10 +87,12 @@ table 40099 "GP Checkbook MSTR"
         }
         field(20; Last_Reconciled_Balance; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(21; CURRBLNC; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(22; CREATDDT; Date)
@@ -105,6 +109,7 @@ table 40099 "GP Checkbook MSTR"
         }
         field(25; Reconcile_In_Progress; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(26; Deposit_In_Progress; Text[21])
@@ -125,6 +130,7 @@ table 40099 "GP Checkbook MSTR"
         }
         field(30; ADPVADLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(31; ADPVAPWD; Text[11])

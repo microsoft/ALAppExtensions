@@ -93,7 +93,7 @@ xmlport 147608 "SL AcctHist Data"
                         currXMLport.Skip();
                     end;
 
-                    SLAcctHist.CpnyID := CpnyID;
+                    SLAcctHist.CpnyID := CopyStr(CpnyID, 1, MaxStrLen(SLAcctHist.CpnyID));
                     SLAcctHist.Acct := Acct;
                     SLAcctHist.Sub := Sub;
                     SLAcctHist.LedgerID := LedgerID;

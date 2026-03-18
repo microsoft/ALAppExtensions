@@ -112,7 +112,7 @@ codeunit 5239 "Contoso Account Schedule"
         InsertAccScheduleName(Name, Description, AnalysisViewName, '');
     end;
 
-    procedure InsertAccScheduleName(Name: Code[10]; Description: Text[80]; AnalysisViewName: Code[10]; InternalDescription: Code[250])
+    procedure InsertAccScheduleName(Name: Code[10]; Description: Text[80]; AnalysisViewName: Code[10]; InternalDescription: Text[500])
     var
         AccScheduleName: Record "Acc. Schedule Name";
         Exists: Boolean;
@@ -140,7 +140,7 @@ codeunit 5239 "Contoso Account Schedule"
         InsertColumnLayoutName(Name, Description, '');
     end;
 
-    procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80]; InternalDescription: Text[250])
+    procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80]; InternalDescription: Text[500])
     var
         ColumnLayoutName: Record "Column Layout Name";
         Exists: Boolean;
@@ -266,7 +266,7 @@ codeunit 5239 "Contoso Account Schedule"
         InsertFinancialReport(Name, Description, FinancialReportRowGrp, FinancialReportColumnGrp, '');
     end;
 
-    procedure InsertFinancialReport(Name: Code[10]; Description: Text[80]; FinancialReportRowGrp: Code[10]; FinancialReportColumnGrp: Code[10]; InternalDescription: Text[250])
+    procedure InsertFinancialReport(Name: Code[10]; Description: Text[80]; FinancialReportRowGrp: Code[10]; FinancialReportColumnGrp: Code[10]; InternalDescription: Text[500])
     var
         FinancialReport: Record "Financial Report";
         Exists: Boolean;

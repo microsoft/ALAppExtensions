@@ -49,6 +49,7 @@ permissionset 11752 "CZ Advance Payments - Obj. CZZ"
                   Codeunit "Sales Post Advance Letter CZZ" = X,
                   Codeunit "Show Preview Handler CZZ" = X,
                   Codeunit "Sugg. Wksh. Lines Handler CZZ" = X,
+                  Codeunit "Update Rel.Vend.Ledg.Entry CZZ" = X,
                   Codeunit "Upgrade Application CZZ" = X,
                   Codeunit "Upgrade Tag Definitions CZZ" = X,
                   Codeunit "VAT Entry Handler CZZ" = X,

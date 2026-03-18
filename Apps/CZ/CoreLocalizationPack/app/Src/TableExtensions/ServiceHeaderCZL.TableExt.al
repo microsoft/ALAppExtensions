@@ -8,9 +8,6 @@ using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.VAT.Calculation;
-#if not CLEAN26
-using Microsoft.Foundation.Address;
-#endif
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
@@ -157,6 +154,7 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
         }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;
@@ -301,23 +299,6 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
         "SWIFT Code CZL" := SWIFTCode;
         OnAfterUpdateBankInfoCZL(Rec);
     end;
-#if not CLEAN26
-    [Obsolete('Pending removal. Use IsIntrastatTransaction from Intrastat Core extension instead.', '26.0')]
-    procedure IsIntrastatTransactionCZL(): Boolean
-    var
-        CountryRegion: Record "Country/Region";
-        IsHandled: Boolean;
-        Result: Boolean;
-    begin
-        OnBeforeIsIntrastatTransactionCZL(Rec, Result, IsHandled);
-        if IsHandled then
-            exit(Result);
-
-        if "EU 3-Party Trade" then
-            exit(false);
-        exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
-    end;
-#endif
 
     procedure GetDefaulBankAccountNoCZL() BankAccountNo: Code[20]
     var
@@ -398,13 +379,6 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
     local procedure OnBeforeGetDefaulBankAccountNoCZL(var ServiceHeader: Record "Service Header"; var BankAccountNo: Code[20]; var IsHandled: Boolean);
     begin
     end;
-#if not CLEAN26
-    [Obsolete('Pending removal. Use OnBeforeCheckIsIntrastatTransaction from Intrastat Core extension instead.', '26.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnBeforeIsIntrastatTransactionCZL(ServiceHeader: Record "Service Header"; var Result: Boolean; var IsHandled: Boolean)
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeConfirmProcessCZL(ConfirmQuestion: Text; var IsHandled: Boolean);

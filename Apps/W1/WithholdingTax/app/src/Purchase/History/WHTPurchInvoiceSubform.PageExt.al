@@ -22,7 +22,7 @@ pageextension 6789 "WHT Purch. Invoice Subform" extends "Purch. Invoice Subform"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the Withholding Tax Product Posting Group is assigned from the Product Entity selected in Purchase Line.';
-                Visible = false;
+                Visible = true;
             }
         }
         addafter("Line Amount")

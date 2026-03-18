@@ -33,52 +33,32 @@ tableextension 31326 "Intrastat Report Setup CZ" extends "Intrastat Report Setup
             Caption = 'Transaction Type Mandatory';
             DataClassification = CustomerContent;
             ObsoleteReason = 'Use "Transaction Type Mandatory" from Intrastat Core extension instead.';
-#if CLEAN26            
             ObsoleteState = Removed;
             ObsoleteTag = '29.0';
-#else            
-            ObsoleteState = Pending;
-            ObsoleteTag = '26.0';
-#endif            
         }
         field(31306; "Transaction Spec. Mandatory CZ"; Boolean)
         {
             Caption = 'Transaction Spec. Mandatory';
             DataClassification = CustomerContent;
             ObsoleteReason = 'Use "Transaction Spec. Mandatory" from Intrastat Core extension instead.';
-#if CLEAN26            
             ObsoleteState = Removed;
             ObsoleteTag = '29.0';
-#else            
-            ObsoleteState = Pending;
-            ObsoleteTag = '26.0';
-#endif            
         }
         field(31307; "Transport Method Mandatory CZ"; Boolean)
         {
             Caption = 'Transport Method Mandatory';
             DataClassification = CustomerContent;
             ObsoleteReason = 'Use "Transport Method Mandatory" from Intrastat Core extension instead.';
-#if CLEAN26            
             ObsoleteState = Removed;
             ObsoleteTag = '29.0';
-#else            
-            ObsoleteState = Pending;
-            ObsoleteTag = '26.0';
-#endif            
         }
         field(31308; "Shipment Method Mandatory CZ"; Boolean)
         {
             Caption = 'Shipment Method Mandatory';
             DataClassification = CustomerContent;
             ObsoleteReason = 'Use "Shipment Method Mandatory" from Intrastat Core extension instead.';
-#if CLEAN26            
             ObsoleteState = Removed;
             ObsoleteTag = '29.0';
-#else            
-            ObsoleteState = Pending;
-            ObsoleteTag = '26.0';
-#endif            
         }
 #endif        
         field(31310; "Intrastat Rounding Type CZ"; Enum "Intrastat Rounding Type CZ")
@@ -90,6 +70,16 @@ tableextension 31326 "Intrastat Report Setup CZ" extends "Intrastat Report Setup
         {
             Caption = 'Default Phys. Trans. - Returns';
             DataClassification = CustomerContent;
+        }
+        field(31320; "Min. Tol. Fair Market Value CZ"; Decimal)
+        {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
+            Caption = 'Minimum Tolerance from Fair Market Value (%)';
+            DataClassification = CustomerContent;
+            MinValue = 0;
+            MaxValue = 100;
+            ToolTip = 'Specifies the minimum percentage tolerance at which the system replaces the sales or purchase price from the item ledger entries with the fair market value entered on the item card when generating Intrastat line suggestions. This tolerance is evaluated during the Intrastat report line creation process.';
         }
     }
 

@@ -199,4 +199,14 @@ codeunit 11367 "Create Currency Ex. Rate BE"
         CurrencyExchangeRate.Validate("Relational Exch. Rate Amount", RelationalExchRateAmount);
         CurrencyExchangeRate.Validate("Relational Adjmt Exch Rate Amt", RelationalAdjmtExchRateAmt);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Add. Reporting Currency", OnBeforeGetResidualCurrencyAccounts, '', false, false)]
+    local procedure GetResidualCurrencyAccountsBE(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
+    var
+        CreateBEGLAccount: Codeunit "Create GL Account BE";
+    begin
+        FXGainsAccount := CreateBEGLAccount.RealizedExchRateDiffIncome();
+        FXLossesAccount := CreateBEGLAccount.RealizedExchRateDiffExpense();
+        IsHandled := true;
+    end;
 }

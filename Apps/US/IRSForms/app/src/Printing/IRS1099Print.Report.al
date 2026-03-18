@@ -128,7 +128,7 @@ report 10032 "IRS 1099 Print"
             }
         }
 
-        trigger OnOpenPage()
+        trigger OnInit()
         begin
             IRS1099FormReportType := IRS1099FormReportType::"Copy B";
         end;

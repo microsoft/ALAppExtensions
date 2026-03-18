@@ -99,10 +99,12 @@ table 6216 "Sustainability Ledger Entry"
         }
         field(17; "Installation Multiplier"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Installation Multiplier';
         }
         field(18; "Time Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Time Factor';
             MaxValue = 1;
         }
@@ -184,12 +186,15 @@ table 6216 "Sustainability Ledger Entry"
         }
         field(32; "CO2e Emission"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'CO2e Emission';
             DecimalPlaces = 2 : 5;
         }
         field(33; "Carbon Fee"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Carbon Fee';
             DecimalPlaces = 2 : 5;
@@ -257,16 +262,19 @@ table 6216 "Sustainability Ledger Entry"
         }
         field(5151; "Emission Factor CO2"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Emission Factor CO2';
             CaptionClass = '102,5,1';
         }
         field(5152; "Emission Factor CH4"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Emission Factor CH4';
             CaptionClass = '102,5,2';
         }
         field(5153; "Emission Factor N2O"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Emission Factor N2O';
             CaptionClass = '102,5,3';
         }

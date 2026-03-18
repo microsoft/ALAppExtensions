@@ -104,7 +104,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         SourceTableId: Integer;
     begin
         SourceTableId := Database::"SL GLSetup";
-        SLGLSetup.SetFilter(CpnyId, '= %1', CompanyName);
+        SLGLSetup.SetFilter(CpnyId, '= %1', GetCpnyID());
         if not SLGLSetup.FindSet() then
             exit;
 
@@ -129,7 +129,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         SourceTableId := Database::"SL GLTran Buffer";
         if InitialHistYear > 0 then
             SLGLTran.SetFilter(PerPost, '>= %1', Format(InitialHistYear));
-        SLGLTran.SetFilter(CpnyID, '= %1', CompanyName);
+        SLGLTran.SetFilter(CpnyID, '= %1', GetCpnyID());
         SLGLTran.SetFilter(Posted, '= %1', PostedTxt);
         if not SLGLTran.FindSet() then
             exit;
@@ -157,7 +157,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         SourceTableId := Database::"SL Batch";
         if InitialHistYear > 0 then
             SLBatch.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
-        SLBatch.SetFilter(CpnyID, '= %1', CompanyName);
+        SLBatch.SetFilter(CpnyID, '= %1', GetCpnyID());
         if not SLBatch.FindSet() then
             exit;
 
@@ -198,7 +198,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         SourceTableId := Database::"SL APDoc Buffer";
         if InitialHistYear > 0 then
             SLAPDoc.SetFilter(PerPost, '>= %1', Format(InitialHistYear));
-        SLAPDoc.SetFilter(CpnyID, '= %1', CompanyName);
+        SLAPDoc.SetFilter(CpnyID, '= %1', GetCpnyID());
         if not SLAPDoc.FindSet() then
             exit;
 
@@ -225,7 +225,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         SourceTableId := Database::"SL APTran Buffer";
         if InitialHistYear > 0 then
             SLAPTran.SetFilter(PerPost, '>= %1', Format(InitialHistYear));
-        SLAPTran.SetFilter(CpnyID, '= %1', CompanyName);
+        SLAPTran.SetFilter(CpnyID, '= %1', GetCpnyID());
         if not SLAPTran.FindSet() then
             exit;
 
@@ -295,7 +295,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         SourceTableId := Database::"SL ARDoc Buffer";
         if InitialHistYear > 0 then
             SLARDoc.SetFilter(PerPost, '>= %1', Format(InitialHistYear));
-        SLARDoc.SetFilter(CpnyID, '= %1', CompanyName);
+        SLARDoc.SetFilter(CpnyID, '= %1', GetCpnyID());
         if not SLARDoc.FindSet() then
             exit;
 
@@ -325,7 +325,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLARTran.SetFilter(TranDate, '>= %1', InitialYearDate);
 
-        SLARTran.SetFilter(CpnyID, '= %1', CompanyName);
+        SLARTran.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLARTran.FindSet() then
             exit;
@@ -382,7 +382,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLSOHeader.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
-        SLSOHeader.SetFilter(CpnyID, '= %1', CompanyName);
+        SLSOHeader.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLSOHeader.FindSet() then
             exit;
@@ -413,7 +413,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLSOLine.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
-        SLSOLine.SetFilter(CpnyID, '= %1', CompanyName);
+        SLSOLine.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLSOLine.FindSet() then
             exit;
@@ -444,7 +444,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLSOShipHeader.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
-        SLSOShipHeader.SetFilter(CpnyID, '= %1', CompanyName);
+        SLSOShipHeader.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLSOShipHeader.FindSet() then
             exit;
@@ -508,7 +508,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLSOType.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
-        SLSOType.SetFilter(CpnyID, '= %1', CompanyName);
+        SLSOType.SetFilter(CpnyID, '= %1', GetCpnyID());
         SLSOType.SetFilter(Active, '<> %1', Inactive);
 
         if not SLSOType.FindSet() then
@@ -551,7 +551,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLINTran.SetFilter(TranDate, '>= %1', InitialDateTime);
 
-        SLINTran.SetFilter(CpnyID, '= %1', CompanyName);
+        SLINTran.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLINTran.FindSet() then
             exit;
@@ -582,7 +582,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLLotSerT.SetFilter(TranDate, '>= %1', InitialDateTime);
 
-        SLLotSerT.SetFilter(CpnyID, '= %1', CompanyName);
+        SLLotSerT.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLLotSerT.FindSet() then
             exit;
@@ -626,7 +626,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLPOTran.SetFilter(TranDate, '>= %1', InitialDateTime);
 
-        SLPOTran.SetFilter(CpnyID, '= %1', CompanyName);
+        SLPOTran.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLPOTran.FindSet() then
             exit;
@@ -657,7 +657,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLPOReceipt.SetFilter(RcptDate, '>= %1', InitialDateTime);
 
-        SLPOReceipt.SetFilter(CpnyID, '= %1', CompanyName);
+        SLPOReceipt.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLPOReceipt.FindSet() then
             exit;
@@ -688,7 +688,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLPurOrdDet.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
-        SLPurOrdDet.SetFilter(CpnyID, '= %1', CompanyName);
+        SLPurOrdDet.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLPurOrdDet.FindSet() then
             exit;
@@ -719,7 +719,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLPurchOrd.SetFilter(PODate, '>= %1', InitialDateTime);
 
-        SLPurchOrd.SetFilter(CpnyID, '= %1', CompanyName);
+        SLPurchOrd.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLPurchOrd.FindSet() then
             exit;
@@ -790,6 +790,11 @@ codeunit 47025 "SL Populate Hist. Tables"
     begin
         if SLHistSourceError.Get(TableId, RecordId) then
             SLHistSourceError.Delete();
+    end;
+
+    internal procedure GetCpnyID(): Text[10]
+    begin
+        exit(CopyStr(CompanyName(), 1, 10));
     end;
 
     [IntegrationEvent(false, false)]

@@ -119,6 +119,7 @@ codeunit 31215 "Contoso CZ Localization"
                     CreateVatPostingGroupsCZ.InsertVATPostingSetupWithoutGLAccounts();
                     CreatePostingGroupsCZ.InsertGenPostingSetupWithoutGLAccounts();
                     Codeunit.Run(Codeunit::"Create G/L Account CZ");
+                    Codeunit.Run(Codeunit::"Create Deferral Template CZ");
                     CreateVatPostingGroupsCZ.UpdateVATPostingSetup();
                     CreateVatPostingGroupsCZ.DeleteVATClauses();
                     CreatePostingGroupsCZ.UpdateGenPostingSetup();
@@ -248,6 +249,7 @@ codeunit 31215 "Contoso CZ Localization"
                     Codeunit.Run(Codeunit::"Create FA Posting Group CZ");
                     Codeunit.Run(Codeunit::"Create FA Setup CZ");
                     CreateDepreciationBookCZ.DeleteDepreciationBooks();
+                    CreateDepreciationBookCZ.CreateFAJournalSetups();
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
@@ -303,7 +305,8 @@ codeunit 31215 "Contoso CZ Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    BindSubscription(CreateItemCZ);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemCZ);
                     BindSubscription(CreateInvtPostingSetupCZ);
                     BindSubscription(CreateItemChargeCZ);
                 end;
@@ -381,7 +384,8 @@ codeunit 31215 "Contoso CZ Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateItemCZ);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateItemCZ);
                     UnbindSubscription(CreateInvtPostingSetupCZ);
                     UnbindSubscription(CreateItemChargeCZ);
                 end;

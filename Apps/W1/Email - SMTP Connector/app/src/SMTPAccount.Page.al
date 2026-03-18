@@ -115,6 +115,7 @@ page 4512 "SMTP Account"
                         if AuthActionsVisible then
                             Message(EveryUserShouldPressAuthenticateMsg);
                         if Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0" then begin
+                            Rec.DeleteIsolatedStorageIfExists(Rec."Password Key");
                             Rec."Password Key" := EmptyGuid;
                             Password := '';
                             Rec.Modify();
@@ -172,6 +173,7 @@ page 4512 "SMTP Account"
                                 ClientId := '';
                                 ClientSecret := '';
                             end else begin
+                                Rec.DeleteIsolatedStorageIfExists(Rec."Password Key");
                                 Rec."Password Key" := EmptyGuid;
                                 Password := '';
                             end;
@@ -347,11 +349,11 @@ page 4512 "SMTP Account"
     begin
         Rec.SetCurrentKey(Name);
 
-        if not IsNullGuid(Rec."Password Key") then
+        if (not IsNullGuid(Rec."Password Key")) and (Rec."Authentication Type" <> Rec."Authentication Type"::"OAuth 2.0") and (Rec."Authentication Type" <> Rec."Authentication Type"::Anonymous) and IsolatedStorage.Contains(Format(Rec."Password Key"), DataScope::Company) then
             Password := SecrectContentLbl;
-        if not IsNullGuid(Rec."Client Id Storage Id") then
+        if (not IsNullGuid(Rec."Client Id Storage Id")) and IsolatedStorage.Contains(Format(Rec."Client Id Storage Id"), DataScope::Company) then
             ClientId := SecrectContentLbl;
-        if not IsNullGuid(Rec."Client Secret Storage Id") then
+        if (not IsNullGuid(Rec."Client Secret Storage Id")) and IsolatedStorage.Contains(Format(Rec."Client Secret Storage Id"), DataScope::Company) then
             ClientSecret := SecrectContentLbl;
         if not IsNullGuid(Rec."Tenant Id") then
             TenantId := SecrectContentLbl;

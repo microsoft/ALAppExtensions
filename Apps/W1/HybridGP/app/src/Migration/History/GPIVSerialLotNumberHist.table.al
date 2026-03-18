@@ -25,6 +25,7 @@ table 4038 "GPIVSerialLotNumberHist"
         }
         field(4; LNSEQNBR; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Line SEQ Number';
             DataClassification = CustomerContent;
         }
@@ -40,6 +41,7 @@ table 4038 "GPIVSerialLotNumberHist"
         }
         field(7; SERLTQTY; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Serial/Lot QTY';
             DataClassification = CustomerContent;
         }

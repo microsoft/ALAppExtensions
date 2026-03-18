@@ -234,6 +234,7 @@ table 6240 "Sust. Excise Jnl. Line"
                 Resource: Record Resource;
                 SustainabilityCertificate: Record "Sustainability Certificate";
                 SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
+                IsHandled: Boolean;
             begin
                 Rec.Validate("Source Description", '');
                 if Rec."Source No." = '' then begin
@@ -241,7 +242,10 @@ table 6240 "Sust. Excise Jnl. Line"
                     exit;
                 end;
 
-                Rec.TestField("Partner No.");
+                OnValidateSourceNoBeforeTestFieldPartnerNo(Rec, IsHandled);
+                if not IsHandled then
+                    Rec.TestField("Partner No.");
+
                 case "Source Type" of
                     Rec."Source Type"::Item:
                         begin
@@ -253,6 +257,8 @@ table 6240 "Sust. Excise Jnl. Line"
                             SustainabilityExciseJnlBatch.Get("Journal Template Name", "Journal Batch Name");
                             if SustainabilityExciseJnlBatch.Type = SustainabilityExciseJnlBatch.Type::EPR then
                                 Rec.Validate("Material Breakdown No.", Item."Material Composition No.");
+
+                            OnAfterCopyFromItem(Rec, Item);
                         end;
                     Rec."Source Type"::"G/L Account":
                         begin
@@ -265,6 +271,8 @@ table 6240 "Sust. Excise Jnl. Line"
                             FixedAsset.Get(Rec."Source No.");
 
                             Rec.Validate("Source Description", FixedAsset.Description);
+
+                            OnAfterCopyFromFixedAsset(Rec, FixedAsset);
                         end;
                     Rec."Source Type"::"Charge (Item)":
                         begin
@@ -326,6 +334,7 @@ table 6240 "Sust. Excise Jnl. Line"
         }
         field(24; "Source Qty."; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Source Qty.';
 
             trigger OnValidate()
@@ -384,6 +393,7 @@ table 6240 "Sust. Excise Jnl. Line"
         }
         field(28; "Material Breakdown Weight"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Material Breakdown Weight';
 
             trigger OnValidate()
@@ -816,6 +826,7 @@ table 6240 "Sust. Excise Jnl. Line"
     local procedure ValidateSustainabilityExciseJournalLineByField(SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line"; CurrentFieldNo: Integer)
     var
         SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
+        IsHandled: Boolean;
     begin
         case CurrentFieldNo of
             SustainabilityExciseJnlLine.FieldNo("Entry Type"),
@@ -824,14 +835,17 @@ table 6240 "Sust. Excise Jnl. Line"
                    (SustainabilityExciseJnlLine."Entry Type" <> SustainabilityExciseJnlLine."Entry Type"::" ") or
                    (SustainabilityExciseJnlLine."Document Type" <> SustainabilityExciseJnlLine."Document Type"::Journal) and
                    (SustainabilityExciseJnlLine."Entry Type" = SustainabilityExciseJnlLine."Entry Type"::" ")
-                then
-                    Error(
-                        UnsupportedEntryErr,
-                        SustainabilityExciseJnlLine.FieldCaption("Entry Type"),
-                        SustainabilityExciseJnlLine."Entry Type"::" ",
-                        SustainabilityExciseJnlLine.FieldCaption("Document Type"),
-                        SustainabilityExciseJnlLine."Document Type"::Journal);
-
+                then begin
+                    IsHandled := false;
+                    OnValidateSustainabilityExciseJournalLineByFieldOnBeforeShowUnsupportedEntryError(SustainabilityExciseJnlLine, CurrentFieldNo, IsHandled);
+                    if not IsHandled then
+                        Error(
+                            UnsupportedEntryErr,
+                            SustainabilityExciseJnlLine.FieldCaption("Entry Type"),
+                            SustainabilityExciseJnlLine."Entry Type"::" ",
+                            SustainabilityExciseJnlLine.FieldCaption("Document Type"),
+                            SustainabilityExciseJnlLine."Document Type"::Journal);
+                end;
             SustainabilityExciseJnlLine.FieldNo("Emission Cost per Unit"),
             SustainabilityExciseJnlLine.FieldNo("Total Emission Cost"),
             SustainabilityExciseJnlLine.FieldNo("CO2e Emission per Unit"):
@@ -917,6 +931,26 @@ table 6240 "Sust. Excise Jnl. Line"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterSetupNewLine(var SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line"; SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch"; PreviousSustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateSourceNoBeforeTestFieldPartnerNo(var SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromItem(var ExciseJournalLine: Record "Sust. Excise Jnl. Line"; Item: Record Item)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromFixedAsset(var ExciseJournalLine: Record "Sust. Excise Jnl. Line"; FixedAsset: Record "Fixed Asset")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateSustainabilityExciseJournalLineByFieldOnBeforeShowUnsupportedEntryError(var ExciseJournalLine: Record "Sust. Excise Jnl. Line"; CurrentFieldNo: Integer; var IsHandled: Boolean)
     begin
     end;
 }

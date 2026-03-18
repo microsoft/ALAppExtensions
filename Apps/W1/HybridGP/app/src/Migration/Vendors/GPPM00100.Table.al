@@ -25,6 +25,7 @@ table 40112 "GP PM00100"
         }
         field(5; MXINVAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(6; WRITEOFF; Integer)
@@ -45,14 +46,17 @@ table 40112 "GP PM00100"
         }
         field(10; MXWOFAMT; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(11; MINORDER; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(12; CRLMTDLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(13; PYMNTPRI; Text[3])
@@ -73,6 +77,7 @@ table 40112 "GP PM00100"
         }
         field(17; MINPYDLR; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(18; MINPYPCT; Integer)

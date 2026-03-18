@@ -40,7 +40,7 @@ codeunit 11508 "NL Contoso Localization"
         if Module = Enum::"Contoso Demo Data Module"::Purchase then
             SalesModule(ContosoDemoDataLevel);
 
-        UnbindSubscriptionDemoData(Module);
+        UnbindSubscriptionDemoData(ContosoDemoDataLevel, Module);
     end;
 
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
@@ -147,7 +147,7 @@ codeunit 11508 "NL Contoso Localization"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure OnBeforeGeneratingDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         CreateLocationNL: Codeunit "Create Location NL";
         CreateItemNL: Codeunit "Create Item NL";
@@ -181,6 +181,8 @@ codeunit 11508 "NL Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account NL");
                     BindSubscription(CreateCurrencyNL);
                     BindSubscription(CreateCurrencyExchRateNL);
                     BindSubscription(CreateResourceNL);
@@ -193,7 +195,8 @@ codeunit 11508 "NL Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    BindSubscription(CreateItemNL);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemNL);
                     BindSubscription(CreateLocationNL);
                     BindSubscription(CreateInvPostingSetupNL);
                 end;
@@ -214,7 +217,7 @@ codeunit 11508 "NL Contoso Localization"
         end;
     end;
 
-    local procedure UnbindSubscriptionDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure UnbindSubscriptionDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         CreateLocationNL: Codeunit "Create Location NL";
         CreateItemNL: Codeunit "Create Item NL";
@@ -260,7 +263,8 @@ codeunit 11508 "NL Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateItemNL);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateItemNL);
                     UnbindSubscription(CreateLocationNL);
                     UnbindSubscription(CreateInvPostingSetupNL);
                 end;

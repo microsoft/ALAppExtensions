@@ -24,6 +24,8 @@ tableextension 6789 "Withholding Purch. Line Ext" extends "Purchase Line"
         }
         field(6786; "Withholding Tax Absorb Base"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Withholding Tax Absorb Base';
             DataClassification = CustomerContent;
         }

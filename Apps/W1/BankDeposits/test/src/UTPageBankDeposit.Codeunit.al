@@ -897,7 +897,7 @@ codeunit 139768 "UT Page Bank Deposit"
         SetupBankDepositReports: Codeunit "Setup Bank Deposit Reports";
     begin
         LibraryVariableStorage.Clear();
-
+        ClearPostedData();
         if Initialized then
             exit;
 
@@ -908,6 +908,15 @@ codeunit 139768 "UT Page Bank Deposit"
         SetupBankDepositReports.InsertSetupData();
         OnAfterInitialize(InitializeHandled);
         Initialized := true;
+    end;
+
+    local procedure ClearPostedData()
+    var
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+    begin
+        PostedBankDepositHeader.DeleteAll();
+        PostedBankDepositLine.DeleteAll();
     end;
 
     local procedure CreateNewDepositTypeLineAndReopen(GenJournalBatch: Record "Gen. Journal Batch")

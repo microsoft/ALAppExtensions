@@ -106,6 +106,7 @@ page 31136 "VAT Statement Preview Line CZL"
                 {
                     ApplicationArea = VAT;
                     AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     BlankZero = true;
                     Caption = 'Column Amount';
                     DrillDown = true;

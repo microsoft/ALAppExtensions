@@ -97,10 +97,7 @@ codeunit 11113 "DE Contoso Localization"
                     Codeunit.Run(Codeunit::"Create DE Data Export Record");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create DE Currency Ex. Rate");
-                    Codeunit.Run(Codeunit::"Create Allocation Account DE");
-                end;
+                Codeunit.Run(Codeunit::"Create DE Currency Ex. Rate");
         end;
     end;
 
@@ -140,6 +137,8 @@ codeunit 11113 "DE Contoso Localization"
                         FinanceModuleSetup.InitRecord();
                         CreateDEVatPostingGroup.InsertVATProductPostingGroup();
                     end;
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account DE");
                     BindSubscription(CreateDEAccScheduleLine);
                     BindSubscription(CreateDEAnalysisView);
                     BindSubscription(CreateDECurrencyExRate);

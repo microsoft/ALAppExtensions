@@ -33,6 +33,8 @@ table 31091 "Commodity Setup CZL"
         }
         field(4; "Commodity Limit Amount LCY"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Commodity Limit Amount LCY';
             DataClassification = CustomerContent;
         }

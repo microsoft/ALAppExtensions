@@ -84,7 +84,7 @@ page 6255 "Sust. ESG Reporting Prev. Line"
                 field(ColumnValue; ColumnValue)
                 {
                     ApplicationArea = Basic, Suite;
-                    AutoFormatType = 1;
+                    AutoFormatType = 0;
                     BlankZero = true;
                     Caption = 'Column Amount';
                     DrillDown = true;

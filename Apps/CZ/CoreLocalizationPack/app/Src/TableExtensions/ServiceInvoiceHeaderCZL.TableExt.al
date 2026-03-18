@@ -104,6 +104,7 @@ tableextension 11735 "Service Invoice Header CZL" extends "Service Invoice Heade
         }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;

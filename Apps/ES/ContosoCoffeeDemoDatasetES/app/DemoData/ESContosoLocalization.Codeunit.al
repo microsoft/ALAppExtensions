@@ -142,7 +142,6 @@ codeunit 10824 "ES Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create ES Column Layout");
                     Codeunit.Run(Codeunit::"Create ES Currency Exch");
-                    Codeunit.Run(Codeunit::"Create Allocation Account ES");
                 end;
         end;
     end;
@@ -186,6 +185,8 @@ codeunit 10824 "ES Contoso Localization"
                         FinanceModuleSetup.InitRecord();
                         Codeunit.Run(Codeunit::"Create ES VAT Posting Groups");
                     end;
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        Codeunit.Run(Codeunit::"Create Allocation Account ES");
                     BindSubscription(CreateESResource);
                     BindSubscription(CreateESAnalysisView);
                     BindSubscription(CreateESAccScheduleLine);
@@ -197,7 +198,8 @@ codeunit 10824 "ES Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateESLocation);
-                    BindSubscription(CreateESItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateESItem);
                 end;
             Enum::"Contoso Demo Data Module"::Bank:
                 begin
@@ -263,7 +265,8 @@ codeunit 10824 "ES Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateESItem);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateESItem);
                     UnbindSubscription(CreateESLocation);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:

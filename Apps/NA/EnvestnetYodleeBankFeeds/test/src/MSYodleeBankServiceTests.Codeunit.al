@@ -33,7 +33,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         CannotGetLinkedAccountsErr: Label 'The updated list of linked bank accounts could not be shown.';
         GetAccountsFailedTxt: Label '/getAccountsFailed';
         DetailsFailedTxt: Label '/detailsFailed';
-        Error500Txt: Label '(500) Server Error.';
+        Error500Txt: Label '(500) Internal Server Error.';
         DetailsOKTxt: Label '/detailsOK';
         DetailsDuplicateAccountIdTxt: Label '/detailsDuplicateAccountId';
         DetailsMFATxt: Label '/detailsMFA';
@@ -200,7 +200,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestServiceHandles500();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -211,11 +211,11 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         // Exercise
         ASSERTERROR MSYodleeBankServiceSetup.CheckSetup();
-        Assert.ExpectedError(STRSUBSTNO(ServiceErr, '(500) Server Error.') + '\' + BadCobrandTxt);
+        Assert.ExpectedError(STRSUBSTNO(ServiceErr, '(500) Internal Server Error.') + '\' + BadCobrandTxt);
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestServiceHandles404();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -230,7 +230,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestServiceHandles403();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -245,7 +245,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestServiceInvalidCobrandResponse();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -260,7 +260,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestServiceHandles200();
     var
         MSYodleeBankServiceSetup: TestPage "MS - Yodlee Bank Service Setup";
@@ -436,7 +436,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestLogErrorOnConnectionFailure();
     var
         ActivityLog: Record "Activity Log";
@@ -451,7 +451,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         // Exercise
         ASSERTERROR MSYodleeBankServiceSetup.CheckSetup();
-        Assert.ExpectedError(STRSUBSTNO(ServiceErr, '(500) Server Error.') + '\' + BadCobrandTxt);
+        Assert.ExpectedError(STRSUBSTNO(ServiceErr, '(500) Internal Server Error.') + '\' + BadCobrandTxt);
 
         // Assert Log Entry
         ActivityLog.SETRANGE(Status, ActivityLog.Status::Failed);
@@ -501,7 +501,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestSessionTokens();
     var
         MSYodleeBankSession: Record "MS - Yodlee Bank Session";
@@ -544,7 +544,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestResetSessionTokens();
     var
         BankAccount: Record "Bank Account";
@@ -568,7 +568,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingServiceData();
     var
         BankAccount: Record "Bank Account";
@@ -606,7 +606,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingServiceRefreshData();
     var
         BankAccount: Record "Bank Account";
@@ -642,7 +642,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingServiceRefreshAutomatic();
     var
         BankAccount: Record "Bank Account";
@@ -661,7 +661,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,BankAccountRefreshMFAHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,BankAccountRefreshMFAHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingServiceRefreshMFA();
     var
         BankAccount: Record "Bank Account";
@@ -686,7 +686,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateGetLinkedAccountsFail();
     var
         BankAccount: Record "Bank Account";
@@ -708,7 +708,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateGetDetailedLinkedAccountsFail();
     var
         BankAccount: Record "Bank Account";
@@ -730,7 +730,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateFindsExistingAccounts();
     var
         BankAccount: Record "Bank Account";
@@ -756,7 +756,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,CloseBankLinkingHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,CloseBankLinkingHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateFindsExistingDuplicateAccount();
     var
         BankAccountList: TestPage "Bank Account List";
@@ -771,7 +771,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,FastlinkHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,FastlinkHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingCreateWithNoNewAccounts();
     var
         BankAccount: Record "Bank Account";
@@ -796,7 +796,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateLaunchFromNonLinkedBankAccount();
     var
         BankAccount: Record "Bank Account";
@@ -826,7 +826,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateRemovesUnlinkedAccounts();
     var
         BankAccount: Record "Bank Account";
@@ -861,7 +861,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingHandler,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdatePromptsMissingLinkings();
     var
         BankAccount: Record "Bank Account";
@@ -879,7 +879,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingActionHandler,BankLinkingActionHandlerStepTwo,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingActionHandler,BankLinkingActionHandlerStepTwo,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdatePromptsMissingLinkingsWithAction();
     var
         BankAccount: Record "Bank Account";
@@ -897,7 +897,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingCreateNewHandler,BankAccountCardHandler,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingCreateNewHandler,BankAccountCardHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateMissLinksCreateNew();
     var
         BankAccount: Record "Bank Account";
@@ -924,7 +924,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingCreateNewHandler,BankAccountCardHandler,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingCreateNewHandler,BankAccountCardHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateMissLinksReselect();
     var
         BankAccount: Record "Bank Account";
@@ -952,7 +952,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,FastlinkHandler,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,FastlinkHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateAutoLink();
     var
         BankAccount: Record "Bank Account";
@@ -980,7 +980,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,FastlinkHandler,BankAccountCardHandler,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,FastlinkHandler,BankAccountCardHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateCreateNewAndAutoLink();
     var
         BankAccount: Record "Bank Account";
@@ -1038,7 +1038,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingUnlinkHandler,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingUnlinkHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateUnLinkAction();
     var
         BankAccountList: TestPage "Bank Account List";
@@ -1059,7 +1059,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingUnlinkHandler,BankLinkingActionHandlerStepTwo,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingUnlinkHandler,BankLinkingActionHandlerStepTwo,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateUnLinkActionFromLinkedAccount();
     var
         BankAccount: Record "Bank Account";
@@ -1093,7 +1093,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingUnlinkHandler,BankAccountCardHandler,ConsentConfirmYes')]
+    [HandlerFunctions('MessageHandler,ConfirmHandler,BankLinkingUnlinkHandler,BankAccountCardHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestBankLinkingUpdateUnLinkActionFromNewLinkedAccount();
     var
         BankAccountList: TestPage "Bank Account List";
@@ -1113,7 +1113,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestGetTransactions();
     var
         BankAccount: Record "Bank Account";
@@ -1135,7 +1135,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestGetTransactionsWithActivityLogging();
     var
         BankAccount: Record "Bank Account";
@@ -1167,7 +1167,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,PaymentBankAccountListHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,PaymentBankAccountListHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestGetTransactionsIntoNewPmtReconJnl();
     var
         BankAccount: Record "Bank Account";
@@ -1219,7 +1219,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestJobQueueRemovedOnAccountDeletion();
     var
         BankAccount: Record "Bank Account";
@@ -1333,7 +1333,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestGetTransactionsViaJobQueue();
     var
         BankAccount: Record "Bank Account";
@@ -1361,7 +1361,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestGetTransactionsViaJobQueueTwice();
     var
         BankAccount: Record "Bank Account";
@@ -1394,7 +1394,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestGetTransactionsCurrencyMissmatch();
     var
         BankAccount: Record "Bank Account";
@@ -1418,7 +1418,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('BankStatementFilterHandler,ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestGetTransactionsWrongBankAccountID();
     var
         BankAccount: Record "Bank Account";
@@ -1463,7 +1463,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestServiceSetupFromIsolatedStorage();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -1622,7 +1622,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestCreateConsumerOnAuthenticate();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -1655,7 +1655,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestCreateConsumerSuccessWithNoTenantId();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -1689,7 +1689,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestRemoveConsumerOnDisable();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -1751,7 +1751,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     procedure TestRemoveConsumerOnNoLinkedBankAccounts();
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
@@ -1864,7 +1864,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [HandlerFunctions('ConfirmHandler,ConsentConfirmYes,HttpClientHandler')]
     [NonDebuggable]
     procedure TestRegisterConsumerShouldGenerateUserNameIfNotExist();
     var
@@ -2430,6 +2430,180 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         MSYodleeBankServiceSetup."Service URL" :=
           COPYSTR(MSYodleeBankServiceSetup."Service URL" + Path, 1, MAXSTRLEN(MSYodleeBankServiceSetup."Service URL"));
         MSYodleeBankServiceSetup.MODIFY();
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        if Request.Path.Contains('/status500/cobrand/login') then begin
+            LoadResourceIntoHttpResponse('Status500.txt', Response);
+            Response.HttpStatusCode := 500;
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/status404/cobrand/login') then begin
+            LoadResourceIntoHttpResponse('Status404.txt', Response);
+            Response.HttpStatusCode := 404;
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/status403/cobrand/login') then begin
+            LoadResourceIntoHttpResponse('Status403.txt', Response);
+            Response.HttpStatusCode := 403;
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/loginOK/cobrand/login') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('CobrandTokenOK.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/loginOK/user/login') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('ConsumerTokenOK.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/loginOK/user/accessTokens') then begin
+            if Request.QueryParameters.ContainsKey('appIds') and (Request.QueryParameters.Get('appIds') = '10003600') then begin
+                Response.HttpStatusCode := 200;
+                LoadResourceIntoHttpResponse('FastlinkTokenOK.txt', Response);
+            end;
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/getAccountsFailed/loginOK/providerAccounts') then begin
+            LoadResourceIntoHttpResponse('Status500.txt', Response);
+            Response.HttpStatusCode := 500;
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/detailsFailed/loginOK/providerAccounts') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('SiteAccounts.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/detailsFailed/loginOK/accounts') then begin
+            if Request.QueryParameters.ContainsKey('status') and (Request.QueryParameters.Get('status') = 'ACTIVE') then begin
+                Response.HttpStatusCode := 500;
+                LoadResourceIntoHttpResponse('Status500.txt', Response);
+            end;
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/loginOK/providerAccounts') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('SiteAccounts.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/detailsOK/loginOK/accounts') then begin
+            Response.HttpStatusCode := 200;
+            if Request.QueryParameters.ContainsKey('status') then begin
+                if (Request.QueryParameters.Get('status') = 'ACTIVE') then
+                    LoadResourceIntoHttpResponse('SiteAccountsDetails.txt', Response)
+                else
+                    LoadResourceIntoHttpResponse('Empty.txt', Response);
+            end else
+                if Request.QueryParameters.ContainsKey('accountId') then
+                    LoadResourceIntoHttpResponse('SiteAccountsDetails.txt', Response)
+                else
+                    LoadResourceIntoHttpResponse('Empty.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/transactions') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('transactions.json', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/startSiteRefresh') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('refreshdata.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/getSiteRefreshInfo') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('refreshdatadone.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/detailsMFA/loginOK/accounts') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('SiteAccountsDetailsMFA.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/resetToken/loginOK/providerAccounts') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('SiteAccounts.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/resetToken/loginOK/accounts') then begin
+            Response.HttpStatusCode := 200;
+            if Request.QueryParameters.ContainsKey('status') then begin
+                if (Request.QueryParameters.Get('status') = 'ACTIVE') then
+                    LoadResourceIntoHttpResponse('StaleTokens.txt', Response)
+                else
+                    LoadResourceIntoHttpResponse('Empty.txt', Response);
+            end else
+                LoadResourceIntoHttpResponse('Empty.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/accountFails/loginOK/user/register') then begin
+            LoadResourceIntoHttpResponse('Status500.txt', Response);
+            Response.HttpStatusCode := 500;
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/accountFails/loginOK/user/unregister') then begin
+            LoadResourceIntoHttpResponse('Status500.txt', Response);
+            Response.HttpStatusCode := 500;
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/user/register') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('Empty.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/user/unregister') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('Empty.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/detailsDuplicateAccountId/loginOK/accounts') then begin
+            Response.HttpStatusCode := 200;
+            LoadResourceIntoHttpResponse('DuplicateSiteAccountsDetails.txt', Response);
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/status200/cobrand/login') then begin
+            Response.HttpStatusCode := 200;
+            Response.Content.WriteFrom('{invalid response}');
+            exit(false);
+        end;
+
+        if Request.Path.Contains('/status200/user/login') then begin
+            Response.HttpStatusCode := 200;
+            Response.Content.WriteFrom('{invalid response}');
+            exit(false);
+        end;
+
+        exit(false);
+    end;
+
+    local procedure LoadResourceIntoHttpResponse(ResourceText: Text; var Response: TestHttpResponseMessage)
+    begin
+        Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
     end;
 }
 

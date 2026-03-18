@@ -18,7 +18,7 @@ tableextension 4811 "Intrastat Report Item" extends Item
                 TariffNumber: Record "Tariff Number";
                 IntrastatReportMgt: Codeunit IntrastatReportManagement;
             begin
-                if "Tariff No." <> '' then begin
+                if ("Tariff No." <> '') and ("No." <> '') then begin
                     TariffNumber.Get("Tariff No.");
                     if not (TariffNumber."Suppl. Unit of Measure" in ['', "Supplementary Unit of Measure"]) then begin
                         if not ItemUOM.Get("No.", TariffNumber."Suppl. Unit of Measure") then begin

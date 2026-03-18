@@ -5,7 +5,10 @@
 namespace Microsoft.WithholdingTax;
 
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+#if not CLEAN29
 using Microsoft.Purchases.Vendor;
+#endif
 
 tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
 {
@@ -25,6 +28,8 @@ tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
         }
         field(6786; "Withholding Tax Absorb Base"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Withholding Tax Absorb Base';
             DataClassification = CustomerContent;
         }
@@ -60,6 +65,8 @@ tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
         }
         field(6793; "WHT Interest Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Interest Amount';
             DataClassification = CustomerContent;
 
@@ -76,12 +83,15 @@ tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
         }
         field(6794; "WHT Interest Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Interest Amount (LCY)';
             DataClassification = CustomerContent;
         }
         field(6795; "WHT VAT Base (ACY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'VAT Base (ACY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -89,12 +99,14 @@ tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
         field(6796; "WHT VAT Amount (ACY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'VAT Amount (ACY)';
             DataClassification = CustomerContent;
         }
         field(6797; "WHT Amount Including VAT (ACY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'Amount Including VAT (ACY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -102,6 +114,7 @@ tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
         field(6798; "WHT Amount (ACY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'Amount (ACY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -109,12 +122,14 @@ tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
         field(6799; "WHT VAT Difference (ACY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'VAT Difference (ACY)';
             Editable = false;
             DataClassification = CustomerContent;
         }
         field(6800; "WHT Vendor Exchange Rate (ACY)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Vendor Exchange Rate (ACY)';
             DecimalPlaces = 0 : 15;
             DataClassification = CustomerContent;
@@ -127,20 +142,38 @@ tableextension 6793 "Withholding Gen. Jnl. Line Ext" extends "Gen. Journal Line"
         field(6801; "WHT Line Discount Amt. (ACY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'Line Discount Amt. (ACY)';
             DataClassification = CustomerContent;
         }
         field(6802; "WHT Inv. Discount Amt. (ACY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrency();
             Caption = 'Inv. Discount Amt. (ACY)';
             DataClassification = CustomerContent;
         }
         field(6803; "WHT Actual Vendor No."; Code[20])
         {
             Caption = 'Actual Vendor No.';
+#if not CLEAN29
             TableRelation = Vendor;
+#endif
             DataClassification = CustomerContent;
+#if not CLEAN29
+            ObsoleteState = Pending;
+            ObsoleteTag = '29.0';
+            ObsoleteReason = 'This field has been removed and is no longer required.';
+#endif
         }
     }
+
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+
+    local procedure GetAdditionalReportingCurrency(): Code[10]
+    begin
+        GeneralLedgerSetup.GetRecordOnce();
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
+    end;
 }

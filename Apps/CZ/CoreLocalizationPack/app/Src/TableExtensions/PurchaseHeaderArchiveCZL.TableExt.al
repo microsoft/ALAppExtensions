@@ -81,6 +81,7 @@ tableextension 11733 "Purchase Header Archive CZL" extends "Purchase Header Arch
         }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;

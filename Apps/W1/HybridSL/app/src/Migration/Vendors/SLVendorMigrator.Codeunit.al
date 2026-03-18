@@ -21,6 +21,7 @@ codeunit 47021 "SL Vendor Migrator"
         SLPrefixTxt: Label 'SL', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         StatusInactiveTxt: Label 'I', Locked = true;
+        StatusPostedTxt: Label 'P', Locked = true;
         VendorBatchNameTxt: Label 'SLVEND', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", OnMigrateVendor, '', true, true)]
@@ -156,6 +157,7 @@ codeunit 47021 "SL Vendor Migrator"
     var
         SLAPDoc: Record "SL APDoc Buffer";
         SLAPSetup: Record "SL APSetup";
+        SLBatch: Record "SL Batch";
         SLVendor: Record "SL Vendor";
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         GenJournalLine: Record "Gen. Journal Line";
@@ -188,118 +190,130 @@ codeunit 47021 "SL Vendor Migrator"
             exit;
 
         Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)), '', '');
-        SLAPDoc.SetRange(CpnyID, CompanyName);
+        SLAPDoc.SetRange(CpnyID, GetCpnyID());
         SLAPDoc.SetRange(VendId, SLVendor.VendId);
         SLAPDoc.SetRange(DocType, APDocTypePrePaymentTxt);  // Payment
         SLAPDoc.SetFilter(DocBal, '<>%1', 0);
+        SLAPDoc.SetFilter(Rlsed, '1');
         if SLAPDoc.FindSet() then
             repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLAPDoc.RecordID));
-                GLDocNbr := SLPrefixTxt + SLAPDoc.RefNbr;
-                BalancingAccount := SLAPSetup.APAcct;
-                if SLAPDoc.PONbr.TrimEnd() <> '' then
-                    if SLAPDoc.PONbr.TrimEnd() <> '*' then
-                        LineDescription := JournalLinePOPrefixTxt + SLAPDoc.PONbr.TrimEnd() + '-' + SLAPDoc.DocDesc.TrimEnd()
-                    else
-                        LineDescription := CopyStr(SLAPDoc.DocDesc.TrimEnd(), 1, MaxStrLen(SLAPDoc.DocDesc));
+                SLBatch.Get(APSetupIDTxt, SLAPDoc.BatNbr);
+                if SLBatch.Status = StatusPostedTxt then begin
+                    DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLAPDoc.RecordID));
+                    GLDocNbr := SLPrefixTxt + SLAPDoc.RefNbr;
+                    BalancingAccount := SLAPSetup.APAcct;
+                    if SLAPDoc.PONbr.TrimEnd() <> '' then
+                        if SLAPDoc.PONbr.TrimEnd() <> '*' then
+                            LineDescription := JournalLinePOPrefixTxt + SLAPDoc.PONbr.TrimEnd() + '-' + SLAPDoc.DocDesc.TrimEnd()
+                        else
+                            LineDescription := CopyStr(SLAPDoc.DocDesc.TrimEnd(), 1, MaxStrLen(SLAPDoc.DocDesc));
 
-                Sender.CreateGeneralJournalLine(
-                            CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)),
-                            GLDocNbr,
-                            LineDescription,
-                            SLAPDoc.DocDate,
-                            SLAPDoc.DocDate,
-                            SLAPDoc.DocBal,
-                            SLAPDoc.DocBal,
-                            '',
-                            BalancingAccount
-                        );
-                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::Payment);
-                DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                Sender.SetGeneralJournalLineExternalDocumentNo(SLAPDoc.RefNbr.TrimEnd() + '-' + SLAPDoc.InvcNbr.TrimEnd());
-            until SLAPDoc.Next() = 0;
-
-        SLAPDoc.Reset();
-        SLAPDoc.SetRange(CpnyID, CompanyName);
-        SLAPDoc.SetRange(VendId, SLVendor.VendId);
-        SLAPDoc.SetFilter(DocType, '%1|%2', APDocTypeVoucherTxt, APDocTypeAdjustmentCreditTxt);  // Invoice
-        SLAPDoc.SetFilter(DocBal, '<>%1', 0);
-        if SLAPDoc.FindSet() then
-            repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLAPDoc.RecordID));
-                GLDocNbr := SLPrefixTxt + SLAPDoc.RefNbr;
-                BalancingAccount := SLAPSetup.APAcct;
-                if SLAPDoc.PONbr.TrimEnd() <> '' then
-                    if SLAPDoc.PONbr.TrimEnd() <> '*' then
-                        LineDescription := JournalLinePOPrefixTxt + SLAPDoc.PONbr.TrimEnd() + '-' + SLAPDoc.DocDesc.TrimEnd()
-                    else
-                        LineDescription := CopyStr(SLAPDoc.DocDesc.TrimEnd(), 1, MaxStrLen(SLAPDoc.DocDesc));
-
-                Sender.CreateGeneralJournalLine(
-                            CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)),
-                            GLDocNbr,
-                            LineDescription,
-                            SLAPDoc.DocDate,
-                            SLAPDoc.DueDate,
-                            SLAPDoc.DocBal * -1,
-                            SLAPDoc.DocBal * -1,
-                            '',
-                            BalancingAccount
-                        );
-                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::Invoice);
-                DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                Sender.SetGeneralJournalLineExternalDocumentNo(SLAPDoc.RefNbr.TrimEnd() + '-' + SLAPDoc.InvcNbr.TrimEnd());
-
-                // Temporary code to set the Due Date on Invoices until the Payment Terms migration is implemented.
-                GenJournalLine.SetRange("Journal Batch Name", VendorBatchNameTxt);
-                GenJournalLine.SetRange("Document No.", GLDocNbr);
-                if GenJournalLine.FindLast() then begin
-                    GenJournalLine."Due Date" := SLAPDoc.DueDate;
-                    GenJournalLine.Modify();
+                    Sender.CreateGeneralJournalLine(
+                                CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)),
+                                GLDocNbr,
+                                LineDescription,
+                                SLAPDoc.DocDate,
+                                SLAPDoc.DocDate,
+                                SLAPDoc.DocBal,
+                                SLAPDoc.DocBal,
+                                '',
+                                BalancingAccount
+                                );
+                    Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::Payment);
+                    DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                    Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                    Sender.SetGeneralJournalLineExternalDocumentNo(SLAPDoc.RefNbr.TrimEnd() + '-' + SLAPDoc.InvcNbr.TrimEnd());
                 end;
             until SLAPDoc.Next() = 0;
 
         SLAPDoc.Reset();
-        SLAPDoc.SetRange(CpnyID, CompanyName);
+        SLAPDoc.SetRange(CpnyID, GetCpnyID());
+        SLAPDoc.SetRange(VendId, SLVendor.VendId);
+        SLAPDoc.SetFilter(DocType, '%1|%2', APDocTypeVoucherTxt, APDocTypeAdjustmentCreditTxt);  // Invoice
+        SLAPDoc.SetFilter(DocBal, '<>%1', 0);
+        SLAPDoc.SetFilter(Rlsed, '1');
+        if SLAPDoc.FindSet() then
+            repeat
+                SLBatch.Get(APSetupIDTxt, SLAPDoc.BatNbr);
+                if SLBatch.Status = StatusPostedTxt then begin
+                    DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLAPDoc.RecordID));
+                    GLDocNbr := SLPrefixTxt + SLAPDoc.RefNbr;
+                    BalancingAccount := SLAPSetup.APAcct;
+                    if SLAPDoc.PONbr.TrimEnd() <> '' then
+                        if SLAPDoc.PONbr.TrimEnd() <> '*' then
+                            LineDescription := JournalLinePOPrefixTxt + SLAPDoc.PONbr.TrimEnd() + '-' + SLAPDoc.DocDesc.TrimEnd()
+                        else
+                            LineDescription := CopyStr(SLAPDoc.DocDesc.TrimEnd(), 1, MaxStrLen(SLAPDoc.DocDesc));
+
+                    Sender.CreateGeneralJournalLine(
+                                CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)),
+                                GLDocNbr,
+                                LineDescription,
+                                SLAPDoc.DocDate,
+                                SLAPDoc.DueDate,
+                                SLAPDoc.DocBal * -1,
+                                SLAPDoc.DocBal * -1,
+                                '',
+                                BalancingAccount
+                                );
+                    Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::Invoice);
+                    DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                    Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                    Sender.SetGeneralJournalLineExternalDocumentNo(SLAPDoc.RefNbr.TrimEnd() + '-' + SLAPDoc.InvcNbr.TrimEnd());
+
+                    // Termporary code to set the Due Date on Invoices until the Payment Terms migration is implemented.
+                    GenJournalLine.SetRange("Journal Batch Name", VendorBatchNameTxt);
+                    GenJournalLine.SetRange("Document No.", GLDocNbr);
+                    if GenJournalLine.FindLast() then begin
+                        GenJournalLine."Due Date" := SLAPDoc.DueDate;
+                        GenJournalLine.Modify();
+                    end;
+                end;
+            until SLAPDoc.Next() = 0;
+
+        SLAPDoc.Reset();
+        SLAPDoc.SetRange(CpnyID, GetCpnyID());
         SLAPDoc.SetRange(VendId, SLVendor.VendId);
         SLAPDoc.SetFilter(DocType, APDocTypeAdjustmentDebitTxt);  // Credit Memo
         SLAPDoc.SetFilter(DocBal, '<>%1', 0);
+        SLAPDoc.SetFilter(Rlsed, '1');
         if SLAPDoc.FindSet() then
             repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLAPDoc.RecordID));
-                GLDocNbr := SLPrefixTxt + SLAPDoc.RefNbr;
-                BalancingAccount := SLAPSetup.APAcct;
-                if SLAPDoc.PONbr.TrimEnd() <> '' then
-                    if SLAPDoc.PONbr.TrimEnd() <> '*' then
-                        LineDescription := JournalLinePOPrefixTxt + SLAPDoc.PONbr.TrimEnd() + '-' + SLAPDoc.DocDesc.TrimEnd()
-                    else
-                        LineDescription := CopyStr(SLAPDoc.DocDesc.TrimEnd(), 1, MaxStrLen(SLAPDoc.DocDesc));
+                SLBatch.Get(APSetupIDTxt, SLAPDoc.BatNbr);
+                if SLBatch.Status = StatusPostedTxt then begin
+                    DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLAPDoc.RecordID));
+                    GLDocNbr := SLPrefixTxt + SLAPDoc.RefNbr;
+                    BalancingAccount := SLAPSetup.APAcct;
+                    if SLAPDoc.PONbr.TrimEnd() <> '' then
+                        if SLAPDoc.PONbr.TrimEnd() <> '*' then
+                            LineDescription := JournalLinePOPrefixTxt + SLAPDoc.PONbr.TrimEnd() + '-' + SLAPDoc.DocDesc.TrimEnd()
+                        else
+                            LineDescription := CopyStr(SLAPDoc.DocDesc.TrimEnd(), 1, MaxStrLen(SLAPDoc.DocDesc));
 
-                Sender.CreateGeneralJournalLine(
-                            CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)),
-                            GLDocNbr,
-                            LineDescription,
-                            SLAPDoc.DocDate,
-                            SLAPDoc.DueDate,
-                            SLAPDoc.DocBal,
-                            SLAPDoc.DocBal,
-                            '',
-                            BalancingAccount
-                        );
+                    Sender.CreateGeneralJournalLine(
+                                CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)),
+                                GLDocNbr,
+                                LineDescription,
+                                SLAPDoc.DocDate,
+                                SLAPDoc.DueDate,
+                                SLAPDoc.DocBal,
+                                SLAPDoc.DocBal,
+                                '',
+                                BalancingAccount
+                                );
 
-                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::"Credit Memo");
-                DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                Sender.SetGeneralJournalLineExternalDocumentNo(SLAPDoc.RefNbr.TrimEnd() + '-' + SLAPDoc.InvcNbr.TrimEnd());
+                    Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::"Credit Memo");
+                    DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                    Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                    Sender.SetGeneralJournalLineExternalDocumentNo(SLAPDoc.RefNbr.TrimEnd() + '-' + SLAPDoc.InvcNbr.TrimEnd());
 
-                // Temporary code to set the Due Date on Credit Memos until the Payment Terms migration is implemented.
-                GenJournalLine.SetRange("Journal Batch Name", VendorBatchNameTxt);
-                GenJournalLine.SetRange("Document No.", GLDocNbr);
-                if GenJournalLine.FindLast() then begin
-                    GenJournalLine."Due Date" := SLAPDoc.DueDate;
-                    GenJournalLine.Modify();
+                    // Temporary code to set the Due Date on Credit Memos until the Payment Terms migration is implemented.
+                    GenJournalLine.SetRange("Journal Batch Name", VendorBatchNameTxt);
+                    GenJournalLine.SetRange("Document No.", GLDocNbr);
+                    if GenJournalLine.FindLast() then begin
+                        GenJournalLine."Due Date" := SLAPDoc.DueDate;
+                        GenJournalLine.Modify();
+                    end;
                 end;
             until SLAPDoc.Next() = 0;
     end;
@@ -371,5 +385,10 @@ codeunit 47021 "SL Vendor Migrator"
         Sender.CreatePostingSetupIfNeeded(SLVendClass.ClassID, SLVendClass.Descr, SLVendClass.APAcct);
         Sender.SetVendorPostingGroup(SLVendClass.ClassID);
         Sender.ModifyVendor(true);
+    end;
+
+    internal procedure GetCpnyID(): Text[10]
+    begin
+        exit(CopyStr(CompanyName(), 1, 10));
     end;
 }

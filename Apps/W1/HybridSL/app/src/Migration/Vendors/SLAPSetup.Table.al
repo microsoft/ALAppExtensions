@@ -7,7 +7,6 @@ namespace Microsoft.DataMigration.SL;
 
 table 47047 "SL APSetup"
 {
-    Access = Internal;
     Caption = 'SL APSetup';
     DataClassification = CustomerContent;
 
@@ -44,6 +43,7 @@ table 47047 "SL APSetup"
         field(8; BkupWthldPct; Decimal)
         {
             Caption = 'BkupWthldPct';
+            AutoFormatType = 0;
         }
         field(9; BkupWthldSub; Text[24])
         {
@@ -248,18 +248,22 @@ table 47047 "SL APSetup"
         field(59; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(60; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(61; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(62; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(63; S4Future07; DateTime)
         {
@@ -332,10 +336,12 @@ table 47047 "SL APSetup"
         field(80; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(81; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(82; User5; Text[10])
         {
@@ -360,6 +366,7 @@ table 47047 "SL APSetup"
         field(87; Vend1099Lmt; Decimal)
         {
             Caption = 'Vend1099Lmt';
+            AutoFormatType = 0;
         }
         field(88; VendViewDflt; Text[1])
         {

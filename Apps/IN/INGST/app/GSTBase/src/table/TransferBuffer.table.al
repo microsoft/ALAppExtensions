@@ -49,7 +49,7 @@ table 18014 "Transfer Buffer"
         }
         field(6; Amount; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             Caption = 'Amount';
             DataClassification = SystemMetadata;
         }
@@ -72,13 +72,14 @@ table 18014 "Transfer Buffer"
         }
         field(10; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             DataClassification = SystemMetadata;
             DecimalPlaces = 1 : 5;
         }
         field(11; "Amount (ACY)"; Decimal)
         {
-            AutoFormatType = 1;
+            AutoFormatType = 0;
             Caption = 'Amount (ACY)';
             DataClassification = SystemMetadata;
         }
@@ -89,16 +90,19 @@ table 18014 "Transfer Buffer"
         }
         field(14; "Src. Curr. Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Src. Curr. Amount';
             DataClassification = SystemMetadata;
         }
         field(23; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Amount';
             DataClassification = SystemMetadata;
         }
         field(26; "Tax %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax %';
             DataClassification = SystemMetadata;
         }
@@ -120,11 +124,13 @@ table 18014 "Transfer Buffer"
         }
         field(44; "Charges Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Charges Amount';
             DataClassification = SystemMetadata;
         }
         field(45; "Amount Loaded on Inventory"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount Loaded on Inventory';
             DataClassification = SystemMetadata;
         }
@@ -142,16 +148,19 @@ table 18014 "Transfer Buffer"
         }
         field(16521; "GST Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Amount';
             DataClassification = SystemMetadata;
         }
         field(16522; "GST Amount Loaded on Inventory"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Amount Loaded on Inventory';
             DataClassification = SystemMetadata;
         }
         field(16528; "Custom Duty Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Custom Duty Amount';
             DataClassification = SystemMetadata;
             MinValue = 0;
@@ -163,6 +172,7 @@ table 18014 "Transfer Buffer"
         }
         field(18001; "Excise Amount"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Excise Amount';
             DataClassification = SystemMetadata;
         }

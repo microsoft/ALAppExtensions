@@ -140,26 +140,34 @@ table 18317 "Detailed Cr. Adjstmnt. Entry"
         }
         field(21; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
         field(22; "GST %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST %';
             DataClassification = CustomerContent;
         }
         field(23; "GST Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
         field(24; "Adjustment %"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Adjustment %';
             DataClassification = CustomerContent;
         }
         field(25; "Adjustment Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Adjustment Amount';
             DataClassification = CustomerContent;
         }
@@ -222,12 +230,14 @@ table 18317 "Detailed Cr. Adjstmnt. Entry"
         }
         field(37; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 1 : 6;
         }
         field(38; "GST Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Rounding Precision';
             DataClassification = CustomerContent;
         }

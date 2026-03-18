@@ -22,6 +22,7 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(3; ApplAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ApplAmt';
         }
         field(4; ApplBatNbr; Text[10])
@@ -62,10 +63,12 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(13; CmmnAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CmmnAmt';
         }
         field(14; CmmnPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CmmnPct';
         }
         field(15; ContractID; Text[10])
@@ -94,26 +97,32 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(21; CuryApplAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryApplAmt';
         }
         field(22; CuryClearAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryClearAmt';
         }
         field(23; CuryCmmnAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCmmnAmt';
         }
         field(24; CuryDiscApplAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryDiscApplAmt';
         }
         field(25; CuryDiscBal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryDiscBal';
         }
         field(26; CuryDocBal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryDocBal';
         }
         field(27; CuryEffDate; DateTime)
@@ -130,10 +139,12 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(30; CuryOrigDocAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryOrigDocAmt';
         }
         field(31; CuryRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRate';
         }
         field(32; CuryRateType; Text[6])
@@ -142,38 +153,47 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(33; CuryStmtBal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryStmtBal';
         }
         field(34; CuryTaxTot00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxTot00';
         }
         field(35; CuryTaxTot01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxTot01';
         }
         field(36; CuryTaxTot02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxTot02';
         }
         field(37; CuryTaxTot03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxTot03';
         }
         field(38; CuryTxblTot00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblTot00';
         }
         field(39; CuryTxblTot01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblTot01';
         }
         field(40; CuryTxblTot02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblTot02';
         }
         field(41; CuryTxblTot03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblTot03';
         }
         field(42; CustId; Text[15])
@@ -190,10 +210,12 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(45; DiscApplAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DiscApplAmt';
         }
         field(46; DiscBal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DiscBal';
         }
         field(47; DiscDate; DateTime)
@@ -202,6 +224,7 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(48; DocBal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DocBal';
         }
         field(49; DocClass; Text[1])
@@ -290,6 +313,7 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(74; OrigDocAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OrigDocAmt';
         }
         field(75; OrigDocNbr; Text[10])
@@ -326,6 +350,7 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(83; RGOLAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RGOLAmt';
         }
         field(84; Rlsed; Integer)
@@ -342,18 +367,22 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(87; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(88; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(89; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(90; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(91; S4Future07; DateTime)
@@ -398,6 +427,7 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(101; StmtBal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'StmtBal';
         }
         field(102; StmtDate; DateTime)
@@ -442,18 +472,22 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(112; TaxTot00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxTot00';
         }
         field(113; TaxTot01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxTot01';
         }
         field(114; TaxTot02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxTot02';
         }
         field(115; TaxTot03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxTot03';
         }
         field(116; Terms; Text[2])
@@ -462,18 +496,22 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(117; TxblTot00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblTot00';
         }
         field(118; TxblTot01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblTot01';
         }
         field(119; TxblTot02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblTot02';
         }
         field(120; TxblTot03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblTot03';
         }
         field(121; User1; Text[30])
@@ -486,10 +524,12 @@ table 42827 "SL Hist. ARDoc Archive"
         }
         field(123; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(124; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(125; User5; Text[10])

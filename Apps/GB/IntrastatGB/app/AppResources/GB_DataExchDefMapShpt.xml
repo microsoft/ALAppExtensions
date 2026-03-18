@@ -37,7 +37,7 @@
                 <DataExchFieldMapping ColumnNo="4" FieldID="8" />
                 <DataExchFieldMapping ColumnNo="5" FieldID="21" />
                 <DataExchFieldMapping ColumnNo="6" FieldID="35" Optional="true" />
-                <DataExchFieldMapping ColumnNo="7" FieldID="7" />
+                <DataExchFieldMapping ColumnNo="7" FieldID="101" />
                 <DataExchFieldMapping ColumnNo="8" FieldID="29" />
                 <DataExchFieldMapping ColumnNo="9" FieldID="24" TransformationRule="LOOKUPINTRASTATCODE">
                     <TransformationRules>

@@ -6,7 +6,7 @@ namespace Microsoft.Finance.FinancialReports;
 
 page 31201 "Acc. Schedule Extensions CZL"
 {
-    Caption = 'Acc. Schedule Extensions';
+    Caption = 'Fin. Report Extensions';
     DelayedInsert = true;
     PageType = Worksheet;
     PopulateAllFields = true;
@@ -23,7 +23,7 @@ page 31201 "Acc. Schedule Extensions CZL"
                 field(Code; Rec.Code)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the code of account schedule extensions.';
+                    ToolTip = 'Specifies the code of financial report extensions.';
                 }
                 field("Source Table"; Rec."Source Table")
                 {
@@ -33,7 +33,7 @@ page 31201 "Acc. Schedule Extensions CZL"
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the description of account schedule extensions.';
+                    ToolTip = 'Specifies the description of financial report extensions.';
                 }
                 field("Source Type"; Rec."Source Type")
                 {
@@ -104,13 +104,13 @@ page 31201 "Acc. Schedule Extensions CZL"
                 field("Amount Sign"; Rec."Amount Sign")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the amount sign for the account schedule extension.';
+                    ToolTip = 'Specifies the amount sign for the financial report extension.';
                     Visible = AmtSignVisible;
                 }
                 field("Document Type Filter"; Rec."Document Type Filter")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies setup of documents type for filtr account schedule (invoice, payment).';
+                    ToolTip = 'Specifies setup of documents type for filtr financial report (invoice, payment).';
                     Visible = DocumentTypeFilterVisible;
                 }
                 field("Posting Date Filter"; Rec."Posting Date Filter")

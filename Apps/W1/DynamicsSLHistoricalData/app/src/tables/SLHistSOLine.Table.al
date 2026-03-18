@@ -34,10 +34,12 @@ table 42814 "SL Hist. SOLine"
         }
         field(6; BlktOrdQty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BlktOrdQty';
         }
         field(7; BMICost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMICost';
         }
         field(8; BMICuryID; Text[4])
@@ -50,6 +52,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(10; BMIExtPriceInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMIExtPriceInvc';
         }
         field(11; BMIMultDiv; Text[1])
@@ -58,6 +61,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(12; BMIRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMIRate';
         }
         field(13; BMIRtTp; Text[6])
@@ -66,6 +70,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(14; BMISlsPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'BMISlsPrice';
         }
         field(15; BoundToWO; Integer)
@@ -82,10 +87,12 @@ table 42814 "SL Hist. SOLine"
         }
         field(18; CmmnPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CmmnPct';
         }
         field(19; CnvFact; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CnvFact';
         }
         field(20; COGSAcct; Text[10])
@@ -98,10 +105,12 @@ table 42814 "SL Hist. SOLine"
         }
         field(22; CommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CommCost';
         }
         field(23; Cost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cost';
         }
         field(24; CpnyID; Text[10])
@@ -122,34 +131,42 @@ table 42814 "SL Hist. SOLine"
         }
         field(28; CuryCommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCommCost';
         }
         field(29; CuryCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCost';
         }
         field(30; CuryListPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryListPrice';
         }
         field(31; CurySlsPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CurySlsPrice';
         }
         field(32; CurySlsPriceOrig; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CurySlsPriceOrig';
         }
         field(33; CuryTotCommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotCommCost';
         }
         field(34; CuryTotCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotCost';
         }
         field(35; CuryTotOrd; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTotOrd';
         }
         field(36; Descr; Text[60])
@@ -166,6 +183,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(39; DiscPct; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DiscPct';
         }
         field(40; DiscPrcType; Text[1])
@@ -242,6 +260,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(59; ListPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ListPrice';
         }
         field(60; LotSerialReq; Integer)
@@ -290,6 +309,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(71; OrigShipperCnvFact; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OrigShipperCnvFact';
         }
         field(72; OrigShipperID; Text[15])
@@ -298,6 +318,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(73; OrigShipperLineQty; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'OrigShipperLineQty';
         }
         field(74; OrigShipperLineRef; Text[5])
@@ -326,30 +347,37 @@ table 42814 "SL Hist. SOLine"
         }
         field(80; QtyBO; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyBO';
         }
         field(81; QtyCloseShip; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyCloseShip';
         }
         field(82; QtyFuture; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyFuture';
         }
         field(83; QtyOpenShip; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyOpenShip';
         }
         field(84; QtyOrd; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyOrd';
         }
         field(85; QtyShip; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyShip';
         }
         field(86; QtyToInvc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'QtyToInvc';
         }
         field(87; ReasonCd; Text[6])
@@ -374,18 +402,22 @@ table 42814 "SL Hist. SOLine"
         }
         field(92; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(93; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(94; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(95; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(96; S4Future07; DateTime)
@@ -430,6 +462,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(106; ShipWght; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'ShipWght';
         }
         field(107; SiteID; Text[10])
@@ -446,6 +479,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(110; SlsPrice; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'SlsPrice';
         }
         field(111; SlsPriceID; Text[15])
@@ -454,6 +488,7 @@ table 42814 "SL Hist. SOLine"
         }
         field(112; SlsPriceOrig; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'SlsPriceOrig';
         }
         field(113; SlsSub; Text[24])
@@ -482,18 +517,22 @@ table 42814 "SL Hist. SOLine"
         }
         field(119; TotCommCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotCommCost';
         }
         field(120; TotCost; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotCost';
         }
         field(121; TotOrd; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotOrd';
         }
         field(122; TotShipWght; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TotShipWght';
         }
         field(123; UnitDesc; Text[6])
@@ -526,10 +565,12 @@ table 42814 "SL Hist. SOLine"
         }
         field(130; User5; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User5';
         }
         field(131; User6; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User6';
         }
         field(132; User7; Text[10])

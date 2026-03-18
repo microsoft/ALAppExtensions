@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -17,6 +18,9 @@ codeunit 12199 "Create E-Doc Sample Inv. IT"
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by Create E-Doc. Sample Invoices Codeunit';
+    ObsoleteTag = '28.0';
 
     var
         EDocSamplePurchaseInvoice: Codeunit "E-Doc Sample Purchase Invoice";
@@ -25,7 +29,7 @@ codeunit 12199 "Create E-Doc Sample Inv. IT"
         CreateJobItem: Codeunit "Create Job Item";
         CreateCommonUnitOfMeasure: Codeunit "Create Common Unit Of Measure";
         CreateDemoEDocsIT: Codeunit "Create Demo EDocs IT";
-        CreateAllocationAccountIT: Codeunit "Create Allocation Account IT";
+        CreateAllocationAccount: Codeunit "Create Allocation Account";
 
     trigger OnRun()
     var
@@ -51,7 +55,8 @@ codeunit 12199 "Create E-Doc Sample Inv. IT"
 
         EDocSamplePurchaseInvoice.AddInvoice(CreateVendor.EUGraphicDesign(), '108426', YearlyLicenstCostLbl);
         EDocSamplePurchaseInvoice.AddLine(
-            Enum::"Purchase Line Type"::" ", '', CreateAllocationAccountIT.LicensesDescription(), 1, 5000, '', CreateCommonUnitOfMeasure.Piece());
+            Enum::"Purchase Line Type"::" ", '', CreateAllocationAccount.LicensesDescription(), 1, 5000, '', CreateCommonUnitOfMeasure.Piece());
         EDocSamplePurchaseInvoice.Generate();
     end;
 }
+#endif

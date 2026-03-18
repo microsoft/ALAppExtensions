@@ -17,6 +17,11 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the connectivity between User ID and employee number.';
             }
+            field("User Name CZL"; Rec."User Name CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the short name for the user.';
+            }
         }
         addlast(Control1)
         {
@@ -79,11 +84,6 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the possibillity to allow or not allow complete job.';
                 Visible = IsUserChecksAllowed;
-            }
-            field("User Name CZL"; Rec."User Name CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the short name for the user.';
             }
             field("Check Location Code CZL"; Rec."Check Location Code CZL")
             {

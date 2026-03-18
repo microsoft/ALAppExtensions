@@ -30,40 +30,55 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
         if CheckWithholdingTaxDisabled() then
             exit;
 
+        if not Vendor."Withholding Tax Liable" then
+            exit;
+
         PurchaseHeader."Wthldg. Tax Bus. Post. Group" := Vendor."Wthldg. Tax Bus. Post. Group";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnAfterInitHeaderDefaults, '', false, false)]
-    local procedure CopyHeaderInf0(PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line")
+    local procedure CopyHeaderInfo(PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line")
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchHeader) then
             exit;
 
         PurchLine."Wthldg. Tax Bus. Post. Group" := PurchHeader."Wthldg. Tax Bus. Post. Group";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnAfterAssignGLAccountValues, '', false, false)]
-    local procedure AssignGLAccValue(var PurchLine: Record "Purchase Line"; GLAccount: Record "G/L Account")
+    local procedure AssignGLAccValue(var PurchLine: Record "Purchase Line"; GLAccount: Record "G/L Account"; PurchHeader: Record "Purchase Header")
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchHeader) then
             exit;
 
         PurchLine."Wthldg. Tax Prod. Post. Group" := GLAccount."Wthldg. Tax Prod. Post. Group";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnAfterAssignItemValues, '', false, false)]
-    local procedure AssignItemValue(var PurchLine: Record "Purchase Line"; Item: Record Item)
+    local procedure AssignItemValue(var PurchLine: Record "Purchase Line"; Item: Record Item; PurchHeader: Record "Purchase Header")
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchHeader) then
             exit;
 
         PurchLine."Wthldg. Tax Prod. Post. Group" := Item."Wthldg. Tax Prod. Post. Group";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnAfterAssignFixedAssetValues, '', false, false)]
-    local procedure AssignFAValue(var PurchLine: Record "Purchase Line"; FixedAsset: Record "Fixed Asset")
+    local procedure AssignFAValue(var PurchLine: Record "Purchase Line"; FixedAsset: Record "Fixed Asset"; PurchHeader: Record "Purchase Header")
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchHeader) then
             exit;
 
         PurchLine."Wthldg. Tax Prod. Post. Group" := FixedAsset."Wthldg. Tax Prod. Post. Group";
@@ -71,8 +86,14 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", OnAfterPrepareInvoicePostingBuffer, '', false, false)]
     local procedure OnAfterPrepareInvoicePostingBuffer(var InvoicePostingBuffer: Record "Invoice Posting Buffer" temporary; var PurchaseLine: Record "Purchase Line")
+    var
+        PurchHeader: Record "Purchase Header";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        PurchHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+        if not CheckWithholdingTaxLiable(PurchHeader) then
             exit;
 
         InvoicePostingBuffer."Wthldg. Tax Bus. Post. Group" := PurchaseLine."Wthldg. Tax Bus. Post. Group";
@@ -80,9 +101,12 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", OnPrepareGenJnlLineOnAfterCopyToGenJnlLine, '', false, false)]
-    local procedure OnPrepareGenJnlLineOnAfterCopyToGenJnlLine(InvoicePostingBuffer: Record "Invoice Posting Buffer" temporary; var GenJnlLine: Record "Gen. Journal Line")
+    local procedure OnPrepareGenJnlLineOnAfterCopyToGenJnlLine(InvoicePostingBuffer: Record "Invoice Posting Buffer" temporary; var GenJnlLine: Record "Gen. Journal Line"; PurchHeader: Record "Purchase Header")
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchHeader) then
             exit;
 
         InvoicePostingBuffer."Wthldg. Tax Bus. Post. Group" := GenJnlLine."Wthldg. Tax Bus. Post. Group";
@@ -95,6 +119,9 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
         if CheckWithholdingTaxDisabled() then
             exit;
 
+        if not CheckWithholdingTaxLiable(PurchHeader) then
+            exit;
+
         GenJnlLine."Wthldg. Tax Bus. Post. Group" := PurchHeader."Wthldg. Tax Bus. Post. Group";
     end;
 
@@ -104,13 +131,22 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
         if CheckWithholdingTaxDisabled() then
             exit;
 
+        if not CheckWithholdingTaxLiable(PurchHeader) then
+            exit;
+
         GenJnlLine."Wthldg. Tax Bus. Post. Group" := PurchHeader."Wthldg. Tax Bus. Post. Group";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", OnPrepareLineOnAfterAssignAmounts, '', false, false)]
     local procedure OnPrepareLineOnAfterAssignAmounts(PurchLine: Record "Purchase Line"; var TotalAmount: Decimal; var TotalAmountACY: Decimal)
+    var
+        PurchHeader: Record "Purchase Header";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        PurchHeader.Get(PurchLine."Document Type", PurchLine."Document No.");
+        if not CheckWithholdingTaxLiable(PurchHeader) then
             exit;
 
         AssignWithholdingAmounts(PurchLine, TotalAmount, TotalAmountACY);
@@ -122,6 +158,9 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
         CurrExchRate: Record "Currency Exchange Rate";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchHeader) then
             exit;
 
         GenJnlLine.Amount += PurchHeader."Withholding Tax Amount";
@@ -187,6 +226,9 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
         if CheckWithholdingTaxDisabled() then
             exit;
 
+        if not CheckWithholdingTaxLiable(PurchHeader) then
+            exit;
+
         if PurchHeader.IsCreditDocType() then begin
             if (PurchHeader."Applies-to Doc. Type" = PurchHeader."Applies-to Doc. Type"::Invoice) and (PurchHeader."Applies-to Doc. No." <> '') then
                 WithholdingTaxMgmt.CheckApplicationPurchWithholdingTax(PurchHeader);
@@ -214,6 +256,9 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
         if CheckWithholdingTaxDisabled() then
             exit;
 
+        if not CheckWithholdingTaxLiable(PurchaseHeader) then
+            exit;
+
         PostWithholdingTax(PurchaseHeader, SrcCode, GenJnlLineDocType, GenJnlLineDocNo, GenJnlLineExtDocNo, GenJnlPostLine, TotalPurchLineLCY, TempPurchLineGlobal, TotalAmount);
     end;
 
@@ -223,6 +268,9 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
         WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchaseHeader) then
             exit;
 
         if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::Order, PurchaseHeader."Document Type"::Invoice] then
@@ -235,10 +283,14 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
     var
         WithholdingTaxEntry: Record "Withholding Tax Entry";
         GLRegister: Record "G/L Register";
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
         WithholdingTaxAmount: Decimal;
         WithholdingTaxAmountLCY: Decimal;
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJnlLine) then
             exit;
 
         WithholdingTaxAmount := 0;
@@ -259,13 +311,16 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purchase-Post Prepayments", OnBeforePostVendorEntry, '', false, false)]
-    local procedure OnBeforePostVendorEntry(var GenJnlLine: Record "Gen. Journal Line")
+    local procedure OnBeforePostVendorEntry(var GenJnlLine: Record "Gen. Journal Line"; PurchaseHeader: Record "Purchase Header")
     var
         WithholdingTaxEntry: Record "Withholding Tax Entry";
         WithholdingTaxAmount: Decimal;
         WithholdingTaxAmountLCY: Decimal;
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchaseHeader) then
             exit;
 
         CalcWithholdingTaxAmounts(GenJnlLine."Document No.", WithholdingTaxEntry, WithholdingTaxAmount, WithholdingTaxAmountLCY);
@@ -278,10 +333,14 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
     local procedure OnBeforePostBalancingEntry(var GenJnlLine: Record "Gen. Journal Line")
     var
         WithholdingTaxEntry: Record "Withholding Tax Entry";
+        WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
         WithholdingTaxAmount: Decimal;
         WithholdingTaxAmountLCY: Decimal;
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not WithholdingTaxMgmt.CheckVendorWithholdingTaxLiable(GenJnlLine) then
             exit;
 
         CalcWithholdingTaxAmounts(GenJnlLine."Document No.", WithholdingTaxEntry, WithholdingTaxAmount, WithholdingTaxAmountLCY);
@@ -296,6 +355,9 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
         WithholdingTaxMgmt: Codeunit "Withholding Tax Mgmt.";
     begin
         if CheckWithholdingTaxDisabled() then
+            exit;
+
+        if not CheckWithholdingTaxLiable(PurchaseHeader) then
             exit;
 
         if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::Order, PurchaseHeader."Document Type"::Invoice] then
@@ -501,5 +563,13 @@ codeunit 6784 "Wthldg Tax Purch. Subscribers"
             exit(true);
 
         exit(false);
+    end;
+
+    local procedure CheckWithholdingTaxLiable(PurchHeader: Record "Purchase Header"): Boolean
+    var
+        Vendor: Record Vendor;
+    begin
+        Vendor.Get(PurchHeader."Pay-to Vendor No.");
+        exit(Vendor."Withholding Tax Liable");
     end;
 }

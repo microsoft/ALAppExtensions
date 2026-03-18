@@ -108,6 +108,8 @@ page 31276 "Compensation Proposal CZC"
                 ShowCaption = false;
                 field(TotalBalance; TotalBalance)
                 {
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                     ApplicationArea = Basic, Suite;
                     Caption = 'Total Balance (LCY)';
                     Editable = false;

@@ -58,16 +58,19 @@ table 6227 "Sustainability Value Entry"
         }
         field(7; "Valued Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Sust. Valued Quantity';
             DecimalPlaces = 0 : 5;
         }
         field(8; "Item Ledger Entry Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Item Ledger Entry Quantity';
             DecimalPlaces = 0 : 5;
         }
         field(9; "Invoiced Quantity"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Invoiced Quantity';
             DecimalPlaces = 0 : 5;
         }

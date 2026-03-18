@@ -47,6 +47,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         IsInitialized: Boolean;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTPaymentJournalWithoutAppliedIdPostingErr()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -56,19 +57,20 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Create Vendor.
         WHTGeneralJournalLineWithoutAppliedIdPostingErr(
-          GenJournalLine."Account Type"::Vendor, LibraryPurchase.CreateVendorWithVATBusPostingGroup(''),
-          LibraryRandom.RandDec(10, 2));  // Blank VAT Business Posting Group, Random as Amount.
+          GenJournalLine."Account Type"::Vendor, LibraryRandom.RandDec(10, 2));  // Blank VAT Business Posting Group, Random as Amount.
     end;
 
-    local procedure WHTGeneralJournalLineWithoutAppliedIdPostingErr(AccountType: Enum "Gen. Journal Account Type"; AccountNumber: Code[20]; Amount: Decimal)
+    local procedure WHTGeneralJournalLineWithoutAppliedIdPostingErr(AccountType: Enum "Gen. Journal Account Type"; Amount: Decimal)
     var
         GenJournalLine: Record "Gen. Journal Line";
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
+        VendorNo: Code[20];
     begin
         UpdateGeneralLedgerSetup(true, false);  //  Round Amount for WHT Calc and True as Enable WHT.
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
+        VendorNo := CreateVendorWithPostingGroup('', WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         CreateGeneralJournalLineWithCurrency(
-          GenJournalLine, WHTPostingSetup, AccountType, GenJournalLine."Document Type"::Payment, AccountNumber, '', '', Amount);  // Blank as Applies To Doc No and Currency Code.
+          GenJournalLine, WHTPostingSetup, AccountType, GenJournalLine."Document Type"::Payment, VendorNo, '', '', Amount);  // Blank as Applies To Doc No and Currency Code.
 
         // [WHEN] Post Payment Journal with WHT.
         asserterror LibraryERM.PostGeneralJnlLine(GenJournalLine);
@@ -79,6 +81,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOnPostedPurchaseInvoiceWithWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -90,6 +93,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOnPostedPurchaseCreditMemoWithWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -109,13 +113,13 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Create G/L Account and WHT Posting Setup.
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
 
         // [WHEN] Create and Post Purchase Document with WHT.
         DocumentNo :=
           CreateAndPostPurchaseDocumentWithWHT(PurchaseLine, WHTPostingSetup, DocumentType,
-            LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group"),
-            CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group"), '');  // Blank Currency Code.
+            CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group"),
+            CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), '');  // Blank Currency Code.
 
         // [THEN] Verify WHT Entry - Unrealized Amount, Unrealized Base and G/L Entry - Amount.
         VerifyWHTEntriesAndGLEntry(
@@ -125,6 +129,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOnPostedPurchasePaymentJournalWithWHT()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -141,11 +146,11 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Create Payment Journal with WHT and apply Posted Purchase Invoice.
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
+        CreateWHTPostingSetup(WHTPostingSetup);
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         PostedInvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHT(PurchaseLine, WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group"), '');  // Blank Currency Code.
+            VendorNo, CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), '');  // Blank Currency Code.
         CreateGeneralJournalLineWithCurrency(
           GenJournalLine, WHTPostingSetup, GenJournalLine."Account Type"::Vendor, GenJournalLine."Document Type"::Payment,
           VendorNo, PostedInvoiceNo, '', PurchaseLine."Amount Including VAT" + 1);
@@ -161,6 +166,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PaymentJournalAppliedWithCurrencyAndWHT()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -178,13 +184,13 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Create Payment Journal with Currency Code and WHT and apply Posted Purchase Invoice.
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         CurrencyCode := CreateCurrencyWithExchangeRate();
         PostedInvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHT(
             PurchaseLine, WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group"),
-            CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group"), CurrencyCode);
+            CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group"),
+            CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), CurrencyCode);
 
         BankAccountLEAmount := PurchaseLine."Line Amount" *
           (1 - (GetWHTEntryAmount(PostedInvoiceNo) / PurchaseLine."Amount Including VAT") * WHTPostingSetup."Withholding Tax %" / 100);
@@ -202,6 +208,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PostedPurchaseUnrealizedAmountAndBaseOnWHTEntry()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -217,11 +224,11 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Create Purchase Invoice with WHT.
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         CreatePurchaseDocument(
           PurchaseLine, WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-          LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group"),
-          CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group"), '');  // Blank Currency Code.
+          CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group"),
+          CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), '');  // Blank Currency Code.
         PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
         WHTAmount := PurchaseLine.Amount * WHTPostingSetup."Withholding Tax %" / 100;
 
@@ -234,6 +241,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PostedPaymentJournalAmountOnGLEntry()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -250,8 +258,8 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Create Payment Journal with WHT and apply Posted Purchase Invoice.
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
+        CreateWHTPostingSetup(WHTPostingSetup);
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         PostedInvoiceNo :=
           PostedPurchaseInvoiceLCY(PurchaseLine, VATPostingSetup, WHTPostingSetup, VendorNo);
 
@@ -284,14 +292,14 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Create Payment Journal with WHT and apply Posted Purchase Invoice.
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         PostedInvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHT(
             PurchaseLine, WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
             VendorNo,
-            CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), CurrencyCode);
+            CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), CurrencyCode);
         CreateGeneralJournalLineWithCurrency(
           GenJournalLine, WHTPostingSetup, GenJournalLine."Account Type"::Vendor, GenJournalLine."Document Type"::Payment,
           PurchaseLine."Buy-from Vendor No.", PostedInvoiceNo, CurrencyCode, PurchaseLine."Amount Including VAT");  // Random as Amount.
@@ -311,6 +319,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure MultipleGenJournalWithDiffAccountTypeAmountOnGLEntry()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -330,10 +339,10 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         CurrencyCode := CreateCurrencyWithExchangeRate();
         UpdateAdditionalCurrency(CurrencyCode);
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        GLAccountNo := CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group");
-        UpdateVATBusPostingGroupOnGLAccount(GLAccountNo, VATPostingSetup."VAT Bus. Posting Group");
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
         CreateWHTPostingSetup(WHTPostingSetup, LibraryRandom.RandIntInRange(10, 20));
+        GLAccountNo := CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group");
+        UpdateVATBusPostingGroupOnGLAccount(GLAccountNo, VATPostingSetup."VAT Bus. Posting Group");
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         CreateGeneralJournalLineWithCurrency(
           GenJournalLine, WHTPostingSetup, GenJournalLine."Account Type"::Vendor, GenJournalLine."Document Type"::Invoice,
           VendorNo, '', CurrencyCode, -LibraryRandom.RandDecInRange(1, 10, 2));  // Random as Amount and Blank Applies To Doc No.
@@ -353,6 +362,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PaymentJournalWithCurrency()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -364,7 +374,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         Initialize();
         // [GIVEN] Enabled WHT
         UpdateGeneralLedgerSetup(true, false);
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         // [GIVEN] Bank Account with Currency
         CurrencyCode := CreateCurrencyWithExchangeRate();
         LibraryERM.CreateBankAccount(BankAccount);
@@ -387,6 +397,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntriesPartialPurchAppliesToID()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
@@ -433,6 +444,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntriesPartialPurchAppliesToDocNo()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
@@ -478,6 +490,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PurchaseCrMemoMultiplePartialAppln()
     var
         WHTPostingSetup: Record "Withholding Tax Posting Setup";
@@ -528,6 +541,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure TFS376116_Inconsistent()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -542,10 +556,10 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         Initialize();
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         WHTPostingSetup."Withholding Tax %" := 3;
         WHTPostingSetup.Modify();
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
 
         // [GIVEN] Posted "Invoice[1]" with Amount = 279729.45
         InvoiceNo[1] := PostInvoice(VendorNo, -279729.45, WHTPostingSetup);
@@ -582,6 +596,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure TFS376796_Inconsistent()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -596,10 +611,10 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         Initialize();
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         WHTPostingSetup."Withholding Tax %" := 3;
         WHTPostingSetup.Modify();
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
 
         // [GIVEN] Posted "Invoice[1]" with Amount = 254299.5
         InvoiceNo[1] := PostInvoice(VendorNo, -254299.5, WHTPostingSetup);
@@ -630,6 +645,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure ApplyPaymentToExceedingInvoices()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -645,10 +661,10 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         Initialize();
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         WHTPostingSetup."Withholding Tax %" := 3;
         WHTPostingSetup.Modify();
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
 
         AppliedAmount[1] := LibraryRandom.RandIntInRange(100, 200);
         AppliedAmount[2] := LibraryRandom.RandIntInRange(100, 200);
@@ -675,6 +691,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure TFS377165_Inconsistent()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -690,10 +707,10 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         Initialize();
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         WHTPostingSetup."Withholding Tax %" := 3;
         WHTPostingSetup.Modify();
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
 
         // [GIVEN] Posted 5 Invoice with Amount = 254299.5 each
         for Index := 1 to ArrayLen(InvoiceNo) do begin
@@ -710,6 +727,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchDocEmptyTypeNegativeAmtAndPurchInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -734,7 +752,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
 
         // [GIVEN] Posted Gen. Journal Line "D1" with Vendor "V", empty "Document Type" and negative Amount.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         GenJnlLineAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CreateAndPostGenJnlLineVendorAndSetAppliesToID(
@@ -743,7 +761,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Posted Purchase Invoice "D2" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         InvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, InvoiceNo);
 
         // [GIVEN] Gen. Journal Line "D3" with Vendor "V", "Document Type" = Payment, Amount is between ABS("D2".Amount) and ABS("D1".Amount + "D2".Amount).
@@ -761,6 +779,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchDocEmptyTypePositiveAmtAndPurchInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -785,7 +804,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
 
         // [GIVEN] Posted Gen. Journal Line "D1" with Vendor "V", empty "Document Type" and positive Amount.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         GenJnlLineAmount := LibraryRandom.RandDecInRange(100, 200, 2);
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CreateAndPostGenJnlLineVendorAndSetAppliesToID(
@@ -794,7 +813,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Posted Purchase Invoice "D2" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         InvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, InvoiceNo);
 
         // [GIVEN] Gen. Journal Line "D3" with Vendor "V", "Document Type" = Payment, Amount is between ABS("D2".Amount - "D1".Amount) and ABS("D2".Amount).
@@ -812,6 +831,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchInvoiceWHTWithAppliedPurchCrMemoWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -839,14 +859,14 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Posted Purchase Invoice "D1" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] Posted Purchase Cr. Memo "D2" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] "D2" is applied to "D1".
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CrMemoAmount := LibraryRandom.RandDecInRange(100, 200, 2);
         InvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         CreateAndPostPurchaseDocumentWithWHTAndAppliesToDocNo(WHTPostingSetup, PurchaseHeader."Document Type"::"Credit Memo",
-          VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceNo, 1, CrMemoAmount);
+          VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceNo, 1, CrMemoAmount);
 
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, InvoiceNo);
 
@@ -866,6 +886,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchInvoiceWHTAndPurchCrMemoWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -892,15 +913,15 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Posted Purchase Invoice "D1" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] Posted Purchase Cr. Memo "D2" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CrMemoAmount := LibraryRandom.RandDecInRange(100, 200, 2);
         DocumentNo.Add(
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount));
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount));
         DocumentNo.Add(
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::"Credit Memo",
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), CrMemoAmount));
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), CrMemoAmount));
 
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, DocumentNo.Get(1));
         SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::"Credit Memo", DocumentNo.Get(2));
@@ -915,12 +936,13 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         WHTAmount := WHTTaxManagement.WithholdingAmountJournal(GenJournalLine, false);
 
         // [THEN] WHT Amount of "D3" is equal to (InvoiceAmount - CrMemoAmount) * WHT%.
-        ExpectedWHTAmt := Round((InvoiceAmount - CrMemoAmount) * WHTPostingSetup."Withholding Tax %" / 100);
+        ExpectedWHTAmt := Round(InvoiceAmount * WHTPostingSetup."Withholding Tax %" / 100) - Round(CrMemoAmount * WHTPostingSetup."Withholding Tax %" / 100);
         Assert.AreEqual(ExpectedWHTAmt, WHTAmount, '');
     end;
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchInvoiceWHTWithAppliedPurchCrMemoNonWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -948,15 +970,15 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Posted Purchase Invoice "D1" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] Posted Purchase Cr. Memo "D2" for Vendor "V". Amount is less than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] "D2" is applied to "D1".
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CrMemoAmount := LibraryRandom.RandDecInRange(10, 20, 2);
         InvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         CreateAndPostPurchaseDocumentWithWHTAndAppliesToDocNo(
           WHTPostingSetup, PurchaseHeader."Document Type"::"Credit Memo",
-          VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceNo, 1, CrMemoAmount);
+          VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceNo, 1, CrMemoAmount);
 
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, InvoiceNo);
 
@@ -976,6 +998,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentApplToPurchInvoiceWHTAndPurchCrMemoNonWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1001,15 +1024,15 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Posted Purchase Invoice "D1" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] Posted Purchase Cr. Memo "D2" for Vendor "V". Amount is less than WHTSetup's Minimum Invoice Amount.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CrMemoAmount := LibraryRandom.RandDecInRange(10, 20, 2);
         DocumentNo.Add(
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount));
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount));
         DocumentNo.Add(
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::"Credit Memo",
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), CrMemoAmount));
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), CrMemoAmount));
 
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, DocumentNo.Get(1));
         SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::"Credit Memo", DocumentNo.Get(2));
@@ -1029,6 +1052,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentWithLessAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1053,11 +1077,11 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Two Posted Purchase Invoices for Vendor "V". Amounts are 1000 and 800.
         // [GIVEN] Two Posted Purchase Cr. Memos for Vendor "V" with Amounts > InvoiceAmount / 2. Amounts are 900 and 700.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         DiffAmount := LibraryRandom.RandDecInRange(10, 20, 2);
 
         CreateMultiplePostedPurchDocumentsWithAppliesToID(
-          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"));
+          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"));
         CalcWHTAmountOnInvoiceCrMemoAmounts(ExpectedWHTAmt, DocAmount, DiffAmount, WHTPostingSetup."Withholding Tax %");
 
         // [GIVEN] Gen. Journal Line "D" with Vendor "V", "Document Type" = Payment, Amount is between ABS(InvoiceAmounts - CrMemoAmounts) and ABS(InvoiceAmont).
@@ -1075,6 +1099,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentWithEqualAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1098,10 +1123,10 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Two Posted Purchase Invoices for Vendor "V". Amounts are 1000 and 800.
         // [GIVEN] Two Posted Purchase Cr. Memos for Vendor "V" with Amounts > InvoiceAmount / 2. Amounts are 900 and 700.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
 
         CreateMultiplePostedPurchDocumentsWithAppliesToID(
-          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"));
+          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"));
         CalcWHTAmountOnInvoiceCrMemoAmounts(ExpectedWHTAmt, DocAmount, 0, WHTPostingSetup."Withholding Tax %");
 
         // [GIVEN] Gen. Journal Line "D" with Vendor "V", "Document Type" = Payment, Amount is equal to ABS(InvoiceAmounts - CrMemoAmounts).
@@ -1119,6 +1144,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPaymentWithGreaterAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1143,11 +1169,11 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Two Posted Purchase Invoices for Vendor "V". Amounts are 1000 and 800.
         // [GIVEN] Two Posted Purchase Cr. Memos for Vendor "V" with Amounts > InvoiceAmount / 2. Amounts are 900 and 700.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         DiffAmount := LibraryRandom.RandDecInRange(10, 20, 2);
 
         CreateMultiplePostedPurchDocumentsWithAppliesToID(
-          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"));
+          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"));
         CalcWHTAmountOnInvoiceCrMemoAmounts(ExpectedWHTAmt, DocAmount, 0, WHTPostingSetup."Withholding Tax %");
 
         // [GIVEN] Gen. Journal Line "D" with Vendor "V", "Document Type" = Payment, Amount is larger than ABS(InvoiceAmounts - CrMemoAmounts).
@@ -1165,6 +1191,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchDocEmptyTypeNegativeAmtAndPurchInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1187,7 +1214,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
 
         // [GIVEN] Posted Gen. Journal Line "D1" with Vendor "V", empty "Document Type" and negative Amount.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         GenJnlLineAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CreateAndPostGenJnlLineVendorAndSetAppliesToID(
@@ -1196,7 +1223,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Posted Purchase Invoice "D2" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         InvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, InvoiceNo);
 
         // [GIVEN] Gen. Journal Line "D3" with Vendor "V", "Document Type" = Payment, Amount is equal to ABS("D1".Amount + "D2".Amount).
@@ -1217,6 +1244,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchDocEmptyTypePositiveAmtAndPurchInvoice()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1239,7 +1267,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
 
         // [GIVEN] Posted Gen. Journal Line "D1" with Vendor "V", empty "Document Type" and positive Amount.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         GenJnlLineAmount := LibraryRandom.RandDecInRange(100, 200, 2);
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CreateAndPostGenJnlLineVendorAndSetAppliesToID(
@@ -1248,7 +1276,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Posted Purchase Invoice "D2" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         InvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, InvoiceNo);
 
         // [GIVEN] Gen. Journal Line "D3" with Vendor "V", "Document Type" = Payment, Amount is equal to ABS("D2".Amount - "D1".Amount).
@@ -1269,6 +1297,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchInvoiceWHTWithAppliedPurchCrMemoWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1294,15 +1323,15 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Posted Purchase Invoice "D1" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] Posted Purchase Cr. Memo "D2" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] "D2" is applied to "D1".
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CrMemoAmount := LibraryRandom.RandDecInRange(100, 200, 2);
         InvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         CreateAndPostPurchaseDocumentWithWHTAndAppliesToDocNo(
           WHTPostingSetup, PurchaseHeader."Document Type"::"Credit Memo",
-          VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceNo, 1, CrMemoAmount);
+          VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceNo, 1, CrMemoAmount);
 
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, InvoiceNo);
 
@@ -1323,6 +1352,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchInvoiceWHTAndPurchCrMemoWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1347,15 +1377,15 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Posted Purchase Invoice "D1" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] Posted Purchase Cr. Memo "D2" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CrMemoAmount := LibraryRandom.RandDecInRange(100, 200, 2);
         DocumentNo.Add(
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount));
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount));
         DocumentNo.Add(
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::"Credit Memo",
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), CrMemoAmount));
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), CrMemoAmount));
 
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, DocumentNo.Get(1));
         SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::"Credit Memo", DocumentNo.Get(2));
@@ -1379,6 +1409,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchInvoiceWHTWithAppliedPurchCrMemoNonWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1404,15 +1435,15 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Posted Purchase Invoice "D1" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] Posted Purchase Cr. Memo "D2" for Vendor "V". Amount is less than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] "D2" is applied to "D1".
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CrMemoAmount := LibraryRandom.RandDecInRange(10, 20, 2);
         InvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         CreateAndPostPurchaseDocumentWithWHTAndAppliesToDocNo(
           WHTPostingSetup, PurchaseHeader."Document Type"::"Credit Memo",
-          VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceNo, 1, CrMemoAmount);
+          VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceNo, 1, CrMemoAmount);
 
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, InvoiceNo);
 
@@ -1433,6 +1464,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentApplToPurchInvoiceWHTAndPurchCrMemoNonWHT()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1456,15 +1488,15 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Posted Purchase Invoice "D1" for Vendor "V". Amount is greater than WHTSetup's Minimum Invoice Amount.
         // [GIVEN] Posted Purchase Cr. Memo "D2" for Vendor "V". Amount is less than WHTSetup's Minimum Invoice Amount.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         InvoiceAmount := LibraryRandom.RandDecInRange(1000, 2000, 2);
         CrMemoAmount := LibraryRandom.RandDecInRange(10, 20, 2);
         DocumentNo[1] :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), InvoiceAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), InvoiceAmount);
         DocumentNo[2] :=
           CreateAndPostPurchaseDocumentWithWHTAndAmount(WHTPostingSetup, PurchaseHeader."Document Type"::"Credit Memo",
-            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), CrMemoAmount);
+            VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), CrMemoAmount);
 
         AppliesToID := SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::Invoice, DocumentNo[1]);
         SetAppliesToIDVendorDocument(VendorLedgerEntry."Document Type"::"Credit Memo", DocumentNo[2]);
@@ -1487,6 +1519,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentWithLessAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1510,11 +1543,11 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Two Posted Purchase Invoices for Vendor "V". Amounts are 1000 and 800.
         // [GIVEN] Two Posted Purchase Cr. Memos for Vendor "V" with Amounts > InvoiceAmount / 2. Amounts are 900 and 700.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         DiffAmount := LibraryRandom.RandDecInRange(10, 20, 2);
 
         CreateMultiplePostedPurchDocumentsWithAppliesToID(
-          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"));
+          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"));
         CalcWHTAmountOnInvoiceCrMemoAmounts(ExpectedWHTAmt, DocAmount, DiffAmount, WHTPostingSetup."Withholding Tax %");
 
         // [GIVEN] Gen. Journal Line "D" with Vendor "V", "Document Type" = Payment, Amount is between ABS(InvoiceAmounts - CrMemoAmounts) and ABS(InvoiceAmont).
@@ -1536,6 +1569,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTAmtPostPaymentWithEqualAmountApplToMultipleInvoiceAndCrMemo()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -1558,10 +1592,10 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Two Posted Purchase Invoices for Vendor "V". Amounts are 1000 and 800.
         // [GIVEN] Two Posted Purchase Cr. Memos for Vendor "V" with Amounts > InvoiceAmount / 2. Amounts are 900 and 700.
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
 
         CreateMultiplePostedPurchDocumentsWithAppliesToID(
-          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"));
+          AppliesToID, DocAmount, TotalDocAmount, WHTPostingSetup, VendorNo, CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"));
         CalcWHTAmountOnInvoiceCrMemoAmounts(ExpectedWHTAmt, DocAmount, 0, WHTPostingSetup."Withholding Tax %");
 
         // [GIVEN] Gen. Journal Line "D" with Vendor "V", "Document Type" = Payment, Amount is equal to ABS(InvoiceAmounts - CrMemoAmounts).
@@ -1605,14 +1639,14 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Posted purchase invoice with WHT Entry "No." =  "X"
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
-        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group");
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         PostedInvoiceNo :=
           CreateAndPostPurchaseDocumentWithWHT(
             PurchaseLine, WHTPostingSetup, PurchaseHeader."Document Type"::Invoice,
             VendorNo,
-            CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group"), '');
+            CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), '');
         InvoiceWHTEntry.FindLast();
         InvoiceWHTEntry.TestField("Entry No.", LastWHTEntry."Entry No." + 1);
         InvoiceWHTEntry.TestField("Remaining Unrealized Base");
@@ -1649,6 +1683,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure PostMultipleWHTInvoiceWithPayment()
     var
         GenJournalLine: array[3] of Record "Gen. Journal Line";
@@ -1671,14 +1706,14 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
         // [GIVEN] Find VATPosting setup and WHT posting setup
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
         LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
 
         // [GIVEN] Create multiple vendors
-        CreateMultipleVendors(VendorNo, VATPostingSetup, GeneralPostingSetup."Gen. Bus. Posting Group");
+        CreateMultipleVendors(VendorNo, VATPostingSetup, GeneralPostingSetup."Gen. Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
 
         // [GIVEN] Create G/L Account
-        GLAccountNo := CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group");
+        GLAccountNo := CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group");
 
         // [GIVEN] Create multiple purchase invoices for multiples Vendors
         PostMultiplePurchaseInvoice(VendorNo, PostedInvoiceNo, WHTAmount, WHTPostingSetup, GLAccountNo);
@@ -1703,6 +1738,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ConfirmHandler')]
     procedure WHTEntryOnPostedPurchaseInvoiceJournalWithWHT()
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -1721,13 +1757,13 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         // [GIVEN] Create Purchase Invoice Journal with WHT .
         UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
+        CreateWHTPostingSetup(WHTPostingSetup);
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
         CreateGeneralJournalLineWithCurrency(
          GenJournalLine, WHTPostingSetup, GenJournalLine."Account Type"::Vendor, GenJournalLine."Document Type"::Invoice,
          VendorNo, '', '', -1000);
         GenJournalLine.Validate("Bal. Account Type", GenJournalLine."Bal. Account Type"::"G/L Account");
-        GenJournalLine.validate("Bal. Account No.", CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group"));
+        GenJournalLine.validate("Bal. Account No.", CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"));
         GenJournalLine.validate("Bal. VAT Bus. Posting Group", VATPostingSetup."VAT Bus. Posting Group");
         GenJournalLine.validate("Bal. VAT Prod. Posting Group", VATPostingSetup."VAT Prod. Posting Group");
         GenJournalLine.validate("Bal. Gen. Posting Type", GenJournalLine."Bal. Gen. Posting Type"::Purchase);
@@ -1743,6 +1779,58 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         WHTEntry.SetRange("Document No.", GenJournalLine."Document No.");
         WHTEntry.Findlast();
         Assert.AreEqual(VATEntry.Base, WHTEntry."Unrealized Base", 'Not equal');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure VerifyExternalDocumentNoAndBaseAmountOnWithholdingTaxEntry()
+    var
+        WithholdingTaxPostingSetup: Record "Withholding Tax Posting Setup";
+        VATPostingSetup: Record "VAT Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: array[2] of Record "Purchase Line";
+        WHTEntry: Record "Withholding Tax Entry";
+        GeneralPostingSetup: Record "General Posting Setup";
+        VendorNo: Code[20];
+        GLAccountNo: Code[20];
+        PostedDocumentNo: Code[20];
+        UnrealizedBase: Decimal;
+    begin
+        // [SCENARIO 285194] - Test to verify after Posting Purchase Invoice with WHT, WHT Entry - External Document No. is populated with Vendor Invoice No. and Unrealized Base is correctly calculated.
+        Initialize();
+
+        // [GIVEN] WHT Posting Setup has been created.
+        UpdateGeneralLedgerSetup(true, false);  // Round Amount for WHT Calc and True as Enable WHT.
+        LibraryERM.FindZeroVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
+        LibraryWithholdingTax.CreateWHTPostingSetupWithPayableGLAccounts(WithholdingTaxPostingSetup);
+        LibraryERM.CreateGeneralPostingSetupInvt(GeneralPostingSetup);
+
+        // [GIVEN] Create Vendor and GL Account with Posting Setup.
+        VendorNo := CreateVendorNoWithoutABN(VATPostingSetup."VAT Bus. Posting Group", GeneralPostingSetup."Gen. Bus. Posting Group", WithholdingTaxPostingSetup."Wthldg. Tax Bus. Post. Group");
+        GLAccountNo := CreateGLAccountWithPostingSetup(VATPostingSetup."VAT Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group", WithholdingTaxPostingSetup."Wthldg. Tax Prod. Post. Group");
+
+        // [GIVEN] Create Purchase Invoice with two lines with WHT and WHT Absorb Base
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendorNo);
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryRandom.RandText(30));
+        PurchaseHeader.Modify();
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine[1], PurchaseHeader, PurchaseLine[1].Type::"G/L Account", GLAccountNo, 1);
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine[2], PurchaseHeader, PurchaseLine[2].Type::"G/L Account", GLAccountNo, 10);
+        PurchaseLine[2].Validate("Withholding Tax Absorb Base", 600);
+        PurchaseLine[2].Modify();
+
+        // [WHEN] Post Purchase Invoice.
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Verify WHT Entry - External Document No. is populated with Vendor Invoice No. and Unrealized Base is correctly calculated.                
+        WHTEntry.SetRange("Document No.", PostedDocumentNo);
+        Assert.RecordCount(WHTEntry, 1);
+        WHTEntry.FindFirst();
+        UnrealizedBase := PurchaseLine[1].Amount + PurchaseLine[2]."Withholding Tax Absorb Base";
+        Assert.AreNearlyEqual(
+          UnrealizedBase, WHTEntry."Unrealized Base", LibraryERM.GetAmountRoundingPrecision(),
+          StrSubstNo(AmountErr, WHTEntry.FieldCaption("Unrealized Base"), UnrealizedBase));
+        Assert.AreEqual(PurchaseHeader."Vendor Invoice No.", WHTEntry."External Document No.", WHTEntry.FieldCaption("External Document No."));
+        Assert.AreEqual(PurchaseHeader."Pay-to Country/Region Code", WHTEntry."Country/Region Code", WHTEntry.FieldCaption("Country/Region Code"));
     end;
 
     [Test]
@@ -1990,10 +2078,10 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         exit(BankAccount."No.");
     end;
 
-    local procedure CreateVendorNoWithoutABN(VATBusPostingGroup: Code[20]; GenBusPostingGroup: Code[20]) VendorNo: Code[20]
+    local procedure CreateVendorNoWithoutABN(VATBusPostingGroup: Code[20]; GenBusPostingGroup: Code[20]; WHTBusPostingGroup: Code[20]) VendorNo: Code[20]
     begin
         VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATBusPostingGroup);
-        UpdateVendor(VendorNo, false, '', GenBusPostingGroup);
+        UpdateVendor(VendorNo, GenBusPostingGroup, WHTBusPostingGroup);
     end;
 
     local procedure CreateCurrencyWithExchangeRate(): Code[10]
@@ -2064,7 +2152,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         GenJournalLine.Modify(true);
     end;
 
-    local procedure CreateGLAccount(VATProdPostingGroup: Code[20]): Code[20]
+    local procedure CreateGLAccount(VATProdPostingGroup: Code[20]; WHTProdPostingGroup: Code[20]): Code[20]
     var
         GLAccount: Record "G/L Account";
         GenProductPostingGroup: Record "Gen. Product Posting Group";
@@ -2073,17 +2161,19 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         LibraryERM.CreateGLAccount(GLAccount);
         GLAccount.Validate("Gen. Prod. Posting Group", GenProductPostingGroup.Code);
         GLAccount.Validate("VAT Prod. Posting Group", VATProdPostingGroup);
+        GLAccount.Validate("Wthldg. Tax Prod. Post. Group", WHTProdPostingGroup);
         GLAccount.Modify(true);
         exit(GLAccount."No.");
     end;
 
-    local procedure CreateGLAccountWithPostingSetup(VATProdPostingGroup: Code[20]; GenProductPostingGroup: Code[20]): Code[20]
+    local procedure CreateGLAccountWithPostingSetup(VATProdPostingGroup: Code[20]; GenProductPostingGroup: Code[20]; WHTProdPostingGroup: Code[20]): Code[20]
     var
         GLAccount: Record "G/L Account";
     begin
         LibraryERM.CreateGLAccount(GLAccount);
         GLAccount.Validate("Gen. Prod. Posting Group", GenProductPostingGroup);
         GLAccount.Validate("VAT Prod. Posting Group", VATProdPostingGroup);
+        GLAccount.Validate("Wthldg. Tax Prod. Post. Group", WHTProdPostingGroup);
         GLAccount.Modify(true);
         exit(GLAccount."No.");
     end;
@@ -2171,9 +2261,9 @@ codeunit 148321 "ERM Withholding Tax Tests I"
     begin
         UpdateGeneralLedgerSetup(true, false);
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
-        GLAccountNo := CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
+        VendorNo := CreateVendorWithPostingGroup(VATPostingSetup."VAT Bus. Posting Group", WHTPostingSetup."Wthldg. Tax Bus. Post. Group");
+        GLAccountNo := CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group");
     end;
 
     local procedure FindCurrencyFactor(CurrencyCode: Code[10]): Decimal
@@ -2194,19 +2284,22 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         exit(Amount);
     end;
 
-    local procedure FindWHTPostingSetup(var WHTPostingSetup: Record "Withholding Tax Posting Setup")
+    local procedure CreateWHTPostingSetup(var WHTPostingSetup: Record "Withholding Tax Posting Setup")
+    var
+        WHTBusinessPostingGroup: Record "Wthldg. Tax Bus. Post. Group";
+        WHTProductPostingGroup: Record "Wthldg. Tax Prod. Post. Group";
     begin
-        // Enable test cases in NZ, create WHT Posting Setup.
-        if not WHTPostingSetup.Get('', '') then
-            CreateWHTPostingSetupWithRealizedWHTType(
-            WHTPostingSetup, '', '', WHTPostingSetup."Realized Withholding Tax Type"::Payment, LibraryRandom.RandIntInRange(30, 40));
+        LibraryWithholdingTax.CreateWHTBusinessPostingGroup(WHTBusinessPostingGroup);
+        LibraryWithholdingTax.CreateWHTProductPostingGroup(WHTProductPostingGroup);
+        CreateWHTPostingSetupWithRealizedWHTType(
+        WHTPostingSetup, WHTBusinessPostingGroup.Code, WHTProductPostingGroup.Code, WHTPostingSetup."Realized Withholding Tax Type"::Payment, LibraryRandom.RandIntInRange(30, 40));
     end;
 
     local procedure FindAndUpdateSetupsWithGSTAndWHTAndZeroVAT(var VATPostingSetup: Record "VAT Posting Setup"; var WHTPostingSetup: Record "Withholding Tax Posting Setup")
     begin
         UpdateGeneralLedgerSetup(true, false);
         LibraryERM.FindZeroVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        FindWHTPostingSetup(WHTPostingSetup);
+        CreateWHTPostingSetup(WHTPostingSetup);
     end;
 
     local procedure GetWHTEntryAmount(DocumentNo: Code[20]): Decimal
@@ -2238,7 +2331,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         exit(
           CreateAndPostPurchaseDocumentWithWHT(
             PurchaseLine, WHTPostingSetup, PurchaseHeader."Document Type"::Invoice, VendorNo,
-            CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group"), ''));
+            CreateGLAccount(VATPostingSetup."VAT Prod. Posting Group", WHTPostingSetup."Wthldg. Tax Prod. Post. Group"), ''));
     end;
 
     local procedure PostAppliedPaymentToInvoices(VendorNo: Code[20]; InvoiceNo: array[20] of Code[20]; AppliedAmount: array[20] of Decimal; WHTPostingSetup: Record "Withholding Tax Posting Setup"; InvoiceCount: Integer): Code[20]
@@ -2313,14 +2406,14 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         GLAccount.Modify(true);
     end;
 
-    local procedure UpdateVendor(VendorNo: Code[20]; Registered: Boolean; ABN: Text[11]; GenBusPostingGroup: Code[20])
+    local procedure UpdateVendor(VendorNo: Code[20]; GenBusPostingGroup: Code[20]; WHTBusPostingGroup: Code[20])
     var
         Vendor: Record Vendor;
     begin
         Vendor.Get(VendorNo);
         Vendor."Gen. Bus. Posting Group" := GenBusPostingGroup;
-        Vendor."WHT Registered" := Registered;
-        Vendor."WHT ABN" := ABN;
+        Vendor."Withholding Tax Liable" := true;
+        Vendor."Wthldg. Tax Bus. Post. Group" := WHTBusPostingGroup;
         Vendor.Modify();
     end;
 
@@ -2507,7 +2600,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         until GLEntry.Next() = 0;
     end;
 
-    local procedure CreateMultipleVendors(var VendorNo: array[3] of Code[20]; VATPostingSetup: Record "VAT Posting Setup"; GenBusPostingGroup: Code[20])
+    local procedure CreateMultipleVendors(var VendorNo: array[3] of Code[20]; VATPostingSetup: Record "VAT Posting Setup"; GenBusPostingGroup: Code[20]; WHTBusPostingGroup: Code[20])
     var
         Vendor: Record Vendor;
         i: Integer;
@@ -2516,6 +2609,8 @@ codeunit 148321 "ERM Withholding Tax Tests I"
             VendorNo[i] := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
             Vendor.Get(VendorNo[i]);
             Vendor."Gen. Bus. Posting Group" := GenBusPostingGroup;
+            Vendor."Withholding Tax Liable" := true;
+            Vendor."Wthldg. Tax Bus. Post. Group" := WHTBusPostingGroup;
             Vendor.Modify(true);
         end;
     end;
@@ -2611,6 +2706,19 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         WHTEntry.SetRange("Document No.", DocumentNo);
         WHTEntry.FindFirst();
         exit(WHTEntry."Unrealized Amount");
+    end;
+
+    local procedure CreateVendorWithPostingGroup(VendorBusPostingGroup: Code[20]; WHTBusPostingGroup: Code[20]): Code[20]
+    var
+        Vendor: Record Vendor;
+        VendorNo: Code[20];
+    begin
+        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VendorBusPostingGroup);
+        Vendor.Get(VendorNo);
+        Vendor.Validate("Withholding Tax Liable", true);
+        Vendor.Validate("Wthldg. Tax Bus. Post. Group", WHTBusPostingGroup);
+        Vendor.Modify(true);
+        exit(Vendor."No.");
     end;
 
     [ModalPageHandler]

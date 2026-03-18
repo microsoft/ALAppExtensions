@@ -1323,4 +1323,57 @@ codeunit 18077 "Library GST"
         Assert.AreNearlyEqual(Amount, GLEntry.Amount, GeneralLedgerSetup."Inv. Rounding Precision (LCY)",
         StrSubstNo(AmountLEVerifyErr, GLEntry.FieldCaption("Amount"), GLEntry.TableCaption));
     end;
+
+    procedure CreateNewFixedAssetsForReclassificationWithGSTDetails(
+            var FixedAsset: Record "Fixed Asset";
+            var FixedAsset2: Record "Fixed Asset";
+            var VATPostingSetup: Record "VAT Posting Setup";
+            var DepreciationBook: Record "Depreciation Book";
+            var FADepreciationBook: Record "FA Depreciation Book";
+            GSTGroupCode: Code[20];
+            HSNSACCode: Code[10];
+            FAPostingGroup: Code[20];
+            Availment: Boolean;
+            FAExempted: Boolean)
+    var
+        FASetup: Record "FA Setup";
+        LibraryFixedAsset: Codeunit "Library - Fixed Asset";
+    begin
+        CreateZeroVATPostingSetup(VATPostingSetup);
+        LibraryFixedAsset.CreateFAWithPostingGroup(FixedAsset);
+        LibraryFixedAsset.CreateFAWithPostingGroup(FixedAsset2);
+        CreateDepreciationBook(DepreciationBook);
+        CreateFADepreciationBook(FADepreciationBook, FixedAsset, DepreciationBook.Code);
+        CreateFADepreciationBook(FADepreciationBook, FixedAsset2, DepreciationBook.Code);
+        CreateAndUpdateFAClassSubclass(FixedAsset);
+
+        FixedAsset2.Validate("FA Class Code", FixedAsset."FA Class Code");
+        FixedAsset2.Validate("FA Subclass Code", FixedAsset."FA Subclass Code");
+        FixedAsset2.Validate("FA Location Code", FixedAsset."FA Location Code");
+
+        FASetup.Get();
+        FASetup.Validate("Default Depr. Book", DepreciationBook.Code);
+        FASetup.Modify(true);
+
+        UpdateFAPostingGroupGLAccounts(FixedAsset."FA Posting Group");
+
+        FixedAsset.Validate("GST Group Code", GSTGroupCode);
+        FixedAsset.Validate("HSN/SAC Code", HSNSACCode);
+        FixedAsset2.Validate("GST Group Code", GSTGroupCode);
+        FixedAsset2.Validate("HSN/SAC Code", HSNSACCode);
+
+        if Availment then begin
+            FixedAsset.Validate("GST Credit", FixedAsset."GST Credit"::Availment);
+            FixedAsset2.Validate("GST Credit", FixedAsset."GST Credit"::Availment)
+        end
+        else begin
+            FixedAsset.Validate("GST Credit", FixedAsset."GST Credit"::"Non-Availment");
+            FixedAsset2.Validate("GST Credit", FixedAsset."GST Credit"::"Non-Availment");
+        end;
+
+        FixedAsset.Validate(Exempted, FAExempted);
+        FixedAsset2.Validate(Exempted, FAExempted);
+        FixedAsset.Modify(true);
+        FixedAsset2.Modify(true);
+    end;
 }

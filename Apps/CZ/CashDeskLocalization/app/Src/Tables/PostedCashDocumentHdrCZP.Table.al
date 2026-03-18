@@ -58,6 +58,8 @@ table 11737 "Posted Cash Document Hdr. CZP"
         }
         field(7; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             CalcFormula = Sum("Posted Cash Document Line CZP".Amount where("Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.")));
             Caption = 'Amount';
             Editable = false;
@@ -65,6 +67,8 @@ table 11737 "Posted Cash Document Hdr. CZP"
         }
         field(8; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = Sum("Posted Cash Document Line CZP"."Amount (LCY)" where("Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.")));
             Caption = 'Amount (LCY)';
             Editable = false;
@@ -128,6 +132,7 @@ table 11737 "Posted Cash Document Hdr. CZP"
         }
         field(25; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
         }
@@ -182,6 +187,8 @@ table 11737 "Posted Cash Document Hdr. CZP"
         }
         field(55; "VAT Base Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = Sum("Posted Cash Document Line CZP"."VAT Base Amount (LCY)" where("Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.")));
             Caption = 'VAT Base Amount (LCY)';
             Editable = false;
@@ -189,6 +196,8 @@ table 11737 "Posted Cash Document Hdr. CZP"
         }
         field(56; "Amount Including VAT (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = Sum("Posted Cash Document Line CZP"."Amount Including VAT (LCY)" where("Cash Desk No." = field("Cash Desk No."), "Cash Document No." = field("No.")));
             Caption = 'Amount Including VAT (LCY)';
             Editable = false;

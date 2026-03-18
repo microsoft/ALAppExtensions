@@ -73,6 +73,7 @@ table 1863 "C5 LedTable"
         }
         field(15; BalanceCur; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Balance currency';
         }
         field(16; Currency; Code[3])
@@ -94,42 +95,52 @@ table 1863 "C5 LedTable"
         }
         field(20; BalanceMST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Balance in LCY';
         }
         field(21; TmpNumerals05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum05';
         }
         field(22; TmpNumerals06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum06';
         }
         field(23; TmpNumerals07; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum07';
         }
         field(24; TmpNumerals08; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum08';
         }
         field(25; TmpNumerals09; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum09';
         }
         field(26; TmpNumerals10; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum10';
         }
         field(27; TmpNumerals11; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum11';
         }
         field(28; TmpNumerals12; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum12';
         }
         field(29; TmpNumerals13; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TmpNum13';
         }
         field(30; CompanyGroupAcc; Text[10])
@@ -143,6 +154,7 @@ table 1863 "C5 LedTable"
         }
         field(32; Balance02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Balance in';
         }
         field(33; EDIIndex; Text[10])

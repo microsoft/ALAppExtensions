@@ -78,6 +78,7 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(17; CuryFreight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryFreight';
         }
         field(18; CuryID; Text[4])
@@ -90,14 +91,17 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(20; CuryPOAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryPOAmt';
         }
         field(21; CuryPOItemTotal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryPOItemTotal';
         }
         field(22; CuryRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRate';
         }
         field(23; CuryRateType; Text[6])
@@ -106,38 +110,47 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(24; CuryRcptTotAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRcptTotAmt';
         }
         field(25; CuryTaxTot00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxTot00';
         }
         field(26; CuryTaxTot01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxTot01';
         }
         field(27; CuryTaxTot02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxTot02';
         }
         field(28; CuryTaxTot03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTaxTot03';
         }
         field(29; CuryTxblTot00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblTot00';
         }
         field(30; CuryTxblTot01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblTot01';
         }
         field(31; CuryTxblTot02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblTot02';
         }
         field(32; CuryTxblTot03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryTxblTot03';
         }
         field(33; EDI; Integer)
@@ -150,6 +163,7 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(35; Freight; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Freight';
         }
         field(36; LastRcptDate; DateTime)
@@ -194,6 +208,7 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(46; POAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POAmt';
         }
         field(47; PODate; DateTime)
@@ -202,6 +217,7 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(48; POItemTotal; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'POItemTotal';
         }
         field(49; PONbr; Text[10])
@@ -230,6 +246,7 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(55; RcptTotAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RcptTotAmt';
         }
         field(56; ReqNbr; Text[10])
@@ -246,18 +263,22 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(59; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(60; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(61; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(62; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(63; S4Future07; DateTime)
@@ -402,18 +423,22 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(98; TaxTot00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxTot00';
         }
         field(99; TaxTot01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxTot01';
         }
         field(100; TaxTot02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxTot02';
         }
         field(101; TaxTot03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TaxTot03';
         }
         field(102; Terms; Text[2])
@@ -422,18 +447,22 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(103; TxblTot00; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblTot00';
         }
         field(104; TxblTot01; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblTot01';
         }
         field(105; TxblTot02; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblTot02';
         }
         field(106; TxblTot03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'TxblTot03';
         }
         field(107; User1; Text[30])
@@ -446,10 +475,12 @@ table 42811 "SL Hist. PurchOrd"
         }
         field(109; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(110; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(111; User5; Text[10])

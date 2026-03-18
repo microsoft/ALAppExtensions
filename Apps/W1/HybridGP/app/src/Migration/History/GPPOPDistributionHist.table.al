@@ -24,21 +24,25 @@ table 4055 "GPPOPDistributionHist"
         }
         field(4; CRDTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Credit Amount';
             DataClassification = CustomerContent;
         }
         field(5; ORCRDAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Credit Amount';
             DataClassification = CustomerContent;
         }
         field(6; DEBITAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Debit Amount';
             DataClassification = CustomerContent;
         }
         field(7; ORDBTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Debit Amount';
             DataClassification = CustomerContent;
         }
@@ -65,6 +69,7 @@ table 4055 "GPPOPDistributionHist"
         }
         field(12; XCHGRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exchange Rate';
             DataClassification = CustomerContent;
         }
@@ -106,6 +111,7 @@ table 4055 "GPPOPDistributionHist"
         }
         field(20; DENXRATE; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Denomination Exchange Rate';
             DataClassification = CustomerContent;
         }

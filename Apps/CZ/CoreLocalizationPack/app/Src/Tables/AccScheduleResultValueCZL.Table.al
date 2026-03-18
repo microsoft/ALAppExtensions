@@ -6,7 +6,7 @@ namespace Microsoft.Finance.FinancialReports;
 
 table 31113 "Acc. Schedule Result Value CZL"
 {
-    Caption = 'Acc. Schedule Result Value';
+    Caption = 'Fin. Report Result Value';
 
     fields
     {
@@ -28,6 +28,8 @@ table 31113 "Acc. Schedule Result Value CZL"
         }
         field(4; Value; Decimal)
         {
+            AutoFormatExpression = '';
+            AutoFormatType = 2;
             Caption = 'Value';
             DataClassification = CustomerContent;
 

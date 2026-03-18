@@ -77,6 +77,9 @@ table 10771 "Verifactu Document"
         key(Ke3; "Source Document Type", "Source Document No.")
         {
         }
+        key(Key4; "Submission Id")
+        {
+        }
     }
 
 }

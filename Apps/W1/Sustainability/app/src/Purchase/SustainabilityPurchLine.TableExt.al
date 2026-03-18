@@ -450,6 +450,7 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
         }
         field(6238; "Installation Multiplier"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Installation Multiplier';
             DataClassification = CustomerContent;
 
@@ -464,6 +465,7 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
         }
         field(6239; "Time Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Time Factor';
             MaxValue = 1;
             DataClassification = CustomerContent;

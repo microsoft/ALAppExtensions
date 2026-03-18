@@ -35,26 +35,31 @@ table 4053 "GPPMHist"
         }
         field(6; DOCAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Document Amount';
             DataClassification = CustomerContent;
         }
         field(7; CURTRXAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Current Trx Amount';
             DataClassification = CustomerContent;
         }
         field(8; DISTKNAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Taken Amount';
             DataClassification = CustomerContent;
         }
         field(9; DISCAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Amount';
             DataClassification = CustomerContent;
         }
         field(10; DSCDLRAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Dollar Amount';
             DataClassification = CustomerContent;
         }
@@ -90,16 +95,19 @@ table 4053 "GPPMHist"
         }
         field(17; TEN99AMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = '1099 Amount';
             DataClassification = CustomerContent;
         }
         field(18; WROFAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Write Off Amount';
             DataClassification = CustomerContent;
         }
         field(19; DISAMTAV; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Amount Available';
             DataClassification = CustomerContent;
         }
@@ -110,21 +118,25 @@ table 4053 "GPPMHist"
         }
         field(21; UN1099AM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Unapplied 1099 Amount';
             DataClassification = CustomerContent;
         }
         field(22; BKTPURAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Purchases Amount';
             DataClassification = CustomerContent;
         }
         field(23; BKTFRTAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Freight Amount';
             DataClassification = CustomerContent;
         }
         field(24; BKTMSCAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Misc Amount';
             DataClassification = CustomerContent;
         }
@@ -150,6 +162,7 @@ table 4053 "GPPMHist"
         }
         field(29; PPSAMDED; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'PPS Amount Deducted';
             DataClassification = CustomerContent;
         }
@@ -165,6 +178,7 @@ table 4053 "GPPMHist"
         }
         field(32; GSTDSAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Discount Amount';
             DataClassification = CustomerContent;
         }
@@ -201,31 +215,37 @@ table 4053 "GPPMHist"
         }
         field(39; PRCHAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Purchases Amount';
             DataClassification = CustomerContent;
         }
         field(40; TRDISAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Trade Discount Amount';
             DataClassification = CustomerContent;
         }
         field(41; MSCCHAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Misc Charges Amount';
             DataClassification = CustomerContent;
         }
         field(42; FRTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Freight Amount';
             DataClassification = CustomerContent;
         }
         field(43; TAXAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tax Amount';
             DataClassification = CustomerContent;
         }
         field(44; TTLPYMTS; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Total Payments';
             DataClassification = CustomerContent;
         }
@@ -271,6 +291,7 @@ table 4053 "GPPMHist"
         }
         field(53; DISAVTKN; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Discount Available Taken';
             DataClassification = CustomerContent;
         }
@@ -281,6 +302,7 @@ table 4053 "GPPMHist"
         }
         field(55; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Note Index';
             DataClassification = CustomerContent;
         }
@@ -291,6 +313,7 @@ table 4053 "GPPMHist"
         }
         field(57; RETNAGAM; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Retainage Amount';
             DataClassification = CustomerContent;
         }
@@ -356,6 +379,7 @@ table 4053 "GPPMHist"
         }
         field(70; BackoutTradeDisc; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Backout Trade Discount Amount';
             DataClassification = CustomerContent;
         }

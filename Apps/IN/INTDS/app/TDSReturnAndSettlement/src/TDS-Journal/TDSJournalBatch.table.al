@@ -126,6 +126,14 @@ table 18746 "TDS Journal Batch"
                 end;
             end;
         }
+        field(40; "No. of Lines"; Integer)
+        {
+            CalcFormula = count("TDS Journal Line" where("Journal Template Name" = field("Journal Template Name"), "Journal Batch Name" = field(Name)));
+            Caption = 'No. of Lines';
+            Editable = false;
+            FieldClass = FlowField;
+            ToolTip = 'Specifies the number of lines in this journal batch.';
+        }
     }
 
     keys

@@ -46,11 +46,13 @@ table 4036 "GPIVDistributionHist"
         }
         field(8; DEBITAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Debit Amount';
             DataClassification = CustomerContent;
         }
         field(9; CRDTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Credit Amount';
             DataClassification = CustomerContent;
         }

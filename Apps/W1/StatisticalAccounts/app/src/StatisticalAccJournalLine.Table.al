@@ -63,6 +63,8 @@ table 2631 "Statistical Acc. Journal Line"
         }
         field(13; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             DataClassification = CustomerContent;
         }
@@ -70,6 +72,7 @@ table 2631 "Statistical Acc. Journal Line"
         field(14; "Amount Change"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             CalcFormula = sum("Statistical Acc. Journal Line".Amount where("Journal Template Name" = field("Journal Template Name"),
                                                                    "Journal Batch Name" = field("Journal Batch Name"),
                                                                    "Statistical Account No." = field("Statistical Account No.")));

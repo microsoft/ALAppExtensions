@@ -52,10 +52,12 @@ table 47080 "SL PJEquip Buffer"
         field(10; eq_id06; Decimal)
         {
             Caption = 'eq_id06';
+            AutoFormatType = 0;
         }
         field(11; eq_id07; Decimal)
         {
             Caption = 'eq_id07';
+            AutoFormatType = 0;
         }
         field(12; eq_id08; Date)
         {
@@ -132,10 +134,12 @@ table 47080 "SL PJEquip Buffer"
         field(30; er_id06; Decimal)
         {
             Caption = 'er_id06';
+            AutoFormatType = 0;
         }
         field(31; er_id07; Decimal)
         {
             Caption = 'er_id07';
+            AutoFormatType = 0;
         }
         field(32; er_id08; Date)
         {

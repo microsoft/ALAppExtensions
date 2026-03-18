@@ -8,7 +8,7 @@ using System.Security.User;
 
 page 31205 "Acc. Schedule Result Hist. CZL"
 {
-    Caption = 'Acc. Schedule Result History';
+    Caption = 'Fin. Report Result History';
     Editable = false;
     PageType = List;
     SourceTable = "Acc. Schedule Result Hist. CZL";
@@ -33,7 +33,7 @@ page 31205 "Acc. Schedule Result Hist. CZL"
                 field("Old Value"; Rec."Old Value")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the old value of the account schedule result';
+                    ToolTip = 'Specifies the old value of the financial report result';
                 }
                 field("User ID"; Rec."User ID")
                 {

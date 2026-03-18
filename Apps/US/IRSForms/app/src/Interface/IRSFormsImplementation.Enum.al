@@ -4,19 +4,21 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-enum 10031 "IRS Forms Implementation" implements "IRS 1099 Create Form Docs", "IRS 1099 Printing", "IRS 1099 Form Box Calc.", "IRS 1099 IRIS Transmission", "IRS 1099 IRIS Xml"
+enum 10031 "IRS Forms Implementation" implements "IRS 1099 Create Form Docs", "IRS 1099 Printing", "IRS 1099 Form Box Calc.", "IRS 1099 IRIS Transmission", "IRS 1099 IRIS Xml", "IRS 1099 IRIS Configuration"
 {
     Extensible = true;
     DefaultImplementation = "IRS 1099 Create Form Docs" = "IRS 1099 Form Docs Impl.",
                             "IRS 1099 Printing" = "IRS 1099 Printing Impl.",
                             "IRS 1099 Form Box Calc." = "IRS 1099 Form Box Calc. Impl.",
                             "IRS 1099 IRIS Transmission" = "IRS 1099 IRIS Impl.",
-                            "IRS 1099 IRIS Xml" = "IRS 1099 IRIS Impl.";
+                            "IRS 1099 IRIS Xml" = "IRS 1099 IRIS Impl.",
+                            "IRS 1099 IRIS Configuration" = "Key Vault Client IRIS";
     UnknownValueImplementation = "IRS 1099 Create Form Docs" = "IRS 1099 Form Docs Impl.",
                             "IRS 1099 Printing" = "IRS 1099 Printing Impl.",
                             "IRS 1099 Form Box Calc." = "IRS 1099 Form Box Calc. Impl.",
                             "IRS 1099 IRIS Transmission" = "IRS 1099 IRIS Impl.",
-                            "IRS 1099 IRIS Xml" = "IRS 1099 IRIS Impl.";
+                            "IRS 1099 IRIS Xml" = "IRS 1099 IRIS Impl.",
+                            "IRS 1099 IRIS Configuration" = "Key Vault Client IRIS";
 
     value(0; Standard)
     {

@@ -505,6 +505,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Invt. Movement Temp. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow VAT Date Changing CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow Orig Doc VAT Date Ch CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow Ext.Doc.No. Changing CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Value Entry", ValueEntry.FieldNo("G/L Correction CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Amount Line", VATAmountLine.FieldNo("VAT Base (LCY) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Amount Line", VATAmountLine.FieldNo("VAT Amount (LCY) CZL"));
@@ -544,11 +545,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Name", VATStatementName.FieldNo("Comments CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Name", VATStatementName.FieldNo("Attachments CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Name", VATStatementName.FieldNo("XML Format CZL"));
-#if not CLEAN26
-#pragma warning disable AL0432
-        DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Template", VATStatementTemplate.FieldNo("XML Format CZL"));
-#pragma warning restore AL0432
-#endif
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Template", VATStatementTemplate.FieldNo("Allow Comments/Attachments CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::Vendor, Vendor.FieldNo("Validate Registration No. CZL"));

@@ -286,6 +286,7 @@ codeunit 139657 "ADL Migration Tests"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         NotificationHandler: Codeunit "Notification Handler";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         NotificationText: Text;
         RunId: Text;
         TriggerType: Text;
@@ -294,6 +295,7 @@ codeunit 139657 "ADL Migration Tests"
     begin
         // [SCENARIO 345772] Correct events are called after finishing ADL migration
         Initialize();
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         LibraryHybridManagement.SetExpectedProduct(Product);
         LibraryHybridManagement.SetExpectedRunId(RunId);
         LibraryHybridManagement.SetAdlCleanedUp(false);

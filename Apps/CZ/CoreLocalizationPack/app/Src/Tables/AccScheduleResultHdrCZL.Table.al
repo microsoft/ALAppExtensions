@@ -8,7 +8,7 @@ using System.Security.AccessControl;
 
 table 31099 "Acc. Schedule Result Hdr. CZL"
 {
-    Caption = 'Acc. Schedule Result Header';
+    Caption = 'Fin. Report Result Header';
     LookupPageId = "Acc. Sched. Res. Hdr. List CZL";
 
     fields
@@ -30,7 +30,7 @@ table 31099 "Acc. Schedule Result Hdr. CZL"
         }
         field(4; "Acc. Schedule Name"; Code[10])
         {
-            Caption = 'Acc. Schedule Name';
+            Caption = 'Fin. Report Name';
             DataClassification = CustomerContent;
             TableRelation = "Acc. Schedule Name";
         }

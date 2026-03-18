@@ -108,6 +108,7 @@ table 47057 "SL Site"
         field(24; IRDaysSupply; Decimal)
         {
             Caption = 'IRDaysSupply';
+            AutoFormatType = 0;
         }
         field(25; IRDemandID; Text[10])
         {
@@ -148,14 +149,17 @@ table 47057 "SL Site"
         field(34; IRServiceLevel; Decimal)
         {
             Caption = 'IRServiceLevel';
+            AutoFormatType = 0;
         }
         field(35; IRSftyStkDays; Decimal)
         {
             Caption = 'IRSftyStkDays';
+            AutoFormatType = 0;
         }
         field(36; IRSftyStkPct; Decimal)
         {
             Caption = 'IRSftyStkPct';
+            AutoFormatType = 0;
         }
         field(37; IRSftyStkPolicy; Text[1])
         {
@@ -172,6 +176,7 @@ table 47057 "SL Site"
         field(40; IRTargetOrdReq; Decimal)
         {
             Caption = 'IRTargetOrdReq';
+            AutoFormatType = 0;
         }
         field(41; IRTransferSiteID; Text[10])
         {
@@ -232,18 +237,22 @@ table 47057 "SL Site"
         field(55; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(56; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(57; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(58; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(59; S4Future07; DateTime)
         {
@@ -304,10 +313,12 @@ table 47057 "SL Site"
         field(73; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(74; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(75; User5; Text[10])
         {

@@ -131,6 +131,7 @@ tableextension 18443 "GST Service Shipment Header" extends "Service Shipment Hea
         }
         field(18465; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
             MinValue = 0;

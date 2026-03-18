@@ -360,17 +360,17 @@ page 10696 "Elec. VAT Submission Wizard"
         if GetLastErrorText() <> '' then
             exit(true);
         if CloseAction = CloseAction::OK then
-            If not GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Elec. VAT Submission Wizard") then
+            if not GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Elec. VAT Submission Wizard") then
                 if not Confirm(SetupNotCompletedQst) then
                     Error('');
     end;
 
     local procedure LoadTopBanners();
     begin
-        if MediaRepositoryStandard.GET('AssistedSetup-NoText-400px.png', FORMAT(CurrentClientType())) AND
+        if MediaRepositoryStandard.GET('AssistedSetup-NoText-400px.png', FORMAT(CurrentClientType())) and
            MediaRepositoryDone.GET('AssistedSetupDone-NoText-400px.png', FORMAT(CurrentClientType()))
         then
-            if MediaResourcesStd.GET(MediaRepositoryStandard."Media Resources Ref") AND
+            if MediaResourcesStd.GET(MediaRepositoryStandard."Media Resources Ref") and
                 MediaResourcesFinished.GET(MediaRepositoryDone."Media Resources Ref")
             then
                 TopBannerVisible := MediaResourcesFinished."Media Reference".HasValue();
@@ -400,7 +400,7 @@ page 10696 "Elec. VAT Submission Wizard"
             exit;
         if Backwards then
             Step := Step - 1
-        ELSE
+        else
             Step := Step + 1;
         EnableControls();
     end;
@@ -424,7 +424,7 @@ page 10696 "Elec. VAT Submission Wizard"
         if (not Backwards) and WelcomeStepVisible and (not ElecVATSetup.Enabled) then
             if not ConfirmCustomerConsent() then
                 exit(false);
-        if (Not Backwards) and AuthenticationStepVisible and (AuthorizationStatus <> AuthorizationStatus::Authorized) then
+        if (not Backwards) and AuthenticationStepVisible and (AuthorizationStatus <> AuthorizationStatus::Authorized) then
             if not ConfirmManagement.GetResponse(AuthorizationNotCompletedQst, false) then
                 exit(false);
         exit(true);

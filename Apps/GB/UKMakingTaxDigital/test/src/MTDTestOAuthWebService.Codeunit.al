@@ -15,6 +15,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     var
+        MTDHttpClientMockService: Codeunit MTDHttpClientMockService;
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryMakingTaxDigital: Codeunit "Library - Making Tax Digital";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
@@ -47,7 +48,7 @@ codeunit 148081 "MTDTestOAuthWebService"
         ReasonTxt: Label 'Reason: ';
 
     [Test]
-    [HandlerFunctions('ConfirmHandler,OAuth20SetupSetStatus_MPH,MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('ConfirmHandler,OAuth20SetupSetStatus_MPH,MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure CheckOAuthConfigured_GetPayments_AcceptOpenSetup_SetEnabled()
     var
@@ -68,7 +69,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure ParseErrors_Basic()
     begin
@@ -97,7 +98,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure ParseErrors_Advanced()
     var
@@ -127,7 +128,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure ParseErrors_Error429_TooManyReq()
     var
@@ -152,7 +153,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Negative()
     var
@@ -182,7 +183,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Positive()
     var
@@ -205,7 +206,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure MTDConnection_InvokeRequest_RefreshAccessToken_Positive_ExpireInSec()
     var
@@ -228,7 +229,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     end;
 
     [Test]
-    [HandlerFunctions('MTDWebClientFPHeaders_MPH')]
+    [HandlerFunctions('MTDWebClientFPHeaders_MPH,HttpClientHandler')]
     [Scope('OnPrem')]
     procedure FraudPreventionHeaders_WebClient()
     begin
@@ -241,6 +242,7 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         LibrarySetupStorage.Restore();
         LibraryVariableStorage.Clear();
+        MTDHttpClientMockService.ClearUnauthorizedVRNCalls();
 
         if IsInitialized then
             exit;
@@ -361,5 +363,12 @@ codeunit 148081 "MTDTestOAuthWebService"
     [HyperlinkHandler]
     procedure HyperlinkHandler(Message: Text[1024])
     begin
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        MTDHttpClientMockService.HandleRequest(Request, Response);
+        exit(false);
     end;
 }

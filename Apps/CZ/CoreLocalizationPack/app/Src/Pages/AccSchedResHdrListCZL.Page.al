@@ -8,7 +8,7 @@ using System.Security.User;
 
 page 31203 "Acc. Sched. Res. Hdr. List CZL"
 {
-    Caption = 'Acc. Schedule Res. Header List';
+    Caption = 'Fin. Report Res. Header List';
     CardPageId = "Acc. Sched. Res. Overview CZL";
     Editable = false;
     PageType = List;
@@ -24,22 +24,22 @@ page 31203 "Acc. Sched. Res. Hdr. List CZL"
                 field("Result Code"; Rec."Result Code")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the result code of account schedule results.';
+                    ToolTip = 'Specifies the result code of financial report results.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the description of account schedule results.';
+                    ToolTip = 'Specifies the description of financial report results.';
                 }
                 field("Date Filter"; Rec."Date Filter")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the date filter of account schedule results.';
+                    ToolTip = 'Specifies the date filter of financial report results.';
                 }
                 field("Acc. Schedule Name"; Rec."Acc. Schedule Name")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the name of the account schedule.';
+                    ToolTip = 'Specifies the name of the financial report.';
                 }
                 field("Column Layout Name"; Rec."Column Layout Name")
                 {
@@ -61,12 +61,12 @@ page 31203 "Acc. Sched. Res. Hdr. List CZL"
                 field("Result Date"; Rec."Result Date")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the created date of account schedule results.';
+                    ToolTip = 'Specifies the created date of financial report results.';
                 }
                 field("Result Time"; Rec."Result Time")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the created time of account schedule results.';
+                    ToolTip = 'Specifies the created time of financial report results.';
                 }
             }
         }
@@ -78,7 +78,7 @@ page 31203 "Acc. Sched. Res. Hdr. List CZL"
         {
             group("Acc. Schedule Result")
             {
-                Caption = 'Acc. Schedule Result';
+                Caption = 'Fin. Report Result';
                 action(Card)
                 {
                     ApplicationArea = Basic, Suite;
@@ -88,7 +88,7 @@ page 31203 "Acc. Sched. Res. Hdr. List CZL"
                     RunPageLink = "Result Code" = field("Result Code"),
                                   "Acc. Schedule Name" = field("Acc. Schedule Name");
                     ShortcutKey = 'Shift+F7';
-                    ToolTip = 'The funkction opens the account schedule result card.';
+                    ToolTip = 'The function opens the financial report result card.';
                 }
             }
         }
@@ -103,7 +103,7 @@ page 31203 "Acc. Sched. Res. Hdr. List CZL"
                     Caption = 'Print';
                     Ellipsis = true;
                     Image = Print;
-                    ToolTip = 'Allows print the account schedule results.';
+                    ToolTip = 'Allows print the financial report results.';
 
                     trigger OnAction()
                     begin
@@ -118,7 +118,7 @@ page 31203 "Acc. Sched. Res. Hdr. List CZL"
                     Caption = 'Export to Excel';
                     Ellipsis = true;
                     Image = ExportToExcel;
-                    ToolTip = 'Allows the account schedule results export to excel.';
+                    ToolTip = 'Allows the financial report results export to excel.';
 
                     trigger OnAction()
                     var

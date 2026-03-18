@@ -2321,6 +2321,30 @@ codeunit 148017 "FEC Audit File Export Tests"
         VerifyDateLetFieldReport(GLRegister, AuditFile, VendorPostingGroup."Payables Account", InvoiceDocNo, "Gen. Journal Document Type"::Payment, Today);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure VerifyAccentedCharactersFromTestExportGLEntries()
+    var
+        BankAccount: Record "Bank Account";
+        GLRegister: Record "G/L Register";
+        AuditFile: Record "Audit File";
+        StartingDate: Date;
+    begin
+        // [SCENARIO 617634] Using the audit file export some accented characters are replaced by other characters which makes the file unreadable in French localisation.
+        Initialize();
+
+        // [GIVEN] Gen. Journal Line is posted for Bank Account.
+        StartingDate := GetStartingDate();
+        CreateAndPostBankGenJnlLineFAC(BankAccount, "Gen. Journal Account Type"::"Bank Account", StartingDate);
+
+        // [WHEN] Export Tax Audit report.
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
+
+        // [THEN] Verify Accented characters are correctly exported.
+        GLRegister.FindLast();
+        VerifyExportGLEntriesReport(GLRegister, AuditFile, '', BankAccount."No.", BankAccount.Name);
+    end;
+
     local procedure Initialize()
     begin
         LibrarySetupStorage.Restore();
@@ -2360,7 +2384,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     local procedure CreateReadStream(var FileInStream: InStream; var AuditFile: Record "Audit File")
     begin
         AuditFile.CalcFields("File Content");
-        AuditFile."File Content".CreateInStream(FileInStream);
+        AuditFile."File Content".CreateInStream(FileInStream, TextEncoding::UTF8);
     end;
 
     local procedure RunFECExport(var AuditFile: Record "Audit File"; GLAccountNoFilter: Text; StartDate: Date; EndDate: Date; IncludeOpeningBalances: Boolean)
@@ -3634,6 +3658,15 @@ codeunit 148017 "FEC Audit File Export Tests"
                 Assert.AreEqual(AppliedEntries, FieldsValueArray[14], GetErrorTextForAssertStmnt(14));
                 Assert.AreEqual(GetFormattedDate(AppliedDate), FieldsValueArray[15], GetErrorTextForAssertStmnt(15));
             until GLEntry.Next() = 0;
+    end;
+
+    local procedure CreateAndPostBankGenJnlLineFAC(var BankAccount: Record "Bank Account"; DocumentType: Enum "Gen. Journal Document Type"; PostingDate: Date)
+    begin
+        CreateBankAccount(BankAccount);
+        BankAccount.Validate(Name, 'Banque Société GénéraleàÂ');
+        BankAccount.Modify(true);
+        CreateAndPostGenJnlLine(
+            "Gen. Journal Account Type"::"Bank Account", BankAccount."No.", DocumentType, PostingDate, -LibraryRandom.RandDecInRange(100, 200, 2));
     end;
 
     [ConfirmHandler]

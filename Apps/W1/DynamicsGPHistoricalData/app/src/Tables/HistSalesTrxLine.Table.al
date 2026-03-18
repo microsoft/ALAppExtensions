@@ -48,31 +48,42 @@ table 40903 "Hist. Sales Trx. Line"
         }
         field(9; "Unit Cost"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Unit Cost';
             BlankZero = true;
         }
         field(10; "Unit Price"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Unit Price';
             BlankZero = true;
         }
         field(11; Quantity; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity';
             BlankZero = true;
         }
         field(12; "Ext. Cost"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Ext. Cost';
             BlankZero = true;
         }
         field(13; "Ext. Price"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Ext. Price';
             BlankZero = true;
         }
         field(14; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Tax Amount';
             BlankZero = true;
         }

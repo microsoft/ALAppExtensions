@@ -24,7 +24,7 @@ page 31204 "Acc. Sched.Page.Drill-Down CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Formula';
                 Editable = false;
-                ToolTip = 'Specifies the formula of account schedule.';
+                ToolTip = 'Specifies the formula of financial report.';
             }
             repeater(Lines)
             {
@@ -33,17 +33,17 @@ page 31204 "Acc. Sched.Page.Drill-Down CZL"
                 field("Acc. Sched. Row No."; Rec."Acc. Sched. Row No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the number of the account schedule row.';
+                    ToolTip = 'Specifies the number of the financial report row.';
                 }
                 field("Totaling Type"; Rec."Totaling Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the totaling type for the account schedule line. The type determines which accounts within the totaling interval you specify in the Totaling field will be totaled.';
+                    ToolTip = 'Specifies the totaling type for the financial report line. The type determines which accounts within the totaling interval you specify in the Totaling field will be totaled.';
                 }
                 field(Expression; Rec.Expression)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies expression of account schedule.';
+                    ToolTip = 'Specifies expression of financial report.';
                 }
                 field(Amount; Rec.Amount)
                 {

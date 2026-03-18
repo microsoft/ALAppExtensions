@@ -32,7 +32,7 @@ codeunit 14108 "MX Contoso Localization"
         if Module = Enum::"Contoso Demo Data Module"::Bank then
             BankModule(ContosoDemoDataLevel);
 
-        UnBindSubscriptionDemoData(Module);
+        UnBindSubscriptionDemoData(ContosoDemoDataLevel, Module);
     end;
 
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
@@ -128,7 +128,8 @@ codeunit 14108 "MX Contoso Localization"
                 BindSubscription(CreateBankAccountMX);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    BindSubscription(CreateItemMX);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemMX);
                     BindSubscription(CreateLocationMX);
                     BindSubscription(CreateInvPostingSetupMX);
                     BindSubscription(CreateItemJournalTemplateMX);
@@ -162,7 +163,7 @@ codeunit 14108 "MX Contoso Localization"
         end;
     end;
 
-    local procedure UnBindSubscriptionDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure UnBindSubscriptionDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         CreateCurrencyExchRateMX: Codeunit "Create Currency Ex. Rate MX";
         CreateAccScheduleLineMX: Codeunit "Create Acc. Schedule Line MX";
@@ -187,7 +188,8 @@ codeunit 14108 "MX Contoso Localization"
                 UnbindSubscription(CreateBankAccountMX);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateItemMX);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnbindSubscription(CreateItemMX);
                     UnbindSubscription(CreateLocationMX);
                     UnbindSubscription(CreateInvPostingSetupMX);
                     UnbindSubscription(CreateItemJournalTemplateMX);

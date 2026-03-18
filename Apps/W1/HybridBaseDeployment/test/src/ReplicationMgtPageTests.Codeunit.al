@@ -3,6 +3,7 @@ codeunit 139653 "Replication Mgt Page Tests"
     // [FEATURE] [Intelligent Edge Hybrid Management Page]
     Subtype = Test;
     TestPermissions = Disabled;
+    TestType = UnitTest;
 
     local procedure Initialize(IsSaas: Boolean)
     var
@@ -10,6 +11,9 @@ codeunit 139653 "Replication Mgt Page Tests"
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        ReplicationTableMapping: Record "Replication Table Mapping";
+        SettingupTableMapping: Record "Migration Setup Table Mapping";
         GuidedExperience: Codeunit "Guided Experience";
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
         PermissionManager: Codeunit "Permission Manager";
@@ -30,8 +34,12 @@ codeunit 139653 "Replication Mgt Page Tests"
         IntelligentCloudSetup."Company Creation Task Status" := IntelligentCloudSetup."Company Creation Task Status"::Completed;
         IntelligentCloudSetup."Deployed Version" := 'V1.0';
         IntelligentCloudSetup."Latest Version" := 'V2.0';
+        IntelligentCloudSetup."Custom Migration Enabled" := false;
         IntelligentCloudSetup.Insert();
         LibraryVariableStorage.AssertEmpty();
+
+        ReplicationTableMapping.DeleteAll();
+        SettingupTableMapping.DeleteAll();
 
         if Initialized then
             exit;
@@ -42,9 +50,339 @@ codeunit 139653 "Replication Mgt Page Tests"
         BindSubscription(LibraryHybridManagement);
         HybridDeploymentSetup.Get();
         HybridCloudManagement.RefreshIntelligentCloudStatusTable();
+
+        // Mark system tables as not replicated to avoid permission issues in tests
+        IntelligentCloudStatus.SetRange("Table Id", 2000000000, 2000100000);
+        if IntelligentCloudStatus.FindSet() then
+            IntelligentCloudStatus.DeleteAll();
+
         Commit();
 
         Initialized := true;
+    end;
+
+    [Test]
+    procedure TestValidateTablesForReplicationTableMappingTable()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        ReplicationTableMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [SCENARIO] Custom migration validation succeeds when Replication Table Mapping contains a supported table with Replicate Data already enabled
+        Initialize(true);
+
+        // [GIVEN] Custom migration is enabled in the Intelligent Cloud Setup
+        if IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Custom Migration Enabled" := true;
+            IntelligentCloudSetup.Modify();
+        end;
+
+        // [GIVEN] A table mapping exists for the Customer table
+        ReplicationTableMapping.Init();
+        ReplicationTableMapping."Source Sql Table Name" := 'Customer';
+        ReplicationTableMapping."Destination Sql Table Name" := 'Customer';
+        ReplicationTableMapping.Insert();
+
+        // [GIVEN] The Customer table exists in Intelligent Cloud Status with Replicate Data = true
+        IntelligentCloudStatus.SetRange("Table Name", 'Customer');
+        if not IntelligentCloudStatus.IsEmpty() then
+            IntelligentCloudStatus.ModifyAll("Replicate Data", true)
+        else begin
+            IntelligentCloudStatus.Init();
+            IntelligentCloudStatus."Table Id" := Database::Customer;
+            IntelligentCloudStatus."Table Name" := 'Customer';
+            IntelligentCloudStatus."Replicate Data" := true;
+            IntelligentCloudStatus.Insert();
+        end;
+
+        // [WHEN] Validate the tables for migration
+        HybridCloudManagement.PrepareTablesForCustomMigration();
+
+        // [THEN] Validate successfully without any error.
+    end;
+
+    [Test]
+    procedure TestValidateTablesForReplicationTableMappingTableWithFalseReplicateData()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        ReplicationTableMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [SCENARIO] Custom migration validation succeeds and automatically enables Replicate Data for tables in Replication Table Mapping
+        Initialize(true);
+
+        // [GIVEN] Custom migration is enabled in the Intelligent Cloud Setup
+        if IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Custom Migration Enabled" := true;
+            IntelligentCloudSetup.Modify();
+        end;
+
+        // [GIVEN] A table mapping exists for the Customer table
+        ReplicationTableMapping.Init();
+        ReplicationTableMapping."Source Sql Table Name" := 'Customer';
+        ReplicationTableMapping."Destination Sql Table Name" := 'Customer';
+        ReplicationTableMapping.Insert();
+
+        // [GIVEN] The Customer table exists in Intelligent Cloud Status with Replicate Data = false
+        IntelligentCloudStatus.SetRange("Table Name", 'Customer');
+        if not IntelligentCloudStatus.IsEmpty() then
+            IntelligentCloudStatus.ModifyAll("Replicate Data", false)
+        else begin
+            IntelligentCloudStatus.Init();
+            IntelligentCloudStatus."Table Id" := Database::Customer;
+            IntelligentCloudStatus."Table Name" := 'Customer';
+            IntelligentCloudStatus."Replicate Data" := false;
+            IntelligentCloudStatus.Insert();
+        end;
+
+        // [WHEN] Prepare tables for custom migration
+        HybridCloudManagement.PrepareTablesForCustomMigration();
+
+        // [THEN] Validation succeeds and Replicate Data is automatically set to true for the Customer table
+        IntelligentCloudStatus.SetRange("Table Name", 'Customer');
+        if IntelligentCloudStatus.FindSet() then
+            repeat
+                Assert.AreEqual(true, IntelligentCloudStatus."Replicate Data", 'Replicate Data should be set to true for Customer table');
+            until IntelligentCloudStatus.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestValidateTablesForReplicationTableMappingPlatformTableNotSupported()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        ReplicationTableMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [SCENARIO] Custom migration validation fails when Replication Table Mapping includes an internal/sensitive platform table
+        Initialize(true);
+
+        // [GIVEN] Custom migration is enabled in the Intelligent Cloud Setup
+        if IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Custom Migration Enabled" := true;
+            IntelligentCloudSetup.Modify();
+        end;
+
+        // [GIVEN] A table mapping exists for the Access Control platform table
+        ReplicationTableMapping.Init();
+        ReplicationTableMapping."Source Sql Table Name" := 'Access Control';
+        ReplicationTableMapping."Destination Sql Table Name" := 'Access Control';
+        ReplicationTableMapping.Insert();
+
+        // [GIVEN] The Access Control table is marked for replication in Intelligent Cloud Status
+        IntelligentCloudStatus.SetRange("Table Name", 'Access Control');
+        if not IntelligentCloudStatus.IsEmpty() then
+            IntelligentCloudStatus.ModifyAll("Replicate Data", true)
+        else begin
+            IntelligentCloudStatus.Init();
+            IntelligentCloudStatus."Table Id" := Database::"Access Control";
+            IntelligentCloudStatus."Table Name" := 'Access Control';
+            IntelligentCloudStatus."Replicate Data" := true;
+            IntelligentCloudStatus.Insert();
+        end;
+
+        // [WHEN] Validate the tables for migration
+        asserterror HybridCloudManagement.PrepareTablesForCustomMigration();
+
+        // [THEN] An error is thrown indicating the internal table cannot be replicated
+        Assert.ExpectedError('The replication properties of the following tables cannot be changed because they are internal. Changing the replication of the sensitive tables is not allowed: Access Control');
+    end;
+
+    [Test]
+    procedure TestValidateTablesForReplicationTableMappingNonExistingTable()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        ReplicationTableMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [SCENARIO] Custom migration validation fails when Replication Table Mapping includes a table not configured for replication
+        Initialize(true);
+
+        // [GIVEN] Custom migration is enabled in the Intelligent Cloud Setup
+        if IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Custom Migration Enabled" := true;
+            IntelligentCloudSetup.Modify();
+        end;
+
+        // [GIVEN] A table mapping exists for a non-existing table named 'NonExistingTable'
+        ReplicationTableMapping.Init();
+        ReplicationTableMapping."Source Sql Table Name" := 'NonExistingTable';
+        ReplicationTableMapping."Destination Sql Table Name" := 'NonExistingTable';
+        ReplicationTableMapping.Insert();
+
+        // [WHEN] Validate the tables for migration
+        asserterror HybridCloudManagement.PrepareTablesForCustomMigration();
+
+        // [THEN] An error is thrown because the table does not exist and its replication properties cannot be changed
+        Assert.ExpectedError('The following tables do not exist in SaaS: NonExistingTable');
+    end;
+
+    [Test]
+    procedure TestValidateTablesForSetupTableMapping()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        MigrationSetupMapping: Record "Migration Setup Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [SCENARIO] Custom migration validation succeeds when Migration Setup Table Mapping contains a supported table with Replicate Data already enabled
+        Initialize(true);
+
+        // [GIVEN] Custom migration is enabled in the Intelligent Cloud Setup
+        if IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Custom Migration Enabled" := true;
+            IntelligentCloudSetup.Modify();
+        end;
+
+        IntelligentCloudStatus.Init();
+
+        // [GIVEN] A Migration Setup Table Mapping exists for the Customer table
+        MigrationSetupMapping.DeleteAll();
+        MigrationSetupMapping.Init();
+        MigrationSetupMapping."Destination Sql Table Name" := 'Customer';
+        MigrationSetupMapping."Source Sql Table Name" := 'Customer';
+        MigrationSetupMapping.Insert();
+
+        // [GIVEN] The Customer table exists in Intelligent Cloud Status with Replicate Data = true
+        IntelligentCloudStatus.SetRange("Table Name", 'Customer');
+        if not IntelligentCloudStatus.IsEmpty() then
+            IntelligentCloudStatus.ModifyAll("Replicate Data", true)
+        else begin
+            IntelligentCloudStatus.Init();
+            IntelligentCloudStatus."Table Id" := Database::Customer;
+            IntelligentCloudStatus."Table Name" := 'Customer';
+            IntelligentCloudStatus."Replicate Data" := true;
+            IntelligentCloudStatus.Insert();
+        end;
+
+        // [WHEN] Prepare tables for custom migration
+        HybridCloudManagement.PrepareTablesForCustomMigration();
+
+        // [THEN] Validation succeeds without any error 
+    end;
+
+    [Test]
+    procedure TestValidateTablesForSetupTableMappingWithFalseReplicateData()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        MigrationSetupMapping: Record "Migration Setup Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [SCENARIO] Custom migration validation succeeds and automatically enables Replicate Data for tables in Migration Setup Table Mapping
+        Initialize(true);
+
+        // [GIVEN] Custom migration is enabled in the Intelligent Cloud Setup
+        if IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Custom Migration Enabled" := true;
+            IntelligentCloudSetup.Modify();
+        end;
+
+        IntelligentCloudStatus.Init();
+
+        // [GIVEN] A Migration Setup Table Mapping exists for the Customer table
+        MigrationSetupMapping.DeleteAll();
+        MigrationSetupMapping.Init();
+        MigrationSetupMapping."Destination Sql Table Name" := 'Customer';
+        MigrationSetupMapping."Source Sql Table Name" := 'Customer';
+        MigrationSetupMapping.Insert();
+
+        // [GIVEN] The Customer table exists in Intelligent Cloud Status with Replicate Data = false
+        IntelligentCloudStatus.SetRange("Table Name", 'Customer');
+        if not IntelligentCloudStatus.IsEmpty() then
+            IntelligentCloudStatus.ModifyAll("Replicate Data", false)
+        else begin
+            IntelligentCloudStatus.Init();
+            IntelligentCloudStatus."Table Id" := Database::Customer;
+            IntelligentCloudStatus."Table Name" := 'Customer';
+            IntelligentCloudStatus."Replicate Data" := false;
+            IntelligentCloudStatus.Insert();
+        end;
+
+        // [WHEN] Prepare tables for custom migration
+        HybridCloudManagement.PrepareTablesForCustomMigration();
+
+        // [THEN] Validation succeeds and Replicate Data is automatically set to true for the Customer table
+        IntelligentCloudStatus.SetRange("Table Name", 'Customer');
+        if IntelligentCloudStatus.FindSet() then
+            repeat
+                Assert.AreEqual(true, IntelligentCloudStatus."Replicate Data", 'Replicate Data should be set to true for Customer table');
+            until IntelligentCloudStatus.Next() = 0;
+    end;
+
+    [Test]
+    procedure TestValidateTablesForSetupTableMappingPlatformTableNotSupported()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        MigrationSetupMapping: Record "Migration Setup Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [SCENARIO] Custom migration validation fails when Migration Setup Table Mapping includes an internal/sensitive platform table
+        Initialize(true);
+
+        // [GIVEN] Custom migration is enabled in the Intelligent Cloud Setup
+        if IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Custom Migration Enabled" := true;
+            IntelligentCloudSetup.Modify();
+        end;
+
+        // [GIVEN] A migration table mapping exists for the Access Control platform table
+        MigrationSetupMapping.Init();
+        MigrationSetupMapping."Destination Sql Table Name" := 'Access Control';
+        MigrationSetupMapping."Source Sql Table Name" := 'Access Control';
+        MigrationSetupMapping.Insert();
+
+        // [GIVEN] The Access Control table is marked for replication in Intelligent Cloud Status
+        IntelligentCloudStatus.SetRange("Table Name", 'Access Control');
+        if not IntelligentCloudStatus.IsEmpty() then begin
+            IntelligentCloudStatus."Replicate Data" := true;
+            IntelligentCloudStatus.Modify();
+        end
+        else begin
+            IntelligentCloudStatus.Init();
+            IntelligentCloudStatus."Table Id" := Database::"Access Control";
+            IntelligentCloudStatus."Table Name" := 'Access Control';
+            IntelligentCloudStatus."Replicate Data" := true;
+            IntelligentCloudStatus.Insert();
+        end;
+
+        // [WHEN] Validate the tables for migration
+        asserterror HybridCloudManagement.PrepareTablesForCustomMigration();
+
+        // [THEN] An error is thrown indicating the internal table cannot be replicated
+        Assert.ExpectedError('The replication properties of the following tables cannot be changed because they are internal. Changing the replication of the sensitive tables is not allowed: Access Control');
+    end;
+
+    [Test]
+    procedure TestValidateTablesForSetupTableMappingNonExistingTable()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        MigrationSetupMapping: Record "Migration Setup Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        // [SCENARIO] Custom migration validation fails when Migration Setup Table Mapping includes a table not configured for replication
+        Initialize(true);
+
+        // [GIVEN] Custom migration is enabled in the Intelligent Cloud Setup
+        if IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Custom Migration Enabled" := true;
+            IntelligentCloudSetup.Modify();
+        end;
+
+        // [GIVEN] A migration table mapping exists for a non-existing table named 'NonExistingTable'
+        MigrationSetupMapping.Init();
+        MigrationSetupMapping."Destination Sql Table Name" := 'NonExistingTable';
+        MigrationSetupMapping."Source Sql Table Name" := 'NonExistingTable';
+        MigrationSetupMapping.Insert();
+
+        // [WHEN] Validate the tables for migration
+        asserterror HybridCloudManagement.PrepareTablesForCustomMigration();
+
+        // [THEN] An error is thrown because the table does not exist and its replication properties cannot be changed
+        Assert.ExpectedError('The following tables do not exist in SaaS: NonExistingTable');
     end;
 
     [Test]
@@ -55,7 +393,6 @@ codeunit 139653 "Replication Mgt Page Tests"
         CloudMigrationManagement: TestPage "Cloud Migration Management";
     begin
         // [SCENARIO] User Opens up the Hybrid Replication Management Page and clicks 'Run Replication Now' button on the ribbon.
-
         // Remove Inprogress and Failed run records for past 24 hrs
         HybridReplicationSummary.SetFilter("Start Time", '>%1', (CurrentDateTime() - 86400000));
         if not HybridReplicationSummary.IsEmpty() then begin

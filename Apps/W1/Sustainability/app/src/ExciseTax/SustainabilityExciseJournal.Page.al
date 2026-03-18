@@ -56,6 +56,7 @@ page 6287 "Sustainability Excise Journal"
 
                         if Page.RunModal(Page::"Sust. Excise Jnl. Batches", SustainabilityExciseJnlBatch) = Action::LookupOK then begin
                             ResetFilterOnLinesWithNewBatch(SustainabilityExciseJnlBatch);
+                            InitializeAndSetControlAppearance();
                             CurrPage.Update(false);
                         end;
                     end;
@@ -67,6 +68,7 @@ page 6287 "Sustainability Excise Journal"
                         CurrPage.SaveRecord();
                         SustainabilityExciseJnlBatch.Get(Rec.GetRangeMax("Journal Template Name"), CurrentJournalBatchName);
                         ResetFilterOnLinesWithNewBatch(SustainabilityExciseJnlBatch);
+                        InitializeAndSetControlAppearance();
                         CurrPage.Update(false);
                     end;
                 }
@@ -484,6 +486,7 @@ page 6287 "Sustainability Excise Journal"
         SustainabilityExciseJnlBatch := SustainabilityExciseJournalMgt.SelectBatch(SustainabilityExciseJnlTemplate, CurrentJournalBatchName);
 
         ResetFilterOnLinesWithNewBatch(SustainabilityExciseJnlBatch);
+        InitializeAndSetControlAppearance();
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
@@ -507,12 +510,15 @@ page 6287 "Sustainability Excise Journal"
     end;
 
     var
-        CurrentJournalBatchName: Code[10];
         ShortcutDimCode: array[8] of Code[20];
         DimVisible1, DimVisible2, DimVisible3, DimVisible4, DimVisible5, DimVisible6, DimVisible7, DimVisible8 : Boolean;
         EnableEPR: Boolean;
         EnableCBAM: Boolean;
         CalculateExciseJournalQst: Label 'Do you want to calculate the journal line?';
+
+    protected var
+        CurrentJournalBatchName: Code[10];
+        EnableExciseTax: Boolean;
 
     local procedure ResetFilterOnLinesWithNewBatch(SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch")
     begin
@@ -536,14 +542,18 @@ page 6287 "Sustainability Excise Journal"
         SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
     begin
         InitializeControlAppearance();
-        SustainabilityExciseJnlBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name");
+        if not SustainabilityExciseJnlBatch.Get(Rec.GetRangeMax("Journal Template Name"), CurrentJournalBatchName) then
+            exit;
+
         EnableEPR := SustainabilityExciseJnlBatch.Type = SustainabilityExciseJnlBatch.Type::EPR;
         EnableCBAM := SustainabilityExciseJnlBatch.Type = SustainabilityExciseJnlBatch.Type::CBAM;
+        EnableExciseTax := SustainabilityExciseJnlBatch.Type = SustainabilityExciseJnlBatch.Type::Excises;
     end;
 
     local procedure InitializeControlAppearance()
     begin
         EnableEPR := false;
         EnableCBAM := false;
+        EnableExciseTax := false;
     end;
 }

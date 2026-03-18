@@ -95,16 +95,22 @@ table 18766 "Provisional Entry"
         }
         field(12; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(13; "Debit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Debit Amount';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(14; "Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Credit Amount';
             DataClassification = EndUserIdentifiableInformation;
         }
@@ -206,6 +212,8 @@ table 18766 "Provisional Entry"
         }
         field(32; "Amount LCY"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount LCY';
             DataClassification = EndUserIdentifiableInformation;
         }

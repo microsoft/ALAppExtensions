@@ -6,7 +6,6 @@ namespace Microsoft.Finance.AuditFileExport;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
-using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
@@ -827,30 +826,9 @@ codeunit 10826 "Generate File FEC"
         TextLine: Text;
         BlobOutStream: OutStream;
     begin
-        TempBlob.CreateOutStream(BlobOutStream);
+        TempBlob.CreateOutStream(BlobOutStream, TextEncoding::UTF8);
         foreach TextLine in LinesList do
             BlobOutStream.WriteText(TextLine);
-    end;
-
-    local procedure GetCustomerReceivablesAccount(CustomerNo: Code[20]): Code[20]
-    var
-        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
-        CustomerPostingGroup: Record "Customer Posting Group";
-    begin
-        DetailedCustLedgEntry.SetRange("Customer No.", CustomerNo);
-        DetailedCustLedgEntry.FindFirst();
-        CustomerPostingGroup.Get(DetailedCustLedgEntry."Posting Group");
-        exit(CustomerPostingGroup."Receivables Account");
-    end;
-
-    local procedure GetVendorPayablesAccount(VendorNo: Code[20]): Code[20]
-    var
-        Vendor: Record Vendor;
-        VendorPostingGroup: Record "Vendor Posting Group";
-    begin
-        Vendor.Get(VendorNo);
-        VendorPostingGroup.Get(Vendor."Vendor Posting Group");
-        exit(VendorPostingGroup."Payables Account");
     end;
 
     local procedure AllowMultiplePosting(var PartyNo: Code[20]; var PartyName: Text[100]; GLEntry: Record "G/L Entry"; Customer: Record Customer)
@@ -876,17 +854,5 @@ codeunit 10826 "Generate File FEC"
                         PartyName := Customer.Name;
                     end;
             until AltCustPostGroup.Next() = 0;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Exch. Rate Adjmt. Process", 'OnAfterInitDtldCustLedgerEntry', '', false, false)]
-    local procedure UpdateDtldCustLedgerEntryCurrAdjmtAccNo(var DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry")
-    begin
-        DetailedCustLedgEntry."Curr. Adjmt. G/L Account No." := GetCustomerReceivablesAccount(DetailedCustLedgEntry."Customer No.");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Exch. Rate Adjmt. Process", 'OnAfterInitDtldVendLedgerEntry', '', false, false)]
-    local procedure UpdateDtldVendLedgerEntryCurrAdjmtAccNo(var DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry")
-    begin
-        DetailedVendorLedgEntry."Curr. Adjmt. G/L Account No." := GetVendorPayablesAccount(DetailedVendorLedgEntry."Vendor No.");
     end;
 }

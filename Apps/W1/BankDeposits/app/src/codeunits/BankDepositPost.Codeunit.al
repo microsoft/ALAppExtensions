@@ -85,9 +85,6 @@ codeunit 1690 "Bank Deposit-Post"
         Rec.LockTable();
         GenJournalLine.LockTable();
 
-        InsertPostedBankDepositHeader(Rec);
-        CopyBankComments(Rec);
-
         GenJournalTemplate.Get(Rec."Journal Template Name");
         DocumentType := Enum::"Gen. Journal Document Type"::" ";
         PostingDate := Rec."Posting Date";
@@ -111,20 +108,16 @@ codeunit 1690 "Bank Deposit-Post"
             GenJnlCheckLine.RunCheck(GenJournalLine);
         until GenJournalLine.Next() = 0;
 
-        Commit();
+        BankDepositPost.SetPostedBankDepositHeaderCreated(false);
         BankDepositPost.SetCurrentDeposit(Rec);
         BindSubscription(BankDepositPost);
-        if not GenJnlPostBatch.Run(GenJournalLine) then begin
-            CleanPostedBankDepositHeaderAndLines(Rec."No.");
-            Commit();
-            Error(GetLastErrorText());
-        end;
+        GenJnlPostBatch.Run(GenJournalLine);
         UnbindSubscription(BankDepositPost);
+
         if Rec."Post as Lump Sum" then begin
             BankDepositPost.GetLumpSumBalanceEntry(GLEntry);
             SetBalancingEntryToPostedDepositLines(Rec, GLEntry);
         end;
-
 
         DeleteBankComments(Rec);
 
@@ -336,6 +329,7 @@ codeunit 1690 "Bank Deposit-Post"
         CurrentBankDepositHeader: Record "Bank Deposit Header";
         LineNo: Integer;
         ProgressDialog: Dialog;
+        PostedBankDepositHeaderCreated: Boolean;
         EmptyDepositErr: Label 'The deposit must have lines.';
         TotalAmountsMustMatchErr: Label 'The %1 must match the %2.', Comment = '%1 - total amount, %2 - total amount on the lines';
         LinesInSameTransactionForLumpSumErr: Label 'The lines of the deposit must belong to the same transaction when posting as lump sum. Please verify that %1, %2 and %3 are the same for every line or modify the template used to allow unbalanced documents.', Comment = '%1 - posting date field caption, %2 - document type field caption, %3 - document number field caption';
@@ -384,6 +378,7 @@ codeunit 1690 "Bank Deposit-Post"
         PostedBankDepositHeader."No. Printed" := 0;
         OnBeforePostedBankDepositHeaderInsert(PostedBankDepositHeader, BankDepositHeader);
         PostedBankDepositHeader.Insert();
+        SetPostedBankDepositHeaderCreated(true);
         RecordLinkManagement.CopyLinks(BankDepositHeader, PostedBankDepositHeader);
     end;
 
@@ -391,6 +386,11 @@ codeunit 1690 "Bank Deposit-Post"
     begin
         LineNo := 0;
         CurrentBankDepositHeader.Copy(BankDepositHeader);
+    end;
+
+    internal procedure SetPostedBankDepositHeaderCreated(Value: Boolean)
+    begin
+        PostedBankDepositHeaderCreated := Value;
     end;
 
     local procedure AssignVATDateIfEmpty(var GenJournalLine: Record "Gen. Journal Line")
@@ -402,29 +402,6 @@ codeunit 1690 "Bank Deposit-Post"
             else
                 GenJournalLine."VAT Reporting Date" := GLSetup.GetVATDate(GenJournalLine."Posting Date", GenJournalLine."Document Date");
         end;
-    end;
-
-    local procedure CleanPostedBankDepositHeaderAndLines(BankDepositNo: Code[20])
-    var
-        BankAccCommentLine: Record "Bank Acc. Comment Line";
-        PostedBankDepositHeaderLocal: Record "Posted Bank Deposit Header";
-        PostedBankDepositLine: Record "Posted Bank Deposit Line";
-        IsHandled: Boolean;
-    begin
-        IsHandled := false;
-        OnBeforeCleanPostedBankDepositHeaderAndLines(BankDepositNo, IsHandled);
-        if IsHandled then
-            exit;
-
-        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositNo);
-        PostedBankDepositLine.DeleteAll();
-        if not PostedBankDepositHeaderLocal.Get(BankDepositNo) then
-            exit;
-        BankAccCommentLine.SetRange("Table Name", BankAccCommentLine."Table Name"::"Posted Bank Deposit Header");
-        BankAccCommentLine.SetRange("Bank Account No.", PostedBankDepositHeaderLocal."Bank Account No.");
-        BankAccCommentLine.SetRange("No.", PostedBankDepositHeaderLocal."No.");
-        BankAccCommentLine.DeleteAll();
-        PostedBankDepositHeaderLocal.Delete();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnBeforePostGenJnlLine', '', false, false)]
@@ -460,6 +437,12 @@ codeunit 1690 "Bank Deposit-Post"
             SetLumpSumBalanceEntry(PostingGenJournalLine);
             exit;
         end;
+
+        if not PostedBankDepositHeaderCreated then begin
+            InsertPostedBankDepositHeader(CurrentBankDepositHeader);
+            CopyBankComments(CurrentBankDepositHeader);
+        end;
+
         LineNo += 1;
         PostedBankDepositLine."Bank Deposit No." := CurrentBankDepositHeader."No.";
         PostedBankDepositLine."Line No." := LineNo;
@@ -503,7 +486,6 @@ codeunit 1690 "Bank Deposit-Post"
         PostedBankDepositLine.Insert();
     end;
 
-
     [IntegrationEvent(false, false)]
     local procedure OnAfterCheckBankDeposit(BankDepositHeader: Record "Bank Deposit Header")
     begin
@@ -544,7 +526,6 @@ codeunit 1690 "Bank Deposit-Post"
     begin
     end;
 
-
     [IntegrationEvent(false, false)]
     local procedure OnRunOnAfterPostBalancingEntry(var GenJournalLine: Record "Gen. Journal Line")
     begin
@@ -555,10 +536,13 @@ codeunit 1690 "Bank Deposit-Post"
     begin
     end;
 
+#if not CLEAN28
+    [Obsolete('This event is obsolete and will be removed in a future version.', '28.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCleanPostedBankDepositHeaderAndLines(var BankDepositNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
+#endif
 }
 
 

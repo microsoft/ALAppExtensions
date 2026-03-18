@@ -114,6 +114,7 @@ tableextension 18154 "GST Sales Shipment Header Ext" extends "Sales Shipment Hea
         }
         field(18157; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
         }

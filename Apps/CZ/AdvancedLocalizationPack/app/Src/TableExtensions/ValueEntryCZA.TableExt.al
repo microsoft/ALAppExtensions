@@ -34,6 +34,7 @@ tableextension 31263 "Value Entry CZA" extends "Value Entry"
         }
         field(31007; "Currency Factor CZA"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DecimalPlaces = 0 : 15;
             DataClassification = CustomerContent;

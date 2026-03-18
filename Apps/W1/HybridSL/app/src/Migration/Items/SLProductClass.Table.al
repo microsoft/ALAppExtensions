@@ -20,6 +20,7 @@ table 47104 "SL ProductClass"
         field(2; CFOvhMatlRate; Decimal)
         {
             Caption = 'CFOvhMatlRate';
+            AutoFormatType = 0;
         }
         field(3; ChkOrdQty; Text[1])
         {
@@ -44,6 +45,7 @@ table 47104 "SL ProductClass"
         field(8; CVOvhMatlRate; Decimal)
         {
             Caption = 'CVOvhMatlRate';
+            AutoFormatType = 0;
         }
         field(9; Descr; Text[30])
         {
@@ -172,6 +174,7 @@ table 47104 "SL ProductClass"
         field(40; DfltStkWt; Decimal)
         {
             Caption = 'DfltStkWt';
+            AutoFormatType = 0;
         }
         field(41; DfltStkWtUnit; Text[6])
         {
@@ -224,6 +227,7 @@ table 47104 "SL ProductClass"
         field(53; MinGrossProfit; Decimal)
         {
             Caption = 'MinGrossProfit';
+            AutoFormatType = 0;
         }
         field(54; NoteID; Integer)
         {
@@ -232,10 +236,12 @@ table 47104 "SL ProductClass"
         field(55; PFOvhMatlRate; Decimal)
         {
             Caption = 'PFOvhMatlRate';
+            AutoFormatType = 0;
         }
         field(56; PVOvhMatlRate; Decimal)
         {
             Caption = 'PVOvhMatlRate';
+            AutoFormatType = 0;
         }
         field(57; RollupCost; Integer)
         {
@@ -256,18 +262,22 @@ table 47104 "SL ProductClass"
         field(61; S4Future03; Decimal)
         {
             Caption = 'S4Future03';
+            AutoFormatType = 0;
         }
         field(62; S4Future04; Decimal)
         {
             Caption = 'S4Future04';
+            AutoFormatType = 0;
         }
         field(63; S4Future05; Decimal)
         {
             Caption = 'S4Future05';
+            AutoFormatType = 0;
         }
         field(64; S4Future06; Decimal)
         {
             Caption = 'S4Future06';
+            AutoFormatType = 0;
         }
         field(65; S4Future07; DateTime)
         {
@@ -304,10 +314,12 @@ table 47104 "SL ProductClass"
         field(73; User3; Decimal)
         {
             Caption = 'User3';
+            AutoFormatType = 0;
         }
         field(74; User4; Decimal)
         {
             Caption = 'User4';
+            AutoFormatType = 0;
         }
         field(75; User5; Text[10])
         {

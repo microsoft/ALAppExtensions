@@ -66,6 +66,8 @@ tableextension 18151 "GST Sales Line Ext" extends "Sales Line"
         }
         field(18150; "GST Assessable Value (LCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'GST Assessable Value (LCY)';
             DataClassification = CustomerContent;
         }
@@ -86,16 +88,22 @@ tableextension 18151 "GST Sales Line Ext" extends "Sales Line"
         }
         field(18154; "GST Assessable Value (FCY)"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'GST Assessable Value (FCY)';
             DataClassification = CustomerContent;
         }
         field(18155; "Unit Price Incl. of Tax"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             Caption = 'Unit Price Incl. of Tax';
             DataClassification = CustomerContent;
         }
         field(18156; "Total UPIT Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Total UPIT Amount';
             DataClassification = CustomerContent;
         }

@@ -19,14 +19,20 @@ table 31117 "Bank Acc. Adjust. Buffer CZL"
         }
         field(2; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount';
         }
         field(10; "Debit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Debit Amount';
         }
         field(11; "Credit Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Credit Amount';
         }
         field(15; Description; Text[100])
@@ -39,6 +45,8 @@ table 31117 "Bank Acc. Adjust. Buffer CZL"
         }
         field(20; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
         }
         field(25; "Currency Code"; Code[10])

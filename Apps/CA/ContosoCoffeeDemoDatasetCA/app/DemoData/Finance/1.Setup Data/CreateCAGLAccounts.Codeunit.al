@@ -302,7 +302,6 @@ codeunit 27009 "Create CA GL Accounts"
         //BlankGL
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.BALANCESHEETName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.AccumDepreciationBuildingsName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.EmployeesPayableName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.IncreasesduringtheYearBuildingsName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.DecreasesduringtheYearBuildingsName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.IncreasesduringtheYearOperEquipName(), '');
@@ -2450,7 +2449,7 @@ codeunit 27009 "Create CA GL Accounts"
         PaymentDiscountsGrantedCOGSTok: Label 'Payment Discounts Granted, COGS', MaxLength = 100;
         RepairsandMaintenanceExpensesTok: Label 'Repairs and Maintenance, Expenses', MaxLength = 100;
         AccumDepreciationBuildingsTok: Label 'Accum. Depreciation, Building', MaxLength = 100;
-        EmployeesPayableTok: Label 'Employee Payable', MaxLength = 100;
+        EmployeesPayableTok: Label 'Employees Payable', MaxLength = 100;
         CostofGoodsSoldTok: Label 'Cost of Goods Sold', MaxLength = 80;
         MiscellaneousTok: Label 'Miscellaneous.', MaxLength = 100;
 }

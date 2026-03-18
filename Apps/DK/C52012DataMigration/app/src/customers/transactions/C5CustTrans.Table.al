@@ -55,10 +55,12 @@ table 1892 "C5 CustTrans"
         }
         field(11; AmountMST; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount in LCY';
         }
         field(12; AmountCur; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Amount in currency';
         }
         field(13; Currency; Code[3])
@@ -71,6 +73,7 @@ table 1892 "C5 CustTrans"
         }
         field(15; VatAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT amount';
         }
         field(16; Approved; Option)
@@ -85,6 +88,7 @@ table 1892 "C5 CustTrans"
         }
         field(18; CashDiscAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Cash discount';
         }
         field(19; CashDiscDate; Date)
@@ -102,18 +106,22 @@ table 1892 "C5 CustTrans"
         }
         field(22; ExchRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Exch. rate';
         }
         field(23; RESERVED2; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RESERVED2';
         }
         field(24; RESERVED3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'RESERVED3';
         }
         field(25; PostedDiffAmount; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Diff. posted';
         }
         field(26; RefRecID; Integer)
@@ -139,6 +147,7 @@ table 1892 "C5 CustTrans"
         }
         field(31; ExchRateTri; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Tri rate';
         }
         field(32; PaymentId; Text[30])

@@ -3,6 +3,8 @@ namespace Microsoft.Sustainability.Posting;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Posting;
+using Microsoft.Manufacturing.Capacity;
+using Microsoft.Manufacturing.Document;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Journal;
 
@@ -45,6 +47,34 @@ codeunit 6256 "Sust. Item Post Subscriber"
         ItemLedgerEntry."Total EPR Fee" := ItemJournalLine."Total EPR Fee";
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnSetupSplitJnlLineOnAfterSetupTempSplitItemJnlLine', '', false, false)]
+    local procedure OnSetupSplitJnlLineOnAfterSetupTempSplitItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; var TempSplitItemJournalLine: Record "Item Journal Line" temporary)
+    var
+        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
+        CO2eAmount: Decimal;
+        CO2eQuantity: Decimal;
+    begin
+        if ItemJournalLine."Sust. Account No." = '' then
+            exit;
+
+        if not SustainabilityPostMgt.IsCarbonTrackingSpecificItem(ItemJournalLine."Item No.") then
+            exit;
+
+        TempSplitItemJournalLine."Emission CO2" := Abs(ItemJournalLine."Emission CO2" / ItemJournalLine.Quantity) * TempSplitItemJournalLine.Quantity;
+        TempSplitItemJournalLine."Emission CH4" := Abs(ItemJournalLine."Emission CH4" / ItemJournalLine.Quantity) * TempSplitItemJournalLine.Quantity;
+        TempSplitItemJournalLine."Emission N2O" := Abs(ItemJournalLine."Emission N2O" / ItemJournalLine.Quantity) * TempSplitItemJournalLine.Quantity;
+
+        if TempSplitItemJournalLine."Applies-from Entry" <> 0 then begin
+            SustainabilityPostMgt.GetCO2eAmountAndQuantity(TempSplitItemJournalLine."Applies-from Entry", CO2eAmount, CO2eQuantity);
+            if CO2eQuantity <> 0 then begin
+                TempSplitItemJournalLine."Total CO2e" := Abs(CO2eAmount / CO2eQuantity) * TempSplitItemJournalLine.Quantity;
+                TempSplitItemJournalLine."CO2e per Unit" := Abs(CO2eAmount / CO2eQuantity);
+            end;
+        end;
+
+        TempSplitItemJournalLine.Modify();
+    end;
+
     local procedure CanCreateSustValueEntry(ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry"): Boolean
     begin
         if (ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Transfer) then
@@ -76,7 +106,9 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine."Dimension Set ID" := ItemJournalLine."Dimension Set ID";
         SustainabilityJnlLine."Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
         SustainabilityJnlLine."Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
-
+        if ItemLedgerEntry."Entry No." <> 0 then
+            GetTotalCO2eFromProdOrder(ItemJournalLine, ValueEntry.Type);
+        SustainabilityPostMgt.GetTotalCO2eAmount(ItemLedgerEntry, ValueEntry.Type, ItemJournalLine."Total CO2e", ItemJournalLine."CO2e per Unit");
         if ItemJournalLine.ShouldUpdateJournalLineWithPostingSign() then
             SustainabilityJnlLine.Validate("CO2e Emission", Sign * ItemJournalLine."Total CO2e")
         else
@@ -88,6 +120,28 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine.Validate(Correction, ItemJournalLine.Correction);
         SustainabilityJnlLine.Validate("Country/Region Code", ItemJournalLine."Country/Region Code");
         SustainabilityPostMgt.InsertValueEntry(SustainabilityJnlLine, ValueEntry, ItemLedgerEntry);
+    end;
+
+    local procedure GetTotalCO2eFromProdOrder(var ItemJournalLine: Record "Item Journal Line"; ValueEntryType: Enum "Capacity Type Journal")
+    var
+        ProdOrderLine: Record "Prod. Order Line";
+        Sustainability: Codeunit "Sustainability Post Mgt";
+    begin
+        if not (ValueEntryType in [ValueEntryType::"Machine Center", ValueEntryType::"Work Center"]) or
+               (ItemJournalLine."Entry Type" <> ItemJournalLine."Entry Type"::Output) then
+            exit;
+
+        if not Sustainability.IsCarbonTrackingSpecificItem(ItemJournalLine."Item No.") then
+            exit;
+
+        if not ProdOrderLine.Get(ProdOrderLine.Status::Released, ItemJournalLine."Order No.", ItemJournalLine."Order Line No.") then
+            exit;
+
+        ProdOrderLine.CalcFields("Expected Operation Total CO2e");
+        if ProdOrderLine.Quantity = 0 then
+            exit;
+
+        ItemJournalLine."Total CO2e" := (ProdOrderLine."Expected Operation Total CO2e" / ProdOrderLine.Quantity) * ItemJournalLine.Quantity;
     end;
 
     local procedure CheckSustainabilityItemJnlLine(AccountNo: Code[20]; AccountCategory: Code[20]; AccountSubCategory: Code[20]; CO2eToPost: Decimal)

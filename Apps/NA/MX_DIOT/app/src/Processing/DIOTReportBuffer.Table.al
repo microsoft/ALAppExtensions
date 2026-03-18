@@ -24,6 +24,7 @@ table 27032 "DIOT Report Buffer"
         }
         field(4; Value; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Value';
         }
     }

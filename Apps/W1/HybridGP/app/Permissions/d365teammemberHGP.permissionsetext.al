@@ -8,11 +8,6 @@ permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
                   tabledata GPPOPTaxHist = RIMD,
                   tabledata GPSOPTrxHist = RIMD,
                   tabledata GPSOPProcessHoldWorkHist = RIMD,
-#if not CLEAN26
-#pragma warning disable AL0432
-                  tabledata GPForecastTemp = RIMD,
-#pragma warning restore AL0432
-#endif
                   tabledata GPIVTrxAmountsHist = RIMD,
                   tabledata GPSOPWorkflowWorkHist = RIMD,
                   tabledata "GP GLTransactions" = RIMD,
@@ -117,5 +112,6 @@ permissionsetextension 4027 "D365 TEAM MEMBER - HGP" extends "D365 TEAM MEMBER"
                   tabledata "GP Migration Warnings" = RIMD,
                   tabledata "GP IV00104" = RIMD,
                   tabledata "GP PM00101" = RIMD,
-                  tabledata "GP PM00203" = RIMD;
+                  tabledata "GP PM00203" = RIMD,
+                  tabledata "GP PO Validation Buffer" = RIMD;
 }

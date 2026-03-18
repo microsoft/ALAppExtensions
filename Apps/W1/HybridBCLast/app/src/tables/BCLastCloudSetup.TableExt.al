@@ -8,6 +8,7 @@ tableextension 4038 "BC Last Cloud Setup" extends "Intelligent Cloud Setup"
     {
         field(40; "Source BC Version"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = SystemMetadata;
             Caption = 'Version of the On Premise BC database';
         }

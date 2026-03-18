@@ -1,0 +1,1 @@
+{"user":{"id":10042740,"loginName":"sbMemDjordje1","name":{"first":"FNAME","last":"LNAME"},"session":{"userSession":"consumertoken"},"preferences":{"currency":"USD","timeZone":"PST","dateFormat":"MM/dd/yyyy","locale": "en_US"}}}

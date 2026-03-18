@@ -16,7 +16,7 @@ using System.Utilities;
 
 report 11776 "Acc. Schedule Export File CZL"
 {
-    Caption = 'Account Schedule Export File';
+    Caption = 'Fin. Report Export File';
     ProcessingOnly = true;
 
     dataset
@@ -138,9 +138,9 @@ report 11776 "Acc. Schedule Export File CZL"
                     field(AccSchedNameCZL; AccSchedName)
                     {
                         ApplicationArea = Basic, Suite;
-                        Caption = 'Acc. Schedule Name';
+                        Caption = 'Fin. Report Name';
                         TableRelation = "Acc. Schedule Name";
-                        ToolTip = 'Specifies the name of the account schedule to be shown in the report.';
+                        ToolTip = 'Specifies the name of the financial report to be shown in the report.';
 
                         trigger OnLookup(var Text: Text): Boolean
                         var
@@ -191,7 +191,7 @@ report 11776 "Acc. Schedule Export File CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Excel Template';
                         TableRelation = "Excel Template CZL";
-                        ToolTip = 'Specifies the excel template for the account schedule export.';
+                        ToolTip = 'Specifies the excel template for the financial report export.';
                         Visible = TemplateIsVisible;
 
                         trigger OnValidate()

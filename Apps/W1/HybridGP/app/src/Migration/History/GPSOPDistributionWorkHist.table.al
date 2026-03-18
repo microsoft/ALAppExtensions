@@ -41,21 +41,25 @@ table 4070 "GPSOPDistributionWorkHist"
         }
         field(7; DEBITAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Debit Amount';
             DataClassification = CustomerContent;
         }
         field(8; ORDBTAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Debit Amount';
             DataClassification = CustomerContent;
         }
         field(9; CRDTAMNT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Credit Amount';
             DataClassification = CustomerContent;
         }
         field(10; ORCRDAMT; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Originating Credit Amount';
             DataClassification = CustomerContent;
         }
@@ -76,6 +80,7 @@ table 4070 "GPSOPDistributionWorkHist"
         }
         field(14; Contract_Exchange_Rate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Contract Exchange Rate';
             DataClassification = CustomerContent;
         }

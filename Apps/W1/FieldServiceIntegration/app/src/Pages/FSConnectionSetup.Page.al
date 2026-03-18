@@ -59,12 +59,14 @@ page 6612 "FS Connection Setup"
                         FeatureTelemetry: Codeunit "Feature Telemetry";
                         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
                         FSIntegrationMgt: Codeunit "FS Integration Mgt.";
+                        CRMIntegrationManagement: Codeunit "CRM Integration Management";
                     begin
                         CurrPage.Update(true);
                         if Rec."Is Enabled" then begin
                             FeatureTelemetry.LogUptake('0000MB9', FSIntegrationMgt.ReturnIntegrationTypeLabel(Rec), Enum::"Feature Uptake Status"::"Set up");
                             Session.LogMessage('0000MBC', CRMConnEnabledOnPageTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
 
+                            CRMIntegrationManagement.CheckCRMConnectionURL(Rec."Server Address");
                             if (Rec."Server Address" <> '') and (Rec."Server Address" <> TestServerAddressTok) then
                                 if CDSIntegrationImpl.MultipleCompaniesConnected() then
                                     CDSIntegrationImpl.SendMultipleCompaniesNotification();
@@ -445,8 +447,10 @@ page 6612 "FS Connection Setup"
     local procedure TryDetectMultipleCompanies(var MultipleCompaniesDetected: Boolean)
     var
         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
+        CRMIntegrationManagement: Codeunit "CRM Integration Management";
     begin
         Rec.RegisterConnection();
+        CRMIntegrationManagement.CheckCRMConnectionURL(Rec."Server Address");
         if (Rec."Server Address" <> '') and (Rec."Server Address" <> TestServerAddressTok) then
             MultipleCompaniesDetected := CDSIntegrationImpl.MultipleCompaniesConnected();
     end;

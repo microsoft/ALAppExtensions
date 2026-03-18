@@ -70,6 +70,8 @@ table 31007 "Advance Letter Application CZZ"
         }
         field(8; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount';
             DataClassification = CustomerContent;
 
@@ -84,16 +86,22 @@ table 31007 "Advance Letter Application CZZ"
         }
         field(9; "Amount (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (LCY)';
             DataClassification = CustomerContent;
         }
         field(11; "Amount to Use"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount to Use';
             DataClassification = CustomerContent;
         }
         field(12; "Amount to Use (LCY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount to Use (LCY)';
             DataClassification = CustomerContent;
         }
@@ -106,6 +114,7 @@ table 31007 "Advance Letter Application CZZ"
         }
         field(21; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;

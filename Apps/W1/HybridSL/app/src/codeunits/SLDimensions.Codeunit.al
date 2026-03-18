@@ -74,9 +74,9 @@ codeunit 47020 "SL Dimensions"
                 0:
                     begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr00) then
-                            SLSegments.Id := SLFlexDef.Descr00.Trim() + 's'
+                            SLSegments.Id := SLFlexDef.Descr00.Trim().ToUpper() + 'S'
                         else
-                            SLSegments.Id := SLFlexDef.Descr00;
+                            SLSegments.Id := CopyStr(SLFlexDef.Descr00.Trim().ToUpper(), 1, MaxStrLen(SLSegments.Id));
                         SLSegments.Name := SLFlexDef.Descr00;
                         SLSegments.CodeCaption := SLFlexDef.Descr00.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr00.Trim() + ' Filter';
@@ -87,9 +87,9 @@ codeunit 47020 "SL Dimensions"
                 1:
                     begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr01) then
-                            SLSegments.Id := SLFlexDef.Descr01.Trim() + 's'
+                            SLSegments.Id := SLFlexDef.Descr01.Trim().ToUpper() + 'S'
                         else
-                            SLSegments.Id := SLFlexDef.Descr01;
+                            SLSegments.Id := CopyStr(SLFlexDef.Descr01.Trim().ToUpper(), 1, MaxStrLen(SLSegments.Id));
                         SLSegments.Name := SLFlexDef.Descr01;
                         SLSegments.CodeCaption := SLFlexDef.Descr01.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr01.Trim() + ' Filter';
@@ -100,9 +100,9 @@ codeunit 47020 "SL Dimensions"
                 2:
                     begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr02) then
-                            SLSegments.Id := SLFlexDef.Descr02.Trim() + 's'
+                            SLSegments.Id := SLFlexDef.Descr02.Trim().ToUpper() + 'S'
                         else
-                            SLSegments.Id := SLFlexDef.Descr02;
+                            SLSegments.Id := CopyStr(SLFlexDef.Descr02.Trim().ToUpper(), 1, MaxStrLen(SLSegments.Id));
                         SLSegments.Name := SLFlexDef.Descr02;
                         SLSegments.CodeCaption := SLFlexDef.Descr02.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr02.Trim() + ' Filter';
@@ -113,9 +113,9 @@ codeunit 47020 "SL Dimensions"
                 3:
                     begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr03) then
-                            SLSegments.Id := SLFlexDef.Descr03.Trim() + 's'
+                            SLSegments.Id := SLFlexDef.Descr03.Trim().ToUpper() + 'S'
                         else
-                            SLSegments.Id := SLFlexDef.Descr03;
+                            SLSegments.Id := CopyStr(SLFlexDef.Descr03.Trim().ToUpper(), 1, MaxStrLen(SLSegments.Id));
                         SLSegments.Name := SLFlexDef.Descr03;
                         SLSegments.CodeCaption := SLFlexDef.Descr03.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr03.Trim() + ' Filter';
@@ -126,9 +126,9 @@ codeunit 47020 "SL Dimensions"
                 4:
                     begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr04) then
-                            SLSegments.Id := SLFlexDef.Descr04.Trim() + 's'
+                            SLSegments.Id := SLFlexDef.Descr04.Trim().ToUpper() + 'S'
                         else
-                            SLSegments.Id := SLFlexDef.Descr04;
+                            SLSegments.Id := CopyStr(SLFlexDef.Descr04.Trim().ToUpper(), 1, MaxStrLen(SLSegments.Id));
                         SLSegments.Name := SLFlexDef.Descr04;
                         SLSegments.CodeCaption := SLFlexDef.Descr04.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr04.Trim() + ' Filter';
@@ -139,9 +139,9 @@ codeunit 47020 "SL Dimensions"
                 5:
                     begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr05) then
-                            SLSegments.Id := SLFlexDef.Descr05.Trim() + 's'
+                            SLSegments.Id := SLFlexDef.Descr05.Trim().ToUpper() + 'S'
                         else
-                            SLSegments.Id := SLFlexDef.Descr05;
+                            SLSegments.Id := CopyStr(SLFlexDef.Descr05.Trim().ToUpper(), 1, MaxStrLen(SLSegments.Id));
                         SLSegments.Name := SLFlexDef.Descr05;
                         SLSegments.CodeCaption := SLFlexDef.Descr05.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr05.Trim() + ' Filter';
@@ -152,9 +152,9 @@ codeunit 47020 "SL Dimensions"
                 6:
                     begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr06) then
-                            SLSegments.Id := SLFlexDef.Descr06.Trim() + 's'
+                            SLSegments.Id := SLFlexDef.Descr06.Trim().ToUpper() + 'S'
                         else
-                            SLSegments.Id := SLFlexDef.Descr06;
+                            SLSegments.Id := CopyStr(SLFlexDef.Descr06.Trim().ToUpper(), 1, MaxStrLen(SLSegments.Id));
                         SLSegments.Name := SLFlexDef.Descr06;
                         SLSegments.CodeCaption := SLFlexDef.Descr06.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr06.Trim() + ' Filter';
@@ -165,9 +165,9 @@ codeunit 47020 "SL Dimensions"
                 7:
                     begin
                         if FlexDefDescInSLSubaccountSegDesc(SLFlexDef.Descr07) then
-                            SLSegments.Id := SLFlexDef.Descr07.Trim() + 's'
+                            SLSegments.Id := SLFlexDef.Descr07.Trim().ToUpper() + 'S'
                         else
-                            SLSegments.Id := SLFlexDef.Descr07;
+                            SLSegments.Id := CopyStr(SLFlexDef.Descr07.Trim().ToUpper(), 1, MaxStrLen(SLSegments.Id));
                         SLSegments.Name := SLFlexDef.Descr07;
                         SLSegments.CodeCaption := SLFlexDef.Descr07.Trim() + ' Code';
                         SLSegments.FilterCaption := SLFlexDef.Descr07.Trim() + ' Filter';

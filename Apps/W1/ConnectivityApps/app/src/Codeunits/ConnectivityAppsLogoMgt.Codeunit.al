@@ -10,10 +10,11 @@ codeunit 20353 "Connectivity Apps Logo Mgt."
     Permissions = tabledata "Connectivity App Logo" = RIMD;
 
     var
-        AppExistURLLbl: Label 'https://appsource.microsoft.com/view/app/pubid.%1|aid.%2|pappid.%3/?version=2017-04-24', Locked = true;
+        AppExistURLLbl: Label 'https://marketplace.microsoft.com/view/app/pubid.%1|aid.%2|pappid.%3/?version=2017-04-24', Locked = true;
         IncorrectAppSourceUrlLbl: Label '%1 is not a correct AppSource URL.', Locked = true, Comment = '%1 = App source URL';
         LogoDownloadFailedLbl: Label 'Logo download failed from %1', Locked = true, Comment = '%1 = App source URL';
         TelemetryCategoryLbl: Label 'Connectivity Apps', Locked = true;
+        UserAgentLbl: Label 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', Locked = true;
 
     procedure LoadImages(var ConnectivityApp: Record "Connectivity App")
     var
@@ -113,6 +114,7 @@ codeunit 20353 "Connectivity Apps Logo Mgt."
         HttpResponseBodyText: Text;
         LogoURL: Text;
     begin
+        HttpClient.DefaultRequestHeaders().Add('User-Agent', UserAgentLbl);
         HttpClient.Get(StrSubstNo(AppExistURLLbl, PubId, AId, PAppId), HttpResponseMessage);
         StatusCode := HttpResponseMessage.HttpStatusCode();
 

@@ -38,6 +38,7 @@ tableextension 18081 "GST Purchase Header Ext" extends "Purchase Header"
         }
         field(18084; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             MinValue = 0;
             DataClassification = CustomerContent;
@@ -133,6 +134,7 @@ tableextension 18081 "GST Purchase Header Ext" extends "Purchase Header"
         }
         field(18101; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
         }
@@ -183,6 +185,8 @@ tableextension 18081 "GST Purchase Header Ext" extends "Purchase Header"
         }
         field(18111; "Bill of Entry Value"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Bill of Entry Value';
             DataClassification = CustomerContent;
             MinValue = 0;

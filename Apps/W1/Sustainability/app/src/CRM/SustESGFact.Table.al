@@ -196,6 +196,7 @@ table 6246 "Sust. ESG Fact"
         }
         field(40; NumericValue; Decimal)
         {
+            AutoFormatType = 0;
             ExternalName = 'msdyn_numericvalue';
             ExternalType = 'Decimal';
             Description = 'Numeric Value';

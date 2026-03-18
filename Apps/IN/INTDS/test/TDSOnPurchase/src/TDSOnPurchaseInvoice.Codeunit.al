@@ -1051,37 +1051,6 @@ codeunit 18791 "TDS On Purchase Invoice"
         VerifyGLEntryCount(DocumentNo, 5);
     end;
 
-#if not CLEAN26
-    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
-    [Test]
-    [HandlerFunctions('TaxRatePageHandler,Statistics')]
-    procedure VerifyPurchaseInvoiceStatisticsWithItem()
-    var
-        ConcessionalCode: Record "Concessional Code";
-        TDSPostingSetup: Record "TDS Posting Setup";
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-        Vendor: Record Vendor;
-    begin
-        // [SCENARIO] [1395] Check if the program is showing TDS amount should be shown in Statistics while creating Purchase Invoice.
-        LibraryTDS.CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
-        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
-        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
-
-        // [WHEN] Created and Posted Purchase PurchaseHeader,
-        CreatePurchaseDocument(
-            PurchaseHeader,
-            PurchaseHeader."Document Type"::Invoice,
-            Vendor."No.",
-            WorkDate(),
-            PurchaseLine.Type::Item,
-            false);
-
-        // [THEN] Statistics Verified
-        VerifyStatisticsForTDS(PurchaseHeader);
-    end;
-#endif
-
     [Test]
     [HandlerFunctions('TaxRatePageHandler,StatisticsPageHandler')]
     procedure VerifyPurchInvoiceStatisticsWithItem()
@@ -1109,38 +1078,6 @@ codeunit 18791 "TDS On Purchase Invoice"
         // [THEN] Statistics Verified
         VerifyStatsForTDS(PurchaseHeader);
     end;
-
-#if not CLEAN26
-    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
-    [Test]
-    [HandlerFunctions('TaxRatePageHandler,Statistics')]
-    procedure VerifyPurchaseInvoiceStatisticsWithGLAccount()
-    var
-        ConcessionalCode: Record "Concessional Code";
-        TDSPostingSetup: Record "TDS Posting Setup";
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-        Vendor: Record Vendor;
-    begin
-        // [SCENARIO] [1395] Check if the program is showing TDS amount should be shown in Statistics while creating Purchase Invoice.
-        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode with Threshold and Surcharge Overlook.
-        LibraryTDS.CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
-        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
-        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
-
-        // [WHEN] Created Purchase Invoice With G/L Account
-        CreatePurchaseDocument(
-            PurchaseHeader,
-            PurchaseHeader."Document Type"::Invoice,
-            Vendor."No.",
-            WorkDate(),
-            PurchaseLine.Type::"G/L Account",
-            false);
-
-        // [THEN] Statistics Verified
-        VerifyStatisticsForTDS(PurchaseHeader);
-    end;
-#endif
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler,StatisticsPageHandler')]
@@ -1171,38 +1108,6 @@ codeunit 18791 "TDS On Purchase Invoice"
         VerifyStatsForTDS(PurchaseHeader);
     end;
 
-#if not CLEAN26
-    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
-    [Test]
-    [HandlerFunctions('TaxRatePageHandler,Statistics')]
-    procedure VerifyPurchaseInvoiceStatisticsWithFixedAsset()
-    var
-        ConcessionalCode: Record "Concessional Code";
-        TDSPostingSetup: Record "TDS Posting Setup";
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-        Vendor: Record Vendor;
-    begin
-        // [SCENARIO] [1395] Check if the program is showing TDS amount should be shown in Statistics while creating Purchase Invoice.
-        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode with Threshold and Surcharge Overlook.
-        LibraryTDS.CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
-        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
-        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
-
-        // [WHEN] Created  Purchase Invoice with Fixed Asset
-        CreatePurchaseDocument(
-            PurchaseHeader,
-            PurchaseHeader."Document Type"::Invoice,
-            Vendor."No.",
-            WorkDate(),
-            PurchaseLine.Type::"Fixed Asset",
-            false);
-
-        // [THEN] StatistiCS Verified
-        VerifyStatisticsForTDS(PurchaseHeader);
-    end;
-#endif
-
     [Test]
     [HandlerFunctions('TaxRatePageHandler,StatisticsPageHandler')]
     procedure VerifyPurchInvoiceStatisticsWithFixedAsset()
@@ -1231,38 +1136,6 @@ codeunit 18791 "TDS On Purchase Invoice"
         // [THEN] StatistiCS Verified
         VerifyStatsForTDS(PurchaseHeader);
     end;
-
-#if not CLEAN26
-    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
-    [Test]
-    [HandlerFunctions('TaxRatePageHandler,Statistics')]
-    procedure VerifyPurchaseInvoiceStatisticsWithChargeItem()
-    var
-        ConcessionalCode: Record "Concessional Code";
-        TDSPostingSetup: Record "TDS Posting Setup";
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-        Vendor: Record Vendor;
-    begin
-        // [SCENARIO] [1395] Check if the program is showing TDS amount should be shown in Statistics while creating Purchase Invoice.
-        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode with Threshold and Surcharge Overlook.
-        LibraryTDS.CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
-        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
-        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
-
-        // [WHEN] Create PurchaseInvoice with Charge item
-        CreatePurchaseDocument(
-            PurchaseHeader,
-            PurchaseHeader."Document Type"::Invoice,
-            Vendor."No.",
-            WorkDate(),
-            PurchaseLine.Type::"Charge (Item)",
-            false);
-
-        // [THEN] Statistics Verified
-        VerifyStatisticsForTDS(PurchaseHeader);
-    end;
-#endif
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler,StatisticsPageHandler')]
@@ -1836,6 +1709,66 @@ codeunit 18791 "TDS On Purchase Invoice"
         VerifyGLEntryCount(DocumentNo, 6);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    // [SCENARIO] [482399] Required a validation on TDS concessional code with Certificate No. and Values.
+    procedure PostFromPurchInvWithGLAccWithPANWithConCodeAndCertificateValue()
+    var
+        Vendor: Record Vendor;
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode With Certificate Value with Threshold.
+        LibraryTDS.CreateTDSSetupWithConcessionalCertificate(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithConcessional(Vendor, false, false);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Created and Posted Purchase Invoice.
+        DocumentNo := CreateAndPostPurchaseDocument(
+            PurchaseHeader,
+            PurchaseHeader."Document Type"::Invoice,
+            Vendor."No.", WorkDate(),
+            PurchaseLine.Type::"G/L Account", false);
+
+        // [THEN] G/L Entries and TDS Entries Verified
+        VerifyGLEntryCount(DocumentNo, 3);
+        LibraryTDS.VerifyGLEntryWithTDS(DocumentNo, TDSPostingSetup."TDS Account");
+        VerifyTDSEntry(DocumentNo, true, true, true);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    // [SCENARIO] [482399] Required a validation on TDS concessional code with Certificate No. and Values.
+    procedure PostFromPurchInvWithGLAccWithPANWithConCodeAndCrossedCertificateValue()
+    var
+        Vendor: Record Vendor;
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode With Certificate Value with Threshold.
+        LibraryTDS.CreateTDSSetupWithConcessionalCertificate(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithConcessional(Vendor, false, false);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Created and Posted Purchase Invoice.
+        DocumentNo := CreateAndPostPurchaseDocumentCrossedTDSCertificateValue(
+            PurchaseHeader,
+            PurchaseHeader."Document Type"::Invoice,
+            Vendor."No.", WorkDate(),
+            PurchaseLine.Type::"G/L Account", false);
+
+        // [THEN] G/L Entries and TDS Entries Verified
+        VerifyGLEntryCount(DocumentNo, 3);
+        LibraryTDS.VerifyGLEntryWithTDS(DocumentNo, TDSPostingSetup."TDS Account");
+        VerifyTDSEntry(DocumentNo, true, true, true);
+    end;
+
     local procedure UpdateTDSSection(PurchaseHeader: Record "Purchase Header")
     var
         PurchaseInvoice: TestPage "Purchase Invoice";
@@ -1892,52 +1825,6 @@ codeunit 18791 "TDS On Purchase Invoice"
         PageTaxtype.Filter.SetFilter(Code, TDSSetup."Tax Type");
         PageTaxtype.TaxRates.Invoke();
     end;
-
-#if not CLEAN26
-    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
-    local procedure VerifyStatisticsForTDS(var PurchaseHeader: Record "Purchase Header")
-    var
-        PurchaseLine: Record "Purchase Line";
-        TaxTransactionValue: Record "Tax Transaction Value";
-        TDSSetup: Record "TDS Setup";
-        PurchaseInvoiceStatistics: TestPage "Purchase Statistics";
-        PurchaseInvoice: TestPage "Purchase Invoices";
-        RecordIDList: List of [RecordID];
-        i: Integer;
-        ActualAmount: Decimal;
-    begin
-        Clear(ExpectedTDSAmount);
-        if not TDSSetup.Get() then
-            exit;
-        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
-        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
-        if PurchaseLine.FindSet() then
-            repeat
-                RecordIDList.Add(PurchaseLine.RecordId());
-            until PurchaseLine.Next() = 0;
-
-        for i := 1 to RecordIDList.Count() do begin
-            TaxTransactionValue.SetRange("Tax Record ID", RecordIDList.Get(i));
-            TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
-            TaxTransactionValue.SetRange("Tax Type", TDSSetup."Tax Type");
-            TaxTransactionValue.SetFilter(Percent, '<>%1', 0);
-            if not TaxTransactionValue.IsEmpty() then
-                TaxTransactionValue.CalcSums(Amount);
-            ExpectedTDSAmount += TaxTransactionValue.Amount;
-        end;
-        ExpectedTDSAmount := Round(ExpectedTDSAmount, 1, '=');
-        PurchaseInvoice.OpenEdit();
-        PurchaseInvoice.GoToRecord(PurchaseHeader);
-        PurchaseInvoiceStatistics.OpenEdit();
-        PurchaseInvoice.Statistics.Invoke();
-        if (CopyStr(Storage.Get(TDSAmountLbl), StrPos(Storage.Get(TDSAmountLbl), '.'), StrLen(Storage.Get(TDSAmountLbl))) = '.00') then
-            Evaluate(ActualAmount, CopyStr(Storage.Get(TDSAmountLbl), 1, StrPos(Storage.Get(TDSAmountLbl), '.') - 1))
-        else
-            Evaluate(ActualAmount, Storage.Get(TDSAmountLbl));
-        Assert.AreNearlyEqual(Round(ExpectedTDSAmount, 0.01, '='), ActualAmount, 0,
-        StrSubstNo(AmountErr, ActualAmount, PurchaseInvoiceStatistics."TDS Amount".Caption()));
-    end;
-#endif
 
     local procedure VerifyStatsForTDS(var PurchaseHeader: Record "Purchase Header")
     var
@@ -2014,6 +1901,22 @@ codeunit 18791 "TDS On Purchase Invoice"
         exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true))
     end;
 
+    procedure CreateAndPostPurchaseDocumentCrossedTDSCertificateValue(var PurchaseHeader: Record "Purchase Header";
+        DocumentType: enum "Purchase Document Type";
+        VendorNo: Code[20];
+        PostingDate: Date;
+        LineType: enum "Purchase Line Type";
+        LineDiscount: Boolean): Code[20]
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
+        PurchaseHeader.Validate("Posting Date", PostingDate);
+        PurchaseHeader.Modify(true);
+        CreatePurchaseLineCrossedTDSCertificatevalue(PurchaseHeader, PurchaseLine, LineType, LineDiscount);
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true))
+    end;
+
     local procedure CreatePurchaseLine(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line";
         Type: enum "Purchase Line Type"; LineDiscount: Boolean)
     begin
@@ -2022,6 +1925,17 @@ codeunit 18791 "TDS On Purchase Invoice"
             PurchaseLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
 
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInDecimalRange(1000, 1001, 0));
+        PurchaseLine.Modify(true);
+    end;
+
+    local procedure CreatePurchaseLineCrossedTDSCertificatevalue(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line";
+        Type: enum "Purchase Line Type"; LineDiscount: Boolean)
+    begin
+        InsertPurchaseLine(PurchaseLine, PurchaseHeader, Type);
+        if LineDiscount then
+            PurchaseLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
+
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInDecimalRange(30000, 1001, 0));
         PurchaseLine.Modify(true);
     end;
 
@@ -2332,18 +2246,6 @@ codeunit 18791 "TDS On Purchase Invoice"
         TaxRates.AttributeValue15.SetValue(0);
         TaxRates.OK().Invoke();
     end;
-
-#if not CLEAN26
-    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
-    [ModalPageHandler]
-    procedure Statistics(var PurchaseStatistics: TestPage "Purchase Statistics")
-    var
-        Amt: Text;
-    begin
-        Amt := (PurchaseStatistics."TDS Amount".Value);
-        Storage.Set(TDSAmountLbl, Amt);
-    end;
-#endif
 
     [PageHandler]
     procedure StatisticsPageHandler(var PurchaseStatistics: TestPage "Purchase Statistics")

@@ -257,6 +257,7 @@ page 1693 "Bank Deposit Subform"
                     ShowCaption = false;
                     field(TotalDepositLines; TotalDepositLines)
                     {
+                        AutoFormatType = 0;
                         ApplicationArea = Basic, Suite;
                         Caption = 'Total Deposit Lines';
                         Editable = false;

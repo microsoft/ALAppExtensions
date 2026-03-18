@@ -756,7 +756,7 @@ page 47018 "SL Migration Configuration"
         CurrPage.Update();
     end;
 
-    internal procedure PrepSettingsForFieldUpdate(): Boolean
+    procedure PrepSettingsForFieldUpdate(): Boolean
     begin
         SLCompanyAdditionalSettings.SetFilter(Name, '<>%1', '');
         SLCompanyAdditionalSettings.SetRange("Migration Completed", false);

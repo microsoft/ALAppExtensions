@@ -88,7 +88,7 @@
           </TransformationRules>
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="5" FieldID="29" Optional="true" />
-        <DataExchFieldMapping ColumnNo="6" FieldID="7" Optional="true" TransformationRule="TRIM" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="101" Optional="true" TransformationRule="TRIM" />
         <DataExchFieldMapping ColumnNo="7" FieldID="26" Optional="true" />
         <DataExchFieldMapping ColumnNo="8" FieldID="24" Optional="true" />
         <DataExchFieldMapping ColumnNo="9" FieldID="8" Optional="true" />

@@ -31,11 +31,15 @@ table 10019 "IRS 1096 Form Line"
         }
         field(5; "Calculated Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Calculated Amount';
             Editable = false;
         }
         field(6; "Total Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
 
             trigger OnValidate()
@@ -45,6 +49,8 @@ table 10019 "IRS 1096 Form Line"
         }
         field(7; "Calculated Adjustment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Calculated Adjustment Amount';
             Editable = false;
         }

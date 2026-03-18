@@ -123,13 +123,13 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
         }
         field(31085; "Shared Account Schedule CZL"; Code[10])
         {
-            Caption = 'Shared Account Schedule';
+            Caption = 'Shared Financial Report';
             DataClassification = CustomerContent;
             TableRelation = "Acc. Schedule Name";
         }
         field(31086; "Acc. Schedule Results Nos. CZL"; Code[20])
         {
-            Caption = 'Acc. Schedule Results Nos.';
+            Caption = 'Fin. Report Results Nos.';
             DataClassification = CustomerContent;
             TableRelation = "No. Series";
         }

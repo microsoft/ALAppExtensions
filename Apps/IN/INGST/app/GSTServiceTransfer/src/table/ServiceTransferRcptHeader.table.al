@@ -193,6 +193,7 @@ table 18352 "Service Transfer Rcpt. Header"
         }
         field(29; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             DataClassification = CustomerContent;
         }

@@ -26,10 +26,14 @@ table 10530 "MTD Liability"
         }
         field(4; "Original Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(5; "Outstanding Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(6; "Due Date"; Date)

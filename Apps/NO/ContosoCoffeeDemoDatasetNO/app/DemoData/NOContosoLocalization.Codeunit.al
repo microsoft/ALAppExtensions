@@ -31,7 +31,7 @@ codeunit 10669 "NO Contoso Localization"
         if Module = Enum::"Contoso Demo Data Module"::Sales then
             SalesModule(ContosoDemoDataLevel);
 
-        UnBindSubscriptionDemoData(Module);
+        UnBindSubscriptionDemoData(ContosoDemoDataLevel, Module);
     end;
 
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
@@ -106,7 +106,8 @@ codeunit 10669 "NO Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateLocationNO);
-                    BindSubscription(CreateItemNO);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemNO);
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
@@ -143,7 +144,7 @@ codeunit 10669 "NO Contoso Localization"
         end;
     end;
 
-    local procedure UnBindSubscriptionDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure UnBindSubscriptionDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         CreateItemNO: Codeunit "Create Item NO";
         CreateCurrencyNO: Codeunit "Create Currency NO";
@@ -168,7 +169,8 @@ codeunit 10669 "NO Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnbindSubscription(CreateLocationNO);
-                    UnBindSubscription(CreateItemNO);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnBindSubscription(CreateItemNO);
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin

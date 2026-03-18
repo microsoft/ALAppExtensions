@@ -329,7 +329,7 @@ codeunit 4700 "VAT Group Communication"
         GroupRepCompanyName: Text;
     begin
         CheckLoadVATReportSetup();
-        Result := VATReportSetup."Group Representative API URL";
+        Result := VATReportSetup.GetGroupRepresentativeURL();
         GroupRepCompanyName := VATReportSetup."Group Representative Company";
         case VATReportSetup."VAT Group BC Version" of
             VATReportSetup."VAT Group BC Version"::BC:
@@ -356,7 +356,7 @@ codeunit 4700 "VAT Group Communication"
 
     local procedure PrepareBatchURI(Endpoint: Text) Result: Text
     begin
-        Result := VATReportSetup."Group Representative API URL";
+        Result := VATReportSetup.GetGroupRepresentativeURL();
         case VATReportSetup."VAT Group BC Version" of
             VATReportSetup."VAT Group BC Version"::BC:
                 Result += URLAppendixLbl;

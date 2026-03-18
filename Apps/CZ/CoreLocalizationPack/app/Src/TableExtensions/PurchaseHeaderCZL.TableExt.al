@@ -10,9 +10,6 @@ using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Setup;
-#if not CLEAN26
-using Microsoft.Foundation.Address;
-#endif
 using Microsoft.Foundation.BatchProcessing;
 using Microsoft.Purchases.Vendor;
 using System.Reflection;
@@ -200,6 +197,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         }
         field(11750; "Additional Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Additional Currency Factor';
             DecimalPlaces = 0 : 15;
             MinValue = 0;
@@ -207,6 +205,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'VAT Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;
@@ -327,11 +326,6 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         GeneralLedgerSetup: Record "General Ledger Setup";
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         ConfirmManagement: Codeunit "Confirm Management";
-#if not CLEAN26
-        GlobalDocumentType: Enum "Purchase Document Type";
-        GlobalDocumentNo: Code[20];
-        GlobalIsIntrastatTransaction: Boolean;
-#endif
         IsConfirmedCZL: Boolean;
         UpdateVATCurrFactorDisabled: Boolean;
         UpdateExchRateQst: Label 'Do you want to update the exchange rate for VAT?';
@@ -523,54 +517,6 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         "SWIFT Code CZL" := SWIFTCode;
         OnAfterUpdateBankInfoCZL(Rec);
     end;
-#if not CLEAN26
-    [Obsolete('Pending removal. Replaced by internal ShipOrReceiveInventoriableTypeItems function from Intrastat Core extension. ', '26.0')]
-    procedure ShipOrReceiveInventoriableTypeItemsCZL(): Boolean
-    var
-        PurchaseLine: Record "Purchase Line";
-    begin
-        PurchaseLine.SetRange("Document Type", "Document Type");
-        PurchaseLine.SetRange("Document No.", "No.");
-        PurchaseLine.SetRange(Type, PurchaseLine.Type::Item);
-        if PurchaseLine.FindSet() then
-            repeat
-                if ((PurchaseLine."Qty. to Receive" <> 0) or (PurchaseLine."Return Qty. to Ship" <> 0)) and PurchaseLine.IsInventoriableItem() then
-                    exit(true);
-            until PurchaseLine.Next() = 0;
-    end;
-
-    [Obsolete('Pending removal. Use IsIntrastatTransaction from Intrastat Core extension instead.', '26.0')]
-    procedure IsIntrastatTransactionCZL(): Boolean
-    begin
-        if ("Document Type" <> GlobalDocumentType) or ("No." <> GlobalDocumentNo) or ("No." = '') then begin
-            GlobalDocumentType := "Document Type";
-            GlobalDocumentNo := "No.";
-            GlobalIsIntrastatTransaction := UpdateGlobalIsIntrastatTransaction();
-        end;
-        exit(GlobalIsIntrastatTransaction);
-    end;
-
-    local procedure UpdateGlobalIsIntrastatTransaction(): Boolean
-    var
-        CountryRegion: Record "Country/Region";
-        IsHandled: Boolean;
-        Result: Boolean;
-    begin
-        OnBeforeUpdateGlobalIsIntrastatTransaction(Rec, Result, IsHandled);
-        if IsHandled then
-            exit(Result);
-
-        if "EU 3-Party Intermed. Role CZL" then
-            exit(false);
-        if IsCreditDocType() then
-            exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", true));
-        if "VAT Country/Region Code" = "Ship-to Country/Region Code" then
-            exit(false);
-        if CountryRegion.IsLocalCountryCZL("Ship-to Country/Region Code", true) then
-            exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", true));
-        exit(CountryRegion.IsIntrastatCZL("Ship-to Country/Region Code", true));
-    end;
-#endif
 
     procedure GetDefaulBankAccountNoCZL() BankAccountNo: Code[20]
     var
@@ -643,13 +589,6 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     local procedure OnAfterUpdateBankInfoCZL(var PurchaseHeader: Record "Purchase Header")
     begin
     end;
-#if not CLEAN26
-    [Obsolete('Pending removal. Use OnBeforeCheckIsIntrastatTransaction from Intrastat Core extension instead.', '26.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnBeforeUpdateGlobalIsIntrastatTransaction(PurchaseHeader: Record "Purchase Header"; var Result: Boolean; var IsHandled: Boolean)
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnValidateVATDateOnBeforeCheckNeedUpdateVATCurrencyFactorCZL(var PurchaseHeader: Record "Purchase Header"; var IsIsConfirmedCZL: Boolean; var NeedUpdateVATCurrencyFactor: Boolean; xPurchaseHeader: Record "Purchase Header")

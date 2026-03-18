@@ -92,6 +92,7 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
             if not EmailAccountV4Exists() then
                 exit(false);
         end;
+        EmailAccounts.SetShowCreateAccount(true);
         EmailAccounts.EnableLookupMode();
         EmailAccounts.FilterConnectorV4Accounts(true);
         if EmailAccounts.RunModal() <> Action::LookupOK then

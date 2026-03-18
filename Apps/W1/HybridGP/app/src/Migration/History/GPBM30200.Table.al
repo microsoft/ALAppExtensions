@@ -24,6 +24,7 @@ table 41003 "GP BM30200"
         }
         field(5; Batch_ID_Note_Index; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(6; Completion_Date; DateTime)
@@ -48,6 +49,7 @@ table 41003 "GP BM30200"
         }
         field(13; NOTEINDX; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
         }
         field(14; MODIFDT; DateTime)

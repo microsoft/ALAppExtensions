@@ -50,6 +50,7 @@ table 42806 "SL Hist. Batch"
         }
         field(10; clearamt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'clearamt';
         }
         field(11; Cleared; Integer)
@@ -74,26 +75,32 @@ table 42806 "SL Hist. Batch"
         }
         field(16; CrTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CrTot';
         }
         field(17; CtrlTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CtrlTot';
         }
         field(18; CuryCrTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCrTot';
         }
         field(19; CuryCtrlTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryCtrlTot';
         }
         field(20; CuryDepositAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryDepositAmt';
         }
         field(21; CuryDrTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryDrTot';
         }
         field(22; CuryEffDate; DateTime)
@@ -110,6 +117,7 @@ table 42806 "SL Hist. Batch"
         }
         field(25; CuryRate; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'CuryRate';
         }
         field(26; CuryRateType; Text[6])
@@ -130,6 +138,7 @@ table 42806 "SL Hist. Batch"
         }
         field(30; DepositAmt; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DepositAmt';
         }
         field(31; Descr; Text[30])
@@ -138,6 +147,7 @@ table 42806 "SL Hist. Batch"
         }
         field(32; DrTot; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'DrTot';
         }
         field(33; EditScrnNbr; Text[5])
@@ -214,18 +224,22 @@ table 42806 "SL Hist. Batch"
         }
         field(51; S4Future03; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future03';
         }
         field(52; S4Future04; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future04';
         }
         field(53; S4Future05; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future05';
         }
         field(54; S4Future06; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'S4Future06';
         }
         field(55; S4Future07; DateTime)
@@ -270,10 +284,12 @@ table 42806 "SL Hist. Batch"
         }
         field(66; User3; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User3';
         }
         field(67; User4; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'User4';
         }
         field(68; User5; Text[10])

@@ -8,7 +8,9 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Reversal;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
+using System.Utilities;
 
 codeunit 10032 "IRS 1099 BaseApp Subscribers"
 {
@@ -133,12 +135,40 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         PurchLine."1099 Liable" := (PurchHeader."IRS 1099 Form Box No." <> '')
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Standard Vendor Purchase Code", 'OnApplyStdCodesToPurchaseLinesOnAfterPurchLineInsert', '', false, false)]
+    local procedure Update1099LiableOnApplyStdCodesToPurchaseLinesOnAfterPurchLineInsert(var PurchaseLine: Record "Purchase Line"; var PurchaseHeader: Record "Purchase Header"; var StandardPurchaseLine: Record "Standard Purchase Line")
+    begin
+        if PurchaseLine."1099 Liable" = (PurchaseHeader."IRS 1099 Form Box No." <> '') then
+            exit;
+        PurchaseLine."1099 Liable" := (PurchaseHeader."IRS 1099 Form Box No." <> '');
+        PurchaseLine.Modify();
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Page Management", 'OnConditionalCardPageIDNotFound', '', true, true)]
     local procedure OnConditionalCardPageIDNotFound(RecordRef: RecordRef; var CardPageID: Integer);
     begin
         case RecordRef.Number of
             Database::"IRS Forms Setup":
                 CardPageID := Page::"IRS Forms Setup";
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Error Messages", 'OnOpenRelatedRecord', '', false, false)]
+    local procedure OpenTransmissionErrorRelatedRecord(ErrorMessage: Record "Error Message"; var IsHandled: Boolean)
+    var
+        Vendor: Record Vendor;
+        PageManagement: Codeunit "Page Management";
+    begin
+        if ErrorMessage."Context Table Number" <> Database::"Transmission IRIS" then
+            exit;
+
+        case ErrorMessage."Table Number" of
+            Database::Vendor:
+                if ErrorMessage."Additional Information" <> '' then begin
+                    Vendor.SetFilter("No.", ErrorMessage."Additional Information");
+                    PageManagement.PageRunList(Vendor);
+                    IsHandled := true;
+                end;
         end;
     end;
 

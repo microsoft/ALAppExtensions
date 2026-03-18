@@ -1,0 +1,440 @@
+[
+  {
+    "CaseID": "{36F296E6-87B5-4460-A286-ADF87551DEAF}",
+    "Description": "Inter-State FA G/L Journal from Fixed Assets where Input Tax Credit is available through Fixed Asset General Journal",
+    "Version": 1,
+    "MinorVersion": 0,
+    "TaxType": "GST",
+    "ChangedBy": "Microsoft",
+    "Code": "GST HSN",
+    "TaxEntity": "Gen. Journal Line",
+    "ParentUseCase": "Gen. Journal Line",
+    "ParentCaseId": "{282C9335-DD37-49C9-9C60-7A0DB8A4B8F0}",
+    "PresentationOrder": 435,
+    "Indent": 1,
+    "PostingTableName": "GST Posting Setup",
+    "PostingTableFilters": [
+      {
+        "FiterFieldName": "State Code",
+        "FilterType": "Equals",
+        "FilterValue": {
+          "Type": "Lookup",
+          "Lookup": {
+            "SourceType": "Table",
+            "TableName": "Location",
+            "TableFieldName": "State Code",
+            "Method": "First",
+            "TableFilters": [
+              {
+                "FiterFieldName": "Code",
+                "FilterType": "Equals",
+                "FilterValue": {
+                  "Type": "Lookup",
+                  "Lookup": {
+                    "SourceType": "Current Record",
+                    "TableName": "Gen. Journal Line",
+                    "FieldName": "Location Code"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "Attributes": [
+      {
+        "Name": "HSN/SAC",
+        "When": [
+          {
+            "ValueType": "Relation",
+            "Sequence": 0,
+            "Relation": {
+              "IsCurrentRecord": true,
+              "TableName": "Gen. Journal Line"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "GST Group Code",
+        "When": [
+          {
+            "ValueType": "Relation",
+            "Sequence": 0,
+            "Relation": {
+              "IsCurrentRecord": true,
+              "TableName": "Gen. Journal Line"
+            }
+          }
+        ]
+      }
+    ],
+    "RateColumns": [
+      {
+        "Name": "Location State Code",
+        "When": [
+          {
+            "ValueType": "Lookup",
+            "Sequence": 0,
+            "Lookup": {
+              "SourceType": "Table",
+              "TableName": "Location",
+              "TableFieldName": "State Code",
+              "Method": "First",
+              "TableFilters": [
+                {
+                  "FiterFieldName": "Code",
+                  "FilterType": "Equals",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Current Record",
+                      "TableName": "Gen. Journal Line",
+                      "FieldName": "Location Code"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "Name": "From State",
+        "When": [
+          {
+            "Condition": {
+              "Body": []
+            },
+            "ValueType": "Lookup",
+            "Sequence": 0,
+            "Lookup": {
+              "SourceType": "Table",
+              "TableName": "Location",
+              "TableFieldName": "State Code",
+              "Method": "Last",
+              "TableFilters": [
+                {
+                  "FiterFieldName": "Code",
+                  "FilterType": "Equals",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Table",
+                      "TableName": "Gen. Journal Line",
+                      "TableFieldName": "Location Code",
+                      "Method": "Last",
+                      "TableFilters": [
+                        {
+                          "FiterFieldName": "Account No.",
+                          "FilterType": "Not Equals",
+                          "FilterValue": {
+                            "Type": "Lookup",
+                            "Lookup": {
+                              "SourceType": "Current Record",
+                              "TableName": "Gen. Journal Line",
+                              "FieldName": "Account No."
+                            }
+                          }
+                        },
+                        {
+                          "FiterFieldName": "Document No.",
+                          "FilterType": "Equals",
+                          "FilterValue": {
+                            "Type": "Lookup",
+                            "Lookup": {
+                              "SourceType": "Current Record",
+                              "TableName": "Gen. Journal Line",
+                              "FieldName": "Document No."
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "Name": "Date",
+        "When": [
+          {
+            "ValueType": "Lookup",
+            "Sequence": 0,
+            "Lookup": {
+              "SourceType": "Current Record",
+              "TableName": "Gen. Journal Line",
+              "FieldName": "Posting Date"
+            }
+          }
+        ]
+      }
+    ],
+    "ComputationVariables": [],
+    "ComputationScript": [],
+    "PostingVariables": [],
+    "PostingScript": [],
+    "Components": [
+      {
+        "ComponentName": "GST Base Amount",
+        "Sequence": 2,
+        "Formula": {
+          "VariableName": "GST Base Amount",
+          "Expression": "{Amount}",
+          "Tokens": [
+            {
+              "TokenName": "{Amount}",
+              "TokenValue": {
+                "Type": "Lookup",
+                "Lookup": {
+                  "SourceType": "Current Record",
+                  "TableName": "Gen. Journal Line",
+                  "FieldName": "Amount"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "ComponentName": "IGST",
+        "Sequence": 1,
+        "Formula": {
+          "VariableName": "IGST",
+          "Expression": "{Amount}*{IGST %}/100",
+          "Tokens": [
+            {
+              "TokenName": "{Amount}",
+              "TokenValue": {
+                "Type": "Lookup",
+                "Lookup": {
+                  "SourceType": "Current Record",
+                  "TableName": "Gen. Journal Line",
+                  "FieldName": "Amount"
+                }
+              }
+            },
+            {
+              "TokenName": "{IGST %}",
+              "TokenValue": {
+                "Type": "Lookup",
+                "Lookup": {
+                  "SourceType": "Component Percent",
+                  "ComponentName": "IGST"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Condition": {
+      "Body": [
+        {
+          "Operator": "and",
+          "ConditionType": "Equals",
+          "LHS": {
+            "Lookup": {
+              "SourceType": "Current Record",
+              "TableName": "Gen. Journal Line",
+              "FieldName": "Account Type"
+            }
+          },
+          "RHS": {
+            "Type": "Constant",
+            "Value": "Fixed Asset"
+          }
+        },
+        {
+          "Operator": "and",
+          "ConditionType": "Equals",
+          "LHS": {
+            "Lookup": {
+              "SourceType": "Table",
+              "TableName": "GST Group",
+              "TableFieldName": "GST Group Type",
+              "Method": "First",
+              "TableFilters": [
+                {
+                  "FiterFieldName": "Code",
+                  "FilterType": "Equals",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Current Record",
+                      "TableName": "Gen. Journal Line",
+                      "FieldName": "GST Group Code"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "RHS": {
+            "Type": "Constant",
+            "Value": "Goods"
+          }
+        },
+        {
+          "Operator": "and",
+          "ConditionType": "Equals",
+          "LHS": {
+            "Lookup": {
+              "SourceType": "Current Record",
+              "TableName": "Gen. Journal Line",
+              "FieldName": "GST Credit"
+            }
+          },
+          "RHS": {
+            "Type": "Constant",
+            "Value": "Availment"
+          }
+        },
+        {
+          "Operator": "and",
+          "ConditionType": "Not Equals",
+          "LHS": {
+            "Lookup": {
+              "SourceType": "Table",
+              "TableName": "Location",
+              "TableFieldName": "State Code",
+              "Method": "First",
+              "TableFilters": [
+                {
+                  "FiterFieldName": "Code",
+                  "FilterType": "Equals",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Table",
+                      "TableName": "Gen. Journal Line",
+                      "TableFieldName": "Location Code",
+                      "Method": "First",
+                      "TableFilters": [
+                        {
+                          "FiterFieldName": "Document No.",
+                          "FilterType": "Equals",
+                          "FilterValue": {
+                            "Type": "Lookup",
+                            "Lookup": {
+                              "SourceType": "Current Record",
+                              "TableName": "Gen. Journal Line",
+                              "FieldName": "Document No."
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "RHS": {
+            "Type": "Lookup",
+            "Lookup": {
+              "SourceType": "Table",
+              "TableName": "Location",
+              "TableFieldName": "State Code",
+              "Method": "First",
+              "TableFilters": [
+                {
+                  "FiterFieldName": "Code",
+                  "FilterType": "Equals",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Table",
+                      "TableName": "Gen. Journal Line",
+                      "TableFieldName": "Location Code",
+                      "Method": "Last",
+                      "TableFilters": [
+                        {
+                          "FiterFieldName": "Document No.",
+                          "FilterType": "Equals",
+                          "FilterValue": {
+                            "Type": "Lookup",
+                            "Lookup": {
+                              "SourceType": "Current Record",
+                              "TableName": "Gen. Journal Line",
+                              "FieldName": "Document No."
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Operator": "and",
+          "ConditionType": "Not Equals",
+          "LHS": {
+            "Lookup": {
+              "SourceType": "Current Record",
+              "TableName": "Gen. Journal Line",
+              "FieldName": "GST Group Code"
+            }
+          },
+          "RHS": {
+            "Type": "Constant",
+            "Value": ""
+          }
+        },
+        {
+          "Operator": "and",
+          "ConditionType": "Not Equals",
+          "LHS": {
+            "Lookup": {
+              "SourceType": "Current Record",
+              "TableName": "Gen. Journal Line",
+              "FieldName": "HSN/SAC Code"
+            }
+          },
+          "RHS": {
+            "Type": "Constant",
+            "Value": ""
+          }
+        },
+        {
+          "Operator": "and",
+          "ConditionType": "Equals",
+          "LHS": {
+            "Lookup": {
+              "SourceType": "Current Record",
+              "TableName": "Gen. Journal Line",
+              "FieldName": "FA Posting Type"
+            }
+          },
+          "RHS": {
+            "Type": "Constant",
+            "Value": "Acquisition Cost"
+          }
+        },
+        {
+          "Operator": "and",
+          "ConditionType": "Equals",
+          "LHS": {
+            "Lookup": {
+              "SourceType": "Current Record",
+              "TableName": "Gen. Journal Line",
+              "FieldName": "FA Reclassification Entry"
+            }
+          },
+          "RHS": {
+            "Type": "Constant",
+            "Value": "true"
+          }
+        }
+      ]
+    },
+    "TaxPostingSetup": []
+  }
+]

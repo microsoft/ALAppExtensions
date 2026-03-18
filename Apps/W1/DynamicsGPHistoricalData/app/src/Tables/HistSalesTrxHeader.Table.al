@@ -31,40 +31,56 @@ table 40902 "Hist. Sales Trx. Header"
         }
         field(6; "Sub Total"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Sub Total';
         }
         field(7; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Tax Amount';
             BlankZero = true;
         }
         field(8; "Trade Disc. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Trade Discount Amount';
             BlankZero = true;
         }
         field(9; "Freight Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Freight Amount';
             BlankZero = true;
         }
         field(10; "Misc. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Miscellaneous Amount';
             BlankZero = true;
         }
         field(11; "Payment Recv. Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Payment Received Amount';
             BlankZero = true;
         }
         field(12; "Disc. Taken Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Discount Taken Amount';
             BlankZero = true;
         }
         field(13; "Total"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Total';
         }
         field(14; "Document Date"; Date)

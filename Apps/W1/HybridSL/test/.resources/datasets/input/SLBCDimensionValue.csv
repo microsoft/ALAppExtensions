@@ -1,0 +1,104 @@
+﻿Dimension Code,Code,Name,Indentation,Global Dimension No.
+GROUP,00,Default                       ,0,2
+GROUP,01,Group 1                       ,0,2
+GROUP,99,Default 99                    ,0,2
+LOCATIONS,0,Default 0                     ,0,1
+LOCATIONS,00,Default                       ,0,1
+LOCATIONS,50,Default 50                    ,0,1
+LOCATIONS,99,Default 99                    ,0,1
+LOCATIONS,AA,Administration Offices        ,0,1
+LOCATIONS,AT,Atlanta                       ,0,1
+LOCATIONS,CD,Canada                        ,0,1
+LOCATIONS,CH,Chicago                       ,0,1
+LOCATIONS,FR,France                        ,0,1
+LOCATIONS,GM,Germany                       ,0,1
+LOCATIONS,IT,Italy                         ,0,1
+LOCATIONS,LA,Los Angeles                   ,0,1
+LOCATIONS,NY,New York                      ,0,1
+LOCATIONS,SF,San Francisco                 ,0,1
+LOCATIONS,UK,United Kingdom                ,0,1
+REG/BRANCH,000,Default                       ,0,4
+REG/BRANCH,100,Controller                    ,0,4
+REG/BRANCH,110,MIS                           ,0,4
+REG/BRANCH,120,PersonnelPersonnel            ,0,4
+REG/BRANCH,130,Office Management             ,0,4
+REG/BRANCH,140,Legal                         ,0,4
+REG/BRANCH,200,Purchasing                    ,0,4
+REG/BRANCH,210,Production                    ,0,4
+REG/BRANCH,220,Maintenance                   ,0,4
+REG/BRANCH,230,Engineering                   ,0,4
+REG/BRANCH,240,Inventory Management          ,0,4
+REG/BRANCH,250,Quality Control               ,0,4
+REG/BRANCH,260,Research and Development      ,0,4
+REG/BRANCH,270,Shipping                      ,0,4
+REG/BRANCH,280,Receiving                     ,0,4
+REG/BRANCH,290,Traffic                       ,0,4
+REG/BRANCH,300,Planning                      ,0,4
+REG/BRANCH,310,Scheduling                    ,0,4
+REG/BRANCH,400,Marketing                     ,0,4
+REG/BRANCH,410,Sales Operations              ,0,4
+REG/BRANCH,420,Customer Service              ,0,4
+REG/BRANCH,430,Sales                         ,0,4
+REG/BRANCH,440,Retail Operations             ,0,4
+REG/BRANCH,500,Default 500                   ,0,4
+REG/BRANCH,999,Default 999                   ,0,4
+REGION,0,Default                       ,0,6
+REGION,1,North                         ,0,6
+REGION,2,South                         ,0,6
+REGION,3,East                          ,0,6
+REGION,4,West                          ,0,6
+REGION,8,Southwest                     ,0,6
+REGION,9,Default 9                     ,0,6
+REPORTING UNIT,00,Default                       ,0,3
+REPORTING UNIT,01,Administration                ,0,3
+REPORTING UNIT,02,Manufacturing                 ,0,3
+REPORTING UNIT,03,Sales and Marketing           ,0,3
+REPORTING UNIT,04,International                 ,0,3
+REPORTING UNIT,10,Default 10                    ,0,3
+REPORTING UNIT,99,Default 99                    ,0,3
+REPORTING UNIT,AT,AvaTax                        ,0,3
+REPORTING UNIT,CO,Consulting                    ,0,3
+REPORTING UNIT,EN,Engineering                   ,0,3
+REPORTING UNIT,EV,Events                        ,0,3
+REPORTING UNIT,GC,General Contractors           ,0,3
+REPORTING UNIT,HH,Heavy/Highway Construction    ,0,3
+REPORTING UNIT,MF,Build-to-Suit Manufacturing   ,0,3
+REPORTING UNIT,SC,Specialty Contractors         ,0,3
+REPORTING UNIT,SW,Software                      ,0,3
+SALES TYPE,00,Default                       ,0,5
+SALES TYPE,01,Retail                        ,0,5
+SALES TYPE,02,Wholesale                     ,0,5
+SALES TYPE,03,Mail Order                    ,0,5
+SALES TYPE,10,Assembled Product-10          ,0,5
+SALES TYPE,11,Component B1                  ,0,5
+SALES TYPE,12,Component B2                  ,0,5
+SALES TYPE,13,Component B3                  ,0,5
+SALES TYPE,14,Component B4                  ,0,5
+SALES TYPE,15,Component B5                  ,0,5
+SALES TYPE,16,Component B6                  ,0,5
+SALES TYPE,17,Component B7                  ,0,5
+SALES TYPE,30,Assembled Product-30          ,0,5
+SALES TYPE,31,Component B1                  ,0,5
+SALES TYPE,32,Component B2                  ,0,5
+SALES TYPE,33,Component B3                  ,0,5
+SALES TYPE,34,Component B4                  ,0,5
+SALES TYPE,35,Component B5                  ,0,5
+SALES TYPE,36,Component B6                  ,0,5
+SALES TYPE,37,Component B7                  ,0,5
+SALES TYPE,40,Assembled Product-40          ,0,5
+SALES TYPE,41,Component B1                  ,0,5
+SALES TYPE,42,Component B2                  ,0,5
+SALES TYPE,43,Component B3                  ,0,5
+SALES TYPE,44,Component B4                  ,0,5
+SALES TYPE,45,Component B5                  ,0,5
+SALES TYPE,46,Component B6                  ,0,5
+SALES TYPE,47,Component B7                  ,0,5
+SALES TYPE,50,Assembled Product-50          ,0,5
+SALES TYPE,51,Component B1                  ,0,5
+SALES TYPE,52,Component B2                  ,0,5
+SALES TYPE,53,Component B3                  ,0,5
+SALES TYPE,54,Component B4                  ,0,5
+SALES TYPE,55,Component B5                  ,0,5
+SALES TYPE,56,Component B6                  ,0,5
+SALES TYPE,57,Component B7                  ,0,5
+SALES TYPE,99,Default 99                    ,0,5

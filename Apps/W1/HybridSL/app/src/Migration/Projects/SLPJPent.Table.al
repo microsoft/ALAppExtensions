@@ -113,10 +113,12 @@ table 47068 "SL PJPent"
         field(23; pe_id06; Decimal)
         {
             Caption = 'pe_id06';
+            AutoFormatType = 0;
         }
         field(24; pe_id07; Decimal)
         {
             Caption = 'pe_id07';
+            AutoFormatType = 0;
         }
         field(25; pe_id08; DateTime)
         {
@@ -161,6 +163,7 @@ table 47068 "SL PJPent"
         field(35; pe_id38; Decimal)
         {
             Caption = 'pe_id38';
+            AutoFormatType = 0;
         }
         field(36; pe_id39; DateTime)
         {
@@ -277,10 +280,12 @@ table 47068 "SL PJPent"
         field(64; user3; Decimal)
         {
             Caption = 'user3';
+            AutoFormatType = 0;
         }
         field(65; user4; Decimal)
         {
             Caption = 'user4';
+            AutoFormatType = 0;
         }
     }
 

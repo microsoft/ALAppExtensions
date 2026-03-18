@@ -25,6 +25,8 @@ codeunit 13414 "FI Contoso Localization"
     var
         CreatePurchaseOrderFI: Codeunit "Create Purchase Order FI";
     begin
+        if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+            Codeunit.Run(Codeunit::"Create Allocation Account FI");
         if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Historical Data" then
             CreatePurchaseOrderFI.UpdateInvoiceMessage();
     end;
@@ -43,7 +45,7 @@ codeunit 13414 "FI Contoso Localization"
         if Module = Enum::"Contoso Demo Data Module"::Finance then
             FinanceModule(ContosoDemoDataLevel);
 
-        UnBindSubscriptionDemoData(Module);
+        UnBindSubscriptionDemoData(ContosoDemoDataLevel, Module);
     end;
 
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
@@ -110,7 +112,7 @@ codeunit 13414 "FI Contoso Localization"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
         CreateCountryRegionFI: Codeunit "Create Country Region FI";
         CreateLocationFI: Codeunit "Create Location FI";
@@ -154,7 +156,8 @@ codeunit 13414 "FI Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateInvPostingSetupFI);
-                    BindSubscription(CreateItemFI);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        BindSubscription(CreateItemFI);
                     BindSubscription(CreateLocationFI);
                 end;
             Enum::"Contoso Demo Data Module"::Sales:
@@ -191,7 +194,7 @@ codeunit 13414 "FI Contoso Localization"
         end;
     end;
 
-    local procedure UnBindSubscriptionDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure UnBindSubscriptionDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         CreateCountryRegionFI: Codeunit "Create Country Region FI";
         CreateLocationFI: Codeunit "Create Location FI";
@@ -236,7 +239,8 @@ codeunit 13414 "FI Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     UnBindSubscription(CreateInvPostingSetupFI);
-                    UnBindSubscription(CreateItemFI);
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then
+                        UnBindSubscription(CreateItemFI);
                     UnBindSubscription(CreateLocationFI);
                 end;
             Enum::"Contoso Demo Data Module"::Sales:

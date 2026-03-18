@@ -48,6 +48,8 @@ table 18322 "GST Payment Buffer Details"
         }
         field(7; "Payment Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Liability';
             DataClassification = CustomerContent;
             Editable = false;
@@ -55,12 +57,16 @@ table 18322 "GST Payment Buffer Details"
         }
         field(10; "Net Payment Liability"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Net Payment Liability';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(13; "Total Credit Available"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Credit Available';
             DataClassification = CustomerContent;
             Editable = false;
@@ -68,30 +74,40 @@ table 18322 "GST Payment Buffer Details"
         }
         field(14; "Credit Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Credit Utilized';
             DataClassification = CustomerContent;
             MinValue = 0;
         }
         field(15; "Payment Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Payment Amount';
             DataClassification = CustomerContent;
             MinValue = 0;
         }
         field(27; "Surplus Credit"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Surplus Credit';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(28; "Surplus Cr. Utilized"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Surplus Cr. Utilized';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(29; "Carry Forward"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Carry Forward';
             DataClassification = CustomerContent;
             Editable = false;

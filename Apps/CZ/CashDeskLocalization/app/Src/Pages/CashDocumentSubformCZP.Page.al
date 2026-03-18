@@ -162,6 +162,8 @@ page 31161 "Cash Document Subform CZP"
                 }
                 field(RelatedAmountToApplyField; RelatedAmountToApply)
                 {
+                    AutoFormatExpression = '';
+                    AutoFormatType = 1;
                     Caption = 'Related Amount to Apply (LCY)';
                     ApplicationArea = Basic, Suite;
                     Editable = false;
@@ -560,9 +562,6 @@ page 31161 "Cash Document Subform CZP"
         TotalCashDocumentHeaderCZP: Record "Cash Document Header CZP";
         AllocationAccountMgt: Codeunit "Allocation Account Mgt.";
         CashDocumentTotalsCZP: Codeunit "Cash Document Totals CZP";
-#if not CLEAN26
-        AccountTypeIsFilled: Boolean;
-#endif
         VATAmount: Decimal;
         RelatedAmountToApply: Decimal;
         ActionOnlyAllowedForAllocationAccountsErr: Label 'This action is only available for lines that have Allocation Account set as Type.';
@@ -591,13 +590,6 @@ page 31161 "Cash Document Subform CZP"
         CurrPage.Update(SetSaveRecord);
     end;
 
-#if not CLEAN26
-    [Obsolete('The procedure is not used and will be obsoleted', '26.0')]
-    procedure SetShowMandatoryConditions()
-    begin
-        AccountTypeIsFilled := Rec."Account Type" <> Rec."Account Type"::" ";
-    end;
-#endif
     procedure InsertExtendedText(Unconditionally: Boolean)
     var
         TransferExtendedTextCZP: Codeunit "Transfer Extended Text CZP";

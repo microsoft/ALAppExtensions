@@ -35,4 +35,14 @@ codeunit 11486 "Create Currency US"
         Currency.Validate("Realized Gains Acc.", RealizedGainsAcc);
         Currency.Validate("Realized Losses Acc.", RealizedLossesAcc);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Add. Reporting Currency", OnBeforeGetResidualCurrencyAccounts, '', false, false)]
+    local procedure GetResidualCurrencyAccountsUS(var FXGainsAccount: Code[20]; var FXLossesAccount: Code[20]; var IsHandled: Boolean)
+    var
+        CreateUSGLAccount: Codeunit "Create US GL Accounts";
+    begin
+        FXGainsAccount := CreateUSGLAccount.CurrencyGains();
+        FXLossesAccount := CreateUSGLAccount.CurrencyLosses();
+        IsHandled := true;
+    end;
 }

@@ -58,6 +58,7 @@ table 18476 "Subcon. Delivery Challan Line"
         }
         field(6; "Quantity To Send"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity To Send';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -69,12 +70,14 @@ table 18476 "Subcon. Delivery Challan Line"
         }
         field(7; "Quantity (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity (Base)';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
         }
         field(8; "Quantity To Send (Base)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Quantity To Send (Base)';
             DecimalPlaces = 0 : 3;
             DataClassification = EndUserIdentifiableInformation;
@@ -124,6 +127,7 @@ table 18476 "Subcon. Delivery Challan Line"
         }
         field(16; "Qty. per Unit of Measure"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Qty. per Unit of Measure';
             DecimalPlaces = 0 : 3;
             Editable = false;

@@ -56,6 +56,8 @@ table 18005 "GST Ledger Entry"
         }
         field(9; "GST Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Base Amount';
             DataClassification = CustomerContent;
         }
@@ -118,6 +120,8 @@ table 18005 "GST Ledger Entry"
         }
         field(27; "GST Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'GST Amount';
             DataClassification = CustomerContent;
         }
@@ -129,6 +133,7 @@ table 18005 "GST Ledger Entry"
         }
         field(29; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DecimalPlaces = 1 : 6;
             DataClassification = CustomerContent;

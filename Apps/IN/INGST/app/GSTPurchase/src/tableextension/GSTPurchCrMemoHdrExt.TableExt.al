@@ -38,6 +38,7 @@ tableextension 18085 "GST Purch. Cr. Memo Hdr. Ext" extends "Purch. Cr. Memo Hdr
         }
         field(18084; "GST Inv. Rounding Precision"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'GST Inv. Rounding Precision';
             MinValue = 0;
             DataClassification = CustomerContent;
@@ -133,6 +134,7 @@ tableextension 18085 "GST Purch. Cr. Memo Hdr. Ext" extends "Purch. Cr. Memo Hdr
         }
         field(18101; "Distance (Km)"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Distance (Km)';
             DataClassification = CustomerContent;
         }
@@ -183,6 +185,8 @@ tableextension 18085 "GST Purch. Cr. Memo Hdr. Ext" extends "Purch. Cr. Memo Hdr
         }
         field(18111; "Bill of Entry Value"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Bill of Entry Value';
             DataClassification = CustomerContent;
             MinValue = 0;

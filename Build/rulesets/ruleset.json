@@ -40,11 +40,6 @@
       "justification": "TODO(#572306) - (see PTE0026) This will require a multi-release effort."
     },
     {
-      "id": "AL0897",
-      "action": "None",
-      "justification": "TODO(#616973)"
-    },
-    {
       "id": "AS0139",
       "action": "None",
       "justification": "TODO(#595767) - This will be enabled after branching to BC 27."

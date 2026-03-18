@@ -72,7 +72,7 @@ report 6790 "Withholding Tax Certificate"
             column(VendAddr_1_; VendAddr[1])
             {
             }
-            column(Vendor__WHT_Registration_ID_; Vendor."WHT Registered")
+            column(Vendor__WHT_Registration_ID_; Vendor."Withholding Tax Reg. ID")
             {
             }
             column(PayToVendAddr_1_; PayToVendAddr[1])
@@ -213,37 +213,18 @@ report 6790 "Withholding Tax Certificate"
 
             trigger OnAfterGetRecord()
             begin
-                if "Actual Vendor No." <> '' then
-                    if "Actual Vendor No." <> "Bill-to/Pay-to No." then begin
-                        Vendor.Get("Actual Vendor No.");
-                        PrintPayToVendor := true;
-                    end else begin
-                        Vendor.Get("Bill-to/Pay-to No.");
-                        PrintPayToVendor := false;
-                    end;
+                if "Bill-to/Pay-to No." <> '' then begin
+                    Vendor.Get("Bill-to/Pay-to No.");
+                    PrintPayToVendor := false;
+                end;
+
                 if "Transaction Type" = "Transaction Type"::Purchase then
                     PayToVendor.Get("Bill-to/Pay-to No.")
                 else
                     PaytoCustomer.Get("Bill-to/Pay-to No.");
+
                 FormatAddr.Vendor(VendAddr, Vendor);
                 FormatAddr.Vendor(PayToVendAddr, PayToVendor);
-
-                // WHT Report
-                WHTPostingSetup.SetRange("Wthldg. Tax Bus. Post. Group", "Wthldg. Tax Bus. Post. Group");
-                WHTPostingSetup.SetRange("Wthldg. Tax Prod. Post. Group", "Wthldg. Tax Prod. Post. Group");
-                if WHTPostingSetup.FindFirst() then
-                    case WHTPostingSetup."Withholding Tax Report" of
-                        WHTPostingSetup."Withholding Tax Report"::" ":
-                            CheckBox1 := 'X';
-                        WHTPostingSetup."Withholding Tax Report"::"Por Ngor Dor 1":
-                            CheckBox2 := 'X';
-                        WHTPostingSetup."Withholding Tax Report"::"Por Ngor Dor 2":
-                            CheckBox3 := 'X';
-                        WHTPostingSetup."Withholding Tax Report"::"Por Ngor Dor 3":
-                            CheckBox53 := 'X';
-                        WHTPostingSetup."Withholding Tax Report"::"Por Ngor Dor 53":
-                            CheckBox55 := 'X';
-                    end;
             end;
 
             trigger OnPreDataItem()
@@ -322,7 +303,6 @@ report 6790 "Withholding Tax Certificate"
 
             trigger OnAfterGetRecord()
             var
-                WithholdingTaxInvoiceMgmt: Codeunit "Withholding Tax Invoice Mgmt.";
                 WHTManagement: Codeunit "Withholding Tax Mgmt.";
             begin
                 if not "WHT Entry".FindFirst() then
@@ -345,8 +325,8 @@ report 6790 "Withholding Tax Certificate"
                 TotalBaseLCY := TotalBaseLCY + WHTBaseLCY;
 
                 if GlobalLanguage = 1054 then begin
-                    WithholdingTaxInvoiceMgmt.InitTextVariable();
-                    WithholdingTaxInvoiceMgmt.FormatNoText(AmtInWords, TotalAmountLCY, "WHT Entry"."Currency Code");
+                    WHTManagement.InitTextVariable();
+                    WHTManagement.FormatNoText(AmtInWords, TotalAmountLCY, "WHT Entry"."Currency Code");
                 end;
             end;
 
@@ -377,8 +357,7 @@ report 6790 "Withholding Tax Certificate"
     trigger OnPreReport()
     begin
         if ("WHT Entry".GetFilter("Original Document No.") = '') or
-           (("WHT Entry".GetFilter("Bill-to/Pay-to No.") = '') and
-            ("WHT Entry".GetFilter("Actual Vendor No.") = ''))
+           ("WHT Entry".GetFilter("Bill-to/Pay-to No.") = '')
         then
             Error(BillToVendorLbl);
     end;
@@ -389,7 +368,6 @@ report 6790 "Withholding Tax Certificate"
         Vendor: Record Vendor;
         PurchSetup: Record "Purchases & Payables Setup";
         WHTEntry2: Record "Withholding Tax Entry";
-        WHTPostingSetup: Record "Withholding Tax Posting Setup";
         PaytoCustomer: Record Customer;
         PayToVendor: Record Vendor;
         FormatAddr: Codeunit "Format Address";

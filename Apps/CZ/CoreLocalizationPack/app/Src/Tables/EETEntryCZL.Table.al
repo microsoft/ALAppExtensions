@@ -135,18 +135,21 @@ table 31128 "EET Entry CZL"
         field(150; "Total Sales Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Total Sales Amount';
             DataClassification = CustomerContent;
         }
         field(155; "Amount Exempted From VAT"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount Exempted From VAT';
             DataClassification = CustomerContent;
         }
         field(160; "VAT Base (Basic)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Base (Basic)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -154,12 +157,14 @@ table 31128 "EET Entry CZL"
         field(161; "VAT Amount (Basic)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Amount (Basic)';
             DataClassification = CustomerContent;
         }
         field(164; "VAT Base (Reduced)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Base (Reduced)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -167,12 +172,14 @@ table 31128 "EET Entry CZL"
         field(165; "VAT Amount (Reduced)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Amount (Reduced)';
             DataClassification = CustomerContent;
         }
         field(167; "VAT Base (Reduced 2)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Base (Reduced 2)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -180,24 +187,28 @@ table 31128 "EET Entry CZL"
         field(168; "VAT Amount (Reduced 2)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'VAT Amount (Reduced 2)';
             DataClassification = CustomerContent;
         }
         field(170; "Amount - Art.89"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount - Art.89';
             DataClassification = CustomerContent;
         }
         field(175; "Amount (Basic) - Art.90"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (Basic) - Art.90';
             DataClassification = CustomerContent;
         }
         field(177; "Amount (Reduced) - Art.90"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount (Reduced) - Art.90';
             DataClassification = CustomerContent;
         }
@@ -205,17 +216,20 @@ table 31128 "EET Entry CZL"
         {
             AutoFormatType = 1;
             Caption = 'Amount (Reduced 2) - Art.90';
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(190; "Amt. For Subseq. Draw/Settle"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amt. For Subseq. Draw/Settle';
             DataClassification = CustomerContent;
         }
         field(195; "Amt. Subseq. Drawn/Settled"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amt. Subseq. Drawn/Settled';
             DataClassification = CustomerContent;
         }

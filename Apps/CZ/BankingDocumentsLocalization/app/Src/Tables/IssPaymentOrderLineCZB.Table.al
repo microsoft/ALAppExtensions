@@ -94,6 +94,7 @@ table 31259 "Iss. Payment Order Line CZB"
         {
             Caption = 'Amount (LCY)';
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
         }
         field(13; "Applies-to Doc. Type"; Enum "Gen. Journal Document Type")
@@ -157,6 +158,7 @@ table 31259 "Iss. Payment Order Line CZB"
         }
         field(27; "Payment Order Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Payment Order Currency Factor';
             DecimalPlaces = 0 : 15;
             Editable = false;

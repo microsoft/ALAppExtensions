@@ -165,6 +165,8 @@ table 4511 "SMTP Account"
     [NonDebuggable]
     procedure GetPassword(PasswordKey: Guid) Password: SecretText
     begin
+        if IsNullGuid(PasswordKey) then
+            exit;
         if not IsolatedStorage.Get(Format(PasswordKey), DataScope::Company, Password) then
             Error(UnableToGetPasswordMsg);
     end;
@@ -215,7 +217,7 @@ table 4511 "SMTP Account"
             Error(UnableToGetClientSecretMsg);
     end;
 
-    local procedure DeleteIsolatedStorageIfExists(KeyToCheck: Guid)
+    internal procedure DeleteIsolatedStorageIfExists(KeyToCheck: Guid)
     begin
         if IsNullGuid(KeyToCheck) then
             exit;

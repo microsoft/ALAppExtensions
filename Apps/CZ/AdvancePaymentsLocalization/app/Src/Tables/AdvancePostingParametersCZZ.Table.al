@@ -68,6 +68,8 @@ table 31014 "Advance Posting Parameters CZZ"
         }
         field(15; "Amount to Link"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             Caption = 'Amount to Link';
             DataClassification = SystemMetadata;
         }
@@ -78,6 +80,7 @@ table 31014 "Advance Posting Parameters CZZ"
         }
         field(21; "Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;
@@ -85,6 +88,7 @@ table 31014 "Advance Posting Parameters CZZ"
         }
         field(22; "Additional Currency Factor"; Decimal)
         {
+            AutoFormatType = 0;
             Caption = 'Additional Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;

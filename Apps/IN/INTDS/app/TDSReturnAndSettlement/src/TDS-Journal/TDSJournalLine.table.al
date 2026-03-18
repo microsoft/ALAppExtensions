@@ -240,6 +240,7 @@ table 18747 "TDS Journal Line"
         field(11; Amount; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Amount';
             DataClassification = CustomerContent;
 
@@ -251,6 +252,7 @@ table 18747 "TDS Journal Line"
         field(12; "Debit Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             BlankZero = true;
             Caption = 'Debit Amount';
             DataClassification = CustomerContent;
@@ -265,6 +267,7 @@ table 18747 "TDS Journal Line"
         field(13; "Credit Amount"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             BlankZero = true;
             Caption = 'Credit Amount';
             DataClassification = CustomerContent;
@@ -279,6 +282,7 @@ table 18747 "TDS Journal Line"
         field(14; "Balance (LCY)"; Decimal)
         {
             AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Balance (LCY)';
             Editable = false;
             DataClassification = CustomerContent;
@@ -382,12 +386,16 @@ table 18747 "TDS Journal Line"
         }
         field(27; "TDS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'TDS Amount';
             DataClassification = CustomerContent;
             Editable = false;
         }
         field(28; "Tax Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             Caption = 'Tax Amount';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 4;
@@ -407,6 +415,7 @@ table 18747 "TDS Journal Line"
         }
         field(31; "TDS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'TDS %';
             Editable = false;
@@ -433,18 +442,24 @@ table 18747 "TDS Journal Line"
         }
         field(32; "TDS Amt Incl Surcharge"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'TDS Amt Incl Surcharge';
             Editable = false;
         }
         field(33; "Bal. TDS Including SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Bal. TDS Including SHE CESS';
             Editable = false;
         }
         field(34; "CESS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'CESS Amount';
 
@@ -457,6 +472,8 @@ table 18747 "TDS Journal Line"
         }
         field(35; "eCess Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'eCess Amount';
 
@@ -469,12 +486,15 @@ table 18747 "TDS Journal Line"
         }
         field(36; "Surcharge %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Surcharge %';
             Editable = false;
         }
         field(37; "Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Surcharge Amount';
             Editable = false;
@@ -493,6 +513,7 @@ table 18747 "TDS Journal Line"
         }
         field(40; "TDS % Applied"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'TDS % Applied';
 
@@ -521,6 +542,8 @@ table 18747 "TDS Journal Line"
         }
         field(42; "TDS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'TDS Base Amount';
             Editable = false;
@@ -554,12 +577,15 @@ table 18747 "TDS Journal Line"
         }
         field(48; "Balance Surcharge Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Balance Surcharge Amount';
             Editable = false;
         }
         field(49; "Surcharge % Applied"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'Surcharge % Applied';
 
@@ -572,41 +598,53 @@ table 18747 "TDS Journal Line"
         }
         field(50; "Surcharge Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Surcharge Base Amount';
             Editable = false;
         }
         field(51; "Balance TDS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Balance TDS Amount';
             Editable = false;
         }
         field(52; "eCESS %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'eCESS %';
             Editable = false;
         }
         field(53; "eCESS on TDS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'eCESS on TDS Amount';
             Editable = false;
         }
         field(54; "Total TDS Incl. SHE CESS"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Total TDS Incl. SHE CESS';
             Editable = false;
         }
         field(55; "eCESS Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'eCESS Base Amount';
         }
         field(56; "eCESS % Applied"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'eCESS % Applied';
 
@@ -631,6 +669,8 @@ table 18747 "TDS Journal Line"
         }
         field(59; "Bal. SHE Cess on TDS Amt"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Bal. SHE Cess on TDS Amt';
         }
@@ -642,8 +682,9 @@ table 18747 "TDS Journal Line"
         }
         field(61; "SHE Cess Amount"; Decimal)
         {
-            DataClassification = CustomerContent;
             AutoFormatType = 1;
+            AutoFormatExpression = '';
+            DataClassification = CustomerContent;
             Caption = 'SHE Cess Amount';
 
             trigger OnValidate()
@@ -655,24 +696,30 @@ table 18747 "TDS Journal Line"
         }
         field(62; "SHE Cess %"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'SHE Cess %';
             Editable = false;
         }
         field(63; "SHE Cess on TDS Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'SHE Cess on TDS Amount';
             Editable = false;
         }
         field(64; "SHE Cess Base Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'SHE Cess Base Amount';
             Editable = false;
         }
         field(65; "SHE Cess % Applied"; Decimal)
         {
+            AutoFormatType = 0;
             DataClassification = CustomerContent;
             Caption = 'SHE Cess % Applied';
 
@@ -712,6 +759,8 @@ table 18747 "TDS Journal Line"
         }
         field(70; "TDS Base Amount Applied"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'TDS Base Amount Applied';
 
@@ -758,6 +807,8 @@ table 18747 "TDS Journal Line"
         }
         field(87; "Balance eCESS on TDS Amt"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'Balance eCESS on TDS Amt';
         }
@@ -768,6 +819,8 @@ table 18747 "TDS Journal Line"
         }
         field(89; "TDS Line Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
             DataClassification = CustomerContent;
             Caption = 'TDS Line Amount';
         }

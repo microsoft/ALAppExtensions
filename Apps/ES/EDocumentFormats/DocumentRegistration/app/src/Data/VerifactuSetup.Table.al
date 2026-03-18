@@ -5,6 +5,7 @@
 namespace Microsoft.EServices.EDocument.Verifactu;
 
 using Microsoft.EServices.EDocument;
+using System.Environment;
 using System.Privacy;
 using System.Security.Encryption;
 using System.Utilities;
@@ -32,11 +33,13 @@ table 10777 "Verifactu Setup"
                 SIISetup: Record "SII Setup";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 ConfirmMgt: Codeunit "Confirm Management";
+                Verifactu: Codeunit Verifactu;
                 VerifactuSetupConsentProvidedLbl: Label 'Verifactu Setup - consent provided by UserSecurityId %1.', Locked = true;
             begin
                 if Enabled and ("Certificate Code" = '') then
                     Error(CannotEnableWithoutCertificateErr);
                 if Enabled then begin
+                    Verifactu.CheckCompanyInformation();
                     if SIISetup.IsEnabled() then
                         if ConfirmMgt.GetResponseOrDefault(DisableSIIQst, false) then begin
                             SIISetup.Enabled := false;
@@ -108,6 +111,7 @@ table 10777 "Verifactu Setup"
 
     var
         UrlHelper: Codeunit "Url Helper";
+        EnvironmentInformation: Codeunit "Environment Information";
         CannotEnableWithoutCertificateErr: Label 'The setup cannot be enabled without a valid certificate.';
         DisableSIIQst: Label 'SII setup will be disabled. Do you want to proceed?';
         DocumentSubmissionEndpointUrlTxt: Label 'https://www1.agenciatributaria.gob.es/wlpl/TIKE-CONT/ws/SistemaFacturacion/VerifactuSOAP', Locked = true;
@@ -125,7 +129,7 @@ table 10777 "Verifactu Setup"
 
     internal procedure GetQRCodeValidationEndpointUrl(): Text
     begin
-        if UrlHelper.IsPPE() then
+        if UrlHelper.IsPPE() or EnvironmentInformation.IsSandbox() then
             exit(QRCodeValidationSandboxEndpointUrlTxt);
 
         exit(QRCodeValidationEndpointUrlTxt);
@@ -133,7 +137,7 @@ table 10777 "Verifactu Setup"
 
     internal procedure GetDocumentSubmissionEndpointUrl(): Text
     begin
-        if UrlHelper.IsPPE() then
+        if UrlHelper.IsPPE() or EnvironmentInformation.IsSandbox() then
             exit(DocumentSubmissionSandboxEndpointUrlTxt);
 
         exit(DocumentSubmissionEndpointUrlTxt);

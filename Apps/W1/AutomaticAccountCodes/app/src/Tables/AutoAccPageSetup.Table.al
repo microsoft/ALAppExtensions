@@ -19,13 +19,8 @@ table 4857 "Auto. Acc. Page Setup"
         field(1; Id; Enum "AAC Page Setup Key")
         {
             DataClassification = SystemMetadata;
-#if CLEAN26
             ObsoleteState = Removed;
             ObsoleteTag = '29.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '26.0';
-#endif
             ObsoleteReason = 'Automatic Acc.functionality will be moved to a new app.';
         }
 #pragma warning restore AS0105

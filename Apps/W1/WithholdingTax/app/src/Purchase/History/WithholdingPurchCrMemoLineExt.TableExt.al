@@ -24,16 +24,22 @@ tableextension 6794 "WithholdingPurchCrMemoLineExt" extends "Purch. Cr. Memo Lin
         }
         field(6786; "Withholding Tax Absorb Base"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
             Caption = 'Withholding Tax Absorb Base';
             DataClassification = CustomerContent;
         }
         field(6787; "WHT Paid Amount Incl. VAT"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
             Caption = 'Paid Amount Incl. VAT';
             DataClassification = CustomerContent;
         }
         field(6788; "WHT Paid VAT"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
             Caption = 'Paid VAT';
             DataClassification = CustomerContent;
         }

@@ -61,7 +61,7 @@ table 10036 "IRS 1099 Form Doc. Line"
             trigger OnValidate()
             begin
                 TestStatusOpen();
-                Validate("Include In 1099", Rec.Amount > Rec."Minimum Reportable Amount");
+                Validate("Include In 1099", Rec.Amount >= Rec."Minimum Reportable Amount");
             end;
         }
         field(20; "Manually Changed"; Boolean)

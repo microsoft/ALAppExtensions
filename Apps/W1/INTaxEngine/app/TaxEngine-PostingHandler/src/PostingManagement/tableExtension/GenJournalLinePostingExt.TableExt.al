@@ -20,6 +20,8 @@ tableextension 20334 "Gen. Journal Line Posting Ext" extends "Gen. Journal Line"
         }
         field(20336; "Amount Before Adjustment"; Decimal)
         {
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
             DataClassification = EndUserIdentifiableInformation;
             Caption = 'Amount Before Adjustment';
         }
