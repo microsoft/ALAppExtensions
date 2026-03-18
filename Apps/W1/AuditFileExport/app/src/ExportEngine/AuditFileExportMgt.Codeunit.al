@@ -283,6 +283,7 @@ codeunit 5261 "Audit File Export Mgt."
         AuditFileExportLine.Validate(Status, AuditFileExportLine.Status::"In Progress");
         Clear(AuditFileExportLine."Audit File Content");
         AuditFileExportLine.Validate(Progress, 0);
+        AuditFileExportLine.Validate("No. Of Attempts", 3);
         if AuditFileExportHeader."Parallel Processing" then begin
             LogState(AuditFileExportLine, StrSubstNo(ScheduleTaskForLineTxt, AuditFileExportLine."Line No."), true);
             NotBefore += 3000; // have a delay between running jobs to avoid deadlocks
