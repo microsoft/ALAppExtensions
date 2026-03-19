@@ -1162,28 +1162,35 @@ codeunit 13916 "Export XRechnung Document"
         AttachmentElement: XmlElement;
         OutStream: OutStream;
         InStream: InStream;
+        MimeCode: Text;
+        FileName: Text;
     begin
+        MimeCode := GetMimeCode(DocumentAttachment);
+        if not IsValidMimeCode(MimeCode) then
+            exit;
+
         TempBlob.CreateOutStream(OutStream);
         DocumentAttachment.ExportToStream(OutStream);
         TempBlob.CreateInStream(InStream);
 
+        FileName := DocumentAttachment."File Name" + '.' + DocumentAttachment."File Extension";
         AttachmentElement := XmlElement.Create('AdditionalDocumentReference', XmlNamespaceCAC);
-        AttachmentElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, DocumentAttachment."File Name" + '.' + DocumentAttachment."File Extension"));
+        AttachmentElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, FileName));
         AttachmentElement.Add(XmlElement.Create('DocumentDescription', XmlNamespaceCBC, DocumentAttachment."File Name"));
-        AddAttachmentObject(AttachmentElement, InStream, DocumentAttachment);
+        AddAttachmentObject(AttachmentElement, InStream, MimeCode, FileName);
 
         RootElement.Add(AttachmentElement);
     end;
 
-    local procedure AddAttachmentObject(var AttachmentElement: XmlElement; var InStream: InStream; var DocumentAttachment: Record "Document Attachment");
+    local procedure AddAttachmentObject(var AttachmentElement: XmlElement; var InStream: InStream; MimeCode: Text; FileName: Text);
     var
         Base64Convert: Codeunit "Base64 Convert";
         AttachmentObjectElement: XmlElement;
     begin
         AttachmentObjectElement := XmlElement.Create('Attachment', XmlNamespaceCAC);
         AttachmentObjectElement.Add(XmlElement.Create('EmbeddedDocumentBinaryObject', XmlNamespaceCBC,
-            XmlAttribute.Create('mimeCode', GetMimeCode(DocumentAttachment)),
-            XmlAttribute.Create('filename', DocumentAttachment."File Name" + '.' + DocumentAttachment."File Extension"),
+            XmlAttribute.Create('mimeCode', MimeCode),
+            XmlAttribute.Create('filename', FileName),
             Base64Convert.ToBase64(InStream)));
         AttachmentElement.Add(AttachmentObjectElement);
     end;
@@ -1192,9 +1199,14 @@ codeunit 13916 "Export XRechnung Document"
     begin
         case DocumentAttachment."File Type" of
             "Document Attachment File Type"::Image:
-                exit('image/' + LowerCase(DocumentAttachment."File Extension"));
+                case LowerCase(DocumentAttachment."File Extension") of
+                    'png':
+                        exit('image/png');
+                    'jpeg', 'jpg':
+                        exit('image/jpeg');
+                end;
             "Document Attachment File Type"::PDF:
-                exit('application/' + LowerCase(DocumentAttachment."File Extension"));
+                exit('application/pdf');
             "Document Attachment File Type"::Excel:
                 exit('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             "Document Attachment File Type"::Other:
@@ -1210,6 +1222,20 @@ codeunit 13916 "Export XRechnung Document"
             'ots':
                 exit('application/vnd.oasis.opendocument.spreadsheet');
         end;
+    end;
+
+    local procedure IsValidMimeCode(MimeCode: Text): Boolean
+    begin
+        case MimeCode of
+            'application/pdf',
+            'image/png',
+            'image/jpeg',
+            'text/csv',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.oasis.opendocument.spreadsheet':
+                exit(true);
+        end;
+        exit(false);
     end;
 
     local procedure CalculateLineAmounts(SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
