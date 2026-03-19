@@ -2631,10 +2631,10 @@ codeunit 13918 "XRechnung XML Document Tests"
 
     local procedure GetCurrencyCode(DocumentCurrencyCode: Code[10]; var Currency: Record Currency): Code[10]
     begin
-        if DocumentCurrencyCode = ';
-
-            exit(GeneralLedgerSe;
-
+        if DocumentCurrencyCode = '' then begin
+            Currency.InitRoundingPrecision();
+            exit(GeneralLedgerSetup."LCY Code");
+        end else begin
             Currency.Get(DocumentCurrencyCode);
             Currency.TestField("Amount Rounding Precision");
             Currency.TestField("Unit-Amount Rounding Precision");
@@ -2662,9 +2662,9 @@ codeunit 13918 "XRechnung XML Document Tests"
         CompanyInformation."SWIFT Code" := LibraryUtility.GenerateGUID();
         CompanyInformation."E-Mail" := LibraryUtility.GenerateRandomEmail();
         CompanyInformation.Modify();
-        
+
         GeneralLedgerSetup.Get();
-        
+
         EDocumentService.DeleteAll();
         EDocumentService.Get(LibraryEdocument.CreateService("E-Document Format"::XRechnung, "Service Integration"::"No Integration"));
         Commit();
