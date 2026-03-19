@@ -1366,6 +1366,36 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
     #endregion
 
+    #region TwoDecimalPlaces
+    [Test]
+    procedure FormatDecimalWithTwoDecimalPlacesFlagReturnsTrailingZero();
+    begin
+        // [SCENARIO] FormatDecimal with IncludeDecimalPlaces = true always formats amount with exactly two decimal places
+        Initialize();
+
+        // [WHEN/THEN] A value with one significant decimal place gets the trailing zero
+        Assert.AreEqual('1.10', ExportXRechnungDocument.FormatDecimal(1.1, true), 'FormatDecimal(1.1, true) should return ''1.10''');
+        // [WHEN/THEN] A whole number gets two decimal zeros
+        Assert.AreEqual('1.00', ExportXRechnungDocument.FormatDecimal(1, true), 'FormatDecimal(1, true) should return ''1.00''');
+        // [WHEN/THEN] A value with two decimal places is unchanged
+        Assert.AreEqual('1.23', ExportXRechnungDocument.FormatDecimal(1.23, true), 'FormatDecimal(1.23, true) should return ''1.23''');
+    end;
+
+    [Test]
+    procedure FormatDecimalWithoutTwoDecimalPlacesFlagNoTrailingZero();
+    begin
+        // [SCENARIO] FormatDecimal with IncludeDecimalPlaces = false uses the default format without trailing zeros
+        Initialize();
+
+        // [WHEN/THEN] A value with one significant decimal place has no trailing zero
+        Assert.AreEqual('1.1', ExportXRechnungDocument.FormatDecimal(1.1, false), 'FormatDecimal(1.1, false) should return ''1.1''');
+        // [WHEN/THEN] A whole number has no decimal places
+        Assert.AreEqual('1', ExportXRechnungDocument.FormatDecimal(1, false), 'FormatDecimal(1, false) should return ''1''');
+        // [WHEN/THEN] A value with two decimal places is unchanged
+        Assert.AreEqual('1.23', ExportXRechnungDocument.FormatDecimal(1.23, false), 'FormatDecimal(1.23, false) should return ''1.23''');
+    end;
+    #endregion
+
     local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
@@ -2601,10 +2631,10 @@ codeunit 13918 "XRechnung XML Document Tests"
 
     local procedure GetCurrencyCode(DocumentCurrencyCode: Code[10]; var Currency: Record Currency): Code[10]
     begin
-        if DocumentCurrencyCode = '' then begin
-            Currency.InitRoundingPrecision();
-            exit(GeneralLedgerSetup."LCY Code");
-        end else begin
+        if DocumentCurrencyCode = ';
+
+            exit(GeneralLedgerSe;
+
             Currency.Get(DocumentCurrencyCode);
             Currency.TestField("Amount Rounding Precision");
             Currency.TestField("Unit-Amount Rounding Precision");
