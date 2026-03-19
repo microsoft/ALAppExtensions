@@ -92,6 +92,11 @@ table 4095 "GP Item"
             Caption = 'Item Tracking Code';
             DataClassification = CustomerContent;
         }
+        field(17; ITEMNMBR; Text[31])
+        {
+            Caption = 'ITEMNMBR';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

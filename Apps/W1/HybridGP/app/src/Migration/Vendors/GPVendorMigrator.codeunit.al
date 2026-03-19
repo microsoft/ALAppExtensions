@@ -669,15 +669,19 @@ codeunit 4022 "GP Vendor Migrator"
         if not IsTemporaryVendor then
             exit(true);
 
-        // Check for open POs
-        GPPOP10100.SetRange(POTYPE, GPPOP10100.POTYPE::Standard);
-        GPPOP10100.SetRange(POSTATUS, 1, 4);
-        GPPOP10100.SetRange(VENDORID, VendorNo);
-        HasOpenPurchaseOrders := GPPOP10100.Count() > 0;
+        if GPCompanyAdditionalSettings.GetMigrateOpenPOs() then begin
+            // Check for open POs
+            GPPOP10100.SetRange(POTYPE, GPPOP10100.POTYPE::Standard);
+            GPPOP10100.SetRange(POSTATUS, 1, 4);
+            GPPOP10100.SetRange(VENDORID, VendorNo);
+            HasOpenPurchaseOrders := GPPOP10100.Count() > 0;
+        end;
 
-        // Check for open AP transactions
-        GPVendorTransactions.SetRange(VENDORID, VendorNo);
-        HasOpenTransactions := GPVendorTransactions.Count() > 0;
+        if GPCompanyAdditionalSettings.GetMigrateOnlyPayablesMaster() then begin
+            // Check for open AP transactions
+            GPVendorTransactions.SetRange(VENDORID, VendorNo);
+            HasOpenTransactions := GPVendorTransactions.Count() > 0;
+        end;
 
         if not HasOpenPurchaseOrders then
             if not HasOpenTransactions then

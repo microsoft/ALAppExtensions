@@ -15,7 +15,15 @@ table 40116 "GP IV00101"
         {
             DataClassification = CustomerContent;
         }
+        field(4; ITMSHNAM; Text[15])
+        {
+            DataClassification = CustomerContent;
+        }
         field(5; ITEMTYPE; Integer)
+        {
+            DataClassification = CustomerContent;
+        }
+        field(6; ITMGEDSC; Text[11])
         {
             DataClassification = CustomerContent;
         }
