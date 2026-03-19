@@ -532,8 +532,6 @@ codeunit 40125 "GP Populate Combined Tables"
     internal procedure PopulateGPVendors()
     var
         GPPM00200Vendor: Record "GP PM00200";
-        GPPM00201VendorSum: Record "GP PM00201";
-        GPSY01200NetAddresses: Record "GP SY01200";
         GPVendor: Record "GP Vendor";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin

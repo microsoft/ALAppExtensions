@@ -1,8 +1,8 @@
 namespace Microsoft.DataMigration.GP;
 
+using Microsoft.Finance.SalesTax;
 using Microsoft.Sales.Customer;
 using System.Email;
-using Microsoft.Finance.SalesTax;
 
 table 4048 "GP Customer Address"
 {
