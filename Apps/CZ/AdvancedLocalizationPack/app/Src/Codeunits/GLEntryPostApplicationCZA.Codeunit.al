@@ -317,17 +317,6 @@ codeunit 31370 "G/L Entry Post Application CZA"
             DtldGLEntryNo := 0;
     end;
 
-#if not CLEAN26
-    [Obsolete('The local SetAmountToApply procedure is used instead.', '26.0')]
-    procedure SetAmountToApply()
-    var
-        GLEntry: Record "G/L Entry";
-        ApplyingAmount: Decimal;
-    begin
-        SetAmountToApply(GLEntry, ApplyingAmount);
-    end;
-#endif
-
     local procedure SetAmountToApply(var GLEntry: Record "G/L Entry"; var ApplyingAmount: Decimal)
     begin
         if Abs(GLEntry."Amount to Apply CZA") - Abs(ApplyingAmount) <= 0 then begin

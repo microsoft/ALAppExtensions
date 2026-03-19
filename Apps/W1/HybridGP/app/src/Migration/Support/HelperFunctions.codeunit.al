@@ -1065,7 +1065,7 @@ codeunit 4037 "Helper Functions"
         if GPVendor.FindSet() then
             repeat
                 if GPVendorMigrator.ShouldMigrateVendor(GPVendor.VENDORID, IsTemporaryVendor, HasOpenPurchaseOrders, HasOpenTransactions) then
-                    VendorCount := VendorCount + 1;
+                    VendorCount += 1;
 
             until GPVendor.Next() = 0;
 
@@ -1148,7 +1148,7 @@ codeunit 4037 "Helper Functions"
                 GenJournalLine.SetRange("Journal Template Name", GenJournalBatch."Journal Template Name");
                 GenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
                 if not GenJournalLine.IsEmpty() then
-                    UnpostedBatchCount := UnpostedBatchCount + 1;
+                    UnpostedBatchCount += 1;
             until GenJournalBatch.Next() = 0;
 
         exit(UnpostedBatchCount);
@@ -1171,7 +1171,7 @@ codeunit 4037 "Helper Functions"
             repeat
                 ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatch.Name);
                 if not ItemJournalLine.IsEmpty() then
-                    UnpostedBatchCount += UnpostedBatchCount + 1;
+                    UnpostedBatchCount += 1;
             until ItemJournalBatch.Next() = 0;
 
         exit(UnpostedBatchCount);
@@ -1194,20 +1194,23 @@ codeunit 4037 "Helper Functions"
             repeat
                 StatisticalAccJournalLine.SetRange("Journal Batch Name", StatisticalAccJournalBatch.Name);
                 if not StatisticalAccJournalLine.IsEmpty() then
-                    UnpostedBatchCount += UnpostedBatchCount + 1;
+                    UnpostedBatchCount += 1;
             until StatisticalAccJournalBatch.Next() = 0;
 
         exit(UnpostedBatchCount);
     end;
 
-    internal procedure GetUnpostedBatchCountForCompany(CompanyNameTxt: Text; var TotalGLBatchCount: Integer; var TotalStatisticalBatchCount: Integer; var TotalItemBatchCount: Integer)
+    internal procedure GetUnpostedBatchCountForCompany(CompanyNameTxt: Text; var TotalGLBatchCount: Integer; var TotalStatisticalBatchCount: Integer; var TotalBankBatchCount: Integer; var TotalCustomerBatchCount: Integer; var TotalItemBatchCount: Integer; var TotalVendorBatchCount: Integer)
     var
         HybridCompanyStatus: Record "Hybrid Company Status";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         TotalGLBatchCount := 0;
         TotalStatisticalBatchCount := 0;
+        TotalBankBatchCount := 0;
+        TotalCustomerBatchCount := 0;
         TotalItemBatchCount := 0;
+        TotalVendorBatchCount := 0;
 
         if not HybridCompanyStatus.Get(CompanyNameTxt) then
             exit;
@@ -1225,16 +1228,18 @@ codeunit 4037 "Helper Functions"
         end;
 
         if not GPCompanyAdditionalSettings."Skip Posting Customer Batches" then
-            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, CustomerBatchNameTxt);
+            TotalCustomerBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, CustomerBatchNameTxt);
 
         if not GPCompanyAdditionalSettings."Skip Posting Vendor Batches" then
-            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, VendorBatchNameTxt);
+            TotalVendorBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, VendorBatchNameTxt);
 
         if not GPCompanyAdditionalSettings."Skip Posting Bank Batches" then
-            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, BankBatchNameTxt);
+            TotalBankBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, BankBatchNameTxt);
 
         if not GPCompanyAdditionalSettings."Skip Posting Item Batches" then
             TotalItemBatchCount := GetItemBatchCountWithUnpostedLinesForCompany(CompanyNameTxt);
+
+        TotalGLBatchCount += TotalGLBatchCount + TotalBankBatchCount + TotalCustomerBatchCount + TotalVendorBatchCount;
     end;
 
     procedure PostGLTransactions()

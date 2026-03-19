@@ -255,7 +255,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertHeaderData(RootXMLNode, SalesInvoiceHeader, CurrencyCode);
         InsertOrderReference(RootXMLNode, SalesInvoiceHeader);
         InsertEmbeddedDocument(RootXMLNode, SalesInvoiceHeader);
-        InsertAttachment(RootXMLNode, Database::"Sales Invoice Header", SalesInvoiceHeader."No.");
+        InsertAttachment(RootXMLNode, Database::"Service Invoice Header", SalesInvoiceHeader."No.");
         CalculateLineAmounts(SalesInvoiceHeader, TempSalesInvLine, Currency, LineAmounts);
         InsertAccountingSupplierParty(SalesInvoiceHeader."Responsibility Center", SalesInvoiceHeader."Salesperson Code", RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesInvoiceHeader);
@@ -310,7 +310,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertHeaderData(RootXMLNode, SalesCrMemoHeader, CurrencyCode);
         InsertOrderReference(RootXMLNode, SalesCrMemoHeader);
         InsertEmbeddedDocument(RootXMLNode, SalesCrMemoHeader);
-        InsertAttachment(RootXMLNode, Database::"Sales Cr.Memo Header", SalesCrMemoHeader."No.");
+        InsertAttachment(RootXMLNode, Database::"Service Cr.Memo Header", SalesCrMemoHeader."No.");
         CalculateLineAmounts(SalesCrMemoHeader, TempSalesCrMemoLine, Currency, LineAmounts);
         InsertAccountingSupplierParty(SalesCrMemoHeader."Responsibility Center", SalesCrMemoHeader."Salesperson Code", RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesCrMemoHeader);
@@ -1146,6 +1146,7 @@ codeunit 13916 "Export XRechnung Document"
     begin
         DocumentAttachment.SetRange("Table ID", TableNo);
         DocumentAttachment.SetRange("No.", DocumentNo);
+        OnInsertAttachmentOnAfterSetFilters(TableNo, DocumentNo, DocumentAttachment);
         if DocumentAttachment.IsEmpty() then
             exit;
 
@@ -1196,6 +1197,18 @@ codeunit 13916 "Export XRechnung Document"
                 exit('application/' + LowerCase(DocumentAttachment."File Extension"));
             "Document Attachment File Type"::Excel:
                 exit('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            "Document Attachment File Type"::Other:
+                exit(GetMimeCodeFromExtension(DocumentAttachment."File Extension"));
+        end;
+    end;
+
+    local procedure GetMimeCodeFromExtension(FileExtension: Text): Text
+    begin
+        case LowerCase(FileExtension) of
+            'csv':
+                exit('text/csv');
+            'ots':
+                exit('application/vnd.oasis.opendocument.spreadsheet');
         end;
     end;
 
@@ -1557,6 +1570,11 @@ codeunit 13916 "Export XRechnung Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAddCrMemoLineElement(var CrMemoLineElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnInsertAttachmentOnAfterSetFilters(TableNo: Integer; DocumentNo: Code[20]; var DocumentAttachment: Record "Document Attachment")
     begin
     end;
 }

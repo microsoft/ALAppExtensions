@@ -695,6 +695,7 @@ codeunit 4001 "Hybrid Cloud Management"
         end;
 
         RefreshIntelligentCloudStatusTable();
+        SelectLatestVersion(Database::"Intelligent Cloud Status");
         CreateCompanies();
 
         FeatureTelemetry.LogUptake('0000JMU', GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");

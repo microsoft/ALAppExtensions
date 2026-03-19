@@ -25,5 +25,9 @@ permissionsetextension 4000 "D365 BASIC - HBD" extends "D365 BASIC"
                   tabledata "Replication Run Completed Arg" = RIMD,
                   tabledata "Replication Record Link Buffer" = RIMD,
                   tabledata "Record Link Mapping" = RIMD,
-                  tabledata "Cloud Migration Warning" = RIMD;
+                  tabledata "Cloud Migration Warning" = RIMD,
+                  tabledata "Validation Suite" = RIMD,
+                  tabledata "Migration Validation Error" = RIMD,
+                  tabledata "Validation Suite Line" = RIMD,
+                  tabledata "Validation Progress" = RIMD;
 }

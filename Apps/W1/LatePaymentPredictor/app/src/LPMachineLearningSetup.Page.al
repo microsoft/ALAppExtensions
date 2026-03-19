@@ -244,26 +244,6 @@ page 1950 "LP Machine Learning Setup"
                     LPModelManagement.InvokeShowModelFromUi();
                 end;
             }
-#if not CLEAN26
-            action("Open Azure AI Gallery")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Open Azure AI Gallery';
-                Gesture = None;
-                Image = LinkWeb;
-                ObsoleteReason = 'Webpage does not exist';
-                ObsoleteState = Pending;
-                ObsoleteTag = '26.0';
-                Promoted = true;
-                ToolTip = 'Explore models for Azure Machine Learning, and use Azure Machine Learning Studio to build, test, and deploy the Prediction Model for Microsoft Dynamics 365.';
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    Hyperlink('https://go.microsoft.com/fwlink/?linkid=2034407');
-                end;
-            }
-#endif
         }
     }
 
