@@ -4,10 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-#if not CLEAN26
-using Microsoft.eServices.EDocument;
-using Microsoft.eServices.EDocument.Integration;
-#endif
 using System.Upgrade;
 
 #pragma warning disable AS0130
@@ -23,35 +19,7 @@ codeunit 6435 "Logiq Upgrade"
     var
 
     begin
-#if not CLEAN26
-        // Upgrade code per company
-        UpdateServiceIntegration();
-#endif
-
     end;
-
-#if not CLEAN26
-    local procedure UpdateServiceIntegration()
-    var
-        EDocumentService: Record "E-Document Service";
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeServiceIntegrationTag()) then
-            exit;
-
-        // 6431 - Logiq Integration
-        EDocumentService.SetRange("Service Integration", 6431);
-        if EDocumentService.FindSet() then
-            repeat
-                EDocumentService."Service Integration V2" := Enum::"Service Integration"::Logiq;
-                EDocumentService."Service Integration" := Enum::"E-Document Integration"::"No Integration";
-                EDocumentService.Modify();
-            until EDocumentService.Next() = 0;
-
-        UpgradeTag.SetUpgradeTag(UpgradeServiceIntegrationTag());
-    end;
-#endif
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])

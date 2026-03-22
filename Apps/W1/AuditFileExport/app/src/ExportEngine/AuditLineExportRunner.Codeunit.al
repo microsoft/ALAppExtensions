@@ -27,7 +27,6 @@ codeunit 5265 "Audit Line Export Runner"
         Rec.Validate("Server Instance ID", ServiceInstanceId());
         Rec.Validate("Session ID", SessionId());
         Rec.Validate("Created Date/Time", 0DT);
-        Rec.Validate("No. Of Attempts", 3);
         Rec.Modify();
         Commit();
 

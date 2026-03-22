@@ -35,17 +35,6 @@ codeunit 11781 "VAT Attribute Code Mgt. CZL"
         VATStatementExportCZL.InitVATAttributes(VATStatementName."Statement Template Name");
         UnbindSubscription(this);
     end;
-#if not CLEAN26
-
-    [Obsolete('Replaced by InitVATAttributesCZL function with VATStatementName parameter.', '26.0')]
-    procedure InitVATAttributes(VATStatementTemplate: Record "VAT Statement Template")
-    var
-        VATStatementExportCZL: Interface "VAT Statement Export CZL";
-    begin
-        VATStatementExportCZL := VATStatementTemplate."XML Format CZL";
-        VATStatementExportCZL.InitVATAttributes(VATStatementTemplate.Name);
-    end;
-#endif
 
     procedure DeleteVATAttributes(VATStatementTemplate: Record "VAT Statement Template")
     var

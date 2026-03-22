@@ -192,6 +192,24 @@ page 40063 "Cloud Migration Management"
                                 end;
                             }
                         }
+                        group(MigrationValidationErrors)
+                        {
+                            ShowCaption = false;
+
+                            field("Validation Errors"; ValidationErrors)
+                            {
+                                ApplicationArea = All;
+                                Caption = 'Validation Errors';
+                                Style = Unfavorable;
+                                StyleExpr = (ValidationErrors > 0);
+                                ToolTip = 'Indicates the total number of failed post migration validation tests, for all migrated companies.';
+
+                                trigger OnDrillDown()
+                                begin
+                                    Page.Run(Page::"Migration Validation Errors");
+                                end;
+                            }
+                        }
                     }
                 }
             }
@@ -317,31 +335,6 @@ page 40063 "Cloud Migration Management"
                     WarnAboutNonInitializedCompanies();
                 end;
             }
-#if not CLEAN26
-            action(ResetAllCloudData)
-            {
-                Enabled = IsSuper and IsSetupComplete;
-                Visible = false;
-                ApplicationArea = All;
-                Caption = 'Reset cloud data';
-                ToolTip = 'Resets migration enabled data in the cloud tenant.';
-                Image = Restore;
-                ObsoleteReason = 'This action is being obsoleted. Disable the cloud migration, delete the company and replicate it again. See official documentation for more details.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '26.0';
-
-                trigger OnAction()
-                var
-                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-                begin
-                    if not Dialog.Confirm(ResetCloudDataConfirmQst, false) then
-                        exit;
-
-                    HybridCloudManagement.ResetCloudData();
-                    Message(ResetCompletedTxt);
-                end;
-            }
-#endif
             action(PrepareTables)
             {
                 Enabled = IsSuper and IsSetupComplete;
@@ -786,6 +779,7 @@ page 40063 "Cloud Migration Management"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        MigrationValidationError: Record "Migration Validation Error";
         TempHybridReplicationDetail: Record "Hybrid Replication Detail" temporary;
         HybridReplicationStatistics: Codeunit "Hybrid Replication Statistics";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
@@ -809,6 +803,8 @@ page 40063 "Cloud Migration Management"
             HybridReplicationSummary.CalcFields("Companies Not Initialized");
             NotInitializedCompaniesCount := HybridReplicationSummary."Companies Not Initialized";
         end;
+
+        ValidationErrors := MigrationValidationError.Count();
     end;
 
     local procedure UpdateControlProperties()
@@ -1017,10 +1013,6 @@ page 40063 "Cloud Migration Management"
         RunReplicationTxt: Label 'Data replication has been successfully started. You can track the status on the management page.';
         IntegrationKeyTxt: Label 'Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
         NewIntegrationKeyTxt: Label 'New Primary key for the integration runtime is: %1', Comment = '%1 = Integration Runtime Key';
-#if not CLEAN26
-        ResetCloudDataConfirmQst: Label 'Reset cloud data is being obsoleted. Disable the cloud migration, delete the company and replicate it again. See official documentation for more details.\\If you choose to reset cloud data, all migrated data will be deleted for all companies in the next migration run. Are you sure you want to reset cloud data?';
-        ResetCompletedTxt: Label 'Reset has been successfully run. All migration enabled data will be reset in the next migration run.';
-#endif
         TablesReadyForReplicationMsg: Label 'All tables have been successfully prepared for migration.';
         NonInitializedCompaniesMsg: Label 'One or more companies have been successfully migrated but are not yet initialized. Manage the companies in the Hybrid Companies List page.';
         OpenPageMsg: Label 'Start setup';
@@ -1061,4 +1053,5 @@ page 40063 "Cloud Migration Management"
         RecordLinkBufferNotEmpty: Boolean;
         HideManageCustomTables: Boolean;
         HideChangeTheWayDataIsReplicated: Boolean;
+        ValidationErrors: Integer;
 }

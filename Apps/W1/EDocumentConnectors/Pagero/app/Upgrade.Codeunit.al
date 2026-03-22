@@ -5,9 +5,6 @@
 namespace Microsoft.EServices.EDocumentConnector;
 
 using Microsoft.eServices.EDocument;
-#if not CLEAN26
-using Microsoft.eServices.EDocument.Integration;
-#endif
 using System.Upgrade;
 
 #pragma warning disable AS0130
@@ -24,35 +21,7 @@ codeunit 6370 Upgrade
     var
 
     begin
-#if not CLEAN26
-        // Upgrade code per company
-        UpdateServiceIntegration();
-#endif
-
     end;
-
-#if not CLEAN26
-    local procedure UpdateServiceIntegration()
-    var
-        EDocumentService: Record "E-Document Service";
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeServiceIntegrationTag()) then
-            exit;
-
-        // 6361 - Pagero (removed)
-        EDocumentService.SetRange("Service Integration", 6361);
-        if EDocumentService.FindSet() then
-            repeat
-                EDocumentService."Service Integration V2" := Enum::"Service Integration"::Pagero;
-                EDocumentService."Service Integration" := Enum::"E-Document Integration"::"No Integration";
-                EDocumentService.Modify();
-            until EDocumentService.Next() = 0;
-
-        UpgradeTag.SetUpgradeTag(UpgradeServiceIntegrationTag());
-    end;
-#endif
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])

@@ -20,7 +20,7 @@ report 10850 "Suggest Vend. Payments"
     {
         dataitem(Vendor; Vendor)
         {
-            DataItemTableView = sorting("No.");
+            DataItemTableView = sorting("No.") where(Blocked = filter(" "));
             RequestFilterFields = "No.", "Payment Method Code";
 
             trigger OnAfterGetRecord()
