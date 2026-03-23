@@ -132,7 +132,6 @@ codeunit 139649 "E-Doc. Attachment Tests"
     [Test]
     procedure PurchaseInvoiceCannotPostWithoutEDocument()
     var
-        DummyEDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
         DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
     begin
@@ -146,7 +145,7 @@ codeunit 139649 "E-Doc. Attachment Tests"
         InitSetupEDocument("Digital Voucher Entry Type"::"Purchase Document");
 
         // [GIVEN] Purchase invoice WITHOUT linked e-document
-        CreatePurchaseDocument(PurchaseHeader, "Purchase Document Type"::Invoice, DummyEDocument);
+        CreatePurchaseDocument(PurchaseHeader, "Purchase Document Type"::Invoice);
 
         // [WHEN] Post purchase invoice
         asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
@@ -401,6 +400,21 @@ codeunit 139649 "E-Doc. Attachment Tests"
         EDocService.Insert(false);
     end;
 
+    local procedure CreatePurchaseDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, LibraryPurchase.CreateVendorNo());
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item,
+            LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDec(100, 2));
+        PurchaseLine.Modify(true);
+        PurchaseHeader.CalcFields(Amount, "Amount Including VAT");
+        PurchaseHeader.Validate("Doc. Amount Incl. VAT", PurchaseHeader."Amount Including VAT");
+        PurchaseHeader.Modify(false);
+    end;
+
     local procedure CreatePurchaseDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type"; var EDocument: Record "E-Document")
     var
         PurchaseLine: Record "Purchase Line";
@@ -415,11 +429,9 @@ codeunit 139649 "E-Doc. Attachment Tests"
         PurchaseHeader.Validate("Doc. Amount Incl. VAT", PurchaseHeader."Amount Including VAT");
         PurchaseHeader.Validate("E-Document Link", EDocument.SystemId);
         PurchaseHeader.Modify(false);
-        if EDocument."Entry No" <> 0 then begin
-            EDocument."Document No." := PurchaseHeader."No.";
-            EDocument."Posting Date" := PurchaseHeader."Posting Date";
-            EDocument."Document Record ID" := PurchaseHeader.RecordId();
-            EDocument.Modify(false);
-        end;
+        EDocument."Document No." := PurchaseHeader."No.";
+        EDocument."Posting Date" := PurchaseHeader."Posting Date";
+        EDocument."Document Record ID" := PurchaseHeader.RecordId();
+        EDocument.Modify(false);
     end;
 }

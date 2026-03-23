@@ -8,6 +8,7 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Reports;
+using System.Telemetry;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Purchases.Document;
@@ -39,13 +40,13 @@ codeunit 5579 "Digital Voucher Impl."
                   Tabledata "Purch. Cr. Memo Hdr." = m;
 
     var
-        DigitalVoucherEntry: Codeunit "Digital Voucher Entry";
         DigitalVoucherFeature: Codeunit "Digital Voucher Feature";
+        DigitalVoucherEntry: Codeunit "Digital Voucher Entry";
+        AssistedSetupTxt: Label 'Set up a digital voucher feature';
         AssistedSetupDescriptionTxt: Label 'In some countries authorities require to make sure that for every single general ledger register ther is a digital vouchers assigned.';
         AssistedSetupHelpTxt: Label 'https://learn.microsoft.com/en-us/dynamics365/business-central/across-how-setup-digital-vouchers', Locked = true;
-        AssistedSetupTxt: Label 'Set up a digital voucher feature';
-        CannotChangeIncomDocWithEnforcedDigitalVoucherErr: Label 'Cannot change incoming document with the enforced digital voucher functionality';
         CannotRemoveReferenceRecordFromIncDocErr: Label 'Cannot remove the reference record from the incoming document because it is used for the enforced digital voucher functionality';
+        CannotChangeIncomDocWithEnforcedDigitalVoucherErr: Label 'Cannot change incoming document with the enforced digital voucher functionality';
         DigitalVoucherFileTxt: Label 'DigitalVoucher_%1_%2_%3.pdf', Comment = '%1 = doc type; %2 = posting date; %3 = doc no.';
 
     procedure HandleDigitalVoucherForDocument(var ErrorMessageMgt: Codeunit "Error Message Management"; EntryType: Enum "Digital Voucher Entry Type"; Record: Variant)
@@ -104,13 +105,13 @@ codeunit 5579 "Digital Voucher Impl."
     [CommitBehavior(CommitBehavior::Ignore)]
     procedure GenerateDigitalVoucherForDocument(RecRef: RecordRef)
     var
-        PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
-        PurchInvHeader: Record "Purch. Inv. Header";
-        ReportSelections: Record "Report Selections";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         SalesInvHeader: Record "Sales Invoice Header";
-        ServCrMemoHeader: Record "Service Cr.Memo Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         ServInvHeader: Record "Service Invoice Header";
+        ServCrMemoHeader: Record "Service Cr.Memo Header";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        ReportSelections: Record "Report Selections";
     begin
         case RecRef.Number of
             Database::"Sales Invoice Header":
@@ -247,7 +248,7 @@ codeunit 5579 "Digital Voucher Impl."
             exit;
         DataTypeManagement.GetRecordRef(RelatedRecord, RecRef);
         if DigitalVoucherFeature.IsDigitalVoucherEnabledForTableNumber(RecRef.Number) then
-            Error(CannotChangeIncomDocWithEnforcedDigitalVoucherErr);
+            error(CannotChangeIncomDocWithEnforcedDigitalVoucherErr);
     end;
 
     procedure GetDigitalVoucherEntrySetup(var DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup"; EntryType: Enum "Digital Voucher Entry Type"): Boolean
@@ -273,6 +274,7 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment: Record "Incoming Document Attachment";
         EDocumentHelper: Codeunit "E-Document Processing";
         ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         FileNameTok: Label 'E-Document_%1.xml', Locked = true;
         RecordLinkTxt: Text;
     begin
@@ -295,8 +297,10 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment.SetRange("Document No.", EDocument."Document No.");
         IncomingDocumentAttachment.SetRange("Posting Date", EDocument."Posting Date");
         IncomingDocumentAttachment.SetContentFromBlob(TempBlob);
-        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, StrSubstNo(FileNameTok, RecordLinkTxt), TempBlob) then
+        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, StrSubstNo(FileNameTok, RecordLinkTxt), TempBlob) then begin
+            FeatureTelemetry.LogError('', 'E-Documents', 'AttachIncomingEDocument', GetLastErrorText(true), GetLastErrorCallStack());
             exit;
+        end;
 
         IncomingDocumentAttachment."Is E-Document" := true;
         IncomingDocumentAttachment.Modify(false);
@@ -337,6 +341,7 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment: Record "Incoming Document Attachment";
         ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
         TempBlob: Codeunit "Temp Blob";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocumentFileNameLbl: Label 'E-Document_%1.%2', Comment = '%1 = E-Document Entry No., %2 = File Format', Locked = true;
         FileName: Text[250];
     begin
@@ -358,8 +363,10 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment.SetRange("Document No.", DocumentNo);
         IncomingDocumentAttachment.SetRange("Posting Date", PostingDate);
         IncomingDocumentAttachment.SetContentFromBlob(TempBlob);
-        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, TempBlob) then
+        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, TempBlob) then begin
+            FeatureTelemetry.LogError('', 'E-Documents', 'AttachPurchaseEDocument', GetLastErrorText(true), GetLastErrorCallStack());
             exit;
+        end;
 
         IncomingDocumentAttachment."Is E-Document" := true;
         IncomingDocumentAttachment.Modify(false);
@@ -375,19 +382,24 @@ codeunit 5579 "Digital Voucher Impl."
         ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
         PDFDocument: Codeunit "PDF Document";
         ExtractedXmlBlob: Codeunit "Temp Blob";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         PdfInStream: InStream;
     begin
         TempBlob.CreateInStream(PdfInStream);
-        if not PDFDocument.GetDocumentAttachmentStream(PdfInStream, ExtractedXmlBlob) then
+        if not PDFDocument.GetDocumentAttachmentStream(PdfInStream, ExtractedXmlBlob) then begin
+            FeatureTelemetry.LogError('', 'E-Documents', 'ExtractXMLFromPDF', GetLastErrorText(true), GetLastErrorCallStack());
             exit;
+        end;
 
         if not ExtractedXmlBlob.HasValue() then
             exit;
 
         IncomingDocumentAttachment.Default := false;
         IncomingDocumentAttachment."Main Attachment" := false;
-        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, ExtractedXmlBlob) then
+        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, ExtractedXmlBlob) then begin
+            FeatureTelemetry.LogError('', 'E-Documents', 'ExtractXMLFromPDF', GetLastErrorText(true), GetLastErrorCallStack());
             exit;
+        end;
 
         IncomingDocumentAttachment."Is E-Document" := true;
         IncomingDocumentAttachment.Modify(false);
@@ -461,8 +473,8 @@ codeunit 5579 "Digital Voucher Impl."
 
     local procedure IsPaymentReconciliationJournal(DigitalVoucherEntryType: Enum "Digital Voucher Entry Type"; RecRef: RecordRef): Boolean
     var
-        GenJournalLine: Record "Gen. Journal Line";
         SourceCodeSetup: Record "Source Code Setup";
+        GenJournalLine: Record "Gen. Journal Line";
         FieldRef: FieldRef;
         SourceCodeValue: Text;
     begin
@@ -478,8 +490,8 @@ codeunit 5579 "Digital Voucher Impl."
 
     local procedure IsGenJnlLineWithIncDocAttachedToAdjLine(DigitalVoucherEntryType: Enum "Digital Voucher Entry Type"; RecRef: RecordRef): Boolean
     var
-        AdjacentGenJournalLine: Record "Gen. Journal Line";
         GenJournalLine: Record "Gen. Journal Line";
+        AdjacentGenJournalLine: Record "Gen. Journal Line";
         IncomingDocument: Record "Incoming Document";
     begin
         if DigitalVoucherEntryType <> DigitalVoucherEntryType::"General Journal" then
@@ -665,8 +677,8 @@ codeunit 5579 "Digital Voucher Impl."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post", 'OnAfterPostServiceDoc', '', true, true)]
     local procedure CheckServiceVoucherOnAfterPostServiceDoc(ServInvoiceNo: Code[20]; ServCrMemoNo: Code[20]; PassedInvoice: Boolean)
     var
-        ServCrMemoHeader: Record "Service Cr.Memo Header";
         ServInvHeader: Record "Service Invoice Header";
+        ServCrMemoHeader: Record "Service Cr.Memo Header";
         RecVar: Variant;
     begin
         if not DigitalVoucherFeature.IsFeatureEnabled() then
@@ -766,8 +778,8 @@ codeunit 5579 "Digital Voucher Impl."
     [EventSubscriber(ObjectType::Table, Database::"Incoming Document", 'OnBeforeCanReplaceMainAttachment', '', false, false)]
     local procedure CheckVoucherOnBeforeCanReplaceMainAttachment(var CanReplaceMainAttachment: Boolean; IncomingDocument: Record "Incoming Document"; var IsHandled: Boolean)
     var
-        RelatedRecordID: RecordId;
         RecRef: RecordRef;
+        RelatedRecordID: RecordId;
     begin
         RelatedRecordID := IncomingDocument."Related Record ID";
         if RelatedRecordID.TableNo = 0 then
@@ -780,8 +792,8 @@ codeunit 5579 "Digital Voucher Impl."
     [EventSubscriber(ObjectType::Table, Database::"Incoming Document", 'OnBeforeRemoveReferencedRecords', '', false, false)]
     local procedure CheckVoucherOnBeforeRemoveReferencedRecords(IncomingDocument: Record "Incoming Document"; var IsHandled: Boolean)
     var
-        RelatedRecordID: RecordId;
         RecRef: RecordRef;
+        RelatedRecordID: RecordId;
     begin
         if not DigitalVoucherFeature.IsFeatureEnabled() then
             exit;
