@@ -96,7 +96,7 @@ codeunit 11743 "Sales Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterUpdateShipToAddress', '', false, false)]
     local procedure UpdateVATCountryRegionCodeOnAfterUpdateShipToAddress(var SalesHeader: Record "Sales Header")
     begin
-        if SalesHeader.IsCreditDocType() then
+        if SalesHeader.IsCreditDocType() and (SalesHeader."No." <> '') then
             SalesHeader.Validate("VAT Country/Region Code", SalesHeader."Sell-to Country/Region Code");
     end;
 }

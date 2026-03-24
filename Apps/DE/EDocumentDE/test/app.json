@@ -70,8 +70,5 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "resourceFolders": [
-    ".resources"
-  ],
   "application": "29.0.0.0"
 }

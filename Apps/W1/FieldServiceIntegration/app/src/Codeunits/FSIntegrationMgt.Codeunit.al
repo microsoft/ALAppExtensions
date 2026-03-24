@@ -372,6 +372,7 @@ codeunit 6615 "FS Integration Mgt."
         EmptyGuid: Guid;
     begin
         FSBookingStatus.SetRange(FieldServiceStatus, FSBookingStatus.FieldServiceStatus::Completed);
+        OnGetBookingStatusCompletedOnSetFilterForFSBookingStatus(FSBookingStatus);
         if not FSBookingStatus.FindFirst() then
             exit(EmptyGuid);
 
@@ -417,5 +418,10 @@ codeunit 6615 "FS Integration Mgt."
         CRMIntegrationManagement.CheckCRMConnectionURL(FSConnectionSetup."Server Address");
         ServiceConnection.InsertServiceConnectionExtended(
           ServiceConnection, RecRef.RecordId, FSConnectionSetup.TableCaption(), FSConnectionSetup."Server Address", Page::"FS Connection Setup", Page::"FS Connection Setup Wizard");
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetBookingStatusCompletedOnSetFilterForFSBookingStatus(var FSBookingStatus: Record "FS Booking Status")
+    begin
     end;
 }

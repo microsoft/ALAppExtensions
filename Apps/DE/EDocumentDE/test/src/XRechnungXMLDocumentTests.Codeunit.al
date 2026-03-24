@@ -1394,7 +1394,6 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
     #endregion
 
-    #region DocumentAttachmentFiltering
     [Test]
     procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyUnsupportedAttachmentIsSkipped();
     var
@@ -1421,39 +1420,6 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyAdditionalDocumentReferenceCount(TempXMLBuffer, 1);
         VerifyCSVAttachmentInXML(TempXMLBuffer, 'data.csv', 'text/csv', CSVText);
     end;
-
-    [Test]
-    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyUnsupportedImageExtensionIsSkipped();
-    var
-        DocumentAttachment: Record "Document Attachment";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempXMLBuffer: Record "XML Buffer" temporary;
-        Base64Convert: Codeunit "Base64 Convert";
-        TempBlob: Codeunit "Temp Blob";
-        RecRef: RecordRef;
-    begin
-        // [SCENARIO] Image attachments with unsupported extensions (e.g. bmp) are skipped; supported ones (jpg) are exported
-        Initialize();
-
-        // [GIVEN] Create and Post Sales Invoice
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, "Sales Line Type"::Item, false));
-        RecRef.GetTable(SalesInvoiceHeader);
-
-        // [GIVEN] Create one unsupported BMP image and one supported JGP image attachment
-        LoadFileFromResourceFolders('d365businesscentral.bmp', TempBlob);
-        DocumentAttachment.SaveAttachment(RecRef, 'd365businesscentral.bmp', TempBlob);
-        LoadFileFromResourceFolders('CRONUS.jpg', TempBlob);
-        Clear(DocumentAttachment);
-        DocumentAttachment.SaveAttachment(RecRef, 'CRONUS.jpg', TempBlob);
-
-        // [WHEN] Export XRechnung Electronic Document
-        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
-
-        // [THEN] Only the JPG attachment (supported) is present; BMP is skipped
-        VerifyAdditionalDocumentReferenceCount(TempXMLBuffer, 1);
-        VerifyAttachmentInXML(TempXMLBuffer, 'CRONUS.jpg', 'image/jpeg', '');
-    end;
-    #endregion
 
     local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
@@ -2497,20 +2463,19 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.AreEqual(ExpectedCount, TempXMLBuffer.Count, 'Incorrect number of AdditionalDocumentReference nodes');
     end;
 
-
     local procedure VerifyCSVAttachmentInXML(var TempXMLBuffer: Record "XML Buffer" temporary; AttachmentID: Text; ExpectedMIMEType: Text; ExpectedCSVText: Text)
     var
         Base64Convert: Codeunit "Base64 Convert";
         Base64EncodedContent: Text;
     begin
         Base64EncodedContent := Base64Convert.ToBase64(ExpectedCSVText);
+        VerifyAttachmentInXML(TempXMLBuffer, AttachmentID, ExpectedMIMEType, Base64EncodedContent);
     end;
 
     local procedure VerifyAttachmentInXML(var TempXMLBuffer: Record "XML Buffer" temporary; AttachmentID: Text; ExpectedMIMEType: Text; ExpectedBase64Content: Text)
     var
         TempXMLBufferAttachment: Record "XML Buffer" temporary;
         TempXMLBufferChild: Record "XML Buffer" temporary;
-        DecodedText: Text;
         EncodedContent: Text;
         ExpectedDescription: Text;
         AttachmentEntryNo: Integer;
@@ -2844,17 +2809,6 @@ codeunit 13918 "XRechnung XML Document Tests"
         TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         OutStream.WriteText(ContentText);
         DocumentAttachment.SaveAttachment(RecRef, FileName, TempBlob);
-    end;
-
-    local procedure LoadFileFromResourceFolders(FilePath: Text; var TempBlob: Codeunit "Temp Blob")
-    var
-        ImageOutStream: OutStream;
-        FileInStream: InStream;
-    begin
-        Clear(TempBlob);
-        NavApp.GetResource(FilePath, FileInStream);
-        ImageOutStream := TempBlob.CreateOutStream();
-        CopyStream(ImageOutStream, FileInStream);
     end;
 
     local procedure GetCurrencyCode(DocumentCurrencyCode: Code[10]; var Currency: Record Currency): Code[10]

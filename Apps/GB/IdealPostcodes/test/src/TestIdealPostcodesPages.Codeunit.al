@@ -133,9 +133,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         // [WHEN] we assume successful process, copying fields
         BankAccountCard.OpenEdit();
         BankAccountCard."Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         BankAccountCard."Post Code".Value('TESTPOSTCODE');
-        BankAccountCard.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                                  // PostcodeSearchScenario page handler takes over and inputs postcode
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', BankAccountCard.Address.Value, RetrievedInvalidValueTok);
@@ -173,11 +173,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         BankAccountCard."Address 2".Value('');
         BankAccountCard.City.Value('');
         BankAccountCard."Country/Region Code".Value('');
-        BankAccountCard."Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        BankAccountCard.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        BankAccountCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', BankAccountCard.Address.Value, RetrievedInvalidValueTok);
@@ -292,9 +290,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         // [WHEN] we assume successful process, copying fields
         CustomerCard.OpenEdit();
         CustomerCard."Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         CustomerCard."Post Code".Value('TESTPOSTCODE');
-        CustomerCard.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                               // PostcodeSearchScenario page handler takes over and inputs postcode
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', CustomerCard.Address.Value, RetrievedInvalidValueTok);
@@ -333,11 +331,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         CustomerCard."Address 2".Value('');
         CustomerCard.City.Value('');
         CustomerCard."Country/Region Code".Value('');
-        CustomerCard."Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        CustomerCard.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        CustomerCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', CustomerCard.Address.Value, RetrievedInvalidValueTok);
@@ -454,9 +450,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         // [WHEN] we assume successful process, copying fields
         EmployeeCard.OpenEdit();
         EmployeeCard."Country/Region Code".Value('');
-        EmployeeCard."Post Code".Value('TESTPOSTCODE');
-        EmployeeCard.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
+        // [WHEN] trigger postcode search
         // PostcodeSearchScenario page handler takes over and inputs postcode
+        EmployeeCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', EmployeeCard.Address.Value, RetrievedInvalidValueTok);
@@ -500,9 +496,8 @@ codeunit 148121 "Test IdealPostcodes Pages"
         EmployeeCard."Country/Region Code".Value('');
 
         // [WHEN] trigger postcode search via validate
-        EmployeeCard."Post Code".Value('TESTPOSTCODE');
-        EmployeeCard.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        EmployeeCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', EmployeeCard.Address.Value, RetrievedInvalidValueTok);
@@ -635,9 +630,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         ShiptoAddress.OpenEdit();
         ShiptoAddress.GoToRecord(ShipToAddressRec);
         ShiptoAddress."Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         ShiptoAddress."Post Code".Value('TESTPOSTCODE');
-        ShiptoAddress.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                                // PostcodeSearchScenario page handler takes over and inputs postcode
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', ShiptoAddress.Address.Value, RetrievedInvalidValueTok);
@@ -680,11 +675,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         ShiptoAddress."Address 2".Value('');
         ShiptoAddress.City.Value('');
         ShiptoAddress."Country/Region Code".Value('');
-        ShiptoAddress."Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        ShiptoAddress.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        ShiptoAddress."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', ShiptoAddress.Address.Value, RetrievedInvalidValueTok);
@@ -806,9 +799,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         LocationCard.New();
         LocationCard.Code.Value(LibraryRandom.RandText(10));
         LocationCard."Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         LocationCard."Post Code".Value('TESTPOSTCODE');
-        LocationCard.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                               // PostcodeSearchScenario page handler takes over and inputs postcode
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', LocationCard.Address.Value, RetrievedInvalidValueTok);
@@ -852,11 +845,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         LocationCard."Address 2".Value('');
         LocationCard.City.Value('');
         LocationCard."Country/Region Code".Value('');
-        LocationCard."Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        LocationCard.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        LocationCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', LocationCard.Address.Value, RetrievedInvalidValueTok);
@@ -954,9 +945,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         ResourceCard.OpenEdit();
         ResourceCard.New();
         ResourceCard."Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         ResourceCard."Post Code".Value('TESTPOSTCODE');
-        ResourceCard.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                               // PostcodeSearchScenario page handler takes over and inputs postcode
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', ResourceCard.Address.Value, RetrievedInvalidValueTok);
@@ -998,11 +989,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         ResourceCard."Address 2".Value('');
         ResourceCard.City.Value('');
         ResourceCard."Country/Region Code".Value('');
-        ResourceCard."Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        ResourceCard.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        ResourceCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', ResourceCard.Address.Value, RetrievedInvalidValueTok);
@@ -1126,9 +1115,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         ContactCard.OpenEdit();
         ContactCard.New();
         ContactCard."Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         ContactCard."Post Code".Value('TESTPOSTCODE');
-        ContactCard.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                              // PostcodeSearchScenario page handler takes over and inputs postcode
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', ContactCard.Address.Value, RetrievedInvalidValueTok);
@@ -1168,11 +1157,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         ContactCard."Address 2".Value('');
         ContactCard.City.Value('');
         ContactCard."Country/Region Code".Value('');
-        ContactCard."Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        ContactCard.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        ContactCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', ContactCard.Address.Value, RetrievedInvalidValueTok);
@@ -1294,9 +1281,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         ContactAltAddressCard.New();
         ContactAltAddressCard.Code.Value(LibraryRandom.RandText(10));
         ContactAltAddressCard."Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         ContactAltAddressCard."Post Code".Value('TESTPOSTCODE');
-        ContactAltAddressCard.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                                        // PostcodeSearchScenario page handler takes over and inputs postcode
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', ContactAltAddressCard.Address.Value, RetrievedInvalidValueTok);
@@ -1336,11 +1323,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         ContactAltAddressCard."Address 2".Value('');
         ContactAltAddressCard.City.Value('');
         ContactAltAddressCard."Country/Region Code".Value('');
-        ContactAltAddressCard."Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        ContactAltAddressCard.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        ContactAltAddressCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', ContactAltAddressCard.Address.Value, RetrievedInvalidValueTok);
@@ -1532,9 +1517,10 @@ codeunit 148121 "Test IdealPostcodes Pages"
         // [WHEN] we assume successful process, copying fields
         CompanyInformation.OpenEdit();
         CompanyInformation."Ship-to Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         CompanyInformation."Ship-to Post Code".Value('TESTPOSTCODE');
-        CompanyInformation.LookupShipToAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                                           // PostcodeSearchScenario page handler takes over and inputs postcode
+        CompanyInformation.LookupShipToAddress_IdealPostcodes.Drilldown();
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', CompanyInformation."Ship-to Address".Value, RetrievedInvalidValueTok);
@@ -1572,11 +1558,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         CompanyInformation."Ship-to Address 2".Value('');
         CompanyInformation."Ship-to City".Value('');
         CompanyInformation."Ship-to Country/Region Code".Value('');
-        CompanyInformation."Ship-to Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        CompanyInformation.LookupShipToAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        CompanyInformation."Ship-to Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', CompanyInformation."Ship-to Address".Value, RetrievedInvalidValueTok);
@@ -1690,9 +1674,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         // [WHEN] we assume successful process, copying fields
         VendorCard.OpenEdit();
         VendorCard."Country/Region Code".Value('');
+        // [WHEN] trigger postcode search
+        // PostcodeSearchScenario page handler takes over and inputs postcode
         VendorCard."Post Code".Value('TESTPOSTCODE');
-        VendorCard.LookupAddress_IdealPostcodes.DrillDown(); // trigger postcode search
-                                                             // PostcodeSearchScenario page handler takes over and inputs postcode
 
         // [THEN] we should get our data
         Assert.AreEqual('ADDRESS', VendorCard.Address.Value, RetrievedInvalidValueTok);
@@ -1731,11 +1715,9 @@ codeunit 148121 "Test IdealPostcodes Pages"
         VendorCard."Address 2".Value('');
         VendorCard.City.Value('');
         VendorCard."Country/Region Code".Value('');
-        VendorCard."Post Code".Value('TESTPOSTCODE');
-
         // [WHEN] trigger postcode search
-        VendorCard.LookupAddress_IdealPostcodes.DrillDown();
         // PostcodeSearch cancel page handler takes over and cancels the process
+        VendorCard."Post Code".Value('TESTPOSTCODE');
 
         // [THEN] address fields should stay blank
         Assert.AreEqual('', VendorCard.Address.Value, RetrievedInvalidValueTok);

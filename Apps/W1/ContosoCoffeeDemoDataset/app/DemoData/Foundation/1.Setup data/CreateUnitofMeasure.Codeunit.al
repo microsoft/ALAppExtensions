@@ -29,7 +29,7 @@ codeunit 5248 "Create Unit of Measure"
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Box(), BoxLbl, 'BX');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Pallet(), PalletLbl, 'PF');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Pack(), PackLbl, 'PK');
-        ContosoUnitOfMeasure.InsertUnitOfMeasure(Miles(), MilesLbl, '1A');
+        ContosoUnitOfMeasure.InsertUnitOfMeasure(Miles(), MilesLbl, 'SMI');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(KM(), KilometerLbl, 'KMT');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(KG(), KiloLbl, 'KGM');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Set(), SetLbl, 'SET');
@@ -163,7 +163,7 @@ codeunit 5248 "Create Unit of Measure"
         KilometerLbl: Label 'Kilometer', MaxLength = 50;
         KMLbl: Label 'KM', MaxLength = 10;
         KGLbl: Label 'KG', MaxLength = 10;
-        KiloLbl: Label 'Kilo', MaxLength = 10;
+        KiloLbl: Label 'Kilogram', MaxLength = 50;
         SetTok: Label 'SET', MaxLength = 10;
         SetLbl: Label 'Set', MaxLength = 50;
         BagTok: Label 'BAG', MaxLength = 10;

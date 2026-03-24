@@ -327,10 +327,12 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         AOAIDeployments: Codeunit "AOAI Deployments";
         AOAIOperationResponse: Codeunit "AOAI Operation Response";
         AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
+        AOAIPolicyParams: Codeunit "AOAI Policy Params";
         AOAIChatMessages: Codeunit "AOAI Chat Messages";
         CompletionAnswerTxt: Text;
         NumberOfFoundMatches: Integer;
         NewLineChar: Char;
+        UserMessageWithXPIADetectionTagsTxt: Text;
     begin
         NewLineChar := 10;
         NumberOfFoundMatches := 0;
@@ -341,11 +343,17 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         // Generate OpenAI Completion
         AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation");
+        AOAIPolicyParams.SetXPIADetection(true);
+        AOAIPolicyParams.SetHarmsSeverity(Enum::"AOAI Policy Harms Severity"::Medium);
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
         AOAIChatCompletionParams.SetTemperature(0);
+        AOAIChatCompletionParams.SetAOAIPolicyParams(AOAIPolicyParams);
         AOAIChatMessages.AddSystemMessage(CompletionTaskTxt.Unwrap().Replace('\n', NewLineChar));
-        if not UserMessageTxt.IsEmpty() then
-            AOAIChatMessages.AddUserMessage(UserMessageTxt.Unwrap().Replace('\n', NewLineChar));
+        if not UserMessageTxt.IsEmpty() then begin
+            UserMessageWithXPIADetectionTagsTxt := UserMessageTxt.Unwrap().Replace('\n', NewLineChar);
+            AOAIChatMessages.AddXPIADetectionTags(UserMessageWithXPIADetectionTagsTxt);
+            AOAIChatMessages.AddUserMessage(UserMessageWithXPIADetectionTagsTxt);
+        end;
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
         if AOAIOperationResponse.IsSuccess() then
             CompletionAnswerTxt := AOAIOperationResponse.GetResult()

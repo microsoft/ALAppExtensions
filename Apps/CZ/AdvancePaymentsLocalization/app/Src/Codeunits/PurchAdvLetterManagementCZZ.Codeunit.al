@@ -953,9 +953,15 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         OriginalDocumentVATDate: Date;
         DocumentDate: Date;
         PostingDate: Date;
+        IsHandled: Boolean;
     begin
         PurchAdvLetterEntryCZZ.TestField("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Payment");
         PurchAdvLetterEntryCZZ.TestField(Cancelled, false);
+
+        IsHandled := false;
+        OnBeforePostAdvanceCreditMemoVAT(PurchAdvLetterEntryCZZ, IsHandled);
+        if IsHandled then
+            exit;
 
         PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
         AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
@@ -1345,6 +1351,11 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePostPaymentVAT(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; PostingDate: Date; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostAdvanceCreditMemoVAT(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var IsHandled: Boolean)
     begin
     end;
 

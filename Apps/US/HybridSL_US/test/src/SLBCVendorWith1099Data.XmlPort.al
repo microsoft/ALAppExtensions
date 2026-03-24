@@ -145,12 +145,11 @@ xmlport 147657 "SL BC Vendor With 1099 Data"
 
     procedure GetExpectedVendors(var NewTempVendor: Record Vendor temporary)
     begin
-        if TempVendor.FindSet() then begin
+        if TempVendor.FindSet() then
             repeat
                 NewTempVendor.Copy(TempVendor);
                 NewTempVendor.Insert();
             until TempVendor.Next() = 0;
-        end;
     end;
 
     var

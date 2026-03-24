@@ -14,7 +14,7 @@ pageextension 10067 "IRS 1099 Pstd. Purch.Inv. Sub." extends "Posted Purch. Invo
         {
             field("1099 Liable"; Rec."1099 Liable")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Visible = false;
             }
         }

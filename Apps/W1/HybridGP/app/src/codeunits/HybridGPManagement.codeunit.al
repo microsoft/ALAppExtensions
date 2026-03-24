@@ -15,7 +15,7 @@ codeunit 4016 "Hybrid GP Management"
         GPSettingUpgradePendingOnReplicationRunCompletedMsg: Label 'Setting upgrade pending on Replication Run Completed.', Locked = true;
         GPCloudMigrationReplicationErrorsMsg: Label 'Errors occured during GP Cloud Migration. Error message: %1.', Locked = true;
         SqlCompatibilityErr: Label 'SQL database must be at compatibility level 130 or higher.';
-        StartingHandleInitializationofGPSynchronizationTelemetryMsg: Label 'Starting HandleInitializationofGPSynchronization', Locked = true;
+        StartingHandleInitializationOfGPSynchronizationTelemetryMsg: Label 'Starting HandleInitializationofGPSynchronization', Locked = true;
         UpgradeWasScheduledMsg: Label 'Upgrade was succesfully scheduled';
         GPCloudMigrationDoesNotSupportNewUIMsg: Label 'GP Cloud migration does not support the new UI, please switch back to the previous UI page.';
         CannotContinueUpgradeFailedMsg: Label 'Previous data upgrade has failed. You need to delete the failed companies and to migrate them again.';
@@ -36,7 +36,7 @@ codeunit 4016 "Hybrid GP Management"
             exit;
 
         UpdateStatusOnHybridReplicationCompleted(RunId, NotificationText);
-        HandleInitializationofGPSynchronization(RunId, SubscriptionId, NotificationText);
+        HandleInitializationOfGPSynchronization(RunId, SubscriptionId, NotificationText);
         TriggerUpgradeIfOneStepEnabled(RunId);
     end;
 
@@ -223,7 +223,7 @@ codeunit 4016 "Hybrid GP Management"
         end;
     end;
 
-    local procedure HandleInitializationofGPSynchronization(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
+    local procedure HandleInitializationOfGPSynchronization(RunId: Text[50]; SubscriptionId: Text; NotificationText: Text)
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCompanyStatus: Record "Hybrid Company Status";
@@ -238,7 +238,7 @@ codeunit 4016 "Hybrid GP Management"
 
         JsonManagement.InitializeObject(NotificationText);
         JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType);
-        Session.LogMessage('0000FXA', StartingHandleInitializationofGPSynchronizationTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
+        Session.LogMessage('0000FXA', StartingHandleInitializationOfGPSynchronizationTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
 
         if ServiceType = ReplicationCompletedServiceTypeTxt then begin
             Session.LogMessage('0000FVN', GPSettingUpgradePendingOnReplicationRunCompletedMsg, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
@@ -362,7 +362,7 @@ codeunit 4016 "Hybrid GP Management"
     procedure InvokeCompanyUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50]; DelayDuration: Duration)
     var
         CreateSession: Boolean;
-        SesssionID: Integer;
+        SessionID: Integer;
     begin
         CreateSession := true;
         OnCreateSessionForUpgrade(CreateSession);
@@ -378,7 +378,7 @@ codeunit 4016 "Hybrid GP Management"
             TaskScheduler.CreateTask(
                 Codeunit::"GP Cloud Migration", Codeunit::"Hybrid Handle GP Upgrade Error", true, CompanyName, CurrentDateTime() + DelayDuration, HybridReplicationSummary.RecordId, GetDefaultJobTimeout())
         else
-            Session.StartSession(SesssionID, Codeunit::"GP Cloud Migration", CompanyName, HybridReplicationSummary, GetDefaultJobTimeout())
+            Session.StartSession(SessionID, Codeunit::"GP Cloud Migration", CompanyName, HybridReplicationSummary, GetDefaultJobTimeout())
     end;
 
     internal procedure GetDefaultJobTimeout(): Duration

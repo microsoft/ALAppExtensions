@@ -14,7 +14,7 @@ pageextension 10068 "IRS 1099 Pstd. P. CrMemo Sub." extends "Posted Purch. Cr. M
         {
             field("1099 Liable"; Rec."1099 Liable")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Visible = false;
             }
         }

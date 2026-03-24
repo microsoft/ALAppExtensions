@@ -510,36 +510,29 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
     begin
     end;
 
-    internal procedure ValidateAndEnableReplicationForMappedTables()
+    internal procedure ValidateCustomMigrationTables()
     var
-        IntelligentCloudStatus: Record "Intelligent Cloud Status";
         IncludedMappingTableNames: Dictionary of [Text[128], Boolean];
-        MissingTables: Text;
-        TablesCannotBeEnabled: Text;
+        MissingTables: TextBuilder;
+        TablesCannotBeEnabled: TextBuilder;
+        CannotEnableTable: Boolean;
+        TableDoesNotExist: Boolean;
         TableName: Text[128];
+        TableSeparatorTok: Label ', ', Locked = true;
     begin
         LoadIncludedTableNamesFromMappings(IncludedMappingTableNames);
 
         foreach TableName in IncludedMappingTableNames.Keys() do begin
-            IntelligentCloudStatus.SetRange("Table Name", TableName);
-            if IntelligentCloudStatus.FindSet() then
-                repeat
-                    if not IntelligentCloudStatus."Replicate Data" then
-                        if not EnableReplicateDataForTable(IntelligentCloudStatus) then begin
-                            if TablesCannotBeEnabled <> '' then
-                                TablesCannotBeEnabled += ', ';
-                            TablesCannotBeEnabled += TableName;
-                        end;
-                until IntelligentCloudStatus.Next() = 0
-            else begin
-                if MissingTables <> '' then
-                    MissingTables += ', ';
-                MissingTables += TableName;
-            end;
+            ValidateAndEnableTableReplication(TableName, CannotEnableTable, TableDoesNotExist);
+            if CannotEnableTable then
+                TablesCannotBeEnabled.Append(TableName + TableSeparatorTok);
+
+            if TableDoesNotExist then
+                MissingTables.Append(TableName + TableSeparatorTok);
         end;
 
-        if (TablesCannotBeEnabled <> '') or (MissingTables <> '') then
-            Error(TableMappingsIncorrectErr, GetTablesCannotBeEnabledErrorPart(TablesCannotBeEnabled), GetMissingTablesErrorPart(MissingTables));
+        if (TablesCannotBeEnabled.Length() > 0) or (MissingTables.Length() > 0) then
+            Error(TableMappingsIncorrectErr, GetTablesCannotBeEnabledErrorPart(TablesCannotBeEnabled.ToText().TrimEnd(TableSeparatorTok)), GetMissingTablesErrorPart(MissingTables.ToText().TrimEnd(TableSeparatorTok)));
     end;
 
     local procedure LoadIncludedTableNamesFromMappings(var IncludedMappingTableNames: Dictionary of [Text[128], Boolean])
@@ -574,6 +567,23 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
         IntelligentCloudStatus."Replicate Data" := true;
         IntelligentCloudStatus.Modify();
         exit(true);
+    end;
+
+    internal procedure ValidateAndEnableTableReplication(TableName: Text[128]; var CannotEnableTable: Boolean; var TableDoesNotExist: Boolean)
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    begin
+        IntelligentCloudStatus.SetRange("Table Name", TableName);
+        if not IntelligentCloudStatus.FindSet() then begin
+            TableDoesNotExist := true;
+            exit;
+        end;
+
+        repeat
+            if not IntelligentCloudStatus."Replicate Data" then
+                if not EnableReplicateDataForTable(IntelligentCloudStatus) then
+                    CannotEnableTable := true;
+        until IntelligentCloudStatus.Next() = 0;
     end;
 
     local procedure GetTablesCannotBeEnabledErrorPart(TablesCannotBeEnabled: Text): Text

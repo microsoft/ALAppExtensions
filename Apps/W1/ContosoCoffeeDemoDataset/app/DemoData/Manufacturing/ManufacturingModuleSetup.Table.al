@@ -27,6 +27,11 @@ table 4766 "Manufacturing Module Setup"
             DataClassification = CustomerContent;
             TableRelation = "Location" where("Use As In-Transit" = const(false));
         }
+        field(3; "Subcontracting Location"; Code[10])
+        {
+            DataClassification = CustomerContent;
+            TableRelation = "Location" where("Use As In-Transit" = const(false));
+        }
     }
 
     keys

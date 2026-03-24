@@ -13,7 +13,7 @@ page 10061 "Transmissions IRIS"
     RefreshOnActivate = true;
     AnalysisModeEnabled = false;
     InsertAllowed = false;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     UsageCategory = Documents;
     SourceTable = "Transmission IRIS";
 

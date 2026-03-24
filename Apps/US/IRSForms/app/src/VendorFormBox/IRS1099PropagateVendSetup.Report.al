@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ report 10038 "IRS 1099 Propagate Vend. Setup"
 {
     Caption = 'IRS 1099 Propagate Vendor Form Box Setup';
     ProcessingOnly = true;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Permissions = TableData "Vendor Ledger Entry" = rm, tabledata "Purch. Inv. Header" = rm;
 
     dataset
@@ -46,7 +46,7 @@ report 10038 "IRS 1099 Propagate Vend. Setup"
                     Caption = 'Options';
                     field(StartingDateControl; StartingDate)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Starting Date';
                         ToolTip = 'Specifies the starting posting date of the vendor ledger entries to be included in propagation process.';
 
@@ -58,7 +58,7 @@ report 10038 "IRS 1099 Propagate Vend. Setup"
                     }
                     field(EndingDateControl; EndingDate)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Ending Date';
                         ToolTip = 'Specifies the ending posting date of the vendor ledger entries to be included in propagation process.';
 
@@ -70,13 +70,13 @@ report 10038 "IRS 1099 Propagate Vend. Setup"
                     }
                     field(PurchaseDocumentsControl; PurchaseDocuments)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Purchase Documents';
                         ToolTip = 'Specifies whether to include purchase documents in the propagation process.';
                     }
                     field(VendorLedgerEntriesControl; VendorLedgerEntries)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Vendor Ledger Entries';
                         ToolTip = 'Specifies whether to include vendor ledger entries in the propagation process.';
 

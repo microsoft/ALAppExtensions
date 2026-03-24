@@ -207,7 +207,11 @@ report 6786 "WHT Certificate Creditable tax"
                 SecondMonth := 0;
                 ThirdMonth := 0;
 
-                Vend.Get("Bill-to/Pay-to No.");
+                if "Actual Vendor No." <> '' then
+                    Vend.Get("Actual Vendor No.")
+                else
+                    Vend.Get("Bill-to/Pay-to No.");
+
                 VendName := Vend.Name;
                 VendTIN := Vend."VAT Registration No.";
                 VendAddress := Vend.Address;

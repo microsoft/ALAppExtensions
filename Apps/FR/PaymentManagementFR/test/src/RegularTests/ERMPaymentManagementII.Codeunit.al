@@ -417,6 +417,7 @@ codeunit 144017 "ERM Payment Management II"
         PaymentClassCode: Text[30];
         SummarizePer: Option " ",Vendor,"Due date";
     begin
+        // [FEATURE] [AI TEST]
         // [SCENARIO 623072] Blocked vendor with Blocked = Payment is excluded from Suggest Vendor Payments report.
 
         // [GIVEN] A vendor with a posted purchase invoice, then set as Blocked = Payment.

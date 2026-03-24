@@ -7,7 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 page 10067 "IRS 1099 Form Doc. Update"
 {
     PageType = ListPlus;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Caption = 'Update 1099 Form Documents';
     InsertAllowed = false;
     DeleteAllowed = false;

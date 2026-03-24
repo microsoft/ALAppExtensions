@@ -338,6 +338,36 @@ codeunit 5579 "Digital Voucher Impl."
         exit(InvIncomingDocumentAttachment."Incoming Document Entry No.");
     end;
 
+    local procedure CopyIncomingDocForPrepmtDoc(PurchHeader: Record "Purchase Header"; PostedDocNo: Code[20]; PostedPostingDate: Date)
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        SourceIncomingDocument: Record "Incoming Document";
+        TargetIncomingDocument: Record "Incoming Document";
+        SourceIncomingDocAttach: Record "Incoming Document Attachment";
+        TargetIncomingDocAttach: Record "Incoming Document Attachment";
+    begin
+        if not GetDigitalVoucherEntrySetup(DigitalVoucherEntrySetup, "Digital Voucher Entry Type"::"Purchase Document") then
+            exit;
+        if DigitalVoucherEntrySetup."Generate Automatically" then
+            exit;
+        if PurchHeader."Incoming Document Entry No." = 0 then
+            exit;
+        if not SourceIncomingDocument.Get(PurchHeader."Incoming Document Entry No.") then
+            exit;
+        SourceIncomingDocAttach.SetRange("Incoming Document Entry No.", SourceIncomingDocument."Entry No.");
+        if not SourceIncomingDocAttach.FindSet() then
+            exit;
+        TargetIncomingDocument.Init();
+        TargetIncomingDocument."Document No." := PostedDocNo;
+        TargetIncomingDocument."Posting Date" := PostedPostingDate;
+        TargetIncomingDocument.Insert(true);
+        repeat
+            TargetIncomingDocAttach := SourceIncomingDocAttach;
+            TargetIncomingDocAttach."Incoming Document Entry No." := TargetIncomingDocument."Entry No.";
+            TargetIncomingDocAttach.Insert(true);
+        until SourceIncomingDocAttach.Next() = 0;
+    end;
+
     local procedure IsPaymentReconciliationJournal(DigitalVoucherEntryType: Enum "Digital Voucher Entry Type"; RecRef: RecordRef): Boolean
     var
         SourceCodeSetup: Record "Source Code Setup";
@@ -593,10 +623,14 @@ codeunit 5579 "Digital Voucher Impl."
     begin
         if not DigitalVoucherFeature.IsFeatureEnabled() then
             exit;
-        if PurchInvHeader."No." <> '' then
+        if PurchInvHeader."No." <> '' then begin
+            CopyIncomingDocForPrepmtDoc(PurchHeader, PurchInvHeader."No.", PurchInvHeader."Posting Date");
             HandleDigitalVoucherForPostedDocument("Digital Voucher Entry Type"::"Purchase Document", PurchInvHeader);
-        if PurchCrMemoHdr."No." <> '' then
+        end;
+        if PurchCrMemoHdr."No." <> '' then begin
+            CopyIncomingDocForPrepmtDoc(PurchHeader, PurchCrMemoHdr."No.", PurchCrMemoHdr."Posting Date");
             HandleDigitalVoucherForPostedDocument("Digital Voucher Entry Type"::"Purchase Document", PurchCrMemoHdr);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnProcessLinesOnAfterPostGenJnlLines', '', true, true)]

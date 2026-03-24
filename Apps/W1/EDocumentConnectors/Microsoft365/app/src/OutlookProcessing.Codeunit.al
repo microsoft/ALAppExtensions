@@ -48,45 +48,7 @@ codeunit 6385 "Outlook Processing"
 
 
         Email.MarkAsRead(OutlookSetup."Email Account ID", OutlookSetup."Email Connector", EDocument."Outlook Mail Message Id");
-        Email.ApplyEmailCategory(OutlookSetup."Email Account ID", OutlookSetup."Email Connector", EDocument."Outlook Mail Message Id", RetrieveOrCreateOutlookCategory(OutlookSetup, EDocumentService));
-    end;
-
-    /// <summary>
-    /// Retrieves the display name of the Outlook category associated to the processing by this E-Document Service. If the category does not exist, it is created. 
-    /// </summary>
-    /// <param name="OutlookSetup"></param>
-    /// <param name="EDocumentService"></param>
-    /// <returns>The display name of the Outlook category as needed by AddCategoryFilter. This name is guaranteed to exist in Outlook after the procedure completes.</returns>
-    local procedure RetrieveOrCreateOutlookCategory(var OutlookSetup: Record "Outlook Setup"; EDocumentService: Record "E-Document Service"): Text
-    var
-        TempEmailCategories: Record "Email Categories" temporary;
-        Email: Codeunit Email;
-        RedCategoryTok: Label 'Preset0', Locked = true;
-        CategoryFound: Boolean;
-    begin
-        Email.GetEmailCategories(OutlookSetup."Email Account ID", OutlookSetup."Email Connector", TempEmailCategories);
-        // We try to find the category used to tag the outlook emails by id
-        if OutlookSetup."Outlook Category Id" <> '' then begin
-            TempEmailCategories.SetRange("Id", OutlookSetup."Outlook Category Id");
-            CategoryFound := TempEmailCategories.FindFirst();
-            TempEmailCategories.SetRange("Id");
-        end;
-        // If we cannot find the category by id, we try to find it by name
-        if not CategoryFound then begin
-            TempEmailCategories.SetRange("Display Name", GetOutlookCategoryDescription(EDocumentService));
-            CategoryFound := TempEmailCategories.FindFirst();
-            if CategoryFound then begin
-                OutlookSetup."Outlook Category Id" := TempEmailCategories.Id; // we update the setup with the id of the category we found to avoid having to do this search again
-                OutlookSetup.Modify();
-            end;
-            TempEmailCategories.SetRange("Display Name");
-        end;
-        // If we cannot find the category by id nor by name, we create it and assign it to the setup
-        if not CategoryFound then begin
-            OutlookSetup."Outlook Category Id" := CopyStr(Email.CreateEmailCategory(OutlookSetup."Email Account ID", OutlookSetup."Email Connector", GetOutlookCategoryDescription(EDocumentService), RedCategoryTok), 1, MaxStrLen(OutlookSetup."Outlook Category Id"));
-            OutlookSetup.Modify();
-        end;
-        exit(CategoryFound ? TempEmailCategories."Display Name" : GetOutlookCategoryDescription(EDocumentService));
+        Email.ApplyEmailCategory(OutlookSetup."Email Account ID", OutlookSetup."Email Connector", EDocument."Outlook Mail Message Id", GetOutlookCategoryDescription(EDocumentService));
     end;
 
     procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
@@ -96,7 +58,6 @@ codeunit 6385 "Outlook Processing"
         OutlookProcessing: Codeunit "Outlook Processing";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         DocumentsArray: JsonArray;
-        CategoryDescription: Text;
     begin
         CheckSetupEnabled(OutlookSetup);
         if DailyEmailLimitReached(EDocumentService) then begin
@@ -108,14 +69,13 @@ codeunit 6385 "Outlook Processing"
             Session.LogMessage('0000QJ1', 'Daily limit for e-mail attachments received has been reached.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
             exit;
         end;
-        CategoryDescription := RetrieveOrCreateOutlookCategory(OutlookSetup, EDocumentService);
         FeatureTelemetry.LogUptake('0000OGS', FeatureName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000OGV', FeatureName(), Format(EDocumentService."Service Integration V2"));
         TempFilters."Load Attachments" := true;
         TempFilters."Max No. of Emails" := GetMaxNoOfEmails();
         TempFilters."Earliest Email" := OutlookSetup."Last Sync At";
         TempFilters."Category Filter Type" := TempFilters."Category Filter Type"::Exclude;
-        TempFilters.AddCategoryFilter(CategoryDescription);
+        TempFilters.AddCategoryFilter(GetOutlookCategoryDescription(EDocumentService));
         OutlookProcessing.ConfigureForEmailRetrieval(TempFilters);
         Commit();
         if not OutlookProcessing.Run() then begin // Email.RetrieveEmails() called this way to "catch" and recover
@@ -458,7 +418,7 @@ codeunit 6385 "Outlook Processing"
         EDocM365ConnEvents: Codeunit "E-Doc. M365 Conn. Events";
         CategoryDescription: Text;
     begin
-        CategoryDescription := OutlookCategoryTxt;
+        CategoryDescription := OutlookCategoryTok;
         EDocM365ConnEvents.OnGetOutlookCategoryDescription(EDocumentService, CategoryDescription);
         exit(CategoryDescription);
     end;
@@ -476,5 +436,5 @@ codeunit 6385 "Outlook Processing"
         ProcessingEmailTxt: label 'Processing email.', Locked = true;
         PageCountExceededTelemetryTxt: label 'PDF Attachment ignored because it exceeds page count of %1.', Locked = true;
         PageCountCallFailedTelemetryTxt: label 'Unable to calculate page count for PDF Attachment.', Locked = true;
-        OutlookCategoryTxt: Label 'Processed by Business Central';
+        OutlookCategoryTok: Label 'Processed by Business Central', Locked = true;
 }

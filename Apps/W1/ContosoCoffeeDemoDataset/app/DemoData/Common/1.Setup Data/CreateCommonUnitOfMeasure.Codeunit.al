@@ -23,7 +23,7 @@ codeunit 5130 "Create Common Unit Of Measure"
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Box(), BoxLbl, 'BX');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Pallet(), PalletLbl, 'PF');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Pack(), PackLbl, 'PK');
-        ContosoUnitOfMeasure.InsertUnitOfMeasure(Miles(), MilesLbl, '1A');
+        ContosoUnitOfMeasure.InsertUnitOfMeasure(Miles(), MilesLbl, 'SMI');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(KM(), KilometerLbl, 'KMT');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(KG(), KiloLbl, 'KGM');
         ContosoUnitOfMeasure.InsertUnitOfMeasure(Set(), SetLbl, 'SET');
@@ -36,40 +36,40 @@ codeunit 5130 "Create Common Unit Of Measure"
     end;
 
     var
-        HourLbl: Label 'Hour', MaxLength = 10;
+        HourLbl: Label 'Hour', MaxLength = 50;
         HourTok: Label 'HOUR', MaxLength = 10;
-        DayLbl: Label 'Day', MaxLength = 10;
+        DayLbl: Label 'Day', MaxLength = 50;
         DayTok: Label 'DAY', MaxLength = 10;
-        PieceLbl: Label 'Piece', MaxLength = 10;
+        PieceLbl: Label 'Piece', MaxLength = 50;
         PieceTok: Label 'PCS', MaxLength = 10;
-        CanLbl: Label 'Can', MaxLength = 10;
+        CanLbl: Label 'Can', MaxLength = 50;
         CanTok: Label 'CAN', MaxLength = 10;
-        BoxLbl: Label 'Box', MaxLength = 10;
+        BoxLbl: Label 'Box', MaxLength = 50;
         BoxTok: Label 'BOX', MaxLength = 10;
-        PalletLbl: Label 'Pallet', MaxLength = 10;
+        PalletLbl: Label 'Pallet', MaxLength = 50;
         PalletTok: Label 'PALLET', MaxLength = 10;
-        PackLbl: Label 'Pack', MaxLength = 10;
+        PackLbl: Label 'Pack', MaxLength = 50;
         PackTok: Label 'PACK', MaxLength = 10;
-        MilesLbl: Label 'Miles', MaxLength = 10;
+        MilesLbl: Label 'Miles', MaxLength = 50;
         MilesTok: Label 'MILES', MaxLength = 10;
-        KilometerLbl: Label 'Kilometer', MaxLength = 10;
+        KilometerLbl: Label 'Kilometer', MaxLength = 50;
         KMLbl: Label 'KM', MaxLength = 10;
         KGLbl: Label 'KG', MaxLength = 10;
-        KiloLbl: Label 'Kilo', MaxLength = 10;
+        KiloLbl: Label 'Kilogram', MaxLength = 50;
         SetTok: Label 'SET', MaxLength = 10;
-        SetLbl: Label 'Set', MaxLength = 10;
+        SetLbl: Label 'Set', MaxLength = 50;
         BagTok: Label 'BAG', MaxLength = 10;
         BagLbl: Label 'Bag', MaxLength = 10;
         GRTok: Label 'GR', MaxLength = 10;
-        GramTok: Label 'Gram', MaxLength = 10;
+        GramTok: Label 'Gram', MaxLength = 50;
         LTok: Label 'L', MaxLength = 10;
-        LiterTok: Label 'Liter', MaxLength = 10;
+        LiterTok: Label 'Liter', MaxLength = 50;
         MLTok: Label 'ML', MaxLength = 10;
-        MilliliterTok: Label 'Milliliter', MaxLength = 10;
+        MilliliterTok: Label 'Milliliter', MaxLength = 50;
         TTok: Label 'T', MaxLength = 10;
-        TonneLbl: Label 'Tonne', MaxLength = 10;
+        TonneLbl: Label 'Tonne', MaxLength = 50;
         KWHTok: Label 'KWH', MaxLength = 10;
-        KWHLbl: Label 'KW Hour', MaxLength = 10;
+        KWHLbl: Label 'KW Hour', MaxLength = 50;
 
     procedure Bag(): Code[10]
     begin

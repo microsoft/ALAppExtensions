@@ -25,6 +25,10 @@ page 4765 "Manufacturing Module Setup"
                 {
                     ToolTip = 'Specifies a new or an existing location that you want to use for production operations.';
                 }
+                field("Subcontracting Location"; Rec."Subcontracting Location")
+                {
+                    ToolTip = 'Specifies a new or an existing location that you want to use for subcontracting operations.';
+                }
             }
         }
     }

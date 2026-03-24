@@ -26,7 +26,7 @@ report 10063 "Upgrade IRS 1099 Data"
                     Caption = 'Options';
                     field(IRSReportingPeriodCodeField; IRSReportingPeriodCode)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Reporting Period Code';
                         ToolTip = 'Specifies the code of the tax reporting period to upgrade the data from the old IRS 1099 feature to the new one.';
                         TableRelation = "IRS Reporting Period";

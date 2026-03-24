@@ -10,6 +10,7 @@ pageextension 9408 "IPC Employee Card" extends "Employee Card"
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
             end;
         }
@@ -17,7 +18,9 @@ pageextension 9408 "IPC Employee Card" extends "Employee Card"
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
+                ShowPostcodeLookup(true);
             end;
         }
         modify("Country/Region Code")
@@ -88,6 +91,8 @@ pageextension 9408 "IPC Employee Card" extends "Employee Card"
         Employee: Record Employee;
         RecRef: RecordRef;
     begin
+        if Rec."Post Code" = '' then
+            exit;
         if not IPCAddressLookupHelper.ConfiguredAndSupportedForRecord(Rec."Country/Region Code") then
             exit;
 

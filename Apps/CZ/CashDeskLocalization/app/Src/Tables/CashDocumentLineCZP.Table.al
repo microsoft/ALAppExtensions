@@ -1449,6 +1449,8 @@ table 11733 "Cash Document Line CZP"
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
         ManualCrossAppHandlerCZP: Codeunit "Manual Cross App. Handler CZP";
     begin
+        OnBeforeApplyEntries(Rec);
+
         CashDocumentHeaderCZP.Get("Cash Desk No.", "Cash Document No.");
         if "Account Type" = "Account Type"::Customer then
             CashDocumentHeaderCZP.TestNotEETCashRegister();
@@ -1857,7 +1859,6 @@ table 11733 "Cash Document Line CZP"
                 PostedGLAccount.Get(FAPostingGroup."Acquisition Cost Account");
             end;
         PostedGLAccount.CheckGLAcc();
-        PostedGLAccount.TestField("Gen. Prod. Posting Group");
         "Posting Group" := FADepreciationBook."FA Posting Group";
         Validate("Gen. Posting Type", PostedGLAccount."Gen. Posting Type");
         Validate("VAT Bus. Posting Group", PostedGLAccount."VAT Bus. Posting Group");
@@ -2345,6 +2346,11 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(true, false)]
     local procedure OnValidateAccountTypeOnAfterInitRec(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeApplyEntries(var CashDocumentLineCZP: Record "Cash Document Line CZP")
     begin
     end;
 

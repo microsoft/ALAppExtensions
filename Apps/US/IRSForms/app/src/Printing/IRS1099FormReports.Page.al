@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ page 10048 "IRS 1099 Form Reports"
 {
     PageType = List;
     SourceTable = "IRS 1099 Form Report";
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Editable = true;
     layout
     {

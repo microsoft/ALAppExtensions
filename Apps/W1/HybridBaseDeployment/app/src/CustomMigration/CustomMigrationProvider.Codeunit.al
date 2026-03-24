@@ -87,20 +87,11 @@ codeunit 40034 "Custom Migration Provider" implements "Custom Migration Provider
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'OnOpenNewUI', '', false, false)]
     local procedure HandleOnOpenNewUI(var OpenNewUI: Boolean)
-    begin
-        if GetCustomMigrationEnabled() then
-            OpenNewUI := true;
-    end;
-
-    local procedure GetCustomMigrationEnabled(): Boolean
     var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
-        if not IntelligentCloudSetup.Get() then
-            exit(false);
-
-        exit(IntelligentCloudSetup."Custom Migration Enabled" and
-             (IntelligentCloudSetup."Custom Migration Provider" = IntelligentCloudSetup."Custom Migration Provider"::"Custom Migration Provider"));
+        if HybridCloudManagement.IsCustomMigrationEnabled() then
+            OpenNewUI := true;
     end;
 
     [IntegrationEvent(false, false)]

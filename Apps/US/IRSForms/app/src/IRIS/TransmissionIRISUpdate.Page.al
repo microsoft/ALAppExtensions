@@ -9,7 +9,7 @@ using System.Telemetry;
 page 10066 "Transmission IRIS Update"
 {
     PageType = Card;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Extensible = false;
     InsertAllowed = false;
     DeleteAllowed = false;

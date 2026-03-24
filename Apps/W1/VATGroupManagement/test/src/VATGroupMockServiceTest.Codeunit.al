@@ -217,33 +217,11 @@ codeunit 139526 "VAT Group Mock Service Test"
 
 
     [HttpClientHandler]
-    procedure VATGroupHttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    internal procedure VATGroupHttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
     var
-        InStream: InStream;
-        ResourceName: Text;
+        VATGroupHttpMockService: Codeunit "VAT Group Http Mock Service";
     begin
-        case Request.Path of
-            URLTxt + '/api/microsoft/vatgroup/v1.0/companies(name=''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissionStatus',
-            URLTxt + '/api/v1.0/companies(name=''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissionStatus',
-            URLTxt + '/OData/Company(''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissionStatus':
-                if Request.RequestType = HttpRequestType::Get then
-                    ResourceName := 'status_single_released.json';
-
-            URLTxt + '/api/v1.0/$batch',
-            URLTxt + '/api/microsoft/vatgroup/v1.0/$batch',
-            URLTxt + '/OData/$batch':
-                if Request.RequestType = HttpRequestType::Post then
-                    ResourceName := 'status_batch_released.json';
-            URLTxt + '/api/microsoft/vatgroup/v1.0/companies(name=''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissions',
-            URLTxt + '/api/v1.0/companies(name=''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissions',
-            URLTxt + '/OData/Company(''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissions':
-                if Request.RequestType = HttpRequestType::Post then
-                    ResourceName := '200_blanked.json';
-        end;
-
-        NavApp.GetResource(ResourceName, InStream);
-        Response.Content.WriteFrom(InStream);
-        Response.HttpStatusCode := 200;
+        VATGroupHttpMockService.HandleRequest(Request, Response);
         exit(false);
     end;
 }

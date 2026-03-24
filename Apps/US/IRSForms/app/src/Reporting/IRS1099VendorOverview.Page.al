@@ -11,7 +11,7 @@ page 10072 "IRS 1099 Vendor Overview"
     PageType = List;
     SourceTable = "IRS 1099 Vend. Form Box Buffer";
     SourceTableTemporary = true;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     UsageCategory = ReportsAndAnalysis;
     InsertAllowed = false;
     DeleteAllowed = false;
@@ -27,7 +27,7 @@ page 10072 "IRS 1099 Vendor Overview"
                 {
                     Caption = 'Reporting Period No.';
                     ToolTip = 'Specifies the reporting period to filter the data.';
-                    ApplicationArea = BasicUS;
+                    ApplicationArea = BasicCA, BasicUS;
                     TableRelation = "IRS Reporting Period";
                     ShowMandatory = true;
 

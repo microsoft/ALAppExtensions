@@ -150,13 +150,14 @@ codeunit 31353 "Issue Payment Order CZB"
         UncVATPayerLinesExistQst: Label 'There are %1 lines with unreliable VAT payer.\\Do you want to continue?', Comment = '%1 = Count of Lines';
         UncVATPayerStatusNotCheckedQst: Label 'The unreliable VAT payer status has not been checked.\\Do you want to continue?';
     begin
-        if PaymentOrderHeaderCZB.UnreliablePayerCheckExpired() then
-            PaymentOrderHeaderCZB.ImportUnreliablePayerStatus();
-
         SetPaymentOrderLineFilters(PaymentOrderLineCZB, PaymentOrderHeaderCZB);
         PaymentOrderLineCZB.SetRange(Type, PaymentOrderLineCZB.Type::Vendor);
         if not PaymentOrderLineCZB.FindSet() then
             exit;
+
+        if PaymentOrderHeaderCZB.UnreliablePayerCheckExpired() then
+            PaymentOrderHeaderCZB.ImportUnreliablePayerStatus();
+
         repeat
             if PaymentOrderLineCZB.IsUnreliablePayerCheckPossible() then begin
                 UnreliablePayerCheckPossible := true;

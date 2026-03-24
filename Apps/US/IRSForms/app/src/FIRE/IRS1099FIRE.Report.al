@@ -17,7 +17,7 @@ using System.Utilities;
 
 report 10039 "IRS 1099 FIRE"
 {
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Caption = 'IRS 1099 FIRE';
     ProcessingOnly = true;
     UsageCategory = ReportsAndAnalysis;
@@ -247,7 +247,7 @@ report 10039 "IRS 1099 FIRE"
                     Caption = 'Options';
                     field(YearField; Year)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Calendar Year';
                         ToolTip = 'Specifies the tax year for the 1099 forms that you want to print. The default is the work date year. The taxes may apply to the previous calendar year so you may want to change this date if nothing prints.';
 
@@ -259,7 +259,7 @@ report 10039 "IRS 1099 FIRE"
                     }
                     field(TCCField; TCC)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Transmitter Control Code';
                         ToolTip = 'Specifies the control code of the transmitter that is used to electronically file 1099 forms.';
 
@@ -274,43 +274,43 @@ report 10039 "IRS 1099 FIRE"
                         Caption = 'Transmitter Information';
                         field(TransmitterInfoName; TransmitterInfo.Name)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Transmitter Name';
                             ToolTip = 'Specifies the name of the transmitter that is used to electronically file 1099 forms.';
                         }
                         field(TransmitterInfoAddress; TransmitterInfo.Address)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Street Address';
                             ToolTip = 'Specifies the address of the vendor.';
                         }
                         field(TransmitterInfoCity; TransmitterInfo.City)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'City';
                             ToolTip = 'Specifies the city in the vendor''s address.';
                         }
                         field(TransmitterInfoCounty; TransmitterInfo.County)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'State';
                             ToolTip = 'Specifies the state as a part of the address.';
                         }
                         field(TransmitterInfoPostCode; TransmitterInfo."Post Code")
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'ZIP Code';
                             ToolTip = 'Specifies the vendor''s ZIP code as a part of the address.';
                         }
                         field(TransmitterInfoFederalIDNo; TransmitterInfo."Federal ID No.")
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Employer ID';
                             ToolTip = 'Specifies the employer at the vendor.';
                         }
                         field(ContactNameField; ContactName)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Contact Name';
                             ToolTip = 'Specifies the name of the contact at the vendor.';
                             Visible = not ContactInformationTakenFromAKV;
@@ -323,7 +323,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(ContactPhoneNoField; ContactPhoneNo)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Contact Phone No.';
                             ToolTip = 'Specifies the phone number of the contact at the vendor.';
                             Visible = not ContactInformationTakenFromAKV;
@@ -336,7 +336,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(ContactEmailField; ContactEmail)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Contact E-Mail';
                             ToolTip = 'Specifies the email address of the contact at the vendor.';
                             Visible = not ContactInformationTakenFromAKV;
@@ -344,7 +344,7 @@ report 10039 "IRS 1099 FIRE"
                     }
                     field(bTestFileField; bTestFile)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Test File';
                         ToolTip = 'Specifies you want to print a test file of the information that will be filed electronically.';
 
@@ -358,14 +358,14 @@ report 10039 "IRS 1099 FIRE"
                         Caption = 'Vendor Information';
                         field(VendIndicatorField; VendIndicator)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor Indicator';
                             OptionCaption = 'Vendor Software,In-House Software';
                             ToolTip = 'Specifies the type of vendor indicator that you want to use, including Vendor Software and In-House Software.';
                         }
                         field(VendorInfoName; TempVendorInfo.Name)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor Name';
                             ToolTip = 'Specifies the vendor''s name.';
 
@@ -377,7 +377,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(VendorInfoAddress; TempVendorInfo.Address)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor Street Address';
                             ToolTip = 'Specifies the vendor''s address.';
 
@@ -389,7 +389,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(VendorInfoCity; TempVendorInfo.City)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor City';
                             ToolTip = 'Specifies the vendors city as a part of the address.';
 
@@ -401,7 +401,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(VendorInfoCounty; TempVendorInfo.County)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor State';
                             ToolTip = 'Specifies the vendor''s state as a part of the address.';
 
@@ -413,7 +413,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(VendorInfoPostCode; TempVendorInfo."Post Code")
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor ZIP Code';
                             ToolTip = 'Specifies the vendor''s ZIP code as a part of the address.';
 
@@ -425,7 +425,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(VendContactNameField; VendContactName)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor Contact Name';
                             ToolTip = 'Specifies the name of the contact at the vendor.';
 
@@ -437,7 +437,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(VendContactPhoneNoField; VendContactPhoneNo)
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor Contact Phone No.';
                             ToolTip = 'Specifies the phone number of the contact at the vendor.';
 
@@ -449,7 +449,7 @@ report 10039 "IRS 1099 FIRE"
                         }
                         field(VendorInfoEmail; TempVendorInfo."E-Mail")
                         {
-                            ApplicationArea = BasicUS;
+                            ApplicationArea = BasicCA, BasicUS;
                             Caption = 'Vendor E-Mail';
                             ToolTip = 'Specifies the vendor''s email address.';
 

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ page 10031 "IRS Reporting Periods"
 {
     PageType = List;
     SourceTable = "IRS Reporting Period";
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     UsageCategory = Administration;
     AboutTitle = 'About reporting periods';
     AboutText = 'Here you can set up the different periods and form boxes, vendor mapping, and statement for reporting per period.';

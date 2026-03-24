@@ -12,22 +12,10 @@ pageextension 50002 "Contact Card" extends "Contact Card"
 {
     layout
     {
-        modify(Address)
-        {
-            trigger OnBeforeValidate()
-            var
-                PostcodeBusinessLogic: Codeunit "Postcode Business Logic GB";
-            begin
-                PostcodeBusinessLogic.ShowDiscoverabilityNotificationIfNeccessary();
-            end;
-        }
         modify("Post Code")
         {
             trigger OnBeforeValidate()
-            var
-                PostcodeBusinessLogic: Codeunit "Postcode Business Logic GB";
             begin
-                PostcodeBusinessLogic.ShowDiscoverabilityNotificationIfNeccessary();
                 ShowPostcodeLookup(false);
             end;
         }

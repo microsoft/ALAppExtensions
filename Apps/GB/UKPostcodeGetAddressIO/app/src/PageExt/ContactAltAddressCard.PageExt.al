@@ -12,22 +12,10 @@ pageextension 50001 "Contact Alt. Address Card" extends "Contact Alt. Address Ca
 {
     layout
     {
-        modify(Address)
-        {
-            trigger OnBeforeValidate()
-            var
-                PostcodeBusinessLogic: Codeunit "Postcode Business Logic GB";
-            begin
-                PostcodeBusinessLogic.ShowDiscoverabilityNotificationIfNeccessary();
-            end;
-        }
         modify("Post Code")
         {
             trigger OnBeforeValidate()
-            var
-                PostcodeBusinessLogic: Codeunit "Postcode Business Logic GB";
             begin
-                PostcodeBusinessLogic.ShowDiscoverabilityNotificationIfNeccessary();
                 ShowPostcodeLookup(false);
             end;
         }

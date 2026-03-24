@@ -153,10 +153,12 @@ codeunit 20297 "Use Case Symbols Handler"
 
         ScriptSymbolLookup.SetFilter("Source Type", '%1|%2', ScriptSymbolLookup."Source Type"::"Attribute Table", ScriptSymbolLookup."Source Type"::"Tax Attributes");
         ScriptSymbolLookup.SetRange("Source Field ID", Rec.ID);
+        OnFindScriptSymbolLookupOnBeforeTaxAttributeDeleteEvent(ScriptSymbolLookup, Rec);
         if ScriptSymbolLookup.FindFirst() then
             ThrowAttributeInUseError(Rec."Tax Type", Rec.Name, ScriptSymbolLookup."Case ID");
 
         UseCaseAttributeMapping.SetRange("Attribtue ID", Rec.ID);
+        OnFindUseCaseAttributeMappingOnBeforeTaxAttributeDeleteEvent(UseCaseAttributeMapping, Rec);
         if UseCaseAttributeMapping.FindFirst() then
             ThrowAttributeInUseError(Rec."Tax Type", Rec.Name, UseCaseAttributeMapping."Case ID");
     end;
@@ -179,18 +181,22 @@ codeunit 20297 "Use Case Symbols Handler"
 
         ScriptSymbolLookup.SetFilter("Source Type", '%1|%2', ScriptSymbolLookup."Source Type"::Component, ScriptSymbolLookup."Source Type"::"Component Percent");
         ScriptSymbolLookup.SetRange("Source Field ID", Rec.ID);
+        OnFindScriptSymbolLookupOnBeforeTaxComponentDeleteEvent(ScriptSymbolLookup, Rec);
         if ScriptSymbolLookup.FindFirst() then
             ThrowComponentInUseError(Rec."Tax Type", Rec.Name, ScriptSymbolLookup."Case ID");
 
         UseCaseComponentCalculation.SetRange("Component ID", Rec.ID);
+        OnFindUseCaseComponentCalculationOnBeforeTaxComponentDeleteEvent(UseCaseComponentCalculation, Rec);
         if UseCaseComponentCalculation.FindFirst() then
             ThrowComponentInUseError(Rec."Tax Type", Rec.Name, UseCaseComponentCalculation."Case ID");
         ScriptSymbolLookup.SetFilter("Source Type", '%1|%2', ScriptSymbolLookup."Source Type"::Component, ScriptSymbolLookup."Source Type"::"Component Percent");
         ScriptSymbolLookup.SetRange("Source Field ID", Rec.ID);
+        OnFindScriptSymbolLookupForPostingOnBeforeTaxComponentDeleteEvent(ScriptSymbolLookup, Rec);
         if ScriptSymbolLookup.FindFirst() then
             ThrowComponentInUseError(Rec."Tax Type", Rec.Name, ScriptSymbolLookup."Case ID");
 
         UseCaseComponentCalculation.SetRange("Component ID", Rec.ID);
+        OnFindUseCaseComponentCalculationForPostingOnBeforeTaxComponentDeleteEvent(UseCaseComponentCalculation, Rec);
         if UseCaseComponentCalculation.FindFirst() then
             ThrowComponentInUseError(Rec."Tax Type", Rec.Name, UseCaseComponentCalculation."Case ID");
     end;
@@ -476,6 +482,36 @@ codeunit 20297 "Use Case Symbols Handler"
             exit;
         if UseCase."Tax Type" = TaxType then
             error(ComponentUsedInUseCaseErr, ComponentName, UseCase.Description);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindScriptSymbolLookupOnBeforeTaxAttributeDeleteEvent(var ScriptSymbolLookup: Record "Script Symbol Lookup"; TaxAttribute: Record "Tax Attribute")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindUseCaseAttributeMappingOnBeforeTaxAttributeDeleteEvent(var UseCaseAttributeMapping: Record "Use Case Attribute Mapping"; TaxAttribute: Record "Tax Attribute")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindScriptSymbolLookupOnBeforeTaxComponentDeleteEvent(var ScriptSymbolLookup: Record "Script Symbol Lookup"; TaxComponent: Record "Tax Component")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindScriptSymbolLookupForPostingOnBeforeTaxComponentDeleteEvent(var ScriptSymbolLookup: Record "Script Symbol Lookup"; TaxComponent: Record "Tax Component")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindUseCaseComponentCalculationOnBeforeTaxComponentDeleteEvent(var UseCaseComponentCalculation: Record "Use Case Component Calculation"; TaxComponent: Record "Tax Component")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindUseCaseComponentCalculationForPostingOnBeforeTaxComponentDeleteEvent(var UseCaseComponentCalculation: Record "Use Case Component Calculation"; TaxComponent: Record "Tax Component")
+    begin
     end;
 
     var

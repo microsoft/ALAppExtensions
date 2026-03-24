@@ -10,6 +10,7 @@ pageextension 9404 "IPC Contact Alt. Address Card" extends "Contact Alt. Address
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
             end;
         }
@@ -17,7 +18,9 @@ pageextension 9404 "IPC Contact Alt. Address Card" extends "Contact Alt. Address
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
+                ShowPostcodeLookup(true);
             end;
         }
         modify("Country/Region Code")
@@ -89,6 +92,8 @@ pageextension 9404 "IPC Contact Alt. Address Card" extends "Contact Alt. Address
         ContactAltAddress: Record "Contact Alt. Address";
         RecRef: RecordRef;
     begin
+        if Rec."Post Code" = '' then
+            exit;
         if not IPCAddressLookupHelper.ConfiguredAndSupportedForRecord(Rec."Country/Region Code") then
             exit;
 

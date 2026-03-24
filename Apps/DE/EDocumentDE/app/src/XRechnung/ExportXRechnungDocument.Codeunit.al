@@ -1599,6 +1599,12 @@ codeunit 13916 "Export XRechnung Document"
     begin
     end;
 
+    /// <summary>
+    /// Allows subscribers to add additional filters on the Document Attachment record after the default filters are set.
+    /// </summary>
+    /// <param name="TableNo">The table ID being filtered.</param>
+    /// <param name="DocumentNo">The document number being filtered.</param>
+    /// <param name="DocumentAttachment">The Document Attachment record to filter.</param>
     [IntegrationEvent(false, false)]
     local procedure OnInsertAttachmentOnAfterSetFilters(TableNo: Integer; DocumentNo: Code[20]; var DocumentAttachment: Record "Document Attachment")
     begin
