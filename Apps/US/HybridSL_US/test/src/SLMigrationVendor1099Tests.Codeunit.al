@@ -72,7 +72,6 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
     procedure TestMappingCreated()
     var
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
-        SLSupportedTaxYear: Record "SL Supported Tax Year";
         TempSL1099BoxMapping: Record "SL 1099 Box Mapping" temporary;
         TempSLSupportedTaxYear: Record "SL Supported Tax Year" temporary;
         SLCloudMigrationUS: Codeunit "SL Cloud Migration US";
@@ -179,8 +178,6 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
     var
         SLAPBalances: Record "SL AP_Balances";
         SLAPSetup: Record "SL APSetup";
-        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
-        SLCompanyMigrationSettings: Record "SL Company Migration Settings";
         SLVendor: Record "SL Vendor";
 
     begin

@@ -161,12 +161,17 @@ codeunit 148130 "Library - Elec. VAT Submission"
 
     local procedure SetOAuthSetupTestTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")
     begin
-        with OAuth20Setup do begin
-            SetToken("Client ID", 'Dummy Test Client ID');
-            SetToken("Client Secret", 'Dummy Test Client Secret');
-            SetToken("Access Token", 'Dummy Test Access Token');
-            SetToken("Refresh Token", 'Dummy Test Refresh Token');
-        end;
+        SetIsolatedStorageToken(OAuth20Setup, OAuth20Setup."Client ID", 'Dummy Test Client ID');
+        SetIsolatedStorageToken(OAuth20Setup, OAuth20Setup."Client Secret", 'Dummy Test Client Secret');
+        SetIsolatedStorageToken(OAuth20Setup, OAuth20Setup."Access Token", 'Dummy Test Access Token');
+        SetIsolatedStorageToken(OAuth20Setup, OAuth20Setup."Refresh Token", 'Dummy Test Refresh Token');
+    end;
+
+    local procedure SetIsolatedStorageToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var TokenKey: Guid; TokenValue: Text)
+    begin
+        if IsNullGuid(TokenKey) then
+            TokenKey := CreateGuid();
+        IsolatedStorage.Set(TokenKey, TokenValue, OAuth20Setup.GetTokenDataScope());
     end;
 
     local procedure CreateVATSpecification(): Code[50]

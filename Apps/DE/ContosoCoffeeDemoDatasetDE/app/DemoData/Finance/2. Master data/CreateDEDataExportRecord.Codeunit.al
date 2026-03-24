@@ -107,6 +107,7 @@ codeunit 11125 "Create DE Data Export Record"
 
     local procedure CreateDataExportRecordField()
     var
+        GLRegister: Record "G/L Register";
         CreateDEDataExport: Codeunit "Create DE Data Export";
         CreateDEDataExpRecType: Codeunit "Create DE Data Exp. Rec. Type";
         ContosoDEDigitalAudit: Codeunit "Contoso DE Digital Audit";
@@ -376,7 +377,10 @@ codeunit 11125 "Create DE Data Export Record"
         ContosoDEDigitalAudit.InsertDataExportRecordField(CreateDEDataExport.GLAccountData(), CreateDEDataExpRecType.GLAccountData(), 90000, Database::"Detailed Vendor Ledg. Entry", 36, 100000, 0);
         ContosoDEDigitalAudit.InsertDataExportRecordField(CreateDEDataExport.GLAccountData(), CreateDEDataExpRecType.GLAccountData(), 100000, Database::"G/L Register", 2, 10000, 0);
         ContosoDEDigitalAudit.InsertDataExportRecordField(CreateDEDataExport.GLAccountData(), CreateDEDataExpRecType.GLAccountData(), 100000, Database::"G/L Register", 3, 20000, 0);
-        ContosoDEDigitalAudit.InsertDataExportRecordField(CreateDEDataExport.GLAccountData(), CreateDEDataExpRecType.GLAccountData(), 100000, Database::"G/L Register", 4, 30000, 0);
+
+        //Not using FieldId directly as its a system field
+        ContosoDEDigitalAudit.InsertDataExportRecordField(CreateDEDataExport.GLAccountData(), CreateDEDataExpRecType.GLAccountData(), 100000, Database::"G/L Register", GLRegister.FieldNo(SystemCreatedAt), 30000, 0);
+
         ContosoDEDigitalAudit.InsertDataExportRecordField(CreateDEDataExport.GLAccountData(), CreateDEDataExpRecType.GLAccountData(), 100000, Database::"G/L Register", 6, 40000, 0);
         ContosoDEDigitalAudit.InsertDataExportRecordField(CreateDEDataExport.GLAccountData(), CreateDEDataExpRecType.GLAccountData(), 110000, Database::"General Ledger Setup", 71, 10000, 0);
         ContosoDEDigitalAudit.InsertDataExportRecordField(CreateDEDataExport.GLAccountData(), CreateDEDataExpRecType.GLAccountData(), 120000, Database::"VAT Entry", 1, 10000, 0);

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ report 10037 "IRS 1099 Copy Setup From"
 {
     Caption = 'IRS 1099 Copy Setup';
     ProcessingOnly = true;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
 
     requestpage
     {
@@ -23,7 +23,7 @@ report 10037 "IRS 1099 Copy Setup From"
                     Caption = 'Options';
                     field(FromPeriod; FromPeriodNo)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'From Period';
                         ToolTip = 'Specifies the period to copy from';
                         TableRelation = "IRS Reporting Period";
@@ -50,7 +50,7 @@ report 10037 "IRS 1099 Copy Setup From"
                     }
                     field(ToPeriod; ToPeriodNo)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'To Period';
                         ToolTip = 'Specifies the period to copy to.';
                         TableRelation = "IRS Reporting Period";
@@ -82,7 +82,7 @@ report 10037 "IRS 1099 Copy Setup From"
                     }
                     field(CompaniesSelectionOption; CompaniesSelection)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Companies';
                         ToolTip = 'Specifies the companies to copy the setup for.';
                         Editable = false;

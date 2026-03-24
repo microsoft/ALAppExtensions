@@ -89,7 +89,6 @@ codeunit 148122 "Intrastat Report Exp. Ext. IT"
     var
         IntrastatReportLine: Record "Intrastat Report Line";
         OutText: Text;
-        Length: Integer;
         Amount, LineCount : Integer;
     begin
         IntrastatReportMgtIT.GetTotals(Amount, LineCount);
@@ -109,14 +108,10 @@ codeunit 148122 "Intrastat Report Exp. Ext. IT"
             OutText += Format(LineCount).PadLeft(5, '0');
             OutText += Format(Amount).PadLeft(13, '0');
 
-            if IntrastatReportHeader.Type = IntrastatReportHeader.Type::Purchases then
-                Length := 49
-            else
-                Length := 54;
-
-            OutText += Format('').PadLeft(Length, '0');
+            OutText += Format('').PadLeft(54, '0');
         end;
-        OutText += Format('').PadLeft(5, '0');
+        if IntrastatReportHeader.Type = IntrastatReportHeader.Type::Sales then
+            OutText += Format('').PadLeft(5, '0');
         exit(OutText);
     end;
 

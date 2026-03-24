@@ -14,7 +14,7 @@ pageextension 10066 "IRS 1099 Purch. Cr.Memo Sub." extends "Purch. Cr. Memo Subf
         {
             field("1099 Liable"; Rec."1099 Liable")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Visible = false;
             }
         }

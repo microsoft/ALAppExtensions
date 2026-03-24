@@ -7,7 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 page 10069 "Transmission Log Lines IRIS"
 {
     PageType = List;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Caption = 'Transmission History Lines';
     SourceTable = "Transmission Log Line IRIS";
     Editable = false;

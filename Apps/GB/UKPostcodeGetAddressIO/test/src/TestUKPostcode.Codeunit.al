@@ -170,57 +170,6 @@ codeunit 139500 "Test UK Postcode"
         DeleteConfiguration();
     end;
 
-    [Test]
-    [Scope('OnPrem')]
-    procedure TestNotificationDontShowAgain()
-    var
-#if not CLEAN28
-        PostcodeNotificationMemory: Record "Postcode Notification Memory";
-#else
-        PostcodeNotificationMemory: Record "Postcode Notif. Memory";
-#endif
-        PostcodeBusinessLogic: Codeunit "Postcode Business Logic GB";
-        DummyNotification: Notification;
-    begin
-        // [GIVEN] basic user, that hasn't had any interaction with postcode notificaitons
-        LibraryLowerPermissions.SetO365Basic();
-        Assert.RecordIsEmpty(PostcodeNotificationMemory);
-
-        // [WHEN] user clicks "don't show again"
-        PostcodeBusinessLogic.NotificationOnDontShowAgain(DummyNotification);
-
-        // [THEN] no window opens, record is present NOT to show notification again
-        Assert.RecordCount(PostcodeNotificationMemory, 1);
-
-        PostcodeNotificationMemory.DeleteAll(); // Cleanup
-    end;
-
-    [Test]
-    [HandlerFunctions('PostcodeConfigurationPageHandler')]
-    [Scope('OnPrem')]
-    procedure TestNotificationConfigure()
-    var
-#if not CLEAN28
-        PostcodeNotificationMemory: Record "Postcode Notification Memory";
-#else
-        PostcodeNotificationMemory: Record "Postcode Notif. Memory";
-#endif
-        PostcodeBusinessLogic: Codeunit "Postcode Business Logic GB";
-        DummyNotification: Notification;
-    begin
-        // [GIVEN] basic user, that hasn't had any interaction with postcode notificaitons
-        LibraryLowerPermissions.SetO365BusFull();
-        Assert.RecordIsEmpty(PostcodeNotificationMemory);
-
-        // [WHEN] User clicks configure
-        PostcodeBusinessLogic.NotificationOnConfigure(DummyNotification);
-
-        // [THEN] service config window opens, record is present NOT to show notification again
-        Assert.RecordCount(PostcodeNotificationMemory, 1);
-
-        PostcodeNotificationMemory.DeleteAll(); // Cleanup
-    end;
-
     local procedure Initialize()
     var
         PostcodeServiceConfig: Record "Postcode Service Config";
@@ -322,15 +271,5 @@ codeunit 139500 "Test UK Postcode"
         Assert.AreEqual('DELIVERYPOINT', PostcodeSearch.DeliveryPoint.Value, 'Delivery point is not correctly passed into a page.');
     end;
 
-    [PageHandler]
-    [Scope('OnPrem')]
-#if not CLEAN28
-    procedure PostcodeConfigurationPageHandler(var PostcodeConfigurationPage: TestPage "Postcode Configuration Page")
-#else
-    procedure PostcodeConfigurationPageHandler(var PostcodeConfigurationPage: TestPage "Postcode Configuration Page GB")
-#endif
-    begin
-        PostcodeConfigurationPage.Cancel().Invoke();
-    end;
 }
 #endif

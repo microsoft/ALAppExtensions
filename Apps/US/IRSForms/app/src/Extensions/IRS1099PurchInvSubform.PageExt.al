@@ -14,7 +14,7 @@ pageextension 10065 "IRS 1099 Purch. Inv. Subform" extends "Purch. Invoice Subfo
         {
             field("1099 Liable"; Rec."1099 Liable")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Visible = false;
             }
         }

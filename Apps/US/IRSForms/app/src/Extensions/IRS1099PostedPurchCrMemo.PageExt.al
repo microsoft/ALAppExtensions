@@ -14,18 +14,18 @@ pageextension 10061 "IRS 1099 Posted Purch. Cr.Memo" extends "Posted Purchase Cr
         {
             field("IRS 1099 Reporting Period"; Rec."IRS 1099 Reporting Period")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Tooltip = 'Specifies the IRS reporting period for the document.';
             }
             field("IRS 1099 Form No."; Rec."IRS 1099 Form No.")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Tooltip = 'Specifies the IRS form number for the document.';
                 Editable = false;
             }
             field("IRS 1099 Form Box No."; Rec."IRS 1099 Form Box No.")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Tooltip = 'Specifies the IRS form box number for the vendor ledger entry.';
                 Editable = false;
             }

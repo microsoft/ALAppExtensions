@@ -10,6 +10,7 @@ pageextension 9409 "IPC Location Card" extends "Location Card"
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
             end;
         }
@@ -17,7 +18,9 @@ pageextension 9409 "IPC Location Card" extends "Location Card"
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
+                ShowPostcodeLookup(true);
             end;
         }
         modify("Country/Region Code")
@@ -89,6 +92,8 @@ pageextension 9409 "IPC Location Card" extends "Location Card"
         Location: Record Location;
         RecRef: RecordRef;
     begin
+        if Rec."Post Code" = '' then
+            exit;
         if not IPCAddressLookupHelper.ConfiguredAndSupportedForRecord(Rec."Country/Region Code") then
             exit;
 

@@ -10,6 +10,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
         DummyGuid: Guid;
 
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure TestQueryAPIEndpoint()
     var
         VATReportSetup: Record "VAT Report Setup";
@@ -146,6 +147,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
     end;
 
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure TestVATGroupSubmissionStatusBatchRequest()
     var
         VATReportHeader: Record "VAT Report Header";
@@ -245,6 +247,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
     end;
 
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure TestVATGroupSubmissionStatusWrongBatchEndpoint()
     var
         VATGroupSubmissionStatus: Codeunit "VAT Group Submission Status";
@@ -265,7 +268,9 @@ codeunit 139741 "VAT Group Sub. Status Test"
         Assert.ExpectedError('Not Found: cannot locate the requested resource.');
     end;
 
+
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure TestVATGroupSubmissionStatusErrorSingleGETRequestInBatch()
     var
         VATReportHeader: Record "VAT Report Header";
@@ -366,6 +371,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
     end;
 
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure TestUpdateSingleVATReportStatus()
     var
         VATReportHeader: Record "VAT Report Header";
@@ -491,6 +497,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
     end;
 
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure TestUpdateSingleVATReportStatusError()
     var
         VATGroupSubmissionStatus: Codeunit "VAT Group Submission Status";
@@ -552,6 +559,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
     end;
 
     [Test]
+    [HandlerFunctions('HttpClientHandler')]
     procedure TestButtonUpdateStatusVATReportPage()
     var
         VATReportHeader: Record "VAT Report Header";
@@ -848,5 +856,14 @@ codeunit 139741 "VAT Group Sub. Status Test"
     local procedure Guid8(): Guid
     begin
         exit('CDEF7890-ABCD-0123-0005-100890ABCDEA');
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        VATGroupHttpMockService: Codeunit "VAT Group Http Mock Service";
+    begin
+        VATGroupHttpMockService.HandleRequest(Request, Response);
+        exit(false);
     end;
 }

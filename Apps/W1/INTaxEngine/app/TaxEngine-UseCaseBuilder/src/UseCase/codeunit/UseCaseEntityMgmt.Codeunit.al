@@ -179,10 +179,12 @@ codeunit 20292 "Use Case Entity Mgmt."
         UseCaseMgmt: Codeunit "Use Case Mgmt.";
     begin
         TaxUseCase.SetRange("Tax Type", TaxTypeCode);
+        OnFindDisableSelectedUseCases(TaxUseCase);
         UseCaseMgmt.DisableSelectedUseCases(TaxUseCase);
 
         TaxUseCase.Reset();
         TaxUseCase.SetRange("Tax Type", TaxTypeCode);
+        OnFindDeleteSelectedUseCases(TaxUseCase);
         if not TaxUseCase.IsEmpty() then
             TaxUseCase.DeleteAll(true);
     end;
@@ -206,6 +208,16 @@ codeunit 20292 "Use Case Entity Mgmt."
             exit;
 
         ValidateUseCase(Rec, xRec);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindDisableSelectedUseCases(var TaxUseCase: Record "Tax Use Case")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindDeleteSelectedUseCases(var TaxUseCase: Record "Tax Use Case")
+    begin
     end;
 
     var

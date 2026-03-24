@@ -1310,8 +1310,10 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                 TempVATEntry.Init();
                 TempVATEntry := VATEntry;
                 if TempVATEntry."Original VAT Entry No. CZL" <> 0 then begin
-                    TempVATEntry.Base := TempVATEntry.GetOriginalVATBaseCZL();
-                    TempVATEntry.Amount := TempVATEntry.GetOriginalVATAmountCZL();
+                    TempVATEntry.Base := TempVATEntry."Original VAT Base CZL";
+                    TempVATEntry.Amount := TempVATEntry."Original VAT Amount CZL";
+                    TempVATEntry."Additional-Currency Base" := TempVATEntry."Original VAT Base ACY CZL";
+                    TempVATEntry."Additional-Currency Amount" := TempVATEntry."Original VAT Amount ACY CZL";
                 end;
                 OnBeforeInsertTempVATEntryForForPeriod(TempVATEntry);
                 TempVATEntry.Insert();

@@ -27,6 +27,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         AOAIDeployments: Codeunit "AOAI Deployments";
         AOAIOperationResponse: Codeunit "AOAI Operation Response";
         AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
+        AOAIPolicyParams: Codeunit "AOAI Policy Params";
         AOAIChatMessages: Codeunit "AOAI Chat Messages";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -76,8 +77,11 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         if not BankAccReconciliationLine.IsEmpty() then begin
             AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
             AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation");
+            AOAIPolicyParams.SetXPIADetection(true);
+            AOAIPolicyParams.SetHarmsSeverity(Enum::"AOAI Policy Harms Severity"::Medium);
             AOAIChatCompletionParams.SetMaxTokens(BankRecAIMatchingImpl.MaxTokens());
             AOAIChatCompletionParams.SetTemperature(0);
+            AOAIChatCompletionParams.SetAOAIPolicyParams(AOAIPolicyParams);
             InputWithReservedWordsFound := false;
             GetCompletionResponse(AOAIChatMessages, BankAccReconciliationLine, TempBankStatementMatchingBuffer, GLAccount, AzureOpenAI, AOAIChatCompletionParams, AOAIOperationResponse);
             if AOAIOperationResponse.IsSuccess() then
@@ -101,6 +105,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
     begin
         SysMsg := BuildMostAppropriateGLAccountPromptTask().Unwrap();
         UserMsg := BuildBankRecPromptUserMessage(BuildBankRecStatementLines(BankAccReconciliationLine, TempBankStatementMatchingBuffer), BuildGLAccounts(GLAccount)).Unwrap();
+        AOAIChatMessages.AddXPIADetectionTags(UserMsg);
         AOAIChatMessages.AddSystemMessage(SysMsg);
         AOAIChatMessages.AddUserMessage(UserMsg);
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);

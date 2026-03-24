@@ -7,7 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 page 10065 "Transmission Logs IRIS"
 {
     PageType = List;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Caption = 'Transmission History';
     SourceTable = "Transmission Log IRIS";
     Editable = false;
@@ -69,7 +69,7 @@ page 10065 "Transmission Logs IRIS"
         {
             action(DownloadTransmContent)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Download Transmission Content';
                 Image = Download;
                 ToolTip = 'Downloads the transmission content as an XML file.';
@@ -80,7 +80,7 @@ page 10065 "Transmission Logs IRIS"
             }
             action(DownloadRespContent)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Download Response Content';
                 Image = Download;
                 ToolTip = 'Downloads the response content as an XML or JSON file.';
@@ -91,7 +91,7 @@ page 10065 "Transmission Logs IRIS"
             }
             action(DownloadAcknowledgContent)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Download Acknowledgement Content';
                 Image = Download;
                 ToolTip = 'Downloads the acknowledgement content as an XML or JSON file.';

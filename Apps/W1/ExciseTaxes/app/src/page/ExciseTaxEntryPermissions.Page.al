@@ -12,7 +12,7 @@ page 7413 "Excise Tax Entry Permissions"
     ApplicationArea = All;
     SourceTable = "Excise Tax Entry Permission";
     DataCaptionExpression = GetCaption();
-    Caption = 'Excise Tax Entry Permissions';
+    Caption = 'Excise Tax Entry Types';
 
     layout
     {
@@ -45,8 +45,8 @@ page 7413 "Excise Tax Entry Permissions"
             action("Setup Default Permissions")
             {
                 ApplicationArea = All;
-                Caption = 'Setup Default Permissions';
-                ToolTip = 'Create default permissions for all entry types.';
+                Caption = 'Setup Default Entry Types';
+                ToolTip = 'Create default entry types for all tax types.';
                 Image = Setup;
 
                 trigger OnAction()
@@ -65,7 +65,7 @@ page 7413 "Excise Tax Entry Permissions"
 
     var
         ConfirmManagement: Codeunit "Confirm Management";
-        ConfirmForInsertMsg: Label 'Are you sure you want to Setup all default permissions for tax type %1?', Comment = '%1 = Excise Tax Type Code';
+        ConfirmForInsertMsg: Label 'Are you sure you want to setup all default entry types for tax type %1?', Comment = '%1 = Excise Tax Type Code';
         EntryPermissionsCaptionLbl: Label '%1 for Tax Type: %2', Comment = '%1=Current Rec TableCaption, %2=Excise Tax Type Code';
 
     local procedure GetCaption(): Text[100]

@@ -144,6 +144,9 @@ codeunit 9401 "IPC Address Lookup Helper"
         PostCodeServiceManager: Codeunit "Postcode Service Manager";
         IsConfigured: Boolean;
     begin
+        if not GuiAllowed() then
+            exit(false);
+
         if not SupportedCountryOrRegionCode(CountryOrRegionCode) then
             exit(false);
 

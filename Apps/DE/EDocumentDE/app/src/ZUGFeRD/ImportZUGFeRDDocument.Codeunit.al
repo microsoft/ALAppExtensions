@@ -34,6 +34,7 @@ codeunit 13919 "Import ZUGFeRD Document"
         DocumentNamespace: Text;
         PDFInStream: InStream;
         PdfAttachmentStream: InStream;
+        BasicInfoParsed: Boolean;
         DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document', Locked = true;
         NoXMLFileErr: Label 'No invoice attachment found in the PDF file. Please check the PDF file.';
         CrossIndustryInvoiceLbl: Label 'CrossIndustryInvoice', Locked = true;
@@ -52,22 +53,25 @@ codeunit 13919 "Import ZUGFeRD Document"
         DocumentNamespace := GetNamespace(TempXMLBuffer);
         DocumentType := GetDocumentType(TempXMLBuffer, DocumentNamespace);
 
-        case UpperCase(DocumentType) of
-            '380', '384', '751', '877':
-                if DocumentNamespace <> '' then
-                    ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentElementLbl, DocumentNamespace, CrossIndustryInvoiceLbl), PdfInStream)
-                else
-                    ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, CrossIndustryInvoiceLbl, PdfInStream);
-            '381', '261':
-                if DocumentNamespace <> '' then
-                    ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentElementLbl, DocumentNamespace, CrossIndustryInvoiceLbl), PdfInStream)
-                else
-                    ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, CrossIndustryInvoiceLbl, PdfInStream)
-            else begin
-                FeatureTelemetry.LogUsage('0000EXE', FeatureNameTok, StrSubstNo(UnsupportedDocumentTypeErr, DocumentType));
-                Error(UnsupportedDocumentTypeErr, DocumentType);
+        BasicInfoParsed := false;
+        OnParseBasicInfoOnBeforeDocumentTypeCheck(DocumentType, EDocument, TempXMLBuffer, DocumentNamespace, CrossIndustryInvoiceLbl, PdfInStream, BasicInfoParsed);
+        if not BasicInfoParsed then
+            case UpperCase(DocumentType) of
+                '380', '384', '751', '877':
+                    if DocumentNamespace <> '' then
+                        ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentElementLbl, DocumentNamespace, CrossIndustryInvoiceLbl), PdfInStream)
+                    else
+                        ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, CrossIndustryInvoiceLbl, PdfInStream);
+                '381', '261':
+                    if DocumentNamespace <> '' then
+                        ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentElementLbl, DocumentNamespace, CrossIndustryInvoiceLbl), PdfInStream)
+                    else
+                        ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, CrossIndustryInvoiceLbl, PdfInStream)
+                else begin
+                    FeatureTelemetry.LogUsage('0000EXE', FeatureNameTok, StrSubstNo(UnsupportedDocumentTypeErr, DocumentType));
+                    Error(UnsupportedDocumentTypeErr, DocumentType);
+                end;
             end;
-        end;
     end;
 
     procedure ParseCompleteInfo(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; var TempBlob: Codeunit "Temp Blob")
@@ -588,6 +592,11 @@ codeunit 13919 "Import ZUGFeRD Document"
 
     [IntegrationEvent(false, false)]
     internal procedure OnAfterParseCreditMemo(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; TempXMLBuffer: Record "XML Buffer" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnParseBasicInfoOnBeforeDocumentTypeCheck(var DocumentType: Text; var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentNamespace: Text; CrossIndustryInvoiceLbl: Text; PdfInStream: InStream; var BasicInfoParsed: Boolean)
     begin
     end;
 }

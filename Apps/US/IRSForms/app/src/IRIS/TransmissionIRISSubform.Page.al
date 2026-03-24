@@ -7,7 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 page 10059 "Transmission IRIS Subform"
 {
     PageType = ListPart;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Caption = 'Documents';
     SourceTable = "IRS 1099 Form Doc. Header";
     InsertAllowed = false;

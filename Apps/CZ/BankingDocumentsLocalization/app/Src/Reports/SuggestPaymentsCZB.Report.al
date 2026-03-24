@@ -206,7 +206,7 @@ report 31280 "Suggest Payments CZB"
                     DialogOpen := true;
 
                     if EmplType = EmplType::OnlyPayables then
-                        SetRange(Positive, true);
+                        SetRange(Positive, false);
                     SetRange("Posting Date", 0D, LastDueDateToPayReq);
                     if EmployeeNoFilter <> '' then
                         SetFilter("Employee No.", EmployeeNoFilter);

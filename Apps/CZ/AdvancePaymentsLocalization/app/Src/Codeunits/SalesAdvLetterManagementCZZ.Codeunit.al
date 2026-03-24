@@ -955,9 +955,15 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         PostingDate: Date;
         CurrencyFactor: Decimal;
         AddCurrencyFactor: Decimal;
+        IsHandled: Boolean;
     begin
         SalesAdvLetterEntryCZZ.TestField("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment");
         SalesAdvLetterEntryCZZ.TestField(Cancelled, false);
+
+        IsHandled := false;
+        OnBeforePostAdvanceCreditMemoVAT(SalesAdvLetterEntryCZZ, IsHandled);
+        if IsHandled then
+            exit;
 
         AdvPaymentCloseDialog.SetValues(SalesAdvLetterEntryCZZ."Posting Date", SalesAdvLetterEntryCZZ."VAT Date", SalesAdvLetterEntryCZZ."Currency Code", SalesAdvLetterEntryCZZ."Currency Factor", '', false);
         if AdvPaymentCloseDialog.RunModal() = Action::OK then begin
@@ -1326,6 +1332,11 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePostPaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; PostingDate: Date; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostAdvanceCreditMemoVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var IsHandled: Boolean)
     begin
     end;
 

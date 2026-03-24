@@ -90,7 +90,6 @@ codeunit 148079 "Banking Documents CZB"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler')]
     procedure CheckIssuePaymentOrder()
     var
         PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
@@ -115,7 +114,7 @@ codeunit 148079 "Banking Documents CZB"
     end;
 
     [Test]
-    [HandlerFunctions('CopyPaymentOrderHandler,MessageHandler')]
+    [HandlerFunctions('CopyPaymentOrderHandler')]
     procedure CopyingPaymentOrderToBankStatement()
     var
         BankStatementHeaderCZB: Record "Bank Statement Header CZB";
@@ -239,7 +238,7 @@ codeunit 148079 "Banking Documents CZB"
     end;
 
     [Test]
-    [HandlerFunctions('RequestPagePaymentOrderHandler,MessageHandler')]
+    [HandlerFunctions('RequestPagePaymentOrderHandler')]
     procedure PrintingIssuedPaymentOrder()
     var
         PaymentOrderHeaderCZB: Record "Payment Order Header CZB";

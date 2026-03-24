@@ -23,6 +23,7 @@ codeunit 31446 "Calculate Invent. Handler CZA"
     begin
         ItemsWithoutChange := ItemsWithoutChangeCZA;
         UseItemDimensions := UseItemDimensionsCZA;
+        IsItemWithoutChange := false;
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Calculate Inventory", 'OnAfterItemOnPreDataItem', '', false, false)]

@@ -19,6 +19,11 @@
       "id": "c9b38161-dd8d-40a9-8920-60ccbf8d7a59",
       "name": "Dynamics SL Migration Tests",
       "publisher": "Microsoft"
+    },
+    {
+      "id": "5f85a491-a6f4-4303-88ed-95a577849f91",
+      "name": "Dynamics SL Migration - US Tests",
+      "publisher": "Microsoft"
     }
   ],
   "dependencies": [

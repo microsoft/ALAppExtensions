@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ page 10035 "IRS 1099 Vendor Form Box Setup"
 {
     PageType = List;
     SourceTable = "IRS 1099 Vendor Form Box Setup";
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     UsageCategory = Administration;
     AboutTitle = 'About the setup of form boxes for vendors';
     AboutText = 'Here you can map the form boxes to vendor in the certain period. When you create a document for a certain vendor, the system will use this setup to fill in the form boxes.';
@@ -54,7 +54,7 @@ page 10035 "IRS 1099 Vendor Form Box Setup"
         {
             action(SuggestVendors)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Suggest';
                 Image = Suggest;
                 ToolTip = 'Suggest vendors for the selected period';
@@ -74,7 +74,7 @@ page 10035 "IRS 1099 Vendor Form Box Setup"
             }
             action(Propagate)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Propagate';
                 Image = CopyBudget;
                 ToolTip = 'Propagate the vendor form box setup to the existing opened purchase documents vendor ledger entries.';

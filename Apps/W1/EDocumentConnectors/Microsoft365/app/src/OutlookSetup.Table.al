@@ -73,12 +73,24 @@ table 6383 "Outlook Setup"
             ToolTip = 'Specifies whether the customer has given consent to the privacy notice.';
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA31
         field(6; "Outlook Category Id"; Text[2048])
         {
             Caption = 'Outlook Category';
             ToolTip = 'Specifies the Outlook category that will be set when an email has been processed by the connector.';
             DataClassification = CustomerContent;
+            ObsoleteReason = 'Never used field.';
+#pragma warning disable AS0072
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '31.0';
+#endif
+#pragma warning restore AS0072
         }
+#endif
         field(16; "Enabled At"; DateTime)
         {
             Caption = 'Enabled At';

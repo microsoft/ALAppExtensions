@@ -14,7 +14,7 @@ pageextension 10069 "IRS 1099 Purch. Ret.Order Sub." extends "Purchase Return Or
         {
             field("1099 Liable"; Rec."1099 Liable")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Visible = false;
             }
         }

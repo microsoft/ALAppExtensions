@@ -333,7 +333,7 @@ codeunit 40125 "GP Populate Combined Tables"
     begin
         GPRM00101.SetRange(INACTIVE, false);
         if GPCompanyAdditionalSettings.GetMigrateInactiveCustomers() then
-                GPRM00101.SetRange(INACTIVE);
+            GPRM00101.SetRange(INACTIVE);
 
         if not GPRM00101.FindSet() then
             exit;

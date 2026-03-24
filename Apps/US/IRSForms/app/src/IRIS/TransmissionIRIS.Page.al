@@ -13,7 +13,7 @@ page 10058 "Transmission IRIS"
     PageType = Card;
     InsertAllowed = false;
     Caption = 'IRIS Transmission';
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     SourceTable = "Transmission IRIS";
     Permissions = tabledata "User Params IRIS" = M;
 

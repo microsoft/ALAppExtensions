@@ -10,6 +10,7 @@ pageextension 9406 "IPC Customer Bank Account Card" extends "Customer Bank Accou
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
             end;
         }
@@ -17,7 +18,9 @@ pageextension 9406 "IPC Customer Bank Account Card" extends "Customer Bank Accou
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
+                ShowPostcodeLookup(true);
             end;
         }
         modify("Country/Region Code")
@@ -90,6 +93,8 @@ pageextension 9406 "IPC Customer Bank Account Card" extends "Customer Bank Accou
         CustomerBankAccount: Record "Customer Bank Account";
         RecRef: RecordRef;
     begin
+        if Rec."Post Code" = '' then
+            exit;
         if not IPCAddressLookupHelper.ConfiguredAndSupportedForRecord(Rec."Country/Region Code") then
             exit;
 

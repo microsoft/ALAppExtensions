@@ -9,7 +9,7 @@ using System.Telemetry;
 page 10068 "Setup IRIS User ID"
 {
     PageType = Card;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Extensible = false;
     InsertAllowed = false;
     DeleteAllowed = false;
@@ -80,7 +80,7 @@ page 10068 "Setup IRIS User ID"
         {
             action(OpenIRSConsentApp)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Open IRS Consent App';
                 Image = LinkWeb;
                 ToolTip = 'Opens the IRS Consent App in the default web browser.';

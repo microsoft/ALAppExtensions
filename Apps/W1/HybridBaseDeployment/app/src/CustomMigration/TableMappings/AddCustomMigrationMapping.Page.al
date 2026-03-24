@@ -13,7 +13,9 @@ page 40016 "Add Custom Migration Mapping"
     ApplicationArea = All;
     PageType = List;
     SourceTable = "AllObj";
-    Permissions = tabledata "NAV App Installed App" = r, tabledata AllObj = r, tabledata "Published Application" = r;
+    Permissions = tabledata "NAV App Installed App" = r,
+                  tabledata AllObj = r,
+                  tabledata "Published Application" = r;
     InsertAllowed = false;
     DeleteAllowed = false;
     ModifyAllowed = false;
@@ -167,6 +169,11 @@ page 40016 "Add Custom Migration Mapping"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the destination table in the cloud database. Use underscores in place of special characters, similar to how table names appear in SQL Server Management Studio.';
                     Caption = 'Destination table name';
+
+                    trigger OnValidate()
+                    begin
+                        ValidateTargetTable();
+                    end;
                 }
             }
         }
@@ -183,6 +190,9 @@ page 40016 "Add Custom Migration Mapping"
         if not (CloseAction in [Action::OK, Action::LookupOK]) then
             exit(true);
 
+        if TargetTableName = '' then
+            exit(Confirm(TheDestinationTableIsEmptyContinueQst));
+
         if AllCompanies then begin
             HybridCompany.SetRange(Replicate, true);
             HybridCompany.SetFilter(Name, '<>%1', '');
@@ -197,6 +207,9 @@ page 40016 "Add Custom Migration Mapping"
             until HybridCompany.Next() = 0;
         end else
             CustomMigrationTableBuffer.SaveMigrationTableMapping(MappingType, SourceTableName, DestinationTableName, TargetTableName, CompanyName, DataPerCompany, GlobalPreserveCloudData);
+
+        // Validate and enable replication for all custom migration tables
+        ValidateTargetTable();
         exit(true);
     end;
 
@@ -218,6 +231,19 @@ page 40016 "Add Custom Migration Mapping"
         end;
     end;
 
+    local procedure ValidateTargetTable()
+    var
+        CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
+        CannotEnableTable: Boolean;
+        TableDoesNotExist: Boolean;
+    begin
+        CloudMigReplicateDataMgt.ValidateAndEnableTableReplication(DestinationTableName, CannotEnableTable, TableDoesNotExist);
+        if CannotEnableTable then
+            Error(TargetTableCannotBeEnabledErr, DestinationTableName);
+        if TableDoesNotExist then
+            Error(TargetTableDoesNotExistErr, DestinationTableName);
+    end;
+
     var
         TableMetadata: Record "Table Metadata";
         MappingType: Enum "Migration Mapping Type";
@@ -237,4 +263,7 @@ page 40016 "Add Custom Migration Mapping"
         AllCompanies: Boolean;
         UpdateTableNamesWithAllCompaniesTokMsg: Label 'The %1 token in the source table and destination table name will be replaced with the name of the company that is selected for migration. Update the source and destination table names accordingly.', Comment = '%1 is this value that is not translated {$AllCompanies$}';
         CompanyNameMustBeSpecifiedErr: Label 'Company Name must be specified when Data Per Company is selected.', Comment = 'Error message shown when trying to select a table mapping that is per company without specifying a company name.';
+        TargetTableCannotBeEnabledErr: Label 'The destination table %1 cannot be enabled for replication. Please ensure the table exists and is not a system table.', Comment = '%1 is the name of the destination table that cannot be enabled for replication.';
+        TargetTableDoesNotExistErr: Label 'The destination table %1 does not exist. Please ensure the table name is correct.', Comment = '%1 is the name of the destination table that was not found.';
+        TheDestinationTableIsEmptyContinueQst: Label 'The destination table name is empty, the mapping will not be saved. Do you want to continue?';
 }

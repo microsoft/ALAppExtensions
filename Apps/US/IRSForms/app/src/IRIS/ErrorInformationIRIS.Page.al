@@ -7,7 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 page 10070 "Error Information IRIS"
 {
     PageType = List;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     Caption = 'Error Information';
     SourceTable = "Error Information IRIS";
     Editable = false;

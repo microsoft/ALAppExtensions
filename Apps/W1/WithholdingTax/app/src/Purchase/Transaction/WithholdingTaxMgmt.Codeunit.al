@@ -56,6 +56,7 @@ codeunit 6785 "Withholding Tax Mgmt."
         CountryRegionCode: Code[10];
         GenBusPostGrp: Code[20];
         GenProdPostGrp: Code[20];
+        ActualVendorNo: Code[20];
         OnesText: array[20] of Text[30];
         TensText: array[10] of Text[30];
         ExponentText: array[5] of Text[30];
@@ -445,6 +446,7 @@ codeunit 6785 "Withholding Tax Mgmt."
                         GenBusPostGrp := PurchCrMemoLine."Gen. Bus. Posting Group";
                         GenProdPostGrp := PurchCrMemoLine."Gen. Prod. Posting Group";
                         TransType := TransType::Purchase;
+                        ActualVendorNo := PurchCreditHeader."WHT Actual Vendor No.";
                         ExtDocNo := PurchCreditHeader."Vendor Cr. Memo No.";
                         CountryRegionCode := PurchCreditHeader."Pay-to Country/Region Code";
                         PostingDate := PurchCreditHeader."Posting Date";
@@ -534,6 +536,7 @@ codeunit 6785 "Withholding Tax Mgmt."
         PayToVendCustNo := GenJnlLine."Account No.";
         BuyFromAccType := BuyFromAccType::Vendor;
         BuyFromVendCustNo := GenJnlLine."Account No.";
+        ActualVendorNo := GenJnlLine."WHT Actual Vendor No.";
         ApplyDocType := GenJnlLine."Applies-to Doc. Type";
         ApplyDocNo := GenJnlLine."Applies-to Doc. No.";
         "Applies-toID" := GenJnlLine."Applies-to ID";
@@ -2187,6 +2190,7 @@ codeunit 6785 "Withholding Tax Mgmt."
                             PayToAccType := PayToAccType::Vendor;
                             PayToVendCustNo := PurchInvHeader."Pay-to Vendor No.";
                             BuyFromAccType := BuyFromAccType::Vendor;
+                            ActualVendorNo := PurchInvHeader."WHT Actual Vendor No.";
                             GenBusPostGrp := PurchLine."Gen. Bus. Posting Group";
                             GenProdPostGrp := PurchLine."Gen. Prod. Posting Group";
                             TransType := TransType::Purchase;
@@ -2262,6 +2266,7 @@ codeunit 6785 "Withholding Tax Mgmt."
                             PayToAccType := PayToAccType::Vendor;
                             PayToVendCustNo := PurchHeader."Pay-to Vendor No.";
                             BuyFromAccType := BuyFromAccType::Vendor;
+                            ActualVendorNo := PurchHeader."WHT Actual Vendor No.";
                             GenBusPostGrp := PurchLine."Gen. Bus. Posting Group";
                             GenProdPostGrp := PurchLine."Gen. Prod. Posting Group";
                             TransType := TransType::Purchase;
@@ -2342,6 +2347,7 @@ codeunit 6785 "Withholding Tax Mgmt."
                 else
                     WithholdingTaxEntry."Transaction Type" := WithholdingTaxEntry."Transaction Type"::Sale;
 
+                WithholdingTaxEntry."Actual Vendor No." := ActualVendorNo;
                 WithholdingTaxEntry."Source Code" := SourceCode;
                 WithholdingTaxEntry."Bill-to/Pay-to No." := PayToVendCustNo;
                 WithholdingTaxEntry."User ID" := UserId;
@@ -3599,6 +3605,7 @@ codeunit 6785 "Withholding Tax Mgmt."
         VendorArray: array[1000] of Code[20];
         DocumentArray: array[1000] of Code[20];
         WHTSlipNo: Code[20];
+        ActualVendorExists: Boolean;
     begin
         x := 0;
         GLRegFilter := GLReg.GetFilters();
@@ -3629,7 +3636,12 @@ codeunit 6785 "Withholding Tax Mgmt."
 
             x := x + 1;
 
-            VendorArray[x] := WithholdingTaxEntry."Bill-to/Pay-to No.";
+            if WithholdingTaxEntry."Actual Vendor No." <> '' then begin
+                VendorArray[x] := WithholdingTaxEntry."Actual Vendor No.";
+                ActualVendorExists := true;
+            end else
+                VendorArray[x] := WithholdingTaxEntry."Bill-to/Pay-to No.";
+
             DocumentArray[x] := WithholdingTaxEntry."Original Document No.";
         until WithholdingTaxEntry.Next() = 0;
 
@@ -3666,7 +3678,10 @@ codeunit 6785 "Withholding Tax Mgmt."
 
                 WithholdingTaxEntry.Reset();
                 WithholdingTaxEntry.SetCurrentKey("Bill-to/Pay-to No.", "Original Document No.", "Withholding Tax Revenue Type");
-                WithholdingTaxEntry.SetRange("Bill-to/Pay-to No.", VendorArray[PrintSlips]);
+                if ActualVendorExists then
+                    WithholdingTaxEntry.SetRange("Actual Vendor No.", VendorArray[PrintSlips])
+                else
+                    WithholdingTaxEntry.SetRange("Bill-to/Pay-to No.", VendorArray[PrintSlips]);
                 WithholdingTaxEntry.SetRange("Original Document No.", DocumentArray[PrintSlips]);
                 if WithholdingTaxEntry.FindSet() then
                     repeat
@@ -3686,7 +3701,10 @@ codeunit 6785 "Withholding Tax Mgmt."
 
                 WithholdingTaxEntry.Reset();
                 WithholdingTaxEntry.SetCurrentKey("Bill-to/Pay-to No.", "Original Document No.", "Withholding Tax Revenue Type");
-                WithholdingTaxEntry.SetRange("Bill-to/Pay-to No.", VendorArray[PrintSlips]);
+                if ActualVendorExists then
+                    WithholdingTaxEntry.SetRange("Actual Vendor No.", VendorArray[PrintSlips])
+                else
+                    WithholdingTaxEntry.SetRange("Bill-to/Pay-to No.", VendorArray[PrintSlips]);
                 WithholdingTaxEntry.SetRange("Original Document No.", DocumentArray[PrintSlips]);
                 WithholdingTaxEntry.SetRange("Wthldg. Tax Certificate No.", WHTSlipNo);
                 if WithholdingTaxEntry.FindSet() then
@@ -4092,6 +4110,7 @@ codeunit 6785 "Withholding Tax Mgmt."
                     WithholdingTaxEntry2."Applies-to Entry No." := WithholdingTaxEntry."Entry No.";
                     WithholdingTaxEntry2."User ID" := UserId;
                     WithholdingTaxEntry2."External Document No." := GenJnlLine."External Document No.";
+                    WithholdingTaxEntry2."Actual Vendor No." := GenJnlLine."WHT Actual Vendor No.";
                     WithholdingTaxEntry2."Original Document No." := GenJnlLine."Document No.";
                     WithholdingTaxEntry2."Source Code" := GenJnlLine."Source Code";
                     WithholdingTaxEntry2."Transaction No." := TransactionNo;
@@ -4873,6 +4892,7 @@ codeunit 6785 "Withholding Tax Mgmt."
                     WithholdingTaxEntry2."Applies-to Entry No." := WithholdingTaxEntry."Entry No.";
                     WithholdingTaxEntry2."User ID" := UserId;
                     WithholdingTaxEntry2."External Document No." := GenJnlLine."External Document No.";
+                    WithholdingTaxEntry2."Actual Vendor No." := GenJnlLine."WHT Actual Vendor No.";
                     WithholdingTaxEntry2."Original Document No." := GenJnlLine."Document No.";
                     WithholdingTaxEntry2."Source Code" := GenJnlLine."Source Code";
                     WithholdingTaxEntry2."Transaction No." := TransactionNo;

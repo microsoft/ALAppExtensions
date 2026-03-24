@@ -26,7 +26,7 @@ tableextension 22211 "G/L Entry Review" extends "G/L Entry"
         {
             Caption = 'Reviewed Date';
             FieldClass = FlowField;
-            CalcFormula = lookup("G/L Entry Review Log".SystemCreatedAt where("G/L Entry No." = field("Entry No.")));
+            CalcFormula = lookup("G/L Entry Review Log"."Reviewed At" where("G/L Entry No." = field("Entry No.")));
             ToolTip = 'Specifies the date and time when the G/L entry was reviewed.';
         }
         field(22215; "Reviewed Identifier"; Integer)

@@ -1,5 +1,6 @@
 namespace Microsoft.Test.Sustainability;
 
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Setup;
 using Microsoft.Purchases.Document;
@@ -27,6 +28,7 @@ codeunit 148210 "Sust. Item Chrg Assign. Test"
         LibraryInventory: Codeunit "Library - Inventory";
         LibrarySustainability: Codeunit "Library - Sustainability";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryERM: Codeunit "Library - ERM";
         IsInitialized: Boolean;
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
@@ -1012,6 +1014,665 @@ codeunit 148210 "Sust. Item Chrg Assign. Test"
             StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), ExpectedCO2eEmission, SustainabilityLedgerEntry.TableCaption()));
     end;
 
+    [Test]
+    procedure VerifyCancelledPurchOrderCreatesNegativeEmissionInSustainabilityLedgerEntry()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO 581746] Verify cancelled Purchase Order creates negative emission in Sustainability Ledger Entry.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update Sustainability Account No., Emission CO2, Emission CH4, Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify();
+
+        // [GIVEN] Update Reason Code in Purchase Header.
+        UpdateReasonCodeinPurchaseHeader(PurchaseHeader);
+
+        // [GIVEN] Post Purchase Document.
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Cancel Posted Purchase Invoice.
+        PurchaseInvoiceHeader.Get(PostedInvoiceNo);
+        CorrectPostedPurchInvoice.CancelPostedInvoice(PurchaseInvoiceHeader);
+
+        // [THEN] Verify the cancellation Sustainability Ledger Entry has negative emission values.
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.FindLast();
+        Assert.AreEqual(
+            -EmissionCO2,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), -EmissionCO2, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            -EmissionCH4,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), -EmissionCH4, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            -EmissionN2O,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), -EmissionN2O, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCorrectedPurchaseOrderCreatesNegativeEmissionInSustainabilityLedgerEntry()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO 581746] Verify corrective credit memo for Purchase Order creates negative emission in Sustainability Ledger Entry.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update Sustainability Account No., Emission CO2, Emission CH4, Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify();
+
+        // [GIVEN] Update Reason Code in Purchase Header.
+        UpdateReasonCodeinPurchaseHeader(PurchaseHeader);
+
+        // [GIVEN] Post Purchase Document.
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedInvoiceNo);
+
+        // [WHEN] Create and Post Corrective Credit Memo.
+        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader);
+        PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryRandom.RandText(10));
+        PurchaseHeader.Modify();
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Verify the corrective Sustainability Ledger Entry has negative emission values.
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.FindLast();
+        Assert.AreEqual(
+            -EmissionCO2,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), -EmissionCO2, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            -EmissionCH4,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), -EmissionCH4, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            -EmissionN2O,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), -EmissionN2O, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySustainabilityLedgerEntryRemovedWhenPurchInvoiceIsCancelled()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO 581746] Verify Sustainability Ledger Entry should be removed when Posted Purchase Invoice is cancelled.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create a Purchase Invoice.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update Sustainability Account No., Emission CO2, Emission CH4, Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify();
+
+        // [GIVEN] Update Reason Code in Purchase Header.
+        UpdateReasonCodeinPurchaseHeader(PurchaseHeader);
+
+        // [GIVEN] Post Purchase Invoice.
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Cancel Posted Purchase Invoice.
+        PurchaseInvoiceHeader.Get(PostedInvoiceNo);
+        CorrectPostedPurchInvoice.CancelPostedInvoice(PurchaseInvoiceHeader);
+
+        // [THEN] Verify Sustainability Ledger Entry emissions are removed.
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.CalcSums("Emission CO2", "Emission CH4", "Emission N2O");
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySustainabilityLedgerEntryRemovedWhenPurchInvoiceIsCorrected()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+    begin
+        // [SCENARIO 581746] Verify Sustainability Ledger Entry should be removed when corrective credit memo for Purchase Invoice is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create a Purchase Invoice.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update Sustainability Account No., Emission CO2, Emission CH4, Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify();
+
+        // [GIVEN] Update Reason Code in Purchase Header.
+        UpdateReasonCodeinPurchaseHeader(PurchaseHeader);
+
+        // [GIVEN] Post Purchase Invoice.
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedInvoiceNo);
+
+        // [WHEN] Create and Post Corrective Credit Memo.
+        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader);
+        PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryRandom.RandText(10));
+        PurchaseHeader.Modify();
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Verify Sustainability Ledger Entry emissions are removed.
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.CalcSums("Emission CO2", "Emission CH4", "Emission N2O");
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyPositiveEmissionForChargeItemOnPostedPurchaseOrder()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseHeader2: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseLine2: Record "Purchase Line";
+        PurchRcptLine: Record "Purch. Rcpt. Line";
+        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+        ItemNo: Code[20];
+    begin
+        // [SCENARIO 581746] Verify Sustainability Ledger Entry has positive emission when charge item is assigned to Purchase Receipt.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create Purchase Order with Item.
+        ItemNo := LibraryInventory.CreateItemNo();
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, ItemNo, LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Modify();
+
+        // [GIVEN] Post Purchase Order.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Find Purchase Receipt Line.
+        PurchRcptLine.SetRange("Order No.", PurchaseHeader."No.");
+        PurchRcptLine.SetRange("No.", ItemNo);
+        PurchRcptLine.FindFirst();
+
+        // [GIVEN] Create Purchase Order with Charge Item and Sustainability.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader2, "Purchase Document Type"::Order, PurchaseHeader."Buy-from Vendor No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine2, PurchaseHeader2, "Purchase Line Type"::"Charge (Item)", LibraryInventory.CreateItemChargeNo(), LibraryRandom.RandInt(10));
+        PurchaseLine2.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine2.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine2.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine2.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine2.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine2.Modify();
+
+        // [GIVEN] Assign Item Charge to Purchase Receipt.
+        LibraryInventory.CreateItemChargeAssignPurchase(
+            ItemChargeAssignmentPurch, PurchaseLine2,
+            ItemChargeAssignmentPurch."Applies-to Doc. Type"::Receipt,
+            PurchRcptLine."Document No.", PurchRcptLine."Line No.", PurchRcptLine."No.");
+
+        // [WHEN] Post Purchase Order with Charge Item.
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader2, true, true);
+
+        // [THEN] Verify Sustainability Ledger Entry has positive emission.
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedInvoiceNo);
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.FindFirst();
+        Assert.AreEqual(
+            EmissionCO2,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), EmissionCO2, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            EmissionCH4,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), EmissionCH4, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            EmissionN2O,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), EmissionN2O, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyNegativeEmissionForChargeItemOnPostedPurchaseReturnOrder()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseHeader2: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseLine2: Record "Purchase Line";
+        ReturnShipmentLine: Record "Return Shipment Line";
+        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedCrMemoNo: Code[20];
+        ItemNo: Code[20];
+    begin
+        // [SCENARIO 581746] Verify Sustainability Ledger Entry has negative emission when charge item is assigned to Return Shipment via Purchase Return Order.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create and Post Purchase Return Order with Item.
+        ItemNo := LibraryInventory.CreateItemNo();
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::"Return Order", LibraryPurchase.CreateVendorNo());
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, ItemNo, LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Modify();
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Find Return Shipment Line.
+        ReturnShipmentLine.SetRange("Return Order No.", PurchaseHeader."No.");
+        ReturnShipmentLine.SetRange("No.", ItemNo);
+        ReturnShipmentLine.FindFirst();
+
+        // [GIVEN] Create Purchase Return Order with Charge Item and Sustainability.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader2, "Purchase Document Type"::"Return Order", PurchaseHeader."Buy-from Vendor No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine2, PurchaseHeader2, "Purchase Line Type"::"Charge (Item)", LibraryInventory.CreateItemChargeNo(), LibraryRandom.RandInt(10));
+        PurchaseLine2.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine2.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine2.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine2.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine2.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine2.Modify();
+
+        // [GIVEN] Assign Item Charge to Return Shipment.
+        LibraryInventory.CreateItemChargeAssignPurchase(
+            ItemChargeAssignmentPurch, PurchaseLine2,
+            ItemChargeAssignmentPurch."Applies-to Doc. Type"::"Return Shipment",
+            ReturnShipmentLine."Document No.", ReturnShipmentLine."Line No.", ReturnShipmentLine."No.");
+
+        // [WHEN] Post Purchase Return Order with Charge Item.
+        PostedCrMemoNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader2, true, true);
+
+        // [THEN] Verify Sustainability Ledger Entry has negative emission.
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedCrMemoNo);
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.FindFirst();
+        Assert.AreEqual(
+            -EmissionCO2,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), -EmissionCO2, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            -EmissionCH4,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), -EmissionCH4, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            -EmissionN2O,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), -EmissionN2O, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyEmissionRemovedForChargeItemWhenPurchInvoiceIsCancelled()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseHeader2: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseLine2: Record "Purchase Line";
+        PurchRcptLine: Record "Purch. Rcpt. Line";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+        ItemNo: Code[20];
+    begin
+        // [SCENARIO 581746] Verify Sustainability Ledger Entry emissions are removed when Purchase Invoice with charge item is cancelled.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create Purchase Order with Item.
+        ItemNo := LibraryInventory.CreateItemNo();
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, ItemNo, LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Modify();
+
+        // [GIVEN] Post Purchase Order.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Find Purchase Receipt Line.
+        PurchRcptLine.SetRange("Order No.", PurchaseHeader."No.");
+        PurchRcptLine.SetRange("No.", ItemNo);
+        PurchRcptLine.FindFirst();
+
+        // [GIVEN] Create Purchase Order with Charge Item and Sustainability.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader2, "Purchase Document Type"::Order, PurchaseHeader."Buy-from Vendor No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine2, PurchaseHeader2, "Purchase Line Type"::"Charge (Item)", LibraryInventory.CreateItemChargeNo(), LibraryRandom.RandInt(10));
+        PurchaseLine2.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine2.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine2.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine2.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine2.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine2.Modify();
+
+        // [GIVEN] Assign Item Charge to Purchase Receipt.
+        LibraryInventory.CreateItemChargeAssignPurchase(
+            ItemChargeAssignmentPurch, PurchaseLine2,
+            ItemChargeAssignmentPurch."Applies-to Doc. Type"::Receipt,
+            PurchRcptLine."Document No.", PurchRcptLine."Line No.", PurchRcptLine."No.");
+
+        // [GIVEN] Update Reason Code in Purchase Header.
+        UpdateReasonCodeinPurchaseHeader(PurchaseHeader2);
+
+        // [GIVEN] Post Purchase Order with Charge Item.
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader2, true, true);
+
+        // [WHEN] Cancel Posted Purchase Invoice.
+        PurchaseInvoiceHeader.Get(PostedInvoiceNo);
+        CorrectPostedPurchInvoice.CancelPostedInvoice(PurchaseInvoiceHeader);
+
+        // [THEN] Verify Sustainability Ledger Entry emissions are removed.
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.CalcSums("Emission CO2", "Emission CH4", "Emission N2O");
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyEmissionRemovedForChargeItemWhenCorrectiveCrMemoIsPosted()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseHeader2: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseLine2: Record "Purchase Line";
+        PurchRcptLine: Record "Purch. Rcpt. Line";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedInvoiceNo: Code[20];
+        ItemNo: Code[20];
+    begin
+        // [SCENARIO 581746] Verify Sustainability Ledger Entry emissions are removed when corrective credit memo for Purchase Invoice with charge item is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create Purchase Order with Item.
+        ItemNo := LibraryInventory.CreateItemNo();
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, ItemNo, LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Modify();
+
+        // [GIVEN] Post Purchase Order.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Find Purchase Receipt Line.
+        PurchRcptLine.SetRange("Order No.", PurchaseHeader."No.");
+        PurchRcptLine.SetRange("No.", ItemNo);
+        PurchRcptLine.FindFirst();
+
+        // [GIVEN] Create Purchase Order with Charge Item and Sustainability.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader2, "Purchase Document Type"::Order, PurchaseHeader."Buy-from Vendor No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine2, PurchaseHeader2, "Purchase Line Type"::"Charge (Item)", LibraryInventory.CreateItemChargeNo(), LibraryRandom.RandInt(10));
+        PurchaseLine2.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine2.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine2.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine2.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine2.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine2.Modify();
+
+        // [GIVEN] Assign Item Charge to Purchase Receipt.
+        LibraryInventory.CreateItemChargeAssignPurchase(
+            ItemChargeAssignmentPurch, PurchaseLine2,
+            ItemChargeAssignmentPurch."Applies-to Doc. Type"::Receipt,
+            PurchRcptLine."Document No.", PurchRcptLine."Line No.", PurchRcptLine."No.");
+
+        // [GIVEN] Update Reason Code in Purchase Header.
+        UpdateReasonCodeinPurchaseHeader(PurchaseHeader2);
+
+        // [GIVEN] Post Purchase Order with Charge Item.
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader2, true, true);
+        PurchaseInvoiceHeader.Get(PostedInvoiceNo);
+
+        // [WHEN] Create and Post Corrective Credit Memo.
+        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader2);
+        PurchaseHeader2.Validate("Vendor Cr. Memo No.", LibraryRandom.RandText(10));
+        PurchaseHeader2.Modify();
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader2, true, true);
+
+        // [THEN] Verify Sustainability Ledger Entry emissions are removed.
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        SustainabilityLedgerEntry.CalcSums("Emission CO2", "Emission CH4", "Emission N2O");
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CO2",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission CH4",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), 0, SustainabilityLedgerEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityLedgerEntry."Emission N2O",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), 0, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
     local procedure Initialize()
     var
         InventorySetup: Record "Inventory Setup";
@@ -1312,5 +1973,15 @@ codeunit 148210 "Sust. Item Chrg Assign. Test"
         LibrarySustainability.InsertAccountCategory(
             CategoryCode, CategoryCode, Enum::"Emission Scope"::"Scope 1", Enum::"Calculation Foundation"::"Fuel/Electricity",
             true, true, true, '', false);
+    end;
+
+    local procedure UpdateReasonCodeinPurchaseHeader(var PurchaseHeader: Record "Purchase Header")
+    var
+        ReasonCode: Record "Reason Code";
+    begin
+        LibraryERM.CreateReasonCode(ReasonCode);
+
+        PurchaseHeader.Validate("Reason Code", ReasonCode.Code);
+        PurchaseHeader.Modify();
     end;
 }

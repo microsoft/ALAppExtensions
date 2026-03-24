@@ -5,6 +5,7 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.Finance.VAT.Clause;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
@@ -18,6 +19,7 @@ codeunit 31219 "Contoso Posting Setup CZ"
         tabledata "VAT Clause" = rim;
 
     var
+        CreateVatPostingGroups: Codeunit "Create Vat Posting Groups";
         VATSetupDescTok: Label 'Setup for %1 / %2', MaxLength = 100, Comment = '%1 is the VAT Bus. Posting Group Code, %2 is the VAT Prod. Posting Group Code';
         OverwriteData: Boolean;
 
@@ -71,6 +73,8 @@ codeunit 31219 "Contoso Posting Setup CZ"
         end;
         if VATPostingSetup."VAT Calculation Type" = VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT" then
             VATPostingSetup.Validate("Reverse Chrg. VAT Acc.", ReverseChargeVATUnrealAcc);
+        if VATPostingSetup."VAT Bus. Posting Group" = CreateVatPostingGroups.EU() then
+            VATPostingSetup.Validate("VIES Sales CZL", true);
 
         VATPostingSetup.Validate("VAT Rate CZL", VATRate);
         VATPostingSetup.Validate("VAT Clause Code", VATClauseCode);

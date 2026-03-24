@@ -81,7 +81,14 @@ codeunit 11756 "Registration No. Mgt. CZL"
     end;
 
     local procedure CheckContactDuplicity(RegNo: Text[20]; Number: Code[20]; IsTax: Boolean)
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCheckContactDuplicity(RegNo, Number, IsTax, IsHandled);
+        if IsHandled then
+            exit;
+
         if not IsTax then
             Contact.SetRange("Registration Number", RegNo)
         else
@@ -115,5 +122,10 @@ codeunit 11756 "Registration No. Mgt. CZL"
         if not IsTax then
             exit(Contact.FieldCaption("Registration Number"));
         exit(Contact.FieldCaption("Tax Registration No. CZL"));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckContactDuplicity(RegNo: Text[20]; Number: Code[20]; IsTax: Boolean; var IsHandled: Boolean)
+    begin
     end;
 }

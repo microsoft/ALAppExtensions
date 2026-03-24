@@ -52,16 +52,16 @@ page 7415 "Excise Tax Type Card"
         {
             action("Configure Rates")
             {
-                Caption = 'Configure Entry Permissions';
-                ToolTip = 'Configure entry type permissions for this tax type.';
+                Caption = 'Configure Entry Types';
+                ToolTip = 'Configure entry types for this tax type.';
                 Image = Setup;
                 RunObject = Page "Excise Tax Entry Permissions";
                 RunPageLink = "Excise Tax Type Code" = field(Code);
             }
             action("Item/FA Rates")
             {
-                Caption = 'Item/FA Rates';
-                ToolTip = 'Configure tax rates for specific items and fixed assets.';
+                Caption = 'Excise Duty Rates';
+                ToolTip = 'Configure excise duty rates for specific items and fixed assets.';
                 Image = Setup;
                 RunObject = Page "Excise Tax Item/FA Rates";
                 RunPageLink = "Excise Tax Type Code" = field(Code);

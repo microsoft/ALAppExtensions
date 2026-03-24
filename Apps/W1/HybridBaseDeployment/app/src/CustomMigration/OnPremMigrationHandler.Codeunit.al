@@ -13,6 +13,7 @@ codeunit 40035 "OnPrem Migration Handler"
     InherentEntitlements = X;
     InherentPermissions = X;
     Access = Internal;
+    EventSubscriberInstance = Manual;
 
     var
         GlobalProductId: Text;
@@ -61,12 +62,9 @@ codeunit 40035 "OnPrem Migration Handler"
 
     local procedure CanHandle(): Boolean
     var
-        HybridDeploymentSetup: Record "Hybrid Deployment Setup";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if HybridDeploymentSetup.Get() then
-            exit(HybridDeploymentSetup."Handler Codeunit ID" = Codeunit::"OnPrem Migration Handler");
-
-        exit(false);
+        exit(not EnvironmentInformation.IsSaaSInfrastructure());
     end;
 
     [Scope('OnPrem')]

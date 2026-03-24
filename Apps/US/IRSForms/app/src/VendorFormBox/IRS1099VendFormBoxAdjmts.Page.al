@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ page 10054 "IRS 1099 Vend. Form Box Adjmts"
     Caption = 'IRS 1099 Vendor Form Box Adjustments';
     PageType = List;
     SourceTable = "IRS 1099 Vendor Form Box Adj.";
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     UsageCategory = Administration;
     DelayedInsert = true;
 

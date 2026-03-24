@@ -161,7 +161,7 @@ table 4003 "Intelligent Cloud Setup"
         }
         field(27; "Custom Migration Enabled"; Boolean)
         {
-            Description = 'Specifies if custom migration is enabled.';
+            Description = 'Specifies if custom migration is enabled. This is a no-code migration.';
             DataClassification = SystemMetadata;
         }
         field(28; "Custom Migration Provider"; Enum "Custom Migration Provider")

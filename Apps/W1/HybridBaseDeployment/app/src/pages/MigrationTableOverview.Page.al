@@ -100,6 +100,7 @@ page 40034 "Migration Table Overview"
                     Caption = 'Total records - Source table';
                     BlankZero = true;
                     Editable = false;
+                    Visible = ShowRecordCounts;
                 }
                 field("Total records - Target table"; Rec."Total records - Target Table")
                 {
@@ -107,6 +108,7 @@ page 40034 "Migration Table Overview"
                     Caption = 'Total records - Target table';
                     BlankZero = true;
                     Editable = false;
+                    Visible = ShowRecordCounts;
                 }
                 field("Target difference to Source"; Rec."Target difference to Source")
                 {
@@ -114,6 +116,7 @@ page 40034 "Migration Table Overview"
                     Caption = 'Difference between target and source';
                     BlankZero = true;
                     Editable = false;
+                    Visible = ShowRecordCounts;
                 }
 
                 field("Number of replications"; Rec."Replication Count")
@@ -144,6 +147,9 @@ page 40034 "Migration Table Overview"
         if Rec.Status = Rec.Status::Failed then
             StatusExpr := 'Unfavorable';
 
+        if not ShowRecordCounts then
+            exit;
+
         HybridReplicationDetail.SetRange("Company Name", Rec."Company Name");
         HybridReplicationDetail.SetRange("Table Name", Rec."Table Name");
         HybridReplicationDetail.SetFilter("Total Records", '>0');
@@ -172,6 +178,7 @@ page 40034 "Migration Table Overview"
         if CompanyFilterDisplayName = '' then
             CompanyFilterDisplayName := HybridReplicationStatistics.GetAllCompaniesLbl();
 
+        ShowRecordCounts := GetShowRecordCounts();
         if Rec.FindFirst() then;
     end;
 
@@ -186,10 +193,23 @@ page 40034 "Migration Table Overview"
             Rec.SetRange("Company Name", CompanyFilterDisplayName);
     end;
 
+    local procedure GetShowRecordCounts(): Boolean
+    var
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+    begin
+        if HybridCloudManagement.IsCustomMigrationEnabled() then
+            exit(false);
+
+        HybridReplicationDetail.SetFilter("Records Copied", '>0');
+        exit(not HybridReplicationDetail.IsEmpty());
+    end;
+
     var
         AllObj: Record AllObj;
         CouldNotReadTargetTableCountLbl: Label 'The total of records in the target table is unavailable since the table is protected, so it isn''t possible to calculate if there is a difference to the source table. Instead, check the number of records that were migrated in the last run.';
         CompanyFilterDisplayName: Text;
         TableNameFilter: Text;
         StatusExpr: Text;
+        ShowRecordCounts: Boolean;
 }

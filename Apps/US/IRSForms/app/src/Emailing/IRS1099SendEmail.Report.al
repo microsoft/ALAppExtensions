@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ using System.Threading;
 
 report 10033 "IRS 1099 Send Email"
 {
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     ProcessingOnly = true;
 
     dataset
@@ -32,7 +32,7 @@ report 10033 "IRS 1099 Send Email"
                     ShowCaption = false;
                     field(ReportTypeField; ReportType)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Report Type';
                         ToolTip = 'Specifies the 1099 report type to send in the email. Note that only documents with status Submitted will be processed.';
 
@@ -43,7 +43,7 @@ report 10033 "IRS 1099 Send Email"
                     }
                     field(ResendEmailField; ResendEmail)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Visible = ResendEmailVisible;
                         Caption = 'Resend Email';
 #pragma warning disable AA0219

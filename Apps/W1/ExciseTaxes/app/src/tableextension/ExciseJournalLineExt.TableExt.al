@@ -68,7 +68,7 @@ tableextension 7413 "Excise Journal Line Ext" extends "Sust. Excise Jnl. Line"
         field(7416; "Excise Duty"; Decimal)
         {
             AutoFormatType = 0;
-            Caption = 'Excise Duty';
+            Caption = 'Excise Duty Rate';
             DecimalPlaces = 2 : 5;
             MinValue = 0;
             DataClassification = CustomerContent;

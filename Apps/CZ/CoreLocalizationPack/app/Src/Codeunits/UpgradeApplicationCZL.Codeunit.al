@@ -653,7 +653,7 @@ codeunit 31017 "Upgrade Application CZL"
             exit;
 
         VATEntry.SetFilter("Non-Deductible VAT %", '<>%1', 0);
-        VATEntry.SetLoadFields("Entry No.", "Additional-Currency Base", "Additional-Currency Amount", "Non-Deductible VAT Base ACY", "Non-Deductible VAT Amount ACY");
+        VATEntry.SetLoadFields("Entry No.", "Additional-Currency Base", "Additional-Currency Amount", "Non-Deductible VAT Base ACY", "Non-Deductible VAT Amount ACY", "Original VAT Base ACY CZL", "Original VAT Amount ACY CZL");
         if VATEntry.FindSet() then
             repeat
                 VATEntry."Original VAT Base ACY CZL" := VATEntry.CalcOriginalVATBaseACYCZL();

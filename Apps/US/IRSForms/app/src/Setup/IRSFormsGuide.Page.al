@@ -13,7 +13,7 @@ page 10032 "IRS Forms Guide"
 {
     PageType = NavigatePage;
     RefreshOnActivate = true;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     SourceTable = "IRS Forms Setup";
 
     layout
@@ -56,6 +56,7 @@ page 10032 "IRS Forms Guide"
 
                     field(ReportingYearControl; Rec."Init Reporting Year")
                     {
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Reporting Year';
                         ShowMandatory = true;
                         BlankZero = true;
@@ -237,18 +238,22 @@ page 10032 "IRS Forms Guide"
                     InstructionalText = 'Specify how the IRS Forms feature will be used in your company.';
                     field("Collect Details For Line"; Rec."Collect Details For Line")
                     {
+                        ApplicationArea = BasicCA, BasicUS;
                         ToolTip = 'Specifies if the mapping between the IRS 1099 Form Line and associated vendor ledger entries must be kept. That will allow you to drill-down into the Amount field, but requires an extra space in the database.';
                     }
                     field("Protect TIN"; Rec."Protect TIN")
                     {
+                        ApplicationArea = BasicCA, BasicUS;
                         ToolTip = 'Specifies if the TIN of the vendor/company must be protected when printing reports.';
                     }
                     field("Business Name Control"; Rec."Business Name Control")
                     {
+                        ApplicationArea = BasicCA, BasicUS;
                         ToolTip = 'Specifies the business name control that must match the one in the IRS''s National Account Profile (NAP) database. Generally, it can be up to the first four alphanumeric characters of the business''s legal name.';
                     }
                     field("API Client ID"; Rec."IRIS API Client ID")
                     {
+                        ApplicationArea = BasicCA, BasicUS;
                         ToolTip = 'Specifies the GUID that is used to authenticate and authorize access to the IRS''s Information Returns Intake System (IRIS) API.';
                     }
                 }
@@ -371,6 +376,7 @@ page 10032 "IRS Forms Guide"
         ReviewDataLinkTok: Label 'Review affected data';
 #endif
         SetupNotCompletedQst: Label 'Set up of IRS Forms has not been completed.\\Are you sure that you want to exit?';
+        ReportingYearMustBeSpecifiedErr: Label 'You must specify the reporting year.';
         IRSFormsTok: Label 'IRS Forms', Locked = true;
 
     local procedure EnableControls();
@@ -393,6 +399,8 @@ page 10032 "IRS Forms Guide"
     var
         GuidedExperience: Codeunit "Guided Experience";
     begin
+        if Rec."Init Reporting Year" = 0 then
+            Error(ReportingYearMustBeSpecifiedErr);
         SetupCompleted := true;
         Commit();
         IRSFormsData.AddReportingPeriodsWithForms(Rec."Init Reporting Year");
