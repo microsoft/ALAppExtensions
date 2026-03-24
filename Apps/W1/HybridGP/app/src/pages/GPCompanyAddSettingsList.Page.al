@@ -153,6 +153,12 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specify whether to migrate kit items.';
                     ApplicationArea = All;
                 }
+                field("Item Desc. 2 Source"; Rec."Item Desc. 2 Source")
+                {
+                    Caption = 'Item Desc. 2 Src';
+                    ToolTip = 'Specifies whether Short Description or Generic Description populates Item Description 2 field.';
+                    ApplicationArea = All;
+                }
                 field("Migrate Customer Classes"; Rec."Migrate Customer Classes")
                 {
                     Caption = 'Customer Classes';

@@ -487,6 +487,10 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Receivables Module", true);
             end;
         }
+        field(47; "Item Desc. 2 Source"; enum "GP Item Desc. 2 Source")
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys
@@ -703,6 +707,12 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Oldest GL Year to Migrate");
+    end;
+
+    procedure GetItemDesc2Source(): enum "GP Item Desc. 2 Source"
+    begin
+        GetSingleInstance();
+        exit(Rec."Item Desc. 2 Source");
     end;
 
     // Historical Transactions

@@ -280,8 +280,8 @@ codeunit 40108 "GP PO Migrator"
         PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
         PurchaseLine."Unit of Measure" := UnitOfMeasure;
         PurchaseLine."Unit of Measure Code" := UnitOfMeasure;
-        PurchaseLine."Location Code" := LocationCode;
         PurchaseLine.Validate("No.", ItemNo);
+        PurchaseLine."Location Code" := LocationCode;
         PurchaseLine."Posting Group" := GPCodeTxt;
         PurchaseLine.Validate("Expected Receipt Date", GPPOP10110.PRMDATE);
         PurchaseLine.Description := CopyStr(GPPOP10110.ITEMDESC.Trim(), 1, MaxStrLen(PurchaseLine.Description));
