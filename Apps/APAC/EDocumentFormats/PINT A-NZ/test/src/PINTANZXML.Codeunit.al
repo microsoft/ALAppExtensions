@@ -246,6 +246,38 @@ codeunit 148004 "PINT A-NZ XML"
         VerifyNumberOfLines(TempXMLBuffer, '/Invoice', NumberOfLines);
     end;
 
+    [Test]
+    procedure ImportInvoice_ParseBasicInfo()
+    var
+        EDocument: Record "E-Document";
+    begin
+        // [SCENARIO] Import PINT A-NZ invoice with standard namespace and verify basic info is parsed correctly
+        Initialize();
+
+        // [GIVEN] A PINT A-NZ invoice XML with standard namespace (root element: <Invoice>)
+        // [WHEN] ParseBasicInfo is called
+        ImportInvoiceFromResource(EDocument, 'pint-anz/pint-anz-invoice.xml');
+
+        // [THEN] Basic info is parsed correctly
+        VerifyImportedBasicInfo(EDocument);
+    end;
+
+    [Test]
+    procedure ImportInvoice_NamespacePrefixedRootElement()
+    var
+        EDocument: Record "E-Document";
+    begin
+        // [SCENARIO] Import PINT A-NZ invoice with namespace-prefixed root element and verify basic info is parsed correctly
+        Initialize();
+
+        // [GIVEN] A PINT A-NZ invoice XML with prefixed namespace (root element: <ubl:Invoice>)
+        // [WHEN] ParseBasicInfo is called
+        ImportInvoiceFromResource(EDocument, 'pint-anz/pint-anz-invoice-prefixed-ns.xml');
+
+        // [THEN] Basic info is parsed correctly regardless of namespace prefix
+        VerifyImportedBasicInfo(EDocument);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"PINT A-NZ XML");
@@ -482,5 +514,29 @@ codeunit 148004 "PINT A-NZ XML"
         TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
         TempXMLBuffer.SetRange(Path, DocumentPrefix + InvoiceLineTok);
         Assert.RecordCount(TempXMLBuffer, NumberOfLines);
+    end;
+
+    local procedure ImportInvoiceFromResource(var EDocument: Record "E-Document"; ResourcePath: Text)
+    var
+        PINTANZImport: Codeunit "PINT A-NZ Import";
+        TempBlob: Codeunit "Temp Blob";
+        OutStream: OutStream;
+    begin
+        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+        OutStream.WriteText(NavApp.GetResourceAsText(ResourcePath));
+        PINTANZImport.ParseBasicInfo(EDocument, TempBlob);
+    end;
+
+    local procedure VerifyImportedBasicInfo(EDocument: Record "E-Document")
+    begin
+        Assert.AreEqual(EDocument."Document Type"::"Purchase Invoice", EDocument."Document Type", 'Document Type should be Purchase Invoice');
+        Assert.AreEqual('INV-001', EDocument."Incoming E-Document No.", 'Incoming E-Document No. should match');
+        Assert.AreEqual(DMY2Date(15, 1, 2026), EDocument."Document Date", 'Document Date should match');
+        Assert.AreEqual(DMY2Date(15, 2, 2026), EDocument."Due Date", 'Due Date should match');
+        Assert.AreEqual(1500, EDocument."Amount Excl. VAT", 'Amount Excl. VAT should match');
+        Assert.AreEqual(1650, EDocument."Amount Incl. VAT", 'Amount Incl. VAT should match');
+        Assert.AreEqual('PO-001', EDocument."Order No.", 'Order No. should match');
+        Assert.AreEqual('Buyer Pty Ltd', EDocument."Receiving Company Name", 'Receiving Company Name should match');
+        Assert.AreEqual('200 George Street', EDocument."Receiving Company Address", 'Receiving Company Address should match');
     end;
 }
