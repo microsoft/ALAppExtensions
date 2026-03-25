@@ -72,7 +72,7 @@ codeunit 13916 "Export XRechnung Document"
         RecordRef.SetTable(SalesInvoiceHeader);
 
         FindEDocumentService(RecordExportBuffer."Electronic Document Format");
-        CheckShouldIncludeTwoDecimalPlacesForAmountFields();
+        InitializeDecimalFormatFlags();
         RecordExportBuffer."File Content".CreateOutStream(FileOutStream, TextEncoding::UTF8);
         CreateXML(SalesInvoiceHeader, FileOutStream);
         RecordExportBuffer.Modify();
@@ -90,7 +90,7 @@ codeunit 13916 "Export XRechnung Document"
         RecordRef.SetTable(SalesCrMemoHeader);
 
         FindEDocumentService(RecordExportBuffer."Electronic Document Format");
-        CheckShouldIncludeTwoDecimalPlacesForAmountFields();
+        InitializeDecimalFormatFlags();
         RecordExportBuffer."File Content".CreateOutStream(FileOutStream, TextEncoding::UTF8);
         CreateXML(SalesCrMemoHeader, FileOutStream);
         RecordExportBuffer.Modify();
@@ -108,7 +108,7 @@ codeunit 13916 "Export XRechnung Document"
         RecordRef.SetTable(ServiceInvoiceHeader);
 
         FindEDocumentService(RecordExportBuffer."Electronic Document Format");
-        CheckShouldIncludeTwoDecimalPlacesForAmountFields();
+        InitializeDecimalFormatFlags();
         RecordExportBuffer."File Content".CreateOutStream(FileOutStream, TextEncoding::UTF8);
         CreateXML(ServiceInvoiceHeader, FileOutStream);
         RecordExportBuffer.Modify();
@@ -126,7 +126,7 @@ codeunit 13916 "Export XRechnung Document"
         RecordRef.SetTable(ServiceCrMemoHeader);
 
         FindEDocumentService(RecordExportBuffer."Electronic Document Format");
-        CheckShouldIncludeTwoDecimalPlacesForAmountFields();
+        InitializeDecimalFormatFlags();
         RecordExportBuffer."File Content".CreateOutStream(FileOutStream, TextEncoding::UTF8);
         CreateXML(ServiceCrMemoHeader, FileOutStream);
         RecordExportBuffer.Modify();
@@ -1362,10 +1362,10 @@ codeunit 13916 "Export XRechnung Document"
         OnAfterFindEDocumentService(EDocumentService, EDocumentFormat);
     end;
 
-    local procedure CheckShouldIncludeTwoDecimalPlacesForAmountFields()
+    local procedure InitializeDecimalFormatFlags()
     begin
         AlwaysIncludeTwoDecimalPlacesForAmountFields := false;
-        OnCheckShouldIncludeTwoDecimalPlacesForAmountFields(AlwaysIncludeTwoDecimalPlacesForAmountFields);
+        OnInitializeDecimalFormatFlags(AlwaysIncludeTwoDecimalPlacesForAmountFields);
     end;
 
     #region CommonFunctions
@@ -1647,7 +1647,7 @@ codeunit 13916 "Export XRechnung Document"
     /// </summary>
     /// <param name="AlwaysIncludeTwoDecimalPlacesForAmountFields">Set to true to force all amount fields to include two decimal places (e.g. 1.10 instead of 1.1)</param>
     [IntegrationEvent(false, false)]
-    local procedure OnCheckShouldIncludeTwoDecimalPlacesForAmountFields(var AlwaysIncludeTwoDecimalPlacesForAmountFields: Boolean)
+    local procedure OnInitializeDecimalFormatFlags(var AlwaysIncludeTwoDecimalPlacesForAmountFields: Boolean)
     begin
     end;
 }
