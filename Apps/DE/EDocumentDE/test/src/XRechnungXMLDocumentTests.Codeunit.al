@@ -1449,6 +1449,38 @@ codeunit 13918 "XRechnung XML Document Tests"
         // [WHEN/THEN] A value with two decimal places is unchanged
         Assert.AreEqual('1.23', ExportXRechnungDocument.FormatDecimal(1.23, false), 'FormatDecimal(1.23, false) should return ''1.23''');
     end;
+
+    [Test]
+    procedure FormatDecimalUnlimitedWithMinTwoDecimalsReturnsTrailingZero();
+    begin
+        // [SCENARIO] FormatDecimalUnlimited with IncludeMinTwoDecimals = true ensures minimum two decimal places while preserving extended precision
+        Initialize();
+
+        // [WHEN/THEN] A value with one significant decimal place gets the trailing zero
+        Assert.AreEqual('1.10', ExportXRechnungDocument.FormatDecimalUnlimited(1.1, true), 'FormatDecimalUnlimited(1.1, true) should return ''1.10''');
+        // [WHEN/THEN] A whole number gets two decimal zeros
+        Assert.AreEqual('1.00', ExportXRechnungDocument.FormatDecimalUnlimited(1, true), 'FormatDecimalUnlimited(1, true) should return ''1.00''');
+        // [WHEN/THEN] A value with two decimal places is unchanged
+        Assert.AreEqual('1.23', ExportXRechnungDocument.FormatDecimalUnlimited(1.23, true), 'FormatDecimalUnlimited(1.23, true) should return ''1.23''');
+        // [WHEN/THEN] A value with extended decimal places preserves full precision
+        Assert.AreEqual('5.12345', ExportXRechnungDocument.FormatDecimalUnlimited(5.12345, true), 'FormatDecimalUnlimited(5.12345, true) should return ''5.12345''');
+    end;
+
+    [Test]
+    procedure FormatDecimalUnlimitedWithoutMinTwoDecimalsUnbounded();
+    begin
+        // [SCENARIO] FormatDecimalUnlimited with IncludeMinTwoDecimals = false uses unlimited precision without minimum decimal places
+        Initialize();
+
+        // [WHEN/THEN] A value with one significant decimal place has no trailing zero
+        Assert.AreEqual('1.1', ExportXRechnungDocument.FormatDecimalUnlimited(1.1, false), 'FormatDecimalUnlimited(1.1, false) should return ''1.1''');
+        // [WHEN/THEN] A whole number has no decimal places
+        Assert.AreEqual('1', ExportXRechnungDocument.FormatDecimalUnlimited(1, false), 'FormatDecimalUnlimited(1, false) should return ''1''');
+        // [WHEN/THEN] A value with two decimal places is unchanged
+        Assert.AreEqual('1.23', ExportXRechnungDocument.FormatDecimalUnlimited(1.23, false), 'FormatDecimalUnlimited(1.23, false) should return ''1.23''');
+        // [WHEN/THEN] A value with extended decimal places preserves full precision
+        Assert.AreEqual('5.12345', ExportXRechnungDocument.FormatDecimalUnlimited(5.12345, false), 'FormatDecimalUnlimited(5.12345, false) should return ''5.12345''');
+    end;
     #endregion
 
     local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];

@@ -609,7 +609,7 @@ codeunit 13916 "Export XRechnung Document"
         PriceElement: XmlElement;
     begin
         PriceElement := XmlElement.Create('Price', XmlNamespaceCAC);
-        PriceElement.Add(XmlElement.Create('PriceAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimalUnlimited(UnitPrice)));
+        PriceElement.Add(XmlElement.Create('PriceAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimalUnlimited(UnitPrice, AlwaysIncludeTwoDecimalPlacesForAmountFields)));
         RootElement.Add(PriceElement);
     end;
 
@@ -1394,7 +1394,15 @@ codeunit 13916 "Export XRechnung Document"
 
     procedure FormatDecimalUnlimited(VarDecimal: Decimal): Text
     begin
-        exit(Format(VarDecimal, 0, 9));
+        exit(FormatDecimalUnlimited(VarDecimal, false));
+    end;
+
+    procedure FormatDecimalUnlimited(VarDecimal: Decimal; IncludeMinTwoDecimals: Boolean): Text
+    begin
+        if IncludeMinTwoDecimals then
+            exit(Format(VarDecimal, 0, '<Precision,2:><Standard Format,9>'))
+        else
+            exit(Format(VarDecimal, 0, 9));
     end;
 
 #if not CLEAN29
