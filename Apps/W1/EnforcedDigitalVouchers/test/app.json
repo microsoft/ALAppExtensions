@@ -20,6 +20,12 @@
       "version": "29.0.0.0"
     },
     {
+      "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+      "name": "E-Document Core",
+      "publisher": "Microsoft",
+      "version": "28.0.0.0"
+    },
+    {
       "id": "928f7b70-0dbd-431a-beb5-f45c4adbd361",
       "name": "Enforced Digital Vouchers Test Library",
       "publisher": "Microsoft",
@@ -48,6 +54,10 @@
     {
       "from": 139515,
       "to": 139516
+    },
+    {
+      "from": 139649,
+      "to": 139649
     }
   ],
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2141039",
