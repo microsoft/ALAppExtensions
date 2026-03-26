@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -298,7 +298,7 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment.SetRange("Posting Date", EDocument."Posting Date");
         IncomingDocumentAttachment.SetContentFromBlob(TempBlob);
         if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, StrSubstNo(FileNameTok, RecordLinkTxt), TempBlob) then begin
-            FeatureTelemetry.LogError('', 'E-Documents', 'AttachIncomingEDocument', GetLastErrorText(true), GetLastErrorCallStack());
+            FeatureTelemetry.LogError('0000SMC', 'E-Documents', 'AttachIncomingEDocument', GetLastErrorText(true), GetLastErrorCallStack());
             exit;
         end;
 
@@ -364,7 +364,7 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment.SetRange("Posting Date", PostingDate);
         IncomingDocumentAttachment.SetContentFromBlob(TempBlob);
         if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, TempBlob) then begin
-            FeatureTelemetry.LogError('', 'E-Documents', 'AttachPurchaseEDocument', GetLastErrorText(true), GetLastErrorCallStack());
+            FeatureTelemetry.LogError('0000SMD', 'E-Documents', 'AttachPurchaseEDocument', GetLastErrorText(true), GetLastErrorCallStack());
             exit;
         end;
 
@@ -387,7 +387,7 @@ codeunit 5579 "Digital Voucher Impl."
     begin
         TempBlob.CreateInStream(PdfInStream);
         if not PDFDocument.GetDocumentAttachmentStream(PdfInStream, ExtractedXmlBlob) then begin
-            FeatureTelemetry.LogError('', 'E-Documents', 'ExtractXMLFromPDF', GetLastErrorText(true), GetLastErrorCallStack());
+            FeatureTelemetry.LogError('0000SME', 'E-Documents', 'ExtractXMLFromPDF', GetLastErrorText(true), GetLastErrorCallStack());
             exit;
         end;
 
@@ -397,7 +397,7 @@ codeunit 5579 "Digital Voucher Impl."
         IncomingDocumentAttachment.Default := false;
         IncomingDocumentAttachment."Main Attachment" := false;
         if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, ExtractedXmlBlob) then begin
-            FeatureTelemetry.LogError('', 'E-Documents', 'ExtractXMLFromPDF', GetLastErrorText(true), GetLastErrorCallStack());
+            FeatureTelemetry.LogError('0000SMF', 'E-Documents', 'ExtractXMLFromPDF', GetLastErrorText(true), GetLastErrorCallStack());
             exit;
         end;
 
