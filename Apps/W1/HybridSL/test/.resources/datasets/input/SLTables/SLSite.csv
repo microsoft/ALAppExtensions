@@ -1,0 +1,7 @@
+﻿SiteId,Addr1,Addr2,City,CpnyID,Fax,Name,Phone,Zip
+200       ,,,,CRONUS USA,,Building 200                  ,,
+400       ,,,,CRONUS USA,,Building 400                  ,,
+CH        ,12345 Main                                                  ,,Chicago                       ,CRONUS USA,3125550101                    ,Chicago                       ,3125550100                    ,019010    
+LA        ,1 World Way                                                 ,,Los Angeles                   ,CRONUS USA,5555550151                    ,Los Angeles                   ,5555550150                    ,90045-5803
+NY        ,123 Avenue St                                               ,,New York                      ,CRONUS USA,5555550169                    ,New York                      ,5555550168                    ,45860     
+SF        ,324 Fifth Street                                            ,,San Francisco                 ,CRONUS USA,5555550198                    ,San Francisco                 ,5555550199                    ,01009     
