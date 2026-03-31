@@ -552,12 +552,11 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPPM00200Vendor: Record "GP PM00200";
         GPVendor: Record "GP Vendor";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPPM00200Vendor.SetFilter(VENDSTTS, '1|3');
-        if GPCompanyMigrationSettings.Get(CompanyName()) then
-            if GPCompanyMigrationSettings."Migrate Inactive Vendors" then
-                GPPM00200Vendor.SetRange(VENDSTTS);
+        if GPCompanyAdditionalSettings.GetMigrateInactiveVendors() then
+            GPPM00200Vendor.SetRange(VENDSTTS);
 
         if not GPPM00200Vendor.FindSet() then
             exit;
