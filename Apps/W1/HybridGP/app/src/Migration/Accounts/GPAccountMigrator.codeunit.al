@@ -1,6 +1,8 @@
 namespace Microsoft.DataMigration.GP;
 
+using Microsoft.Finance.AllocationAccount;
 using Microsoft.Finance.Analysis.StatisticalAccount;
+using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
@@ -18,6 +20,12 @@ codeunit 4017 "GP Account Migrator"
         MigrationLogAreaTxt: Label 'Account', Locked = true;
         FiscalYearMissingContextTxt: Label 'Account: %1, Year: %2', Locked = true;
         FiscalYearMissingMessageTxt: Label 'Could not migrate beginning balance because the fiscal year is missing.';
+        AllocationAccountMigrationCategoryTok: Label 'Allocation Account: %1', Comment = '%1 = Account Number';
+        AllocationAccountSkippedBecauseOfBreakdownIdxMissingErr: Label 'Allocation Account skipped because the breakdown account %1 is missing.', Comment = '%1 = GP Account Index';
+        AllocationAccountSkippedBecauseOfDistributionIdxMissingErr: Label 'Allocation Account skipped because the distribution account %1 is missing.', Comment = '%1 = GP Account Index';
+        AllocationAccountDistSkippedBecauseOfBreakdownGLMissingErr: Label 'Allocation Account Distribution skipped because the breakdown account %1 is not a G/L Account.', Comment = '%1 = Account Number';
+        AllocationAccountDistSkippedBecauseOfDistributionGLMissingErr: Label 'Allocation Account Distribution skipped because the distribution account %1 is not a G/L Account.', Comment = '%1 = Account Number';
+        AllocationAccountSkippedBecauseHasNonGLAccountErr: Label 'Allocation Account skipped because it contains a distribution or breakdown account that is not a posting account.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
     local procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
@@ -140,7 +148,7 @@ codeunit 4017 "GP Account Migrator"
         CreateBeginningBalance(GPAccount);
     end;
 
-    procedure CreateBeginningBalance(GPAccount: Record "GP Account")
+    procedure CreateBeginningBalance(var GPAccount: Record "GP Account")
     begin
         case GPAccount.AccountType of
             1:
@@ -150,7 +158,7 @@ codeunit 4017 "GP Account Migrator"
         end;
     end;
 
-    local procedure CreateGLAccountBeginningBalanceImp(GPAccount: Record "GP Account")
+    local procedure CreateGLAccountBeginningBalanceImp(var GPAccount: Record "GP Account")
     var
         GLAccount: Record "G/L Account";
         GPGL10111: Record "GP GL10111";
@@ -229,7 +237,7 @@ codeunit 4017 "GP Account Migrator"
         GenJournalLine.Modify(true);
     end;
 
-    local procedure CreateStatisticalAccountBeginningBalanceImp(GPAccount: Record "GP Account")
+    local procedure CreateStatisticalAccountBeginningBalanceImp(var GPAccount: Record "GP Account")
     var
         GPGL00100: Record "GP GL00100";
         GPGL10111: Record "GP GL10111";
@@ -317,7 +325,7 @@ codeunit 4017 "GP Account Migrator"
         StatisticalAccJournalLine.Modify(true);
     end;
 
-    procedure MigrateAccountDetails(GPAccount: Record "GP Account"; var GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
+    procedure MigrateAccountDetails(var GPAccount: Record "GP Account"; var GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
     begin
         case GPAccount.AccountType of
             1:
@@ -327,7 +335,7 @@ codeunit 4017 "GP Account Migrator"
         end;
     end;
 
-    local procedure MigrateGLAccountDetailsImp(GPAccount: Record "GP Account"; var GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
+    local procedure MigrateGLAccountDetailsImp(var GPAccount: Record "GP Account"; var GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
     var
         HelperFunctions: Codeunit "Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -347,7 +355,7 @@ codeunit 4017 "GP Account Migrator"
         GLAccDataMigrationFacade.ModifyGLAccount(true);
     end;
 
-    local procedure MigrateStatisticalAccountDetailsImp(GPAccount: Record "GP Account")
+    local procedure MigrateStatisticalAccountDetailsImp(var GPAccount: Record "GP Account")
     var
         StatisticalAccount: Record "Statistical Account";
         GeneralLedgerSetup: Record "General Ledger Setup";
@@ -372,7 +380,7 @@ codeunit 4017 "GP Account Migrator"
         StatisticalAccount.Insert(true);
     end;
 
-    procedure GenerateGLTransactionBatches(GPAccount: Record "GP Account")
+    procedure GenerateGLTransactionBatches(var GPAccount: Record "GP Account")
     begin
         case GPAccount.AccountType of
             1:
@@ -382,7 +390,7 @@ codeunit 4017 "GP Account Migrator"
         end;
     end;
 
-    local procedure GenerateGLAccountTransactionsImp(GPAccount: Record "GP Account")
+    local procedure GenerateGLAccountTransactionsImp(var GPAccount: Record "GP Account")
     var
         GPGLTransactions: Record "GP GLTransactions";
         GenJournalLine: Record "Gen. Journal Line";
@@ -434,7 +442,7 @@ codeunit 4017 "GP Account Migrator"
             until GPGLTransactions.Next() = 0;
     end;
 
-    local procedure GenerateStatisticalAccountTransactionsImp(GPAccount: Record "GP Account")
+    local procedure GenerateStatisticalAccountTransactionsImp(var GPAccount: Record "GP Account")
     var
         GPGLTransactions: Record "GP GLTransactions";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
@@ -489,5 +497,204 @@ codeunit 4017 "GP Account Migrator"
                     StatisticalAccJournalLine.Modify(true);
                 end;
             until GPGLTransactions.Next() = 0;
+    end;
+
+    internal procedure CreateAllocationAccounts()
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPAccount: Record "GP Account";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+    begin
+        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
+
+        GPAccount.SetRange(AccountType, 3);
+        if not GPCompanyAdditionalSettings.GetMigrateInactiveAllocationAccounts() then
+            GPAccount.SetRange(Active, true);
+
+        if not GPAccount.FindSet() then
+            exit;
+
+        repeat
+            DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPAccount.RecordId));
+            MigrateAllocationAccount(GPAccount);
+        until GPAccount.Next() = 0;
+    end;
+
+    local procedure MigrateAllocationAccount(var GPAccount: Record "GP Account")
+    begin
+        case GPAccount."Sub Type" of
+            GPAccount."Sub Type"::Fixed:
+                MigrateFixedAllocationAccountImp(GPAccount);
+            GPAccount."Sub Type"::Variable:
+                MigrateVariableAllocationAccountImp(GPAccount);
+        end;
+    end;
+
+    local procedure MigrateFixedAllocationAccountImp(var GPAccount: Record "GP Account")
+    var
+        AllocationAccount: Record "Allocation Account";
+        AllocAccountDistribution: Record "Alloc. Account Distribution";
+        GPGL00103: Record "GP GL00103";
+        DistGPAccount: Record "GP Account";
+        GPMigrationWarnings: Record "GP Migration Warnings";
+        GLAccount: Record "G/L Account";
+        HelperFunctions: Codeunit "Helper Functions";
+        AccountNum: Code[20];
+        DistAccountNum: Code[20];
+        LineNo: Integer;
+        DimSetID: Integer;
+    begin
+        AccountNum := CopyStr(GPAccount.AcctNum.Trim(), 1, MaxStrLen(AllocationAccount."No."));
+
+        if AllocationAccount.Get(AccountNum) then
+            exit;
+
+        GPGL00103.SetRange(ACTINDX, GPAccount.AcctIndex);
+        GPGL00103.SetRange("Dist. Is Posting Account", false);
+        if not GPGL00103.IsEmpty() then begin
+            GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), AllocationAccountSkippedBecauseHasNonGLAccountErr);
+            exit;
+        end;
+
+        GPGL00103.Reset();
+        GPGL00103.SetRange(ACTINDX, GPAccount.AcctIndex);
+        if not GPGL00103.FindSet() then
+            exit;
+
+        Clear(AllocationAccount);
+        AllocationAccount.Validate("No.", AccountNum);
+        AllocationAccount.Validate(Name, GPAccount.Name);
+        AllocationAccount.Validate("Account Type", AllocationAccount."Account Type"::Fixed);
+        AllocationAccount.Validate("Document Lines Split", AllocationAccount."Document Lines Split"::"Split Amount");
+        AllocationAccount.Insert(true);
+
+        repeat
+            if not DistGPAccount.Get(GPGL00103.DSTINDX) then begin
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), StrSubstNo(AllocationAccountSkippedBecauseOfDistributionIdxMissingErr, GPGL00103.DSTINDX));
+                continue;
+            end;
+
+            DistAccountNum := CopyStr(DistGPAccount.AcctNum.Trim(), 1, MaxStrLen(AllocationAccount."No."));
+
+            if not GLAccount.Get(DistAccountNum) then begin
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), StrSubstNo(AllocationAccountDistSkippedBecauseOfDistributionGLMissingErr, DistAccountNum));
+                continue;
+            end;
+
+            LineNo := LineNo + 10000;
+            Clear(AllocAccountDistribution);
+
+            AllocAccountDistribution.Validate("Allocation Account No.", AccountNum);
+            AllocAccountDistribution.validate("Line No.", LineNo);
+            AllocAccountDistribution.Validate("Account Type", AllocAccountDistribution."Account Type"::Fixed);
+            AllocAccountDistribution.Validate(Share, GPGL00103.PRCNTAGE);
+            AllocAccountDistribution.Validate("Destination Account Type", AllocAccountDistribution."Destination Account Type"::"G/L Account");
+            AllocAccountDistribution.Validate("Destination Account Number", DistAccountNum);
+
+            DimSetID := HelperFunctions.CreateDimSet(DistGPAccount.ACTNUMBR_1, DistGPAccount.ACTNUMBR_2, DistGPAccount.ACTNUMBR_3, DistGPAccount.ACTNUMBR_4, DistGPAccount.ACTNUMBR_5, DistGPAccount.ACTNUMBR_6, DistGPAccount.ACTNUMBR_7, DistGPAccount.ACTNUMBR_8);
+            AllocAccountDistribution.Validate("Dimension Set ID", DimSetID);
+
+            AllocAccountDistribution.Insert(true);
+        until GPGL00103.Next() = 0;
+    end;
+
+    local procedure MigrateVariableAllocationAccountImp(var GPAccount: Record "GP Account")
+    var
+        AllocationAccount: Record "Allocation Account";
+        AllocAccountDistribution: Record "Alloc. Account Distribution";
+        GPGL00104: Record "GP GL00104";
+        BreakdownGPAccount: Record "GP Account";
+        DistGPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+        GPMigrationWarnings: Record "GP Migration Warnings";
+        HelperFunctions: Codeunit "Helper Functions";
+        AccountNum: Code[20];
+        BreakdownAccountNum: Code[20];
+        DistAccountNum: Code[20];
+        LineNo: Integer;
+        DimSetID: Integer;
+    begin
+        AccountNum := CopyStr(GPAccount.AcctNum.Trim(), 1, MaxStrLen(AllocationAccount."No."));
+
+        if AllocationAccount.Get(AccountNum) then
+            exit;
+
+        GPGL00104.SetRange(ACTINDX, GPAccount.AcctIndex);
+        GPGL00104.SetRange("Dist. Is Posting Account", false);
+        if not GPGL00104.IsEmpty() then begin
+            GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), AllocationAccountSkippedBecauseHasNonGLAccountErr);
+            exit;
+        end;
+
+        GPGL00104.Reset();
+        GPGL00104.SetRange(ACTINDX, GPAccount.AcctIndex);
+        GPGL00104.SetRange("Brkdn. Is Posting Account", false);
+        if not GPGL00104.IsEmpty() then begin
+            GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), AllocationAccountSkippedBecauseHasNonGLAccountErr);
+            exit;
+        end;
+
+        GPGL00104.Reset();
+        GPGL00104.SetRange(ACTINDX, GPAccount.AcctIndex);
+        if not GPGL00104.FindSet() then
+            exit;
+
+        Clear(AllocationAccount);
+        AllocationAccount.Validate("No.", AccountNum);
+        AllocationAccount.Validate(Name, GPAccount.Name);
+        AllocationAccount.Validate("Account Type", AllocationAccount."Account Type"::Variable);
+        AllocationAccount.Validate("Document Lines Split", AllocationAccount."Document Lines Split"::"Split Amount");
+        AllocationAccount.Insert(true);
+
+        repeat
+            if not BreakdownGPAccount.Get(GPGL00104.BDNINDX) then begin
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), StrSubstNo(AllocationAccountSkippedBecauseOfBreakdownIdxMissingErr, GPGL00104.BDNINDX));
+                continue;
+            end;
+
+            if not DistGPAccount.Get(GPGL00104.DSTINDX) then begin
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), StrSubstNo(AllocationAccountSkippedBecauseOfDistributionIdxMissingErr, GPGL00104.DSTINDX));
+                continue;
+            end;
+
+            BreakdownAccountNum := CopyStr(BreakdownGPAccount.AcctNum.Trim(), 1, MaxStrLen(AllocationAccount."No."));
+            DistAccountNum := CopyStr(DistGPAccount.AcctNum.Trim(), 1, MaxStrLen(AllocationAccount."No."));
+
+            if not GLAccount.Get(BreakdownAccountNum) then begin
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), StrSubstNo(AllocationAccountDistSkippedBecauseOfBreakdownGLMissingErr, BreakdownAccountNum));
+                continue;
+            end;
+
+            if not GLAccount.Get(DistAccountNum) then begin
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, StrSubstNo(AllocationAccountMigrationCategoryTok, AccountNum), StrSubstNo(AllocationAccountDistSkippedBecauseOfDistributionGLMissingErr, DistAccountNum));
+                continue;
+            end;
+
+            LineNo := LineNo + 10000;
+            Clear(AllocAccountDistribution);
+
+            AllocAccountDistribution.Validate("Allocation Account No.", AccountNum);
+            AllocAccountDistribution.validate("Line No.", LineNo);
+            AllocAccountDistribution.Validate("Account Type", AllocAccountDistribution."Account Type"::Variable);
+
+            AllocAccountDistribution.Validate("Breakdown Account Type", AllocAccountDistribution."Breakdown Account Type"::"G/L Account");
+            AllocAccountDistribution.Validate("Breakdown Account Number", BreakdownAccountNum);
+
+            AllocAccountDistribution.Validate("Destination Account Type", AllocAccountDistribution."Destination Account Type"::"G/L Account");
+            AllocAccountDistribution.Validate("Destination Account Number", DistAccountNum);
+
+            case GPAccount."Balance For Calculation" of
+                GPAccount."Balance For Calculation"::YTD:
+                    AllocAccountDistribution.Validate("Calculation Period", AllocAccountDistribution."Calculation Period"::"Balance at Date");
+                GPAccount."Balance For Calculation"::Period:
+                    AllocAccountDistribution.Validate("Calculation Period", AllocAccountDistribution."Calculation Period"::Month);
+            end;
+
+            DimSetID := HelperFunctions.CreateDimSet(DistGPAccount.ACTNUMBR_1, DistGPAccount.ACTNUMBR_2, DistGPAccount.ACTNUMBR_3, DistGPAccount.ACTNUMBR_4, DistGPAccount.ACTNUMBR_5, DistGPAccount.ACTNUMBR_6, DistGPAccount.ACTNUMBR_7, DistGPAccount.ACTNUMBR_8);
+            AllocAccountDistribution.Validate("Dimension Set ID", DimSetID);
+
+            AllocAccountDistribution.Insert(true);
+        until GPGL00104.Next() = 0;
     end;
 }

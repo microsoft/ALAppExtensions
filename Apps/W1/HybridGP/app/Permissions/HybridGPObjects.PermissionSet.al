@@ -143,5 +143,7 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP PM00101" = X,
                     table "GP PM00203" = X,
                     table "GP PO Validation Buffer" = X,
-                    codeunit "GP Migration Validator" = X;
+                    codeunit "GP Migration Validator" = X,
+                    table "GP GL00103" = X,
+                    table "GP GL00104" = X;
 }

@@ -169,9 +169,9 @@ codeunit 40108 "GP PO Migrator"
             ShouldCreateLine := true;
 
             ItemNo := CopyStr(GPPOP10110.ITEMNMBR.Trim(), 1, MaxStrLen(Item."No."));
-            Item.SetLoadFields(Blocked);
+            Item.SetLoadFields(Blocked, "Purchasing Blocked");
             if Item.Get(ItemNo) then begin
-                if Item.Blocked then
+                if (Item.Blocked or Item."Purchasing Blocked") then
                     ShouldCreateLine := false
             end else
                 if GPPOP10110.NONINVEN = 0 then

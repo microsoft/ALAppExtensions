@@ -68,6 +68,7 @@ codeunit 40900 "GP Populate Hist. Tables"
 
         HistMigrationStatusMgmt.SetStatusFinished();
         Commit();
+        OnSnapshotCompleted();
     end;
 
     local procedure PopulateGLDetail()
@@ -133,6 +134,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         GPGL20000: Record "GP GL20000";
         GPGL00105: Record "GP GL00105";
         HistGenJournalLine: Record "Hist. Gen. Journal Line";
+        HistPayrollDetails: Record "Hist. Payroll Details";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
         InitialHistYear: Integer;
         SourceTableId: Integer;
@@ -181,15 +183,24 @@ codeunit 40900 "GP Populate Hist. Tables"
                 HistGenJournalLine."Custom2" := GPGL20000.User_Defined_Text02;
 
                 if GPGL20000.SERIES <> GPPayrollSeriesId() then begin
-#pragma warning disable AA0139
-                    HistGenJournalLine."Orig. Document No." := GPGL20000.ORDOCNUM.TrimEnd();
-#pragma warning restore AA0139
-                    HistGenJournalLine."Source No." := GPGL20000.ORMSTRID;
-                    HistGenJournalLine."Source Name" := CopyStr(GPGL20000.ORMSTRNM, 1, MaxStrLen(HistGenJournalLine."Source Name"));
+                    HistGenJournalLine."Orig. Document No." := CopyStr(GPGL20000.ORDOCNUM.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Orig. Document No."));
+                    HistGenJournalLine."Source No." := CopyStr(GPGL20000.ORMSTRID.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Source No."));
+                    HistGenJournalLine."Source Name" := CopyStr(GPGL20000.ORMSTRNM.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Source Name"));
                 end;
 
                 if HistGenJournalLine.Insert() then begin
                     ReportLastSuccess(SourceTableId, LastSourceRecordId);
+
+                    if GPGL20000.SERIES = GPPayrollSeriesId() then
+                        if GPCompanyAdditionalSettings.GetMigrateHistPayrollDetail() then begin
+                            Clear(HistPayrollDetails);
+                            HistPayrollDetails."Hist. Gen. Journal Line Key" := HistGenJournalLine."Primary Key";
+                            HistPayrollDetails."Orig. Document No." := CopyStr(GPGL20000.ORDOCNUM.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Orig. Document No."));
+                            HistPayrollDetails."Source No." := CopyStr(GPGL20000.ORMSTRID.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Source No."));
+                            HistPayrollDetails."Source Name" := CopyStr(GPGL20000.ORMSTRNM.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Source Name"));
+                            HistPayrollDetails.Insert();
+                        end;
+
                     PopulateGLOpenYearItemTransaction(GPGL20000)
                 end else
                     ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP GL Journal Trx.", GPGL20000.TRXSORCE);
@@ -206,6 +217,7 @@ codeunit 40900 "GP Populate Hist. Tables"
         GPGL30000: Record "GP GL30000";
         GPGL00105: Record "GP GL00105";
         HistGenJournalLine: Record "Hist. Gen. Journal Line";
+        HistPayrollDetails: Record "Hist. Payroll Details";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
         InitialHistYear: Integer;
         SourceTableId: Integer;
@@ -254,15 +266,24 @@ codeunit 40900 "GP Populate Hist. Tables"
                 HistGenJournalLine."Custom2" := GPGL30000.User_Defined_Text02;
 
                 if GPGL30000.SERIES <> GPPayrollSeriesId() then begin
-#pragma warning disable AA0139
-                    HistGenJournalLine."Orig. Document No." := GPGL30000.ORDOCNUM.TrimEnd();
-#pragma warning restore AA0139
-                    HistGenJournalLine."Source No." := GPGL30000.ORMSTRID;
-                    HistGenJournalLine."Source Name" := CopyStr(GPGL30000.ORMSTRNM, 1, MaxStrLen(HistGenJournalLine."Source Name"));
+                    HistGenJournalLine."Orig. Document No." := CopyStr(GPGL30000.ORDOCNUM.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Orig. Document No."));
+                    HistGenJournalLine."Source No." := CopyStr(GPGL30000.ORMSTRID.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Source No."));
+                    HistGenJournalLine."Source Name" := CopyStr(GPGL30000.ORMSTRNM.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Source Name"));
                 end;
 
                 if HistGenJournalLine.Insert() then begin
                     ReportLastSuccess(SourceTableId, LastSourceRecordId);
+
+                    if GPGL30000.SERIES = GPPayrollSeriesId() then
+                        if GPCompanyAdditionalSettings.GetMigrateHistPayrollDetail() then begin
+                            Clear(HistPayrollDetails);
+                            HistPayrollDetails."Hist. Gen. Journal Line Key" := HistGenJournalLine."Primary Key";
+                            HistPayrollDetails."Orig. Document No." := CopyStr(GPGL30000.ORDOCNUM.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Orig. Document No."));
+                            HistPayrollDetails."Source No." := CopyStr(GPGL30000.ORMSTRID.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Source No."));
+                            HistPayrollDetails."Source Name" := CopyStr(GPGL30000.ORMSTRNM.TrimEnd(), 1, MaxStrLen(HistGenJournalLine."Source Name"));
+                            HistPayrollDetails.Insert();
+                        end;
+
                     PopulateGLHistoricalYearItemTransaction(GPGL30000)
                 end else
                     ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP GL Journal Trx.", GPGL30000.TRXSORCE);
@@ -1861,6 +1882,11 @@ codeunit 40900 "GP Populate Hist. Tables"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeRunGPPopulateHistTables(var IsHandled: Boolean; var OverrideCommitAfterXRecordCount: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSnapshotCompleted()
     begin
     end;
 }

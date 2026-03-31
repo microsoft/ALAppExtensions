@@ -34,6 +34,8 @@ codeunit 139661 "GP Account Tests"
         StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
         StatisticalLedgerEntry: Record "Statistical Ledger Entry";
         GPMigrationWarings: Record "GP Migration Warnings";
+        AllocationAccount: Record "Allocation Account";
+        AllocAccountDistribution: Record "Alloc. Account Distribution";
         HelperFunctions: Codeunit "Helper Functions";
         StartTime: DateTime;
     begin
@@ -68,6 +70,7 @@ codeunit 139661 "GP Account Tests"
 
         // [WHEN] Posting all transactions
         HelperFunctions.PostGLTransactions();
+        HelperFunctions.CreatePostMigrationData();
 
         Assert.RecordCount(GPMigrationWarings, 0);
 
@@ -107,6 +110,44 @@ codeunit 139661 "GP Account Tests"
 
         StatisticalLedgerEntry.FindFirst();
         Assert.AreEqual(10, StatisticalLedgerEntry.Amount, 'Statistical Account Ledger Entry amount is incorrect');
+
+        // Allocation Accounts
+        Assert.RecordCount(AllocationAccount, 2);
+
+        // Fixed
+        Assert.IsTrue(AllocationAccount.Get('9011'), 'Missing Allocation Account 9011');
+        Assert.AreEqual('Allocation Account - Fixed', AllocationAccount.Name, 'Incorrect Allocation Account name');
+        Assert.AreEqual('Fixed', Format(AllocationAccount."Account Type"), 'Incorrect Allocation Account type');
+        Assert.AreEqual('Split Amount', Format(AllocationAccount."Document Lines Split"), 'Incorrect Allocation Account split type');
+
+        AllocAccountDistribution.SetRange("Allocation Account No.", AllocationAccount."No.");
+        AllocAccountDistribution.SetRange("Account Type", AllocAccountDistribution."Account Type"::Fixed);
+        AllocAccountDistribution.SetRange("Line No.", 10000);
+        Assert.IsTrue(AllocAccountDistribution.FindFirst(), 'Could not find 1st line for Allocation Account 9011');
+        Assert.AreEqual(25, AllocAccountDistribution.Share, 'Incorrect Allocation Account share (25%)');
+        Assert.AreEqual('2106', AllocAccountDistribution."Destination Account Number", 'Incorrect Allocation Account destination account');
+
+        Clear(AllocAccountDistribution);
+        AllocAccountDistribution.SetRange("Allocation Account No.", AllocationAccount."No.");
+        AllocAccountDistribution.SetRange("Account Type", AllocAccountDistribution."Account Type"::Fixed);
+        AllocAccountDistribution.SetRange("Line No.", 20000);
+        Assert.IsTrue(AllocAccountDistribution.FindFirst(), 'Could not find 2nd line for Allocation Account 9011');
+        Assert.AreEqual(75, AllocAccountDistribution.Share, 'Incorrect Allocation Account share (75%)');
+        Assert.AreEqual('4125', AllocAccountDistribution."Destination Account Number", 'Incorrect Allocation Account destination account');
+
+        // Variable
+        Assert.IsTrue(AllocationAccount.Get('9012'), 'Missing Allocation Account 9012');
+        Assert.AreEqual('Allocation Account - Variable', AllocationAccount.Name, 'Incorrect Allocation Account name');
+        Assert.AreEqual('Variable', Format(AllocationAccount."Account Type"), 'Incorrect Allocation Account type');
+        Assert.AreEqual('Split Amount', Format(AllocationAccount."Document Lines Split"), 'Incorrect Allocation Account split type');
+
+        Clear(AllocAccountDistribution);
+        AllocAccountDistribution.SetRange("Allocation Account No.", AllocationAccount."No.");
+        AllocAccountDistribution.SetRange("Account Type", AllocAccountDistribution."Account Type"::Variable);
+        AllocAccountDistribution.SetRange("Line No.", 10000);
+        Assert.IsTrue(AllocAccountDistribution.FindFirst(), 'Could not find line for Allocation Account 9012');
+        Assert.AreEqual('2106', AllocAccountDistribution."Breakdown Account Number", 'Incorrect Allocation Account breakdown account');
+        Assert.AreEqual('4125', AllocAccountDistribution."Destination Account Number", 'Incorrect Allocation Account destination account');
     end;
 
     [Test]
@@ -399,6 +440,8 @@ codeunit 139661 "GP Account Tests"
         StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
         StatisticalAccount: Record "Statistical Account";
         GPMigrationWarings: Record "GP Migration Warnings";
+        AllocationAccount: Record "Allocation Account";
+        AllocAccountDistribution: Record "Alloc. Account Distribution";
     begin
         GPTestHelperFunctions.DeleteAllSettings();
         GPAccount.DeleteAll();
@@ -417,6 +460,8 @@ codeunit 139661 "GP Account Tests"
         StatisticalAccJournalBatch.DeleteAll();
         StatisticalAccount.DeleteAll();
         GPMigrationWarings.DeleteAll();
+        AllocAccountDistribution.DeleteAll();
+        AllocationAccount.DeleteAll();
     end;
 
     local procedure Migrate(var GPAccount: Record "GP Account")
@@ -431,6 +476,10 @@ codeunit 139661 "GP Account Tests"
     end;
 
     local procedure CreateAccountData(var GPAccount: Record "GP Account")
+    var
+        GPGL00103: Record "GP GL00103";
+        GPGL00104: Record "GP GL00104";
+        GPGL00100: Record "GP GL00100";
     begin
         Clear(GPAccount);
         GPAccount.AcctNum := '0000';
@@ -446,6 +495,11 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
+        Clear(GPGL00100);
+        GPGL00100.ACTINDX := GPAccount.AcctIndex;
+        GPGL00100.ACCTTYPE := GPAccount.AccountType;
+        GPGL00100.Insert(true);
+
         Clear(GPAccount);
         GPAccount.AcctNum := '1100';
         GPAccount.AcctIndex := 1;
@@ -460,6 +514,11 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
+        Clear(GPGL00100);
+        GPGL00100.ACTINDX := GPAccount.AcctIndex;
+        GPGL00100.ACCTTYPE := GPAccount.AccountType;
+        GPGL00100.Insert(true);
+
         Clear(GPAccount);
         GPAccount.AcctNum := '1200';
         GPAccount.AcctIndex := 2;
@@ -472,6 +531,11 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountSubcategoryEntryNo := 3;
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);
+
+        Clear(GPGL00100);
+        GPGL00100.ACTINDX := GPAccount.AcctIndex;
+        GPGL00100.ACCTTYPE := GPAccount.AccountType;
+        GPGL00100.Insert(true);
 
         Clear(GPAccount);
         GPAccount.AcctNum := '1550';
@@ -486,6 +550,11 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
+        Clear(GPGL00100);
+        GPGL00100.ACTINDX := GPAccount.AcctIndex;
+        GPGL00100.ACCTTYPE := GPAccount.AccountType;
+        GPGL00100.Insert(true);
+
         Clear(GPAccount);
         GPAccount.AcctNum := '1555';
         GPAccount.AcctIndex := 4;
@@ -498,6 +567,11 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountSubcategoryEntryNo := 10;
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);
+
+        Clear(GPGL00100);
+        GPGL00100.ACTINDX := GPAccount.AcctIndex;
+        GPGL00100.ACCTTYPE := GPAccount.AccountType;
+        GPGL00100.Insert(true);
 
         Clear(GPAccount);
         GPAccount.AcctNum := '2106';
@@ -513,6 +587,11 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
+        Clear(GPGL00100);
+        GPGL00100.ACTINDX := GPAccount.AcctIndex;
+        GPGL00100.ACCTTYPE := GPAccount.AccountType;
+        GPGL00100.Insert(true);
+
         Clear(GPAccount);
         GPAccount.AcctNum := '4125';
         GPAccount.AcctIndex := 6;
@@ -527,6 +606,11 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
+        Clear(GPGL00100);
+        GPGL00100.ACTINDX := GPAccount.AcctIndex;
+        GPGL00100.ACCTTYPE := GPAccount.AccountType;
+        GPGL00100.Insert(true);
+
         Clear(GPAccount);
         GPAccount.AcctNum := '9010';
         GPAccount.AcctIndex := 99;
@@ -535,6 +619,54 @@ codeunit 139661 "GP Account Tests"
         GPAccount.Active := true;
         GPAccount.AccountType := 2;
         GPAccount.Insert(true);
+
+        Clear(GPGL00100);
+        GPGL00100.ACTINDX := GPAccount.AcctIndex;
+        GPGL00100.ACCTTYPE := GPAccount.AccountType;
+        GPGL00100.Insert(true);
+
+        // Allocation accounts
+
+        // Fixed
+        Clear(GPAccount);
+        GPAccount.AcctNum := '9011';
+        GPAccount.AcctIndex := 100;
+        GPAccount.Name := 'Allocation Account - Fixed';
+        GPAccount.SearchName := 'Allocation Account - Fixed';
+        GPAccount.Active := true;
+        GPAccount.AccountType := 3;
+        GPAccount."Sub Type" := GPAccount."Sub Type"::Fixed;
+        GPAccount.Insert(true);
+
+        Clear(GPGL00103);
+        GPGL00103.ACTINDX := GPAccount.AcctIndex;
+        GPGL00103.DSTINDX := 5;
+        GPGL00103.PRCNTAGE := 25;
+        GPGL00103.Insert(true);
+
+        Clear(GPGL00103);
+        GPGL00103.ACTINDX := GPAccount.AcctIndex;
+        GPGL00103.DSTINDX := 6;
+        GPGL00103.PRCNTAGE := 75;
+        GPGL00103.Insert(true);
+
+        // Variable
+        Clear(GPAccount);
+        GPAccount.AcctNum := '9012';
+        GPAccount.AcctIndex := 101;
+        GPAccount.Name := 'Allocation Account - Variable';
+        GPAccount.SearchName := 'Allocation Account - Variable';
+        GPAccount.Active := true;
+        GPAccount.AccountType := 3;
+        GPAccount."Sub Type" := GPAccount."Sub Type"::Variable;
+        GPAccount."Balance For Calculation" := GPAccount."Balance For Calculation"::YTD;
+        GPAccount.Insert(true);
+
+        Clear(GPGL00104);
+        GPGL00104.ACTINDX := GPAccount.AcctIndex;
+        GPGL00104.BDNINDX := 5;
+        GPGL00104.DSTINDX := 6;
+        GPGL00104.Insert(true);
     end;
 
     local procedure CreateDimensionData(var GPSegments: Record "GP Segments"; var GPCodes: Record "GP Codes")

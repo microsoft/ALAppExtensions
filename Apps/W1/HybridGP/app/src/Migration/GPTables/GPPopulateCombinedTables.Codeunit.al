@@ -54,10 +54,12 @@ codeunit 40125 "GP Populate Combined Tables"
         GPGL40200: Record "GP GL40200";
         GPSY00300: Record "GP SY00300";
         GPAccount: Record "GP Account";
+        GPGL00103: Record "GP GL00103";
+        GPGL00104: Record "GP GL00104";
         AccountDescription: Text;
     begin
-        GPGL00100.SetFilter(ACCTTYPE, '1|2');
-        // Only Posting and Unit accounts
+        GPGL00100.SetRange(ACCTTYPE, 1, 3);
+        // Only Posting, Unit, and Allocation accounts
 
         if not GPGL00100.FindSet() then
             exit;
@@ -96,6 +98,23 @@ codeunit 40125 "GP Populate Combined Tables"
             GPAccount.DirectPosting := GPGL00100.ACCTENTR;
             GPAccount.AccountSubcategoryEntryNo := GPGL00100.ACCATNUM;
             GPAccount.AccountType := GPGL00100.ACCTTYPE;
+            GPAccount."Sub Type" := GPAccount."Sub Type"::Standard;
+            GPAccount."Balance For Calculation" := GPAccount."Balance For Calculation"::YTD;
+
+            if GPAccount.AccountType = 3 then begin
+                GPGL00103.SetRange(ACTINDX, GPAccount.AcctIndex);
+
+                if not GPGL00103.IsEmpty() then
+                    GPAccount."Sub Type" := GPAccount."Sub Type"::Fixed;
+
+                GPGL00104.SetRange(ACTINDX, GPAccount.AcctIndex);
+                if not GPGL00104.IsEmpty() then
+                    GPAccount."Sub Type" := GPAccount."Sub Type"::Variable;
+            end;
+
+            if GPGL00100.BALFRCLC > 0 then
+                GPAccount."Balance For Calculation" := GPAccount."Balance For Calculation"::Period;
+
             GPAccount.Insert();
         until GPGL00100.Next() = 0;
     end;
@@ -533,11 +552,12 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPPM00200Vendor: Record "GP PM00200";
         GPVendor: Record "GP Vendor";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
     begin
         GPPM00200Vendor.SetFilter(VENDSTTS, '1|3');
-        if GPCompanyAdditionalSettings.GetMigrateInactiveVendors() then
-            GPPM00200Vendor.SetRange(VENDSTTS);
+        if GPCompanyMigrationSettings.Get(CompanyName()) then
+            if GPCompanyMigrationSettings."Migrate Inactive Vendors" then
+                GPPM00200Vendor.SetRange(VENDSTTS);
 
         if not GPPM00200Vendor.FindSet() then
             exit;

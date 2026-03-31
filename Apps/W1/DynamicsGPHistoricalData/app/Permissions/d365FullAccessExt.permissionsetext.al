@@ -19,5 +19,6 @@ permissionsetextension 40901 "D365 Full Access Ext." extends "D365 FULL ACCESS"
                   tabledata "Hist. Payables Apply" = RIMD,
                   tabledata "Hist. Receivables Apply" = RIMD,
                   tabledata "Hist. Invt. Trx. SerialLot" = RIMD,
-                  tabledata "Hist. Recv. Trx. SerialLot" = RIMD;
+                  tabledata "Hist. Recv. Trx. SerialLot" = RIMD,
+                  tabledata "Hist. Payroll Details" = I;
 }

@@ -562,6 +562,13 @@ codeunit 4037 "Helper Functions"
         GPItemMigrator.CreateItemCategories();
     end;
 
+    local procedure CreateAllocationAccounts()
+    var
+        GPAccountMigrator: Codeunit "GP Account Migrator";
+    begin
+        GPAccountMigrator.CreateAllocationAccounts();
+    end;
+
     procedure CreateSetupRecordsIfNeeded()
     var
         CompanyInformation: Record "Company Information";
@@ -640,6 +647,19 @@ codeunit 4037 "Helper Functions"
         NoSeriesLine.Validate("Increment-by No.", 1);
         NoSeriesLine.Validate(Implementation, "No. Series Implementation"::Normal);
         NoSeriesLine.Insert(true);
+    end;
+
+    local procedure UpdateDefaultNoSeries()
+    var
+        NoSeriesLine: Record "No. Series Line";
+    begin
+        // Increase the default contact capacity from 100,000 to 9,999,999.
+        NoSeriesLine.SetRange("Series Code", 'CONT');
+        if not NoSeriesLine.FindFirst() then
+            exit;
+
+        NoSeriesLine.Validate("Ending No.", 'CT9999999');
+        NoSeriesLine.Modify(true);
     end;
 
     internal procedure CalculateDueDateFormula(GPPaymentTerms: Record "GP Payment Terms"; Use_Discount_Calc: Boolean; Discount_Calc: Text[32]): Text[50]
@@ -2042,6 +2062,7 @@ codeunit 4037 "Helper Functions"
         end;
 
         CreateNoSeries();
+        UpdateDefaultNoSeries();
 
         exit(true)
     end;
@@ -2080,6 +2101,7 @@ codeunit 4037 "Helper Functions"
             CreateKitItems();
 
         CreateItemCategories();
+        CreateAllocationAccounts();
 
         exit(GPConfiguration.IsAllPostMigrationDataCreated());
     end;

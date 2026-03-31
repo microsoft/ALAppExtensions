@@ -102,6 +102,16 @@ table 4090 "GP Account"
         {
             DataClassification = SystemMetadata;
         }
+        field(102; "Sub Type"; Option)
+        {
+            DataClassification = SystemMetadata;
+            OptionMembers = "Standard","Fixed","Variable";
+        }
+        field(103; "Balance For Calculation"; Option)
+        {
+            DataClassification = SystemMetadata;
+            OptionMembers = "YTD","Period";
+        }
     }
 
     keys
