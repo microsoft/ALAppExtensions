@@ -649,16 +649,37 @@ codeunit 4037 "Helper Functions"
         NoSeriesLine.Insert(true);
     end;
 
-    local procedure UpdateDefaultNoSeries()
+    local procedure UpdateConfiguredContactNoSeries()
     var
+        MarketingSetup: Record "Marketing Setup";
         NoSeriesLine: Record "No. Series Line";
+        GPRM00101: Record "GP RM00101";
+        CustomerCount: Integer;
+        CountBufferOverCustomerCount: Integer;
+        NewMaxCount: BigInteger;
+        NewEndingNo: Code[20];
     begin
-        // Increase the default contact capacity from 100,000 to 9,999,999.
-        NoSeriesLine.SetRange("Series Code", 'CONT');
+        CustomerCount := GPRM00101.Count();
+        CountBufferOverCustomerCount := 100000;
+
+        // The default contact number series maxes out at 100,000. If there are less customers than that, we can exit.
+        if CustomerCount < 100000 then
+            exit;
+
+        if not MarketingSetup.Get() then
+            exit;
+
+        if MarketingSetup."Contact Nos." = '' then
+            exit;
+
+        NoSeriesLine.SetRange("Series Code", MarketingSetup."Contact Nos.");
         if not NoSeriesLine.FindFirst() then
             exit;
 
-        NoSeriesLine.Validate("Ending No.", 'CT9999999');
+        NewMaxCount := Round(CustomerCount * NoSeriesLine."Increment-by No." + (CountBufferOverCustomerCount * NoSeriesLine."Increment-by No."), 1000, '>');
+        NewEndingNo := IncStr(NoSeriesLine."Starting No.", NewMaxCount);
+
+        NoSeriesLine.Validate("Ending No.", NewEndingNo);
         NoSeriesLine.Modify(true);
     end;
 
@@ -2062,7 +2083,7 @@ codeunit 4037 "Helper Functions"
         end;
 
         CreateNoSeries();
-        UpdateDefaultNoSeries();
+        UpdateConfiguredContactNoSeries();
 
         exit(true)
     end;

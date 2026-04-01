@@ -148,13 +148,7 @@ codeunit 4019 "GP Item Migrator"
             if not Sender.DoesItemExist(CopyStr(GPItem.No, 1, MaxStrLen(Item."No."))) then
                 exit;
 
-            if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
-                SetItemAsBlockedIfNeeded(Item, GPItem, DataMigrationErrorLogging);
-                exit;
-            end;
-
-
-            if GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then begin
+            if not GPCompanyAdditionalSettings.GetGLModuleEnabled() or GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then begin
                 SetItemAsBlockedIfNeeded(Item, GPItem, DataMigrationErrorLogging);
                 exit;
             end;
