@@ -241,8 +241,8 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL POReceipt", 'POReceipt');
         UpdateOrInsertRecord(Database::"SL POSetup", 'POSetup');
         UpdateOrInsertRecord(Database::"SL POTran", 'POTran');
-        UpdateOrInsertRecord(Database::"SL PurchOrd", 'PurchOrd');
-        UpdateOrInsertRecord(Database::"SL PurOrdDet", 'PurOrdDet');
+        UpdateOrInsertRecord(Database::"SL PurchOrd Buffer", 'PurchOrd');
+        UpdateOrInsertRecord(Database::"SL PurOrdDet Buffer", 'PurOrdDet');
         UpdateOrInsertRecord(Database::"SL VendClass", 'VendClass');
         UpdateOrInsertRecord(Database::"SL Vendor", 'Vendor');
         // Receivables
@@ -264,6 +264,7 @@ codeunit 47012 "SL Hybrid Wizard"
         // Items
         UpdateOrInsertRecord(Database::"SL INSetup", 'INSetup');
         UpdateOrInsertRecord(Database::"SL INTran Buffer", 'INTran');
+        UpdateOrInsertRecord(Database::"SL INUnit", 'INUnit');
         UpdateOrInsertRecord(Database::"SL Inventory Buffer", 'Inventory');
         UpdateOrInsertRecord(Database::"SL InventoryADG", 'InventoryADG');
         UpdateOrInsertRecord(Database::"SL ItemCost Buffer", 'ItemCost');

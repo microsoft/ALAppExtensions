@@ -1,0 +1,15 @@
+﻿UnitType,ClassID,InvtId,FromUnit,ToUnit,CnvFact,MultDiv
+1,*     ,*                             ,BAG   ,BAG   ,1,M
+1,*     ,*                             ,BIGBOX,BIGBOX,1,M
+1,*     ,*                             ,BIGBOX,CARTON,15,M
+1,*     ,*                             ,BOX   ,BOX   ,1,M
+1,*     ,*                             ,CARTON,CARTON,1,M
+1,*     ,*                             ,DOZEN ,EA    ,12,M
+1,*     ,*                             ,EA    ,DOZEN ,12,D
+1,*     ,*                             ,EA    ,EA    ,1,M
+1,*     ,*                             ,FT    ,FT    ,1,M
+1,*     ,*                             ,HR    ,HR    ,1,M
+1,*     ,*                             ,LABOR ,LABOR ,1,M
+1,*     ,*                             ,LB    ,LB    ,1,M
+2,FILFLD,*                             ,CASE  ,EA    ,24,M
+3,*     ,UNV-14113                     ,BOX   ,CARTON,5,M

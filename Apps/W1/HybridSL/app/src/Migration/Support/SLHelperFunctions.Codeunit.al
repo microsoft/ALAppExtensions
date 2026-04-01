@@ -13,6 +13,7 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Costing;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -995,14 +996,16 @@ codeunit 47023 "SL Helper Functions"
         if SLSite.FindSet() then
             repeat
                 Location.Init();
-                Location.Code := Text.CopyStr(SLSite.SiteId, 1, 10);
+                Location.Code := CopyStr(SLSite.SiteId, 1, 10);
                 Location.Name := SLSite.Name;
                 Location.Address := SLSite.Addr1;
-                Location."Address 2" := Text.CopyStr(SLSite.Addr2, 1, 50);
-                Location.City := Text.CopyStr(SLSite.City, 1, 30);
+                Location."Address 2" := CopyStr(SLSite.Addr2, 1, 50);
+                Location.City := CopyStr(SLSite.City, 1, 30);
                 Location."Phone No." := SLSite.Phone;
                 Location."Fax No." := SLSite.Fax;
                 Location."Post Code" := SLSite.Zip;
+                Location.County := SLSite.State;
+                Location."Country/Region Code" := SLSite.Country;
                 Location.Insert(true);
             until SLSite.Next() = 0;
         Session.LogMessage('0000BK6', 'Created Locations', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
@@ -1025,6 +1028,15 @@ codeunit 47023 "SL Helper Functions"
         SetBankAccountsCreated();
     end;
 
+    internal procedure CreateOpenPurchaseOrders()
+    var
+        SLPOMigrator: Codeunit "SL PO Migrator";
+    begin
+        SLPOMigrator.MigrateOpenPurchaseOrders();
+        Session.LogMessage('0000OPO', 'Created Open Purchase Orders', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetOpenPOsCreated();
+    end;
+
     internal procedure CreateProjectData()
     var
         SLProjectMigrator: Codeunit "SL Project Migrator";
@@ -1032,6 +1044,18 @@ codeunit 47023 "SL Helper Functions"
         SLProjectMigrator.MigrateProjectModule();
         Session.LogMessage('0000PJD', 'Created Project Data', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetProjectDataCreated();
+    end;
+
+    internal procedure CreateUnitOfMeasureIfNeeded(CodeToSet: Code[10]; DescriptionToSet: Text[50])
+    var
+        UnitOfMeasure: Record "Unit of Measure";
+    begin
+        if not UnitOfMeasure.Get(CodeToSet) then begin
+            UnitOfMeasure.Init();
+            UnitOfMeasure.Code := CodeToSet;
+            UnitOfMeasure.Description := DescriptionToSet;
+            UnitOfMeasure.Insert(true);
+        end;
     end;
 
     internal procedure DeleteExistingCustomerPostingGroups()
@@ -1181,6 +1205,10 @@ codeunit 47023 "SL Helper Functions"
             if not CashManagerDataCreated() then
                 CreateBankAccounts();
 
+        if SLCompanyAdditionalSettings.GetMigrateOpenPOs() then
+            if not OpenPODataCreated() then
+                CreateOpenPurchaseOrders();
+
         exit(SLConfiguration.IsAllPostMigationDataCreated());
     end;
 
@@ -1248,6 +1276,12 @@ codeunit 47023 "SL Helper Functions"
         exit(SLConfiguration."Cash Manager Data Created");
     end;
 
+    internal procedure OpenPODataCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Open PO Data Created");
+    end;
+
     internal procedure ProjectDataCreated(): Boolean
     begin
         SLConfiguration.GetSingleInstance();
@@ -1258,6 +1292,13 @@ codeunit 47023 "SL Helper Functions"
     begin
         SLConfiguration.GetSingleInstance();
         SLConfiguration."Cash Manager Data Created" := true;
+        SLConfiguration.Modify();
+    end;
+
+    internal procedure SetOpenPOsCreated()
+    begin
+        SLConfiguration.GetSingleInstance();
+        SLConfiguration."Open PO Data Created" := true;
         SLConfiguration.Modify();
     end;
 

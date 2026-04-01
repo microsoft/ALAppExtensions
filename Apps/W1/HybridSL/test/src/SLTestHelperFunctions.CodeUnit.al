@@ -280,6 +280,22 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateSLItemSiteBufferTable(SLItemSiteInstream);
     end;
 
+    procedure ImportSLPurchOrdBufferData()
+    var
+        SLPurchOrdBufferInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLPurchOrdBuffer.csv', SLPurchOrdBufferInstream);
+        PopulateSLPurchOrdBufferTable(SLPurchOrdBufferInstream);
+    end;
+
+    procedure ImportSLPurOrdDetBufferData()
+    var
+        SLPurOrdDetBufferInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLPurOrdDetBuffer.csv', SLPurOrdDetBufferInstream);
+        PopulateSLPurOrdDetBufferTable(SLPurOrdDetBufferInstream);
+    end;
+
     procedure ImportSLProductClassData()
     var
         SLProductClassInstream: InStream;
@@ -334,6 +350,46 @@ codeunit 147601 "SL Test Helper Functions"
     begin
         GetInputStreamFromResource('datasets/input/SLTables/SLVendorWithClassID.csv', SLVendorInstream);
         PopulateSLVendorTable(SLVendorInstream);
+    end;
+
+    procedure ImportBCVendorForOpenPOsData()
+    var
+        SLBCVendorForOpenPOsInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCVendorForOpenPOs.csv', SLBCVendorForOpenPOsInstream);
+        PopulateSLBCVendorForOpenPOsTable(SLBCVendorForOpenPOsInstream);
+    end;
+
+    procedure ImportBCItemForOpenPOsData()
+    var
+        SLBCItemForOpenPOsInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCItemForOpenPOs.csv', SLBCItemForOpenPOsInstream);
+        PopulateSLBCItemForOpenPOsTable(SLBCItemForOpenPOsInstream);
+    end;
+
+    procedure ImportBCUnitOfMeasureForOpenOrdersData()
+    var
+        SLBCUnitOfMeasureForOpenOrdersInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCUnitOfMeasureForOpenOrders.csv', SLBCUnitOfMeasureForOpenOrdersInstream);
+        PopulateSLBCUnitOfMeasureForOpenOrdersTable(SLBCUnitOfMeasureForOpenOrdersInstream);
+    end;
+
+    procedure ImportBCItemUOMForOpenOrdersData()
+    var
+        SLBCItemUOMForOpenOrdersInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCItemUOMForOpenOrders.csv', SLBCItemUOMForOpenOrdersInstream);
+        PopulateSLBCItemUOMForOpenOrdersTable(SLBCItemUOMForOpenOrdersInstream);
+    end;
+
+    procedure ImportBCLocationsForOpenOrdersData()
+    var
+        SLBCLocationsInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCLocations.csv', SLBCLocationsInstream);
+        PopulateSLBCLocationsForOpenOrdersTable(SLBCLocationsInstream);
     end;
 
     procedure PopulateSLCustomerTable(var Instream: InStream)
@@ -492,6 +548,18 @@ codeunit 147601 "SL Test Helper Functions"
         Xmlport.Import(Xmlport::"SL ItemSite Buffer Data", Instream);
     end;
 
+    procedure PopulateSLPurchOrdBufferTable(var Instream: InStream)
+    begin
+        // Populate SL PurchOrd Buffer table
+        Xmlport.Import(Xmlport::"SL PurchOrd Buffer Data", Instream);
+    end;
+
+    procedure PopulateSLPurOrdDetBufferTable(var Instream: InStream)
+    begin
+        // Populate SL PurOrdDet Buffer table
+        Xmlport.Import(Xmlport::"SL PurOrdDet Buffer Data", Instream);
+    end;
+
     procedure PopulateSLProductClassTable(var Instream: InStream)
     begin
         // Populate SL ProductClass table
@@ -532,5 +600,35 @@ codeunit 147601 "SL Test Helper Functions"
     begin
         // Populate SL Vendor table
         Xmlport.Import(Xmlport::"SL Vendor Data", Instream);
+    end;
+
+    procedure PopulateSLBCVendorForOpenPOsTable(var Instream: InStream)
+    begin
+        // Populate BC Vendor table for open PO tests
+        Xmlport.Import(Xmlport::"SL BC Vendor for Open POs Data", Instream);
+    end;
+
+    procedure PopulateSLBCItemForOpenPOsTable(var Instream: InStream)
+    begin
+        // Populate BC Item table for open PO tests
+        Xmlport.Import(Xmlport::"SL BC Item for Open POs Data", Instream);
+    end;
+
+    procedure PopulateSLBCUnitOfMeasureForOpenOrdersTable(var Instream: InStream)
+    begin
+        // Populate BC Unit of Measure table for open order tests
+        Xmlport.Import(Xmlport::"SL BC UOM Open Orders", Instream);
+    end;
+
+    procedure PopulateSLBCItemUOMForOpenOrdersTable(var Instream: InStream)
+    begin
+        // Populate BC Item Unit of Measure table for open order tests
+        Xmlport.Import(Xmlport::"SL BC Item UOM Open Orders", Instream);
+    end;
+
+    procedure PopulateSLBCLocationsForOpenOrdersTable(var Instream: InStream)
+    begin
+        // Populate BC Location table for open order tests
+        Xmlport.Import(Xmlport::"SL BC Locations Open Orders", Instream);
     end;
 }

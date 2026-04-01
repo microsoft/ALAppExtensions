@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace MSFT.DataMigration.SL;
+namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -11,7 +11,7 @@ using Microsoft.Inventory.Location;
 using System.Integration;
 using System.TestLibraries.Utilities;
 
-codeunit 57610 "SL Item Migrator Tests"
+codeunit 147610 "SL Item Migrator Tests"
 {
     // [FEATURE] [SL Data Migration]
 
@@ -34,7 +34,7 @@ codeunit 57610 "SL Item Migrator Tests"
         TempItem: Record Item temporary;
         ItemDataMigrationFacade: Codeunit "Item Data Migration Facade";
         SLItemMigrator: Codeunit "SL Item Migrator";
-        SLExpectedBCItemData: XmlPort "SL BC Item Data";
+        SLExpectedBCItemData: XmlPort "SL BC Item Data Expected";
         SLInventoryInstream: InStream;
         BCItemInstream: InStream;
     begin
@@ -76,7 +76,7 @@ codeunit 57610 "SL Item Migrator Tests"
         TempItem: Record Item temporary;
         ItemDataMigrationFacade: Codeunit "Item Data Migration Facade";
         SLItemMigrator: Codeunit "SL Item Migrator";
-        SLExpectedBCItemData: XmlPort "SL BC Item Data";
+        SLExpectedBCItemData: XmlPort "SL BC Item Data Expected";
         SLInventoryInstream: InStream;
         BCItemInstream: InStream;
     begin

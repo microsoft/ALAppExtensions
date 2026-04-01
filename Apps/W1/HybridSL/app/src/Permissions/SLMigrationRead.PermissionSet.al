@@ -43,6 +43,7 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL Hist. Source Error" = R,
                   tabledata "SL Hist. Source Progress" = R,
                   tabledata "SL INSetup" = R,
+                  tabledata "SL INUnit" = R,
                   tabledata "SL INTran Buffer" = R,
                   tabledata "SL Inventory Buffer" = R,
                   tabledata "SL InventoryADG" = R,
@@ -70,8 +71,8 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL POSetup" = R,
                   tabledata "SL POTran" = R,
                   tabledata "SL ProductClass" = R,
-                  tabledata "SL PurchOrd" = R,
-                  tabledata "SL PurOrdDet" = R,
+                  tabledata "SL PurchOrd Buffer" = R,
+                  tabledata "SL PurOrdDet Buffer" = R,
                   tabledata "SL SalesTax" = R,
                   tabledata "SL SegDef" = R,
                   tabledata "SL Segments" = R,
@@ -108,6 +109,8 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL PJEquip" = R,
                   tabledata "SL PJPent" = R,
                   tabledata "SL PJProj" = R,
+                  tabledata "SL PurchOrd" = R,
+                  tabledata "SL PurOrdDet" = R,
 #pragma warning restore AL0432
 #endif
                   tabledata SLGLAcctBalByPeriod = R;

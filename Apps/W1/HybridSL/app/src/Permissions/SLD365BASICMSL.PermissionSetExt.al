@@ -41,6 +41,7 @@ permissionsetextension 47001 "SLD365 BASIC - MSL" extends "D365 BASIC"
                   tabledata "SL Hist. Source Error" = RIMD,
                   tabledata "SL Hist. Source Progress" = RIMD,
                   tabledata "SL INSetup" = RIMD,
+                  tabledata "SL INUnit" = RIMD,
                   tabledata "SL INTran Buffer" = RIMD,
                   tabledata "SL Inventory Buffer" = RIMD,
                   tabledata "SL InventoryADG" = RIMD,
@@ -67,8 +68,8 @@ permissionsetextension 47001 "SLD365 BASIC - MSL" extends "D365 BASIC"
                   tabledata "SL POSetup" = RIMD,
                   tabledata "SL POTran" = RIMD,
                   tabledata "SL ProductClass" = RIMD,
-                  tabledata "SL PurchOrd" = RIMD,
-                  tabledata "SL PurOrdDet" = RIMD,
+                  tabledata "SL PurchOrd Buffer" = RIMD,
+                  tabledata "SL PurOrdDet Buffer" = RIMD,
                   tabledata "SL SalesTax" = RIMD,
                   tabledata "SL SegDef" = RIMD,
                   tabledata "SL Segments" = RIMD,
@@ -105,6 +106,8 @@ permissionsetextension 47001 "SLD365 BASIC - MSL" extends "D365 BASIC"
                   tabledata "SL PJEquip" = RIMD,
                   tabledata "SL PJPent" = RIMD,
                   tabledata "SL PJProj" = RIMD,
+                  tabledata "SL PurchOrd" = RIMD,
+                  tabledata "SL PurOrdDet" = RIMD,
 #pragma warning restore AL0432
 #endif
                   tabledata SLGLAcctBalByPeriod = RIMD,

@@ -43,6 +43,7 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Hist. Source Error" = X,
                   table "SL Hist. Source Progress" = X,
                   table "SL INSetup" = X,
+                  table "SL INUnit" = X,
                   table "SL ItemCost Buffer" = X,
                   table "SL INTran Buffer" = X,
                   table "SL Inventory Buffer" = X,
@@ -70,8 +71,8 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL POSetup" = X,
                   table "SL POTran" = X,
                   table "SL ProductClass" = X,
-                  table "SL PurchOrd" = X,
-                  table "SL PurOrdDet" = X,
+                  table "SL PurchOrd Buffer" = X,
+                  table "SL PurOrdDet Buffer" = X,
                   table "SL SalesTax" = X,
                   table "SL SegDef" = X,
                   table "SL Segment Name" = X,
@@ -109,6 +110,8 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL PJEquip" = X,
                   table "SL PJPent" = X,
                   table "SL PJProj" = X,
+                  table "SL PurchOrd" = X,
+                  table "SL PurOrdDet" = X,
 #pragma warning restore AL0432
 #endif            
                   codeunit "SL Account Migrator" = X,

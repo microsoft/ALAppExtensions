@@ -214,7 +214,7 @@ codeunit 47026 "SL Item Migrator"
                 AverageCostValuationMethodTxt, StandardCostValuationMethodTxt, UserSpecifiedCostValuationMethodTxt:
                     begin
                         SLItemSite.SetRange(InvtID, SLInventory.InvtID);
-                        SLItemSite.SetFilter(CpnyID, CompanyName);
+                        SLItemSite.SetFilter(CpnyID, CopyStr(CompanyName, 1, MaxStrLen(SLItemSite.CpnyID)));
                         SLItemSite.SetFilter(QtyOnHand, '<>%1', 0);
                         if SLItemSite.FindSet() then
                             repeat
@@ -226,7 +226,7 @@ codeunit 47026 "SL Item Migrator"
                 FIFOValuationMethodTxt, LIFOValuationMethodTxt, SpecificIdentificationValuationMethodTxt:
                     begin
                         SLItemSite.SetRange(InvtID, SLInventory.InvtID);
-                        SLItemSite.SetFilter(CpnyID, CompanyName);
+                        SLItemSite.SetFilter(CpnyID, CopyStr(CompanyName, 1, MaxStrLen(SLItemSite.CpnyID)));
                         SLItemSite.SetFilter(QtyOnHand, '<>%1', 0);
                         if SLItemSite.FindSet() then
                             repeat

@@ -29,7 +29,7 @@ codeunit 147603 "SL Vendor Migrator Tests"
         TempVendor: Record Vendor temporary;
         VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade";
         SLVendorMigrator: Codeunit "SL Vendor Migrator";
-        SLExpectedBCVendorData: XmlPort "SL BC Vendor Data";
+        SLExpectedBCVendorData: XmlPort "SL BC Vendor Data Expected";
         SLVendorInstream: InStream;
         BCVendorInstream: InStream;
     begin
@@ -76,7 +76,7 @@ codeunit 147603 "SL Vendor Migrator Tests"
         TempVendor: Record Vendor temporary;
         VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade";
         SLVendorMigrator: Codeunit "SL Vendor Migrator";
-        SLExpectedBCVendorData: XmlPort "SL BC Vendor Data";
+        SLExpectedBCVendorData: XmlPort "SL BC Vendor Data Expected";
         SLVendorInstream: InStream;
         BCVendorInstream: InStream;
     begin
@@ -119,7 +119,7 @@ codeunit 147603 "SL Vendor Migrator Tests"
         TempVendor: Record Vendor temporary;
         VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade";
         SLVendorMigrator: Codeunit "SL Vendor Migrator";
-        SLExpectedBCVendorData: XmlPort "SL BC Vendor Data";
+        SLExpectedBCVendorData: XmlPort "SL BC Vendor Data Expected";
         SLVendorInstream: InStream;
         BCVendorInstream: InStream;
     begin
@@ -163,7 +163,7 @@ codeunit 147603 "SL Vendor Migrator Tests"
         TempVendor: Record Vendor temporary;
         VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade";
         SLVendorMigrator: Codeunit "SL Vendor Migrator";
-        SLExpectedBCVendorData: XmlPort "SL BC Vendor Data";
+        SLExpectedBCVendorData: XmlPort "SL BC Vendor Data Expected";
         SLVendorInstream: InStream;
         BCVendorInstream: InStream;
     begin

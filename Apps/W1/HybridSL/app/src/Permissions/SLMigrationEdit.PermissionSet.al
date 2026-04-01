@@ -42,6 +42,7 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Hist. Source Error" = IMD,
                   tabledata "SL Hist. Source Progress" = IMD,
                   tabledata "SL INSetup" = IMD,
+                  tabledata "SL INUnit" = IMD,
                   tabledata "SL INTran Buffer" = IMD,
                   tabledata "SL Inventory Buffer" = IMD,
                   tabledata "SL InventoryADG" = IMD,
@@ -69,8 +70,8 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL POSetup" = IMD,
                   tabledata "SL POTran" = IMD,
                   tabledata "SL ProductClass" = IMD,
-                  tabledata "SL PurchOrd" = IMD,
-                  tabledata "SL PurOrdDet" = IMD,
+                  tabledata "SL PurchOrd Buffer" = IMD,
+                  tabledata "SL PurOrdDet Buffer" = IMD,
                   tabledata "SL SalesTax" = IMD,
                   tabledata "SL SegDef" = IMD,
                   tabledata "SL Segments" = IMD,
@@ -107,6 +108,8 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL PJEquip" = IMD,
                   tabledata "SL PJPent" = IMD,
                   tabledata "SL PJProj" = IMD,
+                  tabledata "SL PurchOrd" = IMD,
+                  tabledata "SL PurOrdDet" = IMD,
 #pragma warning restore AL0432
 #endif
                   tabledata SLGLAcctBalByPeriod = IMD;

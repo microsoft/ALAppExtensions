@@ -85,9 +85,7 @@ page 47018 "SL Migration Configuration"
                 field("Migrate Open POs"; Rec."Migrate Open POs")
                 {
                     Caption = 'Open Purchase Orders';
-                    Enabled = false;
                     ToolTip = 'Specifies whether to migrate the open Purchase Orders.';
-                    Visible = false;
 
                     trigger OnValidate()
                     begin

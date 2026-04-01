@@ -46,8 +46,6 @@ page 47017 "SL Company Add. Settings List"
                 }
                 field("Migrate Open POs"; Rec."Migrate Open POs")
                 {
-                    Enabled = false;
-                    Visible = false;
                 }
                 field("Migrate Receivables Module"; Rec."Migrate Receivables Module")
                 {

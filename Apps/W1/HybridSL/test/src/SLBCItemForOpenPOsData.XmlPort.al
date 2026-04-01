@@ -5,9 +5,10 @@
 namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Inventory.Item;
-xmlport 147620 "SL BC Item Data Expected"
+
+xmlport 147646 "SL BC Item for Open POs Data"
 {
-    Caption = 'BC Item data for import/export';
+    Caption = 'SL BC Item for Open POs data for import/export';
     Direction = Both;
     FieldSeparator = ',';
     RecordSeparator = '<CR><LF>';
@@ -17,11 +18,10 @@ xmlport 147620 "SL BC Item Data Expected"
     {
         textelement(root)
         {
-            tableelement("Item"; Item)
+            tableelement("BCItem"; Item)
             {
                 AutoSave = false;
                 XmlName = 'Item';
-                UseTemporary = true;
 
                 textelement("No.")
                 {
@@ -32,7 +32,7 @@ xmlport 147620 "SL BC Item Data Expected"
                 textelement("SearchDescription")
                 {
                 }
-                textelement("BaseUnitofMeasure")
+                textelement("BaseUnitOfMeasure")
                 {
                 }
                 textelement("Type")
@@ -65,13 +65,16 @@ xmlport 147620 "SL BC Item Data Expected"
                 textelement("GenProdPostingGroup")
                 {
                 }
-                textelement("SalesUnitofMeasure")
+                textelement("SalesUnitOfMeasure")
                 {
                 }
-                textelement("PurchUnitofMeasure")
+                textelement("PurchUnitOfMeasure")
                 {
                 }
                 textelement("ItemTrackingCode")
+                {
+                }
+                textelement("ExpirationCalculation")
                 {
                 }
 
@@ -84,30 +87,41 @@ xmlport 147620 "SL BC Item Data Expected"
                 end;
 
                 trigger OnBeforeInsertRecord()
+                var
+                    Item: Record Item;
                 begin
                     if CaptionRow then begin
                         CaptionRow := false;
                         currXMLport.Skip();
                     end;
 
-                    TempItem."No." := "No.";
-                    TempItem.Description := "Description";
-                    TempItem."Search Description" := "SearchDescription";
-                    TempItem."Base Unit of Measure" := "BaseUnitofMeasure";
-                    Evaluate(TempItem.Type, "Type");
-                    TempItem."Inventory Posting Group" := "InventoryPostingGroup";
-                    Evaluate(TempItem."Unit Price", "UnitPrice");
-                    Evaluate(TempItem."Costing Method", "CostingMethod");
-                    Evaluate(TempItem."Unit Cost", "UnitCost");
-                    Evaluate(TempItem."Standard Cost", "StandardCost");
-                    Evaluate(TempItem."Net Weight", "NetWeight");
-                    Evaluate(TempItem.Blocked, "Blocked");
-                    TempItem."Block Reason" := "BlockReason";
-                    TempItem."Gen. Prod. Posting Group" := "GenProdPostingGroup";
-                    Evaluate(TempItem."Sales Unit of Measure", "SalesUnitofMeasure");
-                    TempItem."Purch. Unit of Measure" := "PurchUnitofMeasure";
-                    TempItem."Item Tracking Code" := "ItemTrackingCode";
-                    TempItem.Insert(false);
+                    Item."No." := "No.";
+                    Item.Description := "Description";
+                    Item."Search Description" := "SearchDescription";
+                    Item."Base Unit of Measure" := "BaseUnitOfMeasure";
+                    if Type <> '' then
+                        Evaluate(Item.Type, "Type");
+                    Item."Inventory Posting Group" := "InventoryPostingGroup";
+                    if UnitPrice <> '' then
+                        Evaluate(Item."Unit Price", "UnitPrice");
+                    if CostingMethod <> '' then
+                        Evaluate(Item."Costing Method", "CostingMethod");
+                    if UnitCost <> '' then
+                        Evaluate(Item."Unit Cost", "UnitCost");
+                    if StandardCost <> '' then
+                        Evaluate(Item."Standard Cost", "StandardCost");
+                    if NetWeight <> '' then
+                        Evaluate(Item."Net Weight", "NetWeight");
+                    if Blocked <> '' then
+                        Evaluate(Item.Blocked, "Blocked");
+                    Item."Block Reason" := "BlockReason";
+                    Item."Gen. Prod. Posting Group" := "GenProdPostingGroup";
+                    Item."Sales Unit of Measure" := "SalesUnitOfMeasure";
+                    Item."Purch. Unit of Measure" := "PurchUnitOfMeasure";
+                    Item."Item Tracking Code" := "ItemTrackingCode";
+                    if ItemTrackingCode <> '' then
+                        Evaluate(Item."Expiration Calculation", "ExpirationCalculation");
+                    Item.Insert();
                 end;
             }
         }
@@ -115,20 +129,11 @@ xmlport 147620 "SL BC Item Data Expected"
 
     trigger OnPreXmlPort()
     begin
+        Item.DeleteAll();
         CaptionRow := true;
-    end;
-
-    procedure GetExpectedItems(var NewTempItem: Record Item temporary)
-    begin
-        if TempItem.FindSet() then begin
-            repeat
-                NewTempItem.Copy(TempItem);
-                NewTempItem.Insert();
-            until TempItem.Next() = 0;
-        end;
     end;
 
     var
         CaptionRow: Boolean;
-        TempItem: Record Item temporary;
+        Item: Record Item;
 }

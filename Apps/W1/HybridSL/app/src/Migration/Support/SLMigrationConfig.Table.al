@@ -92,6 +92,10 @@ table 47017 "SL Migration Config"
         {
             InitValue = false;
         }
+        field(24; "Open PO Data Created"; Boolean)
+        {
+            InitValue = false;
+        }
     }
 
     keys
