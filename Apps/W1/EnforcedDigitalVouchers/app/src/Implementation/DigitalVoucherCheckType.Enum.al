@@ -26,4 +26,9 @@ enum 5580 "Digital Voucher Check Type" implements "Digital Voucher Check"
         Caption = 'Attachment or Note';
         Implementation = "Digital Voucher Check" = "Voucher Attach Or Note Check";
     }
+    value(3; "E-Document")
+    {
+        Caption = 'E-Document';
+        Implementation = "Digital Voucher Check" = "Voucher E-Document Check";
+    }
 }
