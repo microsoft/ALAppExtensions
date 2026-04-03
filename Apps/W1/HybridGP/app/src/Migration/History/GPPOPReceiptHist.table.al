@@ -575,6 +575,10 @@ table 4061 "GPPOPReceiptHist"
         {
             Clustered = false;
         }
+        key(Key3; PYMTRMID)
+        {
+            Clustered = false;
+        }
     }
 
     fieldgroups

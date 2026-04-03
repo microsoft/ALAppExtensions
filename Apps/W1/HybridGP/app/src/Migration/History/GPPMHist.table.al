@@ -446,5 +446,9 @@ table 4053 "GPPMHist"
         {
             Clustered = false;
         }
+        key(Key4; PYMTRMID)
+        {
+            Clustered = false;
+        }
     }
 }

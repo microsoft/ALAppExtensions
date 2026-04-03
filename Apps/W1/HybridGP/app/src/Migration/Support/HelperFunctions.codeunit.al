@@ -562,6 +562,13 @@ codeunit 4037 "Helper Functions"
         GPItemMigrator.CreateItemCategories();
     end;
 
+    local procedure CreateAllocationAccounts()
+    var
+        GPAccountMigrator: Codeunit "GP Account Migrator";
+    begin
+        GPAccountMigrator.CreateAllocationAccounts();
+    end;
+
     procedure CreateSetupRecordsIfNeeded()
     var
         CompanyInformation: Record "Company Information";
@@ -640,6 +647,40 @@ codeunit 4037 "Helper Functions"
         NoSeriesLine.Validate("Increment-by No.", 1);
         NoSeriesLine.Validate(Implementation, "No. Series Implementation"::Normal);
         NoSeriesLine.Insert(true);
+    end;
+
+    local procedure UpdateConfiguredContactNoSeries()
+    var
+        MarketingSetup: Record "Marketing Setup";
+        NoSeriesLine: Record "No. Series Line";
+        GPRM00101: Record "GP RM00101";
+        CustomerCount: Integer;
+        CountBufferOverCustomerCount: Integer;
+        NewMaxCount: BigInteger;
+        NewEndingNo: Code[20];
+    begin
+        CustomerCount := GPRM00101.Count();
+        CountBufferOverCustomerCount := 100000;
+
+        // The default contact number series maxes out at 100,000. If there are less customers than that, we can exit.
+        if CustomerCount < 100000 then
+            exit;
+
+        if not MarketingSetup.Get() then
+            exit;
+
+        if MarketingSetup."Contact Nos." = '' then
+            exit;
+
+        NoSeriesLine.SetRange("Series Code", MarketingSetup."Contact Nos.");
+        if not NoSeriesLine.FindFirst() then
+            exit;
+
+        NewMaxCount := Round(CustomerCount * NoSeriesLine."Increment-by No." + (CountBufferOverCustomerCount * NoSeriesLine."Increment-by No."), 1000, '>');
+        NewEndingNo := IncStr(NoSeriesLine."Starting No.", NewMaxCount);
+
+        NoSeriesLine.Validate("Ending No.", NewEndingNo);
+        NoSeriesLine.Modify(true);
     end;
 
     internal procedure CalculateDueDateFormula(GPPaymentTerms: Record "GP Payment Terms"; Use_Discount_Calc: Boolean; Discount_Calc: Text[32]): Text[50]
@@ -2042,6 +2083,7 @@ codeunit 4037 "Helper Functions"
         end;
 
         CreateNoSeries();
+        UpdateConfiguredContactNoSeries();
 
         exit(true)
     end;
@@ -2080,6 +2122,7 @@ codeunit 4037 "Helper Functions"
             CreateKitItems();
 
         CreateItemCategories();
+        CreateAllocationAccounts();
 
         exit(GPConfiguration.IsAllPostMigrationDataCreated());
     end;
