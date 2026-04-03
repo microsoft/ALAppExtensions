@@ -544,7 +544,7 @@ codeunit 40125 "GP Populate Combined Tables"
                 GPRMOpen.EFTFLAG := GPRM20101.EFTFLAG;
                 GPRMOpen.DEX_ROW_TS := GPRM20101.DEX_ROW_TS;
                 GPRMOpen.DEX_ROW_ID := GPRM20101.DEX_ROW_ID;
-                if GPRMOpen.Insert() then;
+                GPRMOpen.Insert();
             until GPRM20101.Next() = 0;
     end;
 
