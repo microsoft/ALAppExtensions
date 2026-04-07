@@ -1037,6 +1037,15 @@ codeunit 47023 "SL Helper Functions"
         SetOpenPOsCreated();
     end;
 
+    internal procedure CreateOpenSalesOrders()
+    var
+        SLSOMigrator: Codeunit "SL SO Migrator";
+    begin
+        SLSOMigrator.MigrateOpenSalesOrders();
+        Session.LogMessage('0000OSO', 'Created Open Sales Orders', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetOpenSOsCreated();
+    end;
+
     internal procedure CreateProjectData()
     var
         SLProjectMigrator: Codeunit "SL Project Migrator";
@@ -1209,6 +1218,10 @@ codeunit 47023 "SL Helper Functions"
             if not OpenPODataCreated() then
                 CreateOpenPurchaseOrders();
 
+        if SLCompanyAdditionalSettings.GetMigrateOpenSOs() then
+            if not OpenSODataCreated() then
+                CreateOpenSalesOrders();
+
         exit(SLConfiguration.IsAllPostMigationDataCreated());
     end;
 
@@ -1282,6 +1295,12 @@ codeunit 47023 "SL Helper Functions"
         exit(SLConfiguration."Open PO Data Created");
     end;
 
+    internal procedure OpenSODataCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Open SO Data Created");
+    end;
+
     internal procedure ProjectDataCreated(): Boolean
     begin
         SLConfiguration.GetSingleInstance();
@@ -1299,6 +1318,13 @@ codeunit 47023 "SL Helper Functions"
     begin
         SLConfiguration.GetSingleInstance();
         SLConfiguration."Open PO Data Created" := true;
+        SLConfiguration.Modify();
+    end;
+
+    internal procedure SetOpenSOsCreated()
+    begin
+        SLConfiguration.GetSingleInstance();
+        SLConfiguration."Open SO Data Created" := true;
         SLConfiguration.Modify();
     end;
 

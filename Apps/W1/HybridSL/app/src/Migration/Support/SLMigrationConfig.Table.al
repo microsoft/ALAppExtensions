@@ -96,6 +96,10 @@ table 47017 "SL Migration Config"
         {
             InitValue = false;
         }
+        field(25; "Open SO Data Created"; Boolean)
+        {
+            InitValue = false;
+        }
     }
 
     keys

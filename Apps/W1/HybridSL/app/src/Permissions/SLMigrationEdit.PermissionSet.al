@@ -78,13 +78,13 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Segment Name" = IMD,
                   tabledata "SL Site" = IMD,
                   tabledata "SL SOAddress" = IMD,
-                  tabledata "SL SOHeader" = IMD,
-                  tabledata "SL SOLine" = IMD,
+                  tabledata "SL SOHeader Buffer" = IMD,
+                  tabledata "SL SOLine Buffer" = IMD,
                   tabledata "SL SOSetup" = IMD,
                   tabledata "SL SOShipHeader" = IMD,
                   tabledata "SL SOShipLine" = IMD,
                   tabledata "SL SOShipLot" = IMD,
-                  tabledata "SL SOType" = IMD,
+                  tabledata "SL SOType Buffer" = IMD,
                   tabledata "SL Terms" = IMD,
                   tabledata "SL Upgrade Settings" = IMD,
                   tabledata "SL VendClass" = IMD,
@@ -110,6 +110,9 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL PJProj" = IMD,
                   tabledata "SL PurchOrd" = IMD,
                   tabledata "SL PurOrdDet" = IMD,
+                  tabledata "SL SOHeader" = IMD,
+                  tabledata "SL SOLine" = IMD,
+                  tabledata "SL SOType" = IMD,
 #pragma warning restore AL0432
 #endif
                   tabledata SLGLAcctBalByPeriod = IMD;

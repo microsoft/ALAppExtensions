@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47051 "SL SOType"
+table 47101 "SL SOType Buffer"
 {
     Access = Internal;
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL SOType Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -68,15 +59,15 @@ table 47051 "SL SOType"
         }
         field(11; Crtd_DateTime; DateTime)
         {
-            Caption = 'Crtd';
+            Caption = 'Crtd_DateTime';
         }
         field(12; Crtd_Prog; Text[8])
         {
-            Caption = 'Crtd';
+            Caption = 'Crtd_Prog';
         }
         field(13; Crtd_User; Text[10])
         {
-            Caption = 'Crtd';
+            Caption = 'Crtd_User';
         }
         field(14; Descr; Text[30])
         {
@@ -140,15 +131,15 @@ table 47051 "SL SOType"
         }
         field(29; LUpd_DateTime; DateTime)
         {
-            Caption = 'LUpd';
+            Caption = 'LUpd_DateTime';
         }
         field(30; LUpd_Prog; Text[8])
         {
-            Caption = 'LUpd';
+            Caption = 'LUpd_Prog';
         }
         field(31; LUpd_User; Text[10])
         {
-            Caption = 'LUpd';
+            Caption = 'LUpd_User';
         }
         field(32; MiscAcct; Text[10])
         {
@@ -222,11 +213,11 @@ table 47051 "SL SOType"
             Caption = 'S4Future06';
             AutoFormatType = 0;
         }
-        field(49; S4Future07; DateTime)
+        field(49; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(50; S4Future08; DateTime)
+        field(50; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -282,7 +273,7 @@ table 47051 "SL SOType"
         {
             Caption = 'User1';
         }
-        field(64; User10; DateTime)
+        field(64; User10; Date)
         {
             Caption = 'User10';
         }
@@ -316,7 +307,7 @@ table 47051 "SL SOType"
         {
             Caption = 'User8';
         }
-        field(72; User9; DateTime)
+        field(72; User9; Date)
         {
             Caption = 'User9';
         }
@@ -338,4 +329,3 @@ table 47051 "SL SOType"
         }
     }
 }
-#endif

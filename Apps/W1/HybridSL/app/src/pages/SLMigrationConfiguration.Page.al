@@ -110,7 +110,20 @@ page 47018 "SL Migration Configuration"
                             until SLCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
+                field("Migrate Open SOs"; Rec."Migrate Open SOs")
+                {
+                    Caption = 'Open Sales Orders';
+                    ToolTip = 'Specifies whether to migrate open Sales Orders.';
 
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                SLCompanyAdditionalSettings.Validate("Migrate Open SOs", Rec."Migrate Open SOs");
+                                SLCompanyAdditionalSettings.Modify();
+                            until SLCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
                 field("Migrate Inventory Module"; Rec."Migrate Inventory Module")
                 {
                     Caption = 'Inventory';
@@ -755,6 +768,7 @@ page 47018 "SL Migration Configuration"
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Open POs", Rec."Migrate Open POs");
+                    SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Open SOs", Rec."Migrate Open SOs");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Include Project Module", Rec."Include Project Module");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Cash Manager Module", Rec."Migrate Cash Manager Module");
@@ -821,6 +835,7 @@ page 47018 "SL Migration Configuration"
         Rec.Validate("Migrate Payables Module", SLCompanyAdditionalSettingsInit."Migrate Payables Module");
         Rec.Validate("Migrate Receivables Module", SLCompanyAdditionalSettingsInit."Migrate Receivables Module");
         Rec.Validate("Migrate Open POs", SLCompanyAdditionalSettingsInit."Migrate Open POs");
+        Rec.Validate("Migrate Open SOs", SLCompanyAdditionalSettingsInit."Migrate Open SOs");
         Rec.Validate("Migrate Inventory Module", SLCompanyAdditionalSettingsInit."Migrate Inventory Module");
         Rec.Validate("Include Project Module", SLCompanyAdditionalSettingsInit."Include Project Module");
         Rec.Validate("Migrate Cash Manager Module", SLCompanyAdditionalSettingsInit."Migrate Cash Manager Module");

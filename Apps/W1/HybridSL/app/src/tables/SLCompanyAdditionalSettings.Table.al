@@ -152,6 +152,7 @@ table 47061 "SL Company Additional Settings"
             begin
                 if not Rec."Migrate Receivables Module" then begin
                     Rec.Validate("Migrate Inactive Customers", false);
+                    Rec.Validate("Migrate Open SOs", false);
                     Rec.Validate("Migrate Customer Classes", false);
                     Rec.Validate("Migrate Only Rec. Master", false);
                     Rec.Validate("Migrate Hist. AR Trx.", false);
@@ -169,6 +170,7 @@ table 47061 "SL Company Additional Settings"
                 if not Rec."Migrate Inventory Module" then begin
                     Rec.Validate("Migrate Item Classes", false);
                     Rec.Validate("Migrate Open POs", false);
+                    Rec.Validate("Migrate Open SOs", false);
                     Rec.Validate("Migrate Only Inventory Master", false);
                     Rec.Validate("Migrate Inactive Items", false);
                     Rec.Validate("Migrate Discontinued Items", false);
@@ -505,6 +507,23 @@ table 47061 "SL Company Additional Settings"
                             Rec.Validate("Migrate GL Module", true);
             end;
         }
+        field(41; "Migrate Open SOs"; Boolean)
+        {
+            Caption = 'Open Sales Orders';
+            InitValue = false;
+            ToolTip = 'Specify whether to migrate open Sales Orders.';
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Open SOs" then begin
+                    Rec.Validate("Migrate Inventory Module", true);
+                    Rec.Validate("Migrate Receivables Module", true);
+
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
+                end;
+            end;
+        }
     }
 
     keys
@@ -711,6 +730,12 @@ table 47061 "SL Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Open POs");
+    end;
+
+    internal procedure GetMigrateOpenSOs(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Open SOs");
     end;
 
     internal procedure GetInitialYear(): Integer

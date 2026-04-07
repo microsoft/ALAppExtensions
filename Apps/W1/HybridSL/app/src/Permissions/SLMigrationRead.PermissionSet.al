@@ -79,13 +79,13 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL Segment Name" = R,
                   tabledata "SL Site" = R,
                   tabledata "SL SOAddress" = R,
-                  tabledata "SL SOHeader" = R,
-                  tabledata "SL SOLine" = R,
+                  tabledata "SL SOHeader Buffer" = R,
+                  tabledata "SL SOLine Buffer" = R,
                   tabledata "SL SOSetup" = R,
                   tabledata "SL SOShipHeader" = R,
                   tabledata "SL SOShipLine" = R,
                   tabledata "SL SOShipLot" = R,
-                  tabledata "SL SOType" = R,
+                  tabledata "SL SOType Buffer" = R,
                   tabledata "SL Terms" = R,
                   tabledata "SL Upgrade Settings" = R,
                   tabledata "SL VendClass" = R,
@@ -111,6 +111,9 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL PJProj" = R,
                   tabledata "SL PurchOrd" = R,
                   tabledata "SL PurOrdDet" = R,
+                  tabledata "SL SOHeader" = R,
+                  tabledata "SL SOLine" = R,
+                  tabledata "SL SOType" = R,
 #pragma warning restore AL0432
 #endif
                   tabledata SLGLAcctBalByPeriod = R;

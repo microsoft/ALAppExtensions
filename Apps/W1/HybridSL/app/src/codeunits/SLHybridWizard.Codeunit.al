@@ -254,13 +254,13 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL CustClass", 'CustClass');
         UpdateOrInsertRecord(Database::"SL Customer", 'Customer');
         UpdateOrInsertRecord(Database::"SL SOAddress", 'SOAddress');
-        UpdateOrInsertRecord(Database::"SL SOHeader", 'SOHeader');
-        UpdateOrInsertRecord(Database::"SL SOLine", 'SOLine');
+        UpdateOrInsertRecord(Database::"SL SOHeader Buffer", 'SOHeader');
+        UpdateOrInsertRecord(Database::"SL SOLine Buffer", 'SOLine');
         UpdateOrInsertRecord(Database::"SL SOSetup", 'SOSetup');
         UpdateOrInsertRecord(Database::"SL SOShipHeader", 'SOShipHeader');
         UpdateOrInsertRecord(Database::"SL SOShipLine", 'SOShipLine');
         UpdateOrInsertRecord(Database::"SL SOShipLot", 'SOShipLot');
-        UpdateOrInsertRecord(Database::"SL SOType", 'SOType');
+        UpdateOrInsertRecord(Database::"SL SOType Buffer", 'SOType');
         // Items
         UpdateOrInsertRecord(Database::"SL INSetup", 'INSetup');
         UpdateOrInsertRecord(Database::"SL INTran Buffer", 'INTran');

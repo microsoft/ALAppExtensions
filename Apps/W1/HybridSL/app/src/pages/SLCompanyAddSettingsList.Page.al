@@ -50,6 +50,9 @@ page 47017 "SL Company Add. Settings List"
                 field("Migrate Receivables Module"; Rec."Migrate Receivables Module")
                 {
                 }
+                field("Migrate Open Sales Orders"; Rec."Migrate Open SOs")
+                {
+                }
                 field("Migrate Inventory Module"; Rec."Migrate Inventory Module")
                 {
                 }

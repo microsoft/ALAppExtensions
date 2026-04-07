@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47035 "SL SOLine"
+table 47100 "SL SOLine Buffer"
 {
     Access = Internal;
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL SOLine Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -56,7 +47,7 @@ table 47035 "SL SOLine"
         {
             Caption = 'BMICuryID';
         }
-        field(9; BMIEffDate; DateTime)
+        field(9; BMIEffDate; Date)
         {
             Caption = 'BMIEffDate';
         }
@@ -87,7 +78,7 @@ table 47035 "SL SOLine"
         {
             Caption = 'BoundToWO';
         }
-        field(16; CancelDate; DateTime)
+        field(16; CancelDate; Date)
         {
             Caption = 'CancelDate';
         }
@@ -351,7 +342,7 @@ table 47035 "SL SOLine"
         {
             Caption = 'ProjectID';
         }
-        field(79; PromDate; DateTime)
+        field(79; PromDate; Date)
         {
             Caption = 'PromDate';
         }
@@ -398,7 +389,7 @@ table 47035 "SL SOLine"
         {
             Caption = 'RebateID';
         }
-        field(89; ReqDate; DateTime)
+        field(89; ReqDate; Date)
         {
             Caption = 'ReqDate';
         }
@@ -430,11 +421,11 @@ table 47035 "SL SOLine"
             Caption = 'S4Future06';
             AutoFormatType = 0;
         }
-        field(96; S4Future07; DateTime)
+        field(96; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(97; S4Future08; DateTime)
+        field(97; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -557,7 +548,7 @@ table 47035 "SL SOLine"
         {
             Caption = 'User1';
         }
-        field(126; User10; DateTime)
+        field(126; User10; Date)
         {
             Caption = 'User10';
         }
@@ -591,7 +582,7 @@ table 47035 "SL SOLine"
         {
             Caption = 'User8';
         }
-        field(134; User9; DateTime)
+        field(134; User9; Date)
         {
             Caption = 'User9';
         }
@@ -605,4 +596,3 @@ table 47035 "SL SOLine"
         }
     }
 }
-#endif

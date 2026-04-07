@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47034 "SL SOHeader"
+table 47099 "SL SOHeader Buffer"
 {
     Access = Internal;
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL SOHeader Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -147,7 +138,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'BuildAssyTime';
         }
-        field(32; BuildAvailDate; DateTime)
+        field(32; BuildAvailDate; Date)
         {
             Caption = 'BuildAvailDate';
         }
@@ -177,7 +168,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'BuyerName';
         }
-        field(39; CancelDate; DateTime)
+        field(39; CancelDate; Date)
         {
             Caption = 'CancelDate';
         }
@@ -235,7 +226,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'CreditHold';
         }
-        field(53; CreditHoldDate; DateTime)
+        field(53; CreditHoldDate; Date)
         {
             Caption = 'CreditHoldDate';
         }
@@ -256,7 +247,7 @@ table 47034 "SL SOHeader"
             Caption = 'CuryBalDue';
             AutoFormatType = 0;
         }
-        field(58; CuryEffDate; DateTime)
+        field(58; CuryEffDate; Date)
         {
             Caption = 'CuryEffDate';
         }
@@ -349,7 +340,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'CustOrdNbr';
         }
-        field(78; DateCancelled; DateTime)
+        field(78; DateCancelled; Date)
         {
             Caption = 'DateCancelled';
         }
@@ -418,7 +409,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'GeoCode';
         }
-        field(95; InvcDate; DateTime)
+        field(95; InvcDate; Date)
         {
             Caption = 'InvcDate';
         }
@@ -474,7 +465,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'NoteId';
         }
-        field(109; OrdDate; DateTime)
+        field(109; OrdDate; Date)
         {
             Caption = 'OrdDate';
         }
@@ -511,7 +502,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'ProjectID';
         }
-        field(118; QuoteDate; DateTime)
+        field(118; QuoteDate; Date)
         {
             Caption = 'QuoteDate';
         }
@@ -564,11 +555,11 @@ table 47034 "SL SOHeader"
             Caption = 'S4Future06';
             AutoFormatType = 0;
         }
-        field(130; S4Future07; DateTime)
+        field(130; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(131; S4Future08; DateTime)
+        field(131; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -773,7 +764,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'User1';
         }
-        field(179; User10; DateTime)
+        field(179; User10; Date)
         {
             Caption = 'User10';
         }
@@ -807,7 +798,7 @@ table 47034 "SL SOHeader"
         {
             Caption = 'User8';
         }
-        field(187; User9; DateTime)
+        field(187; User9; Date)
         {
             Caption = 'User9';
         }
@@ -846,4 +837,3 @@ table 47034 "SL SOHeader"
         }
     }
 }
-#endif
