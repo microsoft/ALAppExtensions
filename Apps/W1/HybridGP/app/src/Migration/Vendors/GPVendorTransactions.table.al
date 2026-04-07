@@ -78,7 +78,9 @@ table 4097 "GP Vendor Transactions"
         }
         key(Key2; PYMTRMID)
         {
-
+        }
+        key(Key3; VENDORID, TransType)
+        {
         }
     }
 

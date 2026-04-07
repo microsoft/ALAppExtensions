@@ -78,7 +78,9 @@ table 4094 "GP Customer Transactions"
         }
         key(Key2; PYMTRMID)
         {
-
+        }
+        key(Key3; CUSTNMBR, TransType)
+        {
         }
     }
 
