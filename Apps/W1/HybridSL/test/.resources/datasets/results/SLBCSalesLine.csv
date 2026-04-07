@@ -1,0 +1,5 @@
+﻿Document Type,Document No.,Line No.,Sell-to Customer No.,Type,No.,Location Code,Unit of Measure,Quantity,Unit Price
+Order,O1005215,1,C315,Item,0RSEAT-PERF-ASSY,LA,EA,3,25
+Order,O1005215,5,C315,Item,0RHANDLBAR,LA,EA,2,33
+Order,O1005216,2,C421,Item,OID-47573,NY,EA,2,442
+Order,O1005217,1,C389,Item,UNV-14116,SF,CARTON,5,15.9499999999999993

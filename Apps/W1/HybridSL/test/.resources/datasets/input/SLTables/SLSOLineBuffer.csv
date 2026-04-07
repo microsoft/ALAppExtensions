@@ -1,0 +1,6 @@
+﻿CpnyID,OrdNbr,LineRef,InvtID,QtyBO,SiteID,SlsPrice,UnitDesc
+CRONUS USA,O1005215       ,00001,0RSEAT-PERF-ASSY              ,3,LA        ,25,EA    
+CRONUS USA,O1005215       ,00005,0RHANDLBAR                    ,2,LA        ,33,EA    
+CRONUS USA,O1005216       ,00001,MRV-FC0230-B                  ,0,NY        ,346,EA    
+CRONUS USA,O1005216       ,00002,OID-47573                     ,2,NY        ,442,EA    
+CRONUS USA,O1005217       ,00001,UNV-14116                     ,5,SF        ,15.9499999999999993,CARTON
