@@ -8,7 +8,7 @@ using System.Utilities;
 
 report 10034 "Create Transmission IRIS"
 {
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     ProcessingOnly = true;
 
     requestpage
@@ -24,7 +24,7 @@ report 10034 "Create Transmission IRIS"
                     ShowCaption = false;
                     field(PeriodNoField; PeriodNo)
                     {
-                        ApplicationArea = BasicUS;
+                        ApplicationArea = BasicCA, BasicUS;
                         Caption = 'Reporting Period';
                         ToolTip = 'Specifies the period for which the 1099 forms will be submitted.';
                         TableRelation = "IRS Reporting Period"."No.";

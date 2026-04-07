@@ -10,7 +10,7 @@ using Microsoft.Sustainability.ExciseTax;
 
 table 7413 "Excise Tax Item/FA Rate"
 {
-    Caption = 'Excise Tax Item/FA Rate';
+    Caption = 'Excise Duty Rate';
     DataClassification = CustomerContent;
     LookupPageId = "Excise Tax Item/FA Rates";
     DrillDownPageId = "Excise Tax Item/FA Rates";
@@ -54,7 +54,7 @@ table 7413 "Excise Tax Item/FA Rate"
         field(4; "Excise Duty"; Decimal)
         {
             AutoFormatType = 0;
-            Caption = 'Excise Duty';
+            Caption = 'Excise Duty Rate';
             DecimalPlaces = 2 : 5;
             MinValue = 0;
         }

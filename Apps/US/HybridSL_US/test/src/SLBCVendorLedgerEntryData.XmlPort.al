@@ -101,12 +101,11 @@ xmlport 147661 "SL BC Vendor Ledger Entry Data"
 
     procedure GetExpectedVendorLedgerEntries(var NewTempVendorLedgerEntry: Record "Vendor Ledger Entry" temporary)
     begin
-        if TempVendorLedgerEntry.FindSet() then begin
+        if TempVendorLedgerEntry.FindSet() then
             repeat
                 NewTempVendorLedgerEntry.Copy(TempVendorLedgerEntry);
                 NewTempVendorLedgerEntry.Insert();
             until TempVendorLedgerEntry.Next() = 0;
-        end;
     end;
 
     var

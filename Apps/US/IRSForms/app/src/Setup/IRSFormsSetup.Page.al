@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ page 10030 "IRS Forms Setup"
 {
     PageType = Card;
     SourceTable = "IRS Forms Setup";
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     UsageCategory = Administration;
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -56,7 +56,7 @@ page 10030 "IRS Forms Setup"
         {
             action(EmailContentSetup)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Email Content Setup';
                 Image = Email;
                 ToolTip = 'Setup the subject and the body of the email with 1099 form that is sent to the vendor.';
@@ -76,7 +76,7 @@ page 10030 "IRS Forms Setup"
             }
             action(SetupIRISUserID)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Setup IRIS User ID';
                 Image = UserCertificate;
                 ToolTip = 'Obtain and set the IRIS User ID which is used to authenticate and authorize access to the IRS''s Information Returns Intake System (IRIS) API.';

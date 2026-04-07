@@ -534,7 +534,12 @@ codeunit 20361 "Tax Json Deserialization"
         MinorVersion: Integer;
         OldMajorVersion: Integer;
         OldMinorVersion: Integer;
+        IsHandled: Boolean;
     begin
+        OnBeforeReadUseCase(JObject, IsHandled);
+        if IsHandled then
+            exit;
+
         UseCaseID := GetGuidPropertyValue(JObject, 'CaseID');
         TaxType := GetCode20PropertyValue(JObject, 'TaxType');
         Description := GetText250PropertyValue(JObject, 'Description');
@@ -2816,6 +2821,11 @@ codeunit 20361 "Tax Json Deserialization"
         foreach Token in JsonToken.AsArray() do
             if Token.AsObject().Contains(TaxType) then
                 exit(GetText250PropertyValue(Token.AsObject(), TaxType));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeReadUseCase(JObject: JsonObject; var IsHandled: Boolean)
+    begin
     end;
 
     var

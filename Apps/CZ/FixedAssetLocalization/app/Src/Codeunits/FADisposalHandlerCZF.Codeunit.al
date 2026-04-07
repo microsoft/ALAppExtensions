@@ -40,7 +40,8 @@ codeunit 31235 "FA Disposal Handler CZF"
             case FALedgerEntry."FA Posting Type" of
                 FALedgerEntry."FA Posting Type"::"Acquisition Cost":
                     GLAccNo := FAPostingGroup.GetAcquisitionCostAccount();
-                FALedgerEntry."FA Posting Type"::Depreciation:
+                FALedgerEntry."FA Posting Type"::Depreciation,
+                FALedgerEntry."FA Posting Type"::"Bonus Depreciation":
                     GLAccNo := FAPostingGroup.GetAccumDepreciationAccount();
                 FALedgerEntry."FA Posting Type"::"Write-Down":
                     GLAccNo := FAPostingGroup.GetWriteDownAccount();
@@ -65,7 +66,8 @@ codeunit 31235 "FA Disposal Handler CZF"
             case FALedgerEntry."FA Posting Type" of
                 FALedgerEntry."FA Posting Type"::"Acquisition Cost":
                     GLAccNo := FAPostingGroup.GetAcquisitionCostAccountOnDisposal();
-                FALedgerEntry."FA Posting Type"::Depreciation:
+                FALedgerEntry."FA Posting Type"::Depreciation,
+                FALedgerEntry."FA Posting Type"::"Bonus Depreciation":
                     begin
                         if FAPostingGroup.UseStandardDisposalCZF(FALedgerEntry."Reason Code") then
                             FAPostingGroup.TestField("Accum. Depr. Acc. on Disposal");
@@ -926,14 +928,20 @@ codeunit 31235 "FA Disposal Handler CZF"
     local procedure OnGetBalAccAfterSaveGenJnlLineFields(FromGenJnlLine: Record "Gen. Journal Line"; var SkipInsert: Boolean; var sender: Codeunit "FA Insert G/L Account")
     var
         FAInsertGLAccHandlerCZF: Codeunit "FA Insert G/L Acc. Handler CZF";
+        FAPostingGroupAccountType: Enum "FA Posting Group Account Type";
     begin
         FAInsertGLAccHandlerCZF.SetReasonMaintenanceCode(FromGenJnlLine."Reason Code");
         if FromGenJnlLine."FA Posting Type" = FromGenJnlLine."FA Posting Type"::Maintenance then
             FAInsertGLAccHandlerCZF.SetReasonMaintenanceCode(FromGenJnlLine."Maintenance Code");
 
+        if FromGenJnlLine."FA Posting Type" = FromGenJnlLine."FA Posting Type"::"Bonus Depreciation" then
+            FAPostingGroupAccountType := "FA Posting Group Account Type"::Depreciation
+        else
+            FAPostingGroupAccountType := "FA Posting Group Account Type".FromInteger(FromGenJnlLine."FA Posting Type".AsInteger() - 1);
+
         BindSubscription(FAInsertGLAccHandlerCZF);
         sender.InsertBufferBalAcc(
-            "FA Posting Group Account Type".FromInteger(FromGenJnlLine."FA Posting Type".AsInteger() - 1), -FromGenJnlLine.Amount,
+            FAPostingGroupAccountType, -FromGenJnlLine.Amount,
             FromGenJnlLine."Depreciation Book Code", FromGenJnlLine."Posting Group",
             FromGenJnlLine."Shortcut Dimension 1 Code", FromGenJnlLine."Shortcut Dimension 2 Code",
             FromGenJnlLine."Dimension Set ID", false, false);

@@ -1796,6 +1796,7 @@ codeunit 148321 "ERM Withholding Tax Tests I"
         PostedDocumentNo: Code[20];
         UnrealizedBase: Decimal;
     begin
+        // [FEATURE] [AI TEST]
         // [SCENARIO 285194] - Test to verify after Posting Purchase Invoice with WHT, WHT Entry - External Document No. is populated with Vendor Invoice No. and Unrealized Base is correctly calculated.
         Initialize();
 

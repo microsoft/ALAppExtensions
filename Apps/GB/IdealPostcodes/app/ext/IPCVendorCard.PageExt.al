@@ -10,6 +10,7 @@ pageextension 9401 "IPC Vendor Card" extends "Vendor Card"
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
             end;
         }
@@ -17,7 +18,9 @@ pageextension 9401 "IPC Vendor Card" extends "Vendor Card"
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
+                ShowPostcodeLookup(true);
             end;
         }
         modify("Country/Region Code")
@@ -88,6 +91,8 @@ pageextension 9401 "IPC Vendor Card" extends "Vendor Card"
         Vendor: Record Vendor;
         RecRef: RecordRef;
     begin
+        if Rec."Post Code" = '' then
+            exit;
         if not IPCAddressLookupHelper.ConfiguredAndSupportedForRecord(Rec."Country/Region Code") then
             exit;
 

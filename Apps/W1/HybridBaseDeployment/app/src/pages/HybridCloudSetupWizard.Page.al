@@ -583,8 +583,15 @@ page 4000 "Hybrid Cloud Setup Wizard"
     var
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        GuidedExperience: Codeunit "Guided Experience";
         SkipShowLiveCompaniesWarning: Boolean;
     begin
+        if HybridCloudManagement.IsOnPremDevelopmentEnabled() then
+            if BindSubscription(OnPremMigrationHandler) then;
+
+        if not GuidedExperience.Exists("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Hybrid Cloud Setup Wizard") then
+            HybridCloudManagement.AddCloudMigrationWizardToAssistedSetup();
+
         FeatureTelemetry.LogUptake('0000JMS', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         IsCloudMigrationSupported := HybridCloudManagement.IsCloudMigrationUISupported();
 
@@ -673,6 +680,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
         MediaResources_Done: Record "Media Resources";
         ClientTypeManagement: Codeunit "Client Type Management";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        OnPremMigrationHandler: Codeunit "OnPrem Migration Handler";
         IsChanged: Boolean;
         TopBannerVisible: Boolean;
         IntroVisible: Boolean;

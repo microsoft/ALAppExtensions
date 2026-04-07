@@ -7,7 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 page 10055 "IRS 1099 Email Content Setup"
 {
     PageType = Card;
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
 
     layout
     {

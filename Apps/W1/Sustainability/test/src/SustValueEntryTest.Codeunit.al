@@ -4108,6 +4108,7 @@ codeunit 148190 "Sust. Value Entry Test"
         ExternalDocNo: Code[35];
         SubcategoryCode: Code[20];
     begin
+        // [FEATURE] [AI TEST]
         // [SCENARIO 620888] Verify Find Entries returns correct results when searching posted invoices by External Document No.
         LibrarySustainability.CleanUpBeforeTesting();
 

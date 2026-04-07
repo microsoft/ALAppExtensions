@@ -43,6 +43,7 @@ codeunit 18488 "GST FA Reclass Journal Tests"
         DocumentNo: Code[20];
         FAExempted: Boolean;
     begin
+        // [FEATURE] [AI TEST]
         // Check GL Entries after posting FA Reclass Journals.
 
         // 1. Setup: Create GST Setup, Locations, create and modify Depreciation Book, create FA Posting Group, create two Fixed Assets.
@@ -87,6 +88,7 @@ codeunit 18488 "GST FA Reclass Journal Tests"
         DocumentNo: Code[20];
         FAExempted: Boolean;
     begin
+        // [FEATURE] [AI TEST]
         // Check GL Entries after posting FA Reclass Journals.
 
         // 1. Setup: Create GST Setup, Locations, create and modify Depreciation Book, create FA Posting Group, create two Fixed Assets.

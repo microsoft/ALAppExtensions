@@ -14,7 +14,7 @@ pageextension 10064 "IRS 1099 Purch. Order Subform" extends "Purchase Order Subf
         {
             field("1099 Liable"; Rec."1099 Liable")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Visible = false;
             }
         }

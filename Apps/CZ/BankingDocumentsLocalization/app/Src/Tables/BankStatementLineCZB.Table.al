@@ -410,5 +410,11 @@ table 31253 "Bank Statement Line CZB"
         Validate(Amount, BankAccReconciliationLine."Statement Amount");
         Description := BankAccReconciliationLine.Description;
         "Account No." := CopyStr(BankAccReconciliationLine."Related-Party Bank Acc. No.", 1, MaxStrLen("Account No."));
+        OnAfterCopyFromBankAccReconLine(Rec, BankAccReconciliationLine);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromBankAccReconLine(var BankStatementLineCZB: Record "Bank Statement Line CZB"; BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line")
+    begin
     end;
 }

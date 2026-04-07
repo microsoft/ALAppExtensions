@@ -57,6 +57,11 @@
       "id": "82acac14-8067-499b-8cf0-f068448dff34",
       "name": "Dynamics GP Intelligent Cloud Tests",
       "publisher": "Microsoft"
+    },
+    {
+      "id": "a1b2c3d4-5678-9012-abcd-ef1234567890",
+      "name": "BC14 Reimplementation Tool Tests",
+      "publisher": "Microsoft"
     }
   ]
 }

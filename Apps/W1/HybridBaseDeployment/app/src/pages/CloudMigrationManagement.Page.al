@@ -611,7 +611,7 @@ page 40063 "Cloud Migration Management"
                 var
                     HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                 begin
-                    HybridCloudManagement.EnableDisableCustomMigration();
+                    HybridCloudManagement.EnableDisableNoCodeMigration();
                 end;
             }
             action(ManageTableMappings)

@@ -97,7 +97,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         end;
 
         // [WHEN] Validate the tables for migration
-        HybridCloudManagement.PrepareTablesForCustomMigration();
+        HybridCloudManagement.ValidateCustomMigrationTables();
 
         // [THEN] Validate successfully without any error.
     end;
@@ -138,7 +138,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         end;
 
         // [WHEN] Prepare tables for custom migration
-        HybridCloudManagement.PrepareTablesForCustomMigration();
+        HybridCloudManagement.ValidateCustomMigrationTables();
 
         // [THEN] Validation succeeds and Replicate Data is automatically set to true for the Customer table
         IntelligentCloudStatus.SetRange("Table Name", 'Customer');
@@ -184,7 +184,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         end;
 
         // [WHEN] Validate the tables for migration
-        asserterror HybridCloudManagement.PrepareTablesForCustomMigration();
+        asserterror HybridCloudManagement.ValidateCustomMigrationTables();
 
         // [THEN] An error is thrown indicating the internal table cannot be replicated
         Assert.ExpectedError('The replication properties of the following tables cannot be changed because they are internal. Changing the replication of the sensitive tables is not allowed: Access Control');
@@ -213,7 +213,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         ReplicationTableMapping.Insert();
 
         // [WHEN] Validate the tables for migration
-        asserterror HybridCloudManagement.PrepareTablesForCustomMigration();
+        asserterror HybridCloudManagement.ValidateCustomMigrationTables();
 
         // [THEN] An error is thrown because the table does not exist and its replication properties cannot be changed
         Assert.ExpectedError('The following tables do not exist in SaaS: NonExistingTable');
@@ -258,7 +258,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         end;
 
         // [WHEN] Prepare tables for custom migration
-        HybridCloudManagement.PrepareTablesForCustomMigration();
+        HybridCloudManagement.ValidateCustomMigrationTables();
 
         // [THEN] Validation succeeds without any error 
     end;
@@ -302,7 +302,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         end;
 
         // [WHEN] Prepare tables for custom migration
-        HybridCloudManagement.PrepareTablesForCustomMigration();
+        HybridCloudManagement.ValidateCustomMigrationTables();
 
         // [THEN] Validation succeeds and Replicate Data is automatically set to true for the Customer table
         IntelligentCloudStatus.SetRange("Table Name", 'Customer');
@@ -350,7 +350,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         end;
 
         // [WHEN] Validate the tables for migration
-        asserterror HybridCloudManagement.PrepareTablesForCustomMigration();
+        asserterror HybridCloudManagement.ValidateCustomMigrationTables();
 
         // [THEN] An error is thrown indicating the internal table cannot be replicated
         Assert.ExpectedError('The replication properties of the following tables cannot be changed because they are internal. Changing the replication of the sensitive tables is not allowed: Access Control');
@@ -379,7 +379,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         MigrationSetupMapping.Insert();
 
         // [WHEN] Validate the tables for migration
-        asserterror HybridCloudManagement.PrepareTablesForCustomMigration();
+        asserterror HybridCloudManagement.ValidateCustomMigrationTables();
 
         // [THEN] An error is thrown because the table does not exist and its replication properties cannot be changed
         Assert.ExpectedError('The following tables do not exist in SaaS: NonExistingTable');

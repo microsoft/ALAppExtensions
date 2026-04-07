@@ -452,27 +452,11 @@ codeunit 4001 "Hybrid Cloud Management"
 
     procedure RepairCompanionTables()
     var
-        AllObj: Record AllObj;
-        PublishedApplication: Record "Published Application";
         CompanionTableRecordConsistencyRepair: DotNet CompanionTableRecordConsistencyRepair;
     begin
         Session.LogMessage('0000FJ1', 'Companion table repair started.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', GetTelemetryCategory());
         CompanionTableRecordConsistencyRepair := CompanionTableRecordConsistencyRepair.CompanionTableRecordConsistencyRepair();
-        AllObj.SetRange("Object Type", AllObj."Object Type"::"TableExtension");
-        PublishedApplication.SetRange(Installed, true);
-        if PublishedApplication.FindSet() then
-            repeat
-                AllObj.SetRange("App Runtime Package ID", PublishedApplication."Runtime Package ID");
-                if not AllObj.IsEmpty() then begin
-#pragma warning disable AA0217
-                    Session.LogMessage('0000FJ2', StrSubstNo('Starting Repair of Companion Tables for Package ID %1', PublishedApplication."Package ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
-                    CompanionTableRecordConsistencyRepair.UpdateCompanionTablesInAppWithMissingRecords(PublishedApplication."Runtime Package ID");
-                    Commit();
-                    Session.LogMessage('0000FJ3', StrSubstNo('Completed Repair of Companion Tables for Package ID %1', PublishedApplication."Package ID"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
-#pragma warning restore
-                end;
-            until PublishedApplication.Next() = 0;
-
+        CompanionTableRecordConsistencyRepair.UpdateCompanionTablesInAppWithMissingRecords(true);
         Session.LogMessage('0000FJ4', 'Companion table repair completed successfully.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', GetTelemetryCategory());
     end;
 
@@ -878,11 +862,10 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridDeployment.ResetCloudData();
 
         MarkTablesAsReplaceData();
+        ValidateCustomMigrationTables();
         OnHandleRunReplication(Handled, RunId, ReplicationType);
-        if not Handled then begin
-            PrepareTablesForCustomMigration();
+        if not Handled then
             HybridDeployment.RunReplication(RunId, ReplicationType);
-        end;
 
         HybridReplicationSummary.CreateInProgressRecord(RunId, ReplicationType);
         if HybridReplicationSummary.FindLast() then;
@@ -909,19 +892,18 @@ codeunit 4001 "Hybrid Cloud Management"
         exit('');
     end;
 
-    internal procedure PrepareTablesForCustomMigration()
+    internal procedure ValidateCustomMigrationTables()
     var
         CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
     begin
-        CloudMigReplicateDataMgt.CheckCanChangeAllIntelligentCloudStatus();
-
-        if not IsCustomMigrationEnabled() then
+        if not IsNoCodeMigrationEnabled() then
             exit;
 
-        CloudMigReplicateDataMgt.ValidateAndEnableReplicationForMappedTables();
+        CloudMigReplicateDataMgt.CheckCanChangeAllIntelligentCloudStatus();
+        CloudMigReplicateDataMgt.ValidateCustomMigrationTables();
     end;
 
-    local procedure IsCustomMigrationEnabled(): Boolean
+    local procedure IsNoCodeMigrationEnabled(): Boolean
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
@@ -1272,12 +1254,13 @@ codeunit 4001 "Hybrid Cloud Management"
         Message(SettingForUserPermissionsMsg, IntelligentCloudSetup."Keep User Permissions");
     end;
 
-    internal procedure EnableDisableCustomMigration()
+    internal procedure EnableDisableNoCodeMigration()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
         GetIntelligentCloudSetupSafe(IntelligentCloudSetup);
         IntelligentCloudSetup."Custom Migration Enabled" := not IntelligentCloudSetup."Custom Migration Enabled";
+        IntelligentCloudSetup."Custom Migration Provider" := IntelligentCloudSetup."Custom Migration Provider"::"Custom Migration Provider";
         IntelligentCloudSetup.Modify();
         Message(CustomMigrationSettingMsg, IntelligentCloudSetup."Custom Migration Enabled");
     end;
@@ -1863,6 +1846,11 @@ codeunit 4001 "Hybrid Cloud Management"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', false, false)]
     local procedure AddIntelligentCloudToAssistedSetup()
+    begin
+        AddCloudMigrationWizardToAssistedSetup();
+    end;
+
+    internal procedure AddCloudMigrationWizardToAssistedSetup()
     var
         GuidedExperience: Codeunit "Guided Experience";
         PermissionManager: Codeunit "Permission Manager";
@@ -2305,6 +2293,17 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudStatus.SetRange(Blocked, true);
         exit(not IntelligentCloudStatus.IsEmpty());
     end;
+
+    internal procedure IsCustomMigrationEnabled(): Boolean
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not IntelligentCloudSetup.Get() then
+            exit(false);
+
+        exit(IntelligentCloudSetup."Custom Migration Provider".AsInteger() <> 0);
+    end;
+
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::User, 'OnAfterRenameUser', '', false, false)]
     local procedure RenameRecordLinkUsers(OldUserName: Code[50]; NewUserName: Code[50])

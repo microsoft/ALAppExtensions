@@ -14,22 +14,22 @@ pageextension 10048 "IRS 1099 Vendor Ledger Entries" extends "Vendor Ledger Entr
         {
             field("IRS 1099 Reporting Period"; Rec."IRS 1099 Reporting Period")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Tooltip = 'Specifies the IRS reporting period for the vendor ledger entry.';
             }
             field("IRS 1099 Form No."; Rec."IRS 1099 Form No.")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Tooltip = 'Specifies the IRS form number for the vendor ledger entry.';
             }
             field("IRS 1099 Form Box No."; Rec."IRS 1099 Form Box No.")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Tooltip = 'Specifies the IRS form box number for the vendor ledger entry.';
             }
             field("IRS 1099 Reporting Amount"; Rec."IRS 1099 Reporting Amount")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Tooltip = 'Specifies the IRS reporting amount for the vendor ledger entry.';
             }
         }

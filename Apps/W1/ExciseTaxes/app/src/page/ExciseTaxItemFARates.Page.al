@@ -10,7 +10,7 @@ page 7412 "Excise Tax Item/FA Rates"
     ApplicationArea = All;
     SourceTable = "Excise Tax Item/FA Rate";
     DataCaptionExpression = GetCaption();
-    Caption = 'Excise Tax Item/FA Rates';
+    Caption = 'Excise Duty Rates';
     DelayedInsert = true;
 
     layout
@@ -31,6 +31,7 @@ page 7412 "Excise Tax Item/FA Rates"
                 }
                 field("Source No."; Rec."Source No.")
                 {
+                    Visible = false;
                     ToolTip = 'Specifies the Item or Fixed Asset number.';
                 }
                 field("Excise Duty"; Rec."Excise Duty")

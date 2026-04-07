@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ page 10036 "IRS 1099 Form Documents"
     PageType = List;
     SourceTable = "IRS 1099 Form Doc. Header";
     CardPageId = "IRS 1099 Form Document";
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
     UsageCategory = Administration;
     RefreshOnActivate = true;
     Editable = false;

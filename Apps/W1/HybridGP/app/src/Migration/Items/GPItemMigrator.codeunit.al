@@ -62,7 +62,7 @@ codeunit 4019 "GP Item Migrator"
         if not GPItem.Get(RecordIdToMigrate) then
             exit;
 
-        if not HelperFunctions.ShouldMigrateItem(GPItem.No) then begin
+        if not HelperFunctions.ShouldMigrateItem(GPItem.ITEMNMBR) then begin
             DecrementMigratedCount();
             exit;
         end;
@@ -159,7 +159,7 @@ codeunit 4019 "GP Item Migrator"
                     CostingMethodOption::Average:
                         begin
                             // Average : Group by Loc, CurrCost
-                            GPItemTransactionAverageQuery.SetRange(No, GPItem.No);
+                            GPItemTransactionAverageQuery.SetRange(No, GPItem.ITEMNMBR);
                             GPItemTransactionAverageQuery.Open();
                             while GPItemTransactionAverageQuery.Read() do begin
                                 // 1 transaction for each grouping w/ Sum of all Quantities using CurrCost
@@ -178,7 +178,7 @@ codeunit 4019 "GP Item Migrator"
                     CostingMethodOption::Standard:
                         begin
                             // Standard : Group by Loc, Standard
-                            GPItemTransactionStandardQuery.SetRange(No, GPItem.No);
+                            GPItemTransactionStandardQuery.SetRange(No, GPItem.ITEMNMBR);
                             GPItemTransactionStandardQuery.Open();
                             while GPItemTransactionStandardQuery.Read() do begin
                                 // 1 transaction for each grouping w/ Sum of all Quantities using Standard
@@ -200,14 +200,14 @@ codeunit 4019 "GP Item Migrator"
                             '':
                                 begin
                                     // 1 transaction for each record using Unit Cost
-                                    GPItemTransaction.SetRange(No, GPItem.No);
+                                    GPItemTransaction.SetRange(No, GPItem.ITEMNMBR);
                                     if GPItemTransaction.FindSet() then
                                         repeat
                                             CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransaction.Quantity, GPItemTransaction.DateReceived);
                                         until GPItemTransaction.Next() = 0;
                                 end;
                             else begin
-                                GPItemTransactionQuery.SetRange(No, GPItem.No);
+                                GPItemTransactionQuery.SetRange(No, GPItem.ITEMNMBR);
                                 GPItemTransactionQuery.Open();
                                 while GPItemTransactionQuery.Read() do begin
                                     // 1 transaction for each grouping using Unit Cost
@@ -251,7 +251,7 @@ codeunit 4019 "GP Item Migrator"
         CreateInventoryPostingGroup(GPItem, Sender);
 
         if GPCompanyAdditionalSettings.GetMigrateItemClasses() then
-            if GPIV00101.Get(GPItem.No) then
+            if GPIV00101.Get(GPItem.ITEMNMBR) then
                 ItemClassId := CopyStr(GPIV00101.ITMCLSCD.Trim(), 1, MaxStrLen(ItemClassId));
 
         if (ItemClassId <> '') then
@@ -268,7 +268,7 @@ codeunit 4019 "GP Item Migrator"
         CreateGenProductPostingGroup(GPItem, Sender);
 
         if GPCompanyAdditionalSettings.GetMigrateItemClasses() then
-            if GPIV00101.Get(GPItem.No) then
+            if GPIV00101.Get(GPItem.ITEMNMBR) then
                 ItemClassId := CopyStr(GPIV00101.ITMCLSCD.TrimEnd(), 1, MaxStrLen(ItemClassId));
 
         if (ItemClassId <> '') then
@@ -489,7 +489,7 @@ codeunit 4019 "GP Item Migrator"
         if GPIV40400.IsEmpty() then
             exit;
 
-        if not GPIV00101.Get(GPItem.No) then
+        if not GPIV00101.Get(GPItem.ITEMNMBR) then
             exit;
 
         PostingGroupCode := CopyStr(GPIV00101.ITMCLSCD.TrimEnd(), 1, MaxStrLen(PostingGroupCode));
@@ -531,7 +531,7 @@ codeunit 4019 "GP Item Migrator"
         if not GPCompanyAdditionalSettings.GetMigrateItemClasses() then
             exit;
 
-        if not GPIV00101.Get(GPItem.No) then
+        if not GPIV00101.Get(GPItem.ITEMNMBR) then
             exit;
 
         PostingGroupCode := CopyStr(GPIV00101.ITMCLSCD.TrimEnd(), 1, MaxStrLen(PostingGroupCode));

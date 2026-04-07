@@ -300,13 +300,8 @@ table 6790 "Temp Withholding Tax Entry"
         }
         field(44; "Actual Vendor No."; Code[20])
         {
-            Caption = 'Actual Vendor No.';
+            Caption = 'Withholding Actual Vendor No.';
             DataClassification = CustomerContent;
-#if not CLEAN29
-            ObsoleteState = Pending;
-            ObsoleteTag = '29.0';
-            ObsoleteReason = 'This field has been removed and is no longer required.';
-#endif
         }
         field(45; "Wthldg. Tax Certificate No."; Code[20])
         {

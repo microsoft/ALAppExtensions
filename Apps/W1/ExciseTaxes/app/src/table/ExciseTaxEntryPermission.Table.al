@@ -6,7 +6,7 @@ namespace Microsoft.ExciseTaxes;
 
 table 7414 "Excise Tax Entry Permission"
 {
-    Caption = 'Excise Tax Entry Permission';
+    Caption = 'Excise Tax Entry Type';
     DataClassification = CustomerContent;
     LookupPageId = "Excise Tax Entry Permissions";
     DrillDownPageId = "Excise Tax Entry Permissions";

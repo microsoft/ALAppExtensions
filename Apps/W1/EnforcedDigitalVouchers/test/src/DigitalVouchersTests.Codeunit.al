@@ -1536,6 +1536,65 @@ codeunit 139515 "Digital Vouchers Tests"
         UnbindSubscription(DigVouchersDisableEnforce);
     end;
 
+    [Test]
+    procedure PartialPurchaseOrderInvoicingPreservesIncomingDocuments()
+    var
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        Vendor: Record Vendor;
+        FirstIncomingDocEntryNo: Integer;
+        SecondIncomingDocEntryNo: Integer;
+    begin
+        // [FEATURE] [AI TEST]
+        // [SCENARIO 623756] Partial purchase order invoicing should preserve incoming documents for each posted invoice
+        Initialize();
+        EnableDigitalVoucherFeature();
+
+        // [GIVEN] Digital voucher entry setup for Purchase Document is "Attachment"
+        InitSetupCheckOnly("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment);
+
+        // [GIVEN] Create a Purchase Order with one item, quantity = 2
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 2);
+
+        // [GIVEN] Attach an incoming document with attachment to the purchase order
+        PurchaseHeader.Validate("Incoming Document Entry No.", MockIncomingDocument(PurchaseHeader."Posting Date", PurchaseHeader."No."));
+        PurchaseHeader.Modify(true);
+        FirstIncomingDocEntryNo := PurchaseHeader."Incoming Document Entry No.";
+
+        // [GIVEN] Set Qty to Receive = 1 and post first partial invoice
+        PurchaseLine.Validate("Qty. to Receive", 1);
+        PurchaseLine.Validate("Qty. to Invoice", 1);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Post first partial invoice
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Get the purchase order again and set a new vendor invoice number
+        PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, PurchaseHeader."No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateRandomCode(PurchaseHeader.FieldNo("Vendor Invoice No."), DATABASE::"Purchase Header"));
+        PurchaseHeader.Modify(true);
+
+        // [GIVEN] Upload a new incoming document attachment
+        PurchaseHeader.Validate("Incoming Document Entry No.", MockIncomingDocument(PurchaseHeader."Posting Date", PurchaseHeader."No."));
+        PurchaseHeader.Modify(true);
+        SecondIncomingDocEntryNo := PurchaseHeader."Incoming Document Entry No.";
+
+        // [WHEN] Post second partial invoice (remaining quantity)
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // Verify first incoming document still has attachment
+        IncomingDocumentAttachment.SetRange("Incoming Document Entry No.", FirstIncomingDocEntryNo);
+        Assert.IsTrue(IncomingDocumentAttachment.Count() > 0, 'First incoming document attachment not found');
+
+        // [THEN] Verify the second incoming document has attachments
+        IncomingDocumentAttachment.SetRange("Incoming Document Entry No.", SecondIncomingDocEntryNo);
+        Assert.IsTrue(IncomingDocumentAttachment.Count() > 0, 'Second incoming document should have attachments');
+    end;
+
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";

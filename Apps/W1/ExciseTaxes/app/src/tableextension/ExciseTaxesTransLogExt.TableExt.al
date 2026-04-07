@@ -43,7 +43,7 @@ tableextension 7414 "Excise Taxes Trans. Log Ext" extends "Sust. Excise Taxes Tr
         field(7416; "Excise Duty"; Decimal)
         {
             AutoFormatType = 0;
-            Caption = 'Excise Duty';
+            Caption = 'Excise Duty Rate';
             DecimalPlaces = 2 : 5;
             MinValue = 0;
             DataClassification = CustomerContent;

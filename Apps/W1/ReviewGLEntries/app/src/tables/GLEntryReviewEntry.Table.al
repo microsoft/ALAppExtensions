@@ -52,6 +52,7 @@ table 22216 "G/L Entry Review Entry"
             GLEntryReviewLog."G/L Account No." := GlEntry."G/L Account No.";
             GLEntryReviewLog."Reviewed Amount" := GlEntry.Amount;
         end;
+        GLEntryReviewLog."Reviewed At" := CurrentDateTime();
         GLEntryReviewLog.Insert(true);
     end;
 

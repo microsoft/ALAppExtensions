@@ -2269,6 +2269,73 @@ codeunit 139511 "Intrastat IT Test"
     end;
 
     [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure E2EIntrastatReportITCorrPurchHeaderNoExtraZeros()
+    var
+        PurchaseLine: Record "Purchase Line";
+        DataExch: Record "Data Exch.";
+        FileMgt: Codeunit "File Management";
+        LibraryTextFileValidation: Codeunit "Library - Text File Validation";
+        TempBlob: Codeunit "Temp Blob";
+        IntrastatReportPage: TestPage "Intrastat Report";
+        InvoiceDate: Date;
+        IntrastatReportNo: Code[20];
+        FileName: Text;
+        Header: Text;
+        HeaderTotalsSection: Text;
+        ExpectedTotalsLength: Integer;
+        TotalsStartPos: Integer;
+    begin
+        BindSubscription(LibraryIntrastat);
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 624090] Corrective Purchase export header must not contain extra trailing zeros
+        // [GIVEN] Posted Purchase Order and corrective Credit Memo for intrastat
+        Initialize();
+        InvoiceDate := CalcDate('<7Y>');
+        WorkDate(InvoiceDate);
+        CreateAndPostCorrectivePurchCrMemo(LibraryIntrastat.CreateAndPostPurchaseOrderWithInvoice(PurchaseLine, InvoiceDate), CalcDate('<+1M>', InvoiceDate));
+        WorkDate(Today);
+        CreateIntrastatReportAndSuggestLines(CalcDate('<+1M>', InvoiceDate), IntrastatReportNo, Periodicity::Month, Type::Purchase, true, '999', false);
+        Commit();
+
+        // [GIVEN] A Intrastat Report with validated fields
+        EnsureLookupRecordsExist();
+        IntrastatReportPage.OpenEdit();
+        IntrastatReportPage.Filter.SetFilter("No.", IntrastatReportNo);
+        ValidateMissingFields(IntrastatReportPage);
+        IntrastatReportPage.ChecklistReport.Invoke();
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
+
+        // [WHEN] Running Create File for corrective purchase
+        IntrastatReportPage.CreateFile.Invoke();
+
+        // [THEN] Verify header totals section has correct length (72 chars: 18+5+13+36) without extra 5 trailing zeros
+        DataExch.FindLast();
+        Assert.IsTrue(DataExch."File Content".HasValue(), DataExchFileContentMissingErr);
+        DataExch.CalcFields("File Content");
+        TempBlob.FromRecord(DataExch, DataExch.FieldNo("File Content"));
+        FileName := FileMgt.ServerTempFileName('txt');
+        FileMgt.BLOBExportToServerFile(TempBlob, FileName);
+        Header := LibraryTextFileValidation.ReadLine(FileName, 1);
+
+        // Header structure before totals: EUROX(5) + VAT(11) + FileDiskNo(6) + 000000(6) + Type(1) + Period(2) + Periodicity(1) + Month(2) + CompanyVAT(11) + 00(2) + TaxRepVAT(11) = 58 chars
+        TotalsStartPos := 59;
+        // Corrective purchase totals: 18 zeros + LineCount(5) + Amount(13) + 36 zeros = 72 chars. No trailing 5 zeros.
+        ExpectedTotalsLength := 72;
+        HeaderTotalsSection := LibraryTextFileValidation.ReadValue(Header, TotalsStartPos, ExpectedTotalsLength);
+        Assert.AreEqual(ExpectedTotalsLength, StrLen(HeaderTotalsSection), 'Corrective purchase header totals section has incorrect length.');
+
+        // Verify the trailing part is exactly 36 zeros (not 41)
+        Assert.AreEqual(Format('').PadLeft(36, '0'), LibraryTextFileValidation.ReadValue(Header, TotalsStartPos + 36, 36), 'Corrective purchase header should have exactly 36 trailing zeros, not 41.');
+
+        // Verify total header length: 58 (common header) + 72 (corrective purchase totals) = 130
+        Assert.AreEqual(130, StrLen(Header), 'Corrective purchase header total length is incorrect - extra trailing zeros detected.');
+
+        IntrastatReportPage.Close();
+        UnbindSubscription(LibraryIntrastat);
+    end;
+
+    [Test]
     [Scope('OnPrem')]
     [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
     procedure IntrastatReportTotalWeight()
@@ -3789,6 +3856,9 @@ codeunit 139511 "Intrastat IT Test"
         Assert.AreEqual(Format(Round(DecVar, 1)).PadLeft(13, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 13), IntrastatFileOutputErr);
         ReadFromPosition += 13;
         Assert.AreEqual(Format('').PadLeft(54, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 54), IntrastatFileOutputErr);
+        ReadFromPosition += 54;
+        if FileType = 'C' then
+            Assert.AreEqual(Format('').PadLeft(5, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 5), IntrastatFileOutputErr);
 
         // Verify Line
         Line1 := LibraryTextFileValidation.ReadLine(FileName, 2);
@@ -3906,7 +3976,10 @@ codeunit 139511 "Intrastat IT Test"
         Evaluate(DecVar, IntrastatReportPage.IntrastatLines.Amount.Value);
         Assert.AreEqual(ConvertLastDigit(Format(Round(Abs(DecVar), 1)).PadLeft(13, '0')), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 13), IntrastatFileOutputErr);
         ReadFromPosition += 13;
-        Assert.AreEqual(Format('').PadLeft(41, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 41), IntrastatFileOutputErr);
+        Assert.AreEqual(Format('').PadLeft(36, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 36), IntrastatFileOutputErr);
+        ReadFromPosition += 36;
+        if FileType = 'C' then
+            Assert.AreEqual(Format('').PadLeft(5, '0'), LibraryTextFileValidation.ReadValue(Header, ReadFromPosition, 5), IntrastatFileOutputErr);
 
         // Verify Line
         Line1 := LibraryTextFileValidation.ReadLine(FileName, 2);
@@ -3968,6 +4041,56 @@ codeunit 139511 "Intrastat IT Test"
     procedure StrMenuHandlerShpt(Options: Text; var Choice: Integer; Instruction: Text)
     begin
         Choice := 2;
+    end;
+
+    local procedure EnsureLookupRecordsExist()
+    var
+        "Area": Record "Area";
+        CountryRegion: Record "Country/Region";
+        EntryExitPoint: Record "Entry/Exit Point";
+        ShipmentMethod: Record "Shipment Method";
+        TransactionType: Record "Transaction Type";
+        TransactionSpecification: Record "Transaction Specification";
+        TransportMethod: Record "Transport Method";
+    begin
+        if TransactionType.IsEmpty() then begin
+            TransactionType.Init();
+            TransactionType.Code := CopyStr(LibraryRandom.RandText(MaxStrLen(TransactionType.Code)), 1, MaxStrLen(TransactionType.Code));
+            TransactionType.Insert();
+        end;
+        if "Area".IsEmpty() then begin
+            "Area".Init();
+            "Area".Code := CopyStr(LibraryRandom.RandText(MaxStrLen("Area".Code)), 1, MaxStrLen("Area".Code));
+            "Area".Insert();
+        end;
+        if TransactionSpecification.IsEmpty() then begin
+            TransactionSpecification.Init();
+            TransactionSpecification.Code := CopyStr(LibraryRandom.RandText(MaxStrLen(TransactionSpecification.Code)), 1, MaxStrLen(TransactionSpecification.Code));
+            TransactionSpecification.Insert();
+        end;
+        TransactionSpecification.FindFirst();
+        CountryRegion.SetRange("EU Country/Region Code", TransactionSpecification.Code);
+        if CountryRegion.IsEmpty() then begin
+            CountryRegion.Init();
+            CountryRegion.Code := CopyStr(LibraryUtility.GenerateRandomCode(CountryRegion.FieldNo(Code), Database::"Country/Region"), 1, MaxStrLen(CountryRegion.Code));
+            CountryRegion."EU Country/Region Code" := TransactionSpecification.Code;
+            CountryRegion.Insert(true);
+        end;
+        if TransportMethod.IsEmpty() then begin
+            TransportMethod.Init();
+            TransportMethod.Code := CopyStr(LibraryRandom.RandText(MaxStrLen(TransportMethod.Code)), 1, MaxStrLen(TransportMethod.Code));
+            TransportMethod.Insert();
+        end;
+        if EntryExitPoint.IsEmpty() then begin
+            EntryExitPoint.Init();
+            EntryExitPoint.Code := CopyStr(LibraryRandom.RandText(MaxStrLen(EntryExitPoint.Code)), 1, MaxStrLen(EntryExitPoint.Code));
+            EntryExitPoint.Insert();
+        end;
+        if ShipmentMethod.IsEmpty() then begin
+            ShipmentMethod.Init();
+            ShipmentMethod.Code := CopyStr(LibraryRandom.RandText(MaxStrLen(ShipmentMethod.Code)), 1, MaxStrLen(ShipmentMethod.Code));
+            ShipmentMethod.Insert();
+        end;
     end;
 
     local procedure CreateAndPostCorrectiveSalesCrMemo(PostedSalesInvoiceCode: Code[20]; PostingDate: Date): Code[20]

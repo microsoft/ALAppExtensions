@@ -1394,6 +1394,33 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
     #endregion
 
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyUnsupportedAttachmentIsSkipped();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        RecRef: RecordRef;
+        CSVText: Text;
+    begin
+        // [SCENARIO] Attachments with unsupported MIME types are not exported in XRechnung format
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, "Sales Line Type"::Item, false));
+        RecRef.GetTable(SalesInvoiceHeader);
+
+        // [GIVEN] Create one supported CSV attachment and one unsupported TXT attachment
+        CSVText := CreateCSVDocumentAttachment(RecRef, 'data.csv');
+        CreateDocumentAttachment(RecRef, 'report.txt', 'Some text content');
+
+        // [WHEN] Export XRechnung Electronic Document
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] Only the CSV attachment (supported) is present; TXT is skipped
+        VerifyAdditionalDocumentReferenceCount(TempXMLBuffer, 1);
+        VerifyCSVAttachmentInXML(TempXMLBuffer, 'data.csv', 'text/csv', CSVText);
+    end;
+
     local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
@@ -2421,10 +2448,10 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyAdditionalDocumentReferenceCount(TempXMLBuffer, 2);
 
         // [THEN] First attachment is verified in XML with correct ID, MIME type, and content
-        VerifyAttachmentInXML(TempXMLBuffer, FileName1, 'text/csv', CSVText1);
+        VerifyCSVAttachmentInXML(TempXMLBuffer, FileName1, 'text/csv', CSVText1);
 
         // [THEN] Second attachment is verified in XML with correct ID, MIME type, and content
-        VerifyAttachmentInXML(TempXMLBuffer, FileName2, 'text/csv', CSVText2);
+        VerifyCSVAttachmentInXML(TempXMLBuffer, FileName2, 'text/csv', CSVText2);
     end;
 
 
@@ -2436,12 +2463,19 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.AreEqual(ExpectedCount, TempXMLBuffer.Count, 'Incorrect number of AdditionalDocumentReference nodes');
     end;
 
-    local procedure VerifyAttachmentInXML(var TempXMLBuffer: Record "XML Buffer" temporary; AttachmentID: Text; ExpectedMIMEType: Text; ExpectedCSVText: Text)
+    local procedure VerifyCSVAttachmentInXML(var TempXMLBuffer: Record "XML Buffer" temporary; AttachmentID: Text; ExpectedMIMEType: Text; ExpectedCSVText: Text)
     var
         Base64Convert: Codeunit "Base64 Convert";
+        Base64EncodedContent: Text;
+    begin
+        Base64EncodedContent := Base64Convert.ToBase64(ExpectedCSVText);
+        VerifyAttachmentInXML(TempXMLBuffer, AttachmentID, ExpectedMIMEType, Base64EncodedContent);
+    end;
+
+    local procedure VerifyAttachmentInXML(var TempXMLBuffer: Record "XML Buffer" temporary; AttachmentID: Text; ExpectedMIMEType: Text; ExpectedBase64Content: Text)
+    var
         TempXMLBufferAttachment: Record "XML Buffer" temporary;
         TempXMLBufferChild: Record "XML Buffer" temporary;
-        DecodedText: Text;
         EncodedContent: Text;
         ExpectedDescription: Text;
         AttachmentEntryNo: Integer;
@@ -2488,9 +2522,8 @@ codeunit 13918 "XRechnung XML Document Tests"
                 if TempXMLBufferChild.FindFirst() then
                     Assert.AreEqual(ExpectedMIMEType, TempXMLBufferChild.Value, 'Incorrect MIME type');
 
-                // Verify decoded content
-                DecodedText := Base64Convert.FromBase64(EncodedContent);
-                Assert.AreEqual(ExpectedCSVText, DecodedText, 'Decoded attachment content does not match original CSV text');
+                if ExpectedBase64Content <> '' then
+                    Assert.AreEqual(ExpectedBase64Content, EncodedContent, 'Attachment content does not match original value');
             end else
                 Error('EmbeddedDocumentBinaryObject not found for attachment %1', AttachmentID);
         end else
@@ -2765,6 +2798,17 @@ codeunit 13918 "XRechnung XML Document Tests"
         DocumentAttachment.SaveAttachment(RecRef, FileName, TempBlob);
 
         exit(CSVText);
+    end;
+
+    local procedure CreateDocumentAttachment(RecRef: RecordRef; FileName: Text; ContentText: Text)
+    var
+        DocumentAttachment: Record "Document Attachment";
+        TempBlob: Codeunit "Temp Blob";
+        OutStream: OutStream;
+    begin
+        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+        OutStream.WriteText(ContentText);
+        DocumentAttachment.SaveAttachment(RecRef, FileName, TempBlob);
     end;
 
     local procedure GetCurrencyCode(DocumentCurrencyCode: Code[10]; var Currency: Record Currency): Code[10]

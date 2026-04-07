@@ -213,10 +213,14 @@ report 6790 "Withholding Tax Certificate"
 
             trigger OnAfterGetRecord()
             begin
-                if "Bill-to/Pay-to No." <> '' then begin
-                    Vendor.Get("Bill-to/Pay-to No.");
-                    PrintPayToVendor := false;
-                end;
+                if "Actual Vendor No." <> '' then
+                    if "Actual Vendor No." <> "Bill-to/Pay-to No." then begin
+                        Vendor.Get("Actual Vendor No.");
+                        PrintPayToVendor := true;
+                    end else begin
+                        Vendor.Get("Bill-to/Pay-to No.");
+                        PrintPayToVendor := false;
+                    end;
 
                 if "Transaction Type" = "Transaction Type"::Purchase then
                     PayToVendor.Get("Bill-to/Pay-to No.")
@@ -357,7 +361,8 @@ report 6790 "Withholding Tax Certificate"
     trigger OnPreReport()
     begin
         if ("WHT Entry".GetFilter("Original Document No.") = '') or
-           ("WHT Entry".GetFilter("Bill-to/Pay-to No.") = '')
+            (("WHT Entry".GetFilter("Bill-to/Pay-to No.") = '') and
+            ("WHT Entry".GetFilter("Actual Vendor No.") = ''))
         then
             Error(BillToVendorLbl);
     end;

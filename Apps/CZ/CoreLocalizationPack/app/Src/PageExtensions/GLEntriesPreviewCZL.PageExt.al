@@ -10,15 +10,24 @@ pageextension 11760 "G/L Entries Preview CZL" extends "G/L Entries Preview"
 {
     layout
     {
+        modify("VAT Date")
+        {
+            Visible = VATDateEnabled;
+        }
+#if not CLEAN29
         addafter("Posting Date")
         {
             field("VAT Reporting Date CZL"; Rec."VAT Reporting Date")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the date used to include entries on VAT reports in a VAT period. This is either the date that the document was created or posted, depending on your setting on the General Ledger Setup page.';
-                Visible = VATDateEnabled;
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '29.0';
+                ObsoleteReason = 'The field is duplicated with "VAT Date" field. Use the "VAT Date" field instead.';
             }
         }
+#endif
         addafter("FA Entry No.")
         {
 

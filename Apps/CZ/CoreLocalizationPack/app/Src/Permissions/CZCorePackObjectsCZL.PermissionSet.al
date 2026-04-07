@@ -82,6 +82,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "Purchase Header Handler CZL" = X,
                   codeunit "Purchase Line Handler CZL" = X,
                   codeunit "Purchase Posting Handler CZL" = X,
+                  codeunit "Purchase VAT Delay Posting CZL" = X,
                   codeunit "Reconciliation Handler CZL" = X,
                   codeunit "Registration Log Mgt. CZL" = X,
                   codeunit "Registration No. Mgt. CZL" = X,

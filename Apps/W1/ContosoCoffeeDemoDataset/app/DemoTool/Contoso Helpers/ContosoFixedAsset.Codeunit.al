@@ -63,6 +63,7 @@ codeunit 4776 "Contoso Fixed Asset"
         DepreciationBook.Validate(Description, Description);
         DepreciationBook.Validate("G/L Integration - Acq. Cost", AcqCost);
         DepreciationBook.Validate("G/L Integration - Depreciation", Depreciation);
+        DepreciationBook.Validate("G/L Integration - Bonus Depr.", Depreciation);
         DepreciationBook.Validate("G/L Integration - Write-Down", WriteDown);
         DepreciationBook.Validate("G/L Integration - Appreciation", Appreciation);
         DepreciationBook.Validate("G/L Integration - Custom 1", Custom1);

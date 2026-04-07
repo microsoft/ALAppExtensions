@@ -255,6 +255,7 @@ codeunit 11748 "Install Application CZL"
         InitVATCtrlReportSections();
         InitStatutoryReportingSetup();
         InitSourceCodeSetup();
+        InitNonDeductibleVAT();
     end;
 
     local procedure ModifyData()
@@ -468,6 +469,23 @@ codeunit 11748 "Install Application CZL"
                 ConvertAccScheduleLineTotalingTypeEnumValues(AccScheduleLine);
                 AccScheduleLine.Modify(false);
             until AccScheduleLine.Next() = 0;
+    end;
+
+    local procedure InitNonDeductibleVAT()
+    var
+        VATEntry: Record "VAT Entry";
+    begin
+        VATEntry.SetFilter("Non-Deductible VAT %", '<>%1', 0);
+        VATEntry.SetLoadFields("Entry No.", Base, Amount, "Non-Deductible VAT Base", "Non-Deductible VAT Amount", "Original VAT Base CZL", "Original VAT Amount CZL", "Original VAT Entry No. CZL", "Additional-Currency Base", "Additional-Currency Amount", "Non-Deductible VAT Base ACY", "Non-Deductible VAT Amount ACY", "Original VAT Base ACY CZL", "Original VAT Amount ACY CZL");
+        if VATEntry.FindSet(true) then
+            repeat
+                VATEntry."Original VAT Base CZL" := VATEntry.CalcOriginalVATBaseCZL();
+                VATEntry."Original VAT Amount CZL" := VATEntry.CalcOriginalVATAmountCZL();
+                VATEntry."Original VAT Base ACY CZL" := VATEntry.CalcOriginalVATBaseACYCZL();
+                VATEntry."Original VAT Amount ACY CZL" := VATEntry.CalcOriginalVATAmountACYCZL();
+                VATEntry."Original VAT Entry No. CZL" := VATEntry."Entry No.";
+                if VATEntry.Modify(false) then;
+            until VATEntry.Next() = 0;
     end;
 
     local procedure ConvertAccScheduleLineTotalingTypeEnumValues(var AccScheduleLine: Record "Acc. Schedule Line");

@@ -11,6 +11,97 @@
       <rd:DataSourceID>6391917f-ce7d-447d-a227-354248d7de49</rd:DataSourceID>
     </DataSource>
   </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+      <Fields>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="AccFilter">
+          <DataField>AccFilter</DataField>
+        </Field>
+        <Field Name="GLEntryFilter">
+          <DataField>GLEntryFilter</DataField>
+        </Field>
+        <Field Name="GLAccount_No">
+          <DataField>GLAccount_No</DataField>
+        </Field>
+        <Field Name="OriginalGLEntry_EntryNo">
+          <DataField>OriginalGLEntry_EntryNo</DataField>
+        </Field>
+        <Field Name="AppliedAmount">
+          <DataField>AppliedAmount</DataField>
+        </Field>
+        <Field Name="AppliedAmountFormat">
+          <DataField>AppliedAmountFormat</DataField>
+        </Field>
+        <Field Name="OriginalEntry_CreditAmount">
+          <DataField>OriginalEntry_CreditAmount</DataField>
+        </Field>
+        <Field Name="OriginalEntry_CreditAmountFormat">
+          <DataField>OriginalEntry_CreditAmountFormat</DataField>
+        </Field>
+        <Field Name="OriginalEntry_DebitAmount">
+          <DataField>OriginalEntry_DebitAmount</DataField>
+        </Field>
+        <Field Name="OriginalEntry_DebitAmountFormat">
+          <DataField>OriginalEntry_DebitAmountFormat</DataField>
+        </Field>
+        <Field Name="OriginalEntry_Amount">
+          <DataField>OriginalEntry_Amount</DataField>
+        </Field>
+        <Field Name="OriginalEntry_AmountFormat">
+          <DataField>OriginalEntry_AmountFormat</DataField>
+        </Field>
+        <Field Name="OriginalEntry_Description">
+          <DataField>OriginalEntry_Description</DataField>
+        </Field>
+        <Field Name="OriginalEntry_PostingDate">
+          <DataField>OriginalEntry_PostingDate</DataField>
+        </Field>
+        <Field Name="OriginalEntry_DocumentNo">
+          <DataField>OriginalEntry_DocumentNo</DataField>
+        </Field>
+        <Field Name="OriginalEntry_EntryNo">
+          <DataField>OriginalEntry_EntryNo</DataField>
+        </Field>
+        <Field Name="DetailedGLEntryCZA_Amount">
+          <DataField>DetailedGLEntryCZA_Amount</DataField>
+        </Field>
+        <Field Name="DetailedGLEntryCZA_AmountFormat">
+          <DataField>DetailedGLEntryCZA_AmountFormat</DataField>
+        </Field>
+        <Field Name="GLEntry_CreditAmount">
+          <DataField>GLEntry_CreditAmount</DataField>
+        </Field>
+        <Field Name="GLEntry_CreditAmountFormat">
+          <DataField>GLEntry_CreditAmountFormat</DataField>
+        </Field>
+        <Field Name="GLEntry_DebitAmount">
+          <DataField>GLEntry_DebitAmount</DataField>
+        </Field>
+        <Field Name="GLEntry_DebitAmountFormat">
+          <DataField>GLEntry_DebitAmountFormat</DataField>
+        </Field>
+        <Field Name="GLEntry_Description">
+          <DataField>GLEntry_Description</DataField>
+        </Field>
+        <Field Name="GLEntry_PostingDate">
+          <DataField>GLEntry_PostingDate</DataField>
+        </Field>
+        <Field Name="GLEntry_DocumentNo">
+          <DataField>GLEntry_DocumentNo</DataField>
+        </Field>
+        <Field Name="DetailedGLEntryCZA_GLEntryNo">
+          <DataField>DetailedGLEntryCZA_GLEntryNo</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -31,7 +122,7 @@
               </Paragraph>
             </Paragraphs>
             <Height>0.423cm</Height>
-            <Width>17.35935cm</Width>
+            <Width>18cm</Width>
             <Style>
               <VerticalAlign>Middle</VerticalAlign>
             </Style>
@@ -53,7 +144,7 @@
             </Paragraphs>
             <Top>0.423cm</Top>
             <Height>0.423cm</Height>
-            <Width>17.35935cm</Width>
+            <Width>18cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <VerticalAlign>Middle</VerticalAlign>
@@ -63,40 +154,40 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>0.88603cm</Width>
+                  <Width>1.2cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.05001cm</Width>
+                  <Width>1.2cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.5cm</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1.62334cm</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>4.49999cm</Width>
+                  <Width>2cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1.8cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8cm</Width>
+                  <Width>4cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8cm</Width>
+                  <Width>1.9cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8cm</Width>
+                  <Width>1.9cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.2cm</Width>
+                  <Width>1.9cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.2cm</Width>
+                  <Width>1.9cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.2cm</Width>
+                  <Width>0.07938cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.07938cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.07938cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -1108,7 +1199,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -1194,7 +1284,7 @@
             <DataSetName>DataSet_Result</DataSetName>
             <Top>0.846cm</Top>
             <Height>1.86901cm</Height>
-            <Width>17.35937cm</Width>
+            <Width>18.03814cm</Width>
             <ZIndex>2</ZIndex>
             <Style />
           </Tablix>
@@ -1202,7 +1292,7 @@
         <Height>2.71501cm</Height>
         <Style />
       </Body>
-      <Width>17.35937cm</Width>
+      <Width>18.03814cm</Width>
       <Page>
         <PageHeader>
           <Height>1.269cm</Height>
@@ -1227,7 +1317,7 @@
                 </Paragraph>
               </Paragraphs>
               <Top>0.423cm</Top>
-              <Left>16.53893cm</Left>
+              <Left>17.17393cm</Left>
               <Height>0.423cm</Height>
               <Width>0.82042cm</Width>
               <Style>
@@ -1253,7 +1343,7 @@
                 </Paragraph>
               </Paragraphs>
               <Top>0.846cm</Top>
-              <Left>14.10935cm</Left>
+              <Left>14.74435cm</Left>
               <Height>0.423cm</Height>
               <Width>3.25cm</Width>
               <ZIndex>1</ZIndex>
@@ -1279,7 +1369,7 @@
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Left>14.20935cm</Left>
+              <Left>14.84435cm</Left>
               <Height>0.423cm</Height>
               <Width>3.15cm</Width>
               <ZIndex>2</ZIndex>
@@ -1326,7 +1416,7 @@
                 </Paragraph>
               </Paragraphs>
               <Top>0.423cm</Top>
-              <Left>15.48025cm</Left>
+              <Left>16.11525cm</Left>
               <Height>0.423cm</Height>
               <Width>0.88229cm</Width>
               <ZIndex>4</ZIndex>
@@ -1559,95 +1649,4 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Cm</rd:ReportUnitType>
   <rd:ReportID>04b31d42-25ec-4159-af20-e77db33ec39b</rd:ReportID>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Fields>
-        <Field Name="COMPANYNAME">
-          <DataField>COMPANYNAME</DataField>
-        </Field>
-        <Field Name="AccFilter">
-          <DataField>AccFilter</DataField>
-        </Field>
-        <Field Name="GLEntryFilter">
-          <DataField>GLEntryFilter</DataField>
-        </Field>
-        <Field Name="GLAccount_No">
-          <DataField>GLAccount_No</DataField>
-        </Field>
-        <Field Name="OriginalGLEntry_EntryNo">
-          <DataField>OriginalGLEntry_EntryNo</DataField>
-        </Field>
-        <Field Name="AppliedAmount">
-          <DataField>AppliedAmount</DataField>
-        </Field>
-        <Field Name="AppliedAmountFormat">
-          <DataField>AppliedAmountFormat</DataField>
-        </Field>
-        <Field Name="OriginalEntry_CreditAmount">
-          <DataField>OriginalEntry_CreditAmount</DataField>
-        </Field>
-        <Field Name="OriginalEntry_CreditAmountFormat">
-          <DataField>OriginalEntry_CreditAmountFormat</DataField>
-        </Field>
-        <Field Name="OriginalEntry_DebitAmount">
-          <DataField>OriginalEntry_DebitAmount</DataField>
-        </Field>
-        <Field Name="OriginalEntry_DebitAmountFormat">
-          <DataField>OriginalEntry_DebitAmountFormat</DataField>
-        </Field>
-        <Field Name="OriginalEntry_Amount">
-          <DataField>OriginalEntry_Amount</DataField>
-        </Field>
-        <Field Name="OriginalEntry_AmountFormat">
-          <DataField>OriginalEntry_AmountFormat</DataField>
-        </Field>
-        <Field Name="OriginalEntry_Description">
-          <DataField>OriginalEntry_Description</DataField>
-        </Field>
-        <Field Name="OriginalEntry_PostingDate">
-          <DataField>OriginalEntry_PostingDate</DataField>
-        </Field>
-        <Field Name="OriginalEntry_DocumentNo">
-          <DataField>OriginalEntry_DocumentNo</DataField>
-        </Field>
-        <Field Name="OriginalEntry_EntryNo">
-          <DataField>OriginalEntry_EntryNo</DataField>
-        </Field>
-        <Field Name="DetailedGLEntryCZA_Amount">
-          <DataField>DetailedGLEntryCZA_Amount</DataField>
-        </Field>
-        <Field Name="DetailedGLEntryCZA_AmountFormat">
-          <DataField>DetailedGLEntryCZA_AmountFormat</DataField>
-        </Field>
-        <Field Name="GLEntry_CreditAmount">
-          <DataField>GLEntry_CreditAmount</DataField>
-        </Field>
-        <Field Name="GLEntry_CreditAmountFormat">
-          <DataField>GLEntry_CreditAmountFormat</DataField>
-        </Field>
-        <Field Name="GLEntry_DebitAmount">
-          <DataField>GLEntry_DebitAmount</DataField>
-        </Field>
-        <Field Name="GLEntry_DebitAmountFormat">
-          <DataField>GLEntry_DebitAmountFormat</DataField>
-        </Field>
-        <Field Name="GLEntry_Description">
-          <DataField>GLEntry_Description</DataField>
-        </Field>
-        <Field Name="GLEntry_PostingDate">
-          <DataField>GLEntry_PostingDate</DataField>
-        </Field>
-        <Field Name="GLEntry_DocumentNo">
-          <DataField>GLEntry_DocumentNo</DataField>
-        </Field>
-        <Field Name="DetailedGLEntryCZA_GLEntryNo">
-          <DataField>DetailedGLEntryCZA_GLEntryNo</DataField>
-        </Field>
-      </Fields>
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-    </DataSet>
-  </DataSets>
 </Report>

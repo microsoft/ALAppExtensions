@@ -328,6 +328,7 @@ codeunit 139665 "GP Item Transaction Tests"
     begin
         GPItem.Init();
         GPItem.No := FIFOItemNoLbl;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := FIFOItemNoLbl;
         GPItem.SearchDescription := FIFOItemNoLbl;
         GPItem.ShortName := FIFOItemNoLbl;
@@ -347,6 +348,7 @@ codeunit 139665 "GP Item Transaction Tests"
 
         GPItem.Init();
         GPItem.No := FIFOSerialItemNoLbl;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := FIFOSerialItemNoLbl;
         GPItem.SearchDescription := FIFOSerialItemNoLbl;
         GPItem.ShortName := FIFOSerialItemNoLbl;
@@ -366,6 +368,7 @@ codeunit 139665 "GP Item Transaction Tests"
 
         GPItem.Init();
         GPItem.No := StandardItemNoLbl;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := StandardItemNoLbl;
         GPItem.SearchDescription := StandardItemNoLbl;
         GPItem.ShortName := StandardItemNoLbl;
@@ -385,6 +388,7 @@ codeunit 139665 "GP Item Transaction Tests"
 
         GPItem.Init();
         GPItem.No := StandardLotItemNoLbl;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := StandardLotItemNoLbl;
         GPItem.SearchDescription := StandardLotItemNoLbl;
         GPItem.ShortName := StandardLotItemNoLbl;
@@ -404,6 +408,7 @@ codeunit 139665 "GP Item Transaction Tests"
 
         GPItem.Init();
         GPItem.No := AverageItemNoLbl;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := AverageItemNoLbl;
         GPItem.SearchDescription := AverageItemNoLbl;
         GPItem.ShortName := AverageItemNoLbl;
@@ -423,6 +428,7 @@ codeunit 139665 "GP Item Transaction Tests"
 
         GPItem.Init();
         GPItem.No := AverageSerialItemNoLbl;
+        GPItem.ITEMNMBR := CopyStr(GPItem.No, 1, MaxStrLen(GPItem.ITEMNMBR));
         GPItem.Description := AverageSerialItemNoLbl;
         GPItem.SearchDescription := AverageSerialItemNoLbl;
         GPItem.ShortName := AverageSerialItemNoLbl;

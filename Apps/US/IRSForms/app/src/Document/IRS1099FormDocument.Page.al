@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ page 10037 "IRS 1099 Form Document"
 {
     PageType = Card;
     SourceTable = "IRS 1099 Form Doc. Header";
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
 
     layout
     {
@@ -81,7 +81,7 @@ page 10037 "IRS 1099 Form Document"
             }
             part(FormLines; "IRS 1099 Form Doc. Subform")
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 SubPageLink = "Document ID" = field(ID), "Period No." = field("Period No."), "Vendor No." = field("Vendor No."), "Form No." = field("Form No.");
                 Editable = IsLinesEditable;
                 Enabled = IsLinesEditable;
@@ -115,7 +115,7 @@ page 10037 "IRS 1099 Form Document"
                 Image = ReleaseDoc;
                 action(Release)
                 {
-                    ApplicationArea = BasicUS;
+                    ApplicationArea = BasicCA, BasicUS;
                     Caption = 'Re&lease';
                     Enabled = Rec.Status = Rec.Status::Open;
                     Image = ReleaseDoc;
@@ -131,7 +131,7 @@ page 10037 "IRS 1099 Form Document"
                 }
                 action(Reopen)
                 {
-                    ApplicationArea = BasicUS;
+                    ApplicationArea = BasicCA, BasicUS;
                     Caption = 'Re&open';
                     Enabled = Rec.Status <> Rec.Status::Open;
                     Image = ReOpen;
@@ -161,7 +161,7 @@ page 10037 "IRS 1099 Form Document"
             }
             action(AllowCorrection)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Allow Correction';
                 Image = ResetStatus;
                 ToolTip = 'Allows the form to be reopened for correction. After the correction is done, the form must be released again.';
@@ -175,7 +175,7 @@ page 10037 "IRS 1099 Form Document"
             }
             action(Print)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Print';
                 Ellipsis = true;
                 Image = PrintAcknowledgement;
@@ -190,7 +190,7 @@ page 10037 "IRS 1099 Form Document"
             }
             action(Reports)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Reports';
                 Ellipsis = true;
                 Image = Report;
@@ -200,7 +200,7 @@ page 10037 "IRS 1099 Form Document"
             }
             action(SendEmail)
             {
-                ApplicationArea = BasicUS;
+                ApplicationArea = BasicCA, BasicUS;
                 Caption = 'Send Email';
                 Ellipsis = true;
                 Image = Email;

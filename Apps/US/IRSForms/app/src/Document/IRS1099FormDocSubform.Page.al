@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ page 10047 "IRS 1099 Form Doc. Subform"
     MultipleNewLines = true;
     PageType = ListPart;
     SourceTable = "IRS 1099 Form Doc. Line";
-    ApplicationArea = BasicUS;
+    ApplicationArea = BasicCA, BasicUS;
 
     layout
     {

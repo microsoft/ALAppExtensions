@@ -10,6 +10,7 @@ pageextension 9403 "IPC Company Information" extends "Company Information"
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
             end;
         }
@@ -17,6 +18,7 @@ pageextension 9403 "IPC Company Information" extends "Company Information"
         {
             trigger OnBeforeValidate()
             begin
+                HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
                 ShowPostcodeLookupForAddress(false);
             end;
@@ -145,6 +147,8 @@ pageextension 9403 "IPC Company Information" extends "Company Information"
         CompanyInformation: Record "Company Information";
         RecRef: RecordRef;
     begin
+        if Rec."Post Code" = '' then
+            exit;
         if not IPCAddressLookupHelper.ConfiguredAndSupportedForRecord(Rec."Country/Region Code") then
             exit;
 
@@ -164,6 +168,8 @@ pageextension 9403 "IPC Company Information" extends "Company Information"
     var
         RecRef: RecordRef;
     begin
+        if Rec."Ship-to Post Code" = '' then
+            exit;
         if not IPCAddressLookupHelper.ConfiguredAndSupportedForRecord(Rec."Ship-to Country/Region Code") then
             exit;
         CurrPage.SaveRecord();

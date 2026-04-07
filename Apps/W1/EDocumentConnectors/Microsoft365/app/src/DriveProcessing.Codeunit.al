@@ -184,8 +184,8 @@ codeunit 6381 "Drive Processing"
 
     internal procedure SizeThreshold(): Integer
     begin
-        // 5 MB
-        exit(5242880)
+        // 20 MB
+        exit(20971520)
     end;
 
     procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)

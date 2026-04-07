@@ -49,6 +49,7 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
             else
                 GLEntryReviewLog."Reviewed Amount" := GLEntry."Amount to Review";
             GLEntryReviewLog."G/L Account No." := GLEntry."G/L Account No.";
+            GLEntryReviewLog."Reviewed At" := CurrentDateTime();
             GLEntryReviewLog.Insert(true);
 
             GLEntry."Amount to Review" := 0;
