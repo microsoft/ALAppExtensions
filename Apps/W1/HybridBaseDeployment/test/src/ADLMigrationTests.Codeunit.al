@@ -133,7 +133,7 @@ codeunit 139657 "ADL Migration Tests"
     [HandlerFunctions('CaptureMessageDialog')]
     procedure AdlWizardWorks()
     var
-        CloudMigrationAdlSetupRec: Record "Cloud Migration ADL Setup";
+        TempCloudMigrationAdlSetupRec: Record "Cloud Migration ADL Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         CloudMigrationAdlSetup: TestPage "Cloud Migration ADL Setup";
         RunId: Text;
@@ -222,7 +222,7 @@ codeunit 139657 "ADL Migration Tests"
         Assert.AreEqual(HybridReplicationSummary.ReplicationType::"Azure Data Lake", HybridReplicationSummary.ReplicationType, 'Type not ADL');
 
         // [THEN] No actual record was inserted into ADL setup table
-        Assert.IsTrue(CloudMigrationAdlSetupRec.IsEmpty(), 'Adl Setup table must be empty');
+        Assert.IsTrue(TempCloudMigrationAdlSetupRec.IsEmpty(), 'Adl Setup table must be empty');
 
         // [THEN] Page closes
         // The asserterror will fail if the page is still open
@@ -232,7 +232,7 @@ codeunit 139657 "ADL Migration Tests"
     [Test]
     procedure RunAdlMigrationInitiatesMigration()
     var
-        CloudMigrationAdlSetup: Record "Cloud Migration ADL Setup";
+        TempCloudMigrationAdlSetup: Record "Cloud Migration ADL Setup";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         Product: Text;
     begin
@@ -244,9 +244,9 @@ codeunit 139657 "ADL Migration Tests"
         LibraryHybridManagement.SetExpectedProduct(Product);
 
         // [WHEN] RunAdlMigration function is called
-        CloudMigrationAdlSetup."Storage Account Name" := 'testadl';
-        CloudMigrationAdlSetup."Storage Account Key" := 'testadlkey';
-        HybridCloudManagement.RunAdlMigration(CloudMigrationAdlSetup);
+        TempCloudMigrationAdlSetup."Storage Account Name" := 'testadl';
+        TempCloudMigrationAdlSetup."Storage Account Key" := 'testadlkey';
+        HybridCloudManagement.RunAdlMigration(TempCloudMigrationAdlSetup);
 
         // [THEN] Call to service was made with correct account name and key
         Assert.AreEqual('testadl', LibraryHybridManagement.GetAdlAccountName(), 'Unexpected account name');
@@ -256,7 +256,7 @@ codeunit 139657 "ADL Migration Tests"
     [Test]
     procedure RunAdlMigrationCreatesInProgressRecord()
     var
-        CloudMigrationAdlSetup: Record "Cloud Migration ADL Setup";
+        TempCloudMigrationAdlSetup: Record "Cloud Migration ADL Setup";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         Product: Text;
@@ -270,10 +270,10 @@ codeunit 139657 "ADL Migration Tests"
         LibraryHybridManagement.ResetSourceProduct(Product);
 
         // [WHEN] Call to initiate ADL migration is made
-        CloudMigrationAdlSetup."Storage Account Name" := 'testadl';
-        CloudMigrationAdlSetup."Storage Account Key" := 'testadlkey';
+        TempCloudMigrationAdlSetup."Storage Account Name" := 'testadl';
+        TempCloudMigrationAdlSetup."Storage Account Key" := 'testadlkey';
         LibraryHybridManagement.SetExpectedRunId(RunId);
-        HybridCloudManagement.RunAdlMigration(CloudMigrationAdlSetup);
+        HybridCloudManagement.RunAdlMigration(TempCloudMigrationAdlSetup);
 
         // [THEN] Summary record is inserted with correct values
         HybridReplicationSummary.Get(RunId);

@@ -678,8 +678,8 @@ codeunit 148099 "SAF-T Test Helper"
     begin
         Assert.AreEqual(ElementName, TempXMLBuffer.GetElementName(),
             StrSubstNo(UnexpectedElementNameErr, ElementName, TempXMLBuffer.GetElementName()));
-        Assert.AreEqual(ElementValue, TempXMLBuffer.Value,
-            StrSubstNo(UnexpectedElementValueErr, ElementName, ElementValue, TempXMLBuffer.Value));
+        Assert.AreEqual(ElementValue, TempXMLBuffer.GetValue(),
+            StrSubstNo(UnexpectedElementValueErr, ElementName, ElementValue, TempXMLBuffer.GetValue()));
     end;
 
     procedure AssertCurrentValue(var TempXMLBuffer: Record "XML Buffer" temporary; XPath: Text; ExpectedValue: Text)

@@ -3,6 +3,11 @@ codeunit 18131 "GST On Purchase Tests"
     Subtype = Test;
 
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        GSTDistributionHeader: Record "GST Distribution Header";
+        NoSeriesLine: Record "No. Series Line";
+        NoSeries: Record "No. Series";
+        LibraryAssert: Codeunit "Library Assert";
         LibraryGST: Codeunit "Library GST";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryERM: Codeunit "Library - ERM";
@@ -40,6 +45,10 @@ codeunit 18131 "GST On Purchase Tests"
         NotPostedErr: Label 'The entries were not posted.', locked = true;
         VendLedgerEntryVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
         TaxTransactionValueEmptyErr: Label 'Tax Transaction Value cannot be empty for %1', Comment = '%1 = Purchase Line Archive Record ID';
+        IsInitialized: Boolean;
+        GSTDistributionNosCodeLbl: Label 'GST-DIST', Locked = true;
+        GSTReversalDistributionNosCodeLbl: Label 'GST-REV-DIST', Locked = true;
+        ReversalDistNosErr: Label 'GST Reversal Distribution Nos. must have a value in General Ledger Setup';
 
     // [SCENARIO] User can Apply Vendor Payments to invoice with different currency exchange rates
     // [FEATURE] [Adjust Exchange Rate] [FCY] [Post Application-Vendor]    
@@ -1342,6 +1351,369 @@ codeunit 18131 "GST On Purchase Tests"
         CreateAndPostDistributionDocumentNo(DocType::"Credit Memo", DistGSTCredit::Availment, RcptGSTCredit::Availment, false);
     end;
 
+    [Test]
+    procedure DistributionUsesCorrectNoSeriesWhenReversalFalse()
+    var
+        CreatedDistributionHeader: Record "GST Distribution Header";
+        DistributionNumber: Code[20];
+    begin
+        // [SCENARIO 626441] Verify that normal distribution uses correct number series
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup with GST Distribution Nos. configured
+        SetupGeneralLedgerWithNumberSeries();
+
+        // [WHEN] Create a distribution with Reversal = FALSE
+        CreatedDistributionHeader.Init();
+        CreatedDistributionHeader.Reversal := false;
+
+        // [WHEN] Set Posting No. Series conditionally based on Reversal flag
+        if CreatedDistributionHeader.Reversal = false then
+            CreatedDistributionHeader."Posting No. Series" := GSTDistributionNosCodeLbl;
+
+        CreatedDistributionHeader.Insert(true);
+        DistributionNumber := CreatedDistributionHeader."No.";
+
+        // [THEN] Verify number is assigned from GST Distribution Nos. series
+        LibraryAssert.AreNotEqual('', DistributionNumber, 'Distribution number should be assigned');
+        CreatedDistributionHeader.TestField("No. Series", GSTDistributionNosCodeLbl);
+        LibraryAssert.AreEqual(GSTDistributionNosCodeLbl, CreatedDistributionHeader."No. Series", 'Should use GST Distribution Nos. series');
+        LibraryAssert.AreEqual(GSTDistributionNosCodeLbl, CreatedDistributionHeader."Posting No. Series", 'Posting No. Series should be GST Distribution series');
+    end;
+
+    [Test]
+    procedure ReversalUsesCorrectNoSeriesWhenReversalTrue()
+    var
+        CreatedReversalHeader: Record "GST Distribution Header";
+        ReversalNumber: Code[20];
+    begin
+        // [SCENARIO 626441] Verify that reversal distribution uses correct number series
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup with GST Reversal Distribution Nos. configured
+        SetupGeneralLedgerWithNumberSeries();
+
+        // [WHEN] Create a distribution with Reversal = TRUE
+        CreatedReversalHeader.Init();
+        CreatedReversalHeader.Reversal := true;
+
+        // [WHEN] Set Posting No. Series conditionally based on Reversal flag
+        if CreatedReversalHeader.Reversal = true then
+            CreatedReversalHeader."Posting No. Series" := GSTReversalDistributionNosCodeLbl;
+
+        CreatedReversalHeader.Insert(true);
+        ReversalNumber := CreatedReversalHeader."No.";
+
+        // [THEN] Verify number is assigned from GST Reversal Distribution Nos. series
+        LibraryAssert.AreNotEqual('', ReversalNumber, 'Reversal number should be assigned');
+        CreatedReversalHeader.TestField("No. Series", GSTReversalDistributionNosCodeLbl);
+        LibraryAssert.AreEqual(GSTReversalDistributionNosCodeLbl, CreatedReversalHeader."No. Series", 'Should use GST Reversal Distribution Nos. series');
+        LibraryAssert.AreEqual(GSTReversalDistributionNosCodeLbl, CreatedReversalHeader."Posting No. Series", 'Posting No. Series should be GST Reversal Distribution series');
+    end;
+
+    [Test]
+    [HandlerFunctions('NoSeriesModalPageHandler')]
+    procedure ReversalAssistEditGeneratesNextNumber()
+    var
+        ReversalDistributionRec: Record "GST Distribution Header";
+        OriginalNumber: Code[20];
+        NewNumber: Code[20];
+        AssistEditResult: Boolean;
+    begin
+        // [SCENARIO 626441] Verify ReversalAssistEdit generates next number from series
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup with GST Reversal Distribution Nos. configured
+        SetupGeneralLedgerWithNumberSeries();
+
+        // [GIVEN] A reversal distribution header with initial number
+        ReversalDistributionRec.Init();
+        ReversalDistributionRec.Reversal := true;
+
+        // [WHEN] Set Posting No. Series conditionally based on Reversal flag
+        if ReversalDistributionRec.Reversal = true then
+            ReversalDistributionRec."Posting No. Series" := GSTReversalDistributionNosCodeLbl;
+
+        ReversalDistributionRec.Insert(true);
+        OriginalNumber := ReversalDistributionRec."No.";
+
+        // [WHEN] Call ReversalAssistEdit procedure
+        AssistEditResult := ReversalDistributionRec.ReversalAssistEdit(ReversalDistributionRec);
+        NewNumber := ReversalDistributionRec."No.";
+
+        // [THEN] Verify procedure returns TRUE and new number is generated
+        LibraryAssert.IsTrue(AssistEditResult, 'ReversalAssistEdit should return TRUE');
+        LibraryAssert.AreNotEqual('', NewNumber, 'New number should be assigned');
+        LibraryAssert.AreNotEqual(OriginalNumber, NewNumber, 'New number should be different from original');
+    end;
+
+    [Test]
+    procedure MultipleReversalsReceiveSequentialNumbers()
+    var
+        ReversalOne: Record "GST Distribution Header";
+        ReversalTwo: Record "GST Distribution Header";
+        ReversalThree: Record "GST Distribution Header";
+        FirstNumber: Code[20];
+        SecondNumber: Code[20];
+        ThirdNumber: Code[20];
+    begin
+        // [SCENARIO 626441] Verify multiple reversals receive sequential unique numbers
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup with GST Reversal Distribution Nos. configured
+        SetupGeneralLedgerWithNumberSeries();
+
+        // [WHEN] Create first reversal distribution
+        ReversalOne.Init();
+        ReversalOne.Reversal := true;
+        if ReversalOne.Reversal = true then
+            ReversalOne."Posting No. Series" := GSTReversalDistributionNosCodeLbl;
+        ReversalOne.Insert(true);
+        FirstNumber := ReversalOne."No.";
+
+        // [WHEN] Create second reversal distribution
+        ReversalTwo.Init();
+        ReversalTwo.Reversal := true;
+        if ReversalTwo.Reversal = true then
+            ReversalTwo."Posting No. Series" := GSTReversalDistributionNosCodeLbl;
+        ReversalTwo.Insert(true);
+        SecondNumber := ReversalTwo."No.";
+
+        // [WHEN] Create third reversal distribution
+        ReversalThree.Init();
+        ReversalThree.Reversal := true;
+        if ReversalThree.Reversal = true then
+            ReversalThree."Posting No. Series" := GSTReversalDistributionNosCodeLbl;
+        ReversalThree.Insert(true);
+        ThirdNumber := ReversalThree."No.";
+
+        // [THEN] Verify all numbers are unique and sequential
+        LibraryAssert.AreNotEqual('', FirstNumber, 'First number should be assigned');
+        LibraryAssert.AreNotEqual('', SecondNumber, 'Second number should be assigned');
+        LibraryAssert.AreNotEqual('', ThirdNumber, 'Third number should be assigned');
+        LibraryAssert.AreNotEqual(FirstNumber, SecondNumber, 'First and second numbers should be different');
+        LibraryAssert.AreNotEqual(SecondNumber, ThirdNumber, 'Second and third numbers should be different');
+        LibraryAssert.AreNotEqual(FirstNumber, ThirdNumber, 'First and third numbers should be different');
+    end;
+
+    [Test]
+    procedure GSTReversalDistributionNosFieldPersists()
+    var
+        TestSeriesCode: Code[20];
+    begin
+        // [SCENARIO 626441] Verify GST Reversal Distribution Nos. field persists correctly
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup record
+        GeneralLedgerSetup.Get();
+
+        // [WHEN] Set GST Reversal Distribution Nos. field
+        TestSeriesCode := 'TEST-REV-SERIES';
+        CreateNumberSeries(TestSeriesCode);
+        GeneralLedgerSetup."GST Reversal Distribution Nos." := TestSeriesCode;
+        GeneralLedgerSetup.Modify(true);
+
+        // [THEN] Verify value persists
+        GeneralLedgerSetup.Get();
+        LibraryAssert.AreEqual(TestSeriesCode, GeneralLedgerSetup."GST Reversal Distribution Nos.", 'GST Reversal Distribution Nos. should persist');
+    end;
+
+    [Test]
+    procedure ReversalInsertSucceedsWhenNoSeriesEmpty()
+    var
+        SuccessReversalHeader: Record "GST Distribution Header";
+        ReversalNumber: Code[20];
+    begin
+        // [SCENARIO 626441] Verify reversal insert succeeds even when series not configured, but no number is assigned
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup with empty GST Reversal Distribution Nos.
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."GST Reversal Distribution Nos." := '';
+        GeneralLedgerSetup.Modify(true);
+
+        // [WHEN] Try to insert reversal distribution
+        SuccessReversalHeader.Init();
+        SuccessReversalHeader.Reversal := true;
+        SuccessReversalHeader.Insert(true);
+        ReversalNumber := SuccessReversalHeader."No.";
+
+        // [THEN] Insert succeeds but number is not assigned from series
+        LibraryAssert.AreEqual('', ReversalNumber, 'When series is empty, no number should be assigned');
+    end;
+
+    [Test]
+    procedure ReversalAssistEditErrorsWhenSeriesNotConfigured()
+    var
+        TestReversalHeader: Record "GST Distribution Header";
+    begin
+        // [SCENARIO 626441] Verify ReversalAssistEdit errors when series not configured
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup with empty GST Reversal Distribution Nos.
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."GST Reversal Distribution Nos." := '';
+        GeneralLedgerSetup.Modify(true);
+
+        // [GIVEN] A reversal distribution header
+        TestReversalHeader.Init();
+
+        // [WHEN] Call ReversalAssistEdit procedure
+        asserterror TestReversalHeader.ReversalAssistEdit(TestReversalHeader);
+
+        // [THEN] Should throw TestField error about missing configuration
+        LibraryAssert.ExpectedError(ReversalDistNosErr);
+        LibraryAssert.ExpectedErrorCode('TestField');
+    end;
+
+    [Test]
+    procedure BothSeriesCoexistAndFunctionIndependently()
+    var
+        NormalDistributionRec: Record "GST Distribution Header";
+        ReversalDistributionRec: Record "GST Distribution Header";
+        NormalDistNumber: Code[20];
+        ReversalDistNumber: Code[20];
+    begin
+        // [SCENARIO 626441] Verify both series coexist and function independently
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup with both series configured
+        SetupGeneralLedgerWithNumberSeries();
+
+        // [WHEN] Create normal distribution
+        NormalDistributionRec.Init();
+        NormalDistributionRec.Reversal := false;
+
+        // [WHEN] Set Posting No. Series conditionally based on Reversal flag
+        if NormalDistributionRec.Reversal = false then
+            NormalDistributionRec."Posting No. Series" := GSTDistributionNosCodeLbl;
+
+        NormalDistributionRec.Insert(true);
+        NormalDistNumber := NormalDistributionRec."No.";
+
+        // [WHEN] Create reversal distribution
+        ReversalDistributionRec.Init();
+        ReversalDistributionRec.Reversal := true;
+
+        // [WHEN] Set Posting No. Series conditionally based on Reversal flag
+        if ReversalDistributionRec.Reversal = true then
+            ReversalDistributionRec."Posting No. Series" := GSTReversalDistributionNosCodeLbl;
+
+        ReversalDistributionRec.Insert(true);
+        ReversalDistNumber := ReversalDistributionRec."No.";
+
+        // [THEN] Verify both use correct series and don't interfere
+        LibraryAssert.AreEqual(GSTDistributionNosCodeLbl, NormalDistributionRec."No. Series", 'Normal distribution should use correct series');
+        LibraryAssert.AreEqual(GSTReversalDistributionNosCodeLbl, ReversalDistributionRec."No. Series", 'Reversal distribution should use correct series');
+        LibraryAssert.AreEqual(GSTDistributionNosCodeLbl, NormalDistributionRec."Posting No. Series", 'Normal distribution Posting No. Series should be correct');
+        LibraryAssert.AreEqual(GSTReversalDistributionNosCodeLbl, ReversalDistributionRec."Posting No. Series", 'Reversal distribution Posting No. Series should be correct');
+        LibraryAssert.AreNotEqual(NormalDistNumber, ReversalDistNumber, 'Series should not interfere with each other');
+    end;
+
+    [Test]
+    procedure CaseStatementRoutesCorrectlyBasedOnReversalFlag()
+    var
+        NormalDistribution: Record "GST Distribution Header";
+        ReversalDistribution: Record "GST Distribution Header";
+    begin
+        // [SCENARIO 626441] Verify case statement routes correctly based on Reversal flag
+
+        Initialize();
+
+        // [GIVEN] General Ledger Setup with both series configured
+        SetupGeneralLedgerWithNumberSeries();
+
+        // [WHEN] Create distribution with Reversal = FALSE
+        NormalDistribution.Init();
+        NormalDistribution.Reversal := false;
+
+        // [WHEN] Set Posting No. Series conditionally based on Reversal flag
+        if NormalDistribution.Reversal = false then
+            NormalDistribution."Posting No. Series" := GSTDistributionNosCodeLbl;
+
+        NormalDistribution.Insert(true);
+
+        // [THEN] Verify it uses GST Distribution Nos. series
+        NormalDistribution.TestField("No. Series", GSTDistributionNosCodeLbl);
+        LibraryAssert.AreEqual(GSTDistributionNosCodeLbl, NormalDistribution."No. Series", 'FALSE case: should route to GST Distribution Nos.');
+        LibraryAssert.AreEqual(GSTDistributionNosCodeLbl, NormalDistribution."Posting No. Series", 'FALSE case: Posting No. Series should be GST Distribution');
+
+        // [WHEN] Create distribution with Reversal = TRUE
+        ReversalDistribution.Init();
+        ReversalDistribution.Reversal := true;
+
+        // [WHEN] Set Posting No. Series conditionally based on Reversal flag
+        if ReversalDistribution.Reversal = true then
+            ReversalDistribution."Posting No. Series" := GSTReversalDistributionNosCodeLbl;
+
+        ReversalDistribution.Insert(true);
+
+        // [THEN] Verify it uses GST Reversal Distribution Nos. series
+        ReversalDistribution.TestField("No. Series", GSTReversalDistributionNosCodeLbl);
+        LibraryAssert.AreEqual(GSTReversalDistributionNosCodeLbl, ReversalDistribution."No. Series", 'TRUE case: should route to GST Reversal Distribution Nos.');
+        LibraryAssert.AreEqual(GSTReversalDistributionNosCodeLbl, ReversalDistribution."Posting No. Series", 'TRUE case: Posting No. Series should be GST Reversal Distribution');
+    end;
+
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        IsInitialized := true;
+
+        // Clean up test data if any exists
+        GSTDistributionHeader.DeleteAll(true);
+        NoSeriesLine.DeleteAll(true);
+        NoSeries.DeleteAll(true);
+
+        SetupGeneralLedgerWithNumberSeries();
+    end;
+
+    local procedure SetupGeneralLedgerWithNumberSeries()
+    begin
+        GeneralLedgerSetup.Get();
+
+        // Create and setup GST Distribution Nos. series
+        CreateNumberSeries(GSTDistributionNosCodeLbl);
+        GeneralLedgerSetup."GST Distribution Nos." := GSTDistributionNosCodeLbl;
+
+        // Create and setup GST Reversal Distribution Nos. series
+        CreateNumberSeries(GSTReversalDistributionNosCodeLbl);
+        GeneralLedgerSetup."GST Reversal Distribution Nos." := GSTReversalDistributionNosCodeLbl;
+
+        GeneralLedgerSetup.Modify(true);
+    end;
+
+    local procedure CreateNumberSeries(SeriesCode: Code[20])
+    var
+        NoSeriesRecord: Record "No. Series";
+        NoSeriesLineRecord: Record "No. Series Line";
+    begin
+        if NoSeriesRecord.Get(SeriesCode) then
+            exit;
+
+        NoSeriesRecord.Init();
+        NoSeriesRecord.Code := SeriesCode;
+        NoSeriesRecord.Description := SeriesCode;
+        if NoSeriesRecord.Insert(true) then;
+
+        NoSeriesLineRecord.Init();
+        NoSeriesLineRecord."Series Code" := SeriesCode;
+        NoSeriesLineRecord."Line No." := 10000;
+        NoSeriesLineRecord."Starting No." := CopyStr(SeriesCode + '-00001', 1, 20);
+        NoSeriesLineRecord."Ending No." := CopyStr(SeriesCode + '-99999', 1, 20);
+        NoSeriesLineRecord."Last No. Used" := CopyStr(SeriesCode + '-00000', 1, 20);
+        NoSeriesLineRecord.Insert(true);
+    end;
+
     local procedure VerifyTaxTransactionValueExist(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20])
     var
         PurchaseLineArchive: Record "Purchase Line Archive";
@@ -2367,6 +2739,12 @@ codeunit 18131 "GST On Purchase Tests"
     procedure NoSeriesHandler(var NoSeriesList: TestPage "No. Series")
     begin
         NoSeriesList.Cancel().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure NoSeriesModalPageHandler(var NoSeriesList: TestPage "No. Series")
+    begin
+        NoSeriesList.OK().Invoke();
     end;
 
     [PageHandler]

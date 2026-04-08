@@ -113,7 +113,7 @@ report 10035 "IRS 1099 Create Form Docs"
 
     trigger OnPostReport()
     var
-        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         CurrReportingPeriod: Record "IRS Reporting Period";
         IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
         IRSReportingPeriod: Codeunit "IRS Reporting Period";
@@ -124,8 +124,8 @@ report 10035 "IRS 1099 Create Form Docs"
         if PrevPeriodNo <> '' then
             IRSReportingPeriod.UpdateDataForNewTaxYear(PrevPeriodNo, PeriodNo, true);
 
-        BuildCalcParams(IRS1099CalcParameters);
-        IRS1099FormDocument.CreateFormDocs(IRS1099CalcParameters);
+        BuildCalcParams(TempIRS1099CalcParameters);
+        IRS1099FormDocument.CreateFormDocs(TempIRS1099CalcParameters);
         FeatureTelemetry.LogUptake('0000MJN', IRSFormsTok, Enum::"Feature Uptake Status"::Used);
     end;
 

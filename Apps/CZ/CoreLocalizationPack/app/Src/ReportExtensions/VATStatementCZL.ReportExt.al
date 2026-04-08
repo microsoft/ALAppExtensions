@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Utilities;
 
 reportextension 11703 "VAT Statement CZL" extends "VAT Statement"
 {
@@ -69,7 +70,7 @@ reportextension 11703 "VAT Statement CZL" extends "VAT Statement"
         if SettlementNoFilter <> '' then
             Heading2 := Heading2 + ',' + VATEntry.FieldCaption("VAT Settlement No. CZL") + ':' + SettlementNoFilter;
 
-        InitHandler(GetVATStmtCalcParameters());
+        InitializeHandler(GetVATStmtCalcParameters());
     end;
 
     var
@@ -106,7 +107,7 @@ reportextension 11703 "VAT Statement CZL" extends "VAT Statement"
         RoundingDirection := NewRoundingDirection;
 
         if WithBinding then
-            InitHandler(GetVATStmtCalcParameters());
+            InitializeHandler(GetVATStmtCalcParameters());
     end;
 #pragma warning restore AL0432
 #endif
@@ -115,11 +116,18 @@ reportextension 11703 "VAT Statement CZL" extends "VAT Statement"
     begin
         InitializeRequest(NewVATStatementName, NewVATStatementLine, VATStmtCalcParameters.Selection, VATStmtCalcParameters."Period Selection", VATStmtCalcParameters."Print in Integers", VATStmtCalcParameters."Use Amounts in Add. Currency");
         SettlementNoFilter := VATStmtCalcParameters."VAT Settlement No. Filter";
-        RoundingDirection := VATStmtCalcParameters.GetRoundingTypeAsInteger();
-        InitHandler(VATStmtCalcParameters);
+        case VATStmtCalcParameters."Rounding Type" of
+            "Rounding Type"::Nearest:
+                RoundingDirection := RoundingDirection::Nearest;
+            "Rounding Type"::Up:
+                RoundingDirection := RoundingDirection::Up;
+            "Rounding Type"::Down:
+                RoundingDirection := RoundingDirection::Down;
+        end;
+        InitializeHandler(VATStmtCalcParameters);
     end;
 
-    local procedure InitHandler(VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL")
+    local procedure InitializeHandler(VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL")
     begin
         VATStatementHandler.Activate();
         VATStatementHandler.SetParameters(VATStmtCalcParameters);

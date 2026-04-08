@@ -15,7 +15,7 @@ pageextension 6788 "Withholding GL Setup" extends "General Ledger Setup"
             field("Enable Withholding Tax"; Rec."Enable Withholding Tax")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies if your company must use withholding tax.';
+                ToolTip = 'Specifies if the company enabled withholding tax functionality.';
             }
             field("Round Amount for WHT Calc"; Rec."Round Amount Wthldg. Tax Calc")
             {

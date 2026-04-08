@@ -1,0 +1,557 @@
+invoices:
+- invoice_no: INV-001
+  invoice_date: 12/05/2025
+  template: invoice_basic.html
+  
+  unknown_vendor: true
+  vendor_name: "Prime Insights PLE"
+  vendor_address: "88 Southview Rd, Boston, MA"
+  
+  items:
+  
+  - description: Consulting
+    quantity: 10
+    unit_price: 120.00
+    discount: 0.00
+    tax_rate: 0.10
+
+  - description: Consulting
+    quantity: 4
+    unit_price: 350.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-002
+  invoice_date: 13/05/2025
+  template: invoice_basic.html
+
+  unknown_vendor: true
+  vendor_name: "Prime Insights LLC"
+  vendor_address: "88 Southview Rd, Boston, MA"
+
+  items:
+  - description: Consulting
+    quantity: 2
+    unit_price: 1500.00
+    discount: 0.00
+    tax_rate: 0.10
+  - description: Consulting
+    quantity: 1
+    unit_price: 2300.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-003
+  invoice_date: 14/05/2025
+  template: invoice_basic.html
+
+  unknown_vendor: true
+  vendor_name: "Delta Creatives"
+  vendor_address: "17 Innovation Drive, Austin, TX"
+
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 2500.00
+    discount: 250.00
+    tax_rate: 0.10
+  - description: Consulting
+    quantity: 3
+    unit_price: 600.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-004
+  invoice_date: 15/05/2025
+  template: invoice_basic.html
+
+  unknown_vendor: true
+  vendor_name: "FinanceCraft Advisors"
+  vendor_address: "221 Broad Street, New York, NY"
+
+  items:
+  - description: Consulting
+    quantity: 5
+    unit_price: 300.00
+    discount: 0.00
+    tax_rate: 0.10
+  - description: Consulting
+    quantity: 1
+    unit_price: 1750.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-005
+  invoice_date: 16/05/2025
+  template: invoice_basic.html
+
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 4200.00
+    discount: 200.00
+    tax_rate: 0.10
+  - description: Consulting
+    quantity: 2
+    unit_price: 950.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-006
+  invoice_date: 21/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 8
+    unit_price: 120.0
+    discount: 100.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 2
+    unit_price: 250.0
+    discount: 100.0
+    tax_rate: 0.1
+
+- invoice_no: INV-007
+  invoice_date: 22/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 500.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 5
+    unit_price: 500.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-008
+  invoice_date: 23/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 7
+    unit_price: 500.0
+    discount: 50.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 5
+    unit_price: 350.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-009
+  invoice_date: 24/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 6
+    unit_price: 120.0
+    discount: 100.0
+    tax_rate: 0.1
+
+- invoice_no: INV-010
+  invoice_date: 25/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 5
+    unit_price: 120.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 8
+    unit_price: 250.0
+    discount: 50.0
+    tax_rate: 0.1
+
+- invoice_no: INV-011
+  invoice_date: 26/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 2
+    unit_price: 120.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 7
+    unit_price: 500.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-012
+  invoice_date: 27/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 4
+    unit_price: 750.0
+    discount: 0.0
+    tax_rate: 0.1
+  
+- invoice_no: INV-013
+  invoice_date: 28/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 10
+    unit_price: 120.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 6
+    unit_price: 350.0
+    discount: 50.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 8
+    unit_price: 120.0
+    discount: 100.0
+    tax_rate: 0.1
+
+- invoice_no: INV-014
+  invoice_date: 29/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "TechFusion Systems"
+  vendor_address: "457 Oak Boulevard, Seattle, WA"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 7500.0
+    discount: 500.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 40
+    unit_price: 110.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-015
+  invoice_date: 30/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "Global Supply Logistics"
+  vendor_address: "1200 Harbor Way, Portland, OR"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 4200.0
+    discount: 200.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 15
+    unit_price: 175.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-016
+  invoice_date: 31/05/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 12
+    unit_price: 120.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 3250.0
+    discount: 250.0
+    tax_rate: 0.1
+
+- invoice_no: INV-017
+  invoice_date: 01/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "LegalEdge Associates"
+  vendor_address: "888 Constitution Ave, Washington, DC"
+  items:
+  - description: Consulting
+    quantity: 8
+    unit_price: 275.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 3
+    unit_price: 450.0
+    discount: 100.0
+    tax_rate: 0.1
+
+- invoice_no: INV-018
+  invoice_date: 02/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 8500.0
+    discount: 500.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 40
+    unit_price: 125.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-019
+  invoice_date: 03/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "MarketPulse Analytics"
+  vendor_address: "555 Commerce Street, Chicago, IL"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 3800.0
+    discount: 300.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 2750.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-020
+  invoice_date: 04/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 5
+    unit_price: 350.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 4200.0
+    discount: 200.0
+    tax_rate: 0.1
+
+- invoice_no: INV-021
+  invoice_date: 05/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "Quantum Healthcare Solutions"
+  vendor_address: "7755 Medical Parkway, Houston, TX"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 5750.0
+    discount: 250.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 25
+    unit_price: 120.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-022
+  invoice_date: 06/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 15
+    unit_price: 120.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 4
+    unit_price: 350.0
+    discount: 50.0
+    tax_rate: 0.1
+
+- invoice_no: INV-023
+  invoice_date: 07/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "EcoSustain Partners"
+  vendor_address: "123 Green Avenue, Denver, CO"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 6200.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 4800.0
+    discount: 300.0
+    tax_rate: 0.1
+
+- invoice_no: INV-024
+  invoice_date: 08/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 3
+    unit_price: 500.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 2
+    unit_price: 1200.0
+    discount: 100.0
+    tax_rate: 0.1
+
+- invoice_no: INV-025
+  invoice_date: 09/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "VisionForward Media"
+  vendor_address: "9876 Studio Drive, Los Angeles, CA"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 8500.0
+    discount: 500.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 3200.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-026
+  invoice_date: 10/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 20
+    unit_price: 120.0
+    discount: 200.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 3800.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-027
+  invoice_date: 11/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "Innovate HR Consultants"
+  vendor_address: "432 Talent Avenue, Minneapolis, MN"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 4200.0
+    discount: 200.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 2800.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-028
+  invoice_date: 12/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 10
+    unit_price: 350.0
+    discount: 350.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 7500.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 2
+    unit_price: 750.0
+    discount: 0.0
+    tax_rate: 0.1
+
+- invoice_no: INV-029
+  invoice_date: 13/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "QuantumLeap Data Sciences"
+  vendor_address: "789 Analytics Way, Raleigh, NC"
+  items:
+  - description: Consulting
+    quantity: 1
+    unit_price: 9200.0
+    discount: 700.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 80
+    unit_price: 135.0
+    discount: 0.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 4500.0
+    discount: 500.0
+    tax_rate: 0.1
+
+- invoice_no: INV-030
+  invoice_date: 14/06/2025
+  template: invoice_basic.html
+  unknown_vendor: true
+  vendor_name: "BluePeak IT Solutions"
+  vendor_address: "9300 Hillcrest Ave, San Francisco, CA"
+  items:
+  - description: Consulting
+    quantity: 25
+    unit_price: 120.0
+    discount: 300.0
+    tax_rate: 0.1
+  - description: Consulting
+    quantity: 1
+    unit_price: 4200.0
+    discount: 0.0
+    tax_rate: 0.1

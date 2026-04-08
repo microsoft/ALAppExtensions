@@ -33,7 +33,7 @@ codeunit 139775 "Https Mock Email Test"
     [HandlerFunctions('HttpRequestMockHandler')]
     procedure SendNewMessageThroughEditorSuccessTest()
     var
-        Account: Record "Email Account";
+        TempAccount: Record "Email Account";
         OutlookAccount: Record "Email - Outlook Account";
         OutlookApiSetup: Record "Email - Outlook API Setup";
         HttpMockEmailMgnt: Codeunit "Library - Email Mock";
@@ -48,14 +48,14 @@ codeunit 139775 "Https Mock Email Test"
 
         // [GIVEN] Set up the email account and Outlook account
         PermissionsMock.Set('Super');
-        ConnectorMock.AddAccount(Account, Enum::"Email Connector"::"Microsoft 365");
-        SetupOutlookAccount(OutlookAccount, Account);
+        ConnectorMock.AddAccount(TempAccount, Enum::"Email Connector"::"Microsoft 365");
+        SetupOutlookAccount(OutlookAccount, TempAccount);
         SetupOutlookApi(OutlookApiSetup);
 
         // [GIVEN] The Email Editor pages opens up and details are filled
         Editor.Trap();
         EmailMessage.Create('', '', '', false);
-        Email.OpenInEditor(EmailMessage, Account);
+        Email.OpenInEditor(EmailMessage, TempAccount);
         Editor.ToField.SetValue('testtest@microsoft.com');
         Editor.SubjectField.SetValue('Test Subject');
         Editor.BodyField.SetValue('Test body');
@@ -67,8 +67,8 @@ codeunit 139775 "Https Mock Email Test"
         // [THEN] The mail is sent and the info is correct
         Assert.IsTrue(HttpMockEmailMgnt.SentEmailExists(EmailMessage.GetId()), 'A Sent Email record should have been inserted.');
         Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailDescription(EmailMessage.GetId(), 'Test Subject'), 'A different description was expected');
-        Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailAccountId(EmailMessage.GetId(), Account."Account Id"), 'A different account was expected');
-        Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailFrom(EmailMessage.GetId(), Account."Email Address"), 'A different sent was expected');
+        Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailAccountId(EmailMessage.GetId(), TempAccount."Account Id"), 'A different account was expected');
+        Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailFrom(EmailMessage.GetId(), TempAccount."Email Address"), 'A different sent was expected');
         Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailConnector(EmailMessage.GetId(), Enum::"Email Connector"::"Microsoft 365"), 'A different connector was expected');
     end;
 
@@ -76,7 +76,7 @@ codeunit 139775 "Https Mock Email Test"
     [HandlerFunctions('HttpRequestMockHandler')]
     procedure ScheduledEmailBackgroundSuccessTest()
     var
-        Account: Record "Email Account";
+        TempAccount: Record "Email Account";
         OutlookAccount: Record "Email - Outlook Account";
         OutlookApiSetup: Record "Email - Outlook API Setup";
         HttpMockEmailMgnt: Codeunit "Library - Email Mock";
@@ -92,11 +92,11 @@ codeunit 139775 "Https Mock Email Test"
         PermissionsMock.Set('Super');
         EmailMessage.Create(Any.Email(), Any.UnicodeText(50), Any.UnicodeText(250), true);
         Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
-        ConnectorMock.AddAccount(Account, Enum::"Email Connector"::"Microsoft 365");
-        SetupOutlookAccount(OutlookAccount, Account);
+        ConnectorMock.AddAccount(TempAccount, Enum::"Email Connector"::"Microsoft 365");
+        SetupOutlookAccount(OutlookAccount, TempAccount);
         SetupOutlookApi(OutlookApiSetup);
 
-        HttpMockEmailMgnt.SetupEmailOutbox(EmailMessage.GetId(), Enum::"Email Connector"::"Microsoft 365", Account."Account Id", 'Test Subject', Account."Email Address", UserSecurityId());
+        HttpMockEmailMgnt.SetupEmailOutbox(EmailMessage.GetId(), Enum::"Email Connector"::"Microsoft 365", TempAccount."Account Id", 'Test Subject', TempAccount."Email Address", UserSecurityId());
 
         // [WHEN] The sending task is run from the background, the post request is mocked to return a 202 - the email is sent successfully
         SetHttpMockResponse(202, 'Accepted');
@@ -108,8 +108,8 @@ codeunit 139775 "Https Mock Email Test"
         // [THEN] The mail is sent and the info is correct
         Assert.IsTrue(HttpMockEmailMgnt.SentEmailExists(EmailMessage.GetId()), 'A Sent Email record should have been inserted.');
         Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailDescription(EmailMessage.GetId(), 'Test Subject'), 'A different description was expected');
-        Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailAccountId(EmailMessage.GetId(), Account."Account Id"), 'A different account was expected');
-        Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailFrom(EmailMessage.GetId(), Account."Email Address"), 'A different sent was expected');
+        Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailAccountId(EmailMessage.GetId(), TempAccount."Account Id"), 'A different account was expected');
+        Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailFrom(EmailMessage.GetId(), TempAccount."Email Address"), 'A different sent was expected');
         Assert.IsTrue(HttpMockEmailMgnt.CheckSentEmailConnector(EmailMessage.GetId(), Enum::"Email Connector"::"Microsoft 365"), 'A different connector was expected');
     end;
 
@@ -117,7 +117,7 @@ codeunit 139775 "Https Mock Email Test"
     [HandlerFunctions('HttpRequestMockHandler')]
     procedure SendNewMessageThroughEditorFailureTest()
     var
-        Account: Record "Email Account";
+        TempAccount: Record "Email Account";
         OutlookAccount: Record "Email - Outlook Account";
         OutlookApiSetup: Record "Email - Outlook API Setup";
         HttpMockEmailMgnt: Codeunit "Library - Email Mock";
@@ -132,15 +132,15 @@ codeunit 139775 "Https Mock Email Test"
 
         // [GIVEN] Set up the email account and Outlook account
         PermissionsMock.Set('Super');
-        ConnectorMock.AddAccount(Account, Enum::"Email Connector"::"Microsoft 365");
-        SetupOutlookAccount(OutlookAccount, Account);
+        ConnectorMock.AddAccount(TempAccount, Enum::"Email Connector"::"Microsoft 365");
+        SetupOutlookAccount(OutlookAccount, TempAccount);
         SetupOutlookApi(OutlookApiSetup);
         HttpMockEmailMgnt.CleanEmailErrors();
 
         // [GIVEN] The Email Editor pages opens up and details are filled
         Editor.Trap();
         EmailMessage.Create('', '', '', false);
-        Email.OpenInEditor(EmailMessage, Account);
+        Email.OpenInEditor(EmailMessage, TempAccount);
         Editor.ToField.SetValue('testtest@microsoft.com');
         Editor.SubjectField.SetValue('Test Subject');
         Editor.BodyField.SetValue('Test body');
@@ -163,7 +163,7 @@ codeunit 139775 "Https Mock Email Test"
     [HandlerFunctions('HttpRequestMockHandler')]
     procedure ScheduledEmailBackgroundFailureTest()
     var
-        Account: Record "Email Account";
+        TempAccount: Record "Email Account";
         OutlookAccount: Record "Email - Outlook Account";
         OutlookApiSetup: Record "Email - Outlook API Setup";
         HttpMockEmailMgnt: Codeunit "Library - Email Mock";
@@ -180,10 +180,10 @@ codeunit 139775 "Https Mock Email Test"
         // [GIVEN] Set up the email account and Outlook account
         EmailMessage.Create(Any.Email(), Any.UnicodeText(50), Any.UnicodeText(250), true);
         Assert.IsTrue(EmailMessage.Get(EmailMessage.GetId()), 'The email should exist');
-        ConnectorMock.AddAccount(Account, Enum::"Email Connector"::"Microsoft 365");
-        SetupOutlookAccount(OutlookAccount, Account);
+        ConnectorMock.AddAccount(TempAccount, Enum::"Email Connector"::"Microsoft 365");
+        SetupOutlookAccount(OutlookAccount, TempAccount);
         SetupOutlookApi(OutlookApiSetup);
-        HttpMockEmailMgnt.SetupEmailOutbox(EmailMessage.GetId(), Enum::"Email Connector"::"Microsoft 365", Account."Account Id", 'Test Subject', Account."Email Address", UserSecurityId());
+        HttpMockEmailMgnt.SetupEmailOutbox(EmailMessage.GetId(), Enum::"Email Connector"::"Microsoft 365", TempAccount."Account Id", 'Test Subject', TempAccount."Email Address", UserSecurityId());
 
         // [WHEN] The sending task is run from the background, the post request is mocked to return a 400 - the email is sent unsuccessfully
         SetHttpMockResponse(400, 'Failed');

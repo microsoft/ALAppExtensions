@@ -52,7 +52,7 @@ table 18283 "Periodic GSTR-2A Data"
         }
         field(9; "Document Date"; Date)
         {
-            Caption = 'Document Date';
+            Caption = 'Posting Date';
             DataClassification = CustomerContent;
         }
         field(11; "Goods/Services"; Enum "GST Credit")

@@ -68,6 +68,7 @@ codeunit 31364 "Imp. Launch Bank Statement CZB"
     var
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
+        IsHandled: Boolean;
     begin
         BankAccReconciliation.Init();
         BankAccReconciliation."Statement Type" := BankAccReconciliation."Statement Type"::"Payment Application";
@@ -75,6 +76,11 @@ codeunit 31364 "Imp. Launch Bank Statement CZB"
         BankAccReconciliation."Statement No." := BankStatementHeaderCZB."No.";
         BankAccReconciliation.Insert();
         Commit();
+
+        IsHandled := false;
+        OnRunProcessingDataExchDefOnBeforeImportBankStatement(BankAccReconciliation, BankStatementHeaderCZB, IsHandled);
+        if IsHandled then
+            exit;
 
         if not ImportBankStatement(BankAccReconciliation) then begin
             BankAccReconciliationLine.SetRange("Statement Type", BankAccReconciliation."Statement Type");
@@ -105,6 +111,11 @@ codeunit 31364 "Imp. Launch Bank Statement CZB"
 
     [IntegrationEvent(true, false)]
     local procedure OnRunProcessingXMLPortOnAfterSetFilters(BankExportImportSetup: Record "Bank Export/Import Setup"; BankStatementHeaderCZB: Record "Bank Statement Header CZB"; var BankStatementLineCZB: Record "Bank Statement Line CZB")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnRunProcessingDataExchDefOnBeforeImportBankStatement(var BankAccReconciliation: Record "Bank Acc. Reconciliation"; BankStatementHeaderCZB: Record "Bank Statement Header CZB"; var IsHandled: Boolean)
     begin
     end;
 }

@@ -158,7 +158,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         exit(UnreliablePayerWSCZL.GetInputRecordLimit());
     end;
 
-    local procedure GetUnreliablePayerServiceSetup()
+    procedure GetUnreliablePayerServiceSetup()
     begin
         if UnreliablePayerServiceSetupRead then
             exit;
@@ -355,7 +355,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
         end;
     end;
 
-    local procedure ConfirmProcess(ConfirmQuestion: Text)
+    procedure ConfirmProcess(ConfirmQuestion: Text)
     var
         ConfirmManagement: Codeunit "Confirm Management";
         IsHandled: Boolean;

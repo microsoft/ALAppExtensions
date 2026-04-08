@@ -1,0 +1,2360 @@
+name: PA-TS-Metrics-01-fr-FR
+language: fr-FR
+tests:
+- name: PA-INV-V10-002
+  description: VendorNo=V10;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG007;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Cabinet Durand & Associés
+    Address: 22, Place du Parlement
+    Address 2: ''
+    City: RENNES
+    Country/Region Code: FR
+    Post Code: 35000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V10-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62400
+    Description: Conseil RH - entretiens
+    Quantity: 1.0
+    Unit Price: 950.0
+  - Type: 1
+    No.: 62400
+    Description: Accompagnement audit externe
+    Quantity: 1.0
+    Unit Price: 2200.0
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - février
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 62400
+    Description: Assistance contrôle fiscal
+    Quantity: 1.0
+    Unit Price: 3200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V10-002
+        Buy-from Vendor Name: Cabinet Durand & Associés
+        Buy-from Address: 22 Place du Parlement
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Conseil RH - entretiens
+        Quantity: 1.0
+        Unit Cost: 950.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Accompagnement audit externe
+        Quantity: 1.0
+        Unit Cost: 2200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - février
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Assistance contrôle fiscal
+        Quantity: 1.0
+        Unit Cost: 3200.0
+- name: PA-INV-V10-001
+  description: VendorNo=V10;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG007;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Cabinet Durand & Associés
+    Address: 22 Place du Parlement
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V10-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62400
+    Description: DSN - déclarations mensuelles
+    Quantity: 12.0
+    Unit Price: 350.0
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - décembre
+    Quantity: 1.0
+    Unit Price: 2800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V10-001
+        Buy-from Vendor Name: Cabinet Durand & Associés
+        Buy-from Address: 22 Place du Parlement
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: DSN - déclarations mensuelles
+        Quantity: 12.0
+        Unit Cost: 350.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - décembre
+        Quantity: 1.0
+        Unit Cost: 2800.0
+- name: PA-INV-V09-004
+  description: VendorNo=V09;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Mousses et Rembourrages Nantais
+    Address: 56 Rue des Usines
+    Address 2: ''
+    City: Saint-Herblain
+    Country/Region Code: FR
+    Post Code: '44800'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V09-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60220
+    Description: Duvet synthétique - luxe
+    Quantity: 60.0
+    Unit Price: 18.0
+  - Type: 1
+    No.: 60220
+    Description: Sangles élastiques - rouleaux
+    Quantity: 40.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 60220
+    Description: Crin végétal - traditionnel
+    Quantity: 50.0
+    Unit Price: 25.0
+  - Type: 1
+    No.: 60220
+    Description: Ouate silicone premium
+    Quantity: 120.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 60220
+    Description: Mousse haute résilience 40kg
+    Quantity: 60.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 60220
+    Description: Mousse polyéther standard
+    Quantity: 180.0
+    Unit Price: 22.0
+  - Type: 1
+    No.: 60220
+    Description: Ressorts biconiques - unitaires
+    Quantity: 200.0
+    Unit Price: 2.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V09-004
+        Buy-from Vendor Name: Mousses et Rembourrages Nantais
+        Buy-from Address: 56 Rue des Usines
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Herblain
+        Buy-from Post Code: '44800'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Duvet synthétique - luxe
+        Quantity: 60.0
+        Unit Cost: 18.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Sangles élastiques - rouleaux
+        Quantity: 40.0
+        Unit Cost: 32.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Crin végétal - traditionnel
+        Quantity: 50.0
+        Unit Cost: 25.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Ouate silicone premium
+        Quantity: 120.0
+        Unit Cost: 12.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse haute résilience 40kg
+        Quantity: 60.0
+        Unit Cost: 55.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse polyéther standard
+        Quantity: 180.0
+        Unit Cost: 22.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Ressorts biconiques - unitaires
+        Quantity: 200.0
+        Unit Cost: 2.5
+- name: PA-INV-V10-007
+  description: VendorNo=V10;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG007;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Cabinet Durand & Associés
+    Address: Place du Parlement 22
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: F-35000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V10-007
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62400
+    Description: Réconciliation inter-sociétés
+    Quantity: 1.0
+    Unit Price: 980.0
+  - Type: 1
+    No.: 62400
+    Description: Rapport de gestion
+    Quantity: 1.0
+    Unit Price: 1800.0
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - avril
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - novembre
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - juillet
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 62400
+    Description: Situation intermédiaire S1
+    Quantity: 1.0
+    Unit Price: 2500.0
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - août
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 62400
+    Description: Contrat mission annuelle
+    Quantity: 1.0
+    Unit Price: 35000.0
+  - Type: 1
+    No.: 62400
+    Description: Déclarations TVA - trimestre
+    Quantity: 4.0
+    Unit Price: 450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V10-007
+        Buy-from Vendor Name: Cabinet Durand & Associés
+        Buy-from Address: 22 Place du Parlement
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Réconciliation inter-sociétés
+        Quantity: 1.0
+        Unit Cost: 980.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Rapport de gestion
+        Quantity: 1.0
+        Unit Cost: 1800.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - avril
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - novembre
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 50000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - juillet
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 60000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Situation intermédiaire S1
+        Quantity: 1.0
+        Unit Cost: 2500.0
+      - Line No.: 70000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - août
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 80000
+        Type: 1
+        No.: 62400
+        Deferral Code: 12M
+        Description: Contrat mission annuelle
+        Quantity: 1.0
+        Unit Cost: 35000.0
+      - Line No.: 90000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Déclarations TVA - trimestre
+        Quantity: 4.0
+        Unit Cost: 450.0
+- name: PA-INV-V07-001
+  description: VendorNo=V07;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Transports Bretons Réunis
+    Address: Zone Logistique de Noyal
+    Address 2: ''
+    City: Noyal-sur-Vilaine
+    Country/Region Code: FR
+    Post Code: '35530'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V07-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62610
+    Description: Transport foire Cologne
+    Quantity: 1.0
+    Unit Price: 2400.0
+  - Type: 1
+    No.: 62610
+    Description: Transport retour SAV
+    Quantity: 1.0
+    Unit Price: 380.0
+  - Type: 1
+    No.: 62600
+    Description: Collecte matières - fournisseurs
+    Quantity: 1.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison Belgique - Bruxelles
+    Quantity: 1.0
+    Unit Price: 1450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V07-001
+        Buy-from Vendor Name: Transports Bretons Réunis
+        Buy-from Address: Zone Logistique de Noyal
+        Buy-from Address 2: ''
+        Buy-from City: Noyal-sur-Vilaine
+        Buy-from Post Code: '35530'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Transport foire Cologne
+        Quantity: 1.0
+        Unit Cost: 2400.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Transport retour SAV
+        Quantity: 1.0
+        Unit Cost: 380.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62600
+        Deferral Code: ''
+        Description: Collecte matières - fournisseurs
+        Quantity: 1.0
+        Unit Cost: 680.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison Belgique - Bruxelles
+        Quantity: 1.0
+        Unit Cost: 1450.0
+- name: PA-INV-V05-007
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: EDF Entreprises Bretagne
+    Address: 1 Place de Bretagne
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V05-007
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation octobre
+    Quantity: 1.0
+    Unit Price: 7500.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation mars
+    Quantity: 1.0
+    Unit Price: 7200.0
+  - Type: 1
+    No.: 63100
+    Description: Dépassement puissance - pénalité
+    Quantity: 1.0
+    Unit Price: 650.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation novembre
+    Quantity: 1.0
+    Unit Price: 8200.0
+  - Type: 1
+    No.: 63100
+    Description: Régularisation annuelle 2024
+    Quantity: 1.0
+    Unit Price: 2450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-007
+        Buy-from Vendor Name: EDF Entreprises Bretagne
+        Buy-from Address: 1 Place de Bretagne
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation octobre
+        Quantity: 1.0
+        Unit Cost: 7500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation mars
+        Quantity: 1.0
+        Unit Cost: 7200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Dépassement puissance - pénalité
+        Quantity: 1.0
+        Unit Cost: 650.0
+      - Line No.: 40000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation novembre
+        Quantity: 1.0
+        Unit Cost: 8200.0
+      - Line No.: 50000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Régularisation annuelle 2024
+        Quantity: 1.0
+        Unit Cost: 2450.0
+- name: PA-INV-V09-007
+  description: VendorNo=V09;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Mousses et Rembourrages Nantais
+    Address: 56 Rue des Usines
+    Address 2: ''
+    City: Saint-Herblain
+    Country/Region Code: FR
+    Post Code: '44800'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V09-007
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60220
+    Description: Mousse HR profilée - assise
+    Quantity: 35.0
+    Unit Price: 68.0
+  - Type: 1
+    No.: 60220
+    Description: Fibres siliconées - garnissage
+    Quantity: 80.0
+    Unit Price: 15.0
+  - Type: 1
+    No.: 60220
+    Description: Contrat annuel mousses
+    Quantity: 1.0
+    Unit Price: 22000.0
+  - Type: 1
+    No.: 60220
+    Description: Mousse extérieur - résistante
+    Quantity: 20.0
+    Unit Price: 75.0
+  - Type: 1
+    No.: 60220
+    Description: Mousse découpe CNC
+    Quantity: 25.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 60220
+    Description: Latex naturel - coussins
+    Quantity: 30.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 60220
+    Description: Mousse visco-élastique
+    Quantity: 30.0
+    Unit Price: 78.0
+  - Type: 1
+    No.: 60220
+    Description: Mousse à mémoire - découpe
+    Quantity: 20.0
+    Unit Price: 98.0
+  - Type: 1
+    No.: 60220
+    Description: Kit échantillons mousses
+    Quantity: 3.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 60220
+    Description: Ouate thermocollée
+    Quantity: 80.0
+    Unit Price: 10.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V09-007
+        Buy-from Vendor Name: Mousses et Rembourrages Nantais
+        Buy-from Address: 56 Rue des Usines
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Herblain
+        Buy-from Post Code: '44800'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse HR profilée - assise
+        Quantity: 35.0
+        Unit Cost: 68.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Fibres siliconées - garnissage
+        Quantity: 80.0
+        Unit Cost: 15.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60220
+        Deferral Code: 12M
+        Description: Contrat annuel mousses
+        Quantity: 1.0
+        Unit Cost: 22000.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse extérieur - résistante
+        Quantity: 20.0
+        Unit Cost: 75.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse découpe CNC
+        Quantity: 25.0
+        Unit Cost: 125.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Latex naturel - coussins
+        Quantity: 30.0
+        Unit Cost: 95.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse visco-élastique
+        Quantity: 30.0
+        Unit Cost: 78.0
+      - Line No.: 80000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse à mémoire - découpe
+        Quantity: 20.0
+        Unit Cost: 98.0
+      - Line No.: 90000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Kit échantillons mousses
+        Quantity: 3.0
+        Unit Cost: 45.0
+      - Line No.: 100000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Ouate thermocollée
+        Quantity: 80.0
+        Unit Cost: 10.0
+- name: PA-INV-V08-004
+  description: VendorNo=V08;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Panneaux & Contreplaqués Loire
+    Address: 18 Rte de Paris
+    Address 2: ''
+    City: Angers Cedex
+    Country/Region Code: FR
+    Post Code: 49 000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V08-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60120
+    Description: Aggloméré mélaminé gris
+    Quantity: 70.0
+    Unit Price: 25.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V08-004
+        Buy-from Vendor Name: Panneaux & Contreplaqués Loire
+        Buy-from Address: 18 Route de Paris
+        Buy-from Address 2: ''
+        Buy-from City: Angers
+        Buy-from Post Code: '49000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: Aggloméré mélaminé gris
+        Quantity: 70.0
+        Unit Cost: 25.0
+- name: PA-INV-V05-002
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: EDF Entreprises Bretagne
+    Address: 1 Place de Bretagne
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V05-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63100
+    Description: Électricité - showroom
+    Quantity: 1.0
+    Unit Price: 580.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - atelier menuiserie
+    Quantity: 1.0
+    Unit Price: 3200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-002
+        Buy-from Vendor Name: EDF Entreprises Bretagne
+        Buy-from Address: 1 Place de Bretagne
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - showroom
+        Quantity: 1.0
+        Unit Cost: 580.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - atelier menuiserie
+        Quantity: 1.0
+        Unit Cost: 3200.0
+- name: PA-INV-V05-003
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: EDF Entreprises Bretagne
+    Address: 1 Place de Bretagne
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V05-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63100
+    Description: Taxes locales électricité
+    Quantity: 1.0
+    Unit Price: 420.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation décembre
+    Quantity: 1.0
+    Unit Price: 9100.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - atelier finition
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation septembre
+    Quantity: 1.0
+    Unit Price: 6800.0
+  - Type: 1
+    No.: 63100
+    Description: Abonnement tarif jaune - site 1
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 63100
+    Description: Abonnement bureaux Liffré
+    Quantity: 1.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 63100
+    Description: Régularisation compteur T1
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - climatisation
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 63100
+    Description: Prime fixe - puissance souscrite
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 63100
+    Description: Frais mise en service
+    Quantity: 1.0
+    Unit Price: 125.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-003
+        Buy-from Vendor Name: EDF Entreprises Bretagne
+        Buy-from Address: 1 Place de Bretagne
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Taxes locales électricité
+        Quantity: 1.0
+        Unit Cost: 420.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation décembre
+        Quantity: 1.0
+        Unit Cost: 9100.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - atelier finition
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation septembre
+        Quantity: 1.0
+        Unit Cost: 6800.0
+      - Line No.: 50000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Abonnement tarif jaune - site 1
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 60000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Abonnement bureaux Liffré
+        Quantity: 1.0
+        Unit Cost: 185.0
+      - Line No.: 70000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Régularisation compteur T1
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 80000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - climatisation
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 90000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Prime fixe - puissance souscrite
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 100000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Frais mise en service
+        Quantity: 1.0
+        Unit Cost: 125.0
+- name: PA-INV-V09-003
+  description: VendorNo=V09;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Mousses et Rembourrages Nantais
+    Address: Rue des Usines 56
+    Address 2: ''
+    City: Saint-Herblain
+    Country/Region Code: FR
+    Post Code: F-44800
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V09-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60220
+    Description: Ouate 300g - dossiers
+    Quantity: 90.0
+    Unit Price: 10.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V09-003
+        Buy-from Vendor Name: Mousses et Rembourrages Nantais
+        Buy-from Address: 56 Rue des Usines
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Herblain
+        Buy-from Post Code: '44800'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Ouate 300g - dossiers
+        Quantity: 90.0
+        Unit Cost: 10.0
+- name: PA-INV-V07-002
+  description: VendorNo=V07;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG008;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Transports Bretons Réunis
+    Address: Zone Logistique, Noyal
+    Address 2: ''
+    City: NOYAL-SUR-VILAINE
+    Country/Region Code: FR
+    Post Code: 35 530
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V07-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62610
+    Description: Livraison Suisse - Genève
+    Quantity: 1.0
+    Unit Price: 1800.0
+  - Type: 1
+    No.: 62610
+    Description: Transport tables - Nantes
+    Quantity: 1.0
+    Unit Price: 320.0
+  - Type: 1
+    No.: 62610
+    Description: Transport lot sièges - central
+    Quantity: 1.0
+    Unit Price: 780.0
+  - Type: 1
+    No.: 62620
+    Description: Coursier échantillons
+    Quantity: 3.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison groupage - Toulouse
+    Quantity: 1.0
+    Unit Price: 1350.0
+  - Type: 1
+    No.: 62610
+    Description: Transport Bretagne - local
+    Quantity: 1.0
+    Unit Price: 220.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V07-002
+        Buy-from Vendor Name: Transports Bretons Réunis
+        Buy-from Address: Zone Logistique de Noyal
+        Buy-from Address 2: ''
+        Buy-from City: Noyal-sur-Vilaine
+        Buy-from Post Code: '35530'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison Suisse - Genève
+        Quantity: 1.0
+        Unit Cost: 1800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Transport tables - Nantes
+        Quantity: 1.0
+        Unit Cost: 320.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Transport lot sièges - central
+        Quantity: 1.0
+        Unit Cost: 780.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Coursier échantillons
+        Quantity: 3.0
+        Unit Cost: 65.0
+      - Line No.: 50000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison groupage - Toulouse
+        Quantity: 1.0
+        Unit Cost: 1350.0
+      - Line No.: 60000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Transport Bretagne - local
+        Quantity: 1.0
+        Unit Cost: 220.0
+- name: PA-INV-V10-005
+  description: VendorNo=V10;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG007;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Cabinet Durand & Associés
+    Address: 22 Place du Parlement
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V10-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - octobre
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 62400
+    Description: Formation comptabilité interne
+    Quantity: 1.0
+    Unit Price: 1500.0
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - septembre
+    Quantity: 1.0
+    Unit Price: 2800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V10-005
+        Buy-from Vendor Name: Cabinet Durand & Associés
+        Buy-from Address: 22 Place du Parlement
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - octobre
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Formation comptabilité interne
+        Quantity: 1.0
+        Unit Cost: 1500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - septembre
+        Quantity: 1.0
+        Unit Cost: 2800.0
+- name: PA-INV-V07-004
+  description: VendorNo=V07;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG008;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Transports Bretons Réunis
+    Address: ZL de Noyal
+    Address 2: ''
+    City: Noyal sur Vilaine
+    Country/Region Code: FR
+    Post Code: 35530
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V07-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62610
+    Description: Livraison Marseille - lot
+    Quantity: 1.0
+    Unit Price: 1500.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison mobilier - Bordeaux
+    Quantity: 1.0
+    Unit Price: 980.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison client professionnel
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison Grenoble - Alpes
+    Quantity: 1.0
+    Unit Price: 1350.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison meubles - Paris IDF
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 62610
+    Description: Transport spécial - surdimensionné
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison Luxembourg
+    Quantity: 1.0
+    Unit Price: 1100.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison chambres - Lille
+    Quantity: 1.0
+    Unit Price: 1100.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V07-004
+        Buy-from Vendor Name: Transports Bretons Réunis
+        Buy-from Address: Zone Logistique de Noyal
+        Buy-from Address 2: ''
+        Buy-from City: Noyal-sur-Vilaine
+        Buy-from Post Code: '35530'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison Marseille - lot
+        Quantity: 1.0
+        Unit Cost: 1500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison mobilier - Bordeaux
+        Quantity: 1.0
+        Unit Cost: 980.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison client professionnel
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison Grenoble - Alpes
+        Quantity: 1.0
+        Unit Cost: 1350.0
+      - Line No.: 50000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison meubles - Paris IDF
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 60000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Transport spécial - surdimensionné
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 70000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison Luxembourg
+        Quantity: 1.0
+        Unit Cost: 1100.0
+      - Line No.: 80000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison chambres - Lille
+        Quantity: 1.0
+        Unit Cost: 1100.0
+- name: PA-INV-V08-008
+  description: VendorNo=V08;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Panneaux & Contreplaqués Loire S.A.S.
+    Address: 18 Route de Paris
+    Address 2: ''
+    City: Angers
+    Country/Region Code: FR
+    Post Code: '49000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V08-008
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60120
+    Description: Panneau alvéolaire 30mm
+    Quantity: 40.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 60120
+    Description: Mélaminé décor noyer
+    Quantity: 35.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 60120
+    Description: Mélaminé décor chêne
+    Quantity: 55.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 60120
+    Description: CP tout okoumé 18mm
+    Quantity: 30.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 60120
+    Description: MDF ignifugé M1
+    Quantity: 30.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 60120
+    Description: CP multipli 25mm
+    Quantity: 20.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 60120
+    Description: Aggloméré brut 16mm
+    Quantity: 150.0
+    Unit Price: 12.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V08-008
+        Buy-from Vendor Name: Panneaux & Contreplaqués Loire
+        Buy-from Address: 18 Route de Paris
+        Buy-from Address 2: ''
+        Buy-from City: Angers
+        Buy-from Post Code: '49000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: Panneau alvéolaire 30mm
+        Quantity: 40.0
+        Unit Cost: 28.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: Mélaminé décor noyer
+        Quantity: 35.0
+        Unit Cost: 42.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: Mélaminé décor chêne
+        Quantity: 55.0
+        Unit Cost: 38.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: CP tout okoumé 18mm
+        Quantity: 30.0
+        Unit Cost: 45.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: MDF ignifugé M1
+        Quantity: 30.0
+        Unit Cost: 42.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: CP multipli 25mm
+        Quantity: 20.0
+        Unit Cost: 65.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: Aggloméré brut 16mm
+        Quantity: 150.0
+        Unit Cost: 12.0
+- name: PA-INV-V11-001
+  description: VendorNo=V11;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: CIN - Colles Industrielles Nantes
+    Address: 7 Rue de l'Industrie
+    Address 2: ''
+    City: Rezé
+    Country/Region Code: FR
+    Post Code: '44400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V11-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60500
+    Description: Colle vinylique D3 - fûts 25kg
+    Quantity: 10.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 60500
+    Description: Colle assemblage rapide
+    Quantity: 40.0
+    Unit Price: 15.0
+  - Type: 1
+    No.: 60500
+    Description: Durcisseur colle PU
+    Quantity: 10.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 60500
+    Description: Contrat fourniture colles
+    Quantity: 1.0
+    Unit Price: 8500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V11-001
+        Buy-from Vendor Name: Colles Industrielles de Nantes
+        Buy-from Address: 7 Rue de l'Industrie
+        Buy-from Address 2: ''
+        Buy-from City: Rezé
+        Buy-from Post Code: '44400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Colle vinylique D3 - fûts 25kg
+        Quantity: 10.0
+        Unit Cost: 85.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Colle assemblage rapide
+        Quantity: 40.0
+        Unit Cost: 15.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Durcisseur colle PU
+        Quantity: 10.0
+        Unit Cost: 38.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60500
+        Deferral Code: 12M
+        Description: Contrat fourniture colles
+        Quantity: 1.0
+        Unit Cost: 8500.0
+- name: PA-INV-V18-001
+  description: VendorNo=V18;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Sécurité Plus Bretagne
+    Address: 28 rue de Brest
+    Address 2: ''
+    City: Rennes Cedex
+    Country/Region Code: FR
+    Post Code: 35 000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V18-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63500
+    Description: Rondes de nuit - supplémentaires
+    Quantity: 10.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 63500
+    Description: Intervention urgence
+    Quantity: 2.0
+    Unit Price: 250.0
+  - Type: 1
+    No.: 63500
+    Description: Badges accès - lot
+    Quantity: 50.0
+    Unit Price: 8.0
+  - Type: 1
+    No.: 63500
+    Description: Remplacement détecteurs
+    Quantity: 10.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 63500
+    Description: Télésurveillance - abonnement
+    Quantity: 12.0
+    Unit Price: 180.0
+  - Type: 1
+    No.: 63500
+    Description: Mise à jour système contrôle
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 63500
+    Description: Maintenance système alarme
+    Quantity: 4.0
+    Unit Price: 350.0
+  - Type: 1
+    No.: 63500
+    Description: Installation caméras - extension
+    Quantity: 1.0
+    Unit Price: 2500.0
+  - Type: 1
+    No.: 63500
+    Description: Formation sécurité personnel
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 63500
+    Description: Gardiennage site 1 - mensuel
+    Quantity: 12.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 63500
+    Description: Intervention sur alarme
+    Quantity: 5.0
+    Unit Price: 120.0
+  - Type: 1
+    No.: 63500
+    Description: Contrat surveillance annuel
+    Quantity: 1.0
+    Unit Price: 35000.0
+  - Type: 1
+    No.: 63500
+    Description: Surveillance salon Maison&Objet
+    Quantity: 1.0
+    Unit Price: 1500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V18-001
+        Buy-from Vendor Name: Sécurité Plus Bretagne
+        Buy-from Address: 28 Rue de Brest
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Rondes de nuit - supplémentaires
+        Quantity: 10.0
+        Unit Cost: 85.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Intervention urgence
+        Quantity: 2.0
+        Unit Cost: 250.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Badges accès - lot
+        Quantity: 50.0
+        Unit Cost: 8.0
+      - Line No.: 40000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Remplacement détecteurs
+        Quantity: 10.0
+        Unit Cost: 45.0
+      - Line No.: 50000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Télésurveillance - abonnement
+        Quantity: 12.0
+        Unit Cost: 180.0
+      - Line No.: 60000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Mise à jour système contrôle
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 70000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Maintenance système alarme
+        Quantity: 4.0
+        Unit Cost: 350.0
+      - Line No.: 80000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Installation caméras - extension
+        Quantity: 1.0
+        Unit Cost: 2500.0
+      - Line No.: 90000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Formation sécurité personnel
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 100000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Gardiennage site 1 - mensuel
+        Quantity: 12.0
+        Unit Cost: 2800.0
+      - Line No.: 110000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Intervention sur alarme
+        Quantity: 5.0
+        Unit Cost: 120.0
+      - Line No.: 120000
+        Type: 1
+        No.: 63500
+        Deferral Code: 12M
+        Description: Contrat surveillance annuel
+        Quantity: 1.0
+        Unit Cost: 35000.0
+      - Line No.: 130000
+        Type: 1
+        No.: 63500
+        Deferral Code: ''
+        Description: Surveillance salon Maison&Objet
+        Quantity: 1.0
+        Unit Cost: 1500.0
+- name: PA-INV-V20-001
+  description: VendorNo=V20;VendorFrequencyGroup=Low;VendorGroup=VG002;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Informatique Services Bretagne
+    Address: 91 Avenue du Général Patton
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V20-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64100
+    Description: Tablettes - commercial
+    Quantity: 5.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 64100
+    Description: Licence Microsoft 365 - annuelle
+    Quantity: 50.0
+    Unit Price: 150.0
+  - Type: 1
+    No.: 64100
+    Description: Onduleurs - protection
+    Quantity: 5.0
+    Unit Price: 220.0
+  - Type: 1
+    No.: 64100
+    Description: Ordinateurs portables
+    Quantity: 5.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 64100
+    Description: Claviers et souris - lots
+    Quantity: 20.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 64100
+    Description: Imprimante multifonction
+    Quantity: 2.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 64100
+    Description: Mémoire RAM - extension
+    Quantity: 10.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 64100
+    Description: Serveur NAS - stockage
+    Quantity: 1.0
+    Unit Price: 2500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V20-001
+        Buy-from Vendor Name: Informatique Services Bretagne
+        Buy-from Address: 91 Avenue du Général Patton
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Tablettes - commercial
+        Quantity: 5.0
+        Unit Cost: 450.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64100
+        Deferral Code: 12M
+        Description: Licence Microsoft 365 - annuelle
+        Quantity: 50.0
+        Unit Cost: 150.0
+      - Line No.: 30000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Onduleurs - protection
+        Quantity: 5.0
+        Unit Cost: 220.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Ordinateurs portables
+        Quantity: 5.0
+        Unit Cost: 1200.0
+      - Line No.: 50000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Claviers et souris - lots
+        Quantity: 20.0
+        Unit Cost: 45.0
+      - Line No.: 60000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Imprimante multifonction
+        Quantity: 2.0
+        Unit Cost: 850.0
+      - Line No.: 70000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Mémoire RAM - extension
+        Quantity: 10.0
+        Unit Cost: 85.0
+      - Line No.: 80000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Serveur NAS - stockage
+        Quantity: 1.0
+        Unit Cost: 2500.0
+- name: PA-INV-V16-002
+  description: VendorNo=V16;VendorFrequencyGroup=Low;VendorGroup=VG001;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG004;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Machines-Outils Lefevre Industrie
+    Address: 67 Boulevard de Laval
+    Address 2: ''
+    City: Vitré
+    Country/Region Code: FR
+    Post Code: '35500'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V16-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62110
+    Description: Location mortaiseuse
+    Quantity: 1.0
+    Unit Price: 380.0
+  - Type: 1
+    No.: 62110
+    Description: Location scie à ruban
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 62110
+    Description: Location plaqueuse automatique
+    Quantity: 1.0
+    Unit Price: 1500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V16-002
+        Buy-from Vendor Name: Machines-Outils Lefevre Industrie
+        Buy-from Address: 67 Boulevard de Laval
+        Buy-from Address 2: ''
+        Buy-from City: Vitré
+        Buy-from Post Code: '35500'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Location mortaiseuse
+        Quantity: 1.0
+        Unit Cost: 380.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Location scie à ruban
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Location plaqueuse automatique
+        Quantity: 1.0
+        Unit Cost: 1500.0
+- name: PA-INV-V16-004
+  description: VendorNo=V16;VendorFrequencyGroup=Low;VendorGroup=VG001;NameAlt=True;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG004;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Lefevre Industrie - Machines-Outils
+    Address: 67 Bd de Laval
+    Address 2: ''
+    City: Vitre
+    Country/Region Code: FR
+    Post Code: 35 500
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V16-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62110
+    Description: Location aspirateur centralisé
+    Quantity: 1.0
+    Unit Price: 420.0
+  - Type: 1
+    No.: 62110
+    Description: Location équipement temporaire
+    Quantity: 1.0
+    Unit Price: 650.0
+  - Type: 1
+    No.: 62110
+    Description: Location presse hydraulique
+    Quantity: 1.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 62110
+    Description: Location défonceuse CN
+    Quantity: 1.0
+    Unit Price: 1800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V16-004
+        Buy-from Vendor Name: Machines-Outils Lefevre Industrie
+        Buy-from Address: 67 Boulevard de Laval
+        Buy-from Address 2: ''
+        Buy-from City: Vitré
+        Buy-from Post Code: '35500'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Location aspirateur centralisé
+        Quantity: 1.0
+        Unit Cost: 420.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Location équipement temporaire
+        Quantity: 1.0
+        Unit Cost: 650.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Location presse hydraulique
+        Quantity: 1.0
+        Unit Cost: 680.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Location défonceuse CN
+        Quantity: 1.0
+        Unit Cost: 1800.0
+- name: PA-INV-V20-002
+  description: VendorNo=V20;VendorFrequencyGroup=Low;VendorGroup=VG002;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Informatique Services Bretagne
+    Address: 91 Avenue du Général Patton
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V20-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64100
+    Description: Licence antivirus entreprise
+    Quantity: 50.0
+    Unit Price: 35.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V20-002
+        Buy-from Vendor Name: Informatique Services Bretagne
+        Buy-from Address: 91 Avenue du Général Patton
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64100
+        Deferral Code: 12M
+        Description: Licence antivirus entreprise
+        Quantity: 50.0
+        Unit Cost: 35.0
+- name: PA-INV-V19-006
+  description: VendorNo=V19;VendorFrequencyGroup=Low;VendorGroup=VG002;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Informatique Services Ouest S.A.R.L.
+    Address: 5 Allée du Bâtiment
+    Address 2: ''
+    City: Cesson-Sévigné
+    Country/Region Code: FR
+    Post Code: '35510'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V19-006
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64120
+    Description: Antivirus - renouvellement
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 64120
+    Description: Supervision serveurs
+    Quantity: 12.0
+    Unit Price: 150.0
+  - Type: 1
+    No.: 64120
+    Description: Migration serveur mail
+    Quantity: 1.0
+    Unit Price: 2500.0
+  - Type: 1
+    No.: 64120
+    Description: Assistance téléphonique
+    Quantity: 12.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 64120
+    Description: Rapport mensuel IT
+    Quantity: 12.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 64120
+    Description: Contrat infogérance annuel
+    Quantity: 1.0
+    Unit Price: 18000.0
+  - Type: 1
+    No.: 64120
+    Description: Restauration données
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 64120
+    Description: Formation utilisateurs
+    Quantity: 2.0
+    Unit Price: 650.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V19-006
+        Buy-from Vendor Name: Informatique Services Ouest
+        Buy-from Address: 5 Allée du Bâtiment
+        Buy-from Address 2: ''
+        Buy-from City: Cesson-Sévigné
+        Buy-from Post Code: '35510'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64120
+        Deferral Code: 12M
+        Description: Antivirus - renouvellement
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64120
+        Deferral Code: ''
+        Description: Supervision serveurs
+        Quantity: 12.0
+        Unit Cost: 150.0
+      - Line No.: 30000
+        Type: 1
+        No.: 64120
+        Deferral Code: ''
+        Description: Migration serveur mail
+        Quantity: 1.0
+        Unit Cost: 2500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64120
+        Deferral Code: ''
+        Description: Assistance téléphonique
+        Quantity: 12.0
+        Unit Cost: 95.0
+      - Line No.: 50000
+        Type: 1
+        No.: 64120
+        Deferral Code: ''
+        Description: Rapport mensuel IT
+        Quantity: 12.0
+        Unit Cost: 85.0
+      - Line No.: 60000
+        Type: 1
+        No.: 64120
+        Deferral Code: 12M
+        Description: Contrat infogérance annuel
+        Quantity: 1.0
+        Unit Cost: 18000.0
+      - Line No.: 70000
+        Type: 1
+        No.: 64120
+        Deferral Code: ''
+        Description: Restauration données
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 80000
+        Type: 1
+        No.: 64120
+        Deferral Code: ''
+        Description: Formation utilisateurs
+        Quantity: 2.0
+        Unit Cost: 650.0
+- name: PA-INV-V20-003
+  description: VendorNo=V20;VendorFrequencyGroup=Low;VendorGroup=VG002;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Informatique Services Bretagne S.A.
+    Address: 91 Avenue du Général Patton
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V20-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64110
+    Description: Abonnement stockage cloud
+    Quantity: 1.0
+    Unit Price: 1800.0
+  - Type: 1
+    No.: 64100
+    Description: Casques audio - visio
+    Quantity: 15.0
+    Unit Price: 75.0
+  - Type: 1
+    No.: 64110
+    Description: Abonnement Adobe Creative
+    Quantity: 5.0
+    Unit Price: 600.0
+  - Type: 1
+    No.: 64100
+    Description: Webcams HD
+    Quantity: 10.0
+    Unit Price: 95.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V20-003
+        Buy-from Vendor Name: Informatique Services Bretagne
+        Buy-from Address: 91 Avenue du Général Patton
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64110
+        Deferral Code: 12M
+        Description: Abonnement stockage cloud
+        Quantity: 1.0
+        Unit Cost: 1800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Casques audio - visio
+        Quantity: 15.0
+        Unit Cost: 75.0
+      - Line No.: 30000
+        Type: 1
+        No.: 64110
+        Deferral Code: 12M
+        Description: Abonnement Adobe Creative
+        Quantity: 5.0
+        Unit Cost: 600.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Webcams HD
+        Quantity: 10.0
+        Unit Cost: 95.0
+- name: PA-INV-V11-002
+  description: VendorNo=V11;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Colles Industrielles de Nantes
+    Address: 7 Rue de l'Industrie
+    Address 2: ''
+    City: Rezé
+    Country/Region Code: FR
+    Post Code: '44400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V11-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60500
+    Description: Colle blanche D2 - seaux 10kg
+    Quantity: 25.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 60500
+    Description: Colle thermofusible - EVA
+    Quantity: 30.0
+    Unit Price: 18.0
+  - Type: 1
+    No.: 60500
+    Description: Colle D4 extérieur - maritime
+    Quantity: 6.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 60500
+    Description: Adhésif PU sans solvant
+    Quantity: 12.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 60500
+    Description: Adhésif acrylique - structurel
+    Quantity: 15.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 60500
+    Description: Colle hotmelt - bâtonnets
+    Quantity: 100.0
+    Unit Price: 3.5
+  - Type: 1
+    No.: 60500
+    Description: Adhésif double face - rouleaux
+    Quantity: 30.0
+    Unit Price: 8.5
+  - Type: 1
+    No.: 62600
+    Description: Livraison produits collage
+    Quantity: 1.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 60500
+    Description: Colle placage - presse
+    Quantity: 8.0
+    Unit Price: 92.0
+  - Type: 1
+    No.: 60500
+    Description: Kit échantillons colles
+    Quantity: 2.0
+    Unit Price: 55.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V11-002
+        Buy-from Vendor Name: Colles Industrielles de Nantes
+        Buy-from Address: 7 Rue de l'Industrie
+        Buy-from Address 2: ''
+        Buy-from City: Rezé
+        Buy-from Post Code: '44400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Colle blanche D2 - seaux 10kg
+        Quantity: 25.0
+        Unit Cost: 42.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Colle thermofusible - EVA
+        Quantity: 30.0
+        Unit Cost: 18.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Colle D4 extérieur - maritime
+        Quantity: 6.0
+        Unit Cost: 125.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Adhésif PU sans solvant
+        Quantity: 12.0
+        Unit Cost: 65.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Adhésif acrylique - structurel
+        Quantity: 15.0
+        Unit Cost: 55.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Colle hotmelt - bâtonnets
+        Quantity: 100.0
+        Unit Cost: 3.5
+      - Line No.: 70000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Adhésif double face - rouleaux
+        Quantity: 30.0
+        Unit Cost: 8.5
+      - Line No.: 80000
+        Type: 1
+        No.: 62600
+        Deferral Code: ''
+        Description: Livraison produits collage
+        Quantity: 1.0
+        Unit Cost: 95.0
+      - Line No.: 90000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Colle placage - presse
+        Quantity: 8.0
+        Unit Cost: 92.0
+      - Line No.: 100000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Kit échantillons colles
+        Quantity: 2.0
+        Unit Cost: 55.0
+- name: PA-INV-V16-005
+  description: VendorNo=V16;VendorFrequencyGroup=Low;VendorGroup=VG001;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG004;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Machines-Outils Lefevre Industrie
+    Address: 67 Boulevard de Laval
+    Address 2: ''
+    City: Vitré
+    Country/Region Code: FR
+    Post Code: '35500'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V16-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62110
+    Description: Frais installation machines
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 62110
+    Description: Location tenonneuse double
+    Quantity: 1.0
+    Unit Price: 620.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V16-005
+        Buy-from Vendor Name: Machines-Outils Lefevre Industrie
+        Buy-from Address: 67 Boulevard de Laval
+        Buy-from Address 2: ''
+        Buy-from City: Vitré
+        Buy-from Post Code: '35500'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Frais installation machines
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62110
+        Deferral Code: ''
+        Description: Location tenonneuse double
+        Quantity: 1.0
+        Unit Cost: 620.0

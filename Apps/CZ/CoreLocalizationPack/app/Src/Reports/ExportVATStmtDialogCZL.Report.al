@@ -386,8 +386,8 @@ report 31003 "Export VAT Stmt. Dialog CZL"
 
     local procedure StartDateOnAfterValidate()
     begin
-        if StartDate <> 0D then
-            StartDate := GetVATPeriodEndDate();
+        if (StartDate <> 0D) and (EndDate = 0D) then
+            EndDate := GetVATPeriodEndDate();
 
         UpdateDateParameters();
         Attachments := CalcAttachmentsCount();

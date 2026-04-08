@@ -38,6 +38,7 @@ codeunit 11756 "Registration No. Mgt. CZL"
 
     local procedure CheckDuplicity(RegNo: Text[20]; Number: Code[20]; TableID: Option; IsTax: Boolean)
     begin
+        OnBeforeCheckDuplicity(Customer, Vendor, Contact);
         case TableID of
             DataBase::Customer:
                 CheckCustomerDuplicity(RegNo, Number, IsTax);
@@ -124,6 +125,11 @@ codeunit 11756 "Registration No. Mgt. CZL"
         exit(Contact.FieldCaption("Tax Registration No. CZL"));
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckDuplicity(var Customer: Record Customer; var Vendor: Record Vendor; var Contact: Record Contact)
+    begin
+    end;
+    
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckContactDuplicity(RegNo: Text[20]; Number: Code[20]; IsTax: Boolean; var IsHandled: Boolean)
     begin

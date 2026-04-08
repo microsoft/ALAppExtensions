@@ -86,7 +86,7 @@ codeunit 148069 "Balance Sheet Reports CZL"
     end;
 
     [Test]
-    [HandlerFunctions('YesConfirmHandler,RequestPageOpenBalanceSheetHandler')]
+    [HandlerFunctions('YesConfirmHandler,RequestPageOpenBalanceSheetHandler,MessageHandler')]
     procedure OpeningBalanceSheet()
     var
         GenJournalBatch: Record "Gen. Journal Batch";

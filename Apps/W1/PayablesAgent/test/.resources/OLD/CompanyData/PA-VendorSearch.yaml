@@ -1,0 +1,911 @@
+test_setup:
+  vendorsToCreate:
+  # ---------- UNITED STATES ----------
+  - vendorNo: 10002
+    name: Great Plains Manufacturing
+    address: 4555 Pioneer Road
+    city: Omaha
+    postal_code: 68104
+    country: US
+
+  - vendorNo: 10003
+    name: Great Planes Mfg
+    address: 4557 Pioneer Road
+    city: Omaha
+    postal_code: 68104
+    country: US
+
+  - vendorNo: 10004
+    name: FreshMart Foods
+    address: 89 Greenway Blvd
+    city: Denver
+    postal_code: 80202
+    country: US
+
+  - vendorNo: 10005
+    name: Fresh Mart Food Services
+    address: 90 Greenway Blvd
+    city: Denver
+    postal_code: 80202
+    country: US
+
+  - vendorNo: 10006
+    name: Clean & Green Solutions
+    address: 501 Eco Street
+    city: Portland
+    postal_code: 97204
+    country: US
+
+  - vendorNo: 10007
+    name: Clean and Green Solution
+    address: 503 Eco Street
+    city: Portland
+    postal_code: 97204
+    country: US
+
+  - vendorNo: 10008
+    name: GlobalTech Group
+    address: 1 Innovation Park
+    city: Austin
+    postal_code: 73301
+    country: US
+
+  - vendorNo: 10009
+    name: Global Technologies Inc
+    address: 2 Innovation Park
+    city: Austin
+    postal_code: 73301
+    country: US
+
+  - vendorNo: 10010
+    name: Delta Shipping Company
+    address: 400 Harbor Lane
+    city: New Orleans
+    postal_code: 70130
+    country: US
+
+  - vendorNo: 10011
+    name: D. Shipping Co
+    address: 401 Harbor Lane
+    city: New Orleans
+    postal_code: 70130
+    country: US
+
+  - vendorNo: 10012
+    name: Prime Office Solutions
+    address: 780 Corporate Ave
+    city: Dallas
+    postal_code: 75201
+    country: US
+
+  - vendorNo: 10013
+    name: Pr1me Office Solution
+    address: 782 Corporate Ave
+    city: Dallas
+    postal_code: 75201
+    country: US
+
+  - vendorNo: 10014
+    name: Jutland Builders Inc
+    address: 900 Construction Road
+    city: Phoenix
+    postal_code: 85001
+    country: US
+
+  - vendorNo: 10015
+    name: JutLand Building Corp
+    address: 902 Construction Road
+    city: Phoenix
+    postal_code: 85001
+    country: US
+
+  - vendorNo: 10016
+    name: SuperMart USA
+    address: 200 Main Street
+    city: Chicago
+    postal_code: 60601
+    country: US
+
+  - vendorNo: 10017
+    name: SuperMarten Superstore
+    address: 202 Main Street
+    city: Chicago
+    postal_code: 60601
+    country: US
+
+  - vendorNo: 10018
+    name: Horizon Logistics
+    address: 550 Horizon Blvd
+    city: Atlanta
+    postal_code: 30303
+    country: US
+
+  - vendorNo: 10019
+    name: Horizon Logistix
+    address: 551 Horizon Blvd
+    city: Atlanta
+    postal_code: 30303
+    country: US
+
+  - vendorNo: 10020
+    name: Techies Hub
+    address: 340 Silicon Drive
+    city: San Jose
+    postal_code: 95112
+    country: US
+
+  - vendorNo: 10021
+    name: Techie's Hub
+    address: 341 Silicon Drive
+    city: San Jose
+    postal_code: 95112
+    country: US
+
+  - vendorNo: 10022
+    name: Green Valley Organics
+    address: 88 Farm Lane
+    city: Nashville
+    postal_code: 37201
+    country: US
+
+  - vendorNo: 10023
+    name: GreenValley Organic Foods
+    address: 89 Farm Lane
+    city: Nashville
+    postal_code: 37201
+    country: US
+
+  - vendorNo: 10024
+    name: Oceanic Imports
+    address: 120 Pier Street
+    city: Boston
+    postal_code: 02110
+    country: US
+
+  - vendorNo: 10025
+    name: Wawe Imports LLC
+    address: 121 Pier Street
+    city: Boston
+    postal_code: 02110
+    country: US
+
+  - vendorNo: 10026
+    name: West Coast Cycling
+    address: 300 Bike Blvd
+    city: Seattle
+    postal_code: 98101
+    country: US
+
+  - vendorNo: 10027
+    name: WestCoast Cycle
+    address: 302 Bike Blvd
+    city: Seattle
+    postal_code: 98101
+    country: US
+
+  - vendorNo: 10028
+    name: Alpha Medical Supplies
+    address: 999 Health Drive
+    city: Houston
+    postal_code: 77002
+    country: US
+
+  - vendorNo: 10029
+    name: AlphaMed Supply
+    address: 1001 Health Drive
+    city: Houston
+    postal_code: 77002
+    country: US
+
+  - vendorNo: 10030
+    name: Northern Lights Brewery
+    address: 87 Barley Lane
+    city: Minneapolis
+    postal_code: 55401
+    country: US
+
+  - vendorNo: 10031
+    name: Northen Light Brews
+    address: 88 Barley Lane
+    city: Minneapolis
+    postal_code: 55401
+    country: US
+
+  - vendorNo: 10032
+    name: Rapid Courier Services
+    address: 50 Delivery Street
+    city: Los Angeles
+    postal_code: 90001
+    country: US
+
+  - vendorNo: 10033
+    name: Rapid Couriers
+    address: 52 Delivery Street
+    city: Los Angeles
+    postal_code: 90001
+    country: US
+
+  - vendorNo: 10034
+    name: Silver Line Textiles
+    address: 77 Fabric Road
+    city: Charlotte
+    postal_code: 28202
+    country: US
+
+  - vendorNo: 10035
+    name: SilverLine Textile Co
+    address: 78 Fabric Road
+    city: Charlotte
+    postal_code: 28202
+    country: US
+
+  - vendorNo: 10036
+    name: StarBright Lighting
+    address: 15 Light Street
+    city: Orlando
+    postal_code: 32801
+    country: US
+
+  - vendorNo: 10037
+    name: Star Bright Lights
+    address: 16 Light Street
+    city: Orlando
+    postal_code: 32801
+    country: US
+
+  - vendorNo: 10038
+    name: QuickFix Hardware
+    address: 600 Tools Ave
+    city: Detroit
+    postal_code: 48201
+    country: US
+
+  - vendorNo: 10039
+    name: Quick Fix Hardware
+    address: 601 Tools Ave
+    city: Detroit
+    postal_code: 48201
+    country: US
+
+  - vendorNo: 10040
+    name: Modern Living Interiors
+    address: 450 Home Road
+    city: Tampa
+    postal_code: 33602
+    country: US
+
+  - vendorNo: 10041
+    name: Modrn Living Interior
+    address: 452 Home Road
+    city: Tampa
+    postal_code: 33602
+    country: US
+
+  # ---------- GREAT BRITAIN ----------
+  - vendorNo: 10042
+    name: London Supply Co
+    address: 10 River Street
+    city: London
+    postal_code: SW1A 1AA
+    country: GB
+
+  - vendorNo: 10043
+    name: London Supplies Ltd
+    address: 11 River Street
+    city: London
+    postal_code: SW1A 1AA
+    country: GB
+
+  - vendorNo: 10044
+    name: Yorkshire Farming Group
+    address: 220 Harvest Lane
+    city: Leeds
+    postal_code: LS1 4DT
+    country: GB
+
+  - vendorNo: 10045
+    name: York Shire Farms
+    address: 222 Harvest Lane
+    city: Leeds
+    postal_code: LS1 4DT
+    country: GB
+
+  - vendorNo: 10046
+    name: BritTech Solutions
+    address: 45 Innovation Road
+    city: Cambridge
+    postal_code: CB1 1PT
+    country: GB
+
+  - vendorNo: 10047
+    name: British Technologies Ltd
+    address: 46 Innovation Road
+    city: Cambridge
+    postal_code: CB1 1PT
+    country: GB
+
+  - vendorNo: 10048
+    name: Green & Fresh Produce
+    address: 88 Market Street
+    city: Manchester
+    postal_code: M1 1AE
+    country: GB
+
+  - vendorNo: 10049
+    name: Green and Fresh
+    address: 89 Market Street
+    city: Manchester
+    postal_code: M1 1AE
+    country: GB
+
+  - vendorNo: 10050
+    name: Albion Brewery
+    address: 100 Beer Street
+    city: Birmingham
+    postal_code: B1 1AA
+    country: GB
+
+  - vendorNo: 10051
+    name: Albion Brews Ltd
+    address: 102 Beer Street
+    city: Birmingham
+    postal_code: B1 1AA
+    country: GB
+
+  - vendorNo: 10052
+    name: Northern Steel Works
+    address: 250 Forge Lane
+    city: Sheffield
+    postal_code: S1 2AA
+    country: GB
+
+  - vendorNo: 10053
+    name: Northern Steels
+    address: 252 Forge Lane
+    city: Sheffield
+    postal_code: S1 2AA
+    country: GB
+
+  - vendorNo: 10054
+    name: London Fashion Group
+    address: 33 Style Avenue
+    city: London
+    postal_code: W1D 3QA
+    country: GB
+
+  - vendorNo: 10055
+    name: Londn Fashion
+    address: 35 Style Avenue
+    city: London
+    postal_code: W1D 3QA
+    country: GB
+
+  - vendorNo: 10056
+    name: British Cargo Ltd
+    address: 400 Dock Road
+    city: Liverpool
+    postal_code: L1 8JQ
+    country: GB
+
+  - vendorNo: 10057
+    name: BritCargo
+    address: 401 Dock Road
+    city: Liverpool
+    postal_code: L1 8JQ
+    country: GB
+
+  - vendorNo: 10058
+    name: Glasgow Electronics
+    address: 57 Circuit Street
+    city: Glasgow
+    postal_code: G1 2AA
+    country: GB
+
+  - vendorNo: 10059
+    name: Glasgo Electric
+    address: 58 Circuit Street
+    city: Glasgow
+    postal_code: G1 2AA
+    country: GB
+
+  - vendorNo: 10060
+    name: Royal Marine Shipping
+    address: 777 Sea Lane
+    city: Southampton
+    postal_code: SO14 0AA
+    country: GB
+
+  - vendorNo: 10061
+    name: Royal Marines Ship
+    address: 778 Sea Lane
+    city: Southampton
+    postal_code: SO14 0AA
+    country: GB
+
+  - vendorNo: 10062
+    name: Kentish Office Supplies
+    address: 10 Paper Street
+    city: Canterbury
+    postal_code: CT1 2AB
+    country: GB
+
+  - vendorNo: 10063
+    name: Kent Office Supply
+    address: 11 Paper Street
+    city: Canterbury
+    postal_code: CT1 2AB
+    country: GB
+
+  - vendorNo: 10064
+    name: Bristol Builders
+    address: 80 Hammer Lane
+    city: Bristol
+    postal_code: BS1 1AA
+    country: GB
+
+  - vendorNo: 10065
+    name: Bristal Build Co
+    address: 82 Hammer Lane
+    city: Bristol
+    postal_code: BS1 1AA
+    country: GB
+
+  - vendorNo: 10066
+    name: Oxford Furniture Makers
+    address: 30 Wood Street
+    city: Oxford
+    postal_code: OX1 1AA
+    country: GB
+
+  - vendorNo: 10067
+    name: OxFord Furnishings
+    address: 32 Wood Street
+    city: Oxford
+    postal_code: OX1 1AA
+    country: GB
+
+  - vendorNo: 10068
+    name: Sussex Organic Foods
+    address: 15 Farm Road
+    city: Brighton
+    postal_code: BN1 1AA
+    country: GB
+
+  - vendorNo: 10069
+    name: Sussex Organics
+    address: 16 Farm Road
+    city: Brighton
+    postal_code: BN1 1AA
+    country: GB
+
+  - vendorNo: 10070
+    name: Edinburgh Textiles
+    address: 70 Fabric Street
+    city: Edinburgh
+    postal_code: EH1 1AA
+    country: GB
+
+  - vendorNo: 10071
+    name: Edinburg Textile
+    address: 72 Fabric Street
+    city: Edinburgh
+    postal_code: EH1 1AA
+    country: GB
+
+  - vendorNo: 10072
+    name: Royal Crown Lighting
+    address: 50 Light Street
+    city: London
+    postal_code: EC1A 1AA
+    country: GB
+
+  - vendorNo: 10073
+    name: Royal Crown Lights
+    address: 51 Light Street
+    city: London
+    postal_code: EC1A 1AA
+    country: GB
+
+  - vendorNo: 10074
+    name: Northern Couriers
+    address: 44 Delivery Lane
+    city: Newcastle
+    postal_code: NE1 1AA
+    country: GB
+
+  - vendorNo: 10075
+    name: North Courier Services
+    address: 46 Delivery Lane
+    city: Newcastle
+    postal_code: NE1 1AA
+    country: GB
+
+  - vendorNo: 10076
+    name: Midland Metals
+    address: 20 Steel Street
+    city: Birmingham
+    postal_code: B2 1AA
+    country: GB
+
+  - vendorNo: 10077
+    name: Mid Land Metalworks
+    address: 22 Steel Street
+    city: Birmingham
+    postal_code: B2 1AA
+    country: GB
+
+  - vendorNo: 10078
+    name: Windsor Wines Ltd
+    address: 90 Vine Lane
+    city: Windsor
+    postal_code: SL4 1AA
+    country: GB
+
+  - vendorNo: 10079
+    name: Wind Sor Wine Co
+    address: 92 Vine Lane
+    city: Windsor
+    postal_code: SL4 1AA
+    country: GB
+
+  - vendorNo: 10080
+    name: Cardiff Carpets
+    address: 110 Wool Street
+    city: Cardiff
+    postal_code: CF1 1AA
+    country: GB
+
+  - vendorNo: 10081
+    name: Cardif Carpet Co
+    address: 112 Wool Street
+    city: Cardiff
+    postal_code: CF1 1AA
+    country: GB
+
+  - vendorNo: 10082
+    name: Highland Spirits
+    address: 15 Whisky Road
+    city: Inverness
+    postal_code: IV1 1AA
+    country: GB
+
+  - vendorNo: 10083
+    name: Highland Spirit Co
+    address: 16 Whisky Road
+    city: Inverness
+    postal_code: IV1 1AA
+    country: GB
+
+  - vendorNo: 10084
+    name: Cambridge Computing
+    address: 300 Tech Park
+    city: Cambridge
+    postal_code: CB2 2AA
+    country: GB
+
+  - vendorNo: 10085
+    name: Cambrdge Computer
+    address: 302 Tech Park
+    city: Cambridge
+    postal_code: CB2 2AA
+    country: GB
+
+  - vendorNo: 10086
+    name: Nottingham Bikes
+    address: 500 Cycle Lane
+    city: Nottingham
+    postal_code: NG1 1AA
+    country: GB
+
+  - vendorNo: 10087
+    name: Nottinghame Bike Co
+    address: 502 Cycle Lane
+    city: Nottingham
+    postal_code: NG1 1AA
+    country: GB
+
+  - vendorNo: 10088
+    name: Kentish Clothing
+    address: 77 Fashion Street
+    city: Canterbury
+    postal_code: CT2 2AB
+    country: GB
+
+  - vendorNo: 10089
+    name: Kent Clothing Co
+    address: 79 Fashion Street
+    city: Canterbury
+    postal_code: CT2 2AB
+    country: GB
+
+  - vendorNo: 10090
+    name: Atlantic Supplies Inc
+    address: 1200 Ocean Drive
+    city: Miami
+    postal_code: 33139
+    country: US
+
+  - vendorNo: 10091
+    name: Atlantics Supply LLC
+    address: 1201 Ocean Drive
+    city: Miami
+    postal_code: 33139
+    country: US
+
+  - vendorNo: 10092
+    name: Northern Supply LLC
+    address: 4500 Maple Avenue
+    city: Dallas
+    postal_code: 75219
+    country: US
+
+  - vendorNo: 10093
+    name: Horizon Supply LLC
+    address: 88 Bay Street
+    city: San Francisco
+    postal_code: 94133
+    country: US
+
+  - vendorNo: 10094
+    name: Summit Supply LLC
+    address: 230 Mountain Road
+    city: Denver
+    postal_code: 80202
+    country: US
+
+  - vendorNo: 10095
+    name: Pioneer Supply LLC
+    address: 600 Frontier Avenue
+    city: Phoenix
+    postal_code: 85004
+    country: US
+
+  - vendorNo: 10096
+    name: Coastal Supply LLC
+    address: 725 Shoreline Drive
+    city: Charleston
+    postal_code: 29401
+    country: US
+
+  - vendorNo: 10097
+    name: Prairie Supply LLC
+    address: 312 Meadow Lane
+    city: Omaha
+    postal_code: 68102
+    country: US
+
+  - vendorNo: 10098
+    name: Liberty Supply LLC
+    address: 1776 Freedom Blvd
+    city: Philadelphia
+    postal_code: 19106
+    country: US
+
+  - vendorNo: 10099
+    name: Ironwood Supply LLC
+    address: 950 Industrial Way
+    city: Pittsburgh
+    postal_code: 15222
+    country: US
+
+  - vendorNo: 10100
+    name: Evergreen Supply LLC
+    address: 404 Pine Street
+    city: Seattle
+    postal_code: 98101
+    country: US
+
+  - vendorNo: 10101
+    name: Sterling Supply LLC
+    address: 121 Silver Road
+    city: Boston
+    postal_code: 02108
+    country: US
+
+  - vendorNo: 10102
+    name: Harborview Supply LLC
+    address: 390 Dockside Avenue
+    city: Baltimore
+    postal_code: 21202
+    country: US
+
+  - vendorNo: 10103
+    name: Capital Supply LLC
+    address: 500 Constitution Avenue
+    city: Washington
+    postal_code: 20001
+    country: US
+
+  - vendorNo: 10104
+    name: Rivertown Supply LLC
+    address: 840 River Street
+    city: Memphis
+    postal_code: 38103
+    country: US
+
+  - vendorNo: 10105
+    name: Gateway Supply LLC
+    address: 33 Arch Bridge Lane
+    city: St. Louis
+    postal_code: 63102
+    country: US
+
+  - vendorNo: 10106
+    name: Granite Supply LLC
+    address: 70 Monument Circle
+    city: Indianapolis
+    postal_code: 46204
+    country: US
+
+  - vendorNo: 10107
+    name: Lakeside Supply LLC
+    address: 220 Lake Shore Drive
+    city: Chicago
+    postal_code: 60601
+    country: US
+
+  - vendorNo: 10108
+    name: Golden Gate Supply LLC
+    address: 123 Bridgeway Blvd
+    city: San Francisco
+    postal_code: 94129
+    country: US
+
+  - vendorNo: 10109
+    name: Bluegrass Supply LLC
+    address: 101 Bourbon Street
+    city: Louisville
+    postal_code: 40202
+    country: US
+
+  - vendorNo: 10110
+    name: Sunset Supply LLC
+    address: 777 Sunset Blvd
+    city: Los Angeles
+    postal_code: 90028
+    country: US
+
+  - vendorNo: 10111
+    name: Thames Supply LLC
+    address: 12 Riverside Walk
+    city: London
+    postal_code: SE1 7PB
+    country: GB
+
+  - vendorNo: 10112
+    name: Highland Supply LLC
+    address: 88 Castle Street
+    city: Edinburgh
+    postal_code: EH1 2NG
+    country: GB
+
+  - vendorNo: 10113
+    name: Seaside Supply LLC
+    address: 25 Marine Parade
+    city: Brighton
+    postal_code: BN2 1TL
+    country: GB
+
+  - vendorNo: 10114
+    name: Ironbridge Supply LLC
+    address: 15 Foundry Road
+    city: Telford
+    postal_code: TF8 7JP
+    country: GB
+
+  - vendorNo: 10115
+    name: Yorkshire Supply LLC
+    address: 30 Minster Gate
+    city: York
+    postal_code: YO1 7HL
+    country: GB
+
+  - vendorNo: 10116
+    name: Granite Hill Supply LLC
+    address: 44 Granite Road
+    city: Aberdeen
+    postal_code: AB10 1YS
+    country: GB
+
+  - vendorNo: 10117
+    name: Lakeshore Supply LLC
+    address: 9 Windermere Lane
+    city: Windermere
+    postal_code: LA23 1AQ
+    country: GB
+
+  - vendorNo: 10118
+    name: Oxfordshire Supply LLC
+    address: 11 High Street
+    city: Oxford
+    postal_code: OX1 4BG
+    country: GB
+
+  - vendorNo: 10119
+    name: Peak District Supply LLC
+    address: 77 Valley Road
+    city: Bakewell
+    postal_code: DE45 1EY
+    country: GB
+
+  - vendorNo: 10120
+    name: Cotswold Supply LLC
+    address: 5 Hilltop Crescent
+    city: Cheltenham
+    postal_code: GL50 3PB
+    country: GB
+
+  - vendorNo: 10121
+    name: Midlands Supply LLC
+    address: 102 Industrial Estate Road
+    city: Birmingham
+    postal_code: B4 7ET
+    country: GB
+
+  - vendorNo: 10122
+    name: Riverside Supply LLC
+    address: 210 River Road
+    city: Newcastle
+    postal_code: NE1 3HE
+    country: GB
+
+  - vendorNo: 10123
+    name: Cornish Coast Supply LLC
+    address: 12 Harbour View
+    city: St Ives
+    postal_code: TR26 1PD
+    country: GB
+
+  - vendorNo: 10124
+    name: Stonehenge Supply LLC
+    address: 33 Heritage Way
+    city: Salisbury
+    postal_code: SP1 3TP
+    country: GB
+
+  - vendorNo: 10125
+    name: Snowdonia Supply LLC
+    address: 19 Summit Road
+    city: Betws-y-Coed
+    postal_code: LL24 0AH
+    country: GB
+
+  - vendorNo: 10126
+    name: Kentish Supply LLC
+    address: 7 Orchard Lane
+    city: Canterbury
+    postal_code: CT1 2BB
+    country: GB
+
+  - vendorNo: 10127
+    name: Royal Dock Supply LLC
+    address: 50 Dockyard Street
+    city: Portsmouth
+    postal_code: PO1 3LT
+    country: GB
+
+  - vendorNo: 10128
+    name: Cambridge Supply LLC
+    address: 45 Scholar Road
+    city: Cambridge
+    postal_code: CB2 1TN
+    country: GB
+
+  - vendorNo: 10129
+    name: Manchester Supply LLC
+    address: 99 Deansgate
+    city: Manchester
+    postal_code: M3 2NW
+    country: GB
+
+  - vendorNo: 10130
+    name: Bristol Supply LLC
+    address: 120 Clifton Road
+    city: Bristol
+    postal_code: BS8 1NW
+    country: GB
+
+  glAccountsToCreate:
+  - name: Consulting Services
+    accountCategory: 6
+    vendorNo: GLTEST1234

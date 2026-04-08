@@ -68,21 +68,21 @@ codeunit 134414 "Service Connection Test"
     procedure VerifyBankDataConvServiceSetupDisableConnection()
     var
         AMCBankingSetup: Record "AMC Banking Setup";
-        ServiceConnection: Record "Service Connection";
+        TempServiceConnection: Record "Service Connection";
     begin
         // Setup
         Initialize();
         AMCBankingSetup.Get();
         AMCBankingSetup."Service URL" := '';
         AMCBankingSetup.Modify();
-        ServiceConnection.Status := ServiceConnection.Status::Disabled;
+        TempServiceConnection.Status := TempServiceConnection.Status::Disabled;
 
         // Exercise & Verify
         Assert.IsTrue(
           ServiceExist(AMCBankingSetup.TableCaption()),
           'AMC Banking Setup Connection are not recognized');
         Assert.IsTrue(
-          ServiceExistWithStatusAsExpected(AMCBankingSetup.TableCaption(), ServiceConnection),
+          ServiceExistWithStatusAsExpected(AMCBankingSetup.TableCaption(), TempServiceConnection),
           'AMC Banking Setup Connection have wrong status');
     end;
 

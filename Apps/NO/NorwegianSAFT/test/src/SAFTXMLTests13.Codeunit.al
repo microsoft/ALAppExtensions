@@ -437,6 +437,136 @@ codeunit 148110 "SAF-T XML Tests 1.3"
 
     [Test]
     [HandlerFunctions('ConfirmYesHandler')]
+    procedure GroupingCategoryExportsExtendedValueInXML()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTMappingCategory: Record "SAF-T Mapping Category";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        NumberOfMasterDataRecords: Integer;
+        ExtendedCategoryValue: Text[500];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO] When SAF-T Mapping Category has Extended No., the exported XML GroupingCategory node contains the extended value
+        Initialize();
+
+        // [GIVEN] SAF-T setup with Income Statement mapping and GL accounts mapped
+        NumberOfMasterDataRecords := 1;
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Income Statement", NumberOfMasterDataRecords);
+        SAFTTestHelper.PostRandomAmountForNumberOfMasterDataRecords(SAFTMappingRange."Ending Date", NumberOfMasterDataRecords);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+
+        // [GIVEN] SAF-T Mapping Category "C" has Extended No. = "X"
+        ExtendedCategoryValue := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(500, 0), 1, 500);
+        SAFTGLAccountMapping.SetRange("Mapping Range Code", SAFTMappingRange.Code);
+        SAFTGLAccountMapping.SetFilter("Category No.", '<>%1', '');
+        SAFTGLAccountMapping.FindFirst();
+        SAFTMappingCategory.Get(SAFTGLAccountMapping."Mapping Type", SAFTGLAccountMapping."Category No.");
+        SAFTMappingCategory."Extended No." := ExtendedCategoryValue;
+        SAFTMappingCategory.Modify();
+
+        // [WHEN] SAF-T export is run
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code, Enum::"SAF-T Version"::"1.30");
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+
+        // [THEN] Exported XML GroupingCategory node contains the extended value "X"
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        VerifyGroupingCategoryValue(TempXMLBuffer, SAFTMappingRange.Code);
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure GroupingCodeExportsExtendedValueInXML()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTMapping: Record "SAF-T Mapping";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        NumberOfMasterDataRecords: Integer;
+        ExtendedCodeValue: Text[500];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO] When SAF-T Mapping has Extended No., the exported XML GroupingCode node contains the extended value
+        Initialize();
+
+        // [GIVEN] SAF-T setup with Income Statement mapping and GL accounts mapped
+        NumberOfMasterDataRecords := 1;
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Income Statement", NumberOfMasterDataRecords);
+        SAFTTestHelper.PostRandomAmountForNumberOfMasterDataRecords(SAFTMappingRange."Ending Date", NumberOfMasterDataRecords);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+
+        // [GIVEN] SAF-T Mapping "M" has Extended No. = "X"
+        ExtendedCodeValue := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(500, 0), 1, 500);
+        SAFTGLAccountMapping.SetRange("Mapping Range Code", SAFTMappingRange.Code);
+        SAFTGLAccountMapping.SetFilter("No.", '<>%1', '');
+        SAFTGLAccountMapping.FindFirst();
+        SAFTMapping.Get(SAFTGLAccountMapping."Mapping Type", SAFTGLAccountMapping."Category No.", SAFTGLAccountMapping."No.");
+        SAFTMapping."Extended No." := ExtendedCodeValue;
+        SAFTMapping.Modify();
+
+        // [WHEN] SAF-T export is run
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code, Enum::"SAF-T Version"::"1.30");
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+
+        // [THEN] Exported XML GroupingCode node contains the extended value "X"
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        VerifyGroupingCodeValue(TempXMLBuffer, SAFTMappingRange.Code, SAFTGLAccountMapping."G/L Account No.", ExtendedCodeValue);
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure GroupingCodeExportsShortValueWhenNoExtendedNo()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTMapping: Record "SAF-T Mapping";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        NumberOfMasterDataRecords: Integer;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO] When SAF-T Mapping has blank Extended No., the exported XML GroupingCode node contains the No. value
+        Initialize();
+
+        // [GIVEN] SAF-T setup with Income Statement mapping and GL accounts mapped
+        NumberOfMasterDataRecords := 1;
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Income Statement", NumberOfMasterDataRecords);
+        SAFTTestHelper.PostRandomAmountForNumberOfMasterDataRecords(SAFTMappingRange."Ending Date", NumberOfMasterDataRecords);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+
+        // [GIVEN] SAF-T Mapping "M" has blank Extended No.
+        SAFTGLAccountMapping.SetRange("Mapping Range Code", SAFTMappingRange.Code);
+        SAFTGLAccountMapping.SetFilter("No.", '<>%1', '');
+        SAFTGLAccountMapping.FindFirst();
+        SAFTMapping.Get(SAFTGLAccountMapping."Mapping Type", SAFTGLAccountMapping."Category No.", SAFTGLAccountMapping."No.");
+        SAFTMapping."Extended No." := '';
+        SAFTMapping.Modify();
+
+        // [WHEN] SAF-T export is run
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code, Enum::"SAF-T Version"::"1.30");
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+
+        // [THEN] Exported XML GroupingCode node contains the No. value (not extended)
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        VerifyGroupingCodeValue(TempXMLBuffer, SAFTMappingRange.Code, SAFTGLAccountMapping."G/L Account No.", SAFTGLAccountMapping."No.");
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
     procedure GLEntryVATEntryLink()
     var
         SAFTMappingRange: Record "SAF-T Mapping Range";
@@ -1955,6 +2085,59 @@ codeunit 148110 "SAF-T XML Tests 1.3"
             SAFTTestHelper.FindNextElement(TempXMLBuffer); // skip opening balance check
             SAFTTestHelper.FindNextElement(TempXMLBuffer); // skip closing balance check
             SAFTTestHelper.FindNextElement(TempXMLBuffer); // skip n1:Account
+        until GLAccount.Next() = 0;
+    end;
+
+    local procedure VerifyGroupingCategoryValue(var TempXMLBuffer: Record "XML Buffer" temporary; MappingRangeCode: Code[20])
+    var
+        GLAccount: Record "G/L Account";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+    begin
+        Assert.IsTrue(TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/n1:AuditFile/n1:MasterFiles/n1:GeneralLedgerAccounts/n1:Account'), 'No G/L accounts exported.');
+        GLAccount.FindSet();
+        repeat
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AccountID', GLAccount."No.");
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AccountDescription', GLAccount.Name);
+            SAFTGLAccountMapping.Get(MappingRangeCode, GLAccount."No.");
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:GroupingCategory', GetExpectedGroupingCategory(SAFTGLAccountMapping));
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:GroupingCode', SAFTGLAccountMapping."No.");
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AccountType', 'GL');
+            SAFTTestHelper.FindNextElement(TempXMLBuffer);
+            SAFTTestHelper.FindNextElement(TempXMLBuffer);
+            SAFTTestHelper.FindNextElement(TempXMLBuffer);
+        until GLAccount.Next() = 0;
+    end;
+
+    local procedure GetExpectedGroupingCategory(SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping"): Text
+    var
+        SAFTMappingCategory: Record "SAF-T Mapping Category";
+    begin
+        SAFTMappingCategory.Get(SAFTGLAccountMapping."Mapping Type", SAFTGLAccountMapping."Category No.");
+        exit(SAFTMappingCategory."Extended No.");
+    end;
+
+    local procedure VerifyGroupingCodeValue(var TempXMLBuffer: Record "XML Buffer" temporary; MappingRangeCode: Code[20]; TargetGLAccountNo: Code[20]; ExpectedCodeValue: Text)
+    var
+        GLAccount: Record "G/L Account";
+        SAFTGLAccountMapping: Record "SAF-T G/L Account Mapping";
+        GroupingCodeValue: Text;
+    begin
+        Assert.IsTrue(TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/n1:AuditFile/n1:MasterFiles/n1:GeneralLedgerAccounts/n1:Account'), 'No G/L accounts exported.');
+        GLAccount.FindSet();
+        repeat
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AccountID', GLAccount."No.");
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AccountDescription', GLAccount.Name);
+            SAFTGLAccountMapping.Get(MappingRangeCode, GLAccount."No.");
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:GroupingCategory', SAFTGLAccountMapping."Category No.");
+            if GLAccount."No." = TargetGLAccountNo then
+                GroupingCodeValue := ExpectedCodeValue
+            else
+                GroupingCodeValue := SAFTGLAccountMapping."No.";
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:GroupingCode', GroupingCodeValue);
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:AccountType', 'GL');
+            SAFTTestHelper.FindNextElement(TempXMLBuffer);
+            SAFTTestHelper.FindNextElement(TempXMLBuffer);
+            SAFTTestHelper.FindNextElement(TempXMLBuffer);
         until GLAccount.Next() = 0;
     end;
 

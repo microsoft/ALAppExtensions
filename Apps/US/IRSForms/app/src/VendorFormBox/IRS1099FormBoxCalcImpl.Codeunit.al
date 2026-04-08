@@ -27,7 +27,7 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
         Vendor: Record Vendor;
         IRS1099Form: Record "IRS 1099 Form";
         TempIRS1099Form: Record "IRS 1099 Form" temporary;
-        IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer";
+        TempIRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer";
         EntryNo: Integer;
     begin
         if IRS1099CalcParameters."Period No." = '' then
@@ -55,8 +55,8 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
             Vendor.SetRange("No.", IRS1099CalcParameters."Vendor No.");
         if Vendor.IsEmpty() then
             error(NoVendorsGivenFilterErr);
-        GetAppliedVendorEntries(IRS1099VendEntryBuffer, TempIRS1099Form, IRS1099CalcParameters."Vendor No.", IRSReportingPeriod);
-        TransferVengLedgEntryBufferToVendFormBoxBuffer(TempVendFormBoxBuffer, IRS1099VendEntryBuffer, EntryNo, IRS1099CalcParameters."Period No.");
+        GetAppliedVendorEntries(TempIRS1099VendEntryBuffer, TempIRS1099Form, IRS1099CalcParameters."Vendor No.", IRSReportingPeriod);
+        TransferVengLedgEntryBufferToVendFormBoxBuffer(TempVendFormBoxBuffer, TempIRS1099VendEntryBuffer, EntryNo, IRS1099CalcParameters."Period No.");
         FinalizeVendFormBoxBuffer(TempVendFormBoxBuffer, EntryNo, IRSReportingPeriod."No.");
     end;
 

@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Purchases.Payables;
 
-using System.Security.User;
+using Microsoft.Purchases.History;
 
 pageextension 31016 "Vendor Ledger Entries CZL" extends "Vendor Ledger Entries"
 {
@@ -100,10 +100,10 @@ pageextension 31016 "Vendor Ledger Entries CZL" extends "Vendor Ledger Entries"
     trigger OnOpenPage()
     var
     begin
-        IsExtDocNoEditable := UserSetupAdvManagementCZL.IsExtDocNoChangingAllowed();
+        IsExtDocNoEditable := ExtDocNoChangingCZL.IsAllowed();
     end;
 
     var
-        UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        ExtDocNoChangingCZL: Codeunit "Ext. Doc. No. Changing CZL";
         IsExtDocNoEditable: Boolean;
 }

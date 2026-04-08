@@ -44,6 +44,31 @@ codeunit 139683 "Statistical Account Test"
         WrongPageErr: Label 'Wrong page opened.';
         WrongAmountErr: Label 'Wrong amount in the statistical ledger entry list.';
 
+    [Test]
+    procedure StatAccFilterAcceptsRangeExpression()
+    var
+        AnalysisView: Record "Analysis View";
+        StatisticalAccount: array[3] of Record "Statistical Account";
+        AnalysisViewCard: TestPage "Analysis View Card";
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 624566] Statistical Account Filter accepts range expression with ValidateTableRelation = false
+        Initialize();
+
+        // [GIVEN] Create Statistical Accounts.
+        CreateStatisticalAccount(StatisticalAccount, 3);
+
+        // [WHEN] Create Analysis View with Statistical Account Filter set to a range expression.
+        AnalysisViewCard.OpenNew();
+        AnalysisViewCard.Code.SetValue(LibraryUtility.GenerateGUID());
+        AnalysisViewCard."Account Source".SetValue(AnalysisView."Account Source"::"G/L Account");
+        AnalysisViewCard.StatisticalAccountFilter.SetValue(StatisticalAccount[1]."No." + '..' + StatisticalAccount[3]."No.");
+
+        // [THEN] Verify if the range expression is accepted and stored correctly on the Analysis View
+        AnalysisViewCard.StatisticalAccountFilter.AssertEquals(StatisticalAccount[1]."No." + '..' + StatisticalAccount[3]."No.");
+        AnalysisViewCard.Close();
+    end;
+
     local procedure Initialize()
     var
         AnalysisView: Record "Analysis View";

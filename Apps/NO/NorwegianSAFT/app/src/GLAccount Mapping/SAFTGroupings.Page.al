@@ -8,7 +8,7 @@ page 10673 "SAF-T Groupings"
 {
     PageType = List;
     SourceTable = "SAF-T Mapping";
-    SourceTableView = where ("Mapping Type" = const ("Income Statement"));
+    SourceTableView = where("Mapping Type" = const("Income Statement"));
     Caption = 'SAF-T Groupings';
 
     layout
@@ -21,6 +21,11 @@ page 10673 "SAF-T Groupings"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the category of the grouping code that is used for mapping.';
+                }
+                field("Extended No."; "Extended No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the full grouping code when it exceeds 20 characters. This value is used in the SAF-T export.';
                 }
                 field(Description; Description)
                 {

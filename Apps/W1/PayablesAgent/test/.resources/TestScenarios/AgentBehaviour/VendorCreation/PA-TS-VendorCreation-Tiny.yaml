@@ -1,0 +1,148 @@
+tests:
+- name: PayablesAgent-VendorCreation-001
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Prime Insights PLE
+    Address: 88 Southview Rd
+    Address 2: ''
+    Country/Region Code: US
+    City: Boston
+    Post Code: 02125
+  inboundInvoice:
+    Posting Date: 2025-05-12
+    Due Date: 2025-06-11
+    Document Date: 2025-05-12
+    No.: INV-001
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 10
+    Unit Price: 120
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 4
+    Unit Price: 350
+  expected:
+    user_intervention:
+    - reason: The vendor is missing on the draft
+      create_vendor: true
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-001
+        Buy-from Vendor Name: Prime Insights PLE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 10
+        Unit Cost: 120
+      - Line No.: 20000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 4
+        Unit Cost: 350
+- name: PayablesAgent-VendorCreation-002
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Prime Insights LLC
+    Address: 88 Southview Rd
+    Address 2: ''
+    Country/Region Code: US
+    City: Boston
+    Post Code: 02125
+  inboundInvoice:
+    Posting Date: 2025-05-13
+    Due Date: 2025-06-12
+    Document Date: 2025-05-13
+    No.: INV-002
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 2
+    Unit Price: 1500
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 1
+    Unit Price: 2300
+  expected:
+    user_intervention:
+    - reason: The vendor is missing on the draft
+      create_vendor: true
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-002
+        Buy-from Vendor Name: Prime Insights LLC
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 2
+        Unit Cost: 1500
+      - Line No.: 20000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 1
+        Unit Cost: 2300
+- name: PayablesAgent-VendorCreation-003
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Delta Creatives
+    Address: 88 Southview Rd
+    Address 2: ''
+    Country/Region Code: US
+    City: Boston
+    Post Code: 02125
+  inboundInvoice:
+    Posting Date: 2025-05-14
+    Due Date: 2025-06-13
+    Document Date: 2025-05-14
+    No.: INV-003
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 1
+    Unit Price: 2500
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 3
+    Unit Price: 600
+  expected:
+    user_intervention:
+    - reason: The vendor is missing on the draft
+      create_vendor: true
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-003
+        Buy-from Vendor Name: Delta Creatives
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 1
+        Unit Cost: 2500
+      - Line No.: 20000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 3
+        Unit Cost: 600

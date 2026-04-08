@@ -1,0 +1,44 @@
+tests:
+- name: INVOICE_PROCESSING_01
+  description: Process an invoice PDF for a known vendor where all lines are populated.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-Standard.yaml
+  invoice_no: INV-001
+  empty_bus_posting_group_error: true
+
+  expected_data:
+    userIntervention: true
+    userInterventionReason: VAT Posting Setup error
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: "GLTEST1234" # Any account number is valid
+    vendor:
+      name: Strauss Consulting
+      address: Max-Joseph-Platz 2
+      city: München
+      postCode: 80539
+      countryCode: DE
+    purchaseHeader:
+      invoiceNumber: "INV-001"
+
+- name: INVOICE_PROCESSING_02
+  description: Process an invoice PDF for a known vendor with different quantity values.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-Standard.yaml
+  invoice_no: INV-002
+  empty_bus_posting_group_error: true
+  
+  expected_data:
+    userIntervention: true
+    userInterventionReason: VAT Posting Setup error
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: "GLTEST1234" # Any account number is valid
+    vendor:
+      name: Strauss Consulting
+      address: Max-Joseph-Platz 2
+      city: München
+      postCode: 80539
+      countryCode: DE
+    purchaseHeader:
+      invoiceNumber: "INV-002"

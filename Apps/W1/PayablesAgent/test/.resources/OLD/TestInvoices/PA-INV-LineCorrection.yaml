@@ -1,0 +1,900 @@
+invoices:
+- invoice_no: INV-001
+  invoice_date: 12/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 10
+    unit_price: 120.00
+    discount: 0.00
+    tax_rate: 0.10
+
+  - description:  Consulting
+    quantity: 4
+    unit_price: 350.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-002
+  invoice_date: 14/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 80
+    unit_price: 95.50
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 1
+    unit_price: 1500.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-003
+  invoice_date: 15/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 5
+    unit_price: 200.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 40
+    unit_price: 85.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-004
+  invoice_date: 16/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 3
+    unit_price: 750.00
+    discount: 0.00
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 8
+    unit_price: 65.75
+    discount: 0.02
+    tax_rate: 0.10
+
+- invoice_no: INV-005
+  invoice_date: 17/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 25
+    unit_price: 110.00
+    discount: 0.00
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 1
+    unit_price: 1850.00
+    discount: 0.15
+    tax_rate: 0.10
+
+- invoice_no: INV-006
+  invoice_date: 18/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 12
+    unit_price: 95.00
+    discount: 0.00
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 60
+    unit_price: 75.50
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-007
+  invoice_date: 19/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 30
+    unit_price: 125.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 2
+    unit_price: 800.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-008
+  invoice_date: 20/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 1
+    unit_price: 3200.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 45
+    unit_price: 90.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-009
+  invoice_date: 21/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 20
+    unit_price: 135.00
+    discount: 0.00
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 4
+    unit_price: 250.00
+    discount: 0.10
+    tax_rate: 0.10
+
+- invoice_no: INV-010
+  invoice_date: 22/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 7
+    unit_price: 175.00
+    discount: 0.00
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 15
+    unit_price: 190.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-011
+  invoice_date: 23/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 4500.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 10
+    unit_price: 80.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-012
+  invoice_date: 24/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 3
+    unit_price: 650.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 35
+    unit_price: 105.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-013
+  invoice_date: 25/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 50
+    unit_price: 65.00
+    discount: 0.00
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 2
+    unit_price: 975.00
+    discount: 0.15
+    tax_rate: 0.10
+
+- invoice_no: INV-014
+  invoice_date: 26/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 15
+    unit_price: 85.50
+    discount: 0.00
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 1
+    unit_price: 3800.00
+    discount: 0.10
+    tax_rate: 0.10
+
+- invoice_no: INV-015
+  invoice_date: 27/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 5200.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 6
+    unit_price: 145.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-016
+  invoice_date: 28/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 4
+    unit_price: 450.00
+    discount: 0.08
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 40
+    unit_price: 95.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-017
+  invoice_date: 29/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 120
+    unit_price: 85.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 1
+    unit_price: 2200.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-018
+  invoice_date: 30/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 5
+    unit_price: 320.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 25
+    unit_price: 115.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-019
+  invoice_date: 31/05/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 4800.00
+    discount: 0.15
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 8
+    unit_price: 95.50
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-020
+  invoice_date: 01/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 3
+    unit_price: 750.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 60
+    unit_price: 85.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-021
+  invoice_date: 02/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 6500.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 4
+    unit_price: 250.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-022
+  invoice_date: 03/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 2
+    unit_price: 1200.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 80
+    unit_price: 90.00
+    discount: 0.10
+    tax_rate: 0.10
+
+- invoice_no: INV-023
+  invoice_date: 04/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 7800.00
+    discount: 0.15
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 10
+    unit_price: 110.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-024
+  invoice_date: 05/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 5
+    unit_price: 380.00
+    discount: 0.08
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 40
+    unit_price: 125.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-025
+  invoice_date: 06/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 5500.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 15
+    unit_price: 75.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-026
+  invoice_date: 07/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 1
+    unit_price: 3200.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 30
+    unit_price: 140.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-027
+  invoice_date: 08/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 4200.00
+    discount: 0.00
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 8
+    unit_price: 120.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-028
+  invoice_date: 09/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 3
+    unit_price: 850.00
+    discount: 0.12
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 75
+    unit_price: 85.00
+    discount: 0.08
+    tax_rate: 0.10
+
+- invoice_no: INV-029
+  invoice_date: 10/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 8500.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 5
+    unit_price: 280.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-030
+  invoice_date: 11/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 2
+    unit_price: 1450.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 25
+    unit_price: 160.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-031
+  invoice_date: 12/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 6800.00
+    discount: 0.15
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 10
+    unit_price: 95.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-032
+  invoice_date: 13/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 4
+    unit_price: 525.00
+    discount: 0.08
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 1
+    unit_price: 4800.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-033
+  invoice_date: 14/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 120
+    unit_price: 85.00
+    discount: 0.12
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 1
+    unit_price: 2700.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-034
+  invoice_date: 15/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 6
+    unit_price: 210.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 50
+    unit_price: 95.00
+    discount: 0.08
+    tax_rate: 0.10
+
+- invoice_no: INV-035
+  invoice_date: 16/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 7200.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 8
+    unit_price: 125.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-036
+  invoice_date: 17/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 3
+    unit_price: 950.00
+    discount: 0.15
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 40
+    unit_price: 115.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-037
+  invoice_date: 18/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 9500.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 12
+    unit_price: 85.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-038
+  invoice_date: 19/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 2
+    unit_price: 1650.00
+    discount: 0.08
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 90
+    unit_price: 95.00
+    discount: 0.12
+    tax_rate: 0.10
+
+- invoice_no: INV-039
+  invoice_date: 20/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 3800.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 7
+    unit_price: 185.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-040
+  invoice_date: 21/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 4
+    unit_price: 430.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 20
+    unit_price: 145.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-041
+  invoice_date: 22/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 3
+    unit_price: 1200.00
+    discount: 0.15
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 10
+    unit_price: 75.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-042
+  invoice_date: 23/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 1
+    unit_price: 4200.00
+    discount: 0.12
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 60
+    unit_price: 85.00
+    discount: 0.08
+    tax_rate: 0.10
+
+- invoice_no: INV-043
+  invoice_date: 24/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 6200.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 8
+    unit_price: 135.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-044
+  invoice_date: 25/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 5
+    unit_price: 280.00
+    discount: 0.05
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 30
+    unit_price: 165.00
+    discount: 0.10
+    tax_rate: 0.10
+
+- invoice_no: INV-045
+  invoice_date: 26/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 5800.00
+    discount: 0.15
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 12
+    unit_price: 95.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-046
+  invoice_date: 27/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 3
+    unit_price: 780.00
+    discount: 0.08
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 45
+    unit_price: 110.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-047
+  invoice_date: 28/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 8800.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 6
+    unit_price: 190.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-048
+  invoice_date: 29/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 2
+    unit_price: 1350.00
+    discount: 0.12
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 1
+    unit_price: 5500.00
+    discount: 0.05
+    tax_rate: 0.10
+
+- invoice_no: INV-049
+  invoice_date: 30/06/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: Consulting
+    quantity: 1
+    unit_price: 4600.00
+    discount: 0.10
+    tax_rate: 0.10
+    
+  - description: CYWA-034T
+    quantity: 9
+    unit_price: 105.00
+    discount: 0.00
+    tax_rate: 0.10
+
+- invoice_no: INV-050
+  invoice_date: 01/07/2025
+  template: invoice_basic.html
+  vendor_name: "Strauss Medium"
+  items:
+  
+  - description: CYWA-034T
+    quantity: 4
+    unit_price: 480.00
+    discount: 0.15
+    tax_rate: 0.10
+    
+  - description: Consulting
+    quantity: 80
+    unit_price: 95.00
+    discount: 0.08
+    tax_rate: 0.10

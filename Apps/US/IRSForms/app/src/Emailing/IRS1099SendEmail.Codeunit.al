@@ -35,14 +35,14 @@ codeunit 10051 "IRS 1099 Send Email"
     trigger OnRun()
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
-        IRS1099PrintParams: Record "IRS 1099 Print Params";
+        TempIRS1099PrintParams: Record "IRS 1099 Print Params";
         IRSFormsFacade: Codeunit "IRS Forms Facade";
     begin
         if IRS1099FormDocHeader.Get(Rec."Document ID") then begin
             CheckCanSendEmail(IRS1099FormDocHeader);
 
-            IRS1099PrintParams."Report Type" := Rec."Report Type";
-            IRSFormsFacade.SaveContentForDocument(IRS1099FormDocHeader, IRS1099PrintParams, false);
+            TempIRS1099PrintParams."Report Type" := Rec."Report Type";
+            IRSFormsFacade.SaveContentForDocument(IRS1099FormDocHeader, TempIRS1099PrintParams, false);
 
             SendEmailToVendor(IRS1099FormDocHeader, Rec."Report Type");
         end;
@@ -83,12 +83,12 @@ codeunit 10051 "IRS 1099 Send Email"
     procedure CheckEmailSetup()
     var
         IRSFormsSetup: Record "IRS Forms Setup";
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         MailManagement: Codeunit "Mail Management";
         DummyRecId: RecordId;
     begin
         if not MailManagement.IsEnabled() then
-            if EmailAccount.WritePermission() then
+            if TempEmailAccount.WritePermission() then
                 ThrowShowItError('', EmailSetupMissingErr, ShowEmailAccountsTxt, DummyRecId, 0, Page::"Email Accounts")
             else
                 Error(EmailSetupMissingErr);

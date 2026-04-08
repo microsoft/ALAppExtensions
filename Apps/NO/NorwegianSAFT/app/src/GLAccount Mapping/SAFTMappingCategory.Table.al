@@ -30,7 +30,6 @@ table 10671 "SAF-T Mapping Category"
         {
             DataClassification = CustomerContent;
             Caption = 'Extended No.';
-
             trigger OnValidate()
             begin
                 // Meets the current legal requirement of the SAFTLongTextType

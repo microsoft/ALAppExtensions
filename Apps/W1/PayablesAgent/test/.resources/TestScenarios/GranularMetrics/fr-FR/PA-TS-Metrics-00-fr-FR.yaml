@@ -1,0 +1,2012 @@
+name: PA-TS-Metrics-00-fr-FR
+language: fr-FR
+tests:
+- name: PA-INV-V03-010
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-010
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Coulisses billes 45cm
+    Quantity: 100.0
+    Unit Price: 15.0
+  - Type: 1
+    No.: 60300
+    Description: Ferrures d'angle - acier
+    Quantity: 300.0
+    Unit Price: 1.2
+  - Type: 1
+    No.: 60300
+    Description: Poignées encastrées - alu
+    Quantity: 120.0
+    Unit Price: 9.0
+  - Type: 1
+    No.: 60300
+    Description: Entretoises filetées M8
+    Quantity: 400.0
+    Unit Price: 0.65
+  - Type: 1
+    No.: 60300
+    Description: Crémaillères métal - 2m
+    Quantity: 100.0
+    Unit Price: 6.5
+  - Type: 1
+    No.: 60300
+    Description: Vis à tête hexagonale M8x60
+    Quantity: 15.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 60300
+    Description: Poignées drop - laiton vieilli
+    Quantity: 80.0
+    Unit Price: 15.0
+  - Type: 1
+    No.: 60300
+    Description: Pieds boule - bois naturel
+    Quantity: 150.0
+    Unit Price: 5.5
+  - Type: 1
+    No.: 62600
+    Description: Frais port - commande urgente
+    Quantity: 1.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 60300
+    Description: Verrous à pêne dormant
+    Quantity: 60.0
+    Unit Price: 8.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-010
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Coulisses billes 45cm
+        Quantity: 100.0
+        Unit Cost: 15.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Ferrures d'angle - acier
+        Quantity: 300.0
+        Unit Cost: 1.2
+      - Line No.: 30000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Poignées encastrées - alu
+        Quantity: 120.0
+        Unit Cost: 9.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Entretoises filetées M8
+        Quantity: 400.0
+        Unit Cost: 0.65
+      - Line No.: 50000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Crémaillères métal - 2m
+        Quantity: 100.0
+        Unit Cost: 6.5
+      - Line No.: 60000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Vis à tête hexagonale M8x60
+        Quantity: 15.0
+        Unit Cost: 38.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Poignées drop - laiton vieilli
+        Quantity: 80.0
+        Unit Cost: 15.0
+      - Line No.: 80000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Pieds boule - bois naturel
+        Quantity: 150.0
+        Unit Cost: 5.5
+      - Line No.: 90000
+        Type: 1
+        No.: 62600
+        Deferral Code: ''
+        Description: Frais port - commande urgente
+        Quantity: 1.0
+        Unit Cost: 125.0
+      - Line No.: 100000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Verrous à pêne dormant
+        Quantity: 60.0
+        Unit Cost: 8.5
+- name: PA-INV-V03-005
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Supports tablette - invisible
+    Quantity: 200.0
+    Unit Price: 3.5
+  - Type: 1
+    No.: 60300
+    Description: Charnières décalées - gauche
+    Quantity: 120.0
+    Unit Price: 4.2
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-005
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Supports tablette - invisible
+        Quantity: 200.0
+        Unit Cost: 3.5
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Charnières décalées - gauche
+        Quantity: 120.0
+        Unit Cost: 4.2
+- name: PA-INV-V03-019
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-019
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Poignées tubulaires - noir mat
+    Quantity: 100.0
+    Unit Price: 10.5
+  - Type: 1
+    No.: 60300
+    Description: Ferrures angle table
+    Quantity: 200.0
+    Unit Price: 1.8
+  - Type: 1
+    No.: 60300
+    Description: Charnières décoratives - noir
+    Quantity: 100.0
+    Unit Price: 6.0
+  - Type: 1
+    No.: 60300
+    Description: Équerres renforcées - acier
+    Quantity: 250.0
+    Unit Price: 1.5
+  - Type: 1
+    No.: 60300
+    Description: Rivets aveugles - assortiment
+    Quantity: 1000.0
+    Unit Price: 0.08
+  - Type: 1
+    No.: 60300
+    Description: Glissières bois traditionnelles
+    Quantity: 80.0
+    Unit Price: 5.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-019
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Poignées tubulaires - noir mat
+        Quantity: 100.0
+        Unit Cost: 10.5
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Ferrures angle table
+        Quantity: 200.0
+        Unit Cost: 1.8
+      - Line No.: 30000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Charnières décoratives - noir
+        Quantity: 100.0
+        Unit Cost: 6.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Équerres renforcées - acier
+        Quantity: 250.0
+        Unit Cost: 1.5
+      - Line No.: 50000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Rivets aveugles - assortiment
+        Quantity: 1000.0
+        Unit Cost: 0.08
+      - Line No.: 60000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Glissières bois traditionnelles
+        Quantity: 80.0
+        Unit Cost: 5.5
+- name: PA-INV-V01-012
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Bois de Bretagne S.A.S.
+    Address: 12 Zone Industrielle des Landes
+    Address 2: ''
+    City: Fougères
+    Country/Region Code: FR
+    Post Code: '35300'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-012
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60100
+    Description: Chêne grain fin - placage
+    Quantity: 20.0
+    Unit Price: 142.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-012
+        Buy-from Vendor Name: Bois de Bretagne S.A.S.
+        Buy-from Address: 12 Zone Industrielle des Landes
+        Buy-from Address 2: ''
+        Buy-from City: Fougères
+        Buy-from Post Code: '35300'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Chêne grain fin - placage
+        Quantity: 20.0
+        Unit Cost: 142.0
+- name: PA-INV-V03-004
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Charnières inox marine
+    Quantity: 100.0
+    Unit Price: 8.5
+  - Type: 1
+    No.: 60300
+    Description: Vis panneaux particules 6x80
+    Quantity: 25.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 60300
+    Description: Poignées mushroom - bronze
+    Quantity: 100.0
+    Unit Price: 7.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-004
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Charnières inox marine
+        Quantity: 100.0
+        Unit Cost: 8.5
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Vis panneaux particules 6x80
+        Quantity: 25.0
+        Unit Cost: 28.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Poignées mushroom - bronze
+        Quantity: 100.0
+        Unit Cost: 7.5
+- name: PA-INV-V01-013
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Bois de Bretagne S.A.S.
+    Address: 12 Zone Industrielle des Landes
+    Address 2: ''
+    City: Fougères
+    Country/Region Code: FR
+    Post Code: '35300'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-013
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60100
+    Description: Tilleul - sculpture bois
+    Quantity: 25.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 60100
+    Description: Chêne massif - planches 27mm
+    Quantity: 50.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 60100
+    Description: Bois dur - tournage artisan
+    Quantity: 40.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 60100
+    Description: Chêne massif - étagères
+    Quantity: 60.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 60100
+    Description: Chêne verni usine
+    Quantity: 55.0
+    Unit Price: 72.0
+  - Type: 1
+    No.: 60100
+    Description: Chêne étuvé - teinte foncée
+    Quantity: 30.0
+    Unit Price: 105.0
+  - Type: 1
+    No.: 60100
+    Description: Acacia fumé - terrasse luxe
+    Quantity: 30.0
+    Unit Price: 78.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-013
+        Buy-from Vendor Name: Bois de Bretagne S.A.S.
+        Buy-from Address: 12 Zone Industrielle des Landes
+        Buy-from Address 2: ''
+        Buy-from City: Fougères
+        Buy-from Post Code: '35300'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Tilleul - sculpture bois
+        Quantity: 25.0
+        Unit Cost: 62.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Chêne massif - planches 27mm
+        Quantity: 50.0
+        Unit Cost: 85.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Bois dur - tournage artisan
+        Quantity: 40.0
+        Unit Cost: 55.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Chêne massif - étagères
+        Quantity: 60.0
+        Unit Cost: 62.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Chêne verni usine
+        Quantity: 55.0
+        Unit Cost: 72.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Chêne étuvé - teinte foncée
+        Quantity: 30.0
+        Unit Cost: 105.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Acacia fumé - terrasse luxe
+        Quantity: 30.0
+        Unit Cost: 78.0
+- name: PA-INV-V02-020
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Tissus & Garnitures Rennais
+    Address: 45 Rue de la Poterie
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V02-020
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60200
+    Description: Lin épais - naturel brut
+    Quantity: 25.0
+    Unit Price: 52.0
+  - Type: 1
+    No.: 60220
+    Description: Ressorts ensachés - matelas
+    Quantity: 30.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 60200
+    Description: Velours côtelé - coloris taupe
+    Quantity: 50.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 60210
+    Description: Skaï haute qualité - blanc
+    Quantity: 35.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu Alcantara - gris perle
+    Quantity: 18.0
+    Unit Price: 78.0
+  - Type: 1
+    No.: 60200
+    Description: Velours côtelé fin - camel
+    Quantity: 32.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 60200
+    Description: Velours dévoré - or
+    Quantity: 12.0
+    Unit Price: 115.0
+  - Type: 1
+    No.: 60210
+    Description: Cuir souple - blanc cassé
+    Quantity: 10.0
+    Unit Price: 195.0
+  - Type: 1
+    No.: 60220
+    Description: Mousse polyuréthane 25kg
+    Quantity: 80.0
+    Unit Price: 32.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-020
+        Buy-from Vendor Name: Tissus & Garnitures Rennais
+        Buy-from Address: 45 Rue de la Poterie
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Lin épais - naturel brut
+        Quantity: 25.0
+        Unit Cost: 52.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Ressorts ensachés - matelas
+        Quantity: 30.0
+        Unit Cost: 125.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Velours côtelé - coloris taupe
+        Quantity: 50.0
+        Unit Cost: 28.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60210
+        Deferral Code: ''
+        Description: Skaï haute qualité - blanc
+        Quantity: 35.0
+        Unit Cost: 32.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu Alcantara - gris perle
+        Quantity: 18.0
+        Unit Cost: 78.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Velours côtelé fin - camel
+        Quantity: 32.0
+        Unit Cost: 42.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Velours dévoré - or
+        Quantity: 12.0
+        Unit Cost: 115.0
+      - Line No.: 80000
+        Type: 1
+        No.: 60210
+        Deferral Code: ''
+        Description: Cuir souple - blanc cassé
+        Quantity: 10.0
+        Unit Cost: 195.0
+      - Line No.: 90000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse polyuréthane 25kg
+        Quantity: 80.0
+        Unit Cost: 32.0
+- name: PA-INV-V02-013
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Tissus & Garnitures Rennais
+    Address: Rue de la Poterie 45
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: F-35000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V02-013
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60200
+    Description: Commande annuelle tissus
+    Quantity: 1.0
+    Unit Price: 28000.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu anti-taches - beige
+    Quantity: 70.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 60200
+    Description: Lin mélangé - naturel
+    Quantity: 40.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 60210
+    Description: Cuir semi-aniline - caramel
+    Quantity: 10.0
+    Unit Price: 188.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu matelassé - pré-ouatiné
+    Quantity: 30.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 60200
+    Description: Velours de coton - bleu nuit
+    Quantity: 35.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu uni - collection 2025
+    Quantity: 75.0
+    Unit Price: 25.0
+  - Type: 1
+    No.: 60300
+    Description: Clous tapissier - bronze
+    Quantity: 2000.0
+    Unit Price: 0.15
+  - Type: 1
+    No.: 60200
+    Description: Coton métis - lin naturel
+    Quantity: 45.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 60220
+    Description: Latex naturel - coussins
+    Quantity: 20.0
+    Unit Price: 95.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-013
+        Buy-from Vendor Name: Tissus & Garnitures Rennais
+        Buy-from Address: 45 Rue de la Poterie
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60200
+        Deferral Code: 12M
+        Description: Commande annuelle tissus
+        Quantity: 1.0
+        Unit Cost: 28000.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu anti-taches - beige
+        Quantity: 70.0
+        Unit Cost: 32.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Lin mélangé - naturel
+        Quantity: 40.0
+        Unit Cost: 42.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60210
+        Deferral Code: ''
+        Description: Cuir semi-aniline - caramel
+        Quantity: 10.0
+        Unit Cost: 188.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu matelassé - pré-ouatiné
+        Quantity: 30.0
+        Unit Cost: 48.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Velours de coton - bleu nuit
+        Quantity: 35.0
+        Unit Cost: 42.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu uni - collection 2025
+        Quantity: 75.0
+        Unit Cost: 25.0
+      - Line No.: 80000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Clous tapissier - bronze
+        Quantity: 2000.0
+        Unit Cost: 0.15
+      - Line No.: 90000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Coton métis - lin naturel
+        Quantity: 45.0
+        Unit Cost: 32.0
+      - Line No.: 100000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Latex naturel - coussins
+        Quantity: 20.0
+        Unit Cost: 95.0
+- name: PA-INV-V03-001
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG008;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères S.A.
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62600
+    Description: Livraison express quincaillerie
+    Quantity: 1.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 60300
+    Description: Vis confirmation 7x50mm
+    Quantity: 100.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 60300
+    Description: Dominos d'assemblage - 6mm
+    Quantity: 500.0
+    Unit Price: 0.18
+  - Type: 1
+    No.: 60300
+    Description: Roulettes freinées 75mm
+    Quantity: 100.0
+    Unit Price: 8.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-001
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62600
+        Deferral Code: ''
+        Description: Livraison express quincaillerie
+        Quantity: 1.0
+        Unit Cost: 95.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Vis confirmation 7x50mm
+        Quantity: 100.0
+        Unit Cost: 12.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Dominos d'assemblage - 6mm
+        Quantity: 500.0
+        Unit Cost: 0.18
+      - Line No.: 40000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Roulettes freinées 75mm
+        Quantity: 100.0
+        Unit Cost: 8.5
+- name: PA-INV-V03-007
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Freres
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-007
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Poignées arc - nickel mat
+    Quantity: 140.0
+    Unit Price: 9.5
+  - Type: 1
+    No.: 60300
+    Description: Poignées coquille - chrome
+    Quantity: 150.0
+    Unit Price: 6.5
+  - Type: 1
+    No.: 60300
+    Description: Coulisses à fermeture douce
+    Quantity: 80.0
+    Unit Price: 25.0
+  - Type: 1
+    No.: 60300
+    Description: Charnières soft close kit
+    Quantity: 150.0
+    Unit Price: 4.5
+  - Type: 1
+    No.: 60300
+    Description: Charnières à clapet - 95°
+    Quantity: 250.0
+    Unit Price: 3.5
+  - Type: 1
+    No.: 60300
+    Description: Loquets à friction
+    Quantity: 200.0
+    Unit Price: 1.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-007
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Poignées arc - nickel mat
+        Quantity: 140.0
+        Unit Cost: 9.5
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Poignées coquille - chrome
+        Quantity: 150.0
+        Unit Cost: 6.5
+      - Line No.: 30000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Coulisses à fermeture douce
+        Quantity: 80.0
+        Unit Cost: 25.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Charnières soft close kit
+        Quantity: 150.0
+        Unit Cost: 4.5
+      - Line No.: 50000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Charnières à clapet - 95°
+        Quantity: 250.0
+        Unit Cost: 3.5
+      - Line No.: 60000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Loquets à friction
+        Quantity: 200.0
+        Unit Cost: 1.5
+- name: PA-INV-V01-011
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Bois de Bretagne S.A.S.
+    Address: 12, Zone Industrielle des Landes
+    Address 2: ''
+    City: FOUGERES
+    Country/Region Code: FR
+    Post Code: 35 300
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-011
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60120
+    Description: Panneau MDF standard 19mm
+    Quantity: 80.0
+    Unit Price: 22.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-011
+        Buy-from Vendor Name: Bois de Bretagne S.A.S.
+        Buy-from Address: 12 Zone Industrielle des Landes
+        Buy-from Address 2: ''
+        Buy-from City: Fougères
+        Buy-from Post Code: '35300'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: Panneau MDF standard 19mm
+        Quantity: 80.0
+        Unit Cost: 22.0
+- name: PA-INV-V03-006
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Martin Frères Quincaillerie
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-006
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Commande annuelle quincaillerie
+    Quantity: 1.0
+    Unit Price: 35000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-006
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: 12M
+        Description: Commande annuelle quincaillerie
+        Quantity: 1.0
+        Unit Cost: 35000.0
+- name: PA-INV-V03-025
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-025
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Caches-vis - coloris bois
+    Quantity: 2000.0
+    Unit Price: 0.05
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-025
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Caches-vis - coloris bois
+        Quantity: 2000.0
+        Unit Cost: 0.05
+- name: PA-INV-V03-012
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-012
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Écrous marteau - rainure T
+    Quantity: 300.0
+    Unit Price: 0.55
+  - Type: 1
+    No.: 60300
+    Description: Charnières porte vitrée
+    Quantity: 80.0
+    Unit Price: 9.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-012
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Écrous marteau - rainure T
+        Quantity: 300.0
+        Unit Cost: 0.55
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Charnières porte vitrée
+        Quantity: 80.0
+        Unit Cost: 9.5
+- name: PA-INV-V03-002
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Inserts filetés bois - M6
+    Quantity: 600.0
+    Unit Price: 0.28
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-002
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Inserts filetés bois - M6
+        Quantity: 600.0
+        Unit Cost: 0.28
+- name: PA-INV-V03-020
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8, Avenue des Artisans
+    Address 2: ''
+    City: Saint Malo
+    Country/Region Code: FR
+    Post Code: 35400
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-020
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Vérins à gaz 250N
+    Quantity: 60.0
+    Unit Price: 18.0
+  - Type: 1
+    No.: 60300
+    Description: Vérins pneumatiques 350N
+    Quantity: 40.0
+    Unit Price: 22.0
+  - Type: 1
+    No.: 60300
+    Description: Tourillons bois 8mm - 1000pcs
+    Quantity: 30.0
+    Unit Price: 15.0
+  - Type: 1
+    No.: 60300
+    Description: Vis inox tête fraisée 5x50
+    Quantity: 40.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 60300
+    Description: Poignées barres - inox 192mm
+    Quantity: 100.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 60300
+    Description: Charnières ressort - retour
+    Quantity: 80.0
+    Unit Price: 6.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-020
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Vérins à gaz 250N
+        Quantity: 60.0
+        Unit Cost: 18.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Vérins pneumatiques 350N
+        Quantity: 40.0
+        Unit Cost: 22.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Tourillons bois 8mm - 1000pcs
+        Quantity: 30.0
+        Unit Cost: 15.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Vis inox tête fraisée 5x50
+        Quantity: 40.0
+        Unit Cost: 28.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Poignées barres - inox 192mm
+        Quantity: 100.0
+        Unit Cost: 12.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Charnières ressort - retour
+        Quantity: 80.0
+        Unit Cost: 6.5
+- name: PA-INV-V01-008
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Bois de Bretagne SAS
+    Address: 12 ZI des Landes
+    Address 2: ''
+    City: Fougères
+    Country/Region Code: FR
+    Post Code: 35300
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-008
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60100
+    Description: Avenant contrat Q4
+    Quantity: 1.0
+    Unit Price: 12500.0
+  - Type: 1
+    No.: 60100
+    Description: Chêne rustique - poutres déco
+    Quantity: 8.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 60100
+    Description: Chêne séché naturel - lots
+    Quantity: 65.0
+    Unit Price: 75.0
+  - Type: 1
+    No.: 60100
+    Description: Hêtre naturel - chants
+    Quantity: 200.0
+    Unit Price: 8.5
+  - Type: 1
+    No.: 60100
+    Description: Pin sylvestre - caisses
+    Quantity: 100.0
+    Unit Price: 22.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-008
+        Buy-from Vendor Name: Bois de Bretagne S.A.S.
+        Buy-from Address: 12 Zone Industrielle des Landes
+        Buy-from Address 2: ''
+        Buy-from City: Fougères
+        Buy-from Post Code: '35300'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60100
+        Deferral Code: 3M
+        Description: Avenant contrat Q4
+        Quantity: 1.0
+        Unit Cost: 12500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Chêne rustique - poutres déco
+        Quantity: 8.0
+        Unit Cost: 280.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Chêne séché naturel - lots
+        Quantity: 65.0
+        Unit Cost: 75.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Hêtre naturel - chants
+        Quantity: 200.0
+        Unit Cost: 8.5
+      - Line No.: 50000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Pin sylvestre - caisses
+        Quantity: 100.0
+        Unit Cost: 22.0
+- name: PA-INV-V02-019
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Tissus & Garnitures Rennais
+    Address: 45 Rue de la Poterie
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V02-019
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60220
+    Description: Sangles élastiques - rouleaux
+    Quantity: 20.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu outdoor - résistant UV
+    Quantity: 40.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu bouclé - beige rosé
+    Quantity: 35.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 60200
+    Description: Velours strié - lie de vin
+    Quantity: 20.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu technique - anti-acarien
+    Quantity: 50.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 60220
+    Description: Mousse à mémoire - découpe
+    Quantity: 20.0
+    Unit Price: 92.0
+  - Type: 1
+    No.: 60210
+    Description: Simili cuir premium - taupe
+    Quantity: 40.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu Dralon - extérieur
+    Quantity: 35.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 60200
+    Description: Tissu bouclette - ivoire
+    Quantity: 35.0
+    Unit Price: 52.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-019
+        Buy-from Vendor Name: Tissus & Garnitures Rennais
+        Buy-from Address: 45 Rue de la Poterie
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Sangles élastiques - rouleaux
+        Quantity: 20.0
+        Unit Cost: 35.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu outdoor - résistant UV
+        Quantity: 40.0
+        Unit Cost: 42.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu bouclé - beige rosé
+        Quantity: 35.0
+        Unit Cost: 48.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Velours strié - lie de vin
+        Quantity: 20.0
+        Unit Cost: 55.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu technique - anti-acarien
+        Quantity: 50.0
+        Unit Cost: 35.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60220
+        Deferral Code: ''
+        Description: Mousse à mémoire - découpe
+        Quantity: 20.0
+        Unit Cost: 92.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60210
+        Deferral Code: ''
+        Description: Simili cuir premium - taupe
+        Quantity: 40.0
+        Unit Cost: 38.0
+      - Line No.: 80000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu Dralon - extérieur
+        Quantity: 35.0
+        Unit Cost: 45.0
+      - Line No.: 90000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu bouclette - ivoire
+        Quantity: 35.0
+        Unit Cost: 52.0
+- name: PA-INV-V03-011
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Quincaillerie Martin Frères
+    Address: 8 Avenue des Artisans
+    Address 2: ''
+    City: Saint-Malo
+    Country/Region Code: FR
+    Post Code: '35400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-011
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Boutons céramique - blanc
+    Quantity: 120.0
+    Unit Price: 4.5
+  - Type: 1
+    No.: 60300
+    Description: Vis MDF spéciales 4x35
+    Quantity: 30.0
+    Unit Price: 24.0
+  - Type: 1
+    No.: 60300
+    Description: Boulons d'assemblage M6x40
+    Quantity: 500.0
+    Unit Price: 0.35
+  - Type: 1
+    No.: 60300
+    Description: Vis aggloméré 3.5x30 - 5000
+    Quantity: 20.0
+    Unit Price: 42.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-011
+        Buy-from Vendor Name: Quincaillerie Martin Frères
+        Buy-from Address: 8 Avenue des Artisans
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Malo
+        Buy-from Post Code: '35400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Boutons céramique - blanc
+        Quantity: 120.0
+        Unit Cost: 4.5
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Vis MDF spéciales 4x35
+        Quantity: 30.0
+        Unit Cost: 24.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Boulons d'assemblage M6x40
+        Quantity: 500.0
+        Unit Cost: 0.35
+      - Line No.: 40000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Vis aggloméré 3.5x30 - 5000
+        Quantity: 20.0
+        Unit Cost: 42.0
+- name: PA-INV-V01-014
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Bois de Bretagne S.A.S.
+    Address: Zone Ind. des Landes 12
+    Address 2: ''
+    City: Fougères
+    Country/Region Code: FR
+    Post Code: F-35300
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-014
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60120
+    Description: Contreplaqué peuplier 18mm
+    Quantity: 50.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 60100
+    Description: Hêtre fumé - design
+    Quantity: 18.0
+    Unit Price: 145.0
+  - Type: 1
+    No.: 60100
+    Description: Chêne doré - commodes
+    Quantity: 32.0
+    Unit Price: 98.0
+  - Type: 1
+    No.: 60100
+    Description: Hêtre massif - barreaux
+    Quantity: 120.0
+    Unit Price: 15.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-014
+        Buy-from Vendor Name: Bois de Bretagne S.A.S.
+        Buy-from Address: 12 Zone Industrielle des Landes
+        Buy-from Address 2: ''
+        Buy-from City: Fougères
+        Buy-from Post Code: '35300'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60120
+        Deferral Code: ''
+        Description: Contreplaqué peuplier 18mm
+        Quantity: 50.0
+        Unit Cost: 28.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Hêtre fumé - design
+        Quantity: 18.0
+        Unit Cost: 145.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Chêne doré - commodes
+        Quantity: 32.0
+        Unit Cost: 98.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Hêtre massif - barreaux
+        Quantity: 120.0
+        Unit Cost: 15.0
+- name: PA-INV-V05-004
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG009;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: EDF Entreprises Bretagne
+    Address: Place de Bretagne 1
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: 35 000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V05-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63100
+    Description: Électricité - entrepôt logistique
+    Quantity: 1.0
+    Unit Price: 1500.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation avril
+    Quantity: 1.0
+    Unit Price: 6500.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation février
+    Quantity: 1.0
+    Unit Price: 7800.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation janvier
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 63100
+    Description: Électricité - consommation mai
+    Quantity: 1.0
+    Unit Price: 6200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-004
+        Buy-from Vendor Name: EDF Entreprises Bretagne
+        Buy-from Address: 1 Place de Bretagne
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - entrepôt logistique
+        Quantity: 1.0
+        Unit Cost: 1500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation avril
+        Quantity: 1.0
+        Unit Cost: 6500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation février
+        Quantity: 1.0
+        Unit Cost: 7800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation janvier
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 50000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Électricité - consommation mai
+        Quantity: 1.0
+        Unit Cost: 6200.0
+- name: PA-INV-V04-007
+  description: VendorNo=V04;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG003;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Vernis & Finitions de l'Ouest
+    Address: 23 rue du Commerce
+    Address 2: ''
+    City: Nantes Cedex
+    Country/Region Code: FR
+    Post Code: 44 000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V04-007
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60400
+    Description: Teinte noyer clair - 2.5L
+    Quantity: 22.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 60400
+    Description: Contrat annuel fournitures
+    Quantity: 1.0
+    Unit Price: 15000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V04-007
+        Buy-from Vendor Name: Vernis & Finitions de l'Ouest
+        Buy-from Address: 23 Rue du Commerce
+        Buy-from Address 2: ''
+        Buy-from City: Nantes
+        Buy-from Post Code: '44000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60400
+        Deferral Code: ''
+        Description: Teinte noyer clair - 2.5L
+        Quantity: 22.0
+        Unit Cost: 32.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60400
+        Deferral Code: 12M
+        Description: Contrat annuel fournitures
+        Quantity: 1.0
+        Unit Cost: 15000.0
+- name: PA-INV-V05-009
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: EDF Entreprises Bretagne
+    Address: 1 Place de Bretagne
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V05-009
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63100
+    Description: Contribution TURPE
+    Quantity: 1.0
+    Unit Price: 980.0
+  - Type: 1
+    No.: 63100
+    Description: Option heures creuses - site prod
+    Quantity: 1.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 63100
+    Description: Certificats économie énergie
+    Quantity: 1.0
+    Unit Price: 280.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-009
+        Buy-from Vendor Name: EDF Entreprises Bretagne
+        Buy-from Address: 1 Place de Bretagne
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Contribution TURPE
+        Quantity: 1.0
+        Unit Cost: 980.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Option heures creuses - site prod
+        Quantity: 1.0
+        Unit Cost: 280.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63100
+        Deferral Code: ''
+        Description: Certificats économie énergie
+        Quantity: 1.0
+        Unit Cost: 280.0
+- name: PA-INV-V04-009
+  description: VendorNo=V04;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG003;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Vernis & Finitions de l'Ouest
+    Address: Rue du Commerce 23
+    Address 2: ''
+    City: Nantes
+    Country/Region Code: FR
+    Post Code: F-44000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V04-009
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60410
+    Description: Encaustique traditionnelle
+    Quantity: 30.0
+    Unit Price: 15.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V04-009
+        Buy-from Vendor Name: Vernis & Finitions de l'Ouest
+        Buy-from Address: 23 Rue du Commerce
+        Buy-from Address 2: ''
+        Buy-from City: Nantes
+        Buy-from Post Code: '44000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60410
+        Deferral Code: ''
+        Description: Encaustique traditionnelle
+        Quantity: 30.0
+        Unit Cost: 15.0
+- name: PA-INV-V10-004
+  description: VendorNo=V10;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG007;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Cabinet Durand & Associés
+    Address: 22 Place du Parlement
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V10-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62400
+    Description: Honoraires comptables - mai
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 62400
+    Description: Analyse financière annuelle
+    Quantity: 1.0
+    Unit Price: 2200.0
+  - Type: 1
+    No.: 62400
+    Description: Révision comptes annuels
+    Quantity: 1.0
+    Unit Price: 4500.0
+  - Type: 1
+    No.: 62400
+    Description: Formalités AG annuelle
+    Quantity: 1.0
+    Unit Price: 850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V10-004
+        Buy-from Vendor Name: Cabinet Durand & Associés
+        Buy-from Address: 22 Place du Parlement
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Honoraires comptables - mai
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Analyse financière annuelle
+        Quantity: 1.0
+        Unit Cost: 2200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Révision comptes annuels
+        Quantity: 1.0
+        Unit Cost: 4500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62400
+        Deferral Code: ''
+        Description: Formalités AG annuelle
+        Quantity: 1.0
+        Unit Cost: 850.0

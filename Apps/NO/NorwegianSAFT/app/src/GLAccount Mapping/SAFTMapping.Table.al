@@ -20,7 +20,7 @@ table 10672 "SAF-T Mapping"
         {
             DataClassification = CustomerContent;
             Caption = 'Category No.';
-            TableRelation = "SAF-T Mapping Category" where ("Mapping Type" = field ("Mapping Type"));
+            TableRelation = "SAF-T Mapping Category" where("Mapping Type" = field("Mapping Type"));
         }
         field(3; "No."; Code[20])
         {
@@ -31,6 +31,11 @@ table 10672 "SAF-T Mapping"
         {
             DataClassification = CustomerContent;
             Caption = 'Description';
+        }
+        field(5; "Extended No."; Text[500])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Extended No.';
         }
     }
 

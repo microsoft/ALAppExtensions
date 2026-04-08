@@ -1,0 +1,47 @@
+{
+  "id": "f1ede36c-2f5f-47f1-ba20-258b509c0238",
+  "name": "Agent Samples Tests",
+  "publisher": "Microsoft",
+  "brief": "Automation tests for the sample agents defined in the Agent Samples app.",
+  "description": "Automation tests for the sample agents defined in the Agent Samples app.",
+  "version": "29.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
+  "help": "https://go.microsoft.com/fwlink/?LinkId=849257",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=849257",
+  "logo": "ExtensionLogo.png",
+  "screenshots": [],
+  "application": "29.0.0.0",
+  "platform": "29.0.0.0",
+  "dependencies": [
+    {
+      "id": "698cfedb-66b9-44a8-b5ae-1ec18bd32fa7",
+      "name": "Agent Samples",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "517f890c-b49f-47de-8120-d0327974b89d",
+      "name": "AI Development Toolkit - Evaluation",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    }
+  ],
+  "target": "Cloud",
+  "features": [
+    "GenerateCaptions",
+    "TranslationFile",
+    "NoImplicitWith",
+    "NoPromotedActionProperties"
+  ],
+  "idRanges": [
+    {
+      "from": 133740,
+      "to": 133750
+    }
+  ],
+  "resourceFolders": [
+    ".resources"
+  ]
+}

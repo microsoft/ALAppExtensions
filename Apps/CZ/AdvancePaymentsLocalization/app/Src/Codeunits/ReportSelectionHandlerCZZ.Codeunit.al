@@ -70,7 +70,7 @@ codeunit 31420 "Report Selection Handler CZZ"
     local procedure AddSalesAdvanceReportsOnAfterFilterCustomerUsageReportSelections(var ReportSelections: Record "Report Selections")
     begin
         ReportSelections.SetFilter(
-            Usage, '%1|%2|%3|%4|%5|%6|%7|%8|%9|%10',
+            Usage, '%1|%2|%3|%4|%5|%6|%7|%8|%9|%10|%11',
             "Report Selection Usage"::"S.Quote",
             "Report Selection Usage"::"S.Order",
             "Report Selection Usage"::"S.Invoice",
@@ -79,8 +79,31 @@ codeunit 31420 "Report Selection Handler CZZ"
             "Report Selection Usage"::JQ,
             "Report Selection Usage"::Reminder,
             "Report Selection Usage"::"S.Shipment",
+            "Report Selection Usage"::"Pro Forma S. Invoice",
             "Report Selection Usage"::"Sales Advance Letter CZZ",
             "Report Selection Usage"::"Sales Advance VAT Document CZZ");
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Vendor Report Selections", 'OnMapTableUsageValueToPageValueOnCaseElse', '', false, false)]
+    local procedure AddPurchaseAdvanceReportsOnMapTableUsageValueToPageValueOnCaseElse(var ReportUsage: Enum "Report Selection Usage Vendor"; Rec: Record "Custom Report Selection")
+    begin
+        case Rec.Usage of
+            "Report Selection Usage"::"Purchase Advance Letter CZZ":
+                ReportUsage := ReportUsage::"Advance Letter CZZ";
+            "Report Selection Usage"::"Purchase Advance VAT Document CZZ":
+                ReportUsage := ReportUsage::"Advance VAT Document CZZ";
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Vendor Report Selections", 'OnValidateUsage2OnCaseElse', '', false, false)]
+    local procedure AddPurchaseAdvanceReportsOnValidateUsage2OnCaseElse(var CustomReportSelection: Record "Custom Report Selection"; ReportUsage: Enum "Report Selection Usage Vendor")
+    begin
+        case ReportUsage of
+            ReportUsage::"Advance Letter CZZ":
+                CustomReportSelection.Usage := "Report Selection Usage"::"Purchase Advance Letter CZZ";
+            ReportUsage::"Advance VAT Document CZZ":
+                CustomReportSelection.Usage := "Report Selection Usage"::"Purchase Advance VAT Document CZZ";
+        end;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Vendor Report Selections", 'OnAfterFilterVendorUsageReportSelections', '', false, false)]

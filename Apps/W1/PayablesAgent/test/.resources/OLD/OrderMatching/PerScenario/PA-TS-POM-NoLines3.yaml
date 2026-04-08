@@ -1,0 +1,240 @@
+# # Scenario NoLines3
+
+# **Description**: None of the invoice lines (up to 3) match any of the open purchase orders (up to 3 orders with up to 3 lines each) for the same vendor.
+# **Purpose**: Tests the agent's ability to correctly identify when no matches exist between invoice and purchase orders.
+
+#  ## GIVEN
+#  - An invoice with maximum 3 lines 
+#  - A maximum of 3 open purchase orders exist for the vendor.
+#  - Each order has maximum 3 lines.
+#  - None of the lines on the invoice match any line on the purchase orders.
+#  ## WHEN
+#  The agent processes the invoice.
+#  ## THEN
+#  None of the invoice's lines match the open purchase order lines.
+
+tests:
+- name: NoLines3_001
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Office Desk Standard
+          quantity: 5
+          unitPrice: 250.00
+        - description: Ergonomic Office Chair
+          quantity: 5
+          unitPrice: 180.00
+        - description: LED Monitor 24 inch
+          quantity: 10
+          unitPrice: 220.00
+    - lines:
+        - description: Laptop Dell XPS
+          quantity: 3
+          unitPrice: 1500.00
+        - description: Wireless Keyboard
+          quantity: 8
+          unitPrice: 45.00
+    - lines:
+        - description: Network Switch 24 Port
+          quantity: 2
+          unitPrice: 350.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Industrial Shelving Unit
+      quantity: 4
+      unit_price: 280.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Safety Goggles Pack
+      quantity: 50
+      unit_price: 8.50
+      discount: 0.00
+      tax_rate: 10
+    - description: Forklift Maintenance Service
+      quantity: 1
+      unit_price: 450.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    noOrderLineMatches: true
+
+- name: NoLines3_002
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Printer HP LaserJet Pro
+          quantity: 2
+          unitPrice: 350.00
+        - description: Scanner Fujitsu
+          quantity: 1
+          unitPrice: 280.00
+        - description: Toner Cartridge Black
+          quantity: 12
+          unitPrice: 65.00
+    - lines:
+        - description: Copier Paper A3
+          quantity: 30
+          unitPrice: 8.50
+        - description: Binder Clips Large
+          quantity: 100
+          unitPrice: 0.25
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Coffee Machine Commercial
+      quantity: 1
+      unit_price: 850.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Coffee Beans Premium 1kg
+      quantity: 10
+      unit_price: 22.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    noOrderLineMatches: true
+
+- name: NoLines3_003
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Standing Desk Electric
+          quantity: 8
+          unitPrice: 650.00
+        - description: Monitor Arm Dual
+          quantity: 8
+          unitPrice: 95.00
+    - lines:
+        - description: Whiteboard Large 6x4 ft
+          quantity: 4
+          unitPrice: 180.00
+        - description: Whiteboard Markers Pack
+          quantity: 20
+          unitPrice: 12.00
+        - description: Eraser Magnetic
+          quantity: 15
+          unitPrice: 4.50
+    - lines:
+        - description: Filing Cabinet 4 Drawer
+          quantity: 6
+          unitPrice: 320.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Air Conditioning Unit Split
+      quantity: 2
+      unit_price: 1200.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Heater Portable
+      quantity: 5
+      unit_price: 85.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Humidifier Commercial
+      quantity: 3
+      unit_price: 150.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    noOrderLineMatches: true
+
+- name: NoLines3_004
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Server Rack 42U
+          quantity: 1
+          unitPrice: 950.00
+        - description: UPS Battery Backup 1500VA
+          quantity: 3
+          unitPrice: 280.00
+        - description: Patch Panel 48 Port
+          quantity: 2
+          unitPrice: 120.00
+    - lines:
+        - description: Cable Management Kit
+          quantity: 5
+          unitPrice: 45.00
+    - lines:
+        - description: Fire Extinguisher 5kg
+          quantity: 8
+          unitPrice: 65.00
+        - description: First Aid Kit Complete
+          quantity: 10
+          unitPrice: 35.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Cleaning Service Monthly
+      quantity: 1
+      unit_price: 550.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Window Cleaning Solution 5L
+      quantity: 4
+      unit_price: 18.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    noOrderLineMatches: true
+
+- name: NoLines3_005
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Projector Epson HD
+          quantity: 2
+          unitPrice: 780.00
+        - description: Projection Screen Motorized
+          quantity: 2
+          unitPrice: 450.00
+        - description: HDMI Cable 10m
+          quantity: 10
+          unitPrice: 25.00
+    - lines:
+        - description: Conference Phone Polycom
+          quantity: 3
+          unitPrice: 320.00
+        - description: Webcam Logitech 4K
+          quantity: 5
+          unitPrice: 180.00
+        - description: Speaker System Bose
+          quantity: 2
+          unitPrice: 650.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Water Cooler Floor Standing
+      quantity: 3
+      unit_price: 220.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Water Bottles 5 Gallon Pack
+      quantity: 20
+      unit_price: 8.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Paper Cups Dispenser
+      quantity: 5
+      unit_price: 15.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    noOrderLineMatches: true

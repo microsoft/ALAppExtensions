@@ -355,7 +355,7 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure CreateFormDocumentForVendorWithExistingFormDocumentAndReplaceOption()
     var
         TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
@@ -380,9 +380,9 @@ codeunit 148010 "IRS 1099 Document Tests"
         LibraryIRS1099Document.MockVendorFormBoxBuffer(TempIRS1099VendFormBoxBuffer, EntryNo, PeriodNo, VendNo, FormNo, FormBoxNo);
 
         // [WHEN] Run create form documents for MISC with Replace option
-        IRS1099CalcParameters."Form No." := FormNo;
-        IRS1099CalcParameters.Replace := true;
-        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, IRS1099CalcParameters);
+        TempIRS1099CalcParameters."Form No." := FormNo;
+        TempIRS1099CalcParameters.Replace := true;
+        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, TempIRS1099CalcParameters);
 
         // [THEN] The form document for MISC and "X" exists after running create form documents function
         LibraryIRS1099Document.FindIRS1099FormDocHeader(IRS1099FormDocHeader, PeriodNo, VendNo, FormNo);
@@ -402,7 +402,7 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure CreateFormDocumentForVendorWithExistingSubmittedFormDocumentAndReplaceOption()
     var
         TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         OriginalIRS1099FormDocLine, IRS1099FormDocLine : Record "IRS 1099 Form Doc. Line";
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
@@ -427,9 +427,9 @@ codeunit 148010 "IRS 1099 Document Tests"
         LibraryIRS1099Document.MockVendorFormBoxBuffer(TempIRS1099VendFormBoxBuffer, EntryNo, PeriodNo, VendNo, FormNo, FormBoxNo);
 
         // [WHEN] Run create form documents for MISC with Replace option
-        IRS1099CalcParameters."Form No." := FormNo;
-        IRS1099CalcParameters.Replace := true;
-        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, IRS1099CalcParameters);
+        TempIRS1099CalcParameters."Form No." := FormNo;
+        TempIRS1099CalcParameters.Replace := true;
+        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, TempIRS1099CalcParameters);
 
         // [THEN] The form document for MISC and "X" exists after running create form documents function
         LibraryIRS1099Document.FindIRS1099FormDocHeader(IRS1099FormDocHeader, PeriodNo, VendNo, FormNo);
@@ -449,7 +449,7 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure CreateFormDocumentForVendorWithExistingReleasedFormDocumentAndReplaceOption()
     var
         TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
@@ -474,9 +474,9 @@ codeunit 148010 "IRS 1099 Document Tests"
         LibraryIRS1099Document.MockVendorFormBoxBuffer(TempIRS1099VendFormBoxBuffer, EntryNo, PeriodNo, VendNo, FormNo, FormBoxNo);
 
         // [WHEN] Run create form documents for MISC with Replace option
-        IRS1099CalcParameters."Form No." := FormNo;
-        IRS1099CalcParameters.Replace := true;
-        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, IRS1099CalcParameters);
+        TempIRS1099CalcParameters."Form No." := FormNo;
+        TempIRS1099CalcParameters.Replace := true;
+        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, TempIRS1099CalcParameters);
 
         // [THEN] The form document for MISC and "X" exists after running create form documents function
         LibraryIRS1099Document.FindIRS1099FormDocHeader(IRS1099FormDocHeader, PeriodNo, VendNo, FormNo);
@@ -642,7 +642,7 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure CreateFormDocumentForVendorThatHasSubmittedFormWithInitialID()
     var
         TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         OriginalIRS1099FormDocLine, IRS1099FormDocLine : Record "IRS 1099 Form Doc. Line";
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
@@ -670,8 +670,8 @@ codeunit 148010 "IRS 1099 Document Tests"
         LibraryIRS1099Document.MockVendorFormBoxBuffer(TempIRS1099VendFormBoxBuffer, EntryNo, PeriodNo, VendNo, FormNo, FormBoxNo);
 
         // [WHEN] Run create form documents for MISC form
-        IRS1099CalcParameters."Form No." := FormNo;
-        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, IRS1099CalcParameters);
+        TempIRS1099CalcParameters."Form No." := FormNo;
+        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, TempIRS1099CalcParameters);
 
         // [THEN] Submitted form document for MISC and "X" still exists
         IRS1099FormDocHeader.Get(DocId);

@@ -869,7 +869,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
     procedure TestPatchingTheTypeBlanksIds()
     var
         SalesHeader: Record "Sales Header";
-        SalesInvoiceLineAggregate: Record "Sales Invoice Line Aggregate";
+        TempSalesInvoiceLineAggregate: Record "Sales Invoice Line Aggregate";
         SalesLine: Record "Sales Line";
         TargetURL: Text;
         ResponseText: Text;
@@ -883,7 +883,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
         Assert.AreNotEqual('', OrderId, 'ID should not be empty');
         FindFirstSalesLine(SalesHeader, SalesLine);
 
-        OrderLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(SalesInvoiceLineAggregate."API Type"::Account));
+        OrderLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(TempSalesInvoiceLineAggregate."API Type"::Account));
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt

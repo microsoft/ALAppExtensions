@@ -2766,11 +2766,11 @@ codeunit 148218 "Sustainability Service Tests"
     local procedure CreateServiceLineItemTracking(ServiceLine: Record "Service Line"; SerialNo: Code[50]; LotNo: Code[50]; QtyBase: Decimal)
     var
         ReservEntry: Record "Reservation Entry";
-        ItemTrackingSetup: Record "Item Tracking Setup";
+        TempItemTrackingSetup: Record "Item Tracking Setup";
     begin
-        ItemTrackingSetup."Serial No." := SerialNo;
-        ItemTrackingSetup."Lot No." := LotNo;
-        CreateAssemblyHeaderItemTracking(ReservEntry, ServiceLine, ItemTrackingSetup, QtyBase);
+        TempItemTrackingSetup."Serial No." := SerialNo;
+        TempItemTrackingSetup."Lot No." := LotNo;
+        CreateAssemblyHeaderItemTracking(ReservEntry, ServiceLine, TempItemTrackingSetup, QtyBase);
     end;
 
     local procedure CreateAssemblyHeaderItemTracking(var ReservEntry: Record "Reservation Entry"; ServiceLine: Record "Service Line"; ItemTrackingSetup: Record "Item Tracking Setup"; QtyBase: Decimal)

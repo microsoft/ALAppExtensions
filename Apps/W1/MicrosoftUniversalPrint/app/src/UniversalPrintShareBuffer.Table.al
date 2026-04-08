@@ -47,14 +47,14 @@ table 2752 "Universal Print Share Buffer"
 
     procedure FillRecordBuffer()
     var
-        UniversalPrintShareBuffer: Record "Universal Print Share Buffer";
+        TempUniversalPrintShareBuffer: Record "Universal Print Share Buffer";
         UniversalPrinterSetup: Codeunit "Universal Printer Setup";
     begin
-        UniversalPrintShareBuffer.CopyFilters(Rec);
+        TempUniversalPrintShareBuffer.CopyFilters(Rec);
         Rec.Reset();
         Rec.DeleteAll();
         UniversalPrinterSetup.AddAllPrintSharesToBuffer(Rec);
-        Rec.CopyFilters(UniversalPrintShareBuffer);
+        Rec.CopyFilters(TempUniversalPrintShareBuffer);
         if Rec.FindFirst() then;
     end;
 }

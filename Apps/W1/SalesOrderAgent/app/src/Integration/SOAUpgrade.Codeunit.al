@@ -54,7 +54,7 @@ codeunit 4589 "SOA Upgrade"
         if not UpgradeTag.HasUpgradeTag(GetAddBillingTypeToSOACapabilityTag()) then begin
             if EnvironmentInformation.IsSaaSInfrastructure() then
                 if CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Sales Order Agent") then
-                    CopilotCapability.ModifyCapability(Enum::"Copilot Capability"::"Sales Order Agent", Enum::"Copilot Availability"::Preview, Enum::"Copilot Billing Type"::"Microsoft Billed", LearnMoreUrlTxt);
+                    CopilotCapability.ModifyCapability(Enum::"Copilot Capability"::"Sales Order Agent", Enum::"Copilot Availability"::"Generally Available", Enum::"Copilot Billing Type"::"Microsoft Billed", LearnMoreUrlTxt);
 
             UpgradeTag.SetUpgradeTag(GetAddBillingTypeToSOACapabilityTag());
         end;

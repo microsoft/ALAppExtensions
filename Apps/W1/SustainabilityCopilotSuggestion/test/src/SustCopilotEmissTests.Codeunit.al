@@ -26,8 +26,8 @@ codeunit 139797 "Sust. Copilot Emiss. Tests"
     [Test]
     procedure SustainabilityEmissionAccuracyTest()
     var
-        SustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
-        SourceCO2EmissionBuffer: Record "Source CO2 Emission Buffer";
+        TempSustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
+        TempSourceCO2EmissionBuffer: Record "Source CO2 Emission Buffer";
         SustainabilityAI: Codeunit "Sustainability AI";
         AITContext: Codeunit "AIT Test Context";
         JsonContent: JsonObject;
@@ -42,13 +42,13 @@ codeunit 139797 "Sust. Copilot Emiss. Tests"
         // [GIVEN] Get data input from JSON
         // [GIVEN] Generate sustainability journal lines from JSON
         // [GIVEN] Convert sustainability journal line to sustainability emission suggestion
-        LibrarySustainabilityCopilot.GetUserInputFromJson(SustainEmissionSuggestion, JsonToken.AsObject());
+        LibrarySustainabilityCopilot.GetUserInputFromJson(TempSustainEmissionSuggestion, JsonToken.AsObject());
 
         // [WHEN] Generate chat completion
-        SustainabilityAI.AICall(SustainEmissionSuggestion, SourceCO2EmissionBuffer);
+        SustainabilityAI.AICall(TempSustainEmissionSuggestion, TempSourceCO2EmissionBuffer);
 
         // [THEN] Verify that the formula is correct
-        VerifyEmission(SustainEmissionSuggestion, JsonContent);
+        VerifyEmission(TempSustainEmissionSuggestion, JsonContent);
     end;
 
     local procedure Initialize()

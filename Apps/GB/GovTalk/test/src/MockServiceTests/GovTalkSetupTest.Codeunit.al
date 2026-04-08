@@ -29,7 +29,7 @@ codeunit 144031 "GovTalk Setup Test"
     [Scope('OnPrem')]
     procedure TestRegisteredInAssistedSetup()
     var
-        ServiceConnection: Record "Service Connection";
+        TempServiceConnection: Record "Service Connection";
         GovTalkSetup: Record "Gov Talk Setup";
     begin
         // [GIVEN] No GovTalk Setup record exists, user has configuration permissions
@@ -37,12 +37,12 @@ codeunit 144031 "GovTalk Setup Test"
         GovTalkSetup.DeleteAll();
 
         // [WHEN] All services for Service Connections page are gathered
-        ServiceConnection.OnRegisterServiceConnection(ServiceConnection);
-        ServiceConnection.SetRange(Name, GovTalkSetupTok);
+        TempServiceConnection.OnRegisterServiceConnection(TempServiceConnection);
+        TempServiceConnection.SetRange(Name, GovTalkSetupTok);
 
         // [THEN] GovTalk Setup exists there
-        Assert.RecordCount(ServiceConnection, 1);
-        ServiceConnection.DeleteAll(); // Cleanup
+        Assert.RecordCount(TempServiceConnection, 1);
+        TempServiceConnection.DeleteAll(); // Cleanup
     end;
 
     [Test]

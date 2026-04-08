@@ -36,8 +36,9 @@ codeunit 4323 "SOA Awareness Notifications"
         AgentSession: Codeunit "Agent Session";
         AgentMetadataProvider: Enum "Agent Metadata Provider";
     begin
-        if not MyNotifications.IsEnabled(GetSOAAwarenessNotificationId()) then
-            exit(false);
+        if MyNotifications.Get(UserId, GetSOAAwarenessNotificationId()) then
+            if not MyNotifications.Enabled then
+                exit(false);
 
         if AgentSession.IsAgentSession(AgentMetadataProvider) then
             exit(false);

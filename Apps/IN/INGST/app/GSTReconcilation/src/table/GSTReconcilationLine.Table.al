@@ -54,7 +54,7 @@ table 18281 "GST Reconcilation Line"
         }
         field(9; "Document Date"; Date)
         {
-            Caption = 'Document Date';
+            Caption = 'Posting Date';
             DataClassification = CustomerContent;
         }
         field(11; "Goods/Services"; enum "GST Group Type")

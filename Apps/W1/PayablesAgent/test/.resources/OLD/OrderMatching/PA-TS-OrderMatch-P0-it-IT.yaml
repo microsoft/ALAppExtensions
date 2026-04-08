@@ -1,0 +1,704 @@
+tests:
+- name: AllLines10_001
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 685
+      description: Scrivania in piedi elettrica regolabile
+      quantity: 6
+    - unitPrice: 125
+      description: Supporto doppio per braccio monitor
+      quantity: 12
+    - unitPrice: 48
+      description: Supporto per laptop in alluminio
+      quantity: 15
+    - unitPrice: 18.5
+      description: Set da scrivania per organizzare i cavi
+      quantity: 20
+    - unitPrice: 38
+      description: Poggiapiedi ergonomico regolabile
+      quantity: 10
+    - unitPrice: 42
+      description: Sottomano da scrivania grande in pelle
+      quantity: 8
+    - unitPrice: 24.5
+      description: Portadocumenti regolabile
+      quantity: 12
+    - unitPrice: 85
+      description: Webcam HD 1080p Logitech
+      quantity: 10
+    - unitPrice: 95
+      description: Cuffie USB con cancellazione del rumore
+      quantity: 15
+    - unitPrice: 28.5
+      description: Organizer da scrivania in bambù
+      quantity: 18
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Scrivania in piedi elettrica regolabile
+      unit_price: 685
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Braccio per monitor a doppio montaggio
+      unit_price: 125
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Supporto per laptop in alluminio
+      unit_price: 48
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Set da scrivania per organizzare i cavi
+      unit_price: 18.5
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Poggiapiedi ergonomico regolabile
+      unit_price: 38
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Sottomano da scrivania grande in pelle
+      unit_price: 42
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Portadocumenti regolabile
+      unit_price: 24.5
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Webcam Logitech HD1080p
+      unit_price: 85
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Cuffie USB con cancellazione del rumore
+      unit_price: 95
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Organizer da scrivania in bambù
+      unit_price: 28.5
+      quantity: 18
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 8
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 9
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 10
+- name: AllLines10_005
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 2850
+      description: Macchina da caffè commerciale Espresso
+      quantity: 2
+    - unitPrice: 385
+      description: Raffreddatore d'acqua da pavimento
+      quantity: 4
+    - unitPrice: 425
+      description: Forno a microonde professionale 1200W
+      quantity: 3
+    - unitPrice: 285
+      description: Frigorifero Mini Compatto 120L
+      quantity: 5
+    - unitPrice: 24.5
+      description: Caffè in Grani Miscela Premium 1kg
+      quantity: 20
+    - unitPrice: 8.5
+      description: Bicchieri usa e getta da 12 once Confezione da 100
+      quantity: 30
+    - unitPrice: 35
+      description: Set di sostituzione del filtro dell'acqua
+      quantity: 12
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Set di sostituzione del filtro dell'acqua
+      unit_price: 35
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Macchina per caffè espresso commerciale
+      unit_price: 2850
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Bicchieri usa e getta da 12 once Confezione da 100
+      unit_price: 8.5
+      quantity: 30
+    - discount: 0
+      tax_rate: 10
+      description: Forno a microonde professionale da 1200 W
+      unit_price: 425
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Caffè in Grani Miscela Premium 1kg
+      unit_price: 24.5
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Frigorifero Mini Compatto 120L
+      unit_price: 285
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Raffreddatore d'acqua da pavimento
+      unit_price: 385
+      quantity: 4
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 7
+- name: AllLines3_004
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 85
+      description: Cavo di rete Cat6 100 m
+      quantity: 2
+    - unitPrice: 12.5
+      description: Chiavetta USB da 64 GB
+      quantity: 25
+    - unitPrice: 95
+      description: Disco rigido esterno da 2 TB
+      quantity: 6
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Disco rigido esterno da 2 TB
+      unit_price: 95
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Cavo di rete Cat6 100 m
+      unit_price: 85
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Chiavetta USB da 64 GB
+      unit_price: 12.5
+      quantity: 25
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 3
+- name: AllLines5_003
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 425
+      description: Stampante HP LaserJet Pro
+      quantity: 3
+    - unitPrice: 78.5
+      description: Cartuccia toner nera
+      quantity: 12
+    - unitPrice: 82
+      description: Cartuccia toner ciano
+      quantity: 6
+    - unitPrice: 82
+      description: Cartuccia toner magenta
+      quantity: 6
+    - unitPrice: 82
+      description: Cartuccia toner giallo
+      quantity: 6
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Cartuccia toner ciano
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Cartuccia toner giallo
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Stampante HP LaserJet Pro
+      unit_price: 425
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Cartuccia toner magenta
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Cartuccia toner nera
+      unit_price: 78.5
+      quantity: 12
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 5
+- name: Challenge10_002
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 685
+      description: Scrivania da ufficio elettrica
+      quantity: 12
+    - unitPrice: 895
+      description: Sedia da ufficio Herman Miller
+      quantity: 12
+    - unitPrice: 185
+      description: Cassettiera da scrivania con 3 cassetti
+      quantity: 10
+    - unitPrice: 35
+      description: Kit per la gestione dei cavi sotto la scrivania
+      quantity: 15
+    - unitPrice: 48
+      description: Sottomano da scrivania in pelle grande
+      quantity: 14
+    - unitPrice: 58
+      description: Monitor in legno montante
+      quantity: 8
+  - lines:
+    - unitPrice: 68
+      description: Architetto LED per luci da lavoro
+      quantity: 14
+    - unitPrice: 28.5
+      description: Organizer da scrivania in bambù
+      quantity: 12
+    - unitPrice: 42
+      description: Poggiapiedi sotto la scrivania regolabile
+      quantity: 10
+    - unitPrice: 52
+      description: Supporto da scrivania per presa di corrente
+      quantity: 15
+  - lines:
+    - unitPrice: 325
+      description: Armadietto classificatore a 4 cassetti in acciaio
+      quantity: 6
+    - unitPrice: 245
+      description: Libreria 5 Ripiani Legno
+      quantity: 4
+    - unitPrice: 18.5
+      description: Vaso per piante da ufficio in ceramica
+      quantity: 20
+    - unitPrice: 32
+      description: Orologio da parete moderno silenzioso
+      quantity: 8
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Scrivania da ufficio elettrica
+      unit_price: 685
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Sedia da ufficio Herman Miller
+      unit_price: 895
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Piedistallo da scrivania con 3 cassetti
+      unit_price: 185
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Kit di gestione dei cavi sotto la scrivania
+      unit_price: 35
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Sottomano da scrivania grande in pelle
+      unit_price: 48
+      quantity: 14
+    - discount: 0
+      tax_rate: 10
+      description: Lampada da lavoro a LED per architetti
+      unit_price: 68
+      quantity: 14
+    - discount: 0
+      tax_rate: 10
+      description: Poggiapiedi regolabile sotto la scrivania
+      unit_price: 42
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Schedario in acciaio a 4 cassetti
+      unit_price: 325
+      quantity: 6
+    invoice_no: INV-002
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 1
+- name: Challenge3_003
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 5.75
+      description: Risma di carta A4 da 500 fogli
+      quantity: 25
+    - unitPrice: 3.5
+      description: Cartelle raccoglitrici A4
+      quantity: 30
+    - unitPrice: 8.25
+      description: Set di pennarelli per lavagna
+      quantity: 12
+  - lines:
+    - unitPrice: 18
+      description: Cucitrice resistente
+      quantity: 15
+  - lines:
+    - unitPrice: 12
+      description: Organizer da scrivania in plastica
+      quantity: 20
+    - unitPrice: 45.5
+      description: Cartuccia stampante nera HP
+      quantity: 8
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Cartuccia per stampante HP nera
+      unit_price: 45.5
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: 'Risma di carta A4: 500 fogli'
+      unit_price: 5.75
+      quantity: 25
+    - discount: 0
+      tax_rate: 10
+      description: Cucitrice per carichi pesanti
+      unit_price: 18
+      quantity: 15
+    invoice_no: INV-003
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+- name: Challenge5_002
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 485
+      description: Stampante Laser a colori HP
+      quantity: 3
+    - unitPrice: 295
+      description: Scanner per documenti a superficie piana
+      quantity: 2
+    - unitPrice: 75
+      description: Vassoio carta aggiuntivo
+      quantity: 5
+    - unitPrice: 68.5
+      description: Cartuccia toner ciano
+      quantity: 6
+  - lines:
+    - unitPrice: 68.5
+      description: Cartuccia toner magenta
+      quantity: 6
+    - unitPrice: 68.5
+      description: Cartuccia toner giallo
+      quantity: 6
+    - unitPrice: 58
+      description: Cartuccia toner nera
+      quantity: 8
+  - lines:
+    - unitPrice: 12
+      description: Cavo USB per stampante
+      quantity: 10
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Stampante laser a colori HP
+      unit_price: 485
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Cartuccia toner ciano
+      unit_price: 68.5
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Cartuccia toner giallo
+      unit_price: 68.5
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Cartuccia toner nero
+      unit_price: 58
+      quantity: 8
+    invoice_no: INV-002
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 3
+- name: NoLines3_001
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 250
+      description: Scrivania da ufficio standard
+      quantity: 5
+    - unitPrice: 180
+      description: Sedia da ufficio ergonomica
+      quantity: 5
+    - unitPrice: 220
+      description: Monitor LED da 24 pollici
+      quantity: 10
+  - lines:
+    - unitPrice: 1500
+      description: Computer portatile Dell XPS
+      quantity: 3
+    - unitPrice: 45
+      description: Tastiera senza fili
+      quantity: 8
+  - lines:
+    - unitPrice: 350
+      description: Switch di rete 24 porte
+      quantity: 2
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Scaffalatura industriale
+      unit_price: 280
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Pacchetto occhiali di sicurezza
+      unit_price: 8.5
+      quantity: 50
+    - discount: 0
+      tax_rate: 10
+      description: Servizio di manutenzione dei carrelli elevatori
+      unit_price: 450
+      quantity: 1
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: NoLines3_005
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 780
+      description: Proiettore Epson HD
+      quantity: 2
+    - unitPrice: 450
+      description: Schermo di proiezione motorizzato
+      quantity: 2
+    - unitPrice: 25
+      description: Cavo HDMI 10 metri
+      quantity: 10
+  - lines:
+    - unitPrice: 320
+      description: Telefono per conferenze Polycom
+      quantity: 3
+    - unitPrice: 180
+      description: Webcam Logitech 4K
+      quantity: 5
+    - unitPrice: 650
+      description: Sistema di altoparlanti Bose
+      quantity: 2
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Raffreddatore d'acqua da pavimento
+      unit_price: 220
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Confezione di bottiglie d'acqua da 5 galloni
+      unit_price: 8
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Dispenser per bicchieri di carta
+      unit_price: 15
+      quantity: 5
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: OneLine3_004
+  test_setup: PA-OrderMatch-it-IT.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 950
+      description: Rack per server 42U
+      quantity: 1
+    - unitPrice: 280
+      description: Batteria di riserva UPS da 1500 VA
+      quantity: 3
+  - lines:
+    - unitPrice: 120
+      description: Pannello patch 48 porte
+      quantity: 2
+    - unitPrice: 45
+      description: Kit per la gestione dei cavi
+      quantity: 5
+    - unitPrice: 95
+      description: Cavo di rete Cat6 Box
+      quantity: 4
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Servizio di test sugli allarmi antincendio
+      unit_price: 350
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: Batteria di riserva UPS da 1500 VA
+      unit_price: 280
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2

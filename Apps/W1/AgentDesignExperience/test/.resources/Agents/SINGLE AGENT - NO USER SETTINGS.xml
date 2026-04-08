@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Agents>
+  <Agent>
+    <Name>TEST_IMP_AGENT_1</Name>
+    <DisplayName>Agent One</DisplayName>
+    <Initials>A1</Initials>
+    <Description>First test agent</Description>
+    <Version>1.0</Version>
+    <Export Date="2025-09-26T08:14:03.909Z"/>
+    <AccessControls>
+      <AccessControl RoleID="TEST PERMISSION SET" Scope="System" AppID="{87bd596c-2473-4c29-b666-c97ef8760ddd}" />
+    </AccessControls>
+    <Profile ProfileID="TEST PROFILE" AppID="{87bd596c-2473-4c29-b666-c97ef8760ddd}" />
+    <Instructions>Test instructions for agent one</Instructions>
+  </Agent>
+</Agents>

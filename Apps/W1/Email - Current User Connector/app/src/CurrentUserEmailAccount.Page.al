@@ -133,13 +133,13 @@ page 4500 "Current User Email Account"
 
     trigger OnOpenPage()
     var
-        Accounts: Record "Email Account";
+        TempAccounts: Record "Email Account";
         OutlookAPIHelper: Codeunit "Email - Outlook API Helper";
     begin
         NewMode := IsNullGuid(Rec.Id);
 
-        OutlookAPIHelper.GetAccounts(Enum::"Email Connector"::"Current User", Accounts);
-        FirstAccount := Accounts.IsEmpty();
+        OutlookAPIHelper.GetAccounts(Enum::"Email Connector"::"Current User", TempAccounts);
+        FirstAccount := TempAccounts.IsEmpty();
 
         if MediaResources.Get('ASSISTEDSETUP-NOTEXT-400PX.PNG') and (CurrentClientType() = ClientType::Web) then
             TopBannerVisible := MediaResources."Media Reference".HasValue();
