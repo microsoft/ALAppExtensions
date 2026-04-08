@@ -516,6 +516,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         DataTypeManagement: Codeunit "Data Type Management";
         HeaderRecordRef: RecordRef;
         HeaderTradeAgreementElement, SellerTradePartyElement, BuyerTradePartyElement, SpecifiedTaxRegistrationElement, IDElement : XmlElement;
+        SellerOrderReferencedDocumentElement: XmlElement;
         PostalTradeAddressElement, ContactElement : XmlElement;
         SellerIDAttr, BuyerIDAttr : XmlAttribute;
         CustomerNo: Code[20];
@@ -530,6 +531,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         Contact: Text[100];
         CustomerEmail: Text[250];
         PhoneNumber: Text[30];
+        OrderNo: Code[20];
         SellerStreetName: Text;
         SellerAdditionalStreetName: Text;
         SellerCityName: Text;
@@ -559,6 +561,7 @@ codeunit 13917 "Export ZUGFeRD Document"
                     ReportSelections.FindEmailBodyUsageForCust("Report Selection Usage"::"S.Invoice", CustomerNo, TempBodyReportSelections);
                     CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Invoice".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
                     PhoneNumber := SalesInvoiceHeader."Sell-to Phone No.";
+                    OrderNo := SalesInvoiceHeader."Order No.";
                     RespCentrCode := SalesInvoiceHeader."Responsibility Center";
                     GetSellerContactInfo(SalesInvoiceHeader, SellerContactName, SellerPhoneNumber, SellerEmailAddress);
                 end;
@@ -578,6 +581,7 @@ codeunit 13917 "Export ZUGFeRD Document"
                     ReportSelections.FindEmailBodyUsageForCust("Report Selection Usage"::"S.Cr.Memo", CustomerNo, TempBodyReportSelections);
                     CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Cr.Memo".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
                     PhoneNumber := SalesCrMemoHeader."Sell-to Phone No.";
+                    OrderNo := SalesCrMemoHeader."Return Order No.";
                     RespCentrCode := SalesCrMemoHeader."Responsibility Center";
                     GetSellerContactInfo(SalesCrMemoHeader, SellerContactName, SellerPhoneNumber, SellerEmailAddress);
                 end;
@@ -586,6 +590,13 @@ codeunit 13917 "Export ZUGFeRD Document"
         GetSellerPostalAddr(RespCentrCode, SellerStreetName, SellerAdditionalStreetName, SellerCityName, SellerPostalZone, SellerCountryCode);
         HeaderTradeAgreementElement := XmlElement.Create('ApplicableHeaderTradeAgreement', XmlNamespaceRAM);
         HeaderTradeAgreementElement.Add(XmlElement.Create('BuyerReference', XmlNamespaceRAM, GetBuyerReference(YourReference, CustomerNo)));
+
+        // Seller Order Reference
+        if OrderNo <> '' then begin
+            SellerOrderReferencedDocumentElement := XmlElement.Create('SellerOrderReferencedDocument', XmlNamespaceRAM);
+            SellerOrderReferencedDocumentElement.Add(XmlElement.Create('IssuerAssignedID', XmlNamespaceRAM, OrderNo));
+            HeaderTradeAgreementElement.Add(SellerOrderReferencedDocumentElement);
+        end;
 
         // Seller
         SellerTradePartyElement := XmlElement.Create('SellerTradeParty', XmlNamespaceRAM);
@@ -662,6 +673,7 @@ codeunit 13917 "Export ZUGFeRD Document"
             BuyerTradePartyElement.Add(SpecifiedTaxRegistrationElement);
         end;
         HeaderTradeAgreementElement.Add(BuyerTradePartyElement);
+        OnAfterInsertApplicableHeaderTradeAgreement(HeaderTradeAgreementElement, HeaderRecordRef);
         RootXMLNode.Add(HeaderTradeAgreementElement);
     end;
 
@@ -1512,6 +1524,11 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAddCrMemoLineElement(var CrMemoLineElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInsertApplicableHeaderTradeAgreement(var HeaderTradeAgreementElement: XmlElement; HeaderRecordRef: RecordRef)
     begin
     end;
 }
