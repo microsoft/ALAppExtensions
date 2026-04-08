@@ -866,7 +866,7 @@ codeunit 13916 "Export XRechnung Document"
     begin
         TaxCategoryElement := XmlElement.Create('ClassifiedTaxCategory', XmlNamespaceCAC);
         TaxCategoryElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, TaxCategoryID));
-        if TaxCategoryID <> 'O' then
+        if not IsTaxCategoryNotSubjectToVAT(TaxCategoryID) then
             TaxCategoryElement.Add(XmlElement.Create('Percent', XmlNamespaceCBC, FormatFiveDecimal(Percent)));
         InsertTaxScheme(TaxCategoryElement);
         RootElement.Add(TaxCategoryElement);
@@ -937,13 +937,18 @@ codeunit 13916 "Export XRechnung Document"
         exit(VATPostingSetup."Tax Category");
     end;
 
+    local procedure IsTaxCategoryNotSubjectToVAT(TaxCategoryID: Text): Boolean
+    begin
+        exit(TaxCategoryID = 'O');
+    end;
+
     local procedure DetectNotSubjectToVATLines(var SalesInvLine: Record "Sales Invoice Line")
     begin
         AllLinesNotSubjectToVAT := false;
         if SalesInvLine.FindSet() then begin
             AllLinesNotSubjectToVAT := true;
             repeat
-                if GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group") <> 'O' then begin
+                if not IsTaxCategoryNotSubjectToVAT(GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group")) then begin
                     AllLinesNotSubjectToVAT := false;
                     exit;
                 end;
@@ -957,7 +962,7 @@ codeunit 13916 "Export XRechnung Document"
         if SalesCrMemoLine.FindSet() then begin
             AllLinesNotSubjectToVAT := true;
             repeat
-                if GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group") <> 'O' then begin
+                if not IsTaxCategoryNotSubjectToVAT(GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group")) then begin
                     AllLinesNotSubjectToVAT := false;
                     exit;
                 end;
