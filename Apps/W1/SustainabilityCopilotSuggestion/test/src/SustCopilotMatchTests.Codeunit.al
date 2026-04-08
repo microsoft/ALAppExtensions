@@ -25,8 +25,8 @@ codeunit 139796 "Sust. Copilot Match Tests"
     [Test]
     procedure SustainabilityFormulaAccuracyTest()
     var
-        SustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
-        ExpectedSourceCO2EmissionBuffer, ActualSourceCO2EmissionBuffer : Record "Source CO2 Emission Buffer";
+        TempSustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
+        TempExpectedSourceCO2EmissionBuffer, TempActualSourceCO2EmissionBuffer : Record "Source CO2 Emission Buffer";
         SustainabilityAI: Codeunit "Sustainability AI";
         AITContext: Codeunit "AIT Test Context";
         SustainabilityEmissionSource: Codeunit "Sustainability Emission Source";
@@ -46,16 +46,16 @@ codeunit 139796 "Sust. Copilot Match Tests"
         LoadSourceFiles(InputFileJsonToken.AsValue().AsText());
         // [GIVEN] Generate sustainability journal lines from JSON
         // [GIVEN] Convert sustainability journal line to sustainability emission suggestion
-        LibrarySustainabilityCopilot.GetUserInputFromJson(SustainEmissionSuggestion, InputJsonToken.AsObject());
+        LibrarySustainabilityCopilot.GetUserInputFromJson(TempSustainEmissionSuggestion, InputJsonToken.AsObject());
 
-        GetExpectedResultSource(ExpectedSourceCO2EmissionBuffer, ExpectedCategoryList, JsonContent);
+        GetExpectedResultSource(TempExpectedSourceCO2EmissionBuffer, ExpectedCategoryList, JsonContent);
 
         // [WHEN] Generate chat completion and keep only relevant source suggestions
-        SustainabilityAI.MatchCategoryToInput(SustainEmissionSuggestion, ActualSourceCO2EmissionBuffer);
-        SustainabilityEmissionSource.KeepRelevantSourceCO2EmissionBuffer(SustainEmissionSuggestion, ActualSourceCO2EmissionBuffer);
+        SustainabilityAI.MatchCategoryToInput(TempSustainEmissionSuggestion, TempActualSourceCO2EmissionBuffer);
+        SustainabilityEmissionSource.KeepRelevantSourceCO2EmissionBuffer(TempSustainEmissionSuggestion, TempActualSourceCO2EmissionBuffer);
 
         // [THEN] Verify that the formula is correct
-        VerifyMatch(ActualSourceCO2EmissionBuffer, ExpectedSourceCO2EmissionBuffer, ExpectedCategoryList);
+        VerifyMatch(TempActualSourceCO2EmissionBuffer, TempExpectedSourceCO2EmissionBuffer, ExpectedCategoryList);
     end;
 
     local procedure Initialize()

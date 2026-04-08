@@ -1,0 +1,57 @@
+{
+  "id": "00155c68-8cdd-4d60-a451-2034ad094223",
+  "name": "Agent Design Experience",
+  "publisher": "Microsoft",
+  "brief": "An in-client experience to easily prototype Business Central agents before coding using the agent SDK.",
+  "description": "The agent design experience is a set of in-client capabilities within the AI development toolkit for Business Central. It offers a low-risk, in-client environment for envisioning and prototyping new AI agents tailored to your own business scenarios—extending the same agent runtime capabilities used by built-in agents. Built for rapid iteration, it lets you create and refine custom agents using guided wizards and natural language instructions, define their behavior, test agent profiles and permissions, troubleshoot, and safely run and experiment with Business Central data in a sandbox environment. This approach empowers partner personas like consultants, product owners, and domain experts, as well as developers and even power users, to explore new scenarios, validate ideas, and build confidence in their agents before moving to production. Whether you aim to automate repetitive business processes, streamline data processing, or deliver proactive insights, the agent design experience gives you the tools to bring your vision to life.",
+  "version": "29.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "url": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "logo": "ExtensionLogo.png",
+  "screenshots": [],
+  "application": "29.0.0.0",
+  "platform": "29.0.0.0",
+  "target": "OnPrem",
+  "idRanges": [
+    {
+      "from": 4350,
+      "to": 4394
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "87bd596c-2473-4c29-b666-c97ef8760ddd",
+      "name": "Agent Design Experience Test",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "e9bb0470-0e91-4c83-bb89-f15e8b39da90",
+      "name": "Agent Runtime Tests",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "1a3ac64b-0e25-2345-8e9b-eab2a74b9e9a",
+      "name": "Agent Developer Internal Toolkit",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "698cfedb-66b9-44a8-b5ae-1ec18bd32fa7",
+      "name": "Agent Samples",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "f1ede36c-2f5f-47f1-ba20-258b509c0238",
+      "name": "Agent Samples Test",
+      "publisher": "Microsoft"
+    }
+  ],
+  "features": [
+    "GenerateCaptions",
+    "TranslationFile",
+    "NoImplicitWith",
+    "NoPromotedActionProperties"
+  ]
+}

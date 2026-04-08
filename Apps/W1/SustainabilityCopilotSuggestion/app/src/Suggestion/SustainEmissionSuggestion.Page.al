@@ -41,19 +41,19 @@ page 6329 "Sustain. Emission Suggestion"
 
                     trigger OnDrillDown()
                     var
-                        SustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
+                        TempSustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
                         SustEmisSuggestionList: Page "Sust. Emis. Suggestion List";
                     begin
                         if NumberOfCopilotSuggestedLines = 0 then
                             exit;
 
-                        SustainEmissionSuggestion.Copy(SustainEmissionSuggestionGlobal, true);
-                        SustainEmissionSuggestion.SetRange("Calculated by Copilot", true);
-                        SustEmisSuggestionList.Load(SustainEmissionSuggestion);
-                        SustEmisSuggestionList.SetTableView(SustainEmissionSuggestion);
+                        TempSustainEmissionSuggestion.Copy(TempSustainEmissionSuggestionGlobal, true);
+                        TempSustainEmissionSuggestion.SetRange("Calculated by Copilot", true);
+                        SustEmisSuggestionList.Load(TempSustainEmissionSuggestion);
+                        SustEmisSuggestionList.SetTableView(TempSustainEmissionSuggestion);
                         SustEmisSuggestionList.RunModal();
-                        SustEmisSuggestionList.GetRecord(SustainEmissionSuggestion);
-                        SustainEmissionSuggestionGlobal.Copy(SustainEmissionSuggestion, true);
+                        SustEmisSuggestionList.GetRecord(TempSustainEmissionSuggestion);
+                        TempSustainEmissionSuggestionGlobal.Copy(TempSustainEmissionSuggestion, true);
                         if SustEmisSuggestionList.GetPageUpdated() then
                             GenerateCopilotSuggestion();
                         CurrPage.Update();
@@ -107,7 +107,7 @@ page 6329 "Sustain. Emission Suggestion"
                 var
                     SustEmissionSuggestion: Codeunit "Sust. Emission Suggestion";
                 begin
-                    SustEmissionSuggestion.BuildFromLines(SustainEmissionSuggestionGlobal, SustainabilityJnlLineGlobal);
+                    SustEmissionSuggestion.BuildFromLines(TempSustainEmissionSuggestionGlobal, SustainabilityJnlLineGlobal);
                     GenerateCopilotSuggestion();
                 end;
             }
@@ -135,7 +135,7 @@ page 6329 "Sustain. Emission Suggestion"
 
     trigger OnAfterGetCurrRecord()
     begin
-        UpdateHeaderData(SustainEmissionSuggestionGlobal);
+        UpdateHeaderData(TempSustainEmissionSuggestionGlobal);
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -156,12 +156,12 @@ page 6329 "Sustain. Emission Suggestion"
 
     internal procedure GenerateCopilotSuggestion()
     var
-        SourceCO2EmissionBuffer: Record "Source CO2 Emission Buffer";
+        TempSourceCO2EmissionBuffer: Record "Source CO2 Emission Buffer";
         SustainabilityAI: Codeunit "Sustainability AI";
     begin
-        SustainabilityAI.AICall(SustainEmissionSuggestionGlobal, SourceCO2EmissionBuffer);
-        Load(SustainEmissionSuggestionGlobal);
-        Load(SourceCO2EmissionBuffer);
+        SustainabilityAI.AICall(TempSustainEmissionSuggestionGlobal, TempSourceCO2EmissionBuffer);
+        Load(TempSustainEmissionSuggestionGlobal);
+        Load(TempSourceCO2EmissionBuffer);
         if CopilotMatchExist() then
             SetPromptMode(PromptMode::Content);
     end;
@@ -219,7 +219,7 @@ page 6329 "Sustain. Emission Suggestion"
     internal procedure SetData(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var SustainEmissionSuggestion: Record "Sustain. Emission Suggestion")
     begin
         SustainabilityJnlLineGlobal.Copy(SustainabilityJnlLine);
-        SustainEmissionSuggestionGlobal.Copy(SustainEmissionSuggestion, true);
+        TempSustainEmissionSuggestionGlobal.Copy(SustainEmissionSuggestion, true);
     end;
 
     local procedure CalculateTotalConfidence(var SustainEmissionSuggestion: Record "Sustain. Emission Suggestion"): Decimal
@@ -278,7 +278,7 @@ page 6329 "Sustain. Emission Suggestion"
 
     var
         SustainabilityJnlLineGlobal: Record "Sustainability Jnl. Line";
-        SustainEmissionSuggestionGlobal: Record "Sustain. Emission Suggestion";
+        TempSustainEmissionSuggestionGlobal: Record "Sustain. Emission Suggestion";
         NumberOfCopilotSuggestedLines, NumberOfAutoSuggestedLines : Integer;
         AutoSuggestedLinesTxt, CopilotSuggestedLinesTxt, ExcludedFromSuggestionTxt, TotalJournalConfidenceTxt : Text;
         SummaryTxt, SummaryStyleTxt : Text;

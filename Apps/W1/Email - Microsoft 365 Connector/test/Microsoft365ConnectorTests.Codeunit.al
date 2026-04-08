@@ -24,7 +24,7 @@ codeunit 139751 "Microsoft 365 Connector Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSendMailPayloadMessage()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         OutlookAPIClientMock: Codeunit "Outlook API Client Mock";
         OutlookMockInitSubscribers: Codeunit "Outlook Mock Init. Subscribers";
@@ -37,11 +37,11 @@ codeunit 139751 "Microsoft 365 Connector Tests"
         BindSubscription(OutlookMockInitSubscribers);
 
         // [GIVEN] An html formatted email message is created and an account has been registered
-        Microsoft365Connector.RegisterAccount(EmailAccount);
+        Microsoft365Connector.RegisterAccount(TempEmailAccount);
         LibraryOutlookRestAPI.CreateEmailMessage(true, EmailMessage);
 
         // [WHEN] Email message is sent
-        Microsoft365Connector.Send(EmailMessage, EmailAccount."Account Id");
+        Microsoft365Connector.Send(EmailMessage, TempEmailAccount."Account Id");
 
         // [THEN] The json output has a specific format
         EmailJson := OutlookAPIClientMock.GetMessage();
@@ -51,7 +51,7 @@ codeunit 139751 "Microsoft 365 Connector Tests"
         LibraryOutlookRestAPI.CreateEmailMessage(false, EmailMessage);
 
         // [WHEN] Email message is sent
-        Microsoft365Connector.Send(EmailMessage, EmailAccount."Account Id");
+        Microsoft365Connector.Send(EmailMessage, TempEmailAccount."Account Id");
 
         // [THEN] The json output has a specific format
         EmailJson := OutlookAPIClientMock.GetMessage();
@@ -63,7 +63,7 @@ codeunit 139751 "Microsoft 365 Connector Tests"
     [HandlerFunctions('Microsoft365EmailAccountRegisterHandler')]
     procedure TestMultipleAccountsCanBeRegisteredAndRetrieved()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         OutlookMockInitSubscribers: Codeunit "Outlook Mock Init. Subscribers";
         Microsoft365Connector: Codeunit "Microsoft 365 Connector";
         EmailAccounts: TestPage "Email Accounts";
@@ -84,13 +84,13 @@ codeunit 139751 "Microsoft 365 Connector Tests"
             Names[Index] := CopyStr(Any.AlphabeticText(250), 1, 250);
             EmailTxt := Emails[Index];
             NameTxt := Names[Index];
-            Microsoft365Connector.RegisterAccount(EmailAccount);
-            AccountIDs[Index] := EmailAccount."Account Id";
+            Microsoft365Connector.RegisterAccount(TempEmailAccount);
+            AccountIDs[Index] := TempEmailAccount."Account Id";
 
             // [THEN] Accounts are retrieved from the GetAccounts method
-            EmailAccount.DeleteAll();
-            Microsoft365Connector.GetAccounts(EmailAccount);
-            Assert.RecordCount(EmailAccount, Index);
+            TempEmailAccount.DeleteAll();
+            Microsoft365Connector.GetAccounts(TempEmailAccount);
+            Assert.RecordCount(TempEmailAccount, Index);
         end;
 
         // [THEN] This information is shown on the "Email Accounts" page
@@ -107,7 +107,7 @@ codeunit 139751 "Microsoft 365 Connector Tests"
     [HandlerFunctions('Microsoft365EmailAccountRegisterHandler,Microsoft365ShowEmailAccountHandler')]
     procedure TestShowAccountInformation()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         OutlookMockInitSubscribers: Codeunit "Outlook Mock Init. Subscribers";
         Microsoft365Connector: Codeunit "Microsoft 365 Connector";
     begin
@@ -117,10 +117,10 @@ codeunit 139751 "Microsoft 365 Connector Tests"
         BindSubscription(OutlookMockInitSubscribers);
 
         // [GIVEN] An account has been registered
-        Microsoft365Connector.RegisterAccount(EmailAccount);
+        Microsoft365Connector.RegisterAccount(TempEmailAccount);
 
         // [WHEN] The ShowAccountInformation method is invoked
-        Microsoft365Connector.ShowAccountInformation(EmailAccount."Account Id");
+        Microsoft365Connector.ShowAccountInformation(TempEmailAccount."Account Id");
 
         // [THEN] The account page opens and display the information
         // Verify in Microsoft365ShowEmailAccountHandler
@@ -132,7 +132,7 @@ codeunit 139751 "Microsoft 365 Connector Tests"
     procedure TestAzureAppRegistrationMissingOnRegisteringAccount()
     var
         EmailOutlookAPISetup: Record "Email - Outlook API Setup";
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         Microsoft365Connector: Codeunit "Microsoft 365 Connector";
     begin
         // [SCENARIO] The first time an Outlook API based account is added, the Azure App Registration shows up.
@@ -148,7 +148,7 @@ codeunit 139751 "Microsoft 365 Connector Tests"
         EmailOutlookAPISetupHandlerInvokations := 0;
 
         // [WHEN] The first account is registered
-        Microsoft365Connector.RegisterAccount(EmailAccount);
+        Microsoft365Connector.RegisterAccount(TempEmailAccount);
 
         // [THEN] Email - Outlook API Setup page is opened (confirmed by the presence of the handlers).
     end;

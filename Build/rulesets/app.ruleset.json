@@ -153,11 +153,6 @@
       "action": "Warning"
     },
     {
-      "id": "AS0126",
-      "action": "Warning",
-      "justification": "Tracked by #501904"
-    },
-    {
       "id": "AA0051",
       "action": "Warning"
     },

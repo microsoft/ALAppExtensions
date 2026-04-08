@@ -14,6 +14,7 @@ codeunit 148102 "SAF-T Unit Tests"
         LibraryDimension: Codeunit "Library - Dimension";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryUtility: Codeunit "Library - Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         Assert: Codeunit Assert;
@@ -491,10 +492,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Import single grouping code with category code <= 20 characters via ImportFromMappingSource
-
-        // [GIVEN] SAF-T Mapping Source "S" with Source Type = "Income Statement" and tenant media containing XML with one Account: CategoryCode = "REV01", Description = "Revenue", GroupingCode = "3000", GroupingDescription = "Sales Revenue"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account: CategoryCode = "REV01", GroupingCode = "3000"
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(
             SAFTMappingSource,
@@ -505,8 +507,10 @@ codeunit 148102 "SAF-T Unit Tests"
 
         // [THEN] SAF-T Mapping Category "C1" is created with Mapping Type = "Income Statement", No. = "REV01", Description = "Revenue", Extended No. = ''
         VerifySAFTMappingCategory('REV01', 'Revenue', '');
+
         // [THEN] SAF-T Mapping "M1" is created with Category No. = "REV01", No. = "3000", Description = "Sales Revenue"
         VerifySAFTMapping('REV01', '3000', 'Sales Revenue');
+
         // [THEN] SAF-T Mapping "NA" is created with Description = "Not applicable"
         VerifySAFTMapping('NA', 'NA', 'Not applicable');
     end;
@@ -517,10 +521,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Import grouping code with category code > 20 characters triggers auto-increment via ImportFromMappingSource
-
-        // [GIVEN] SAF-T Mapping Source "S" with tenant media containing XML with one Account: CategoryCode = "VERY_LONG_CATEGORY_CODE_EXCEEDS_20" (35 chars), Description = "Extended Cat", GroupingCode = "4001", GroupingDescription = "Extended Item"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account: CategoryCode > 20 chars, GroupingCode = "4001"
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(
             SAFTMappingSource,
@@ -531,6 +536,7 @@ codeunit 148102 "SAF-T Unit Tests"
 
         // [THEN] SAF-T Mapping Category "C1" is created with No. = "CAT000001", Extended No. = "VERY_LONG_CATEGORY_CODE_EXCEEDS_20", Description = "Extended Cat"
         VerifySAFTMappingCategory('CAT000001', 'Extended Cat', 'VERY_LONG_CATEGORY_CODE_EXCEEDS_20');
+
         // [THEN] SAF-T Mapping "M1" is created with Category No. = "CAT000001", No. = "4001"
         VerifySAFTMapping('CAT000001', '4001', 'Extended Item');
     end;
@@ -543,10 +549,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMapping: Record "SAF-T Mapping";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Multiple accounts with same category code creates category once
-
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing two Accounts with same CategoryCode = "ASSET": first with GroupingCode = "1000", second with GroupingCode = "1001"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing two Accounts with same CategoryCode
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(
             SAFTMappingSource,
@@ -560,6 +567,7 @@ codeunit 148102 "SAF-T Unit Tests"
         // [THEN] SAF-T Mapping Category count for "Income Statement" = 2 (ASSET + NA)
         SAFTMappingCategory.SetRange("Mapping Type", SAFTMappingCategory."Mapping Type"::"Income Statement");
         Assert.RecordCount(SAFTMappingCategory, 2);
+
         // [THEN] SAF-T Mapping count for "Income Statement" = 3 (1000, 1001, NA)
         SAFTMapping.SetRange("Mapping Type", SAFTMapping."Mapping Type"::"Income Statement");
         Assert.RecordCount(SAFTMapping, 3);
@@ -571,10 +579,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Multiple accounts with different category codes creates multiple categories
-
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing two Accounts: first with CategoryCode = "ASSET", GroupingCode = "1000"; second with CategoryCode = "LIAB", GroupingCode = "2000"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing two Accounts with different CategoryCodes
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(
             SAFTMappingSource,
@@ -587,10 +596,13 @@ codeunit 148102 "SAF-T Unit Tests"
 
         // [THEN] SAF-T Mapping Category "C1" with No. = "ASSET" exists
         VerifySAFTMappingCategory('ASSET', 'Assets', '');
+
         // [THEN] SAF-T Mapping Category "C2" with No. = "LIAB" exists
         VerifySAFTMappingCategory('LIAB', 'Liabilities', '');
+
         // [THEN] SAF-T Mapping Category "C3" with No. = "NA" exists
         VerifySAFTMappingCategory('NA', 'Not applicable', '');
+
         // [THEN] SAF-T Mapping "M1" with No. = "1000" under "ASSET", "M2" with No. = "2000" under "LIAB", "M3" = "NA"
         VerifySAFTMapping('ASSET', '1000', 'Asset Account');
         VerifySAFTMapping('LIAB', '2000', 'Liability Account');
@@ -603,10 +615,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Multiple extended category codes (>20 chars) get sequential CAT numbers
-
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing two Accounts: first with CategoryCode = "EXTENDED_CATEGORY_ONE_VERY_LONG", GroupingCode = "5001"; second with CategoryCode = "EXTENDED_CATEGORY_TWO_VERY_LONG", GroupingCode = "5002"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing two Accounts with extended CategoryCodes
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(
             SAFTMappingSource,
@@ -619,8 +632,10 @@ codeunit 148102 "SAF-T Unit Tests"
 
         // [THEN] SAF-T Mapping Category "C1" = "CAT000001" with Extended No. = "EXTENDED_CATEGORY_ONE_VERY_LONG"
         VerifySAFTMappingCategory('CAT000001', 'Extended One', 'EXTENDED_CATEGORY_ONE_VERY_LONG');
+
         // [THEN] SAF-T Mapping Category "C2" = "CAT000002" with Extended No. = "EXTENDED_CATEGORY_TWO_VERY_LONG"
         VerifySAFTMappingCategory('CAT000002', 'Extended Two', 'EXTENDED_CATEGORY_TWO_VERY_LONG');
+
         // [THEN] SAF-T Mapping "M1" with Category No. = "CAT000001", "M2" with Category No. = "CAT000002"
         VerifySAFTMapping('CAT000001', '5001', 'Item One');
         VerifySAFTMapping('CAT000002', '5002', 'Item Two');
@@ -632,10 +647,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Optional CategoryDescription element is properly skipped
-
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account with CategoryDescription element between Description and GroupingCode
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account with CategoryDescription element
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(
             SAFTMappingSource,
@@ -646,6 +662,7 @@ codeunit 148102 "SAF-T Unit Tests"
 
         // [THEN] SAF-T Mapping "M1" is created with No. = "3000", Description = "Sales"
         VerifySAFTMapping('REV', '3000', 'Sales');
+
         // [THEN] CategoryDescription element is skipped without error
     end;
 
@@ -655,27 +672,35 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTMappingCategory: Record "SAF-T Mapping Category";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
+        CategoryNo: Code[20];
+        GroupingCode: Code[20];
+        NewDescription: Text[250];
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Existing category is modified when import attempts to insert duplicate
-
-        // [GIVEN] SAF-T Mapping Category "C1" exists with Mapping Type = "Income Statement", No. = "ASSET", Description = "Old Description"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Category "C" exists
         CleanupIncomeStatementMappingData();
+        CategoryNo := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
+        GroupingCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
         SAFTMappingCategory.Init();
         SAFTMappingCategory."Mapping Type" := SAFTMappingCategory."Mapping Type"::"Income Statement";
-        SAFTMappingCategory."No." := 'ASSET';
-        SAFTMappingCategory.Description := 'Old Description';
+        SAFTMappingCategory."No." := CategoryNo;
+        SAFTMappingCategory.Description := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
         SAFTMappingCategory.Insert();
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account: CategoryCode = "ASSET", Description = "New Description", GroupingCode = "1000"
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account with same CategoryCode and new Description
+        NewDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
         CreateMappingSourceWithXML(
             SAFTMappingSource,
-            BuildGroupingCodeXML(BuildGroupingCodeAccountXML('ASSET', 'New Description', '1000', 'Account', false)));
+            BuildGroupingCodeXML(BuildGroupingCodeAccountXML(CategoryNo, NewDescription, GroupingCode, LibraryUtility.GenerateRandomAlphabeticText(250, 0), false)));
 
         // [WHEN] ImportFromMappingSource is called with "S"
         SAFTXMLImport.ImportFromMappingSource(SAFTMappingSource);
 
-        // [THEN] SAF-T Mapping Category "C1" with No. = "ASSET" has Description = "New Description" (modified)
-        VerifySAFTMappingCategory('ASSET', 'New Description', '');
+        // [THEN] SAF-T Mapping Category has updated Description (modified)
+        VerifySAFTMappingCategory(CategoryNo, NewDescription, '');
     end;
 
     [Test]
@@ -685,34 +710,45 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingCategory: Record "SAF-T Mapping Category";
         SAFTMapping: Record "SAF-T Mapping";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
+        CategoryNo: Code[20];
+        GroupingCode: Code[20];
+        CategoryDescription: Text[250];
+        NewMappingDescription: Text[250];
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Existing mapping is modified when import attempts to insert duplicate
-
-        // [GIVEN] SAF-T Mapping Category "C1" with No. = "ASSET" exists
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Category "C" exists
         CleanupIncomeStatementMappingData();
+        CategoryNo := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
+        GroupingCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
+        CategoryDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
         SAFTMappingCategory.Init();
         SAFTMappingCategory."Mapping Type" := SAFTMappingCategory."Mapping Type"::"Income Statement";
-        SAFTMappingCategory."No." := 'ASSET';
-        SAFTMappingCategory.Description := 'Assets';
+        SAFTMappingCategory."No." := CategoryNo;
+        SAFTMappingCategory.Description := CategoryDescription;
         SAFTMappingCategory.Insert();
-        // [GIVEN] SAF-T Mapping "M1" exists with Mapping Type = "Income Statement", Category No. = "ASSET", No. = "1000", Description = "Old Desc"
+
+        // [GIVEN] SAF-T Mapping exists with same Category No. and No.
         SAFTMapping.Init();
         SAFTMapping."Mapping Type" := SAFTMapping."Mapping Type"::"Income Statement";
-        SAFTMapping."Category No." := 'ASSET';
-        SAFTMapping."No." := '1000';
-        SAFTMapping.Description := 'Old Desc';
+        SAFTMapping."Category No." := CategoryNo;
+        SAFTMapping."No." := GroupingCode;
+        SAFTMapping.Description := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
         SAFTMapping.Insert();
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account: CategoryCode = "ASSET", GroupingCode = "1000", GroupingDescription = "New Desc"
+
+        // [GIVEN] SAF-T Mapping Source with XML containing same CategoryCode, same GroupingCode, and new GroupingDescription
+        NewMappingDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
         CreateMappingSourceWithXML(
             SAFTMappingSource,
-            BuildGroupingCodeXML(BuildGroupingCodeAccountXML('ASSET', 'Assets', '1000', 'New Desc', false)));
+            BuildGroupingCodeXML(BuildGroupingCodeAccountXML(CategoryNo, CategoryDescription, GroupingCode, NewMappingDescription, false)));
 
         // [WHEN] ImportFromMappingSource is called with "S"
         SAFTXMLImport.ImportFromMappingSource(SAFTMappingSource);
 
-        // [THEN] SAF-T Mapping "M1" with No. = "1000" has Description = "New Desc" (modified)
-        VerifySAFTMapping('ASSET', '1000', 'New Desc');
+        // [THEN] SAF-T Mapping has updated Description (modified)
+        VerifySAFTMapping(CategoryNo, GroupingCode, NewMappingDescription);
     end;
 
     [Test]
@@ -723,10 +759,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMapping: Record "SAF-T Mapping";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] "NA" Not Applicable mapping is always added at end of import
-
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing one Account: CategoryCode = "REV", GroupingCode = "3000"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing one Account
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(
             SAFTMappingSource,
@@ -738,6 +775,7 @@ codeunit 148102 "SAF-T Unit Tests"
         // [THEN] SAF-T Mapping Category with No. = "NA", Description = "Not applicable" exists
         SAFTMappingCategory.Get(SAFTMappingCategory."Mapping Type"::"Income Statement", 'NA');
         Assert.AreEqual('Not applicable', SAFTMappingCategory.Description, 'Wrong NA category description');
+
         // [THEN] SAF-T Mapping with Category No. = "NA", No. = "NA", Description = "Not applicable" exists
         SAFTMapping.Get(SAFTMapping."Mapping Type"::"Income Statement", 'NA', 'NA');
         Assert.AreEqual('Not applicable', SAFTMapping.Description, 'Wrong NA mapping description');
@@ -749,10 +787,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Error when XML does not contain expected XPath /GroupingCategoryCode/Account
-
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing wrong root element: "<WrongRoot><Account><Code>1</Code></Account></WrongRoot>"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing wrong root element
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(SAFTMappingSource, '<WrongRoot><Account><Code>1</Code></Account></WrongRoot>');
 
@@ -770,10 +809,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Error when Account element has no child elements
-
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing empty Account: "<GroupingCategoryCode><Account/></GroupingCategoryCode>"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing empty Account element
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(SAFTMappingSource, '<GroupingCategoryCode><Account/></GroupingCategoryCode>');
 
@@ -791,10 +831,11 @@ codeunit 148102 "SAF-T Unit Tests"
         SAFTMappingSource: Record "SAF-T Mapping Source";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Category code exactly 20 characters uses value directly without auto-increment
-
-        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account with CategoryCode of exactly 20 characters: "12345678901234567890"
         Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account with CategoryCode of exactly 20 characters
         CleanupIncomeStatementMappingData();
         CreateMappingSourceWithXML(
             SAFTMappingSource,
@@ -815,10 +856,11 @@ codeunit 148102 "SAF-T Unit Tests"
         TenantMedia: Record "Tenant Media";
         SAFTXMLImport: Codeunit "SAF-T XML Import";
     begin
-        // [FEATURE] [AI test]
+        // [FEATURE] [AI test 0.3]
         // [SCENARIO] Second import with extended category codes continues auto-increment from last existing CAT number
-
         Initialize();
+
+        // [GIVEN] First import with extended category code creates "CAT000001"
         CleanupIncomeStatementMappingData();
 
         // [GIVEN] SAF-T Mapping Source "S1" with XML containing Account: CategoryCode = "EXTENDED_CATEGORY_ONE_VERY_LONG", GroupingCode = "5001"
@@ -849,6 +891,99 @@ codeunit 148102 "SAF-T Unit Tests"
 
         // [THEN] Original category "CAT000001" still exists with original data
         VerifySAFTMappingCategory('CAT000001', 'Extended One', 'EXTENDED_CATEGORY_ONE_VERY_LONG');
+    end;
+
+    [Test]
+    procedure ImportGroupingCodeWithShortGroupingCode()
+    var
+        SAFTMappingSource: Record "SAF-T Mapping Source";
+        SAFTXMLImport: Codeunit "SAF-T XML Import";
+        CategoryCode: Code[20];
+        GroupingCode: Code[20];
+        CategoryDescription: Text[250];
+        GroupingDescription: Text[250];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO] Import grouping code with code <= 20 characters leaves Extended No. blank on SAF-T Mapping
+        Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account with short GroupingCode
+        CleanupIncomeStatementMappingData();
+        CategoryCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
+        GroupingCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
+        CategoryDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
+        GroupingDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
+        CreateMappingSourceWithXML(
+            SAFTMappingSource,
+            BuildGroupingCodeXML(BuildGroupingCodeAccountXML(CategoryCode, CategoryDescription, GroupingCode, GroupingDescription, false)));
+
+        // [WHEN] ImportFromMappingSource is called with "S"
+        SAFTXMLImport.ImportFromMappingSource(SAFTMappingSource);
+
+        // [THEN] SAF-T Mapping "M" has No. = GroupingCode and Extended No. = ''
+        VerifySAFTMappingExtendedNo(CategoryCode, GroupingCode, '');
+    end;
+
+    [Test]
+    procedure ImportGroupingCodeWithExtendedGroupingCode()
+    var
+        SAFTMappingSource: Record "SAF-T Mapping Source";
+        SAFTXMLImport: Codeunit "SAF-T XML Import";
+        CategoryCode: Code[20];
+        CategoryDescription: Text[250];
+        GroupingDescription: Text[250];
+        LongGroupingCode: Text;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO] Import grouping code with code > 20 characters stores full value in Extended No. on SAF-T Mapping
+        Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account with GroupingCode > 20 characters
+        CleanupIncomeStatementMappingData();
+        CategoryCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
+        CategoryDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
+        GroupingDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
+        LongGroupingCode := LibraryUtility.GenerateRandomAlphabeticText(100, 0);
+        CreateMappingSourceWithXML(
+            SAFTMappingSource,
+            BuildGroupingCodeXMLWithLongCode(CategoryCode, CategoryDescription, LongGroupingCode, GroupingDescription, false));
+
+        // [WHEN] ImportFromMappingSource is called with "S"
+        SAFTXMLImport.ImportFromMappingSource(SAFTMappingSource);
+
+        // [THEN] SAF-T Mapping "M" has No. = truncated to 20 chars and Extended No. = full value
+        VerifySAFTMappingExtendedNo(CategoryCode, CopyStr(LongGroupingCode, 1, 20), CopyStr(LongGroupingCode, 1, 500));
+    end;
+
+    [Test]
+    procedure ImportGroupingCodeExactly20CharGroupingCode()
+    var
+        SAFTMappingSource: Record "SAF-T Mapping Source";
+        SAFTXMLImport: Codeunit "SAF-T XML Import";
+        CategoryCode: Code[20];
+        GroupingCode: Code[20];
+        CategoryDescription: Text[250];
+        GroupingDescription: Text[250];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO] Import grouping code with code exactly 20 characters leaves Extended No. blank
+        Initialize();
+
+        // [GIVEN] SAF-T Mapping Source "S" with XML containing Account with GroupingCode of exactly 20 characters
+        CleanupIncomeStatementMappingData();
+        CategoryCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
+        GroupingCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, 20);
+        CategoryDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
+        GroupingDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, 250);
+        CreateMappingSourceWithXML(
+            SAFTMappingSource,
+            BuildGroupingCodeXML(BuildGroupingCodeAccountXML(CategoryCode, CategoryDescription, GroupingCode, GroupingDescription, false)));
+
+        // [WHEN] ImportFromMappingSource is called with "S"
+        SAFTXMLImport.ImportFromMappingSource(SAFTMappingSource);
+
+        // [THEN] SAF-T Mapping "M" has No. = GroupingCode and Extended No. = ''
+        VerifySAFTMappingExtendedNo(CategoryCode, GroupingCode, '');
     end;
 
     local procedure Initialize()
@@ -905,6 +1040,21 @@ codeunit 148102 "SAF-T Unit Tests"
         exit(Result);
     end;
 
+    local procedure BuildGroupingCodeXMLWithLongCode(CategoryCode: Text; CategoryDesc: Text; GroupingCode: Text; GroupingDesc: Text; IncludeCategoryDescription: Boolean): Text
+    var
+        Result: Text;
+    begin
+        Result := '<GroupingCategoryCode><Account>';
+        Result += '<CategoryCode>' + CategoryCode + '</CategoryCode>';
+        Result += '<Description>' + CategoryDesc + '</Description>';
+        if IncludeCategoryDescription then
+            Result += '<CategoryDescription>Extra</CategoryDescription>';
+        Result += '<GroupingCode>' + GroupingCode + '</GroupingCode>';
+        Result += '<GroupingDescription>' + GroupingDesc + '</GroupingDescription>';
+        Result += '</Account></GroupingCategoryCode>';
+        exit(Result);
+    end;
+
     local procedure BuildGroupingCodeXML(AccountsXML: Text): Text
     begin
         exit('<GroupingCategoryCode>' + AccountsXML + '</GroupingCategoryCode>');
@@ -925,6 +1075,14 @@ codeunit 148102 "SAF-T Unit Tests"
     begin
         SAFTMapping.Get(SAFTMapping."Mapping Type"::"Income Statement", ExpectedCategoryNo, ExpectedNo);
         Assert.AreEqual(ExpectedDesc, SAFTMapping.Description, 'Wrong mapping description for ' + ExpectedNo);
+    end;
+
+    local procedure VerifySAFTMappingExtendedNo(ExpectedCategoryNo: Code[20]; ExpectedNo: Code[20]; ExpectedExtendedNo: Text[500])
+    var
+        SAFTMapping: Record "SAF-T Mapping";
+    begin
+        SAFTMapping.Get(SAFTMapping."Mapping Type"::"Income Statement", ExpectedCategoryNo, ExpectedNo);
+        Assert.AreEqual(ExpectedExtendedNo, SAFTMapping."Extended No.", 'Wrong extended no. for mapping ' + ExpectedNo);
     end;
 
     local procedure CleanupIncomeStatementMappingData()

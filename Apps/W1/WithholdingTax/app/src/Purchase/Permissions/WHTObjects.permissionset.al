@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-
 namespace Microsoft.WithholdingTax;
 
 using Microsoft.Finance.WithholdingTax;
@@ -32,9 +31,13 @@ permissionset 6786 "WHT - Objects"
         codeunit "Withholding Tax Jnl Subscriber" = X,
         codeunit "Wthldg Tax Navigate Handler" = X,
         codeunit "Withholding Tax Event Handler" = X,
+        codeunit "G/L Reg.-Withholding Entries" = X,
+        codeunit "Wthldg Tax Preview Handler" = X,
         report "WHT Calc. and Post Settlement" = X,
         report "WHT Annual Information Return" = X,
         report "WHT Certificate Creditable tax" = X,
         report "WHT Monthly Remittance Return" = X,
-        report "Withholding Tax Certificate" = X;
+        report "Withholding Tax Certificate" = X,
+        report "WHT Purch. - Cr. Memo" = X,
+        report "WHT Purch. - Invoice" = X;
 }

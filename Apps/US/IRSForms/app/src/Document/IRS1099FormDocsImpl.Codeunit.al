@@ -20,7 +20,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
         TempIRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header" temporary;
         TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary;
         TempIRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail" temporary;
-        CurrVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer";
+        TempCurrVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer";
         LineNo: Integer;
         DocID: Integer;
     begin
@@ -41,7 +41,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
                     LineNo += 1000;
                     AddTempFormLineFromBuffer(TempIRS1099FormDocLine, TempIRS1099FormDocHeader, TempVendFormBoxBuffer, LineNo);
                     if IRSFormsSetup."Collect Details For Line" then begin
-                        CurrVendFormBoxBuffer.Copy(TempVendFormBoxBuffer);
+                        TempCurrVendFormBoxBuffer.Copy(TempVendFormBoxBuffer);
                         TempVendFormBoxBuffer.Reset();
                         TempVendFormBoxBuffer.SetRange("Parent Entry No.", TempVendFormBoxBuffer."Entry No.");
                         TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::"Ledger Entry");
@@ -49,7 +49,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
                             repeat
                                 AddFormDocLineDetail(TempIRS1099FormDocLineDetail, TempIRS1099FormDocLine, TempVendFormBoxBuffer."Vendor Ledger Entry No.", TempVendFormBoxBuffer."Calculated Amount");
                             until TempVendFormBoxBuffer.Next() = 0;
-                        TempVendFormBoxBuffer.Copy(CurrVendFormBoxBuffer);
+                        TempVendFormBoxBuffer.Copy(TempCurrVendFormBoxBuffer);
                     end;
                 until TempVendFormBoxBuffer.Next() = 0;
             end;
@@ -186,7 +186,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
 
     procedure AddTempFormLineFromBuffer(var TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary; var TempIRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail" temporary; var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; LineAction: Enum "IRS 1099 Form Doc. Line Action")
     var
-        CurrVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer";
+        TempCurrVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer";
     begin
         TempIRS1099FormDocLine.Init();
         TempIRS1099FormDocLine."Document ID" := TempVendFormBoxBuffer."Document ID";
@@ -207,7 +207,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
 
         IRSFormsSetup.Get();
         if IRSFormsSetup."Collect Details For Line" then begin
-            CurrVendFormBoxBuffer.Copy(TempVendFormBoxBuffer);
+            TempCurrVendFormBoxBuffer.Copy(TempVendFormBoxBuffer);
             TempVendFormBoxBuffer.Reset();
             TempVendFormBoxBuffer.SetRange("Parent Entry No.", TempVendFormBoxBuffer."Entry No.");
             TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::"Ledger Entry");
@@ -215,7 +215,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
                 repeat
                     AddFormDocLineDetail(TempIRS1099FormDocLineDetail, TempIRS1099FormDocLine, TempVendFormBoxBuffer."Vendor Ledger Entry No.", TempVendFormBoxBuffer."Calculated Amount");
                 until TempVendFormBoxBuffer.Next() = 0;
-            TempVendFormBoxBuffer.Copy(CurrVendFormBoxBuffer);
+            TempVendFormBoxBuffer.Copy(TempCurrVendFormBoxBuffer);
         end;
     end;
 }

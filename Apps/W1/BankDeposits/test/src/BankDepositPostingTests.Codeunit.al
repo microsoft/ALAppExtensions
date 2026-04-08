@@ -709,7 +709,7 @@ codeunit 139769 "Bank Deposit Posting Tests"
         GenJournalLine: Record "Gen. Journal Line";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         PaymentCustLedgerEntry: Record "Cust. Ledger Entry";
-        AppliedCustLedgerEntry: Record "Cust. Ledger Entry" temporary;
+        TempAppliedCustLedgerEntry: Record "Cust. Ledger Entry" temporary;
         BankDeposit: Report "Bank Deposit";
         EntryApplicationMgt: Codeunit "Entry Application Mgt";
         InvoiceEntryNo: Integer;
@@ -742,9 +742,9 @@ codeunit 139769 "Bank Deposit Posting Tests"
         Assert.RecordCount(PaymentCustLedgerEntry, 1);
         PaymentCustLedgerEntry.FindFirst();
         // [THEN] Only one invoice entry is found as applied
-        EntryApplicationMgt.GetAppliedCustEntries(AppliedCustLedgerEntry, PaymentCustLedgerEntry, false);
-        Assert.RecordCount(AppliedCustLedgerEntry, 1);
-        Assert.AreEqual(AppliedCustLedgerEntry."Entry No.", InvoiceEntryNo, 'The found entry should be the invoice.');
+        EntryApplicationMgt.GetAppliedCustEntries(TempAppliedCustLedgerEntry, PaymentCustLedgerEntry, false);
+        Assert.RecordCount(TempAppliedCustLedgerEntry, 1);
+        Assert.AreEqual(TempAppliedCustLedgerEntry."Entry No.", InvoiceEntryNo, 'The found entry should be the invoice.');
     end;
 
     [Test]
@@ -758,7 +758,7 @@ codeunit 139769 "Bank Deposit Posting Tests"
         PaymentVendorLedgerEntry: Record "Vendor Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
-        AppliedVendorLedgerEntry: Record "Vendor Ledger Entry" temporary;
+        TempAppliedVendorLedgerEntry: Record "Vendor Ledger Entry" temporary;
         BankDeposit: Report "Bank Deposit";
         EntryApplicationMgt: Codeunit "Entry Application Mgt";
         InvoiceEntryNo: Integer;
@@ -787,9 +787,9 @@ codeunit 139769 "Bank Deposit Posting Tests"
         // [THEN] Only one entry is attached to the deposit line
         Assert.RecordCount(PaymentVendorLedgerEntry, 1);
         // [THEN] Only one invoice entry is found as applied
-        EntryApplicationMgt.GetAppliedVendEntries(AppliedVendorLedgerEntry, PaymentVendorLedgerEntry, false);
-        Assert.RecordCount(AppliedVendorLedgerEntry, 1);
-        Assert.AreEqual(AppliedVendorLedgerEntry."Entry No.", InvoiceEntryNo, 'The found entry should be the invoice.');
+        EntryApplicationMgt.GetAppliedVendEntries(TempAppliedVendorLedgerEntry, PaymentVendorLedgerEntry, false);
+        Assert.RecordCount(TempAppliedVendorLedgerEntry, 1);
+        Assert.AreEqual(TempAppliedVendorLedgerEntry."Entry No.", InvoiceEntryNo, 'The found entry should be the invoice.');
     end;
 
     [Test]

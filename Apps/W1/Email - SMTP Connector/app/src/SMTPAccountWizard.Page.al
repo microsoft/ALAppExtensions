@@ -451,7 +451,7 @@ page 4511 "SMTP Account Wizard"
     }
 
     var
-        SMTPEmailAccount: Record "Email Account";
+        TempSMTPEmailAccount: Record "Email Account";
         MediaResources: Record "Media Resources";
         SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
         EnvironmentInformation: Codeunit "Environment Information";
@@ -551,8 +551,8 @@ page 4511 "SMTP Account Wizard"
 
     local procedure EnsureAccountCreated()
     begin
-        if IsNullGuid(SMTPEmailAccount."Account Id") then
-            SMTPConnectorImpl.CreateAccount(Rec, Password, SMTPEmailAccount);
+        if IsNullGuid(TempSMTPEmailAccount."Account Id") then
+            SMTPConnectorImpl.CreateAccount(Rec, Password, TempSMTPEmailAccount);
     end;
 
     local procedure AuthenticateWithOAuth2CustomAppReg()
@@ -583,9 +583,9 @@ page 4511 "SMTP Account Wizard"
 
     internal procedure GetAccount(var EmailAccount: Record "Email Account"): Boolean
     begin
-        if IsNullGuid(SMTPEmailAccount."Account Id") then
+        if IsNullGuid(TempSMTPEmailAccount."Account Id") then
             exit(false);
-        EmailAccount := SMTPEmailAccount;
+        EmailAccount := TempSMTPEmailAccount;
         exit(true);
     end;
 }

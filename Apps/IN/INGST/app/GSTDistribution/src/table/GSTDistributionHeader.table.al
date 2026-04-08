@@ -170,6 +170,20 @@ table 18203 "GST Distribution Header"
         end;
     end;
 
+    procedure ReversalAssistEdit(GSTDistributionHeader: Record "GST Distribution Header"): Boolean
+    var
+        GLedgerSetup: Record "General Ledger Setup";
+        NoSeries: Codeunit "No. Series";
+    begin
+        Copy(Rec);
+        GLedgerSetup.Get();
+        GLedgerSetup.TestField("GST Reversal Distribution Nos.");
+        if NoSeries.LookupRelatedNoSeries(GLedgerSetup."GST Reversal Distribution Nos.", "No. Series", "No. Series") then begin
+            "No." := NoSeries.GetNextNo("No. Series");
+            exit(true);
+        end;
+    end;
+
     procedure ShowDocDim()
     var
         DimMgt: Codeunit DimensionManagement;

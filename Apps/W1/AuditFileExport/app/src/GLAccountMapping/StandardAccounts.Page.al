@@ -34,6 +34,11 @@ page 5263 "Standard Accounts"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the standard account code that is used for mapping.';
                 }
+                field("Extended No."; Rec."Extended No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the full grouping code when it exceeds 20 characters. This value is used in the SAF-T export.';
+                }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;

@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Foundation.AuditCodes;
 using System.Utilities;
 
 report 31025 "Purch. Advance Letters VAT CZZ"
@@ -111,15 +112,8 @@ report 31025 "Purch. Advance Letters VAT CZZ"
                 end;
 
                 trigger OnAfterGetRecord()
-                var
-                    VATEntry: Record "VAT Entry";
                 begin
-                    VATEntry.SetRange("Advance Letter No. CZZ", "Purch. Adv. Letter Entry CZZ"."Purch. Adv. Letter No.");
-                    VATEntry.SetRange("Document No.", "Purch. Adv. Letter Entry CZZ"."Document No.");
-                    VATEntry.SetFilter("Posting Date", '..%1', ToDate);
-                    VATEntry.SetFilter("Non-Deductible VAT %", '<>0');
-                    VATEntry.CalcSums(Amount);
-                    NonDeductVATAmountLCY := VATEntry.Amount;
+                    NonDeductVATAmountLCY := CalcNonDeductVATAmountLCY("Purch. Adv. Letter Entry CZZ");
                 end;
             }
 
@@ -173,6 +167,12 @@ report 31025 "Purch. Advance Letters VAT CZZ"
                         ToolTip = 'Specifies if entries will be printed.';
                         ApplicationArea = Basic, Suite;
                     }
+                    field(IncludeCoeffCorrectionField; IncludeCoeffCorrection)
+                    {
+                        Caption = 'Include Coefficient Correction';
+                        ToolTip = 'Specifies if coefficient corrections will be included.';
+                        ApplicationArea = Basic, Suite;
+                    }
                 }
             }
         }
@@ -202,16 +202,34 @@ report 31025 "Purch. Advance Letters VAT CZZ"
         if "Purch. Adv. Letter Header CZZ".GetFilters() <> '' then
             ReportFilters := StrSubstNo(FiltersTxt, "Purch. Adv. Letter Header CZZ".TableCaption(), "Purch. Adv. Letter Header CZZ".GetFilters());
 
+        SourceCodeSetup.Get();
         GeneralLedgerSetup.Get();
         AmountsInLCY := StrSubstNo(AmountsInLCYTxt, GeneralLedgerSetup."LCY Code")
     end;
 
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
+        SourceCodeSetup: Record "Source Code Setup";
         ReportFilters, AmountsInLCY : Text;
-        ToDate: Date;
-        OnlyOpen, PrintEntries : Boolean;
         NonDeductVATAmountLCY: Decimal;
         FiltersTxt: Label 'Filters: %1: %2', Comment = '%1 = Table Caption, %2 = Table Filter';
         AmountsInLCYTxt: Label 'All Amounts are in %1.', Comment = '%1 = Currency Code';
+
+    protected var
+        ToDate: Date;
+        OnlyOpen, PrintEntries, IncludeCoeffCorrection : Boolean;
+
+    local procedure CalcNonDeductVATAmountLCY(PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"): Decimal
+    var
+        VATEntry: Record "VAT Entry";
+    begin
+        VATEntry.SetRange("Advance Letter No. CZZ", PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
+        VATEntry.SetRange("Document No.", PurchAdvLetterEntryCZZ."Document No.");
+        VATEntry.SetFilter("Posting Date", '..%1', ToDate);
+        VATEntry.SetFilter("Non-Deductible VAT %", '<>0');
+        if not IncludeCoeffCorrection then
+            VATEntry.SetFilter("Source Code", '<>%1', SourceCodeSetup."VAT Coeff. Correction CZL");
+        VATEntry.CalcSums(Amount);
+        exit(VATEntry.Amount);
+    end;
 }

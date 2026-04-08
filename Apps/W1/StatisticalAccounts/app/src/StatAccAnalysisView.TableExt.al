@@ -10,6 +10,7 @@ tableextension 2625 StatAccAnalysisView extends "Analysis View"
         {
             Caption = 'Statistical Account Filter';
             TableRelation = "Statistical Account";
+            ValidateTableRelation = false;
             DataClassification = SystemMetadata;
 
             trigger OnLookup()

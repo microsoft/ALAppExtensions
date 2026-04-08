@@ -582,7 +582,7 @@ codeunit 139874 "APIV2 - Purch. Cr.M. Lines E2E"
     procedure TestPatchingTheTypeBlanksIds()
     var
         PurchaseHeader: Record "Purchase Header";
-        PurchInvLineAggregate: Record "Purch. Inv. Line Aggregate";
+        TempPurchInvLineAggregate: Record "Purch. Inv. Line Aggregate";
         PurchaseLine: Record "Purchase Line";
         ResponseText: Text;
         CreditMemoLineJSON: Text;
@@ -594,7 +594,7 @@ codeunit 139874 "APIV2 - Purch. Cr.M. Lines E2E"
         Assert.AreNotEqual('', CreditMemoID, 'ID should not be empty');
         FindFirstPurchaseLine(PurchaseHeader, PurchaseLine);
 
-        CreditMemoLineJSON := StrSubstNo('{"%1":"%2"}', LineTypeFieldNameTxt, Format(PurchInvLineAggregate."API Type"::Account));
+        CreditMemoLineJSON := StrSubstNo('{"%1":"%2"}', LineTypeFieldNameTxt, Format(TempPurchInvLineAggregate."API Type"::Account));
 
         // [WHEN] we PATCH the line
         ModifyCreditMemoLinesThroughAPI(CreditMemoID, PurchaseLine.SystemId, CreditMemoLineJSON, ResponseText);

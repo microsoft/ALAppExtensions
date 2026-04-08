@@ -37,14 +37,14 @@ codeunit 4400 "SOA Setup"
     [Scope('OnPrem')]
     procedure CreateDefaultAgentNoEmail()
     var
-        AgentSetupBuffer: Record "Agent Setup Buffer";
+        TempAgentSetupBuffer: Record "Agent Setup Buffer";
         TempSOASetup: Record "SOA Setup" temporary;
         AgentSetup: Codeunit "Agent Setup";
         SOASetup: Codeunit "SOA Setup";
         AgentUserSecurityID: Guid;
     begin
         Clear(TempSOASetup);
-        AgentSetup.GetSetupRecord(AgentSetupBuffer,
+        AgentSetup.GetSetupRecord(TempAgentSetupBuffer,
            TempSOASetup."User Security ID",
            "Agent Metadata Provider"::"SO Agent",
            SOASetup.GetSOAUsername(),
@@ -52,12 +52,12 @@ codeunit 4400 "SOA Setup"
            SOASetup.GetAgentSummary()
         );
 
-        AgentSetupBuffer.State := AgentSetupBuffer.State::Enabled;
-        AgentUserSecurityID := AgentSetup.SaveChanges(AgentSetupBuffer);
+        TempAgentSetupBuffer.State := TempAgentSetupBuffer.State::Enabled;
+        AgentUserSecurityID := AgentSetup.SaveChanges(TempAgentSetupBuffer);
         GetSOASetup(TempSOASetup, AgentUserSecurityID);
         TempSOASetup."Email Monitoring" := false;
 
-        UpdateAgent(AgentSetupBuffer, TempSOASetup, true);
+        UpdateAgent(TempAgentSetupBuffer, TempSOASetup, true);
     end;
 
     local procedure CreateAgent(var AgentSetupBuffer: Record "Agent Setup Buffer"; var TempSOASetup: Record "SOA Setup" temporary)
@@ -96,7 +96,12 @@ codeunit 4400 "SOA Setup"
     internal procedure AllowCreateNewSOAgent(): Boolean
     var
         SOASetup: Record "SOA Setup";
+        AgentSystemPermissions: Codeunit "Agent System Permissions";
     begin
+        if not AgentSystemPermissions.CurrentUserHasCanManageAllAgentsPermission() then
+            // Limit agent creation to agent admins.
+            exit(false);
+
         exit(SOASetup.IsEmpty());
     end;
 
@@ -178,23 +183,23 @@ codeunit 4400 "SOA Setup"
 
     local procedure LogTelemetry(var AgentSetupBuffer: Record "Agent Setup Buffer"; var TempSOASetup: Record "SOA Setup" temporary)
     var
-        UserSettings: Record "User Settings";
+        TempUserSettings: Record "User Settings";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         Language: Codeunit Language;
         TelemetryCustomDimension: Dictionary of [Text, Text];
     begin
         // SOA user settings
         TelemetryCustomDimension.Add('AgentUserId', Format(TempSOASetup."User Security ID"));
-        Agent.GetUserSettings(AgentSetupBuffer."User Security ID", UserSettings);
-        if UserSettings."Language ID" <> 0 then
-            TelemetryCustomDimension.Add('Language', Language.GetCultureName(UserSettings."Language ID"))
+        Agent.GetUserSettings(AgentSetupBuffer."User Security ID", TempUserSettings);
+        if TempUserSettings."Language ID" <> 0 then
+            TelemetryCustomDimension.Add('Language', Language.GetCultureName(TempUserSettings."Language ID"))
         else
             TelemetryCustomDimension.Add('Language', '');
-        if UserSettings."Locale ID" <> 0 then
-            TelemetryCustomDimension.Add('Locale', Language.GetCultureName(UserSettings."Locale ID"))
+        if TempUserSettings."Locale ID" <> 0 then
+            TelemetryCustomDimension.Add('Locale', Language.GetCultureName(TempUserSettings."Locale ID"))
         else
             TelemetryCustomDimension.Add('Locale', '');
-        TelemetryCustomDimension.Add('TimeZone', UserSettings."Time Zone");
+        TelemetryCustomDimension.Add('TimeZone', TempUserSettings."Time Zone");
 
         // SOA setup config
         TelemetryCustomDimension.Add('IncomingMonitoring', Format(TempSOASetup."Incoming Monitoring"));

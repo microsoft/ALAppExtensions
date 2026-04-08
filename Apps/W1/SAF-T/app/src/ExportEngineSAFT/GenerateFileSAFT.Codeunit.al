@@ -389,7 +389,9 @@ codeunit 5289 "Generate File SAF-T"
     var
         GLAccount: Record "G/L Account";
         StandardAccountCategory: Record "Standard Account Category";
+        StandardAccount: Record "Standard Account";
         GroupingCategoryValue: Text;
+        GroupingCodeValue: Text;
         OpeningDebitBalance, OpeningCreditBalance, ClosingDebitBalance, ClosingCreditBalance : Decimal;
     begin
         GLAccount.Get(GLAccNo);
@@ -427,8 +429,12 @@ codeunit 5289 "Generate File SAF-T"
             if StandardAccountCategory.Get(StandardAccountType, GroupingCategory) then
                 if StandardAccountCategory."Extended No." <> '' then
                     GroupingCategoryValue := StandardAccountCategory."Extended No.";
+            GroupingCodeValue := GroupingNo;
+            if StandardAccount.Get(StandardAccountType, GroupingCategory, GroupingNo) then
+                if StandardAccount."Extended No." <> '' then
+                    GroupingCodeValue := StandardAccount."Extended No.";
             XmlHelper.AppendXmlNode('GroupingCategory', GroupingCategoryValue);
-            XmlHelper.AppendXmlNode('GroupingCode', GroupingNo);
+            XmlHelper.AppendXmlNode('GroupingCode', GroupingCodeValue);
         end;
 
         XmlHelper.AppendXmlNode('AccountType', '');

@@ -781,7 +781,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
     procedure TestPatchingTheTypeBlanksIds()
     var
         PurchaseHeader: Record "Purchase Header";
-        PurchInvLineAggregate: Record "Purch. Inv. Line Aggregate";
+        TempPurchInvLineAggregate: Record "Purch. Inv. Line Aggregate";
         PurchaseLine: Record "Purchase Line";
         TargetURL: Text;
         ResponseText: Text;
@@ -797,7 +797,7 @@ codeunit 139738 "APIV1 - Purchase Inv Lines E2E"
         FindFirstPurchaseLine(PurchaseHeader, PurchaseLine);
         LineNo := PurchaseLine."Line No.";
 
-        InvoiceLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(PurchInvLineAggregate."API Type"::Account));
+        InvoiceLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(TempPurchInvLineAggregate."API Type"::Account));
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt

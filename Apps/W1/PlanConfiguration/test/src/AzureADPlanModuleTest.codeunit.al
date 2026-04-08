@@ -1090,25 +1090,25 @@ codeunit 139509 "Azure AD Plan Module Test"
     local procedure DoesUserOnlyHaveDefaultPermissionsForPlan(UserID: Guid; PlanId: Guid): Boolean
     var
         AccessControl: Record "Access Control";
-        PermissionSetInPlanBuffer: Record "Permission Set In Plan Buffer";
+        TempPermissionSetInPlanBuffer: Record "Permission Set In Plan Buffer";
         PlanConfiguration: Codeunit "Plan Configuration";
     begin
-        PlanConfiguration.GetDefaultPermissions(PermissionSetInPlanBuffer);
+        PlanConfiguration.GetDefaultPermissions(TempPermissionSetInPlanBuffer);
 
         AccessControl.SetRange("User Security ID", UserID);
-        PermissionSetInPlanBuffer.SetRange("Plan ID", PlanId);
-        if AccessControl.Count() > PermissionSetInPlanBuffer.Count() then
+        TempPermissionSetInPlanBuffer.SetRange("Plan ID", PlanId);
+        if AccessControl.Count() > TempPermissionSetInPlanBuffer.Count() then
             exit(false);
 
-        if PermissionSetInPlanBuffer.FindSet() then
+        if TempPermissionSetInPlanBuffer.FindSet() then
             repeat
                 AccessControl.SetRange("User Security ID", UserID);
-                AccessControl.SetRange("Role ID", PermissionSetInPlanBuffer."Role ID");
-                AccessControl.SetRange(Scope, PermissionSetInPlanBuffer.Scope);
-                AccessControl.SetRange("App ID", PermissionSetInPlanBuffer."App ID");
+                AccessControl.SetRange("Role ID", TempPermissionSetInPlanBuffer."Role ID");
+                AccessControl.SetRange(Scope, TempPermissionSetInPlanBuffer.Scope);
+                AccessControl.SetRange("App ID", TempPermissionSetInPlanBuffer."App ID");
                 if AccessControl.IsEmpty() then
                     exit(false)
-            until PermissionSetInPlanBuffer.Next() = 0;
+            until TempPermissionSetInPlanBuffer.Next() = 0;
 
         exit(true);
     end;

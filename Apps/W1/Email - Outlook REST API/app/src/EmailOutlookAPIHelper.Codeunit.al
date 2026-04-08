@@ -386,13 +386,13 @@ codeunit 4509 "Email - Outlook API Helper"
 
     local procedure GetEmailAddressFromEmailAccounts(AccountId: Guid): Text
     var
-        EmailAccounts: Record "Email Account";
+        TempEmailAccounts: Record "Email Account";
     begin
-        EmailAccount.GetAllAccounts(EmailAccounts);
-        EmailAccounts.SetRange("Account Id", AccountId);
-        EmailAccounts.FindFirst();
+        EmailAccount.GetAllAccounts(TempEmailAccounts);
+        TempEmailAccounts.SetRange("Account Id", AccountId);
+        TempEmailAccounts.FindFirst();
 
-        exit(EmailAccounts."Email Address");
+        exit(TempEmailAccounts."Email Address");
     end;
 
     local procedure CreateEmailInboxFromJsonObject(var EmailInbox: Record "Email Inbox"; OutlookAccount: Record "Email - Outlook Account"; var Filters: Record "Email Retrieval Filters"; EmailJsonObject: JsonObject)

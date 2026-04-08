@@ -892,7 +892,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
-        PurchInvLineAggregate: Record "Purch. Inv. Line Aggregate";
+        TempPurchInvLineAggregate: Record "Purch. Inv. Line Aggregate";
         TargetURL: Text;
         ResponseText: Text;
         OrderLineJSON: Text;
@@ -905,7 +905,7 @@ codeunit 139852 "APIV2 - Purch. Order Lines E2E"
         Assert.AreNotEqual('', OrderId, 'ID should not be empty');
         FindFirstPurchaseLine(PurchaseHeader, PurchaseLine);
 
-        OrderLineJSON := StrSubstNo('{"%1":"%2"}', LineTypeFieldNameTxt, Format(PurchInvLineAggregate."API Type"::Account));
+        OrderLineJSON := StrSubstNo('{"%1":"%2"}', LineTypeFieldNameTxt, Format(TempPurchInvLineAggregate."API Type"::Account));
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt

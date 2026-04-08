@@ -673,14 +673,14 @@ page 6613 "FS Connection Setup Wizard"
 
     local procedure GetVirtualTablesAppSourceLink(): Text
     var
-        UserSettingsRecord: Record "User Settings";
+        TempUserSettingsRecord: Record "User Settings";
         Language: Codeunit Language;
         UserSettings: Codeunit "User Settings";
         LanguageID: Integer;
         CultureName: Text;
     begin
-        UserSettings.GetUserSettings(Database.UserSecurityId(), UserSettingsRecord);
-        LanguageID := UserSettingsRecord."Language ID";
+        UserSettings.GetUserSettings(Database.UserSecurityId(), TempUserSettingsRecord);
+        LanguageID := TempUserSettingsRecord."Language ID";
         if (LanguageID = 0) then
             LanguageID := 1033; // Default to EN-US
         CultureName := Language.GetCultureName(LanguageID).ToLower();

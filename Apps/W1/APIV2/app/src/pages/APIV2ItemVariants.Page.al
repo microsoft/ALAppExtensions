@@ -78,6 +78,15 @@ page 30052 "APIV2 - Item Variants"
                     Caption = 'Last Modified Date';
                     Editable = false;
                 }
+
+                part(picture; "APIV2 - Pictures")
+                {
+                    Caption = 'Picture';
+                    Multiplicity = ZeroOrOne;
+                    EntityName = 'picture';
+                    EntitySetName = 'pictures';
+                    SubPageLink = Id = field(SystemId), "Parent Type" = const("Item Variant");
+                }
             }
         }
 

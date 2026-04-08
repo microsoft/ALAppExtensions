@@ -1316,7 +1316,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
     local procedure VerifyPaymentServiceIsShownOnServiceConnectionsPage(MSPayPalStandardAccount: Record "MS - PayPal Standard Account");
     var
-        ServiceConnection: Record "Service Connection";
+        TempServiceConnection: Record "Service Connection";
         ServiceConnections: TestPage "Service Connections";
     begin
         ServiceConnections.OPENEDIT();
@@ -1328,11 +1328,11 @@ codeunit 139500 "MS - PayPal Standard Tests"
 
         IF MSPayPalStandardAccount.Enabled THEN
             Assert.AreEqual(
-              FORMAT(ServiceConnection.Status::Enabled), ServiceConnections.Status.VALUE(),
+              FORMAT(TempServiceConnection.Status::Enabled), ServiceConnections.Status.VALUE(),
               'Status was not set correctly on Service Connections page')
         ELSE
             Assert.AreEqual(
-              FORMAT(ServiceConnection.Status::Disabled), ServiceConnections.Status.VALUE(),
+              FORMAT(TempServiceConnection.Status::Disabled), ServiceConnections.Status.VALUE(),
               'Status was not set correctly on Service Connections page');
     end;
 

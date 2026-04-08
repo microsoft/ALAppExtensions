@@ -44,21 +44,21 @@ codeunit 148001 "Library IRS 1099 Document"
 
     procedure CreateFormDocuments(StartingDate: Date; EndingDate: Date; VendorNo: Code[20]; FormNo: Code[20]; Replace: Boolean)
     var
-        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
     begin
-        IRS1099CalcParameters."Period No." := LibraryIRSReportingPeriod.GetReportingPeriod(StartingDate, EndingDate);
-        IRS1099CalcParameters."Vendor No." := VendorNo;
-        IRS1099CalcParameters."Form No." := FormNo;
-        IRS1099CalcParameters.Replace := Replace;
-        IRS1099FormDocument.CreateFormDocs(IRS1099CalcParameters);
+        TempIRS1099CalcParameters."Period No." := LibraryIRSReportingPeriod.GetReportingPeriod(StartingDate, EndingDate);
+        TempIRS1099CalcParameters."Vendor No." := VendorNo;
+        TempIRS1099CalcParameters."Form No." := FormNo;
+        TempIRS1099CalcParameters.Replace := Replace;
+        IRS1099FormDocument.CreateFormDocs(TempIRS1099CalcParameters);
     end;
 
     procedure CreateFormDocuments(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary);
     var
-        DummyIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempDummyIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
     begin
-        CreateFormDocuments(TempVendFormBoxBuffer, DummyIRS1099CalcParameters);
+        CreateFormDocuments(TempVendFormBoxBuffer, TempDummyIRS1099CalcParameters);
     end;
 
     procedure CreateFormDocuments(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; IRS1099CalcParameters: Record "IRS 1099 Calc. Params");

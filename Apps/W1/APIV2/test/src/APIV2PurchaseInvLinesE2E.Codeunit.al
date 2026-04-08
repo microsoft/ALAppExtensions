@@ -769,7 +769,7 @@ codeunit 139838 "APIV2 - Purchase Inv Lines E2E"
     procedure TestPatchingTheTypeBlanksIds()
     var
         PurchaseHeader: Record "Purchase Header";
-        PurchInvLineAggregate: Record "Purch. Inv. Line Aggregate";
+        TempPurchInvLineAggregate: Record "Purch. Inv. Line Aggregate";
         PurchaseLine: Record "Purchase Line";
         TargetURL: Text;
         ResponseText: Text;
@@ -783,7 +783,7 @@ codeunit 139838 "APIV2 - Purchase Inv Lines E2E"
         Assert.AreNotEqual('', InvoiceId, 'ID should not be empty');
         FindFirstPurchaseLine(PurchaseHeader, PurchaseLine);
 
-        InvoiceLineJSON := StrSubstNo('{"%1":"%2"}', LineTypeFieldNameTxt, Format(PurchInvLineAggregate."API Type"::Account));
+        InvoiceLineJSON := StrSubstNo('{"%1":"%2"}', LineTypeFieldNameTxt, Format(TempPurchInvLineAggregate."API Type"::Account));
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt

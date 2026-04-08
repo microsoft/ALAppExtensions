@@ -11,6 +11,8 @@ codeunit 139537 "Extended Category Import Tests"
     var
         Assert: Codeunit Assert;
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        IsInitialized: Boolean;
 
     [Test]
     procedure ImportGroupingCodeWith20CharsStoredAsNo()
@@ -247,6 +249,90 @@ codeunit 139537 "Extended Category Import Tests"
     end;
 
     [Test]
+    procedure ImportAccountWithShortAccountNo()
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        CategoryCode: Code[20];
+        AccountNo: Code[20];
+        CategoryDescription: Text[250];
+        AccountDescription: Text[250];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 620827] Import account with AccountNo <= 20 characters leaves Extended No. blank on Standard Account
+        Initialize();
+
+        // [GIVEN] XML buffer with short AccountNo
+        CleanupMappingData();
+        CategoryCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(15, 0), 1, MaxStrLen(CategoryCode));
+        AccountNo := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, MaxStrLen(AccountNo));
+        CategoryDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, MaxStrLen(CategoryDescription));
+        AccountDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, MaxStrLen(AccountDescription));
+        BuildGroupingCodeXML(TempXMLBuffer, CategoryCode, CategoryDescription, AccountNo, AccountDescription);
+
+        // [WHEN] Import standard accounts with grouping codes
+        ImportGroupingCodes(TempXMLBuffer);
+
+        // [THEN] Standard Account has Extended No. = ''
+        VerifyStandardAccountExtendedNo(CategoryCode, AccountNo, '');
+    end;
+
+    [Test]
+    procedure ImportAccountWithLongAccountNo()
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        CategoryCode: Code[20];
+        LongAccountNo: Text;
+        CategoryDescription: Text[250];
+        AccountDescription: Text[250];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 620827] Import account with AccountNo > 20 characters stores full value in Extended No. on Standard Account
+        Initialize();
+
+        // [GIVEN] XML buffer with AccountNo > 20 characters
+        CleanupMappingData();
+        CategoryCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(15, 0), 1, MaxStrLen(CategoryCode));
+        LongAccountNo := LibraryUtility.GenerateRandomAlphabeticText(100, 0);
+        CategoryDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, MaxStrLen(CategoryDescription));
+        AccountDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, MaxStrLen(AccountDescription));
+        BuildGroupingCodeXMLWithLongAccountNo(TempXMLBuffer, CategoryCode, CategoryDescription, LongAccountNo, AccountDescription);
+
+        // [WHEN] Import standard accounts with grouping codes
+        ImportGroupingCodes(TempXMLBuffer);
+
+        // [THEN] Standard Account has No. = truncated to 20 chars and Extended No. = full value
+        VerifyStandardAccountExtendedNo(CategoryCode, CopyStr(LongAccountNo, 1, 20), CopyStr(LongAccountNo, 1, 500));
+    end;
+
+    [Test]
+    procedure ImportAccountWithExactly20CharAccountNo()
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        CategoryCode: Code[20];
+        AccountNo: Code[20];
+        CategoryDescription: Text[250];
+        AccountDescription: Text[250];
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO 620827] Import account with AccountNo exactly 20 characters leaves Extended No. blank
+        Initialize();
+
+        // [GIVEN] XML buffer with AccountNo of exactly 20 characters
+        CleanupMappingData();
+        CategoryCode := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(15, 0), 1, MaxStrLen(CategoryCode));
+        AccountNo := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(20, 0), 1, MaxStrLen(AccountNo));
+        CategoryDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, MaxStrLen(CategoryDescription));
+        AccountDescription := CopyStr(LibraryUtility.GenerateRandomAlphabeticText(250, 0), 1, MaxStrLen(AccountDescription));
+        BuildGroupingCodeXML(TempXMLBuffer, CategoryCode, CategoryDescription, AccountNo, AccountDescription);
+
+        // [WHEN] Import standard accounts with grouping codes
+        ImportGroupingCodes(TempXMLBuffer);
+
+        // [THEN] Standard Account has Extended No. = ''
+        VerifyStandardAccountExtendedNo(CategoryCode, AccountNo, '');
+    end;
+
+    [Test]
     procedure ExtendedNoExceeds256CharsThrowsError()
     var
         GLAccountMappingHeader: Record "G/L Account Mapping Header";
@@ -286,6 +372,18 @@ codeunit 139537 "Extended Category Import Tests"
 
         // [THEN] Error is thrown indicating Extended No. exceeds 256 characters
         Assert.ExpectedError('The Extended No. field cannot exceed 256 characters');
+    end;
+
+    local procedure Initialize()
+    begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Extended Category Import Tests");
+        if IsInitialized then
+            exit;
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Extended Category Import Tests");
+
+        IsInitialized := true;
+        Commit();
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Extended Category Import Tests");
     end;
 
     local procedure CreateGLAccountMappingWithCategoryLine(var GLAccountMappingHeader: Record "G/L Account Mapping Header"; var GLAccountMappingLine: Record "G/L Account Mapping Line"; CategoryNo: Code[20])
@@ -440,5 +538,26 @@ codeunit 139537 "Extended Category Import Tests"
         StandardAccountCategory.Get("Standard Account Type"::"Standard Account SAF-T", ExpectedNo);
         Assert.AreEqual(ExpectedDescription, StandardAccountCategory.Description, StrSubstNo('Description mismatch for category %1', ExpectedNo));
         Assert.AreEqual(ExpectedExtendedNo, StandardAccountCategory."Extended No.", StrSubstNo('Extended No. mismatch for category %1', ExpectedNo));
+    end;
+
+    local procedure VerifyStandardAccountExtendedNo(ExpectedCategoryNo: Code[20]; ExpectedNo: Code[20]; ExpectedExtendedNo: Text[500])
+    var
+        StandardAccount: Record "Standard Account";
+    begin
+        StandardAccount.Get("Standard Account Type"::"Standard Account SAF-T", ExpectedCategoryNo, ExpectedNo);
+        Assert.AreEqual(ExpectedExtendedNo, StandardAccount."Extended No.", StrSubstNo('Extended No. mismatch for account %1', ExpectedNo));
+    end;
+
+    local procedure BuildGroupingCodeXMLWithLongAccountNo(var TempXMLBuffer: Record "XML Buffer" temporary; CategoryCode: Text; CategoryDesc: Text; AccountNo: Text; AccountDesc: Text)
+    var
+        XmlText: Text;
+    begin
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.DeleteAll();
+
+        XmlText := '<Root><GroupingCode><CategoryCode>' + CategoryCode + '</CategoryCode><CategoryDescription>' + CategoryDesc + '</CategoryDescription><AccountNo>' + AccountNo + '</AccountNo><AccountDescription>' + AccountDesc + '</AccountDescription></GroupingCode></Root>';
+        TempXMLBuffer.LoadFromText(XmlText);
+
+        TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/Root/GroupingCode');
     end;
 }

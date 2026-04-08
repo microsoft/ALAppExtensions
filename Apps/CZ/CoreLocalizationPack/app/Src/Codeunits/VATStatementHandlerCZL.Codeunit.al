@@ -54,7 +54,7 @@ codeunit 31140 "VAT Statement Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"VAT Statement", 'OnAfterGetAmtRoundingDirection', '', false, false)]
-    local procedure GetRoundingDirectionOnAfterGetAmtRoundingDirection(Direction: Text[1])
+    local procedure GetRoundingDirectionOnAfterGetAmtRoundingDirection(var Direction: Text[1])
     begin
         Direction := GlobalVATStmtCalcParametersCZL.GetRoundingDirection();
     end;

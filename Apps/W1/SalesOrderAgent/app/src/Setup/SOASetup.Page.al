@@ -419,7 +419,7 @@ page 4400 "SOA Setup"
            SOASetupCU.GetAgentSummary());
         UpdateAgentSetupBuffer();
 
-        InitialState := AgentSetupBuffer.State;
+        InitialState := TempAgentSetupBuffer.State;
         UpdateControls();
         FeatureTelemetry.LogUptake('0000QIK', SOASetupCU.GetFeatureName(), Enum::"Feature Uptake Status"::Discovered);
     end;
@@ -427,7 +427,7 @@ page 4400 "SOA Setup"
     trigger OnAfterGetCurrRecord()
     begin
         UpdateAgentSetupBuffer();
-        IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(AgentSetupBuffer);
+        IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(TempAgentSetupBuffer);
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -448,7 +448,7 @@ page 4400 "SOA Setup"
                 Rec.State := Rec.State::Enabled;
 
         UpdateAgentSetupBuffer();
-        if (AgentSetupBuffer.State = AgentSetupBuffer.State::Enabled) and MailboxChanged and StateChanged() then
+        if (TempAgentSetupBuffer.State = TempAgentSetupBuffer.State::Enabled) and (MailboxChanged or StateChanged()) then
             if CheckIsValidConfig() then begin
                 SOASessionEvents.BindUserEvents();
                 SOASetupCU.ValidateEmailConnection(StateChanged(), Rec);
@@ -477,23 +477,23 @@ page 4400 "SOA Setup"
         if StateChanged() then
             SOASetupCU.UpdateSOASetupActivationDT(Rec);
 
-        SOASetupCU.UpdateAgent(AgentSetupBuffer, Rec, ShouldScheduleTask());
+        SOASetupCU.UpdateAgent(TempAgentSetupBuffer, Rec, ShouldScheduleTask());
         exit(true);
     end;
 
     local procedure UpdateAgentSetupBuffer()
     begin
-        CurrPage.AgentSetupPart.Page.GetAgentSetupBuffer(AgentSetupBuffer);
+        CurrPage.AgentSetupPart.Page.GetAgentSetupBuffer(TempAgentSetupBuffer);
     end;
 
     local procedure StateChanged(): Boolean
     begin
-        exit((AgentSetupBuffer.State <> InitialState) or IsFirstConfig());
+        exit((TempAgentSetupBuffer.State <> InitialState) or IsFirstConfig());
     end;
 
     local procedure ShouldScheduleTask(): Boolean
     begin
-        exit((AgentSetupBuffer.State = AgentSetupBuffer.State::Enabled) and (StateChanged() or MailboxChanged));
+        exit((TempAgentSetupBuffer.State = TempAgentSetupBuffer.State::Enabled) and (StateChanged() or MailboxChanged));
     end;
 
     local procedure ShowDeactivateAgentEmailPermissionsWarning(): Boolean
@@ -501,7 +501,7 @@ page 4400 "SOA Setup"
         SOASetupCU: Codeunit "SOA Setup";
     begin
         UpdateAgentSetupBuffer();
-        if (AgentSetupBuffer.State = AgentSetupBuffer.State::Disabled) and StateChanged() and not IsFirstConfig() then
+        if (TempAgentSetupBuffer.State = TempAgentSetupBuffer.State::Disabled) and StateChanged() and not IsFirstConfig() then
             if not SOASetupCU.ValidateEmailConnectionStatus(Rec) then
                 exit(true);
     end;
@@ -511,8 +511,8 @@ page 4400 "SOA Setup"
         User: Record User;
         SOASetupCU: Codeunit "SOA Setup";
     begin
-        if Rec.IsEmpty() or (Rec."User Security ID" <> AgentSetupBuffer."User Security ID") then begin
-            SOASetupCU.GetSOASetup(Rec, AgentSetupBuffer."User Security ID");
+        if Rec.IsEmpty() or (Rec."User Security ID" <> TempAgentSetupBuffer."User Security ID") then begin
+            SOASetupCU.GetSOASetup(Rec, TempAgentSetupBuffer."User Security ID");
             MailboxName := Rec."Email Address";
             if Rec."Email Folder" <> '' then
                 MailboxFolder := Rec."Email Folder"
@@ -531,7 +531,7 @@ page 4400 "SOA Setup"
         if DailyEmailLimit = 0 then
             DailyEmailLimit := Rec.GetDefaultMessageLimit();
 
-        if User.Get(AgentSetupBuffer."Configured By") then
+        if User.Get(TempAgentSetupBuffer."Configured By") then
             ConfiguredBy := User."Full Name";
 
         CheckIsValidConfig();
@@ -545,12 +545,12 @@ page 4400 "SOA Setup"
         OnlyAvailableItemsActive := Rec."Search Only Available Items";
 
         if EnabledAgentFirstConfig() then
-            AgentSetupBuffer.State := AgentSetupBuffer.State::Enabled;
+            TempAgentSetupBuffer.State := TempAgentSetupBuffer.State::Enabled;
     end;
 
     local procedure EnabledAgentFirstConfig(): Boolean
     begin
-        exit((AgentSetupBuffer.State = AgentSetupBuffer.State::Disabled) and IsFirstConfig() and CheckIsValidConfig());
+        exit((TempAgentSetupBuffer.State = TempAgentSetupBuffer.State::Disabled) and IsFirstConfig() and CheckIsValidConfig());
     end;
 
     local procedure CheckIsValidConfig(): Boolean
@@ -565,16 +565,16 @@ page 4400 "SOA Setup"
 
     local procedure CheckMailboxExists(): Boolean
     var
-        EmailAccounts: Record "Email Account";
+        TempEmailAccounts: Record "Email Account";
         EmailAccount: Codeunit "Email Account";
         IConnector: Interface "Email Connector";
     begin
-        EmailAccount.GetAllAccounts(false, EmailAccounts);
-        if EmailAccounts.IsEmpty() then
+        EmailAccount.GetAllAccounts(false, TempEmailAccounts);
+        if TempEmailAccounts.IsEmpty() then
             exit(false);
 
         repeat
-            IConnector := EmailAccounts.Connector;
+            IConnector := TempEmailAccounts.Connector;
 #if not CLEAN28
 #pragma warning disable AL0432
             if IConnector is "Email Connector v3" or IConnector is "Email Connector v4" then
@@ -583,7 +583,7 @@ page 4400 "SOA Setup"
             if IConnector is "Email Connector v4" then
 #endif
                 exit(true);
-        until EmailAccounts.Next() = 0;
+        until TempEmailAccounts.Next() = 0;
     end;
 
     local procedure OnAssistEditMailbox()
@@ -633,7 +633,7 @@ page 4400 "SOA Setup"
     end;
 
     var
-        AgentSetupBuffer: Record "Agent Setup Buffer";
+        TempAgentSetupBuffer: Record "Agent Setup Buffer";
         TempEmailAccount: Record "Email Account" temporary;
         AzureOpenAI: Codeunit "Azure OpenAI";
         AgentSetup: Codeunit "Agent Setup";

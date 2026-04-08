@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Purchases.History;
 
-using System.Security.User;
-
 pageextension 31144 "Posted Purch. Inv. Update CZL" extends "Posted Purch. Invoice - Update"
 {
     layout
@@ -62,10 +60,10 @@ pageextension 31144 "Posted Purch. Inv. Update CZL" extends "Posted Purch. Invoi
 
     trigger OnOpenPage()
     begin
-        IsExtDocNoEditable := UserSetupAdvManagementCZL.IsExtDocNoChangingAllowed();
+        IsExtDocNoEditable := ExtDocNoChangingCZL.IsAllowed();
     end;
 
     var
-        UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        ExtDocNoChangingCZL: Codeunit "Ext. Doc. No. Changing CZL";
         IsExtDocNoEditable: Boolean;
 }

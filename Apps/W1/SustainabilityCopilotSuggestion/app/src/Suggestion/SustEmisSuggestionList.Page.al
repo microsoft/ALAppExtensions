@@ -133,14 +133,14 @@ page 6330 "Sust. Emis. Suggestion List"
 
                     trigger OnDrillDown()
                     var
-                        SustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
+                        TempSustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
                         SustEmisSuggestionList: Page "Sust. Emis. Suggestion List";
                     begin
-                        SustainEmissionSuggestion.Copy(Rec, true);
-                        SustainEmissionSuggestion.SetRange("Line No.", Rec."Line No.");
+                        TempSustainEmissionSuggestion.Copy(Rec, true);
+                        TempSustainEmissionSuggestion.SetRange("Line No.", Rec."Line No.");
                         SustEmisSuggestionList.SetWarningVisibility();
-                        SustEmisSuggestionList.Load(SustainEmissionSuggestion);
-                        SustEmisSuggestionList.SetTableView(SustainEmissionSuggestion);
+                        SustEmisSuggestionList.Load(TempSustainEmissionSuggestion);
+                        SustEmisSuggestionList.SetTableView(TempSustainEmissionSuggestion);
                         SustEmisSuggestionList.RunModal();
                     end;
                 }

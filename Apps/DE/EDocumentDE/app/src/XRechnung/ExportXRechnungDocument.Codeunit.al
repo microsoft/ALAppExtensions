@@ -40,11 +40,13 @@ codeunit 13916 "Export XRechnung Document"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         PEPPOLMgt: Codeunit "PEPPOL Management";
         EDocVATHelper: Codeunit "E-Document VAT Helper";
+        TypeHelper: Codeunit "Type Helper";
         FeatureNameTok: Label 'E-document XRechnung Format', Locked = true;
         StartEventNameTok: Label 'E-document XRechnung export started', Locked = true;
         EndEventNameTok: Label 'E-document XRechnung export completed', Locked = true;
         XmlNamespaceCBC: Text;
         XmlNamespaceCAC: Text;
+        AlwaysIncludeTwoDecimalPlacesForAmountFields: Boolean;
         AllLinesNotSubjectToVAT: Boolean;
         DocumentLanguageCode: Code[10];
 
@@ -73,6 +75,7 @@ codeunit 13916 "Export XRechnung Document"
         RecordRef.SetTable(SalesInvoiceHeader);
 
         FindEDocumentService(RecordExportBuffer."Electronic Document Format");
+        InitializeDecimalFormatFlags();
         RecordExportBuffer."File Content".CreateOutStream(FileOutStream, TextEncoding::UTF8);
         CreateXML(SalesInvoiceHeader, FileOutStream);
         RecordExportBuffer.Modify();
@@ -90,6 +93,7 @@ codeunit 13916 "Export XRechnung Document"
         RecordRef.SetTable(SalesCrMemoHeader);
 
         FindEDocumentService(RecordExportBuffer."Electronic Document Format");
+        InitializeDecimalFormatFlags();
         RecordExportBuffer."File Content".CreateOutStream(FileOutStream, TextEncoding::UTF8);
         CreateXML(SalesCrMemoHeader, FileOutStream);
         RecordExportBuffer.Modify();
@@ -107,6 +111,7 @@ codeunit 13916 "Export XRechnung Document"
         RecordRef.SetTable(ServiceInvoiceHeader);
 
         FindEDocumentService(RecordExportBuffer."Electronic Document Format");
+        InitializeDecimalFormatFlags();
         RecordExportBuffer."File Content".CreateOutStream(FileOutStream, TextEncoding::UTF8);
         CreateXML(ServiceInvoiceHeader, FileOutStream);
         RecordExportBuffer.Modify();
@@ -124,6 +129,7 @@ codeunit 13916 "Export XRechnung Document"
         RecordRef.SetTable(ServiceCrMemoHeader);
 
         FindEDocumentService(RecordExportBuffer."Electronic Document Format");
+        InitializeDecimalFormatFlags();
         RecordExportBuffer."File Content".CreateOutStream(FileOutStream, TextEncoding::UTF8);
         CreateXML(ServiceCrMemoHeader, FileOutStream);
         RecordExportBuffer.Modify();
@@ -620,7 +626,7 @@ codeunit 13916 "Export XRechnung Document"
         PriceElement: XmlElement;
     begin
         PriceElement := XmlElement.Create('Price', XmlNamespaceCAC);
-        PriceElement.Add(XmlElement.Create('PriceAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimalUnlimited(UnitPrice)));
+        PriceElement.Add(XmlElement.Create('PriceAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimalUnlimited(UnitPrice, AlwaysIncludeTwoDecimalPlacesForAmountFields)));
         RootElement.Add(PriceElement);
     end;
 
@@ -889,8 +895,8 @@ codeunit 13916 "Export XRechnung Document"
         AllowanceChargeElement.Add(XmlElement.Create('ChargeIndicator', XmlNamespaceCBC, 'false'));
         AllowanceChargeElement.Add(XmlElement.Create('AllowanceChargeReason', XmlNamespaceCBC, AllowanceChargeReason));
         AllowanceChargeElement.Add(XmlElement.Create('MultiplierFactorNumeric', XmlNamespaceCBC, FormatFiveDecimal(MultiplierFactorNumeric)));
-        AllowanceChargeElement.Add(XmlElement.Create('Amount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(Amount)));
-        AllowanceChargeElement.Add(XmlElement.Create('BaseAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(BaseAmount)));
+        AllowanceChargeElement.Add(XmlElement.Create('Amount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(Amount, AlwaysIncludeTwoDecimalPlacesForAmountFields)));
+        AllowanceChargeElement.Add(XmlElement.Create('BaseAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(BaseAmount, AlwaysIncludeTwoDecimalPlacesForAmountFields)));
         if InsertTaxCat then
             InsertTaxCategory(AllowanceChargeElement, TaxCategory, Percent, VATEXCode, VATClauseDescription);
         RootXMLNode.Add(AllowanceChargeElement);
@@ -914,8 +920,8 @@ codeunit 13916 "Export XRechnung Document"
         TaxSubtotalElement: XmlElement;
     begin
         TaxSubtotalElement := XmlElement.Create('TaxSubtotal', XmlNamespaceCAC);
-        TaxSubtotalElement.Add(XmlElement.Create('TaxableAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(TaxableAmount)));
-        TaxSubtotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(TaxAmount)));
+        TaxSubtotalElement.Add(XmlElement.Create('TaxableAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(TaxableAmount, AlwaysIncludeTwoDecimalPlacesForAmountFields)));
+        TaxSubtotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(TaxAmount, AlwaysIncludeTwoDecimalPlacesForAmountFields)));
         InsertTaxCategory(TaxSubtotalElement, TaxCategory, VATPercentage, VATEXCode, VATClauseDescription);
         RootElement.Add(TaxSubtotalElement);
     end;
@@ -966,7 +972,7 @@ codeunit 13916 "Export XRechnung Document"
         VATClauseDescription: Text;
     begin
         TaxTotalElement := XmlElement.Create('TaxTotal', XmlNamespaceCAC);
-        TaxTotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(GetTotalTaxAmount(SalesInvLine))));
+        TaxTotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(GetTotalTaxAmount(SalesInvLine), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
 
         if SalesInvLine.FindSet() then
             repeat
@@ -995,7 +1001,7 @@ codeunit 13916 "Export XRechnung Document"
         VATClauseDescription: Text;
     begin
         TaxTotalElement := XmlElement.Create('TaxTotal', XmlNamespaceCAC);
-        TaxTotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(GetTotalTaxAmount(SalesCrMemoLine))));
+        TaxTotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(GetTotalTaxAmount(SalesCrMemoLine), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
 
         if SalesCrMemoLine.FindSet() then
             repeat
@@ -1022,12 +1028,12 @@ codeunit 13916 "Export XRechnung Document"
         LegalMonetaryTotalElement: XmlElement;
     begin
         LegalMonetaryTotalElement := XmlElement.Create('LegalMonetaryTotal', XmlNamespaceCAC);
-        LegalMonetaryTotalElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName(Amount)) + LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
-        LegalMonetaryTotalElement.Add(XmlElement.Create('TaxExclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName(Amount)))));
-        LegalMonetaryTotalElement.Add(XmlElement.Create('TaxInclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Amount Including VAT")))));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName(Amount)) + LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('TaxExclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName(Amount)), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('TaxInclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Amount Including VAT")), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
         if LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")) > 0 then
-            LegalMonetaryTotalElement.Add(XmlElement.Create('AllowanceTotalAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
-        LegalMonetaryTotalElement.Add(XmlElement.Create('PayableAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Amount Including VAT")))));
+            LegalMonetaryTotalElement.Add(XmlElement.Create('AllowanceTotalAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('PayableAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Amount Including VAT")), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
         RootXMLNode.Add(LegalMonetaryTotalElement);
     end;
 
@@ -1036,12 +1042,12 @@ codeunit 13916 "Export XRechnung Document"
         LegalMonetaryTotalElement: XmlElement;
     begin
         LegalMonetaryTotalElement := XmlElement.Create('LegalMonetaryTotal', XmlNamespaceCAC);
-        LegalMonetaryTotalElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName(Amount)) + LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
-        LegalMonetaryTotalElement.Add(XmlElement.Create('TaxExclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName(Amount)))));
-        LegalMonetaryTotalElement.Add(XmlElement.Create('TaxInclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Amount Including VAT")))));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName(Amount)) + LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('TaxExclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName(Amount)), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('TaxInclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Amount Including VAT")), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
         if LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")) > 0 then
-            LegalMonetaryTotalElement.Add(XmlElement.Create('AllowanceTotalAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
-        LegalMonetaryTotalElement.Add(XmlElement.Create('PayableAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Amount Including VAT")))));
+            LegalMonetaryTotalElement.Add(XmlElement.Create('AllowanceTotalAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('PayableAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Amount Including VAT")), AlwaysIncludeTwoDecimalPlacesForAmountFields)));
         RootXMLNode.Add(LegalMonetaryTotalElement);
     end;
 
@@ -1108,7 +1114,7 @@ codeunit 13916 "Export XRechnung Document"
                 ExcludeVAT(SalesInvLine, Currency."Amount Rounding Precision");
             InvoiceLineElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, Format(SalesInvLine."Line No.")));
             InvoiceLineElement.Add(XmlElement.Create('InvoicedQuantity', XmlNamespaceCBC, XmlAttribute.Create('unitCode', GetUoMCode(SalesInvLine."Unit of Measure Code")), FormatDecimalUnlimited(SalesInvLine.Quantity)));
-            InvoiceLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesInvLine.Amount + SalesInvLine."Inv. Discount Amount")));
+            InvoiceLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesInvLine.Amount + SalesInvLine."Inv. Discount Amount", AlwaysIncludeTwoDecimalPlacesForAmountFields)));
             if SalesInvLine."Shipment Date" <> 0D then
                 InsertInvoicePeriod(InvoiceLineElement, SalesInvLine."Shipment Date", SalesInvLine."Shipment Date");
             InsertOrderLineReference(InvoiceLineElement, SalesInvLine."Line No.");
@@ -1147,7 +1153,7 @@ codeunit 13916 "Export XRechnung Document"
                 ExcludeVAT(SalesCrMemoLine, Currency."Amount Rounding Precision");
             CrMemoLineElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, Format(SalesCrMemoLine."Line No.")));
             CrMemoLineElement.Add(XmlElement.Create('CreditedQuantity', XmlNamespaceCBC, XmlAttribute.Create('unitCode', GetUoMCode(SalesCrMemoLine."Unit of Measure Code")), FormatDecimalUnlimited(SalesCrMemoLine.Quantity)));
-            CrMemoLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount")));
+            CrMemoLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount", AlwaysIncludeTwoDecimalPlacesForAmountFields)));
             InsertOrderLineReference(CrMemoLineElement, SalesCrMemoLine."Line No.");
             if SalesCrMemoLine."Shipment Date" <> 0D then
                 InsertInvoicePeriod(CrMemoLineElement, SalesCrMemoLine."Shipment Date", SalesCrMemoLine."Shipment Date");
@@ -1435,6 +1441,13 @@ codeunit 13916 "Export XRechnung Document"
         if EDocumentService.FindLast() then;
         OnAfterFindEDocumentService(EDocumentService, EDocumentFormat);
     end;
+
+    local procedure InitializeDecimalFormatFlags()
+    begin
+        AlwaysIncludeTwoDecimalPlacesForAmountFields := false;
+        OnInitializeDecimalFormatFlags(AlwaysIncludeTwoDecimalPlacesForAmountFields);
+    end;
+
     #region CommonFunctions
     procedure FormatDate(VarDate: Date): Text[20];
     begin
@@ -1445,12 +1458,31 @@ codeunit 13916 "Export XRechnung Document"
 
     procedure FormatDecimal(VarDecimal: Decimal): Text[30];
     begin
-        exit(Format(Round(VarDecimal, 0.01), 0, 9));
+        exit(FormatDecimal(VarDecimal, false));
+    end;
+
+    procedure FormatDecimal(VarDecimal: Decimal; IncludeDecimalPlaces: Boolean): Text[30];
+    var
+        DecimalRounded: Decimal;
+    begin
+        DecimalRounded := Round(VarDecimal, 0.01);
+        if IncludeDecimalPlaces then
+            exit(Format(DecimalRounded, 0, TypeHelper.GetXMLAmountFormatWithTwoDecimalPlaces()))
+        else
+            exit(Format(DecimalRounded, 0, 9));
     end;
 
     procedure FormatDecimalUnlimited(VarDecimal: Decimal): Text
     begin
-        exit(Format(VarDecimal, 0, 9));
+        exit(FormatDecimalUnlimited(VarDecimal, false));
+    end;
+
+    procedure FormatDecimalUnlimited(VarDecimal: Decimal; IncludeMinTwoDecimals: Boolean): Text
+    begin
+        if IncludeMinTwoDecimals then
+            exit(Format(VarDecimal, 0, '<Precision,2:><Standard Format,9>'))
+        else
+            exit(Format(VarDecimal, 0, 9));
     end;
 
 #if not CLEAN29
@@ -1687,6 +1719,15 @@ codeunit 13916 "Export XRechnung Document"
     /// <param name="DocumentAttachment">The Document Attachment record to filter.</param>
     [IntegrationEvent(false, false)]
     local procedure OnInsertAttachmentOnAfterSetFilters(TableNo: Integer; DocumentNo: Code[20]; var DocumentAttachment: Record "Document Attachment")
+    begin
+    end;
+
+    /// <summary>
+    /// Use this event to always include two decimal places for amount fields
+    /// </summary>
+    /// <param name="AlwaysIncludeTwoDecimalPlacesForAmountFields">Set to true to force all amount fields to include two decimal places (e.g. 1.10 instead of 1.1)</param>
+    [IntegrationEvent(false, false)]
+    local procedure OnInitializeDecimalFormatFlags(var AlwaysIncludeTwoDecimalPlacesForAmountFields: Boolean)
     begin
     end;
 }

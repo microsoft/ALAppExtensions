@@ -36,7 +36,7 @@ codeunit 6329 "Sustainability Formula"
     [TryFunction]
     procedure ApplyFormula(var SustainEmissionSuggestion: Record "Sustain. Emission Suggestion"; var SourceCO2EmissionBuffer: Record "Source CO2 Emission Buffer")
     var
-        SustFormulaBuffer: Record "Sust. Formula Buffer";
+        TempSustFormulaBuffer: Record "Sust. Formula Buffer";
         SustainabilityEmissionSource: Codeunit "Sustainability Emission Source";
         LinesToken, ExpressionsToken : JsonToken;
         FormulaInStream: InStream;
@@ -55,12 +55,12 @@ codeunit 6329 "Sustainability Formula"
 
         SustainabilityEmissionSource.KeepRelevantSourceCO2EmissionBuffer(SustainEmissionSuggestion, SourceCO2EmissionBuffer);
         LinesToken.AsObject().Get('expressions', ExpressionsToken);
-        if not CalculateFormulaTextAndValue(SustFormulaBuffer, SustainEmissionSuggestion, SourceCO2EmissionBuffer, ExpressionsToken) then begin
+        if not CalculateFormulaTextAndValue(TempSustFormulaBuffer, SustainEmissionSuggestion, SourceCO2EmissionBuffer, ExpressionsToken) then begin
             Telemetry.LogMessage('0000PWO', StrSubstNo(CannotCalculateFormulaForLineNoLbl, SustainEmissionSuggestion."Line No."), Verbosity::Error, DataClassification::SystemMetadata);
             exit;
         end;
 
-        CopySustFormulaBufferToSustainEmissionSuggestion(SustainEmissionSuggestion, SustFormulaBuffer, SourceCO2EmissionBuffer);
+        CopySustFormulaBufferToSustainEmissionSuggestion(SustainEmissionSuggestion, TempSustFormulaBuffer, SourceCO2EmissionBuffer);
     end;
 
     [TryFunction]

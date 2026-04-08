@@ -14,7 +14,7 @@ codeunit 139760 "SMTP Connector Test"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestMultipleAccountsCanBeRegistered()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         SMTPConnector: Codeunit "SMTP Connector Impl.";
         EmailAccounts: TestPage "Email Accounts";
         AccountIds: array[3] of Guid;
@@ -29,15 +29,15 @@ codeunit 139760 "SMTP Connector Test"
         for Index := 1 to 3 do begin
             SetBasicAccount(Index);
 
-            Assert.IsTrue(SMTPConnector.RegisterAccount(EmailAccount), 'Failed to register account.');
-            AccountIds[Index] := EmailAccount."Account Id";
+            Assert.IsTrue(SMTPConnector.RegisterAccount(TempEmailAccount), 'Failed to register account.');
+            AccountIds[Index] := TempEmailAccount."Account Id";
             AccountName[Index] := SMTPAccountMock.Name();
             AccountUserId[Index] := SMTPAccountMock.UserID();
 
             // [Then] Accounts are retrieved from the GetAccounts method
-            EmailAccount.DeleteAll();
-            SMTPConnector.GetAccounts(EmailAccount);
-            Assert.RecordCount(EmailAccount, Index);
+            TempEmailAccount.DeleteAll();
+            SMTPConnector.GetAccounts(TempEmailAccount);
+            Assert.RecordCount(TempEmailAccount, Index);
         end;
 
         EmailAccounts.OpenView();
@@ -54,7 +54,7 @@ codeunit 139760 "SMTP Connector Test"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestCurrentUserAccountsCanBeRegistered()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         SMTPConnector: Codeunit "SMTP Connector Impl.";
         AccountIds: array[3] of Guid;
         AccountName: array[3] of Text[250];
@@ -72,16 +72,16 @@ codeunit 139760 "SMTP Connector Test"
         for Index := 1 to 3 do begin
             SetCurrentUserAccount(Index);
 
-            Assert.IsTrue(SMTPConnector.RegisterAccount(EmailAccount), 'Failed to register account.');
-            AccountIds[Index] := EmailAccount."Account Id";
+            Assert.IsTrue(SMTPConnector.RegisterAccount(TempEmailAccount), 'Failed to register account.');
+            AccountIds[Index] := TempEmailAccount."Account Id";
             AccountName[Index] := SMTPAccountMock.Name();
 
             // [Then] Accounts are retrieved from the GetAccounts method
-            EmailAccount.DeleteAll();
-            SMTPConnector.GetAccounts(EmailAccount);
-            Assert.IsTrue(EmailAccount.Get(AccountIds[Index], Enum::"Email Connector"::SMTP), 'Email account does not exist.');
-            Assert.AreEqual(AccountName[Index], EmailAccount.Name, 'A different name was expected.');
-            Assert.AreEqual(GivenEmail, EmailAccount."Email Address", 'A different email address was expected.');
+            TempEmailAccount.DeleteAll();
+            SMTPConnector.GetAccounts(TempEmailAccount);
+            Assert.IsTrue(TempEmailAccount.Get(AccountIds[Index], Enum::"Email Connector"::SMTP), 'Email account does not exist.');
+            Assert.AreEqual(AccountName[Index], TempEmailAccount.Name, 'A different name was expected.');
+            Assert.AreEqual(GivenEmail, TempEmailAccount."Email Address", 'A different email address was expected.');
         end;
     end;
 
@@ -91,7 +91,7 @@ codeunit 139760 "SMTP Connector Test"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestCurrentUserAccountWithBlankContactEmail()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         SMTPConnector: Codeunit "SMTP Connector Impl.";
         AccountId: Guid;
@@ -107,8 +107,8 @@ codeunit 139760 "SMTP Connector Test"
         // [When] Account is registered with blank email
         SetCurrentUserAccount(0, Enum::"SMTP Authentication Types"::Anonymous);
 
-        Assert.IsTrue(SMTPConnector.RegisterAccount(EmailAccount), 'Failed to register account.');
-        AccountId := EmailAccount."Account Id";
+        Assert.IsTrue(SMTPConnector.RegisterAccount(TempEmailAccount), 'Failed to register account.');
+        AccountId := TempEmailAccount."Account Id";
         AccountName := SMTPAccountMock.Name();
 
         // [When] Email Message created and sent
@@ -124,7 +124,7 @@ codeunit 139760 "SMTP Connector Test"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestShowAccountInformation()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         SMTPConnector: Codeunit "SMTP Connector Impl.";
     begin
         // [Scenario] Account Information is displayed in the "SMTP Account" page.
@@ -132,10 +132,10 @@ codeunit 139760 "SMTP Connector Test"
         // [Given] An SMTP account
         Initialize();
         SetBasicAccount(1);
-        SMTPConnector.RegisterAccount(EmailAccount);
+        SMTPConnector.RegisterAccount(TempEmailAccount);
 
         // [When] The ShowAccountInformation method is invoked
-        SMTPConnector.ShowAccountInformation(EmailAccount."Account Id");
+        SMTPConnector.ShowAccountInformation(TempEmailAccount."Account Id");
 
         // [Then] The account page opens and displays the information
         // Verify in SMTPAccountModalPageHandler

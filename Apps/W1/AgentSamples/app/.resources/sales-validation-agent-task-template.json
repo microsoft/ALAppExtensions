@@ -1,0 +1,12 @@
+{
+    "values": [
+        {
+            "agentTemplateType": 1,
+            "name": "%%template_name%%",
+            "description": "%%template_description%%",
+            "taskTitle": "%%template_task_title%%",
+            "includeMessage": false,
+            "taskExternalId": ""
+        }
+    ]
+}

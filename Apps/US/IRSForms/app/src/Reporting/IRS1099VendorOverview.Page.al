@@ -81,7 +81,7 @@ page 10072 "IRS 1099 Vendor Overview"
 
     local procedure RefreshData()
     var
-        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRSFormsFacade: Codeunit "IRS Forms Facade";
         NoDataForSelectedPeriodMsg: Label 'No data found for the selected reporting period.';
     begin
@@ -89,8 +89,8 @@ page 10072 "IRS 1099 Vendor Overview"
         Rec.DeleteAll();
         TempVendFormBoxBuffer.Reset();
         TempVendFormBoxBuffer.DeleteAll();
-        IRS1099CalcParameters."Period No." := IRSReportingPeriodNo;
-        IRSFormsFacade.GetVendorFormBoxAmount(TempVendFormBoxBuffer, IRS1099CalcParameters);
+        TempIRS1099CalcParameters."Period No." := IRSReportingPeriodNo;
+        IRSFormsFacade.GetVendorFormBoxAmount(TempVendFormBoxBuffer, TempIRS1099CalcParameters);
         TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::Amount);
         if not TempVendFormBoxBuffer.FindSet() then begin
             Message(NoDataForSelectedPeriodMsg);
