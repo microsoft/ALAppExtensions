@@ -1,0 +1,4 @@
+﻿CpnyID,BankAcct,BankSub,AcceptGLUpdates,AcctNbr,Active,AddrID,CashAcctName,transitnbr
+"CRONUS USA, Inc.",1030      ,01100AA00001            ,-1,0000000000                    ,1,WWB01     ,Corporate Account             ,37914070 
+"CRONUS USA, Inc.",1041      ,01100AA00010            ,0,07041973                      ,1,GENBANK   ,General US Cash Account       ,23       
+"CRONUS USA, Inc.",1070      ,000000000000            ,-1,0000000001                    ,1,,Payroll Checking              ,

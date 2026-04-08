@@ -1,0 +1,53 @@
+﻿PONbr,LineRef,CnvFact,CostReceived,CpnyID,ExtCost,InvtID,LineID,OpenLine,PromDate,PurAcct,PurchaseType,PurchUnit,PurSub,QtyOrd,QtyRcvd,TranDesc,UnitCost
+000003    ,1    ,1,8662.5,CRONUS USA,8662.5,HON-673L-L                    ,1,0,1999-03-19,1210      ,GI,EA    ,000000000000            ,25,25,HON 600 Series Wide Lateral Three Drawer File Cabinet       ,346.5
+000004    ,1    ,1,0,CRONUS USA,900,UNV-14115                     ,1,1,1999-03-19,1210      ,GI,CARTON,000000000000            ,100,0,Hanging File Folder -- Letter Size w/ 5 tabs                ,9
+000005    ,00003,1,0,CRONUS USA,3000,HON-672L-P                    ,3,1,2001-01-29,1210      ,GI,EA    ,000000000000            ,10,0,HON 600 Series Wide Lateral Two Drawer File Cabinet         ,300
+000006    ,00001,1,0,CRONUS USA,9600,HON-672L-P                    ,1,1,2001-01-29,1210      ,GI,EA    ,000000000000            ,32,0,HON 600 Series Wide Lateral Two Drawer File Cabinet         ,300
+000006    ,00003,1,0,CRONUS USA,15000,HON-672L-P                    ,3,1,2001-02-13,1110      ,GP,EA    ,CO0000000000            ,50,0,HON 600 Series Wide Lateral Two Drawer File Cabinet         ,300
+000007    ,00002,1,0,CRONUS USA,2400,HON-672L-P                    ,2,1,2001-03-01,1210      ,GI,EA    ,000000000000            ,8,0,HON 600 Series Wide Lateral Two Drawer File Cabinet         ,300
+000008    ,00001,1,0,CRONUS USA,3000,HON-672L-P                    ,1,1,2001-01-29,1210      ,GI,EA    ,000000000000            ,10,0,HON 600 Series Wide Lateral Two Drawer File Cabinet         ,300
+000008    ,00003,1,0,CRONUS USA,4500,HON-672L-P                    ,3,1,2001-03-22,1210      ,GI,EA    ,000000000000            ,15,0,HON 600 Series Wide Lateral Two Drawer File Cabinet         ,300
+000009    ,00001,1,0,CRONUS USA,50,JMNONSTOCK                    ,1,1,2001-01-29,1210      ,SE,EA    ,000000000000            ,10,0,Test Non Stock Item                                         ,5
+000010    ,00001,1,300,CRONUS USA,300,HON-672L-L                    ,1,0,2015-12-01,1210      ,GI,EA    ,000000000000            ,1,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000010    ,00002,1,300,CRONUS USA,300,HON-672L-P                    ,2,0,2015-12-01,1210      ,GI,EA    ,000000000000            ,1,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000011    ,00001,1,0,CRONUS USA,1000,UNV-14116                     ,1,1,2016-09-27,1210      ,GI,CARTON,000000000000            ,1,0,Hanging File Folder -- Letter Size w/ 5 tabs                ,1000
+000012    ,00001,1,1500,CRONUS USA,3000,HON-672L-L                    ,1,1,2016-10-25,1210      ,GI,EA    ,000000000000            ,10,5,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000012    ,00002,1,1500,CRONUS USA,3000,HON-672L-P                    ,2,1,2016-10-25,1210      ,GI,EA    ,000000000000            ,10,5,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000012    ,00003,1,300,CRONUS USA,3000,HON-672L-Q                    ,3,1,2016-10-25,1210      ,GI,EA    ,000000000000            ,10,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000013    ,00001,1,300,CRONUS USA,3000,HON-672L-L                    ,1,1,2016-10-25,1210      ,GI,EA    ,000000000000            ,10,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000013    ,00002,1,300,CRONUS USA,3000,HON-672L-P                    ,2,1,2016-10-25,1210      ,GI,EA    ,000000000000            ,10,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000013    ,00003,1,300,CRONUS USA,3000,HON-672L-Q                    ,3,1,2016-10-25,1210      ,GI,EA    ,000000000000            ,10,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000014    ,00001,1,300,CRONUS USA,300,HON-672L-L                    ,1,0,2016-11-14,1210      ,GI,EA    ,000000000000            ,1,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000015    ,00001,1,300,CRONUS USA,300,HON-672L-L                    ,1,0,2016-11-14,1210      ,GI,EA    ,000000000000            ,1,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000018    ,00001,1,300,CRONUS USA,300,HON-672L-L                    ,1,0,2016-11-15,1210      ,GI,EA    ,000000000000            ,1,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000018    ,00002,1,0,CRONUS USA,0,,2,0,1900-01-01,,DL,,,0,0,Test Description Line                                       ,0
+000018    ,00003,0,25,CRONUS USA,25,,3,0,1900-01-01,7270      ,FR,,000000000000            ,0,0,Freight Charges                                             ,0
+000018    ,00004,0,10,CRONUS USA,10,,4,0,1900-01-01,4030      ,MI,,000000000000            ,0,0,Misc Charges                                                ,0
+000018    ,00005,1,5,CRONUS USA,5,SETUP CHARGES                 ,5,0,2016-11-15,4030      ,GN,EA    ,000000000000            ,1,1,Test Non-Inventory Goods                                    ,5
+000019    ,00001,1,300,CRONUS USA,300,HON-672L-P                    ,1,0,2016-11-15,1210      ,GI,EA    ,000000000000            ,1,1,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000020    ,00001,1,3000,CRONUS USA,3000,HON-672L-L                    ,1,0,2016-12-22,1210      ,GI,EA    ,000000000000            ,10,10,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000021    ,00001,1,700,CRONUS USA,700,XFIFOLOT01                    ,1,0,2018-05-17,1210      ,GI,EA    ,000000000000            ,10,10,"FIFO, Lot-Tracked Test Item 01                              ",70
+000022    ,00001,1,20,CRONUS USA,20,0RTIREVALVE LOTR              ,1,0,2018-12-05,1230      ,GI,EA    ,000000000000            ,100,100,Tire Valve - Lot Assigned on Receipt                        ,0.200000000000000011
+000023    ,00001,1,3000,CRONUS USA,3000,0RBOLT                        ,1,0,2018-04-06,1230      ,GI,EA    ,000000000000            ,10000,10000,Carriage Bolts                                              ,0.299999999999999989
+000024    ,00001,1,0,CRONUS USA,50,NON-INVENTORY GOOD            ,1,1,2022-06-03,4030      ,GN,EA    ,000000000000            ,5,0,Clorox Wipes                                                ,10
+000024    ,00002,0,0,CRONUS USA,5,,2,1,1900-01-01,7270      ,FR,,000000000000            ,0,0,Freight Charges                                             ,0
+000024    ,00003,0,0,CRONUS USA,2.5,,3,1,1900-01-01,4030      ,MI,,000000000000            ,0,0,Misc Charges                                                ,0
+000024    ,00004,1,0,CRONUS USA,30,ABC                           ,4,1,2022-06-03,4030      ,GN,BOXES ,000000000000            ,3,0,Purell                                                      ,10
+000024    ,00005,1,0,CRONUS USA,0,,5,1,1900-01-01,,DL,,,0,0,My Description Line                                         ,0
+000024    ,00006,0,0,CRONUS USA,7.5,,6,1,1900-01-01,7271      ,FR,,EN100AA00000            ,0,0,Freight Charges                                             ,0
+000024    ,00007,1,0,CRONUS USA,300,HON-672L-L                    ,7,1,2022-06-06,1210      ,GI,EA    ,000000000000            ,1,0,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000024    ,00008,1,0,CRONUS USA,0,,8,1,1900-01-01,,DL,,,0,0,My Description Line 2                                       ,0
+000025    ,00001,1,0,CRONUS USA,1500,HON-672L-L                    ,1,1,2022-07-07,4150      ,GP,EA    ,HH0000000000            ,5,0,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000025    ,00002,1,0,CRONUS USA,0,,2,1,1900-01-01,,DL,,,0,0,Description line test                                       ,0
+000025    ,00003,0,0,CRONUS USA,30,,3,1,1900-01-01,7271      ,FR,,HH0000000000            ,0,0,Freight Charges                                             ,0
+000025    ,00004,1,0,CRONUS USA,300,HON-672L-P                    ,4,1,2022-07-08,1210      ,GI,EA    ,000000000000            ,1,0,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000025    ,00006,1,0,CRONUS USA,300,HON-672L-L                    ,6,1,2022-07-08,1210      ,GS,EA    ,000000000000            ,1,0,600 Series Wide Lateral Two Drawer File Cabinet             ,300
+000025    ,00008,0,0,CRONUS USA,25,,8,1,1900-01-01,4030      ,MI,,HH0000000000            ,0,0,Misc Charges                                                ,0
+000025    ,00009,1,0,CRONUS USA,60,AABBCC                        ,9,1,2022-07-08,4030      ,GN,AA    ,HH0000000000            ,3,0,Non-Inventory Good                                          ,20
+000025    ,00010,1,0,CRONUS USA,7.5,0RBOLT                        ,10,1,2022-07-08,1230      ,GI,EA    ,000000000000            ,25,0,Carriage Bolts                                              ,0.299999999999999989
+000025    ,00011,1,0,CRONUS USA,3,0RBOLT                        ,11,1,2022-07-08,1230      ,PI,EA    ,000000000000            ,10,0,Carriage Bolts                                              ,0.299999999999999989
+000025    ,00012,1,0,CRONUS USA,15,0RBOLT                        ,12,1,2022-07-08,1230      ,PS,EA    ,000000000000            ,50,0,Carriage Bolts                                              ,0.299999999999999989
+000025    ,00013,1,0,CRONUS USA,10,,13,1,2022-07-08,6020      ,SE,,000000000000            ,1,0,Answering Services                                          ,10
+000025    ,00014,1,0,CRONUS USA,15,,14,1,2022-07-08,6010      ,SP,,HH0000000000            ,1,0,Advertsing Services                                         ,15
+000026    ,00001,5,0,CRONUS USA,45,UNV-14113                     ,1,1,2022-07-13,1210      ,GI,BOX   ,000000000000            ,1,0,Hanging File Folder -- Letter Size w/ 3 tabs                ,45
+000027    ,00001,15,135,CRONUS USA,135,UNV-14115                     ,1,0,2022-07-21,1210      ,GI,BIGBOX,000000000000            ,1,1,Hanging File Folder -- Letter Size w/ 5 tabs                ,135

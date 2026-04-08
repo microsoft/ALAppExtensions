@@ -6,7 +6,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Purchases.Vendor;
 
-xmlport 147616 "SL BC Vendor Data"
+xmlport 147616 "SL BC Vendor Data Expected"
 {
     Caption = 'Vendor data for import/export';
     Direction = Both;
@@ -18,7 +18,7 @@ xmlport 147616 "SL BC Vendor Data"
     {
         textelement(root)
         {
-            tableelement("Vendor"; Vendor)
+            tableelement("VendorTemp"; Vendor)
             {
                 AutoSave = false;
                 XmlName = 'Vendor';

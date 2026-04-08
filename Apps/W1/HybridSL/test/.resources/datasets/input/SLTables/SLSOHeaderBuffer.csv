@@ -1,0 +1,4 @@
+﻿CpnyID,OrdNbr,CustID,OrdDate,ShipAddr1,ShipAddr2,ShipAttn,ShipCity,ShipCmplt,ShipCountry,ShipName,ShipState,ShipViaID,ShipZip,SOTypeID,Status
+CRONUS USA,O1005215       ,C315           ,2026-02-19,123 Maple Street                                            ,,,Dublin                        ,1,US ,Sarah Mitchell                                              ,OH ,UPS            ,43016     ,SO  ,O
+CRONUS USA,O1005216       ,C421           ,2026-03-02,7237 E Gage Ave                                             ,,,Commerce                      ,1,US ,Britta Simon                                                ,CA ,FEDEX          ,90040-3812,AO  ,O
+CRONUS USA,O1005217       ,C389           ,2026-03-02,Main Street                                                 ,,Tom                           ,Pittsburgh                    ,3,US ,Tom Youtsey                                                 ,PA ,FIXEDFRT       ,33222     ,S01 ,O

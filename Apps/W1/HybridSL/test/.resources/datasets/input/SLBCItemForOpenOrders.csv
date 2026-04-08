@@ -1,0 +1,11 @@
+﻿No.,Description,Search Description,Base Unit of Measure,Type,Inventory Posting Group,Unit Price,Costing Method,Unit Cost,Standard Cost,Net Weight,Blocked,Block Reason,Gen. Prod. Posting Group,Sales Unit of Measure,Purch. Unit of Measure,Item Tracking Code,Expiration Calculation
+0RBOLT,Carriage Bolts                                    ,CARRIAGE BOLTS,EA,Inventory,MMGWO,0,LIFO,0.3,0.299999999999999989,0,false,,SL,EA,EA,,
+0RHANDLBAR,Bicycle Handlebar                                 ,BICYCLE HANDLEBAR,EA,Inventory,MMGWO,0,LIFO,7.5,7.5,0,false,,SL,EA,EA,,
+0RSEAT-PERF-ASSY,Performance Seat Assembly                         ,PERFORMANCE SEAT ASSEMBLY,EA,Inventory,MMGWO,15,Average,0,0,0,false,,SL,EA,EA,,
+HON-672L-L,600 Series Wide Lateral Two Drawer File Cabinet   ,600 SERIES WIDE LATERAL TWO DRAWER FILE CABINET,EA,Inventory,FILCAB,380,Standard,300,300,0,false,,SL,EA,EA,,
+HON-672L-P,600 Series Wide Lateral Two Drawer File Cabinet   ,600 SERIES WIDE LATERAL TWO DRAWER FILE CABINET,EA,Inventory,FILCAB,380,Standard,300,300,0,false,,SL,EA,EA,,
+HON-672L-Q,600 Series Wide Lateral Two Drawer File Cabinet   ,600 SERIES WIDE LATERAL TWO DRAWER FILE CABINET,EA,Inventory,FILCAB,380,Standard,300,300,0,false,,SL,EA,EA,,
+OID-47573,Lateral Two Drawer File Cabinet                   ,LATERAL TWO DRAWER FILE CABINET,EA,Inventory,FILCAB,442,Average,0,0,0,false,,SL,EA,EA,,
+UNV-14113,Hanging File Folder -- Letter Size w/ 3 tabs      ,HANGING FILE FOLDER -- LETTER SIZE W/ 3 TABS,CARTON,Inventory,FILFLD,14.6999999999999993,Standard,9,9,0,false,,SL,CARTON,CARTON,,
+UNV-14115,Hanging File Folder -- Letter Size w/ 5 tabs      ,HANGING FILE FOLDER -- LETTER SIZE W/ 5 TABS,CARTON,Inventory,FILFLD,14.1999999999999993,Standard,9,9,0,false,,SL,CARTON,CARTON,,
+UNV-14116,Hanging File Folder -- Letter Size w/ 5 tabs      ,HANGING FILE FOLDER -- LETTER SIZE W/ 5 TABS,CARTON,Inventory,FILFLD,15.9499999999999993,Standard,9,9,0,false,,SL,CARTON,CARTON,,

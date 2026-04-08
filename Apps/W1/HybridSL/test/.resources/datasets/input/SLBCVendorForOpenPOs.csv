@@ -1,0 +1,20 @@
+﻿No.,Name,Search Name,Address,Address 2,City,Contact,Phone No.,Vendor Posting Group,Shipment Method Code,Country/Region Code,Blocked,Tax Registration No.,Gen. Bus. Posting Group,ZIP Code,State,Email,Tax Area Code,Tax Liable
+V00152,Adventure Works,ADVENTURE WORKS,70 Apple Street,,Cleveland,John Rodman,5555550100,TRADE,,US,,,SL,53636,OH ,,,FALSE
+V00205,Engineers,ENGINEERS,,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00206,Graphic Design Institute,GRAPHIC DESIGN INSTITUTE,,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00207,"Litware, Inc.","LITWARE, INC.",,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00208,"Proseware, Inc.","PROSEWARE, INC.",,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00209,Northwind Traders,NORTHWIND TRADERS,,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00213,"Fabrikam, Inc.","FABRIKAM, INC.",,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00214,Carpenters,CARPENTERS,,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00215,Roofers,ROOFERS,,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00216,Building Contractors,BUILDING CONTRACTORS,,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+V00217,Coho Vineyard,COHO VINEYARD,,,Findlay,,,TRADE,,US,,,SL,01234,OH ,,,FALSE
+VT0100,International,INTERNATIONAL,400 West Madison St.,Suite 400,Chicago,,5555550190,TRADE,,US,,25-5254254,SL,222222,IL ,someone@example.com,COOK-G,TRUE
+VT0110,America,AMERICA,100 N. State St.,Suite 1200,Madison,,5555550196,TRADE,,US,,25-3636254,SL,45454,WI ,,,FALSE
+VT0120,Circle,CIRCLE,258 N. Johnson Ave.,,Sioux City,,5555550105,TRADE,,US,,,SL,09000,IA ,,,FALSE
+VT0121,Square,SQUARE,10 S. Ricker Ave.,,Sioux City,,5555550107,TRADE,,US,,,SL,08777,IA ,,,FALSE
+VT0122,Alphabet,ALPHABET,125 N. Main Ave.,,Sioux City,,5555550109,TRADE,,US,,,SL,10100,IA ,,,FALSE
+VT0123,Consolidated Messenger,CONSOLIDATED MESSENGER,139 N. Akron Ave.,,Sioux City,,5555550111,TRADE,,US,,,SL,22111,IA ,,,FALSE
+VT0124,Fourth Coffee,FOURTH COFFEE,420 S. State St.,,Sioux City,,5555550112,TRADE,,US,,,SL,01000,IA ,,,FALSE
+VT0125,Trey Research,TREY RESEARCH,520 N. Laurence Ave.,,Sioux City,,5555550113,TRADE,,US,,,SL,01000,IA ,,,FALSE
