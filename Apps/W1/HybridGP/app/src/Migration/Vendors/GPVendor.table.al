@@ -138,6 +138,10 @@ table 4096 "GP Vendor"
         {
             Clustered = true;
         }
+        key(Key2; PYMTRMID)
+        {
+
+        }
     }
 
     fieldgroups

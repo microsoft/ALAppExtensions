@@ -76,6 +76,12 @@ table 4097 "GP Vendor Transactions"
         {
             Clustered = true;
         }
+        key(Key2; PYMTRMID)
+        {
+        }
+        key(Key3; VENDORID, TransType)
+        {
+        }
     }
 
     fieldgroups

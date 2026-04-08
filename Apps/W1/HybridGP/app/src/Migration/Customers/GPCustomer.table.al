@@ -149,6 +149,10 @@ table 4093 "GP Customer"
         {
             Clustered = true;
         }
+        key(Key2; PYMTRMID)
+        {
+
+        }
     }
 
     fieldgroups

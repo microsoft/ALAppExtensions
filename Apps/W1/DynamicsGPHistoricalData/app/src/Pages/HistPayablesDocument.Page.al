@@ -214,10 +214,13 @@ page 41008 "Hist. Payables Document"
 
                 trigger OnAction()
                 var
+                    HistGenJournalLine: Record "Hist. Gen. Journal Line";
                     HistGenJournalLines: Page "Hist. Gen. Journal Lines";
                 begin
-                    HistGenJournalLines.SetFilterOriginatingTrxSourceNo(Rec."Audit Code");
-                    HistGenJournalLines.Run();
+                    HistGenJournalLine.SetRange("Orig. Trx. Source No.", Rec."Audit Code");
+                    HistGenJournalLine.SetRange("Orig. Document No.", Rec."Document No.");
+                    HistGenJournalLines.SetTableView(HistGenJournalLine);
+                    HistGenJournalLines.RunModal();
                 end;
             }
         }

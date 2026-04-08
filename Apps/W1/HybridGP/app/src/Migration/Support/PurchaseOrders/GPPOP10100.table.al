@@ -138,5 +138,9 @@ table 40137 "GP POP10100"
         {
             Clustered = true;
         }
+        key(Key2; PYMTRMID)
+        {
+
+        }
     }
 }
