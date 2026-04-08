@@ -20,7 +20,7 @@ codeunit 139750 "Current User Connector Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSendMailPayloadMessage()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         EmailMessage: Codeunit "Email Message";
         OutlookAPIClientMock: Codeunit "Outlook API Client Mock";
         OutlookMockInitSubscribers: Codeunit "Outlook Mock Init. Subscribers";
@@ -35,12 +35,12 @@ codeunit 139750 "Current User Connector Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         // [GIVEN] A text email message is created and an account is created
-        CurrentUserConnector.RegisterAccount(EmailAccount);
+        CurrentUserConnector.RegisterAccount(TempEmailAccount);
         LibraryOutlookRestAPI.CreateEmailMessage(true, EmailMessage);
         EmailId := EmailMessage.GetId();
 
         // [WHEN] Email message is sent and 
-        CurrentUserConnector.Send(EmailMessage, EmailAccount."Account Id");
+        CurrentUserConnector.Send(EmailMessage, TempEmailAccount."Account Id");
 
         // [THEN] The json output has a specific format
         EmailJson := OutlookAPIClientMock.GetMessage();
@@ -50,7 +50,7 @@ codeunit 139750 "Current User Connector Tests"
         LibraryOutlookRestAPI.CreateEmailMessage(false, EmailMessage);
 
         // [WHEN] Email message is sent
-        CurrentUserConnector.Send(EmailMessage, EmailAccount."Account Id");
+        CurrentUserConnector.Send(EmailMessage, TempEmailAccount."Account Id");
 
         // [THEN] The json output has a specific format
         EmailJson := OutlookAPIClientMock.GetMessage();
@@ -62,7 +62,7 @@ codeunit 139750 "Current User Connector Tests"
     [HandlerFunctions('CurrentUserCreateModalPageHandler')]
     procedure TestOnlyASingleAccountCanBeRegistered()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         CurrentUserConnector: Codeunit "Current User Connector";
         OutlookMockInitSubscribers: Codeunit "Outlook Mock Init. Subscribers";
         EmailAccounts: TestPage "Email Accounts";
@@ -74,15 +74,15 @@ codeunit 139750 "Current User Connector Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
 
         // [WHEN] The first is registered
-        CurrentUserConnector.RegisterAccount(EmailAccount);
+        CurrentUserConnector.RegisterAccount(TempEmailAccount);
 
         // [THEN] The Account is shown on the "Email Accounts" page
         EmailAccounts.OpenView();
-        EmailAccounts.GoToKey(EmailAccount."Account Id", Enum::"Email Connector"::"Current User");
+        EmailAccounts.GoToKey(TempEmailAccount."Account Id", Enum::"Email Connector"::"Current User");
 
         // [WHEN] A second Account is Registered
         // [THEN] The Next Action is not visible
-        asserterror CurrentUserConnector.RegisterAccount(EmailAccount);
+        asserterror CurrentUserConnector.RegisterAccount(TempEmailAccount);
         Assert.ExpectedError('Next button was not visible.');
     end;
 
@@ -117,7 +117,7 @@ codeunit 139750 "Current User Connector Tests"
     [HandlerFunctions('CurrentUserCreateModalPageHandler,TestEmailOptionsHandler')]
     procedure TestSendTestEmailCorrectAddressOnPrem()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         EmailOutlookAPISetup: Record "Email - Outlook API Setup";
         OutlookMockInitSubscribers: Codeunit "Outlook Mock Init. Subscribers";
         CurrentUserConnector: Codeunit "Current User Connector";
@@ -137,14 +137,14 @@ codeunit 139750 "Current User Connector Tests"
         EmailOutlookAPISetup.Insert();
 
         // [GIVEN] The current user account is registered
-        CurrentUserConnector.RegisterAccount(EmailAccount);
+        CurrentUserConnector.RegisterAccount(TempEmailAccount);
 
-        Assert.AreEqual('testemail@test.com', EmailAccount."Email Address", 'Wrong email address on the created account');
-        Assert.AreEqual(CurrentUserTok, EmailAccount.Name, 'Wrong name on the created account');
+        Assert.AreEqual('testemail@test.com', TempEmailAccount."Email Address", 'Wrong email address on the created account');
+        Assert.AreEqual(CurrentUserTok, TempEmailAccount.Name, 'Wrong name on the created account');
 
         // [GIVEN] Send test email is invoked on the current user account
         EmailAccounts.OpenView();
-        EmailAccounts.GoToKey(EmailAccount."Account Id", Enum::"Email Connector"::"Current User");
+        EmailAccounts.GoToKey(TempEmailAccount."Account Id", Enum::"Email Connector"::"Current User");
         EmailAccounts.SendTestMail.Invoke();
 
         // [THEN] The first option in the list is the actual email address of the current user

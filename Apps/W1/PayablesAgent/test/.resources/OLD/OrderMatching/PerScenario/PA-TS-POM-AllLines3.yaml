@@ -1,0 +1,212 @@
+# # Scenario AllLines3
+
+# **Description**: All invoice lines (up to 3) match a single open purchase order (up to 3 lines) for the same vendor.
+# **Purpose**: Simple scenario, is able to match reliably even if descriptions differ slightly.
+
+#  ## GIVEN
+#  - An invoice with maximum 3 lines 
+#  - A maximum of 1 open purchase order exists for the vendor.
+#  - Each order has maximum 3 lines.
+#  - Every line on the invoice matches a line on the purchase order.
+#  ## WHEN
+#  The agent processes the invoice.
+#  ## THEN
+#  All the invoice's lines match the open purchase order lines.
+
+tests:
+- name: AllLines3_001
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Office Desk Standard
+          quantity: 5
+          unitPrice: 250.00
+        - description: Ergonomic Office Chair
+          quantity: 5
+          unitPrice: 180.00
+        - description: LED Monitor 24 inch
+          quantity: 10
+          unitPrice: 220.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Standard Office Desk
+      quantity: 5
+      unit_price: 250.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Ergonomic Office Chair
+      quantity: 5
+      unit_price: 180.00
+      discount: 0.00
+      tax_rate: 10
+    - description: 24" LED Monitor
+      quantity: 10
+      unit_price: 220.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Office Desk Standard
+        invoiceLineIndex: 1 # Standard Office Desk
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # Ergonomic Office Chair
+        invoiceLineIndex: 2 # Ergonomic Office Chair
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 3 # LED Monitor 24 inch
+        invoiceLineIndex: 3 # 24" LED Monitor
+
+- name: AllLines3_002
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Laptop Lenovo ThinkPad
+          quantity: 3
+          unitPrice: 1200.00
+        - description: Wireless Mouse Logitech
+          quantity: 15
+          unitPrice: 25.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Logitech Wireless Mouse
+      quantity: 15
+      unit_price: 25.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Laptop Lenovo ThinkPad
+      quantity: 3
+      unit_price: 1200.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Laptop Lenovo ThinkPad
+        invoiceLineIndex: 2 # Laptop Lenovo ThinkPad
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # Wireless Mouse Logitech
+        invoiceLineIndex: 1 # Logitech Wireless Mouse
+
+- name: AllLines3_003
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Printer Cartridge Black HP
+          quantity: 8
+          unitPrice: 45.50
+        - description: A4 Paper Ream 500 sheets
+          quantity: 20
+          unitPrice: 5.75
+        - description: Stapler Heavy Duty
+          quantity: 12
+          unitPrice: 18.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: A4 Paper Ream 500 sheets
+      quantity: 20
+      unit_price: 5.75
+      discount: 0.00
+      tax_rate: 10
+    - description: Stapler Heavy Duty
+      quantity: 12
+      unit_price: 18.00
+      discount: 0.00
+      tax_rate: 10
+    - description: HP Black Printer Cartridge
+      quantity: 8
+      unit_price: 45.50
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Printer Cartridge Black HP
+        invoiceLineIndex: 3 # HP Black Printer Cartridge
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # A4 Paper Ream 500 sheets
+        invoiceLineIndex: 1 # A4 Paper Ream 500 sheets
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 3 # Stapler Heavy Duty
+        invoiceLineIndex: 2 # Stapler Heavy Duty
+
+- name: AllLines3_004
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Network Cable Cat6 100m
+          quantity: 2
+          unitPrice: 85.00
+        - description: USB Flash Drive 64GB
+          quantity: 25
+          unitPrice: 12.50
+        - description: External Hard Drive 2TB
+          quantity: 6
+          unitPrice: 95.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: External Hard Drive 2TB
+      quantity: 6
+      unit_price: 95.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Network Cable Cat6 100m
+      quantity: 2
+      unit_price: 85.00
+      discount: 0.00
+      tax_rate: 10
+    - description: 64GB USB Flash Drive
+      quantity: 25
+      unit_price: 12.50
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Network Cable Cat6 100m
+        invoiceLineIndex: 2 # Network Cable Cat6 100m
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # USB Flash Drive 64GB
+        invoiceLineIndex: 3 # 64GB USB Flash Drive
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 3 # External Hard Drive 2TB
+        invoiceLineIndex: 1 # External Hard Drive 2TB
+
+- name: AllLines3_005
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Conference Table Large
+          quantity: 1
+          unitPrice: 850.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Conference Table Large
+      quantity: 1
+      unit_price: 850.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Conference Table Large
+        invoiceLineIndex: 1 # Conference Table Large

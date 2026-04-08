@@ -534,11 +534,10 @@ report 11716 "Open Vend. Entries to Date CZL"
             trigger OnPreDataItem()
             var
                 lin: Integer;
-                LimitDateTok: Label '<CD>+<%1>', Locked = true;
             begin
                 if not SkipBalance then
                     for lin := 1 to 5 do
-                        Days[lin] := (CalcDate(StrSubstNo(LimitDateTok, Format(LimitDate[lin])), Today()) - Today());
+                        Days[lin] := (CalcDate(LimitDate[lin], Today()) - Today());
             end;
         }
     }

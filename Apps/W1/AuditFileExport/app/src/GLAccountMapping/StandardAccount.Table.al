@@ -33,6 +33,11 @@ table 5263 "Standard Account"
             DataClassification = CustomerContent;
             Caption = 'Description';
         }
+        field(5; "Extended No."; Text[500])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Extended No.';
+        }
     }
 
     keys

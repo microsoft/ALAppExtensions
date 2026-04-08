@@ -1,0 +1,235 @@
+tests:
+  # --- Exact match ---
+  - name: SEARCH_VENDOR_01
+    description: Exact search using full vendor name and address.
+    test_setup: PA-Setup-VendorSearch.yaml
+    vendor:
+      Name: Atlantics Supply LLC
+      Address: 1201 Ocean Drive
+      Country/Region Code: US
+      City: Miami
+      Post Code: 33139
+    inboundInvoice:
+      Posting Date: 2025-12-04
+      Due Date: 2026-01-03
+      Document Date: 2025-12-04
+      No.: INV-001
+      Payment Terms Code: 30 Days
+      Shipment Method Code: DELIVERY
+    inboundInvoiceLines:
+    - Type: 1
+      No.: 1234
+      Description: Consulting
+      Quantity: 1
+      Unit Price: 100
+    expected:
+      data:
+        purchaseHeader:
+          Vendor Invoice No.: INV-001
+          Buy-from Vendor Name: Atlantics Supply LLC
+          Buy-from Address: 1201 Ocean Drive
+          Buy-from City: Miami
+          Buy-from Post Code: 33139
+          Buy-from Country/Region Code: US
+        purchaseLines:
+        - Line No.: 10000
+          Type: 1
+          No.: 1234
+          Description: Consulting
+          Quantity: 1
+          Unit Cost: 100
+    # --- Mild typo in vendor name ---
+  - name: SEARCH_VENDOR_02
+    description: Vendor name has a small OCR typo (missing letter).
+    test_setup: PA-Setup-VendorSearch.yaml
+    vendor:
+      Name: Atlanlc Supplies Inc # OCR dropped the "i" in Atlantic
+      Address: 1200 Ocean Drive
+      Country/Region Code: US
+      City: Miami
+      Post Code: 33139
+    inboundInvoice:
+      Posting Date: 2025-12-04
+      Due Date: 2026-01-03
+      Document Date: 2025-12-04
+      No.: INV-001
+      Payment Terms Code: 30 Days
+      Shipment Method Code: DELIVERY
+    inboundInvoiceLines:
+    - Type: 1
+      No.: 1234
+      Description: Consulting
+      Quantity: 1
+      Unit Price: 100
+    expected:
+      data:
+        purchaseHeader:
+          Vendor Invoice No.: INV-001
+          Buy-from Vendor Name: Atlantic Supplies Inc
+          Buy-from Address: 1200 Ocean Drive
+          Buy-from City: Miami
+          Buy-from Post Code: 33139
+          Buy-from Country/Region Code: US
+        purchaseLines:
+        - Line No.: 10000
+          Type: 1
+          No.: 1234
+          Description: Consulting
+          Quantity: 1
+          Unit Cost: 100
+    # --- Mild typo in street name ---
+  - name: SEARCH_VENDOR_03
+    description: Vendor name has a small OCR typo (missing letter).
+    test_setup: PA-Setup-VendorSearch.yaml
+    vendor:
+      Name: tish Clothing
+      Address: 77 Fashon St # OCR misspelled Fashion and abbreviated Street
+      Country/Region Code: GB
+      City: Canterbury
+      Post Code: CT2 2AB
+    inboundInvoice:
+      Posting Date: 2025-12-04
+      Due Date: 2026-01-03
+      Document Date: 2025-12-04
+      No.: INV-001
+      Payment Terms Code: 30 Days
+      Shipment Method Code: DELIVERY
+    inboundInvoiceLines:
+    - Type: 1
+      No.: 1234
+      Description: Consulting
+      Quantity: 1
+      Unit Price: 100
+    expected:
+      data:
+        purchaseHeader:
+          Vendor Invoice No.: INV-001
+          Buy-from Vendor Name: Kentish Clothing
+          Buy-from Address: 77 Fashion Street
+          Buy-from City: Canterbury
+          Buy-from Post Code: CT2 2AB
+          Buy-from Country/Region Code: GB
+        purchaseLines:
+        - Line No.: 10000
+          Type: 1
+          No.: 1234
+          Description: Consulting
+          Quantity: 1
+          Unit Cost: 100
+    # --- City name typo ---
+  - name: SEARCH_VENDOR_04
+    description: City name slightly misspelled by OCR.
+    test_setup: PA-Setup-VendorSearch.yaml
+    vendor:
+      Name: Horizon Supply LLC
+      Address: 88 Bay Street # OCR added extra "s" to San Francisco
+      Country/Region Code: US
+      City: San Fransisco
+      Post Code: 94133
+    inboundInvoice:
+      Posting Date: 2025-12-04
+      Due Date: 2026-01-03
+      Document Date: 2025-12-04
+      No.: INV-001
+      Payment Terms Code: 30 Days
+      Shipment Method Code: DELIVERY
+    inboundInvoiceLines:
+    - Type: 1
+      No.: 1234
+      Description: Consulting
+      Quantity: 1
+      Unit Price: 100
+    expected:
+      data:
+        purchaseHeader:
+          Vendor Invoice No.: INV-001
+          Buy-from Vendor Name: Horizon Supply LLC
+          Buy-from Address: 88 Bay Street
+          Buy-from City: San Francisco
+          Buy-from Post Code: 94133
+          Buy-from Country/Region Code: US
+        purchaseLines:
+        - Line No.: 10000
+          Type: 1
+          No.: 1234
+          Description: Consulting
+          Quantity: 1
+          Unit Cost: 100
+  # --- City name typo ---
+  - name: SEARCH_VENDOR_04_HARD
+    description: City name slightly misspelled by OCR.
+    test_setup: PA-Setup-VendorSearch.yaml
+    vendor:
+      Name: LLC
+      Address: 88 Bay Street # OCR added extra "s" to San Francisco
+      Country/Region Code: US
+      City: San Francisco
+      Post Code: 94133
+    inboundInvoice:
+      Posting Date: 2025-12-04
+      Due Date: 2026-01-03
+      Document Date: 2025-12-04
+      No.: INV-001
+      Payment Terms Code: 30 Days
+      Shipment Method Code: DELIVERY
+    inboundInvoiceLines:
+    - Type: 1
+      No.: 1234
+      Description: Consulting
+      Quantity: 1
+      Unit Price: 100
+    expected:
+      data:
+        purchaseHeader:
+          Vendor Invoice No.: INV-001
+          Buy-from Vendor Name: Horizon Supply LLC
+          Buy-from Address: 88 Bay Street
+          Buy-from City: San Francisco
+          Buy-from Post Code: 94133
+          Buy-from Country/Region Code: US
+        purchaseLines:
+        - Line No.: 10000
+          Type: 1
+          No.: 1234
+          Description: Consulting
+          Quantity: 1
+          Unit Cost: 100
+  # --- Postal code off by one digit ---
+  - name: SEARCH_VENDOR_05
+    description: Postal code slightly incorrect due to OCR error.
+    test_setup: PA-Setup-VendorSearch.yaml
+    vendor:
+      Name: Northern Supply LLC
+      Address: 4500 Maple Avenue # Actual should be 75219
+      Country/Region Code: US
+      City: Dallas
+      Post Code: 75229
+    inboundInvoice:
+      Posting Date: 2025-12-04
+      Due Date: 2026-01-03
+      Document Date: 2025-12-04
+      No.: INV-001
+      Payment Terms Code: 30 Days
+      Shipment Method Code: DELIVERY
+    inboundInvoiceLines:
+    - Type: 1
+      No.: 1234
+      Description: Consulting
+      Quantity: 1
+      Unit Price: 100
+    expected:
+      data:
+        purchaseHeader:
+          Vendor Invoice No.: INV-001
+          Buy-from Vendor Name: Northern Supply LLC
+          Buy-from Address: 4500 Maple Avenue
+          Buy-from City: Dallas
+          Buy-from Post Code: 75219
+          Buy-from Country/Region Code: US
+        purchaseLines:
+        - Line No.: 10000
+          Type: 1
+          No.: 1234
+          Description: Consulting
+          Quantity: 1
+          Unit Cost: 100

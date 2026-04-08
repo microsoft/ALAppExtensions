@@ -1,0 +1,704 @@
+tests:
+- name: AllLines10_001
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 685
+      description: Stående skrivebord elektrisk justerbar
+      quantity: 6
+    - unitPrice: 125
+      description: Monitorarm dobbeltmontering
+      quantity: 12
+    - unitPrice: 48
+      description: Bærbar stativ i aluminium
+      quantity: 15
+    - unitPrice: 18.5
+      description: Kabel Organizer Skrivebordssæt
+      quantity: 20
+    - unitPrice: 38
+      description: Fodstøtte Ergonomisk Justerbar
+      quantity: 10
+    - unitPrice: 42
+      description: Skrivebordsmåtte Stort Læder
+      quantity: 8
+    - unitPrice: 24.5
+      description: Dokumentholder Justerbar
+      quantity: 12
+    - unitPrice: 85
+      description: Webkamera HD 1080p Logitech
+      quantity: 10
+    - unitPrice: 95
+      description: Headset Støjreducerende USB
+      quantity: 15
+    - unitPrice: 28.5
+      description: Desk Organizer Bambus
+      quantity: 18
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Stående skrivebord elektrisk justerbar
+      unit_price: 685
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Dobbeltmonteret skærmarm
+      unit_price: 125
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Bærbar stativ i aluminium
+      unit_price: 48
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Kabel arrangør skrivebordssæt
+      unit_price: 18.5
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Fodstøtte Ergonomisk Justerbar
+      unit_price: 38
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Skrivebordsmåtte Stort Læder
+      unit_price: 42
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Dokumentholder Justerbar
+      unit_price: 24.5
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Logitech HD 1080p webcam
+      unit_price: 85
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Headset Støjreducerende USB
+      unit_price: 95
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Desk Organizer Bambus
+      unit_price: 28.5
+      quantity: 18
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 8
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 9
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 10
+- name: AllLines10_005
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 2850
+      description: Kaffemaskine kommerciel espresso
+      quantity: 2
+    - unitPrice: 385
+      description: Vandkøler Gulvstående
+      quantity: 4
+    - unitPrice: 425
+      description: Mikrobølgeovn Kommerciel 1200W
+      quantity: 3
+    - unitPrice: 285
+      description: Køleskab Mini Compact 120L
+      quantity: 5
+    - unitPrice: 24.5
+      description: Kaffebønner Premium Blend 1 kg
+      quantity: 20
+    - unitPrice: 8.5
+      description: Engangskopper 12 oz Pakke 100
+      quantity: 30
+    - unitPrice: 35
+      description: Udskiftningssæt for vandfilter
+      quantity: 12
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Udskiftningssæt for vandfilter
+      unit_price: 35
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Kommerciel espresso kaffemaskine
+      unit_price: 2850
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Engangskopper 12 oz Pakke 100
+      unit_price: 8.5
+      quantity: 30
+    - discount: 0
+      tax_rate: 10
+      description: 1200W kommerciel mikroovn
+      unit_price: 425
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Kaffebønner Premium Blend 1 kg
+      unit_price: 24.5
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Køleskab Mini Compact 120L
+      unit_price: 285
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Vandkøler Gulvstående
+      unit_price: 385
+      quantity: 4
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 7
+- name: AllLines3_004
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 85
+      description: Netværkskabel Cat6 100m
+      quantity: 2
+    - unitPrice: 12.5
+      description: USB-flashdrev 64GB
+      quantity: 25
+    - unitPrice: 95
+      description: Ekstern harddisk 2TB
+      quantity: 6
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Ekstern harddisk 2TB
+      unit_price: 95
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Netværkskabel Cat6 100m
+      unit_price: 85
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: 64 GB USB-flashdrev
+      unit_price: 12.5
+      quantity: 25
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 3
+- name: AllLines5_003
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 425
+      description: Printer HP LaserJet Pro
+      quantity: 3
+    - unitPrice: 78.5
+      description: Tonerpatron sort
+      quantity: 12
+    - unitPrice: 82
+      description: Tonerpatron Cyan
+      quantity: 6
+    - unitPrice: 82
+      description: Tonerpatron Magenta
+      quantity: 6
+    - unitPrice: 82
+      description: Tonerpatron gul
+      quantity: 6
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Tonerpatron Cyan
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Tonerpatron gul
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: HP LaserJet Pro printer
+      unit_price: 425
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Tonerpatron Magenta
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Tonerpatron sort
+      unit_price: 78.5
+      quantity: 12
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 5
+- name: Challenge10_002
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 685
+      description: Kontorbord Stående Elektrisk
+      quantity: 12
+    - unitPrice: 895
+      description: Kontorstol Herman Miller
+      quantity: 12
+    - unitPrice: 185
+      description: Skrivebordsskuffe Piedestal 3 Skuffe
+      quantity: 10
+    - unitPrice: 35
+      description: Kabelstyringssæt under skrivebordet
+      quantity: 15
+    - unitPrice: 48
+      description: Skrivebordsmåtte Læder Large
+      quantity: 14
+    - unitPrice: 58
+      description: Monitor Riser Wood
+      quantity: 8
+  - lines:
+    - unitPrice: 68
+      description: Opgavelys LED-arkitekt
+      quantity: 14
+    - unitPrice: 28.5
+      description: Desk Organizer Bambus
+      quantity: 12
+    - unitPrice: 42
+      description: Fodstøtte under skrivebord Justerbar
+      quantity: 10
+    - unitPrice: 52
+      description: Strømudtag Skrivebordsmontering
+      quantity: 15
+  - lines:
+    - unitPrice: 325
+      description: Arkivskab 4 Skuffer Stål
+      quantity: 6
+    - unitPrice: 245
+      description: Reol 5 Hylde Træ
+      quantity: 4
+    - unitPrice: 18.5
+      description: Plantepotte kontorkeramik
+      quantity: 20
+    - unitPrice: 32
+      description: Vægur Modern Silent
+      quantity: 8
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Elektrisk stående kontorbord
+      unit_price: 685
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Herman Miller kontorstol
+      unit_price: 895
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Skrivebordssokkel med 3 skuffer
+      unit_price: 185
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Under Desk Cable Management Kit
+      unit_price: 35
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Stor læder skrivebordsmåtte
+      unit_price: 48
+      quantity: 14
+    - discount: 0
+      tax_rate: 10
+      description: LED Arkitekt Opgavelys
+      unit_price: 68
+      quantity: 14
+    - discount: 0
+      tax_rate: 10
+      description: Justerbar fodstøtte under skrivebordet
+      unit_price: 42
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: 4 Skuffer Stålarkivskab
+      unit_price: 325
+      quantity: 6
+    invoice_no: INV-002
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 1
+- name: Challenge3_003
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 5.75
+      description: A4 Papir Ream 500 ark
+      quantity: 25
+    - unitPrice: 3.5
+      description: Indbindsmapper A4
+      quantity: 30
+    - unitPrice: 8.25
+      description: Whiteboard markører sæt
+      quantity: 12
+  - lines:
+    - unitPrice: 18
+      description: Hæftemaskine Heavy Duty
+      quantity: 15
+  - lines:
+    - unitPrice: 12
+      description: Desk Organizer Plast
+      quantity: 20
+    - unitPrice: 45.5
+      description: Printerpatron sort HP
+      quantity: 8
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: HP sort printerpatron
+      unit_price: 45.5
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: A4 papirpakke - 500 ark
+      unit_price: 5.75
+      quantity: 25
+    - discount: 0
+      tax_rate: 10
+      description: Kraftig hæftemaskine
+      unit_price: 18
+      quantity: 15
+    invoice_no: INV-003
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+- name: Challenge5_002
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 485
+      description: Printer Laser Farve HP
+      quantity: 3
+    - unitPrice: 295
+      description: Scanner Document Flatbed
+      quantity: 2
+    - unitPrice: 75
+      description: Ekstra papirbakke
+      quantity: 5
+    - unitPrice: 68.5
+      description: Tonerpatron Cyan
+      quantity: 6
+  - lines:
+    - unitPrice: 68.5
+      description: Tonerpatron Magenta
+      quantity: 6
+    - unitPrice: 68.5
+      description: Tonerpatron gul
+      quantity: 6
+    - unitPrice: 58
+      description: Tonerpatron sort
+      quantity: 8
+  - lines:
+    - unitPrice: 12
+      description: Printerkabel USB
+      quantity: 10
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: HP farvelaserprinter
+      unit_price: 485
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Cyan tonerpatron
+      unit_price: 68.5
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Gul tonerpatron
+      unit_price: 68.5
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Sort tonerpatron
+      unit_price: 58
+      quantity: 8
+    invoice_no: INV-002
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 3
+- name: NoLines3_001
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 250
+      description: Standard kontorbord
+      quantity: 5
+    - unitPrice: 180
+      description: Ergonomisk kontorstol
+      quantity: 5
+    - unitPrice: 220
+      description: LED skærm 24 tommer
+      quantity: 10
+  - lines:
+    - unitPrice: 1500
+      description: Bærbar Dell XPS
+      quantity: 3
+    - unitPrice: 45
+      description: Trådløst tastatur
+      quantity: 8
+  - lines:
+    - unitPrice: 350
+      description: Netværksswitch 24 port
+      quantity: 2
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Industriel reol
+      unit_price: 280
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Sikkerhedsbriller Pack
+      unit_price: 8.5
+      quantity: 50
+    - discount: 0
+      tax_rate: 10
+      description: Vedligeholdelse af gaffeltrucks
+      unit_price: 450
+      quantity: 1
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: NoLines3_005
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 780
+      description: Projektor Epson HD
+      quantity: 2
+    - unitPrice: 450
+      description: Projektionsskærm motoriseret
+      quantity: 2
+    - unitPrice: 25
+      description: HDMI kabel 10m
+      quantity: 10
+  - lines:
+    - unitPrice: 320
+      description: Konferencetelefon Polycom
+      quantity: 3
+    - unitPrice: 180
+      description: Webkamera Logitech 4K
+      quantity: 5
+    - unitPrice: 650
+      description: Højttalersystem Bose
+      quantity: 2
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Vandkøler Gulvstående
+      unit_price: 220
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Vandflasker 5 gallon pakke
+      unit_price: 8
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Dispenser til papirkopper
+      unit_price: 15
+      quantity: 5
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: OneLine3_004
+  test_setup: PA-OrderMatch-da-DA.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 950
+      description: Serverrack 42U
+      quantity: 1
+    - unitPrice: 280
+      description: UPS batteri backup 1500VA
+      quantity: 3
+  - lines:
+    - unitPrice: 120
+      description: Patch Panel 48 Port
+      quantity: 2
+    - unitPrice: 45
+      description: Kabelstyringssæt
+      quantity: 5
+    - unitPrice: 95
+      description: Netværkskabel Cat6 Box
+      quantity: 4
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Brandalarmtesttjeneste
+      unit_price: 350
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: 1500VA UPS batteri backup
+      unit_price: 280
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2

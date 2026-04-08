@@ -1,0 +1,510 @@
+tests:
+- name: AllLines10_003
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 685
+      description: Konferencetelefon Polycom Trio
+      quantity: 5
+    - unitPrice: 495
+      description: Videokonferencekamera 4K
+      quantity: 5
+    - unitPrice: 1250
+      description: Projektor Epson 4000 Lumens
+      quantity: 3
+    - unitPrice: 785
+      description: Projektionsskærm motoriseret 120 tommer
+      quantity: 3
+    - unitPrice: 42
+      description: HDMI-kabel 15m professionelt
+      quantity: 10
+    - unitPrice: 38
+      description: Præsentation af fjernlaser
+      quantity: 15
+    - unitPrice: 325
+      description: Trådløst mikrofonsystem
+      quantity: 4
+    - unitPrice: 185
+      description: Højttalersystem i loftet
+      quantity: 8
+    - unitPrice: 425
+      description: Audio Mixer 8 kanals
+      quantity: 2
+    - unitPrice: 95
+      description: Video Splitter HDMI 4 Port
+      quantity: 6
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Video Splitter HDMI 4 Port
+      unit_price: 95
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Epson 4000 Lumens projektor
+      unit_price: 1250
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Audio Mixer 8 kanals
+      unit_price: 425
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Konferencetelefon Polycom Trio
+      unit_price: 685
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Præsentation af fjernlaser
+      unit_price: 38
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Trådløst mikrofonsystem
+      unit_price: 325
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Professionelt HDMI-kabel 15m
+      unit_price: 42
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Højttalersystem i loftet
+      unit_price: 185
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Videokonferencekamera 4K
+      unit_price: 495
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Projektionsskærm motoriseret 120 tommer
+      unit_price: 785
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 8
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 9
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 10
+- name: AllLines3_002
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1200
+      description: Bærbar Lenovo ThinkPad
+      quantity: 3
+    - unitPrice: 25
+      description: Trådløs mus Logitech
+      quantity: 15
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Logitech trådløs mus
+      unit_price: 25
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Bærbar Lenovo ThinkPad
+      unit_price: 1200
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+- name: AllLines5_001
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 450
+      description: Office Desk Executive
+      quantity: 8
+    - unitPrice: 320
+      description: Ergonomisk kontorstol Premium
+      quantity: 8
+    - unitPrice: 380
+      description: LED skærm 27 tommer
+      quantity: 12
+    - unitPrice: 65
+      description: Trådløst tastatur og mus sæt
+      quantity: 15
+    - unitPrice: 42.5
+      description: Skrivebordslampe LED Justerbar
+      quantity: 10
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Office Desk Executive
+      unit_price: 450
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Premium ergonomisk stol til kontoret
+      unit_price: 320
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: LED skærm 27 tommer
+      unit_price: 380
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Trådløst tastatur og mus sæt
+      unit_price: 65
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Justerbar LED bordlampe
+      unit_price: 42.5
+      quantity: 10
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+- name: AllLines5_005
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 156
+      description: Whiteboard Magnetisk 120x90cm
+      quantity: 4
+    - unitPrice: 8.5
+      description: Whiteboard Markers Assorted Set
+      quantity: 20
+    - unitPrice: 5.75
+      description: Whiteboard Viskelæder Magnetisk
+      quantity: 10
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Whiteboard Markers Assorted Set
+      unit_price: 8.5
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Magnetisk tavle 120x90cm
+      unit_price: 156
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Whiteboard Viskelæder Magnetisk
+      unit_price: 5.75
+      quantity: 10
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+- name: Challenge3_001
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 250
+      description: Standard kontorbord
+      quantity: 5
+    - unitPrice: 180
+      description: Ergonomisk kontorstol
+      quantity: 5
+  - lines:
+    - unitPrice: 220
+      description: LED skærm 24 tommer
+      quantity: 10
+    - unitPrice: 45
+      description: Trådløst tastatur
+      quantity: 8
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Standard kontorbord
+      unit_price: 250
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: 24" LED-skærm
+      unit_price: 220
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Ergonomisk stol til kontor
+      unit_price: 180
+      quantity: 5
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 2
+- name: Challenge3_005
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 950
+      description: Konferencebord rektangel
+      quantity: 1
+    - unitPrice: 425
+      description: Executive Office Stol Læder
+      quantity: 6
+  - lines:
+    - unitPrice: 285
+      description: Arkivskab 4 Skuffe
+      quantity: 3
+  - lines:
+    - unitPrice: 38
+      description: Skrivebordslampe LED Justerbar
+      quantity: 12
+    - unitPrice: 165
+      description: Bogreol 5 Etage
+      quantity: 2
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Rektangel konferencebord
+      unit_price: 950
+      quantity: 1
+    invoice_no: INV-005
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+- name: Challenge5_004
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 385
+      description: Tablet Samsung Galaxy Tab
+      quantity: 8
+    - unitPrice: 28
+      description: Beskyttende tablettaske
+      quantity: 10
+  - lines:
+    - unitPrice: 48
+      description: Stylus Pen Digital
+      quantity: 8
+    - unitPrice: 12.5
+      description: Skærmbeskytter glas
+      quantity: 15
+    - unitPrice: 8.75
+      description: Ladekabel USB-C 2m
+      quantity: 20
+    - unitPrice: 22
+      description: Vægoplader Hurtig opladning
+      quantity: 12
+    - unitPrice: 58
+      description: Bærbart Bluetooth-tastatur
+      quantity: 6
+  - lines:
+    - unitPrice: 32
+      description: Justerbar tabletstativ
+      quantity: 10
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Samsung Galaxy Tab-tablet
+      unit_price: 385
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Digital Stylus Pen
+      unit_price: 48
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: 2m USB-C ladekabel
+      unit_price: 8.75
+      quantity: 20
+    invoice_no: INV-004
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+- name: NoLines3_003
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 650
+      description: Stående skrivebord elektrisk
+      quantity: 8
+    - unitPrice: 95
+      description: Monitorarm Dual
+      quantity: 8
+  - lines:
+    - unitPrice: 180
+      description: Whiteboard Stor 6x4 fod
+      quantity: 4
+    - unitPrice: 12
+      description: Whiteboard Markers Pakke
+      quantity: 20
+    - unitPrice: 4.5
+      description: Viskelæder magnetisk
+      quantity: 15
+  - lines:
+    - unitPrice: 320
+      description: Arkivskab 4 Skuffe
+      quantity: 6
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Aircondition enhed Split
+      unit_price: 1200
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Bærbar varmelegeme
+      unit_price: 85
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Kommerciel luftfugter
+      unit_price: 150
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: OneLine3_002
+  test_setup: PA-OrderMatch-da-DK.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 350
+      description: Printer HP LaserJet Pro
+      quantity: 2
+    - unitPrice: 280
+      description: Scanner Fujitsu
+      quantity: 1
+  - lines:
+    - unitPrice: 8.5
+      description: Kopipapir A3
+      quantity: 30
+    - unitPrice: 0.25
+      description: Binder Clips Large
+      quantity: 100
+    - unitPrice: 3.5
+      description: Notebook Spiral A4
+      quantity: 50
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Kaffemaskine kommerciel
+      unit_price: 850
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: A3 kopipapir
+      unit_price: 8.5
+      quantity: 30
+    - discount: 0
+      tax_rate: 10
+      description: Vandfilterpatroner
+      unit_price: 15
+      quantity: 12
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1

@@ -123,13 +123,13 @@ codeunit 148004 "Library IRS 1099 Form Box"
 
     procedure GetVendorFormBoxAmount(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; PeriodNo: Code[20]; FormNo: Code[20]; VendorNo: Code[20])
     var
-        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        TempIRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRSFormsFacade: Codeunit "IRS Forms Facade";
     begin
-        IRS1099CalcParameters."Period No." := PeriodNo;
-        IRS1099CalcParameters."Form No." := FormNo;
-        IRS1099CalcParameters."Vendor No." := VendorNo;
-        IRSFormsFacade.GetVendorFormBoxAmount(TempVendFormBoxBuffer, IRS1099CalcParameters);
+        TempIRS1099CalcParameters."Period No." := PeriodNo;
+        TempIRS1099CalcParameters."Form No." := FormNo;
+        TempIRS1099CalcParameters."Vendor No." := VendorNo;
+        IRSFormsFacade.GetVendorFormBoxAmount(TempVendFormBoxBuffer, TempIRS1099CalcParameters);
     end;
 
     procedure AssignFormBoxForVendorInPeriod(VendNo: Code[20]; StartingDate: Date; EndingDate: Date; FormNo: Code[20]; FormBoxNo: Code[20])
@@ -151,21 +151,21 @@ codeunit 148004 "Library IRS 1099 Form Box"
 
     procedure MockConnectedEntryForVendFormBoxBuffer(var TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary) VendLedgEntryNo: Integer
     var
-        CurrIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer";
+        TempCurrIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer";
         EntryNo: Integer;
     begin
-        CurrIRS1099VendFormBoxBuffer.Copy(TempIRS1099VendFormBoxBuffer);
+        TempCurrIRS1099VendFormBoxBuffer.Copy(TempIRS1099VendFormBoxBuffer);
         TempIRS1099VendFormBoxBuffer.Reset();
         if TempIRS1099VendFormBoxBuffer.FindLast() then
             EntryNo := TempIRS1099VendFormBoxBuffer."Entry No.";
         EntryNo += 1;
         TempIRS1099VendFormBoxBuffer."Entry No." := EntryNo;
-        TempIRS1099VendFormBoxBuffer."Parent Entry No." := CurrIRS1099VendFormBoxBuffer."Entry No.";
+        TempIRS1099VendFormBoxBuffer."Parent Entry No." := TempCurrIRS1099VendFormBoxBuffer."Entry No.";
         TempIRS1099VendFormBoxBuffer."Buffer Type" := TempIRS1099VendFormBoxBuffer."Buffer Type"::"Ledger Entry";
         TempIRS1099VendFormBoxBuffer."Vendor Ledger Entry No." := LibraryRandom.RandInt(100);
         TempIRS1099VendFormBoxBuffer.Insert();
         VendLedgEntryNo := TempIRS1099VendFormBoxBuffer."Vendor Ledger Entry No.";
-        TempIRS1099VendFormBoxBuffer.Copy(CurrIRS1099VendFormBoxBuffer);
+        TempIRS1099VendFormBoxBuffer.Copy(TempCurrIRS1099VendFormBoxBuffer);
         exit(VendLedgEntryNo);
     end;
 

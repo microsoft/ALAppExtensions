@@ -86,7 +86,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         GenJournalTemplate: Record "Gen. Journal Template";
         GLAccount: Record "G/L Account";
 #pragma warning disable AL0432
-        GLAccountNetChange: Record "G/L Account Net Change";
+        TempGLAccountNetChange: Record "G/L Account Net Change";
 #pragma warning restore AL0432
         InventoryPostingSetup: Record "Inventory Posting Setup";
         InventorySetup: Record "Inventory Setup";
@@ -304,14 +304,14 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Account", GLAccount.FieldNo("Credit Amount (VAT Date) CZL"));
 #if not CLEAN27 
 #pragma warning disable AL0432
-        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Account Type CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", TempGLAccountNetChange.FieldNo("Account Type CZL"));
 #pragma warning restore AL0432
 #endif
-        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Acc. Type CZL"));
-        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Account No. CZL"));
-        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Net Change in Jnl. Curr. CZL"));
-        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Balance after Posting Curr.CZL"));
-        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", GLAccountNetChange.FieldNo("Currency Code CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", TempGLAccountNetChange.FieldNo("Acc. Type CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", TempGLAccountNetChange.FieldNo("Account No. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", TempGLAccountNetChange.FieldNo("Net Change in Jnl. Curr. CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", TempGLAccountNetChange.FieldNo("Balance after Posting Curr.CZL"));
+        DataClassificationMgt.SetFieldToNormal(Database::"G/L Account Net Change", TempGLAccountNetChange.FieldNo("Currency Code CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Posting Setup", InventoryPostingSetup.FieldNo("Consumption Account CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Posting Setup", InventoryPostingSetup.FieldNo("Change In Inv.Of WIP Acc. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Posting Setup", InventoryPostingSetup.FieldNo("Change In Inv.OfProd. Acc. CZL"));

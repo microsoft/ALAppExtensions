@@ -30,7 +30,7 @@ page 18206 "GST Distribution Reversal"
 
                     trigger OnAssistEdit()
                     begin
-                        if Rec.AssistEdit(xRec) then
+                        if Rec.ReversalAssistEdit(xRec) then
                             CurrPage.UPDATE();
                     end;
                 }

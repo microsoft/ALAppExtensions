@@ -1,0 +1,1928 @@
+name: PA-TS-Metrics-03-fr-FR
+language: fr-FR
+tests:
+- name: PA-INV-V29-004
+  description: VendorNo=V29;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Télécommunications Bretagne Plus
+    Address: 6, Rue de Châtillon
+    Address 2: ''
+    City: RENNES
+    Country/Region Code: FR
+    Post Code: 35000
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V29-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62800
+    Description: Téléphones IP - achat
+    Quantity: 5.0
+    Unit Price: 150.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V29-004
+        Buy-from Vendor Name: Télécommunications Bretagne Plus
+        Buy-from Address: 6 Rue de Châtillon
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62800
+        Deferral Code: ''
+        Description: Téléphones IP - achat
+        Quantity: 5.0
+        Unit Cost: 150.0
+- name: PA-INV-V28-005
+  description: VendorNo=V28;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Imprimerie du Pays de Rennes
+    Address: 48 Boulevard Villebois-Mareuil
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V28-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62510
+    Description: Dépliants 3 volets
+    Quantity: 5000.0
+    Unit Price: 0.35
+  - Type: 1
+    No.: 62510
+    Description: Plaquette commerciale
+    Quantity: 5000.0
+    Unit Price: 0.85
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V28-005
+        Buy-from Vendor Name: Imprimerie du Pays de Rennes
+        Buy-from Address: 48 Boulevard Villebois-Mareuil
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62510
+        Deferral Code: ''
+        Description: Dépliants 3 volets
+        Quantity: 5000.0
+        Unit Cost: 0.35
+      - Line No.: 20000
+        Type: 1
+        No.: 62510
+        Deferral Code: ''
+        Description: Plaquette commerciale
+        Quantity: 5000.0
+        Unit Cost: 0.85
+- name: PA-INV-V25-001
+  description: VendorNo=V25;VendorFrequencyGroup=None;VendorGroup=VG003;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Menuiserie Martin & Fils
+    Address: 78 Avenue Jean Jaurès
+    Address 2: ''
+    City: Lamballe
+    Country/Region Code: FR
+    Post Code: '22400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V25-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61100
+    Description: Chaises bergères - lot
+    Quantity: 6.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 61100
+    Description: Lit baldaquin - création
+    Quantity: 1.0
+    Unit Price: 5500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V25-001
+        Buy-from Vendor Name: Menuiserie Martin & Fils
+        Buy-from Address: 78 Avenue Jean Jaurès
+        Buy-from Address 2: ''
+        Buy-from City: Lamballe
+        Buy-from Post Code: '22400'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Chaises bergères - lot
+        Quantity: 6.0
+        Unit Cost: 850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Lit baldaquin - création
+        Quantity: 1.0
+        Unit Cost: 5500.0
+- name: PA-INV-V27-004
+  description: VendorNo=V27;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Le Traiteur - Restaurant d'Entreprise
+    Address: 11 Rue de la Monnaie
+    Address 2: ''
+    City: Liffré
+    Country/Region Code: FR
+    Post Code: '35340'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V27-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63700
+    Description: Café et viennoiseries - hebdo
+    Quantity: 52.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 63700
+    Description: Repas direction - traiteur
+    Quantity: 8.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 63700
+    Description: Service café permanent
+    Quantity: 12.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 63700
+    Description: Repas accueil nouveaux
+    Quantity: 15.0
+    Unit Price: 25.0
+  - Type: 1
+    No.: 63700
+    Description: Prestation spéciale - gala
+    Quantity: 1.0
+    Unit Price: 4200.0
+  - Type: 1
+    No.: 63700
+    Description: Restauration collective - mars
+    Quantity: 480.0
+    Unit Price: 8.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V27-004
+        Buy-from Vendor Name: Restaurant d'Entreprise Le Traiteur
+        Buy-from Address: 11 Rue de la Monnaie
+        Buy-from Address 2: ''
+        Buy-from City: Liffré
+        Buy-from Post Code: '35340'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63700
+        Deferral Code: ''
+        Description: Café et viennoiseries - hebdo
+        Quantity: 52.0
+        Unit Cost: 45.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63700
+        Deferral Code: ''
+        Description: Repas direction - traiteur
+        Quantity: 8.0
+        Unit Cost: 85.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63700
+        Deferral Code: ''
+        Description: Service café permanent
+        Quantity: 12.0
+        Unit Cost: 280.0
+      - Line No.: 40000
+        Type: 1
+        No.: 63700
+        Deferral Code: ''
+        Description: Repas accueil nouveaux
+        Quantity: 15.0
+        Unit Cost: 25.0
+      - Line No.: 50000
+        Type: 1
+        No.: 63700
+        Deferral Code: ''
+        Description: Prestation spéciale - gala
+        Quantity: 1.0
+        Unit Cost: 4200.0
+      - Line No.: 60000
+        Type: 1
+        No.: 63700
+        Deferral Code: ''
+        Description: Restauration collective - mars
+        Quantity: 480.0
+        Unit Cost: 8.5
+- name: PA-INV-V24-005
+  description: VendorNo=V24;VendorFrequencyGroup=None;VendorGroup=VG003;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Menuiserie Martin
+    Address: 33 Rue des Forges
+    Address 2: ''
+    City: Dinan
+    Country/Region Code: FR
+    Post Code: '22100'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V24-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61100
+    Description: Prototypes nouveaux modèles
+    Quantity: 3.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 61100
+    Description: Cintrage bois - dossiers
+    Quantity: 40.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 61100
+    Description: Sculpture décorative - commande
+    Quantity: 10.0
+    Unit Price: 180.0
+  - Type: 1
+    No.: 61100
+    Description: Fabrication étagères
+    Quantity: 80.0
+    Unit Price: 25.0
+  - Type: 1
+    No.: 61100
+    Description: Assemblage buffets - série
+    Quantity: 15.0
+    Unit Price: 120.0
+  - Type: 1
+    No.: 61100
+    Description: Tournage pieds de table
+    Quantity: 100.0
+    Unit Price: 18.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V24-005
+        Buy-from Vendor Name: Menuiserie Martin
+        Buy-from Address: 33 Rue des Forges
+        Buy-from Address 2: ''
+        Buy-from City: Dinan
+        Buy-from Post Code: '22100'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Prototypes nouveaux modèles
+        Quantity: 3.0
+        Unit Cost: 850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Cintrage bois - dossiers
+        Quantity: 40.0
+        Unit Cost: 35.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Sculpture décorative - commande
+        Quantity: 10.0
+        Unit Cost: 180.0
+      - Line No.: 40000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Fabrication étagères
+        Quantity: 80.0
+        Unit Cost: 25.0
+      - Line No.: 50000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Assemblage buffets - série
+        Quantity: 15.0
+        Unit Cost: 120.0
+      - Line No.: 60000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Tournage pieds de table
+        Quantity: 100.0
+        Unit Cost: 18.0
+- name: PA-INV-V38-002
+  description: VendorNo=V38;VendorFrequencyGroup=New;VendorGroup=VG004;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Transports Martin Express
+    Address: Zone Fret de Rennes
+    Address 2: ''
+    City: Saint-Jacques-de-la-Lande
+    Country/Region Code: FR
+    Post Code: '35136'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V38-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62620
+    Description: Envoi express plan atelier
+    Quantity: 1.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 62620
+    Description: Coursier express pièce urgente
+    Quantity: 1.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 62620
+    Description: Messagerie pièces machine CN
+    Quantity: 1.0
+    Unit Price: 88.0
+  - Type: 1
+    No.: 62320
+    Description: Assurance colis valeur déclarée
+    Quantity: 1.0
+    Unit Price: 180.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V38-002
+        Buy-from Vendor Name: Transports Martin Express
+        Buy-from Address: Zone Fret de Rennes
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Jacques-de-la-Lande
+        Buy-from Post Code: '35136'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Envoi express plan atelier
+        Quantity: 1.0
+        Unit Cost: 38.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Coursier express pièce urgente
+        Quantity: 1.0
+        Unit Cost: 85.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Messagerie pièces machine CN
+        Quantity: 1.0
+        Unit Cost: 88.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62320
+        Deferral Code: 12M
+        Description: Assurance colis valeur déclarée
+        Quantity: 1.0
+        Unit Cost: 180.0
+- name: PA-INV-V32-003
+  description: VendorNo=V32;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Ferrures Design Europe GmbH
+    Address: Industriestraße 88
+    Address 2: ''
+    City: Karlsruhe
+    Country/Region Code: DE
+    Post Code: '76185'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V32-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60300
+    Description: Klapptischbeschlag wandmontiert
+    Quantity: 30.0
+    Unit Price: 86.0
+  - Type: 1
+    No.: 60300
+    Description: Verbindungsbeschläge Exzenter
+    Quantity: 400.0
+    Unit Price: 3.2
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V32-003
+        Buy-from Vendor Name: Ferrures Design Europe GmbH
+        Buy-from Address: Industriestraße 88
+        Buy-from Address 2: ''
+        Buy-from City: Karlsruhe
+        Buy-from Post Code: '76185'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Klapptischbeschlag wandmontiert
+        Quantity: 30.0
+        Unit Cost: 86.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60300
+        Deferral Code: ''
+        Description: Verbindungsbeschläge Exzenter
+        Quantity: 400.0
+        Unit Cost: 3.2
+- name: PA-INV-V40-005
+  description: VendorNo=V40;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Textiles Techniques Atlantique
+    Address: 62 Avenue de la Plage
+    Address 2: ''
+    City: Les Sables-d'Olonne
+    Country/Region Code: FR
+    Post Code: '85100'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V40-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60200
+    Description: Toile acrylique store extérieur
+    Quantity: 40.0
+    Unit Price: 42.6
+  - Type: 1
+    No.: 60200
+    Description: Tissu antibactérien santé
+    Quantity: 40.0
+    Unit Price: 75.8
+  - Type: 1
+    No.: 62510
+    Description: Échantillothèque collection 2025
+    Quantity: 3.0
+    Unit Price: 145.0
+  - Type: 1
+    No.: 60200
+    Description: Simili cuir recyclé écologique
+    Quantity: 70.0
+    Unit Price: 28.9
+  - Type: 1
+    No.: 60200
+    Description: Microfibre haute résistance
+    Quantity: 100.0
+    Unit Price: 32.4
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V40-005
+        Buy-from Vendor Name: Textiles Techniques Atlantique
+        Buy-from Address: 62 Avenue de la Plage
+        Buy-from Address 2: ''
+        Buy-from City: Les Sables-d'Olonne
+        Buy-from Post Code: '85100'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Toile acrylique store extérieur
+        Quantity: 40.0
+        Unit Cost: 42.6
+      - Line No.: 20000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu antibactérien santé
+        Quantity: 40.0
+        Unit Cost: 75.8
+      - Line No.: 30000
+        Type: 1
+        No.: 62510
+        Deferral Code: 12M
+        Description: Échantillothèque collection 2025
+        Quantity: 3.0
+        Unit Cost: 145.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Simili cuir recyclé écologique
+        Quantity: 70.0
+        Unit Cost: 28.9
+      - Line No.: 50000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Microfibre haute résistance
+        Quantity: 100.0
+        Unit Cost: 32.4
+- name: PA-INV-V40-003
+  description: VendorNo=V40;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Textiles Techniques Atlantique
+    Address: 62 Avenue de la Plage
+    Address 2: ''
+    City: Les Sables-d'Olonne
+    Country/Region Code: FR
+    Post Code: '85100'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V40-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60200
+    Description: Tissu acoustique absorbant
+    Quantity: 50.0
+    Unit Price: 56.8
+  - Type: 1
+    No.: 60200
+    Description: Tissu technique outdoor UV stable
+    Quantity: 35.0
+    Unit Price: 68.5
+  - Type: 1
+    No.: 60200
+    Description: Toile enduite extérieur marine
+    Quantity: 45.0
+    Unit Price: 38.6
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V40-003
+        Buy-from Vendor Name: Textiles Techniques Atlantique
+        Buy-from Address: 62 Avenue de la Plage
+        Buy-from Address 2: ''
+        Buy-from City: Les Sables-d'Olonne
+        Buy-from Post Code: '85100'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu acoustique absorbant
+        Quantity: 50.0
+        Unit Cost: 56.8
+      - Line No.: 20000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Tissu technique outdoor UV stable
+        Quantity: 35.0
+        Unit Cost: 68.5
+      - Line No.: 30000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Toile enduite extérieur marine
+        Quantity: 45.0
+        Unit Cost: 38.6
+- name: PA-INV-V39-003
+  description: VendorNo=V39;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Éco-Finitions Durables
+    Address: 38 Rue de l'Écologie
+    Address 2: ''
+    City: Lorient
+    Country/Region Code: FR
+    Post Code: '56100'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V39-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63600
+    Description: Formation application éco-finitions
+    Quantity: 3.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 60420
+    Description: Lasure écologique extérieur 30L
+    Quantity: 6.0
+    Unit Price: 298.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V39-003
+        Buy-from Vendor Name: Éco-Finitions Durables
+        Buy-from Address: 38 Rue de l'Écologie
+        Buy-from Address 2: ''
+        Buy-from City: Lorient
+        Buy-from Post Code: '56100'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63600
+        Deferral Code: 3M
+        Description: Formation application éco-finitions
+        Quantity: 3.0
+        Unit Cost: 680.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Lasure écologique extérieur 30L
+        Quantity: 6.0
+        Unit Cost: 298.0
+- name: PA-INV-V31-002
+  description: VendorNo=V31;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Bois Précieux Import S.A.R.L.
+    Address: 4 Quai des Antilles
+    Address 2: ''
+    City: Saint-Nazaire
+    Country/Region Code: FR
+    Post Code: '44600'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V31-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60110
+    Description: Teck Birmanie recyclé certifié FSC
+    Quantity: 30.0
+    Unit Price: 125.4
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V31-002
+        Buy-from Vendor Name: Bois Précieux Import S.A.R.L.
+        Buy-from Address: 4 Quai des Antilles
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Nazaire
+        Buy-from Post Code: '44600'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Teck Birmanie recyclé certifié FSC
+        Quantity: 30.0
+        Unit Cost: 125.4
+- name: PA-INV-V31-001
+  description: VendorNo=V31;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Bois Précieux Import S.A.R.L.
+    Address: 4 Quai des Antilles
+    Address 2: ''
+    City: Saint-Nazaire
+    Country/Region Code: FR
+    Post Code: '44600'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V31-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60110
+    Description: Movingui Gabon avivés 34mm
+    Quantity: 35.0
+    Unit Price: 68.4
+  - Type: 1
+    No.: 60110
+    Description: Échantillonnage essences rares
+    Quantity: 1.0
+    Unit Price: 580.0
+  - Type: 1
+    No.: 60110
+    Description: Cocobolo tournage pièces luxe
+    Quantity: 6.0
+    Unit Price: 385.0
+  - Type: 1
+    No.: 62320
+    Description: Assurance marchandises import annuel
+    Quantity: 1.0
+    Unit Price: 3600.0
+  - Type: 1
+    No.: 60110
+    Description: Sapelli rubané qualité menuiserie
+    Quantity: 28.0
+    Unit Price: 76.2
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V31-001
+        Buy-from Vendor Name: Bois Précieux Import S.A.R.L.
+        Buy-from Address: 4 Quai des Antilles
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Nazaire
+        Buy-from Post Code: '44600'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Movingui Gabon avivés 34mm
+        Quantity: 35.0
+        Unit Cost: 68.4
+      - Line No.: 20000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Échantillonnage essences rares
+        Quantity: 1.0
+        Unit Cost: 580.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Cocobolo tournage pièces luxe
+        Quantity: 6.0
+        Unit Cost: 385.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62320
+        Deferral Code: 12M
+        Description: Assurance marchandises import annuel
+        Quantity: 1.0
+        Unit Cost: 3600.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Sapelli rubané qualité menuiserie
+        Quantity: 28.0
+        Unit Cost: 76.2
+- name: PA-INV-V31-004
+  description: VendorNo=V31;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Bois Précieux Import S.A.R.L.
+    Address: 4 Quai des Antilles
+    Address 2: ''
+    City: Saint-Nazaire
+    Country/Region Code: FR
+    Post Code: '44600'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V31-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60110
+    Description: Bois de rose Santos select
+    Quantity: 8.0
+    Unit Price: 425.0
+  - Type: 1
+    No.: 60110
+    Description: Placage loupe d'amboine 0.6mm
+    Quantity: 50.0
+    Unit Price: 42.6
+  - Type: 1
+    No.: 60110
+    Description: Zebrano Cameroun planches 27mm
+    Quantity: 18.0
+    Unit Price: 134.2
+  - Type: 1
+    No.: 60110
+    Description: Ébène du Gabon - lot 25 planches
+    Quantity: 25.0
+    Unit Price: 185.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V31-004
+        Buy-from Vendor Name: Bois Précieux Import S.A.R.L.
+        Buy-from Address: 4 Quai des Antilles
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Nazaire
+        Buy-from Post Code: '44600'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Bois de rose Santos select
+        Quantity: 8.0
+        Unit Cost: 425.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Placage loupe d'amboine 0.6mm
+        Quantity: 50.0
+        Unit Cost: 42.6
+      - Line No.: 30000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Zebrano Cameroun planches 27mm
+        Quantity: 18.0
+        Unit Cost: 134.2
+      - Line No.: 40000
+        Type: 1
+        No.: 60110
+        Deferral Code: ''
+        Description: Ébène du Gabon - lot 25 planches
+        Quantity: 25.0
+        Unit Cost: 185.0
+- name: PA-INV-V37-005
+  description: VendorNo=V37;VendorFrequencyGroup=New;VendorGroup=VG004;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Transport Martin
+    Address: 55 Route de Lorient
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V37-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62610
+    Description: Manutention mise en place client
+    Quantity: 4.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison banquette restaurant
+    Quantity: 1.0
+    Unit Price: 450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V37-005
+        Buy-from Vendor Name: Transport Martin
+        Buy-from Address: 55 Route de Lorient
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Manutention mise en place client
+        Quantity: 4.0
+        Unit Cost: 85.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison banquette restaurant
+        Quantity: 1.0
+        Unit Cost: 450.0
+- name: PA-INV-V34-003
+  description: VendorNo=V34;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Nordic Wood Supplies AB
+    Address: Skogsvägen 24
+    Address 2: ''
+    City: Malmö
+    Country/Region Code: SE
+    Post Code: '21147'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V34-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65100
+    Description: Medlemskap Nordic Timber Assoc.
+    Quantity: 1.0
+    Unit Price: 980.0
+  - Type: 1
+    No.: 60100
+    Description: Rönn vitlaserad finish
+    Quantity: 35.0
+    Unit Price: 78.5
+  - Type: 1
+    No.: 60100
+    Description: Fur thermobehandlat 215°C
+    Quantity: 40.0
+    Unit Price: 64.8
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V34-003
+        Buy-from Vendor Name: Nordic Wood Supplies AB
+        Buy-from Address: Skogsvägen 24
+        Buy-from Address 2: ''
+        Buy-from City: Malmö
+        Buy-from Post Code: '21147'
+        Buy-from Country/Region Code: SE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65100
+        Deferral Code: 12M
+        Description: Medlemskap Nordic Timber Assoc.
+        Quantity: 1.0
+        Unit Cost: 980.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Rönn vitlaserad finish
+        Quantity: 35.0
+        Unit Cost: 78.5
+      - Line No.: 30000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Fur thermobehandlat 215°C
+        Quantity: 40.0
+        Unit Cost: 64.8
+- name: PA-INV-V35-003
+  description: VendorNo=V35;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Solutions CAO Mobilier
+    Address: 71 Boulevard de Sébastopol
+    Address 2: ''
+    City: Paris
+    Country/Region Code: FR
+    Post Code: '75002'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V35-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64200
+    Description: Module devis automatique client
+    Quantity: 1.0
+    Unit Price: 1650.0
+  - Type: 1
+    No.: 64200
+    Description: Module optimisation découpe panneaux
+    Quantity: 1.0
+    Unit Price: 2200.0
+  - Type: 1
+    No.: 63600
+    Description: Certification utilisateur expert
+    Quantity: 2.0
+    Unit Price: 650.0
+  - Type: 1
+    No.: 64120
+    Description: Support technique prioritaire annuel
+    Quantity: 1.0
+    Unit Price: 1800.0
+  - Type: 1
+    No.: 64200
+    Description: Connecteur ERP production
+    Quantity: 1.0
+    Unit Price: 4500.0
+  - Type: 1
+    No.: 64200
+    Description: Bibliothèque quincaillerie 3D
+    Quantity: 1.0
+    Unit Price: 580.0
+  - Type: 1
+    No.: 64200
+    Description: Personnalisation interface métier
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 64200
+    Description: Extension bibliothèque matériaux
+    Quantity: 1.0
+    Unit Price: 890.0
+  - Type: 1
+    No.: 64110
+    Description: Abonnement cloud stockage projets
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 63600
+    Description: Formation MeubleCAD niveau avancé
+    Quantity: 4.0
+    Unit Price: 850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V35-003
+        Buy-from Vendor Name: Solutions CAO Mobilier
+        Buy-from Address: 71 Boulevard de Sébastopol
+        Buy-from Address 2: ''
+        Buy-from City: Paris
+        Buy-from Post Code: '75002'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64200
+        Deferral Code: 12M
+        Description: Module devis automatique client
+        Quantity: 1.0
+        Unit Cost: 1650.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64200
+        Deferral Code: 12M
+        Description: Module optimisation découpe panneaux
+        Quantity: 1.0
+        Unit Cost: 2200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63600
+        Deferral Code: ''
+        Description: Certification utilisateur expert
+        Quantity: 2.0
+        Unit Cost: 650.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64120
+        Deferral Code: 12M
+        Description: Support technique prioritaire annuel
+        Quantity: 1.0
+        Unit Cost: 1800.0
+      - Line No.: 50000
+        Type: 1
+        No.: 64200
+        Deferral Code: 24M
+        Description: Connecteur ERP production
+        Quantity: 1.0
+        Unit Cost: 4500.0
+      - Line No.: 60000
+        Type: 1
+        No.: 64200
+        Deferral Code: 12M
+        Description: Bibliothèque quincaillerie 3D
+        Quantity: 1.0
+        Unit Cost: 580.0
+      - Line No.: 70000
+        Type: 1
+        No.: 64200
+        Deferral Code: 12M
+        Description: Personnalisation interface métier
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 80000
+        Type: 1
+        No.: 64200
+        Deferral Code: 12M
+        Description: Extension bibliothèque matériaux
+        Quantity: 1.0
+        Unit Cost: 890.0
+      - Line No.: 90000
+        Type: 1
+        No.: 64110
+        Deferral Code: 12M
+        Description: Abonnement cloud stockage projets
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 100000
+        Type: 1
+        No.: 63600
+        Deferral Code: 3M
+        Description: Formation MeubleCAD niveau avancé
+        Quantity: 4.0
+        Unit Cost: 850.0
+- name: PA-INV-V36-002
+  description: VendorNo=V36;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Aciers Spéciaux Vendée
+    Address: 19 Route de la Roche
+    Address 2: ''
+    City: La Roche-sur-Yon
+    Country/Region Code: FR
+    Post Code: '85000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V36-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60600
+    Description: Tôles perforées déco design
+    Quantity: 15.0
+    Unit Price: 85.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V36-002
+        Buy-from Vendor Name: Aciers Spéciaux Vendée
+        Buy-from Address: 19 Route de la Roche
+        Buy-from Address 2: ''
+        Buy-from City: La Roche-sur-Yon
+        Buy-from Post Code: '85000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60600
+        Deferral Code: ''
+        Description: Tôles perforées déco design
+        Quantity: 15.0
+        Unit Cost: 85.0
+- name: PA-INV-V39-001
+  description: VendorNo=V39;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG003;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Éco-Finitions Durables
+    Address: 38 Rue de l'Écologie
+    Address 2: ''
+    City: Lorient
+    Country/Region Code: FR
+    Post Code: '56100'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V39-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60420
+    Description: Vernis à l'eau écologique 50L
+    Quantity: 10.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 60420
+    Description: Kit test nouvelles finitions bio
+    Quantity: 2.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 60420
+    Description: Laque naturelle sans COV 25L
+    Quantity: 4.0
+    Unit Price: 425.0
+  - Type: 1
+    No.: 60420
+    Description: Teinte naturelle châtaignier
+    Quantity: 10.0
+    Unit Price: 48.6
+  - Type: 1
+    No.: 60420
+    Description: Teinte végétale brou de noix
+    Quantity: 12.0
+    Unit Price: 42.5
+  - Type: 1
+    No.: 60420
+    Description: Cire carnauba finition meuble
+    Quantity: 10.0
+    Unit Price: 95.8
+  - Type: 1
+    No.: 62510
+    Description: Nuancier finitions écologiques
+    Quantity: 5.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 60420
+    Description: Savon entretien bois naturel
+    Quantity: 25.0
+    Unit Price: 18.4
+  - Type: 1
+    No.: 60420
+    Description: Huile de lin siccativée pure
+    Quantity: 20.0
+    Unit Price: 38.6
+  - Type: 1
+    No.: 60420
+    Description: Huile-cire dure satinée 10L
+    Quantity: 6.0
+    Unit Price: 198.5
+  - Type: 1
+    No.: 60420
+    Description: Cire d'abeille pure protection
+    Quantity: 15.0
+    Unit Price: 68.4
+  - Type: 1
+    No.: 60420
+    Description: Fond dur écologique primaire
+    Quantity: 8.0
+    Unit Price: 156.4
+  - Type: 1
+    No.: 60420
+    Description: Diluant végétal agrumes 20L
+    Quantity: 5.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 60420
+    Description: Vernis biosourcé alimentaire
+    Quantity: 5.0
+    Unit Price: 320.0
+  - Type: 1
+    No.: 60420
+    Description: Vernis UV biosourcé 2 composants
+    Quantity: 3.0
+    Unit Price: 480.0
+  - Type: 1
+    No.: 60420
+    Description: Huile dure naturelle bois 20L
+    Quantity: 8.0
+    Unit Price: 245.6
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V39-001
+        Buy-from Vendor Name: Éco-Finitions Durables
+        Buy-from Address: 38 Rue de l'Écologie
+        Buy-from Address 2: ''
+        Buy-from City: Lorient
+        Buy-from Post Code: '56100'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Vernis à l'eau écologique 50L
+        Quantity: 10.0
+        Unit Cost: 185.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Kit test nouvelles finitions bio
+        Quantity: 2.0
+        Unit Cost: 280.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Laque naturelle sans COV 25L
+        Quantity: 4.0
+        Unit Cost: 425.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Teinte naturelle châtaignier
+        Quantity: 10.0
+        Unit Cost: 48.6
+      - Line No.: 50000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Teinte végétale brou de noix
+        Quantity: 12.0
+        Unit Cost: 42.5
+      - Line No.: 60000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Cire carnauba finition meuble
+        Quantity: 10.0
+        Unit Cost: 95.8
+      - Line No.: 70000
+        Type: 1
+        No.: 62510
+        Deferral Code: ''
+        Description: Nuancier finitions écologiques
+        Quantity: 5.0
+        Unit Cost: 35.0
+      - Line No.: 80000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Savon entretien bois naturel
+        Quantity: 25.0
+        Unit Cost: 18.4
+      - Line No.: 90000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Huile de lin siccativée pure
+        Quantity: 20.0
+        Unit Cost: 38.6
+      - Line No.: 100000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Huile-cire dure satinée 10L
+        Quantity: 6.0
+        Unit Cost: 198.5
+      - Line No.: 110000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Cire d'abeille pure protection
+        Quantity: 15.0
+        Unit Cost: 68.4
+      - Line No.: 120000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Fond dur écologique primaire
+        Quantity: 8.0
+        Unit Cost: 156.4
+      - Line No.: 130000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Diluant végétal agrumes 20L
+        Quantity: 5.0
+        Unit Cost: 125.0
+      - Line No.: 140000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Vernis biosourcé alimentaire
+        Quantity: 5.0
+        Unit Cost: 320.0
+      - Line No.: 150000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Vernis UV biosourcé 2 composants
+        Quantity: 3.0
+        Unit Cost: 480.0
+      - Line No.: 160000
+        Type: 1
+        No.: 60420
+        Deferral Code: ''
+        Description: Huile dure naturelle bois 20L
+        Quantity: 8.0
+        Unit Cost: 245.6
+- name: PA-INV-V36-005
+  description: VendorNo=V36;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Aciers Spéciaux Vendée
+    Address: 19 Route de la Roche
+    Address 2: ''
+    City: La Roche-sur-Yon
+    Country/Region Code: FR
+    Post Code: '85000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V36-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61100
+    Description: Pliage tôles sur mesure
+    Quantity: 1.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 60600
+    Description: Acier Corten patine naturelle
+    Quantity: 20.0
+    Unit Price: 125.6
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V36-005
+        Buy-from Vendor Name: Aciers Spéciaux Vendée
+        Buy-from Address: 19 Route de la Roche
+        Buy-from Address 2: ''
+        Buy-from City: La Roche-sur-Yon
+        Buy-from Post Code: '85000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Pliage tôles sur mesure
+        Quantity: 1.0
+        Unit Cost: 680.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60600
+        Deferral Code: ''
+        Description: Acier Corten patine naturelle
+        Quantity: 20.0
+        Unit Cost: 125.6
+- name: PA-INV-V36-006
+  description: VendorNo=V36;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Aciers Spéciaux Vendée
+    Address: 19 Route de la Roche
+    Address 2: ''
+    City: La Roche-sur-Yon
+    Country/Region Code: FR
+    Post Code: '85000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V36-006
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60600
+    Description: Laiton massif barres 25mm
+    Quantity: 25.0
+    Unit Price: 48.5
+  - Type: 1
+    No.: 60600
+    Description: Échantillonnage finitions métal
+    Quantity: 1.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 60600
+    Description: Plats acier laminé 50x5mm
+    Quantity: 80.0
+    Unit Price: 12.8
+  - Type: 1
+    No.: 60600
+    Description: Bronze phosphoreux rondelles
+    Quantity: 200.0
+    Unit Price: 3.4
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V36-006
+        Buy-from Vendor Name: Aciers Spéciaux Vendée
+        Buy-from Address: 19 Route de la Roche
+        Buy-from Address 2: ''
+        Buy-from City: La Roche-sur-Yon
+        Buy-from Post Code: '85000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60600
+        Deferral Code: ''
+        Description: Laiton massif barres 25mm
+        Quantity: 25.0
+        Unit Cost: 48.5
+      - Line No.: 20000
+        Type: 1
+        No.: 60600
+        Deferral Code: ''
+        Description: Échantillonnage finitions métal
+        Quantity: 1.0
+        Unit Cost: 125.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60600
+        Deferral Code: ''
+        Description: Plats acier laminé 50x5mm
+        Quantity: 80.0
+        Unit Cost: 12.8
+      - Line No.: 40000
+        Type: 1
+        No.: 60600
+        Deferral Code: ''
+        Description: Bronze phosphoreux rondelles
+        Quantity: 200.0
+        Unit Cost: 3.4
+- name: PA-INV-V37-002
+  description: VendorNo=V37;VendorFrequencyGroup=New;VendorGroup=VG004;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Transport Martin
+    Address: 55 Route de Lorient
+    Address 2: ''
+    City: Rennes
+    Country/Region Code: FR
+    Post Code: '35000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V37-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62610
+    Description: Livraison express salon Lyon
+    Quantity: 1.0
+    Unit Price: 750.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison chaises lot 50 Marseille
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 62610
+    Description: Livraison comptoir accueil Toulouse
+    Quantity: 1.0
+    Unit Price: 720.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V37-002
+        Buy-from Vendor Name: Transport Martin
+        Buy-from Address: 55 Route de Lorient
+        Buy-from Address 2: ''
+        Buy-from City: Rennes
+        Buy-from Post Code: '35000'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison express salon Lyon
+        Quantity: 1.0
+        Unit Cost: 750.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison chaises lot 50 Marseille
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62610
+        Deferral Code: ''
+        Description: Livraison comptoir accueil Toulouse
+        Quantity: 1.0
+        Unit Cost: 720.0
+- name: PA-INV-V38-004
+  description: VendorNo=V38;VendorFrequencyGroup=New;VendorGroup=VG004;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Transports Martin Express
+    Address: Zone Fret de Rennes
+    Address 2: ''
+    City: Saint-Jacques-de-la-Lande
+    Country/Region Code: FR
+    Post Code: '35136'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V38-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62620
+    Description: Envoi express plateau verre
+    Quantity: 1.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 62620
+    Description: Messagerie vis spéciales lot
+    Quantity: 1.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 62620
+    Description: Coursier clés serrures dépannage
+    Quantity: 1.0
+    Unit Price: 52.0
+  - Type: 1
+    No.: 62620
+    Description: Envoi express tissus échantillon
+    Quantity: 1.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 62620
+    Description: Messagerie rapide ferrures SAV
+    Quantity: 1.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 62620
+    Description: Coursier charnières remplacement
+    Quantity: 1.0
+    Unit Price: 55.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V38-004
+        Buy-from Vendor Name: Transports Martin Express
+        Buy-from Address: Zone Fret de Rennes
+        Buy-from Address 2: ''
+        Buy-from City: Saint-Jacques-de-la-Lande
+        Buy-from Post Code: '35136'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Envoi express plateau verre
+        Quantity: 1.0
+        Unit Cost: 125.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Messagerie vis spéciales lot
+        Quantity: 1.0
+        Unit Cost: 35.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Coursier clés serrures dépannage
+        Quantity: 1.0
+        Unit Cost: 52.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Envoi express tissus échantillon
+        Quantity: 1.0
+        Unit Cost: 42.0
+      - Line No.: 50000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Messagerie rapide ferrures SAV
+        Quantity: 1.0
+        Unit Cost: 62.0
+      - Line No.: 60000
+        Type: 1
+        No.: 62620
+        Deferral Code: ''
+        Description: Coursier charnières remplacement
+        Quantity: 1.0
+        Unit Cost: 55.0
+- name: PA-INV-V33-003
+  description: VendorNo=V33;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Cuirs Italiens Milano S.r.l.
+    Address: Via della Concia 15
+    Address 2: ''
+    City: Milano
+    Country/Region Code: IT
+    Post Code: '20122'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V33-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60210
+    Description: Cuoio fiore corretto nero
+    Quantity: 50.0
+    Unit Price: 98.6
+  - Type: 1
+    No.: 60210
+    Description: Ritagli pelle assortiti kg
+    Quantity: 50.0
+    Unit Price: 25.0
+  - Type: 1
+    No.: 62600
+    Description: Trasporto refrigerato Milano-Rennes
+    Quantity: 1.0
+    Unit Price: 1850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V33-003
+        Buy-from Vendor Name: Cuirs Italiens Milano S.r.l.
+        Buy-from Address: Via della Concia 15
+        Buy-from Address 2: ''
+        Buy-from City: Milano
+        Buy-from Post Code: '20122'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60210
+        Deferral Code: ''
+        Description: Cuoio fiore corretto nero
+        Quantity: 50.0
+        Unit Cost: 98.6
+      - Line No.: 20000
+        Type: 1
+        No.: 60210
+        Deferral Code: ''
+        Description: Ritagli pelle assortiti kg
+        Quantity: 50.0
+        Unit Cost: 25.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62600
+        Deferral Code: ''
+        Description: Trasporto refrigerato Milano-Rennes
+        Quantity: 1.0
+        Unit Cost: 1850.0
+- name: PA-INV-V35-002
+  description: VendorNo=V35;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Solutions CAO Mobilier
+    Address: 71 Boulevard de Sébastopol
+    Address 2: ''
+    City: Paris
+    Country/Region Code: FR
+    Post Code: '75002'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V35-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64200
+    Description: Module FAO intégration machines CN
+    Quantity: 2.0
+    Unit Price: 3500.0
+  - Type: 1
+    No.: 64110
+    Description: Plateforme collaboration projet
+    Quantity: 1.0
+    Unit Price: 960.0
+  - Type: 1
+    No.: 64100
+    Description: Licence viewer client gratuite x50
+    Quantity: 1.0
+    Unit Price: 0.0
+  - Type: 1
+    No.: 64200
+    Description: Module réalité augmentée showroom
+    Quantity: 1.0
+    Unit Price: 5400.0
+  - Type: 1
+    No.: 62420
+    Description: Audit workflow conception atelier
+    Quantity: 1.0
+    Unit Price: 2800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V35-002
+        Buy-from Vendor Name: Solutions CAO Mobilier
+        Buy-from Address: 71 Boulevard de Sébastopol
+        Buy-from Address 2: ''
+        Buy-from City: Paris
+        Buy-from Post Code: '75002'
+        Buy-from Country/Region Code: FR
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64200
+        Deferral Code: 12M
+        Description: Module FAO intégration machines CN
+        Quantity: 2.0
+        Unit Cost: 3500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64110
+        Deferral Code: 12M
+        Description: Plateforme collaboration projet
+        Quantity: 1.0
+        Unit Cost: 960.0
+      - Line No.: 30000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Licence viewer client gratuite x50
+        Quantity: 1.0
+        Unit Cost: 0.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64200
+        Deferral Code: 24M
+        Description: Module réalité augmentée showroom
+        Quantity: 1.0
+        Unit Cost: 5400.0
+      - Line No.: 50000
+        Type: 1
+        No.: 62420
+        Deferral Code: 6M
+        Description: Audit workflow conception atelier
+        Quantity: 1.0
+        Unit Cost: 2800.0
+- name: PA-INV-V34-005
+  description: VendorNo=V34;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-fr-FR.yaml
+  vendor:
+    Name: Nordic Wood Supplies AB
+    Address: Skogsvägen 24
+    Address 2: ''
+    City: Malmö
+    Country/Region Code: SE
+    Post Code: '21147'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V34-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: CF
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60100
+    Description: Alm massiv snickerivirke
+    Quantity: 25.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 60100
+    Description: Furu kvistefri kvalitet A m3
+    Quantity: 8.0
+    Unit Price: 485.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V34-005
+        Buy-from Vendor Name: Nordic Wood Supplies AB
+        Buy-from Address: Skogsvägen 24
+        Buy-from Address 2: ''
+        Buy-from City: Malmö
+        Buy-from Post Code: '21147'
+        Buy-from Country/Region Code: SE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Alm massiv snickerivirke
+        Quantity: 25.0
+        Unit Cost: 95.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Furu kvistefri kvalitet A m3
+        Quantity: 8.0
+        Unit Cost: 485.0

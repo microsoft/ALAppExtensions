@@ -11,11 +11,10 @@ permissionset 6784 "WHT - Admin"
     Access = Public;
     Assignable = true;
 
+    IncludedPermissionSets = "WHT - Edit";
+
     Permissions =
-        tabledata "Temp Withholding Tax Entry" = IMD,
         tabledata "Wthldg. Tax Bus. Post. Group" = IMD,
-        tabledata "Withholding Tax Cert. Buffer" = IMD,
-        tabledata "Withholding Tax Entry" = IMD,
         tabledata "Withholding Tax Posting Setup" = IMD,
         tabledata "Wthldg. Tax Prod. Post. Group" = IMD,
         tabledata "Withholding Tax Posting Buffer" = IMD,

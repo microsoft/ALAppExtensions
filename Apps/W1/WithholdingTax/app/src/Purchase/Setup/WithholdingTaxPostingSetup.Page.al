@@ -11,6 +11,8 @@ page 6786 "Withholding Tax Posting Setup"
     PageType = List;
     SourceTable = "Withholding Tax Posting Setup";
     UsageCategory = Administration;
+    AboutTitle = 'About Withholding Tax Posting Setup';
+    AboutText = 'Configure how withholding tax amounts are calculated and posted to general ledger accounts. Define combinations of withholding tax business and product posting groups, and map vendors and items to the correct accounts to ensure accurate tax calculation and financial reporting.';
 
     layout
     {
@@ -34,7 +36,7 @@ page 6786 "Withholding Tax Posting Setup"
                 field("Wthldg. Tax Calculation Rule"; Rec."Wthldg. Tax Calculation Rule")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Withholding Tax calculation rule.';
+                    ToolTip = 'Specifies the calculation rule for withholding tax, which is used with the amount specified in the withholding tax Minimum Invoice Amount field. This helps identify the transactions for which withholding tax isn''t deducted. For example, if you select the Less than option here and enter 100 in the withholding tax Minimum Invoice Amount field, then withholding tax isn''t deducted for those transactions with an amount less than 100.';
                 }
                 field("Wthldg. Tax Min. Inv. Amount"; Rec."Wthldg. Tax Min. Inv. Amount")
                 {
@@ -52,53 +54,53 @@ page 6786 "Withholding Tax Posting Setup"
                 field("Realized Withholding Tax Type"; Rec."Realized Withholding Tax Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies how Withholding Tax is calculated for purchases or sales of items with this particular combination of Withholding Tax business and product posting groups.';
+                    ToolTip = 'Specifies when the withholding tax is realized for the transaction. Choose whether the withholding is realized when the invoice is posted, when the payment is posted, or at the earliest of the two.';
                 }
                 field("Prepaid Wthldg. Tax Acc. Code"; Rec."Prepaid Wthldg. Tax Acc. Code")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the G/L account number to which you want to post sales Withholding for the particular combination of Withholding Tax business and product posting groups.';
+                    ToolTip = 'Specifies the G/L account number used to post prepaid (advance) withholding tax for the selected combination of Withholding Tax business posting group and product posting group.';
                 }
                 field("Payable Wthldg. Tax Acc. Code"; Rec."Payable Wthldg. Tax Acc. Code")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the G/L account number to which you want to post Purchase Withholding for the particular combination of Withholding Tax business and product posting groups.';
+                    ToolTip = 'Specifies the G/L account number used to post payable withholding tax for the selected combination of Withholding Tax business posting group and product posting group. This account is used when withholding tax becomes due and payable to the tax authority, such as upon payment posting or when the withholding obligation is finalized.';
                 }
                 field("Bal. Prepaid Account Type"; Rec."Bal. Prepaid Account Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the type of Balancing Account type for Sales Withholding transaction.';
+                    ToolTip = 'Specifies the type of balancing account for withholding tax transactions.';
                 }
                 field("Bal. Prepaid Account No."; Rec."Bal. Prepaid Account No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Account No. or Bank name (based on Bal. Prepaid Account Type) as a balancing account for Sales Withholding transactions.';
+                    ToolTip = 'Specifies the account number or bank name for sales withholding tax transactions, based on the type selected in the Bal. Prepaid Account Type field.';
                 }
                 field("Bal. Payable Account Type"; Rec."Bal. Payable Account Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the type of Balancing Account type for Purchase Withholding transaction.';
+                    ToolTip = 'Specifies the type of balancing account for purchase withholding tax transactions.';
                 }
                 field("Bal. Payable Account No."; Rec."Bal. Payable Account No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Account No. or Bank name (based on Bal. Prepaid Account Type) as a balancing account for Purchase Withholding transactions.';
+                    ToolTip = 'Specifies the account number or bank name for purchase withholding tax transactions. This is based on the type selected in the Bal. Payable Account Type field.';
                 }
                 field("Withholding Tax Report Line No. Series"; Rec."Wthldg. Tax Rep Line No Series")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the no. series for Withholding Report Line for a particular Withholding Business and Product Posting group combination.';
+                    ToolTip = 'Specifies the number series for the withholding tax report line.';
                 }
                 field("Revenue Type"; Rec."Revenue Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Revenue Type this combination of Withholding Business and Product Posting group belongs to.';
+                    ToolTip = 'Specifies the type of revenue.';
                     ShowMandatory = true;
                 }
                 field("Purch. Wthldg. Tax Adj. Acc No"; Rec."Purch. Wthldg. Tax Adj. Acc No")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies an account number for Purchase Credit Memo adjustments.';
+                    ToolTip = 'Specifies the account number on which to post purchase credit memo adjustments.';
                 }
                 field("Sales Wthldg. Tax Adj. Acc No"; Rec."Sales Wthldg. Tax Adj. Acc No")
                 {
@@ -109,7 +111,7 @@ page 6786 "Withholding Tax Posting Setup"
                 field(Sequence; Rec.Sequence)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the sequence in which the Withholding Tax Posting Setup shall be displayed in reports.';
+                    ToolTip = 'Specifies the sequence in which the withholding tax posting setup information must be displayed in reports.';
                 }
             }
         }

@@ -1,0 +1,1104 @@
+test_setup:
+  # Domain quirks: below we define records that are required to make the test work, not necessarily relevant for the test itself
+  genBusinessPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Gen. Business Posting Group for tests
+
+  genProductPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Gen. Product Posting Group for tests
+
+  generalPostingSetupToCreate:
+  - Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    Description: Default General Posting Setup for tests
+
+  vatBusinessPostingGroupToCreate:
+  - Code: PAYABLESAGENT-10
+    Description: VAT Business Posting Group for tests
+  - Code: PAYABLESAGENT-25
+    Description: VAT Business Posting Group for tests
+
+  vatProductPostingGroupToCreate:
+  - Code: PAYABLESAGENT-10
+    Description: VAT Product Posting Group for tests
+  - Code: PAYABLESAGENT-25
+    Description: VAT Product Posting Group for tests
+
+  vatPostingSetupToCreate:
+  - Description: 10% VAT Posting Setup for tests
+    VAT Identifier: PAYABLESAGENT-10
+    VAT Calculation Type: 0 # Normal VAT
+    VAT %: 10
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - Description: 25% VAT Posting Setup for tests
+    VAT Identifier: PAYABLESAGENT-25
+    VAT Calculation Type: 0 # Normal VAT
+    VAT %: 25
+    VAT Bus. Posting Group: PAYABLESAGENT-25
+    VAT Prod. Posting Group: PAYABLESAGENT-25
+
+  vendorPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Vendor Posting Group for tests
+
+  customerPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Customer Posting Group for tests
+
+  vendorTemplToCreate:
+  - Code: DEFAULT
+    Description: Default Vendor Template for tests
+    Vendor Posting Group: PAYABLESAGENT-TEST
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    
+  vendorsToCreate:
+  - No.: 10002
+    Name: Great Plains Manufacturing
+    Address: 4555 Pioneer Road
+    Country/Region Code: US
+    City: Omaha
+    Post Code: 68104
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10003
+    Name: Great Planes Mfg
+    Address: 4557 Pioneer Road
+    Country/Region Code: US
+    City: Omaha
+    Post Code: 68104
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10004
+    Name: FreshMart Foods
+    Address: 89 Greenway Blvd
+    Country/Region Code: US
+    City: Denver
+    Post Code: 80202
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10005
+    Name: Fresh Mart Food Services
+    Address: 90 Greenway Blvd
+    Country/Region Code: US
+    City: Denver
+    Post Code: 80202
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10006
+    Name: Clean & Green Solutions
+    Address: 501 Eco Street
+    Country/Region Code: US
+    City: Portland
+    Post Code: 97204
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10007
+    Name: Clean and Green Solution
+    Address: 503 Eco Street
+    Country/Region Code: US
+    City: Portland
+    Post Code: 97204
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10008
+    Name: GlobalTech Group
+    Address: 1 Innovation Park
+    Country/Region Code: US
+    City: Austin
+    Post Code: 73301
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10009
+    Name: Global Technologies Inc
+    Address: 2 Innovation Park
+    Country/Region Code: US
+    City: Austin
+    Post Code: 73301
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10010
+    Name: Delta Shipping Company
+    Address: 400 Harbor Lane
+    Country/Region Code: US
+    City: New Orleans
+    Post Code: 70130
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10011
+    Name: D. Shipping Co
+    Address: 401 Harbor Lane
+    Country/Region Code: US
+    City: New Orleans
+    Post Code: 70130
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10012
+    Name: Prime Office Solutions
+    Address: 780 Corporate Ave
+    Country/Region Code: US
+    City: Dallas
+    Post Code: 75201
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10013
+    Name: Pr1me Office Solution
+    Address: 782 Corporate Ave
+    Country/Region Code: US
+    City: Dallas
+    Post Code: 75201
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10014
+    Name: Jutland Builders Inc
+    Address: 900 Construction Road
+    Country/Region Code: US
+    City: Phoenix
+    Post Code: 85001
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10015
+    Name: JutLand Building Corp
+    Address: 902 Construction Road
+    Country/Region Code: US
+    City: Phoenix
+    Post Code: 85001
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10016
+    Name: SuperMart USA
+    Address: 200 Main Street
+    Country/Region Code: US
+    City: Chicago
+    Post Code: 60601
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10017
+    Name: SuperMarten Superstore
+    Address: 202 Main Street
+    Country/Region Code: US
+    City: Chicago
+    Post Code: 60601
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10018
+    Name: Horizon Logistics
+    Address: 550 Horizon Blvd
+    Country/Region Code: US
+    City: Atlanta
+    Post Code: 30303
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10019
+    Name: Horizon Logistix
+    Address: 551 Horizon Blvd
+    Country/Region Code: US
+    City: Atlanta
+    Post Code: 30303
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10020
+    Name: Techies Hub
+    Address: 340 Silicon Drive
+    Country/Region Code: US
+    City: San Jose
+    Post Code: 95112
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10021
+    Name: Techie's Hub
+    Address: 341 Silicon Drive
+    Country/Region Code: US
+    City: San Jose
+    Post Code: 95112
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10022
+    Name: Green Valley Organics
+    Address: 88 Farm Lane
+    Country/Region Code: US
+    City: Nashville
+    Post Code: 37201
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10023
+    Name: GreenValley Organic Foods
+    Address: 89 Farm Lane
+    Country/Region Code: US
+    City: Nashville
+    Post Code: 37201
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10024
+    Name: Oceanic Imports
+    Address: 120 Pier Street
+    Country/Region Code: US
+    City: Boston
+    Post Code: 2110
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10025
+    Name: Wawe Imports LLC
+    Address: 121 Pier Street
+    Country/Region Code: US
+    City: Boston
+    Post Code: 2110
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10026
+    Name: West Coast Cycling
+    Address: 300 Bike Blvd
+    Country/Region Code: US
+    City: Seattle
+    Post Code: 98101
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10027
+    Name: WestCoast Cycle
+    Address: 302 Bike Blvd
+    Country/Region Code: US
+    City: Seattle
+    Post Code: 98101
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10028
+    Name: Alpha Medical Supplies
+    Address: 999 Health Drive
+    Country/Region Code: US
+    City: Houston
+    Post Code: 77002
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10029
+    Name: AlphaMed Supply
+    Address: 1001 Health Drive
+    Country/Region Code: US
+    City: Houston
+    Post Code: 77002
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10030
+    Name: Northern Lights Brewery
+    Address: 87 Barley Lane
+    Country/Region Code: US
+    City: Minneapolis
+    Post Code: 55401
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10031
+    Name: Northen Light Brews
+    Address: 88 Barley Lane
+    Country/Region Code: US
+    City: Minneapolis
+    Post Code: 55401
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10032
+    Name: Rapid Courier Services
+    Address: 50 Delivery Street
+    Country/Region Code: US
+    City: Los Angeles
+    Post Code: 90001
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10033
+    Name: Rapid Couriers
+    Address: 52 Delivery Street
+    Country/Region Code: US
+    City: Los Angeles
+    Post Code: 90001
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10034
+    Name: Silver Line Textiles
+    Address: 77 Fabric Road
+    Country/Region Code: US
+    City: Charlotte
+    Post Code: 28202
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10035
+    Name: SilverLine Textile Co
+    Address: 78 Fabric Road
+    Country/Region Code: US
+    City: Charlotte
+    Post Code: 28202
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10036
+    Name: StarBright Lighting
+    Address: 15 Light Street
+    Country/Region Code: US
+    City: Orlando
+    Post Code: 32801
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10037
+    Name: Star Bright Lights
+    Address: 16 Light Street
+    Country/Region Code: US
+    City: Orlando
+    Post Code: 32801
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10038
+    Name: QuickFix Hardware
+    Address: 600 Tools Ave
+    Country/Region Code: US
+    City: Detroit
+    Post Code: 48201
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10039
+    Name: Quick Fix Hardware
+    Address: 601 Tools Ave
+    Country/Region Code: US
+    City: Detroit
+    Post Code: 48201
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10040
+    Name: Modern Living Interiors
+    Address: 450 Home Road
+    Country/Region Code: US
+    City: Tampa
+    Post Code: 33602
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10041
+    Name: Modrn Living Interior
+    Address: 452 Home Road
+    Country/Region Code: US
+    City: Tampa
+    Post Code: 33602
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10042
+    Name: London Supply Co
+    Address: 10 River Street
+    Country/Region Code: GB
+    City: London
+    Post Code: SW1A 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10043
+    Name: London Supplies Ltd
+    Address: 11 River Street
+    Country/Region Code: GB
+    City: London
+    Post Code: SW1A 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10044
+    Name: Yorkshire Farming Group
+    Address: 220 Harvest Lane
+    Country/Region Code: GB
+    City: Leeds
+    Post Code: LS1 4DT
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10045
+    Name: York Shire Farms
+    Address: 222 Harvest Lane
+    Country/Region Code: GB
+    City: Leeds
+    Post Code: LS1 4DT
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10046
+    Name: BritTech Solutions
+    Address: 45 Innovation Road
+    Country/Region Code: GB
+    City: Cambridge
+    Post Code: CB1 1PT
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10047
+    Name: British Technologies Ltd
+    Address: 46 Innovation Road
+    Country/Region Code: GB
+    City: Cambridge
+    Post Code: CB1 1PT
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10048
+    Name: Green & Fresh Produce
+    Address: 88 Market Street
+    Country/Region Code: GB
+    City: Manchester
+    Post Code: M1 1AE
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10049
+    Name: Green and Fresh
+    Address: 89 Market Street
+    Country/Region Code: GB
+    City: Manchester
+    Post Code: M1 1AE
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10050
+    Name: Albion Brewery
+    Address: 100 Beer Street
+    Country/Region Code: GB
+    City: Birmingham
+    Post Code: B1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10051
+    Name: Albion Brews Ltd
+    Address: 102 Beer Street
+    Country/Region Code: GB
+    City: Birmingham
+    Post Code: B1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10052
+    Name: Northern Steel Works
+    Address: 250 Forge Lane
+    Country/Region Code: GB
+    City: Sheffield
+    Post Code: S1 2AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10053
+    Name: Northern Steels
+    Address: 252 Forge Lane
+    Country/Region Code: GB
+    City: Sheffield
+    Post Code: S1 2AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10054
+    Name: London Fashion Group
+    Address: 33 Style Avenue
+    Country/Region Code: GB
+    City: London
+    Post Code: W1D 3QA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10055
+    Name: Londn Fashion
+    Address: 35 Style Avenue
+    Country/Region Code: GB
+    City: London
+    Post Code: W1D 3QA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10056
+    Name: British Cargo Ltd
+    Address: 400 Dock Road
+    Country/Region Code: GB
+    City: Liverpool
+    Post Code: L1 8JQ
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10057
+    Name: BritCargo
+    Address: 401 Dock Road
+    Country/Region Code: GB
+    City: Liverpool
+    Post Code: L1 8JQ
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10058
+    Name: Glasgow Electronics
+    Address: 57 Circuit Street
+    Country/Region Code: GB
+    City: Glasgow
+    Post Code: G1 2AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10059
+    Name: Glasgo Electric
+    Address: 58 Circuit Street
+    Country/Region Code: GB
+    City: Glasgow
+    Post Code: G1 2AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10060
+    Name: Royal Marine Shipping
+    Address: 777 Sea Lane
+    Country/Region Code: GB
+    City: Southampton
+    Post Code: SO14 0AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10061
+    Name: Royal Marines Ship
+    Address: 778 Sea Lane
+    Country/Region Code: GB
+    City: Southampton
+    Post Code: SO14 0AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10062
+    Name: Kentish Office Supplies
+    Address: 10 Paper Street
+    Country/Region Code: GB
+    City: Canterbury
+    Post Code: CT1 2AB
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10063
+    Name: Kent Office Supply
+    Address: 11 Paper Street
+    Country/Region Code: GB
+    City: Canterbury
+    Post Code: CT1 2AB
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10064
+    Name: Bristol Builders
+    Address: 80 Hammer Lane
+    Country/Region Code: GB
+    City: Bristol
+    Post Code: BS1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10065
+    Name: Bristal Build Co
+    Address: 82 Hammer Lane
+    Country/Region Code: GB
+    City: Bristol
+    Post Code: BS1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10066
+    Name: Oxford Furniture Makers
+    Address: 30 Wood Street
+    Country/Region Code: GB
+    City: Oxford
+    Post Code: OX1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10067
+    Name: OxFord Furnishings
+    Address: 32 Wood Street
+    Country/Region Code: GB
+    City: Oxford
+    Post Code: OX1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10068
+    Name: Sussex Organic Foods
+    Address: 15 Farm Road
+    Country/Region Code: GB
+    City: Brighton
+    Post Code: BN1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10069
+    Name: Sussex Organics
+    Address: 16 Farm Road
+    Country/Region Code: GB
+    City: Brighton
+    Post Code: BN1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10070
+    Name: Edinburgh Textiles
+    Address: 70 Fabric Street
+    Country/Region Code: GB
+    City: Edinburgh
+    Post Code: EH1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10071
+    Name: Edinburg Textile
+    Address: 72 Fabric Street
+    Country/Region Code: GB
+    City: Edinburgh
+    Post Code: EH1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10072
+    Name: Royal Crown Lighting
+    Address: 50 Light Street
+    Country/Region Code: GB
+    City: London
+    Post Code: EC1A 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10073
+    Name: Royal Crown Lights
+    Address: 51 Light Street
+    Country/Region Code: GB
+    City: London
+    Post Code: EC1A 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10074
+    Name: Northern Couriers
+    Address: 44 Delivery Lane
+    Country/Region Code: GB
+    City: Newcastle
+    Post Code: NE1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10075
+    Name: North Courier Services
+    Address: 46 Delivery Lane
+    Country/Region Code: GB
+    City: Newcastle
+    Post Code: NE1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10076
+    Name: Midland Metals
+    Address: 20 Steel Street
+    Country/Region Code: GB
+    City: Birmingham
+    Post Code: B2 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10077
+    Name: Mid Land Metalworks
+    Address: 22 Steel Street
+    Country/Region Code: GB
+    City: Birmingham
+    Post Code: B2 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10078
+    Name: Windsor Wines Ltd
+    Address: 90 Vine Lane
+    Country/Region Code: GB
+    City: Windsor
+    Post Code: SL4 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10079
+    Name: Wind Sor Wine Co
+    Address: 92 Vine Lane
+    Country/Region Code: GB
+    City: Windsor
+    Post Code: SL4 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10080
+    Name: Cardiff Carpets
+    Address: 110 Wool Street
+    Country/Region Code: GB
+    City: Cardiff
+    Post Code: CF1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10081
+    Name: Cardif Carpet Co
+    Address: 112 Wool Street
+    Country/Region Code: GB
+    City: Cardiff
+    Post Code: CF1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10082
+    Name: Highland Spirits
+    Address: 15 Whisky Road
+    Country/Region Code: GB
+    City: Inverness
+    Post Code: IV1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10083
+    Name: Highland Spirit Co
+    Address: 16 Whisky Road
+    Country/Region Code: GB
+    City: Inverness
+    Post Code: IV1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10084
+    Name: Cambridge Computing
+    Address: 300 Tech Park
+    Country/Region Code: GB
+    City: Cambridge
+    Post Code: CB2 2AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10085
+    Name: Cambrdge Computer
+    Address: 302 Tech Park
+    Country/Region Code: GB
+    City: Cambridge
+    Post Code: CB2 2AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10086
+    Name: Nottingham Bikes
+    Address: 500 Cycle Lane
+    Country/Region Code: GB
+    City: Nottingham
+    Post Code: NG1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10087
+    Name: Nottinghame Bike Co
+    Address: 502 Cycle Lane
+    Country/Region Code: GB
+    City: Nottingham
+    Post Code: NG1 1AA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10088
+    Name: Kentish Clothing
+    Address: 77 Fashion Street
+    Country/Region Code: GB
+    City: Canterbury
+    Post Code: CT2 2AB
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10089
+    Name: Kent Clothing Co
+    Address: 79 Fashion Street
+    Country/Region Code: GB
+    City: Canterbury
+    Post Code: CT2 2AB
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10090
+    Name: Atlantic Supplies Inc
+    Address: 1200 Ocean Drive
+    Country/Region Code: US
+    City: Miami
+    Post Code: 33139
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10091
+    Name: Atlantics Supply LLC
+    Address: 1201 Ocean Drive
+    Country/Region Code: US
+    City: Miami
+    Post Code: 33139
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10092
+    Name: Northern Supply LLC
+    Address: 4500 Maple Avenue
+    Country/Region Code: US
+    City: Dallas
+    Post Code: 75219
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10093
+    Name: Horizon Supply LLC
+    Address: 88 Bay Street
+    Country/Region Code: US
+    City: San Francisco
+    Post Code: 94133
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10094
+    Name: Summit Supply LLC
+    Address: 230 Mountain Road
+    Country/Region Code: US
+    City: Denver
+    Post Code: 80202
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10095
+    Name: Pioneer Supply LLC
+    Address: 600 Frontier Avenue
+    Country/Region Code: US
+    City: Phoenix
+    Post Code: 85004
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10096
+    Name: Coastal Supply LLC
+    Address: 725 Shoreline Drive
+    Country/Region Code: US
+    City: Charleston
+    Post Code: 29401
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10097
+    Name: Prairie Supply LLC
+    Address: 312 Meadow Lane
+    Country/Region Code: US
+    City: Omaha
+    Post Code: 68102
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10098
+    Name: Liberty Supply LLC
+    Address: 1776 Freedom Blvd
+    Country/Region Code: US
+    City: Philadelphia
+    Post Code: 19106
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10099
+    Name: Ironwood Supply LLC
+    Address: 950 Industrial Way
+    Country/Region Code: US
+    City: Pittsburgh
+    Post Code: 15222
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10100
+    Name: Evergreen Supply LLC
+    Address: 404 Pine Street
+    Country/Region Code: US
+    City: Seattle
+    Post Code: 98101
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10101
+    Name: Sterling Supply LLC
+    Address: 121 Silver Road
+    Country/Region Code: US
+    City: Boston
+    Post Code: 2108
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10102
+    Name: Harborview Supply LLC
+    Address: 390 Dockside Avenue
+    Country/Region Code: US
+    City: Baltimore
+    Post Code: 21202
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10103
+    Name: Capital Supply LLC
+    Address: 500 Constitution Avenue
+    Country/Region Code: US
+    City: Washington
+    Post Code: 20001
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10104
+    Name: Rivertown Supply LLC
+    Address: 840 River Street
+    Country/Region Code: US
+    City: Memphis
+    Post Code: 38103
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10105
+    Name: Gateway Supply LLC
+    Address: 33 Arch Bridge Lane
+    Country/Region Code: US
+    City: St. Louis
+    Post Code: 63102
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10106
+    Name: Granite Supply LLC
+    Address: 70 Monument Circle
+    Country/Region Code: US
+    City: Indianapolis
+    Post Code: 46204
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10107
+    Name: Lakeside Supply LLC
+    Address: 220 Lake Shore Drive
+    Country/Region Code: US
+    City: Chicago
+    Post Code: 60601
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10108
+    Name: Golden Gate Supply LLC
+    Address: 123 Bridgeway Blvd
+    Country/Region Code: US
+    City: San Francisco
+    Post Code: 94129
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10109
+    Name: Bluegrass Supply LLC
+    Address: 101 Bourbon Street
+    Country/Region Code: US
+    City: Louisville
+    Post Code: 40202
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10110
+    Name: Sunset Supply LLC
+    Address: 777 Sunset Blvd
+    Country/Region Code: US
+    City: Los Angeles
+    Post Code: 90028
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10111
+    Name: Thames Supply LLC
+    Address: 12 Riverside Walk
+    Country/Region Code: GB
+    City: London
+    Post Code: SE1 7PB
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10112
+    Name: Highland Supply LLC
+    Address: 88 Castle Street
+    Country/Region Code: GB
+    City: Edinburgh
+    Post Code: EH1 2NG
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10113
+    Name: Seaside Supply LLC
+    Address: 25 Marine Parade
+    Country/Region Code: GB
+    City: Brighton
+    Post Code: BN2 1TL
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10114
+    Name: Ironbridge Supply LLC
+    Address: 15 Foundry Road
+    Country/Region Code: GB
+    City: Telford
+    Post Code: TF8 7JP
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10115
+    Name: Yorkshire Supply LLC
+    Address: 30 Minster Gate
+    Country/Region Code: GB
+    City: York
+    Post Code: YO1 7HL
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10116
+    Name: Granite Hill Supply LLC
+    Address: 44 Granite Road
+    Country/Region Code: GB
+    City: Aberdeen
+    Post Code: AB10 1YS
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10117
+    Name: Lakeshore Supply LLC
+    Address: 9 Windermere Lane
+    Country/Region Code: GB
+    City: Windermere
+    Post Code: LA23 1AQ
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10118
+    Name: Oxfordshire Supply LLC
+    Address: 11 High Street
+    Country/Region Code: GB
+    City: Oxford
+    Post Code: OX1 4BG
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10119
+    Name: Peak District Supply LLC
+    Address: 77 Valley Road
+    Country/Region Code: GB
+    City: Bakewell
+    Post Code: DE45 1EY
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10120
+    Name: Cotswold Supply LLC
+    Address: 5 Hilltop Crescent
+    Country/Region Code: GB
+    City: Cheltenham
+    Post Code: GL50 3PB
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10121
+    Name: Midlands Supply LLC
+    Address: 102 Industrial Estate Road
+    Country/Region Code: GB
+    City: Birmingham
+    Post Code: B4 7ET
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10122
+    Name: Riverside Supply LLC
+    Address: 210 River Road
+    Country/Region Code: GB
+    City: Newcastle
+    Post Code: NE1 3HE
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10123
+    Name: Cornish Coast Supply LLC
+    Address: 12 Harbour View
+    Country/Region Code: GB
+    City: St Ives
+    Post Code: TR26 1PD
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10124
+    Name: Stonehenge Supply LLC
+    Address: 33 Heritage Way
+    Country/Region Code: GB
+    City: Salisbury
+    Post Code: SP1 3TP
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10125
+    Name: Snowdonia Supply LLC
+    Address: 19 Summit Road
+    Country/Region Code: GB
+    City: Betws-y-Coed
+    Post Code: LL24 0AH
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10126
+    Name: Kentish Supply LLC
+    Address: 7 Orchard Lane
+    Country/Region Code: GB
+    City: Canterbury
+    Post Code: CT1 2BB
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10127
+    Name: Royal Dock Supply LLC
+    Address: 50 Dockyard Street
+    Country/Region Code: GB
+    City: Portsmouth
+    Post Code: PO1 3LT
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10128
+    Name: Cambridge Supply LLC
+    Address: 45 Scholar Road
+    Country/Region Code: GB
+    City: Cambridge
+    Post Code: CB2 1TN
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10129
+    Name: Manchester Supply LLC
+    Address: 99 Deansgate
+    Country/Region Code: GB
+    City: Manchester
+    Post Code: M3 2NW
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  - No.: 10130
+    Name: Bristol Supply LLC
+    Address: 120 Clifton Road
+    Country/Region Code: GB
+    City: Bristol
+    Post Code: BS8 1NW
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  glAccountsToCreate:
+  # Gen. Posting Type: 0="", 1=Purchase, 2=Sales, 3=Settlement
+  # Account Type: 0=Posting, 1=Heading, 3=Begin-Total, 4=End-Total
+  # Account Category: 0=Balance Sheet, 1=Assets, 2=Liabilities, 3=Equity, 4=Income, 5=COGS, 6=Expense
+  - No.: "1234"
+    Name: Consulting Services
+    Gen. Posting Type: 1 # Purchase
+    Account Type: 0 # Posting
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+
+

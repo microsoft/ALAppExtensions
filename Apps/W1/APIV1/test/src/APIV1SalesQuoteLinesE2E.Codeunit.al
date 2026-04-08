@@ -684,7 +684,7 @@ codeunit 139736 "APIV1 - Sales Quote Lines E2E"
     procedure TestPatchingTheTypeBlanksIds()
     var
         SalesHeader: Record "Sales Header";
-        SalesInvoiceLineAggregate: Record "Sales Invoice Line Aggregate";
+        TempSalesInvoiceLineAggregate: Record "Sales Invoice Line Aggregate";
         SalesLine: Record "Sales Line";
         TargetURL: Text;
         ResponseText: Text;
@@ -700,7 +700,7 @@ codeunit 139736 "APIV1 - Sales Quote Lines E2E"
         FindFirstSalesLine(SalesHeader, SalesLine);
         LineNo := SalesLine."Line No.";
 
-        QuoteLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(SalesInvoiceLineAggregate."API Type"::Account));
+        QuoteLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(TempSalesInvoiceLineAggregate."API Type"::Account));
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt

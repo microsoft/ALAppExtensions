@@ -27,6 +27,11 @@ pageextension 18004 "GST General Ledger Setup Ext" extends "General Ledger Setup
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies the code for the number series that will be used to assign numbers to GST distribution.';
                     }
+                    field("GST Reversal Distribution Nos."; Rec."GST Reversal Distribution Nos.")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        ToolTip = 'Specifies the code for the number series that will be used to assign numbers to GST distribution Reversal.';
+                    }
                     field("GST Credit Adj. Jnl Nos."; Rec."GST Credit Adj. Jnl Nos.")
                     {
                         ApplicationArea = Basic, Suite;

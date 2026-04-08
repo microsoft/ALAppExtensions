@@ -1,0 +1,2240 @@
+name: PA-TS-Metrics-03-es-ES
+language: es-ES
+tests:
+- name: PA-INV-V28-007
+  description: VendorNo=V28;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG009;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Ratán y Fibras Naturales S.L.
+    Address: Ctra. Alicante, km 8
+    Address 2: ''
+    City: Novelda
+    Country/Region Code: ES
+    Post Code: E-03660
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V28-007
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 624000
+    Description: Alquiler andamio móvil
+    Quantity: 1.0
+    Unit Price: 180.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V28-007
+        Buy-from Vendor Name: Ratán y Fibras Naturales S.L.
+        Buy-from Address: Carretera de Alicante km 8
+        Buy-from Address 2: ''
+        Buy-from City: Novelda
+        Buy-from Post Code: '1968'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 624000
+        Deferral Code: ''
+        Description: Alquiler andamio móvil
+        Quantity: 1.0
+        Unit Cost: 180.0
+- name: PA-INV-V28-001
+  description: VendorNo=V28;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Ratán y Fibras Naturales S.L.
+    Address: Carretera de Alicante km 8
+    Address 2: ''
+    City: Novelda
+    Country/Region Code: ES
+    Post Code: '1968'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V28-001
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 624000
+    Description: Alquiler carretilla elevadora mes
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 624000
+    Description: Factura alquileres octubre
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 624000
+    Description: Contrato 6 meses casetas obra
+    Quantity: 1.0
+    Unit Price: 1800.0
+  - Type: 1
+    No.: 624000
+    Description: Renting dumper obra
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 624000
+    Description: Alquiler compresor móvil
+    Quantity: 1.0
+    Unit Price: 280.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V28-001
+        Buy-from Vendor Name: Ratán y Fibras Naturales S.L.
+        Buy-from Address: Carretera de Alicante km 8
+        Buy-from Address 2: ''
+        Buy-from City: Novelda
+        Buy-from Post Code: '1968'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 624000
+        Deferral Code: ''
+        Description: Alquiler carretilla elevadora mes
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 624000
+        Deferral Code: ''
+        Description: Factura alquileres octubre
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 624000
+        Deferral Code: 6M
+        Description: Contrato 6 meses casetas obra
+        Quantity: 1.0
+        Unit Cost: 1800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 624000
+        Deferral Code: ''
+        Description: Renting dumper obra
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 50000
+        Type: 1
+        No.: 624000
+        Deferral Code: ''
+        Description: Alquiler compresor móvil
+        Quantity: 1.0
+        Unit Cost: 280.0
+- name: PA-INV-V24-001
+  description: VendorNo=V24;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Telefónica Empresas S.A.
+    Address: Ronda de la Comunicación s/n
+    Address 2: ''
+    City: Madrid
+    Country/Region Code: ES
+    Post Code: '28050'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V24-001
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 623000
+    Description: Gestión ERE temporal
+    Quantity: 1.0
+    Unit Price: 980.0
+  - Type: 1
+    No.: 623000
+    Description: Gestión inspección trabajo
+    Quantity: 1.0
+    Unit Price: 650.0
+  - Type: 1
+    No.: 623000
+    Description: Alta vehículo empresa
+    Quantity: 1.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 623000
+    Description: Tramitación visado extranjero
+    Quantity: 1.0
+    Unit Price: 280.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V24-001
+        Buy-from Vendor Name: Telefónica Empresas S.A.
+        Buy-from Address: Ronda de la Comunicación s/n
+        Buy-from Address 2: ''
+        Buy-from City: Madrid
+        Buy-from Post Code: '28050'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Gestión ERE temporal
+        Quantity: 1.0
+        Unit Cost: 980.0
+      - Line No.: 20000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Gestión inspección trabajo
+        Quantity: 1.0
+        Unit Cost: 650.0
+      - Line No.: 30000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Alta vehículo empresa
+        Quantity: 1.0
+        Unit Cost: 85.0
+      - Line No.: 40000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Tramitación visado extranjero
+        Quantity: 1.0
+        Unit Cost: 280.0
+- name: PA-INV-V26-003
+  description: VendorNo=V26;VendorFrequencyGroup=None;VendorGroup=VG004;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Ferretería Ind. Murcia S.L.
+    Address: Polígono Industrial Oeste, Calle A
+    Address 2: ''
+    City: Murcia
+    Country/Region Code: ES
+    Post Code: '30169'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V26-003
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 627000
+    Description: Producción video corporativo
+    Quantity: 1.0
+    Unit Price: 4500.0
+  - Type: 1
+    No.: 627000
+    Description: Diseño stand feria Milán
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 627000
+    Description: Diseño packaging nuevo
+    Quantity: 1.0
+    Unit Price: 1500.0
+  - Type: 1
+    No.: 627000
+    Description: Contrato anual gestión RRSS
+    Quantity: 1.0
+    Unit Price: 6000.0
+  - Type: 1
+    No.: 627000
+    Description: Diseño catálogo productos
+    Quantity: 1.0
+    Unit Price: 2500.0
+  - Type: 1
+    No.: 627000
+    Description: Folletos promocionales 5000u
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 627000
+    Description: Fotografía producto profesional
+    Quantity: 1.0
+    Unit Price: 1850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V26-003
+        Buy-from Vendor Name: Ferretería Industrial Murcia S.L.
+        Buy-from Address: Polígono Industrial Oeste, Calle A
+        Buy-from Address 2: ''
+        Buy-from City: Murcia
+        Buy-from Post Code: '30169'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 627000
+        Deferral Code: ''
+        Description: Producción video corporativo
+        Quantity: 1.0
+        Unit Cost: 4500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 627000
+        Deferral Code: ''
+        Description: Diseño stand feria Milán
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 627000
+        Deferral Code: ''
+        Description: Diseño packaging nuevo
+        Quantity: 1.0
+        Unit Cost: 1500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 627000
+        Deferral Code: 12M
+        Description: Contrato anual gestión RRSS
+        Quantity: 1.0
+        Unit Cost: 6000.0
+      - Line No.: 50000
+        Type: 1
+        No.: 627000
+        Deferral Code: ''
+        Description: Diseño catálogo productos
+        Quantity: 1.0
+        Unit Cost: 2500.0
+      - Line No.: 600000
+        Type: 1
+        No.: 627000
+        Deferral Code: ''
+        Description: Folletos promocionales 5000u
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 70000
+        Type: 1
+        No.: 627000
+        Deferral Code: ''
+        Description: Fotografía producto profesional
+        Quantity: 1.0
+        Unit Cost: 1850.0
+- name: PA-INV-V23-002
+  description: VendorNo=V23;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Publicidad y Marketing Sureste S.L.
+    Address: Calle Mayor 23
+    Address 2: ''
+    City: Cartagena
+    Country/Region Code: ES
+    Post Code: '30201'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V23-002
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 623000
+    Description: Liquidación retenciones oct
+    Quantity: 1.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 623000
+    Description: Certificado residencia fiscal
+    Quantity: 1.0
+    Unit Price: 150.0
+  - Type: 1
+    No.: 623000
+    Description: Acuerdo 12 meses asesoría integral
+    Quantity: 1.0
+    Unit Price: 12000.0
+  - Type: 1
+    No.: 623000
+    Description: Suministro semestral consultas
+    Quantity: 1.0
+    Unit Price: 2400.0
+  - Type: 1
+    No.: 623000
+    Description: Preparación declaración IVA Q3
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 623000
+    Description: Asesoría operación intracomunitaria
+    Quantity: 1.0
+    Unit Price: 480.0
+  - Type: 1
+    No.: 623000
+    Description: Declaración Intrastat noviembre
+    Quantity: 1.0
+    Unit Price: 320.0
+  - Type: 1
+    No.: 623000
+    Description: Informe bonificaciones SS
+    Quantity: 1.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 623000
+    Description: Consulta inspección tributaria
+    Quantity: 1.0
+    Unit Price: 650.0
+  - Type: 1
+    No.: 623000
+    Description: Contrato 6 meses nóminas
+    Quantity: 1.0
+    Unit Price: 3600.0
+  - Type: 1
+    No.: 623000
+    Description: Asesoría comercio exterior
+    Quantity: 1.0
+    Unit Price: 520.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V23-002
+        Buy-from Vendor Name: Publicidad y Marketing Sureste S.L.
+        Buy-from Address: Calle Mayor 23
+        Buy-from Address 2: ''
+        Buy-from City: Cartagena
+        Buy-from Post Code: '30201'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Liquidación retenciones oct
+        Quantity: 1.0
+        Unit Cost: 280.0
+      - Line No.: 20000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Certificado residencia fiscal
+        Quantity: 1.0
+        Unit Cost: 150.0
+      - Line No.: 30000
+        Type: 1
+        No.: 623000
+        Deferral Code: 12M
+        Description: Acuerdo 12 meses asesoría integral
+        Quantity: 1.0
+        Unit Cost: 12000.0
+      - Line No.: 40000
+        Type: 1
+        No.: 623000
+        Deferral Code: 6M
+        Description: Suministro semestral consultas
+        Quantity: 1.0
+        Unit Cost: 2400.0
+      - Line No.: 50000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Preparación declaración IVA Q3
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 600000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Asesoría operación intracomunitaria
+        Quantity: 1.0
+        Unit Cost: 480.0
+      - Line No.: 70000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Declaración Intrastat noviembre
+        Quantity: 1.0
+        Unit Cost: 320.0
+      - Line No.: 80000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Informe bonificaciones SS
+        Quantity: 1.0
+        Unit Cost: 280.0
+      - Line No.: 90000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Consulta inspección tributaria
+        Quantity: 1.0
+        Unit Cost: 650.0
+      - Line No.: 100000
+        Type: 1
+        No.: 623000
+        Deferral Code: 6M
+        Description: Contrato 6 meses nóminas
+        Quantity: 1.0
+        Unit Cost: 3600.0
+      - Line No.: 110000
+        Type: 1
+        No.: 623000
+        Deferral Code: ''
+        Description: Asesoría comercio exterior
+        Quantity: 1.0
+        Unit Cost: 520.0
+- name: PA-INV-V33-006
+  description: VendorNo=V33;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Certificaciones Calidad Europa S.A.
+    Address: Paseo de Gracia 85
+    Address 2: ''
+    City: Barcelona
+    Country/Region Code: ES
+    Post Code: 08008
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V33-006
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 604400
+    Description: Acuerdo 12 meses acabados
+    Quantity: 1.0
+    Unit Price: 4200.0
+  - Type: 1
+    No.: 604400
+    Description: Imprimación vegetal 10L
+    Quantity: 20.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 604400
+    Description: Aceite cera natural 5L
+    Quantity: 35.0
+    Unit Price: 58.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V33-006
+        Buy-from Vendor Name: Certificaciones Calidad Europa S.A.
+        Buy-from Address: Paseo de Gracia 85
+        Buy-from Address 2: ''
+        Buy-from City: Barcelona
+        Buy-from Post Code: 08008
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 604400
+        Deferral Code: 12M
+        Description: Acuerdo 12 meses acabados
+        Quantity: 1.0
+        Unit Cost: 4200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 604400
+        Deferral Code: ''
+        Description: Imprimación vegetal 10L
+        Quantity: 20.0
+        Unit Cost: 65.0
+      - Line No.: 30000
+        Type: 1
+        No.: 604400
+        Deferral Code: ''
+        Description: Aceite cera natural 5L
+        Quantity: 35.0
+        Unit Cost: 58.0
+- name: PA-INV-V36-006
+  description: VendorNo=V36;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Gestión de Residuos Sureste S.A.
+    Address: Carretera de Fortuna km 3
+    Address 2: ''
+    City: Abanilla
+    Country/Region Code: ES
+    Post Code: '30640'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V36-006
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 626200
+    Description: Contrato 6 meses mantenimiento
+    Quantity: 1.0
+    Unit Price: 1500.0
+  - Type: 1
+    No.: 626200
+    Description: Vigilancia descarga contenedor
+    Quantity: 1.0
+    Unit Price: 180.0
+  - Type: 1
+    No.: 626200
+    Description: Contrato anual seguridad integral
+    Quantity: 1.0
+    Unit Price: 36000.0
+  - Type: 1
+    No.: 626200
+    Description: Ronda nocturna festivos
+    Quantity: 1.0
+    Unit Price: 450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V36-006
+        Buy-from Vendor Name: Gestión de Residuos Sureste S.A.
+        Buy-from Address: Carretera de Fortuna km 3
+        Buy-from Address 2: ''
+        Buy-from City: Abanilla
+        Buy-from Post Code: '30640'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 626200
+        Deferral Code: 6M
+        Description: Contrato 6 meses mantenimiento
+        Quantity: 1.0
+        Unit Cost: 1500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 626200
+        Deferral Code: ''
+        Description: Vigilancia descarga contenedor
+        Quantity: 1.0
+        Unit Cost: 180.0
+      - Line No.: 30000
+        Type: 1
+        No.: 626200
+        Deferral Code: 12M
+        Description: Contrato anual seguridad integral
+        Quantity: 1.0
+        Unit Cost: 36000.0
+      - Line No.: 40000
+        Type: 1
+        No.: 626200
+        Deferral Code: ''
+        Description: Ronda nocturna festivos
+        Quantity: 1.0
+        Unit Cost: 450.0
+- name: PA-INV-V38-002
+  description: VendorNo=V38;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Outdoor Living Solutions S.L.
+    Address: Calle Marina 78
+    Address 2: ''
+    City: Gandía
+    Country/Region Code: ES
+    Post Code: '46730'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V38-002
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 626300
+    Description: Césped artificial showroom
+    Quantity: 1.0
+    Unit Price: 1500.0
+  - Type: 1
+    No.: 626300
+    Description: Mantenimiento jardín mensual
+    Quantity: 1.0
+    Unit Price: 580.0
+  - Type: 1
+    No.: 626300
+    Description: Plantas recepción empresa
+    Quantity: 1.0
+    Unit Price: 320.0
+  - Type: 1
+    No.: 626300
+    Description: Poda palmeras acceso
+    Quantity: 1.0
+    Unit Price: 420.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V38-002
+        Buy-from Vendor Name: Outdoor Living Solutions S.L.
+        Buy-from Address: Calle Marina 78
+        Buy-from Address 2: ''
+        Buy-from City: Gandía
+        Buy-from Post Code: '46730'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Césped artificial showroom
+        Quantity: 1.0
+        Unit Cost: 1500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Mantenimiento jardín mensual
+        Quantity: 1.0
+        Unit Cost: 580.0
+      - Line No.: 30000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Plantas recepción empresa
+        Quantity: 1.0
+        Unit Cost: 320.0
+      - Line No.: 40000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Poda palmeras acceso
+        Quantity: 1.0
+        Unit Cost: 420.0
+- name: PA-INV-V37-004
+  description: VendorNo=V37;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Iluminación Industrial Ibérica S.L.
+    Address: Polígono Riera de Caldes
+    Address 2: ''
+    City: Palau-solità i Plegamans
+    Country/Region Code: ES
+    Post Code: 08184
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V37-004
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 627100
+    Description: Contrato 6 meses papel
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 627100
+    Description: Post-it colores pack
+    Quantity: 30.0
+    Unit Price: 8.5
+  - Type: 1
+    No.: 627100
+    Description: Cuadernos espiral pack
+    Quantity: 25.0
+    Unit Price: 6.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V37-004
+        Buy-from Vendor Name: Iluminación Industrial Ibérica S.L.
+        Buy-from Address: Polígono Riera de Caldes
+        Buy-from Address 2: ''
+        Buy-from City: Palau-solità i Plegamans
+        Buy-from Post Code: 08184
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 627100
+        Deferral Code: 6M
+        Description: Contrato 6 meses papel
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 627100
+        Deferral Code: ''
+        Description: Post-it colores pack
+        Quantity: 30.0
+        Unit Cost: 8.5
+      - Line No.: 30000
+        Type: 1
+        No.: 627100
+        Deferral Code: ''
+        Description: Cuadernos espiral pack
+        Quantity: 25.0
+        Unit Cost: 6.5
+- name: PA-INV-V32-002
+  description: VendorNo=V32;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Diseño y Prototipos Murcia S.L.
+    Address: Calle Ingeniero 34
+    Address 2: ''
+    City: Murcia
+    Country/Region Code: ES
+    Post Code: '30002'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V32-002
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 605300
+    Description: Barra toallero acero 60cm
+    Quantity: 80.0
+    Unit Price: 18.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V32-002
+        Buy-from Vendor Name: Diseño y Prototipos Murcia S.L.
+        Buy-from Address: Calle Ingeniero 34
+        Buy-from Address 2: ''
+        Buy-from City: Murcia
+        Buy-from Post Code: '30002'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 605300
+        Deferral Code: ''
+        Description: Barra toallero acero 60cm
+        Quantity: 80.0
+        Unit Cost: 18.0
+- name: PA-INV-V30-002
+  description: VendorNo=V30;VendorFrequencyGroup=New;VendorGroup=VG005;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Pinturas y Recubrimientos Levante S.L.
+    Address: Calle del Color 12
+    Address 2: ''
+    City: Ontinyent
+    Country/Region Code: ES
+    Post Code: '46870'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V30-002
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 626100
+    Description: Retirada filtros cabina
+    Quantity: 1.0
+    Unit Price: 220.0
+  - Type: 1
+    No.: 626100
+    Description: Suministro semestral contenedores
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 626100
+    Description: Gestión residuos peligrosos
+    Quantity: 1.0
+    Unit Price: 650.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V30-002
+        Buy-from Vendor Name: Pinturas y Recubrimientos Levante S.L.
+        Buy-from Address: Calle del Color 12
+        Buy-from Address 2: ''
+        Buy-from City: Ontinyent
+        Buy-from Post Code: '46870'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Retirada filtros cabina
+        Quantity: 1.0
+        Unit Cost: 220.0
+      - Line No.: 20000
+        Type: 1
+        No.: 626100
+        Deferral Code: 6M
+        Description: Suministro semestral contenedores
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Gestión residuos peligrosos
+        Quantity: 1.0
+        Unit Cost: 650.0
+- name: PA-INV-V30-001
+  description: VendorNo=V30;VendorFrequencyGroup=New;VendorGroup=VG005;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Pinturas y Recubrimientos Levante S.L.
+    Address: Calle del Color 12
+    Address 2: ''
+    City: Ontinyent
+    Country/Region Code: ES
+    Post Code: '46870'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V30-001
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 626100
+    Description: Gestión fluorescentes usados
+    Quantity: 1.0
+    Unit Price: 180.0
+  - Type: 1
+    No.: 626100
+    Description: Gestión botes pintura usados
+    Quantity: 1.0
+    Unit Price: 320.0
+  - Type: 1
+    No.: 626100
+    Description: Retirada serrín prensado
+    Quantity: 1.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 626100
+    Description: Recogida residuos madera mes
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 626100
+    Description: Certificado destrucción RGPD
+    Quantity: 1.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 626100
+    Description: Contenedor plástico film
+    Quantity: 1.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 626100
+    Description: Acuerdo 12 meses reciclaje
+    Quantity: 1.0
+    Unit Price: 3600.0
+  - Type: 1
+    No.: 626100
+    Description: Informe trazabilidad residuos
+    Quantity: 1.0
+    Unit Price: 120.0
+  - Type: 1
+    No.: 626100
+    Description: Recogida palés rotos
+    Quantity: 1.0
+    Unit Price: 150.0
+  - Type: 1
+    No.: 626100
+    Description: Contrato 6 meses papel oficina
+    Quantity: 1.0
+    Unit Price: 720.0
+  - Type: 1
+    No.: 626100
+    Description: Retirada envases vacíos
+    Quantity: 1.0
+    Unit Price: 120.0
+  - Type: 1
+    No.: 626100
+    Description: Recogida virutas metal
+    Quantity: 1.0
+    Unit Price: 180.0
+  - Type: 1
+    No.: 626100
+    Description: Contrato anual gestión residuos
+    Quantity: 1.0
+    Unit Price: 5400.0
+  - Type: 1
+    No.: 626100
+    Description: Gestión disolventes usados
+    Quantity: 1.0
+    Unit Price: 480.0
+  - Type: 1
+    No.: 626100
+    Description: Contenedor cartón 1100L
+    Quantity: 1.0
+    Unit Price: 85.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V30-001
+        Buy-from Vendor Name: Pinturas y Recubrimientos Levante S.L.
+        Buy-from Address: Calle del Color 12
+        Buy-from Address 2: ''
+        Buy-from City: Ontinyent
+        Buy-from Post Code: '46870'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Gestión fluorescentes usados
+        Quantity: 1.0
+        Unit Cost: 180.0
+      - Line No.: 20000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Gestión botes pintura usados
+        Quantity: 1.0
+        Unit Cost: 320.0
+      - Line No.: 30000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Retirada serrín prensado
+        Quantity: 1.0
+        Unit Cost: 280.0
+      - Line No.: 40000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Recogida residuos madera mes
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 50000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Certificado destrucción RGPD
+        Quantity: 1.0
+        Unit Cost: 85.0
+      - Line No.: 600000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Contenedor plástico film
+        Quantity: 1.0
+        Unit Cost: 65.0
+      - Line No.: 70000
+        Type: 1
+        No.: 626100
+        Deferral Code: 12M
+        Description: Acuerdo 12 meses reciclaje
+        Quantity: 1.0
+        Unit Cost: 3600.0
+      - Line No.: 80000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Informe trazabilidad residuos
+        Quantity: 1.0
+        Unit Cost: 120.0
+      - Line No.: 90000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Recogida palés rotos
+        Quantity: 1.0
+        Unit Cost: 150.0
+      - Line No.: 100000
+        Type: 1
+        No.: 626100
+        Deferral Code: 6M
+        Description: Contrato 6 meses papel oficina
+        Quantity: 1.0
+        Unit Cost: 720.0
+      - Line No.: 110000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Retirada envases vacíos
+        Quantity: 1.0
+        Unit Cost: 120.0
+      - Line No.: 120000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Recogida virutas metal
+        Quantity: 1.0
+        Unit Cost: 180.0
+      - Line No.: 130000
+        Type: 1
+        No.: 626100
+        Deferral Code: 12M
+        Description: Contrato anual gestión residuos
+        Quantity: 1.0
+        Unit Cost: 5400.0
+      - Line No.: 140000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Gestión disolventes usados
+        Quantity: 1.0
+        Unit Cost: 480.0
+      - Line No.: 150000
+        Type: 1
+        No.: 626100
+        Deferral Code: ''
+        Description: Contenedor cartón 1100L
+        Quantity: 1.0
+        Unit Cost: 85.0
+- name: PA-INV-V36-005
+  description: VendorNo=V36;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Gestión de Residuos Sureste S.A.
+    Address: Carretera de Fortuna km 3
+    Address 2: ''
+    City: Abanilla
+    Country/Region Code: ES
+    Post Code: '30640'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V36-005
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 626200
+    Description: Control inventario anual
+    Quantity: 1.0
+    Unit Price: 520.0
+  - Type: 1
+    No.: 626200
+    Description: Vigilante showroom día
+    Quantity: 1.0
+    Unit Price: 180.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V36-005
+        Buy-from Vendor Name: Gestión de Residuos Sureste S.A.
+        Buy-from Address: Carretera de Fortuna km 3
+        Buy-from Address 2: ''
+        Buy-from City: Abanilla
+        Buy-from Post Code: '30640'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 626200
+        Deferral Code: ''
+        Description: Control inventario anual
+        Quantity: 1.0
+        Unit Cost: 520.0
+      - Line No.: 20000
+        Type: 1
+        No.: 626200
+        Deferral Code: ''
+        Description: Vigilante showroom día
+        Quantity: 1.0
+        Unit Cost: 180.0
+- name: PA-INV-V38-004
+  description: VendorNo=V38;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Outdoor Living Solutions S.L.
+    Address: Calle Marina 78
+    Address 2: ''
+    City: Gandía
+    Country/Region Code: ES
+    Post Code: '46730'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V38-004
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 626300
+    Description: Abonado primavera
+    Quantity: 1.0
+    Unit Price: 220.0
+  - Type: 1
+    No.: 626300
+    Description: Macetas decorativas oficina
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 626300
+    Description: Siembra césped zona nueva
+    Quantity: 1.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 626300
+    Description: Instalación riego goteo
+    Quantity: 1.0
+    Unit Price: 950.0
+  - Type: 1
+    No.: 626300
+    Description: Poda árboles parking
+    Quantity: 1.0
+    Unit Price: 350.0
+  - Type: 1
+    No.: 626300
+    Description: Suministro semestral riego
+    Quantity: 1.0
+    Unit Price: 1200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V38-004
+        Buy-from Vendor Name: Outdoor Living Solutions S.L.
+        Buy-from Address: Calle Marina 78
+        Buy-from Address 2: ''
+        Buy-from City: Gandía
+        Buy-from Post Code: '46730'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Abonado primavera
+        Quantity: 1.0
+        Unit Cost: 220.0
+      - Line No.: 20000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Macetas decorativas oficina
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 30000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Siembra césped zona nueva
+        Quantity: 1.0
+        Unit Cost: 680.0
+      - Line No.: 40000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Instalación riego goteo
+        Quantity: 1.0
+        Unit Cost: 950.0
+      - Line No.: 50000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Poda árboles parking
+        Quantity: 1.0
+        Unit Cost: 350.0
+      - Line No.: 600000
+        Type: 1
+        No.: 626300
+        Deferral Code: 6M
+        Description: Suministro semestral riego
+        Quantity: 1.0
+        Unit Cost: 1200.0
+- name: PA-INV-V35-003
+  description: VendorNo=V35;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Formación Profesional Industrial S.L.
+    Address: Avenida de la Universidad 50
+    Address 2: ''
+    City: Murcia
+    Country/Region Code: ES
+    Post Code: '30100'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V35-003
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 629000
+    Description: Formación calidad ISO
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 629000
+    Description: Curso inglés comercial
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 629000
+    Description: Contrato 6 meses ERP BC
+    Quantity: 1.0
+    Unit Price: 2400.0
+  - Type: 1
+    No.: 629000
+    Description: Acuerdo 12 meses soft skills
+    Quantity: 1.0
+    Unit Price: 4200.0
+  - Type: 1
+    No.: 629000
+    Description: Taller trabajo en equipo
+    Quantity: 1.0
+    Unit Price: 980.0
+  - Type: 1
+    No.: 629000
+    Description: Curso primeros auxilios
+    Quantity: 1.0
+    Unit Price: 380.0
+  - Type: 1
+    No.: 629000
+    Description: Taller comunicación efectiva
+    Quantity: 1.0
+    Unit Price: 750.0
+  - Type: 1
+    No.: 629000
+    Description: Formación CNC operadores
+    Quantity: 1.0
+    Unit Price: 2500.0
+  - Type: 1
+    No.: 629000
+    Description: Suministro semestral idiomas
+    Quantity: 1.0
+    Unit Price: 3600.0
+  - Type: 1
+    No.: 629000
+    Description: Taller liderazgo mandos
+    Quantity: 1.0
+    Unit Price: 1800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V35-003
+        Buy-from Vendor Name: Formación Profesional Industrial S.L.
+        Buy-from Address: Avenida de la Universidad 50
+        Buy-from Address 2: ''
+        Buy-from City: Murcia
+        Buy-from Post Code: '30100'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Formación calidad ISO
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Curso inglés comercial
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 629000
+        Deferral Code: 6M
+        Description: Contrato 6 meses ERP BC
+        Quantity: 1.0
+        Unit Cost: 2400.0
+      - Line No.: 40000
+        Type: 1
+        No.: 629000
+        Deferral Code: 12M
+        Description: Acuerdo 12 meses soft skills
+        Quantity: 1.0
+        Unit Cost: 4200.0
+      - Line No.: 50000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Taller trabajo en equipo
+        Quantity: 1.0
+        Unit Cost: 980.0
+      - Line No.: 600000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Curso primeros auxilios
+        Quantity: 1.0
+        Unit Cost: 380.0
+      - Line No.: 70000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Taller comunicación efectiva
+        Quantity: 1.0
+        Unit Cost: 750.0
+      - Line No.: 80000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Formación CNC operadores
+        Quantity: 1.0
+        Unit Cost: 2500.0
+      - Line No.: 90000
+        Type: 1
+        No.: 629000
+        Deferral Code: 6M
+        Description: Suministro semestral idiomas
+        Quantity: 1.0
+        Unit Cost: 3600.0
+      - Line No.: 100000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Taller liderazgo mandos
+        Quantity: 1.0
+        Unit Cost: 1800.0
+- name: PA-INV-V34-005
+  description: VendorNo=V34;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Extintores y Prevención Murcia S.L.
+    Address: Calle Bomberos 8
+    Address 2: ''
+    City: Lorca
+    Country/Region Code: ES
+    Post Code: '30800'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V34-005
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 628000
+    Description: Servicio agua oficinas mes
+    Quantity: 1.0
+    Unit Price: 120.0
+  - Type: 1
+    No.: 628000
+    Description: Servicio catering reunión
+    Quantity: 1.0
+    Unit Price: 280.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V34-005
+        Buy-from Vendor Name: Extintores y Prevención Murcia S.L.
+        Buy-from Address: Calle Bomberos 8
+        Buy-from Address 2: ''
+        Buy-from City: Lorca
+        Buy-from Post Code: '30800'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Servicio agua oficinas mes
+        Quantity: 1.0
+        Unit Cost: 120.0
+      - Line No.: 20000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Servicio catering reunión
+        Quantity: 1.0
+        Unit Cost: 280.0
+- name: PA-INV-V33-003
+  description: VendorNo=V33;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Certificaciones Calidad Europa S.A.
+    Address: Paseo de Gracia 85
+    Address 2: ''
+    City: Barcelona
+    Country/Region Code: ES
+    Post Code: 08008
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V33-003
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 604400
+    Description: Suministro semestral tintes
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 604400
+    Description: Diluyente base cítricos 5L
+    Quantity: 25.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 604400
+    Description: Pintura chalk eco blanca 5L
+    Quantity: 25.0
+    Unit Price: 52.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V33-003
+        Buy-from Vendor Name: Certificaciones Calidad Europa S.A.
+        Buy-from Address: Paseo de Gracia 85
+        Buy-from Address 2: ''
+        Buy-from City: Barcelona
+        Buy-from Post Code: 08008
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 604400
+        Deferral Code: 6M
+        Description: Suministro semestral tintes
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 604400
+        Deferral Code: ''
+        Description: Diluyente base cítricos 5L
+        Quantity: 25.0
+        Unit Cost: 35.0
+      - Line No.: 30000
+        Type: 1
+        No.: 604400
+        Deferral Code: ''
+        Description: Pintura chalk eco blanca 5L
+        Quantity: 25.0
+        Unit Cost: 52.0
+- name: PA-INV-V34-004
+  description: VendorNo=V34;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Extintores y Prevención Murcia S.L.
+    Address: Calle Bomberos 8
+    Address 2: ''
+    City: Lorca
+    Country/Region Code: ES
+    Post Code: '30800'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V34-004
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 628000
+    Description: Catering evento feria
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 628000
+    Description: Factura servicios noviembre
+    Quantity: 1.0
+    Unit Price: 3800.0
+  - Type: 1
+    No.: 628000
+    Description: Catering cena navidad empresa
+    Quantity: 1.0
+    Unit Price: 4500.0
+  - Type: 1
+    No.: 628000
+    Description: Contrato anual comedor empresa
+    Quantity: 1.0
+    Unit Price: 48000.0
+  - Type: 1
+    No.: 628000
+    Description: Contrato 6 meses snacks
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 628000
+    Description: Catering team building
+    Quantity: 1.0
+    Unit Price: 1500.0
+  - Type: 1
+    No.: 628000
+    Description: Menú ejecutivo visita cliente
+    Quantity: 1.0
+    Unit Price: 85.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V34-004
+        Buy-from Vendor Name: Extintores y Prevención Murcia S.L.
+        Buy-from Address: Calle Bomberos 8
+        Buy-from Address 2: ''
+        Buy-from City: Lorca
+        Buy-from Post Code: '30800'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Catering evento feria
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Factura servicios noviembre
+        Quantity: 1.0
+        Unit Cost: 3800.0
+      - Line No.: 30000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Catering cena navidad empresa
+        Quantity: 1.0
+        Unit Cost: 4500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 628000
+        Deferral Code: 12M
+        Description: Contrato anual comedor empresa
+        Quantity: 1.0
+        Unit Cost: 48000.0
+      - Line No.: 50000
+        Type: 1
+        No.: 628000
+        Deferral Code: 6M
+        Description: Contrato 6 meses snacks
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 600000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Catering team building
+        Quantity: 1.0
+        Unit Cost: 1500.0
+      - Line No.: 70000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Menú ejecutivo visita cliente
+        Quantity: 1.0
+        Unit Cost: 85.0
+- name: PA-INV-V37-002
+  description: VendorNo=V37;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Iluminación Industrial Ibérica S.L.
+    Address: Polígono Riera de Caldes
+    Address 2: ''
+    City: Palau-solità i Plegamans
+    Country/Region Code: ES
+    Post Code: 08184
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V37-002
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 627100
+    Description: Tóner impresora láser
+    Quantity: 10.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 627100
+    Description: Carpetas clasificadoras
+    Quantity: 50.0
+    Unit Price: 4.5
+  - Type: 1
+    No.: 627100
+    Description: Sobres comerciales caja
+    Quantity: 10.0
+    Unit Price: 18.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V37-002
+        Buy-from Vendor Name: Iluminación Industrial Ibérica S.L.
+        Buy-from Address: Polígono Riera de Caldes
+        Buy-from Address 2: ''
+        Buy-from City: Palau-solità i Plegamans
+        Buy-from Post Code: 08184
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 627100
+        Deferral Code: ''
+        Description: Tóner impresora láser
+        Quantity: 10.0
+        Unit Cost: 85.0
+      - Line No.: 20000
+        Type: 1
+        No.: 627100
+        Deferral Code: ''
+        Description: Carpetas clasificadoras
+        Quantity: 50.0
+        Unit Cost: 4.5
+      - Line No.: 30000
+        Type: 1
+        No.: 627100
+        Deferral Code: ''
+        Description: Sobres comerciales caja
+        Quantity: 10.0
+        Unit Cost: 18.0
+- name: PA-INV-V39-001
+  description: VendorNo=V39;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Plásticos y Componentes Valencia S.A.
+    Address: Avenida de los Plásticos 15
+    Address 2: ''
+    City: Ribarroja del Turia
+    Country/Region Code: ES
+    Post Code: '46190'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V39-001
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 605400
+    Description: Metacrilato transparente 5mm
+    Quantity: 30.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 605400
+    Description: Metacrilato fluorescente
+    Quantity: 12.0
+    Unit Price: 92.0
+  - Type: 1
+    No.: 605400
+    Description: Polipropileno negro 4mm
+    Quantity: 30.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 605400
+    Description: Poliestireno alto impacto
+    Quantity: 35.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 605400
+    Description: ABS negro plancha 3mm
+    Quantity: 35.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 605400
+    Description: Acuerdo 12 meses corte láser
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 605400
+    Description: HDPE natural alimentario
+    Quantity: 25.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 605400
+    Description: Metacrilato espejo plata
+    Quantity: 18.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 605400
+    Description: PETG transparente 2mm
+    Quantity: 50.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 605400
+    Description: Contrato 6 meses PVC
+    Quantity: 1.0
+    Unit Price: 1500.0
+  - Type: 1
+    No.: 605400
+    Description: Contrato anual plásticos
+    Quantity: 1.0
+    Unit Price: 5500.0
+  - Type: 1
+    No.: 605400
+    Description: Metacrilato colado opal
+    Quantity: 20.0
+    Unit Price: 78.0
+  - Type: 1
+    No.: 605400
+    Description: Nylon blanco mecanizado
+    Quantity: 15.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 605400
+    Description: Suministro semestral acrílicos
+    Quantity: 1.0
+    Unit Price: 2400.0
+  - Type: 1
+    No.: 605400
+    Description: Forex blanco 5mm plancha
+    Quantity: 40.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 605400
+    Description: PVC espumado blanco 10mm
+    Quantity: 40.0
+    Unit Price: 42.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V39-001
+        Buy-from Vendor Name: Plásticos y Componentes Valencia S.A.
+        Buy-from Address: Avenida de los Plásticos 15
+        Buy-from Address 2: ''
+        Buy-from City: Ribarroja del Turia
+        Buy-from Post Code: '46190'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Metacrilato transparente 5mm
+        Quantity: 30.0
+        Unit Cost: 65.0
+      - Line No.: 20000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Metacrilato fluorescente
+        Quantity: 12.0
+        Unit Cost: 92.0
+      - Line No.: 30000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Polipropileno negro 4mm
+        Quantity: 30.0
+        Unit Cost: 32.0
+      - Line No.: 40000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Poliestireno alto impacto
+        Quantity: 35.0
+        Unit Cost: 28.0
+      - Line No.: 50000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: ABS negro plancha 3mm
+        Quantity: 35.0
+        Unit Cost: 38.0
+      - Line No.: 600000
+        Type: 1
+        No.: 605400
+        Deferral Code: 12M
+        Description: Acuerdo 12 meses corte láser
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 70000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: HDPE natural alimentario
+        Quantity: 25.0
+        Unit Cost: 45.0
+      - Line No.: 80000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Metacrilato espejo plata
+        Quantity: 18.0
+        Unit Cost: 85.0
+      - Line No.: 90000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: PETG transparente 2mm
+        Quantity: 50.0
+        Unit Cost: 28.0
+      - Line No.: 100000
+        Type: 1
+        No.: 605400
+        Deferral Code: 6M
+        Description: Contrato 6 meses PVC
+        Quantity: 1.0
+        Unit Cost: 1500.0
+      - Line No.: 110000
+        Type: 1
+        No.: 605400
+        Deferral Code: 12M
+        Description: Contrato anual plásticos
+        Quantity: 1.0
+        Unit Cost: 5500.0
+      - Line No.: 120000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Metacrilato colado opal
+        Quantity: 20.0
+        Unit Cost: 78.0
+      - Line No.: 130000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Nylon blanco mecanizado
+        Quantity: 15.0
+        Unit Cost: 95.0
+      - Line No.: 140000
+        Type: 1
+        No.: 605400
+        Deferral Code: 6M
+        Description: Suministro semestral acrílicos
+        Quantity: 1.0
+        Unit Cost: 2400.0
+      - Line No.: 150000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Forex blanco 5mm plancha
+        Quantity: 40.0
+        Unit Cost: 35.0
+      - Line No.: 160000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: PVC espumado blanco 10mm
+        Quantity: 40.0
+        Unit Cost: 42.0
+- name: PA-INV-V38-003
+  description: VendorNo=V38;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Outdoor Living Solutions S.L.
+    Address: Calle Marina 78
+    Address 2: ''
+    City: Gandía
+    Country/Region Code: ES
+    Post Code: '46730'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V38-003
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 626300
+    Description: Tratamiento plagas jardín
+    Quantity: 1.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 626300
+    Description: Contrato anual zonas verdes
+    Quantity: 1.0
+    Unit Price: 6500.0
+  - Type: 1
+    No.: 626300
+    Description: Limpieza hojas otoño
+    Quantity: 1.0
+    Unit Price: 180.0
+  - Type: 1
+    No.: 626300
+    Description: Factura servicios octubre
+    Quantity: 1.0
+    Unit Price: 650.0
+  - Type: 1
+    No.: 626300
+    Description: Contrato 6 meses exterior
+    Quantity: 1.0
+    Unit Price: 1800.0
+  - Type: 1
+    No.: 626300
+    Description: Reparación sistema riego
+    Quantity: 1.0
+    Unit Price: 150.0
+  - Type: 1
+    No.: 626300
+    Description: Mantenimiento huerto urbano
+    Quantity: 1.0
+    Unit Price: 180.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V38-003
+        Buy-from Vendor Name: Outdoor Living Solutions S.L.
+        Buy-from Address: Calle Marina 78
+        Buy-from Address 2: ''
+        Buy-from City: Gandía
+        Buy-from Post Code: '46730'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Tratamiento plagas jardín
+        Quantity: 1.0
+        Unit Cost: 280.0
+      - Line No.: 20000
+        Type: 1
+        No.: 626300
+        Deferral Code: 12M
+        Description: Contrato anual zonas verdes
+        Quantity: 1.0
+        Unit Cost: 6500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Limpieza hojas otoño
+        Quantity: 1.0
+        Unit Cost: 180.0
+      - Line No.: 40000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Factura servicios octubre
+        Quantity: 1.0
+        Unit Cost: 650.0
+      - Line No.: 50000
+        Type: 1
+        No.: 626300
+        Deferral Code: 6M
+        Description: Contrato 6 meses exterior
+        Quantity: 1.0
+        Unit Cost: 1800.0
+      - Line No.: 600000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Reparación sistema riego
+        Quantity: 1.0
+        Unit Cost: 150.0
+      - Line No.: 70000
+        Type: 1
+        No.: 626300
+        Deferral Code: ''
+        Description: Mantenimiento huerto urbano
+        Quantity: 1.0
+        Unit Cost: 180.0
+- name: PA-INV-V32-003
+  description: VendorNo=V32;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Diseño y Prototipos Murcia S.L.
+    Address: Calle Ingeniero 34
+    Address 2: ''
+    City: Murcia
+    Country/Region Code: ES
+    Post Code: '30002'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V32-003
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 605300
+    Description: Estructura banco industrial
+    Quantity: 20.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 605300
+    Description: Acuerdo 12 meses acabados
+    Quantity: 1.0
+    Unit Price: 7200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V32-003
+        Buy-from Vendor Name: Diseño y Prototipos Murcia S.L.
+        Buy-from Address: Calle Ingeniero 34
+        Buy-from Address 2: ''
+        Buy-from City: Murcia
+        Buy-from Post Code: '30002'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 605300
+        Deferral Code: ''
+        Description: Estructura banco industrial
+        Quantity: 20.0
+        Unit Cost: 95.0
+      - Line No.: 20000
+        Type: 1
+        No.: 605300
+        Deferral Code: 12M
+        Description: Acuerdo 12 meses acabados
+        Quantity: 1.0
+        Unit Cost: 7200.0
+- name: PA-INV-V34-002
+  description: VendorNo=V34;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Extintores y Prevención Murcia S.L.
+    Address: Calle Bomberos 8
+    Address 2: ''
+    City: Lorca
+    Country/Region Code: ES
+    Post Code: '30800'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V34-002
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 628000
+    Description: Picoteo viernes social
+    Quantity: 1.0
+    Unit Price: 250.0
+  - Type: 1
+    No.: 628000
+    Description: Catering prensa presentación
+    Quantity: 1.0
+    Unit Price: 980.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V34-002
+        Buy-from Vendor Name: Extintores y Prevención Murcia S.L.
+        Buy-from Address: Calle Bomberos 8
+        Buy-from Address 2: ''
+        Buy-from City: Lorca
+        Buy-from Post Code: '30800'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Picoteo viernes social
+        Quantity: 1.0
+        Unit Cost: 250.0
+      - Line No.: 20000
+        Type: 1
+        No.: 628000
+        Deferral Code: ''
+        Description: Catering prensa presentación
+        Quantity: 1.0
+        Unit Cost: 980.0
+- name: PA-INV-V35-001
+  description: VendorNo=V35;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Formación Profesional Industrial S.L.
+    Address: Avenida de la Universidad 50
+    Address 2: ''
+    City: Murcia
+    Country/Region Code: ES
+    Post Code: '30100'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V35-001
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 629000
+    Description: Factura formación octubre
+    Quantity: 1.0
+    Unit Price: 2200.0
+  - Type: 1
+    No.: 629000
+    Description: Curso prevención riesgos
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 629000
+    Description: Curso manipulador carretillas
+    Quantity: 1.0
+    Unit Price: 350.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V35-001
+        Buy-from Vendor Name: Formación Profesional Industrial S.L.
+        Buy-from Address: Avenida de la Universidad 50
+        Buy-from Address 2: ''
+        Buy-from City: Murcia
+        Buy-from Post Code: '30100'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Factura formación octubre
+        Quantity: 1.0
+        Unit Cost: 2200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Curso prevención riesgos
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 629000
+        Deferral Code: ''
+        Description: Curso manipulador carretillas
+        Quantity: 1.0
+        Unit Cost: 350.0
+- name: PA-INV-V39-003
+  description: VendorNo=V39;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Plásticos y Componentes Valencia S.A.
+    Address: Avenida de los Plásticos 15
+    Address 2: ''
+    City: Ribarroja del Turia
+    Country/Region Code: ES
+    Post Code: '46190'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V39-003
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 605400
+    Description: PVC rígido gris 6mm
+    Quantity: 30.0
+    Unit Price: 52.0
+  - Type: 1
+    No.: 605400
+    Description: Policarbonato compacto 4mm
+    Quantity: 25.0
+    Unit Price: 85.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V39-003
+        Buy-from Vendor Name: Plásticos y Componentes Valencia S.A.
+        Buy-from Address: Avenida de los Plásticos 15
+        Buy-from Address 2: ''
+        Buy-from City: Ribarroja del Turia
+        Buy-from Post Code: '46190'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: PVC rígido gris 6mm
+        Quantity: 30.0
+        Unit Cost: 52.0
+      - Line No.: 20000
+        Type: 1
+        No.: 605400
+        Deferral Code: ''
+        Description: Policarbonato compacto 4mm
+        Quantity: 25.0
+        Unit Cost: 85.0

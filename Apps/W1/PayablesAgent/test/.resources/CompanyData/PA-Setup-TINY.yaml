@@ -1,0 +1,198 @@
+test_setup:
+  genBusinessPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Gen. Business Posting Group for tests
+
+  genProductPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Gen. Product Posting Group for tests
+
+  generalPostingSetupToCreate:
+  - Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    Description: Default General Posting Setup for tests
+
+  vatBusinessPostingGroupToCreate:
+  - Code: PAYABLESAGENT-10
+    Description: VAT Business Posting Group for tests
+  - Code: PAYABLESAGENT-25
+    Description: VAT Business Posting Group for tests
+
+  vatProductPostingGroupToCreate:
+  - Code: PAYABLESAGENT-10
+    Description: VAT Product Posting Group for tests
+  - Code: PAYABLESAGENT-25
+    Description: VAT Product Posting Group for tests
+
+  vatPostingSetupToCreate:
+  - Description: 10% VAT Posting Setup for tests
+    VAT Identifier: PAYABLESAGENT-10
+    VAT Calculation Type: 0 # Normal VAT
+    VAT %: 10
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - Description: 25% VAT Posting Setup for tests
+    VAT Identifier: PAYABLESAGENT-25
+    VAT Calculation Type: 0 # Normal VAT
+    VAT %: 25
+    VAT Bus. Posting Group: PAYABLESAGENT-25
+    VAT Prod. Posting Group: PAYABLESAGENT-25
+
+  vendorPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Vendor Posting Group for tests
+
+  customerPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Customer Posting Group for tests
+
+  vendorTemplToCreate:
+  - Code: DEFAULT
+    Description: Default Vendor Template for tests
+    Vendor Posting Group: PAYABLESAGENT-TEST
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+
+  vendorsToCreate:
+  - No.: VTEST0001
+    Name: Strauss Medium
+    Address: Max-Joseph-Platz 2
+    City: München
+    Post Code: 80539
+    Country/Region Code: DE
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: VTEST0002
+    Name: Redwave Systems
+    Address: 88 Fremont Street
+    City: San Francisco
+    Post Code: 94105
+    Country/Region Code: US
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: VTEST0003
+    Name: AgriNova Foods
+    Address: 14 Greenhill Crescent
+    City: Cambridge
+    Post Code: CB1 2QS
+    Country/Region Code: GB
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: VTEST0004
+    Name: Vitalyx Medical
+    Address: Via Alessandro Volta 10
+    City: Milano
+    Post Code: 20121
+    Country/Region Code: IT
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: VTEST0005
+    Name: Nexora Dynamics
+    Address: TechPark Allee 17
+    City: Stuttgart
+    Post Code: 70173
+    Country/Region Code: DE
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  glAccountsToCreate:
+  - No.: GLTEST1234
+    Name: Consulting Services
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  deferralTemplatesToCreate:
+  - Deferral Code: 12M
+    No. of Periods: 12
+    Calc. Method: 0
+    Start Date: 0
+    Description: Anual deferral, 12 months
+  - Deferral Code: 6M
+    No. of Periods: 6
+    Calc. Method: 0
+    Start Date: 0
+    Description: Bi-annually deferred, 6 months
+  - Deferral Code: 3M
+    No. of Periods: 3
+    Calc. Method: 0
+    Start Date: 0
+    Description: Quarterly deferred, 3 months
+  historicalPurchaseEntriesToCreate:
+  - Buy-from Vendor No.: VTEST0001
+    No.: HIST-001
+    Posting Date: TODAY-30D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: GLTEST1234
+      Description: Historical Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+    - Type: 1
+      No.: GLTEST1234
+      Description: Real Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+  - Buy-from Vendor No.: VTEST0001
+    No.: HIST-002
+    Posting Date: TODAY-30D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: GLTEST1234
+      Description: Historical Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+    - Type: 1
+      No.: GLTEST1234
+      Description: Real Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+  - Buy-from Vendor No.: VTEST0001
+    No.: HIST-003
+    Posting Date: TODAY-30D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: GLTEST1234
+      Description: Historical Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+    - Type: 1
+      No.: GLTEST1234
+      Description: Real Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+  - Buy-from Vendor No.: VTEST0001
+    No.: HIST-004
+    Posting Date: TODAY-30D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: GLTEST1234
+      Description: Historical Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+    - Type: 1
+      No.: GLTEST1234
+      Description: Real Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+  - Buy-from Vendor No.: VTEST0001
+    No.: HIST-005
+    Posting Date: TODAY-30D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: GLTEST1234
+      Description: Historical Consulting Services
+      Quantity: 5
+      Unit Cost: 100
+    - Type: 1
+      No.: GLTEST1234
+      Description: Real Consulting Services
+      Quantity: 5
+      Unit Cost: 100

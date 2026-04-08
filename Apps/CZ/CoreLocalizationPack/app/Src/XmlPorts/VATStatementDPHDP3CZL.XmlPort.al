@@ -1472,10 +1472,15 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
     var
         BufferAmount: Decimal;
     begin
-        if XMLTagAmount.Get(XMLTag, BufferAmount) then
-            if BufferAmount <> 0 then
-                exit(Format(BufferAmount, 0, 9));
-        exit('');
+        if not XMLTagAmount.Get(XMLTag, BufferAmount) then
+            exit('');
+
+        if BufferAmount = 0 then
+            exit('');
+
+        if GetVATStmtCalcParameters()."Print in Integers" then
+            BufferAmount := Round(BufferAmount, 1, GetVATStmtCalcParameters().GetRoundingDirection());
+        exit(Format(BufferAmount, 0, 9));
     end;
 
     procedure AddAmount(XMLTag: Code[20]; Amount: Decimal)
@@ -1548,13 +1553,12 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
 
     local procedure GetColumnValue(var VATStatementLine: Record "VAT Statement Line") ColumnValue: Decimal
     var
-        VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL";
+        TempVATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL" temporary;
     begin
-        VATStmtCalcParametersCZL := GetVATStmtCalcParameters();
-        VATStatementLine.CalcTotal(VATStmtCalcParametersCZL, ColumnValue);
+        TempVATStmtCalcParametersCZL := GetVATStmtCalcParameters();
+        TempVATStmtCalcParametersCZL."Print in Integers" := false; // Calculate with decimals, rounding will be applied in GetAmount function
+        VATStatementLine.CalcTotal(TempVATStmtCalcParametersCZL, ColumnValue);
         ColumnValue := ColumnValue * VATStatementLine.GetPrintSign();
-        if VATStmtCalcParametersCZL."Print in Integers" then
-            ColumnValue := Round(ColumnValue, 1, VATStmtCalcParametersCZL.GetRoundingDirection());
     end;
 
     procedure CopyAttachmentFilter(var VATStatementAttachmentCZL: Record "VAT Statement Attachment CZL")

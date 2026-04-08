@@ -1,0 +1,45 @@
+{
+    "folders": [
+        {
+            "name": "agent app",
+            "path": "app"
+        },
+        {
+            "name": "agent tests",
+            "path": "test"
+        },
+        {
+            "name": "edocuments",
+            "path": "../../../BCApps/src/Apps/W1/EDocument/App/"
+        },
+        {
+            "name": "edocuments tests",
+            "path": "../../../BCApps/src/Apps/W1/EDocument/Test"
+        },
+        {
+            "name": "edocuments AI tests",
+            "path": "../EDocumentAITest/test"
+        },
+        {
+            "name": "edocuments m365",
+            "path": "../../../../App/Apps/W1/EDocumentConnectors/Microsoft365/app"
+        },
+        {
+            "name": "SMTP API",
+            "path": "../../../Apps/W1/Email - SMTP API/app"
+        },
+        {
+            "name": "SMTP connector",
+            "path": "../../../Apps/W1/Email - SMTP Connector/app"
+        },
+        {
+            "name": "PA dev",
+            "path": "../../../Tool/PA Development"
+        },
+        {
+            "name": "agent logs",
+            "path": "../../../../../../CopilotServiceLogs/Agents"
+        }
+    ],
+    "settings": {}
+}

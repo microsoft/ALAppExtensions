@@ -1,0 +1,1304 @@
+tests:
+- name: ACCURACY01
+  description: Find one matching and released sales order with shipment date 01 January 2027 (1 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 01 January 2027
+    shipment_date: '01-01-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+- name: ACCURACY02
+  description: Find zero matching and released sales orders with shipment date 02 January 2027 (0 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 02 January 2027
+    shipment_date: '01-02-2027'
+    sales_orders:
+      - matching: False
+        release:
+          partial: 1
+          complete: 1
+        no_release:
+          partial: 1
+          complete: 1
+- name: ACCURACY03
+  description: Find one matching and released sales order with shipment date 03 January 2027 (1 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 03 January 2027
+    shipment_date: '01-03-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+- name: ACCURACY04
+  description: Find multiple matching and released sales orders with shipment date 04 January 2027 (2 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 04 January 2027
+    shipment_date: '01-04-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+          complete: 1
+- name: ACCURACY05
+  description: Find one matching sales order with shipment date 05 January 2027 requiring complete shipping advice (1 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 05 January 2027
+    shipment_date: '01-05-2027'
+    sales_orders:
+      - matching: True
+        release:
+          complete: 1
+- name: ACCURACY06
+  description: Find mixed matching sales orders with shipment date 06 January 2027, some released and some not (1 released, 2 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 06 January 2027
+    shipment_date: '01-06-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+        no_release:
+          partial: 1
+          complete: 1
+- name: ACCURACY07
+  description: Find one matching sales order with shipment date 07 January 2027 with multiple line items and complex inventory (1 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 07 January 2027
+    shipment_date: '01-07-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+- name: ACCURACY08
+  description: Find matching sales orders with shipment date 08 January 2027 with edge case - exact quantity match (2 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 08 January 2027
+    shipment_date: '01-08-2027'
+    sales_orders:
+      - matching: True
+        release:
+          complete: 2
+- name: ACCURACY09
+  description: Find one matching sales order with shipment date 09 January 2027 with zero quantity line items (1 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 09 January 2027
+    shipment_date: '01-09-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+- name: ACCURACY10
+  description: Find multiple matching sales orders with shipment date 10 January 2027 with varying shipping advice requirements (3 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 10 January 2027
+    shipment_date: '01-10-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 2
+          complete: 1
+- name: ACCURACY11
+  description: Find matching sales orders with shipment date 11 January 2027 with large number of line items (1 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 11 January 2027
+    shipment_date: '01-11-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+- name: ACCURACY12
+  description: Find matching sales orders with shipment date 12 January 2027 with mixed insufficient and sufficient inventory (2 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 12 January 2027
+    shipment_date: '01-12-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 2
+- name: ACCURACY13
+  description: Find matching sales orders with shipment date 13 January 2027 with extremely large quantities (2 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 13 January 2027
+    shipment_date: '01-13-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+          complete: 1
+- name: ACCURACY14
+  description: Find matching sales orders with shipment date 14 January 2027 with many items having exact quantity matches (2 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 14 January 2027
+    shipment_date: '01-14-2027'
+    sales_orders:
+      - matching: True
+        release:
+          complete: 1
+- name: ACCURACY15
+  description: Find matching sales orders with shipment date 15 January 2027 with complex multi-order scenario (3 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 15 January 2027
+    shipment_date: '01-15-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 2
+          complete: 1
+- name: ACCURACY16
+  description: Find matching sales orders with shipment date 16 January 2027 with extensive line items and varying availability (1 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 16 January 2027
+    shipment_date: '01-16-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+- name: ACCURACY17
+  description: Find matching sales orders with shipment date 17 January 2027 with high-volume mixed orders (3 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 17 January 2027
+    shipment_date: '01-17-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 2
+          complete: 1
+- name: ACCURACY18
+  description: Find matching sales orders with shipment date 18 January 2027 with minimal quantities and many line items (2 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 18 January 2027
+    shipment_date: '01-18-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+          complete: 1
+- name: ACCURACY19
+  description: Find matching sales orders with shipment date 19 January 2027 with complex inventory shortages (2 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 19 January 2027
+    shipment_date: '01-19-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 2
+- name: ACCURACY20
+  description: Find matching sales orders with shipment date 20 January 2027 with maximum complexity - many orders and many items (4 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 20 January 2027
+    shipment_date: '01-20-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 3
+          complete: 1
+- name: ACCURACY21
+  description: Find 20 simple matching sales orders with shipment date 21 January 2027 - all released (20 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 21 January 2027
+    shipment_date: '01-21-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 20
+- name: ACCURACY22
+  description: Find 20 simple sales orders with shipment date 22 January 2027 - none will be released (0 released, 20 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 22 January 2027
+    shipment_date: '01-22-2027'
+    sales_orders:
+      - matching: True
+        no_release:
+          complete: 20
+- name: ACCURACY23
+  description: Find mixed sales orders with shipment date 23 January 2027 - some released and some not (11 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 23 January 2027
+    shipment_date: '01-23-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 11
+- name: ACCURACY24
+  description: Find mixed sales orders with shipment date 24 January 2027 with varying shipping advice and release status (8 released, 7 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 24 January 2027
+    shipment_date: '01-24-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 5
+          complete: 2
+        no_release:
+          partial: 4
+          complete: 3
+- name: ACCURACY25
+  description: Find 50 matching sales orders with shipment date 25 January 2027 - mixed partial and complete shipping advice (50 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 25 January 2027
+    shipment_date: '01-25-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 30
+          complete: 20
+- name: ACCURACY26
+  description: Find 100 sales orders with shipment date 26 January 2027 - large scale test (75 released, 20 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 26 January 2027
+    shipment_date: '01-26-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 75
+        no_release:
+          complete: 20
+- name: ACCURACY27
+  description: Find sales orders with past shipment date 27 December 2026 - testing historical date handling (3 released, 1 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 27 December 2026
+    shipment_date: '12-27-2026'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 2
+          complete: 1
+        no_release:
+          partial: 1
+- name: ACCURACY28
+  description: Find sales orders with far future shipment date 28 January 2028 - testing distant future date (4 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 28 January 2028
+    shipment_date: '01-28-2028'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 3
+          complete: 1
+- name: ACCURACY29
+  description: Find sales orders with shipment date 29 January 2027 - all orders require complete shipping and none released (0 released, 12 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 29 January 2027
+    shipment_date: '01-29-2027'
+    sales_orders:
+      - matching: True
+        no_release:
+          complete: 12
+- name: ACCURACY30
+  description: Find mixed matching and non-matching sales orders with shipment date 30 January 2027 (7 released, 8 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 30 January 2027
+    shipment_date: '01-30-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 5
+          complete: 2
+        no_release:
+          partial: 3
+      - matching: False
+        release:
+          partial: 2
+          complete: 1
+        no_release:
+          partial: 2
+- name: ACCURACY31
+  description: Find sales orders with month-end shipment date 31 January 2027 - boundary date testing (6 released, 3 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 31 January 2027
+    shipment_date: '01-31-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 4
+          complete: 2
+        no_release:
+          complete: 3
+- name: ACCURACY32
+  description: Find sales orders with year-end shipment date 31 December 2027 - boundary date testing (5 released, 2 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 31 December 2027
+    shipment_date: '12-31-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 3
+          complete: 2
+        no_release:
+          partial: 2
+- name: ACCURACY33
+  description: Find sales orders with shipment date 01 February 2027 - empty result validation, no matching orders at all
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 01 February 2027
+    shipment_date: '02-01-2027'
+    sales_orders:
+      - matching: False
+        release:
+          partial: 0
+- name: ACCURACY34
+  description: Find sales orders with shipment date 02 February 2027 - all orders only require complete shipping and inventory insufficient (0 released, 10 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 02 February 2027
+    shipment_date: '02-02-2027'
+    sales_orders:
+      - matching: True
+        no_release:
+          complete: 10
+- name: ACCURACY35
+  description: Find sales orders with shipment date 03 February 2027 - alternating release pattern for consistency testing (8 released, 8 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 03 February 2027
+    shipment_date: '02-03-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 4
+          complete: 4
+        no_release:
+          partial: 4
+          complete: 4
+- name: ACCURACY36
+  description: Find sales orders with shipment date 04 February 2027 - medium volume with specific ratios (15 released, 10 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 04 February 2027
+    shipment_date: '02-04-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 10
+          complete: 5
+        no_release:
+          partial: 6
+          complete: 4
+- name: ACCURACY37
+  description: Find sales orders with shipment date 05 February 2027 - only partial shipping advice orders (12 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 05 February 2027
+    shipment_date: '02-05-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 12
+- name: ACCURACY38
+  description: Find sales orders with shipment date 06 February 2027 - only complete shipping advice orders with mixed results (6 released, 6 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 06 February 2027
+    shipment_date: '02-06-2027'
+    sales_orders:
+      - matching: True
+        release:
+          complete: 6
+        no_release:
+          complete: 6
+- name: ACCURACY39
+  description: Find sales orders with shipment date 07 February 2027 - single order edge case with complete shipping advice not released (0 released, 1 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 07 February 2027
+    shipment_date: '02-07-2027'
+    sales_orders:
+      - matching: True
+        no_release:
+          complete: 1
+- name: ACCURACY40
+  description: Find sales orders with shipment date 08 February 2027 - heavily skewed towards not released (2 released, 18 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 08 February 2027
+    shipment_date: '02-08-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+          complete: 1
+        no_release:
+          partial: 10
+          complete: 8
+- name: ACCURACY41
+  description: Find sales orders with shipment date 09 February 2027 - heavily skewed towards released (35 released, 3 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 09 February 2027
+    shipment_date: '02-09-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 20
+          complete: 15
+        no_release:
+          partial: 2
+          complete: 1
+- name: ACCURACY42
+  description: Find sales orders with shipment date 10 February 2027 - all non-matching orders with various states (0 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 10 February 2027
+    shipment_date: '02-10-2027'
+    sales_orders:
+      - matching: False
+        release:
+          partial: 5
+          complete: 3
+        no_release:
+          partial: 4
+          complete: 2
+- name: ACCURACY43
+  description: Find sales orders with shipment date 11 February 2027 - balanced mix with equal distribution (10 released, 10 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 11 February 2027
+    shipment_date: '02-11-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 5
+          complete: 5
+        no_release:
+          partial: 5
+          complete: 5
+- name: ACCURACY44
+  description: Find sales orders with shipment date 12 February 2027 - moderate volume with only partial releases (25 released, 15 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 12 February 2027
+    shipment_date: '02-12-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 25
+        no_release:
+          partial: 10
+          complete: 5
+- name: ACCURACY45
+  description: Find sales orders with shipment date 13 February 2027 - three-way split between matching, non-matching, and release status (18 released, 12 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 13 February 2027
+    shipment_date: '02-13-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 12
+          complete: 6
+        no_release:
+          partial: 6
+          complete: 4
+      - matching: False
+        release:
+          partial: 1
+        no_release:
+          complete: 1
+- name: ACCURACY46
+  description: Find sales orders with shipment date 14 February 2027 - Valentine's Day special boundary test with romantic quantities (14 released, 2 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 14 February 2027
+    shipment_date: '02-14-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 7
+          complete: 7
+        no_release:
+          complete: 2
+- name: ACCURACY47
+  description: Find 100 sales orders with shipment date 15 February 2027 - high volume with split releases and partial not released (100 released, 25 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 15 February 2027
+    shipment_date: '02-15-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 75
+          complete: 25
+        no_release:
+          partial: 25
+- name: ACCURACY48
+  description: Find 100 sales orders with shipment date 16 February 2027 - high volume with split releases and split not released (100 released, 50 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 16 February 2027
+    shipment_date: '02-16-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 75
+          complete: 25
+        no_release:
+          partial: 35
+          complete: 15
+- name: ACCURACY49
+  description: Find sales orders with shipment date 17 February 2027 - minimal orders with complete shipping advice only (3 released, 1 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 17 February 2027
+    shipment_date: '02-17-2027'
+    sales_orders:
+      - matching: True
+        release:
+          complete: 3
+        no_release:
+          complete: 1
+- name: ACCURACY50
+  description: Find sales orders with shipment date 18 February 2027 - stress test with 150 mixed orders (110 released, 40 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 18 February 2027
+    shipment_date: '02-18-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 80
+          complete: 30
+        no_release:
+          partial: 25
+          complete: 15
+- name: ACCURACY51
+  description: Find sales orders with shipment date 19 February 2027 - edge case with only non-matching orders (0 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 19 February 2027
+    shipment_date: '02-19-2027'
+    sales_orders:
+      - matching: False
+        release:
+          partial: 10
+          complete: 5
+        no_release:
+          partial: 8
+          complete: 3
+- name: ACCURACY52
+  description: Find sales orders with shipment date 20 February 2027 - gradual inventory depletion scenario (16 released, 9 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 20 February 2027
+    shipment_date: '02-20-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 10
+          complete: 6
+        no_release:
+          partial: 5
+          complete: 4
+- name: ACCURACY53
+  description: Find sales orders with shipment date 21 February 2027 - predominantly complete shipping advice orders (8 released, 4 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 21 February 2027
+    shipment_date: '02-21-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 2
+          complete: 6
+        no_release:
+          complete: 4
+- name: ACCURACY54
+  description: Find sales orders with shipment date 22 February 2027 - mixed matching status with high complexity (22 released, 11 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 22 February 2027
+    shipment_date: '02-22-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 15
+          complete: 7
+        no_release:
+          partial: 6
+          complete: 5
+      - matching: False
+        release:
+          partial: 2
+        no_release:
+          partial: 1
+- name: ACCURACY55
+  description: Find sales orders with shipment date 23 February 2027 - quarter-end boundary test with balanced distribution (20 released, 20 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 23 February 2027
+    shipment_date: '02-23-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 10
+          complete: 10
+        no_release:
+          partial: 10
+          complete: 10
+- name: ACCURACY56
+  description: Find sales orders with shipment date 24 February 2027 - sparse orders with high release rate (9 released, 1 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 24 February 2027
+    shipment_date: '02-24-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 6
+          complete: 3
+        no_release:
+          complete: 1
+- name: ACCURACY57
+  description: Find sales orders with shipment date 25 February 2027 - leap year adjacent date with medium volume (30 released, 15 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 25 February 2027
+    shipment_date: '02-25-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 18
+          complete: 12
+        no_release:
+          partial: 9
+          complete: 6
+- name: ACCURACY58
+  description: Find sales orders with shipment date 26 February 2027 - end-of-month boundary with very high release rate (45 released, 5 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 26 February 2027
+    shipment_date: '02-26-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 28
+          complete: 17
+        no_release:
+          partial: 3
+          complete: 2
+- name: ACCURACY59
+  description: Find sales orders with shipment date 27 February 2027 - single partial release order (1 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 27 February 2027
+    shipment_date: '02-27-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+- name: ACCURACY60
+  description: Find sales orders with shipment date 28 February 2027 - last day of February with moderate volume (33 released, 17 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 28 February 2027
+    shipment_date: '02-28-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 20
+          complete: 13
+        no_release:
+          partial: 10
+          complete: 7
+- name: ACCURACY61
+  description: Find sales orders with shipment date 01 March 2027 - month transition with high volume (60 released, 20 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 01 March 2027
+    shipment_date: '03-01-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 40
+          complete: 20
+        no_release:
+          partial: 12
+          complete: 8
+- name: ACCURACY62
+  description: Find sales orders with shipment date 02 March 2027 - multiple non-matching orders mixed with matching (5 released, 3 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 02 March 2027
+    shipment_date: '03-02-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 3
+          complete: 2
+        no_release:
+          partial: 2
+          complete: 1
+      - matching: False
+        release:
+          partial: 4
+          complete: 2
+        no_release:
+          partial: 3
+- name: ACCURACY63
+  description: Find sales orders with shipment date 03 March 2027 - all complete shipping advice with insufficient inventory (0 released, 15 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 03 March 2027
+    shipment_date: '03-03-2027'
+    sales_orders:
+      - matching: True
+        no_release:
+          complete: 15
+- name: ACCURACY64
+  description: Find sales orders with shipment date 04 March 2027 - extreme volume stress test (120 released, 30 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 04 March 2027
+    shipment_date: '03-04-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 90
+          complete: 30
+        no_release:
+          partial: 20
+          complete: 10
+- name: ACCURACY65
+  description: Find sales orders with shipment date 05 March 2027 - balanced distribution with medium complexity (25 released, 25 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 05 March 2027
+    shipment_date: '03-05-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 13
+          complete: 12
+        no_release:
+          partial: 13
+          complete: 12
+- name: ACCURACY66
+  description: Find sales orders with shipment date 06 March 2027 - low volume with all partial releases (7 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 06 March 2027
+    shipment_date: '03-06-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 7
+- name: ACCURACY67
+  description: Find sales orders with shipment date 07 March 2027 - mixed matching with heavy non-matching presence (12 released, 8 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 07 March 2027
+    shipment_date: '03-07-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 8
+          complete: 4
+        no_release:
+          partial: 4
+          complete: 4
+      - matching: False
+        release:
+          partial: 10
+          complete: 5
+        no_release:
+          partial: 8
+          complete: 7
+- name: ACCURACY68
+  description: Find sales orders with shipment date 08 March 2027 - asymmetric distribution favoring complete shipping advice (18 released, 6 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 08 March 2027
+    shipment_date: '03-08-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 5
+          complete: 13
+        no_release:
+          complete: 6
+- name: ACCURACY69
+  description: Find sales orders with shipment date 09 March 2027 - high partial release rate with minimal not released (42 released, 3 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 09 March 2027
+    shipment_date: '03-09-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 35
+          complete: 7
+        no_release:
+          partial: 2
+          complete: 1
+- name: ACCURACY70
+  description: Find sales orders with shipment date 10 March 2027 - round number boundary with equal split (50 released, 50 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 10 March 2027
+    shipment_date: '03-10-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 30
+          complete: 20
+        no_release:
+          partial: 30
+          complete: 20
+- name: ACCURACY71
+  description: Find sales orders with shipment date 11 March 2027 - minimal orders with only partial not released (2 released, 3 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 11 March 2027
+    shipment_date: '03-11-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+          complete: 1
+        no_release:
+          partial: 3
+- name: ACCURACY72
+  description: Find sales orders with shipment date 12 March 2027 - mid-range volume with complete dominance (14 released, 8 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 12 March 2027
+    shipment_date: '03-12-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 4
+          complete: 10
+        no_release:
+          partial: 3
+          complete: 5
+- name: ACCURACY73
+  description: Find sales orders with shipment date 13 March 2027 - unlucky 13 edge case with exact 13 orders (13 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 13 March 2027
+    shipment_date: '03-13-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 8
+          complete: 5
+- name: ACCURACY74
+  description: Find sales orders with shipment date 14 March 2027 - Pi Day approximation with mathematical precision (31 released, 14 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 14 March 2027
+    shipment_date: '03-14-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 20
+          complete: 11
+        no_release:
+          partial: 9
+          complete: 5
+- name: ACCURACY75
+  description: Find sales orders with shipment date 15 March 2027 - mid-month marker with heavy traffic (85 released, 35 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 15 March 2027
+    shipment_date: '03-15-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 55
+          complete: 30
+        no_release:
+          partial: 22
+          complete: 13
+- name: ACCURACY76
+  description: Find sales orders with shipment date 16 March 2027 - sparse with heavy non-matching ratio (4 released, 2 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 16 March 2027
+    shipment_date: '03-16-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 3
+          complete: 1
+        no_release:
+          partial: 1
+          complete: 1
+      - matching: False
+        release:
+          partial: 20
+          complete: 10
+        no_release:
+          partial: 15
+          complete: 12
+- name: ACCURACY77
+  description: Find sales orders with shipment date 17 March 2027 - St. Patrick's Day with lucky distribution (17 released, 7 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 17 March 2027
+    shipment_date: '03-17-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 10
+          complete: 7
+        no_release:
+          partial: 4
+          complete: 3
+- name: ACCURACY78
+  description: Find sales orders with shipment date 18 March 2027 - high complexity with triple-digit volume (100 released, 50 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 18 March 2027
+    shipment_date: '03-18-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 65
+          complete: 35
+        no_release:
+          partial: 35
+          complete: 15
+- name: ACCURACY79
+  description: Find sales orders with shipment date 19 March 2027 - prime number test with 19 orders (19 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 19 March 2027
+    shipment_date: '03-19-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 12
+          complete: 7
+- name: ACCURACY80
+  description: Find sales orders with shipment date 20 March 2027 - spring equinox with balanced nature (40 released, 40 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 20 March 2027
+    shipment_date: '03-20-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 25
+          complete: 15
+        no_release:
+          partial: 25
+          complete: 15
+- name: ACCURACY81
+  description: Find sales orders with shipment date 21 March 2027 - Fibonacci sequence inspired (21 released, 13 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 21 March 2027
+    shipment_date: '03-21-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 13
+          complete: 8
+        no_release:
+          partial: 8
+          complete: 5
+- name: ACCURACY82
+  description: Find sales orders with shipment date 22 March 2027 - double digit pattern with high volume (88 released, 22 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 22 March 2027
+    shipment_date: '03-22-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 60
+          complete: 28
+        no_release:
+          partial: 15
+          complete: 7
+- name: ACCURACY83
+  description: Find sales orders with shipment date 23 March 2027 - prime number with low release rate (5 released, 18 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 23 March 2027
+    shipment_date: '03-23-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 3
+          complete: 2
+        no_release:
+          partial: 11
+          complete: 7
+- name: ACCURACY84
+  description: Find sales orders with shipment date 24 March 2027 - divisibility test with multiple factors (24 released, 12 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 24 March 2027
+    shipment_date: '03-24-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 16
+          complete: 8
+        no_release:
+          partial: 8
+          complete: 4
+- name: ACCURACY85
+  description: Find sales orders with shipment date 25 March 2027 - quarter marker with mixed matching (55 released, 30 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 25 March 2027
+    shipment_date: '03-25-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 38
+          complete: 17
+        no_release:
+          partial: 20
+          complete: 10
+      - matching: False
+        release:
+          partial: 5
+        no_release:
+          partial: 3
+- name: ACCURACY86
+  description: Find sales orders with shipment date 26 March 2027 - all partial shipping advice only (26 released, 0 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 26 March 2027
+    shipment_date: '03-26-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 26
+- name: ACCURACY87
+  description: Find sales orders with shipment date 27 March 2027 - cube number derived test with moderate volume (27 released, 9 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 27 March 2027
+    shipment_date: '03-27-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 18
+          complete: 9
+        no_release:
+          partial: 6
+          complete: 3
+- name: ACCURACY88
+  description: Find sales orders with shipment date 28 March 2027 - high complete shipping requirement (15 released, 13 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 28 March 2027
+    shipment_date: '03-28-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 5
+          complete: 10
+        no_release:
+          partial: 3
+          complete: 10
+- name: ACCURACY89
+  description: Find sales orders with shipment date 29 March 2027 - near month-end with asymmetric distribution (71 released, 18 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 29 March 2027
+    shipment_date: '03-29-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 50
+          complete: 21
+        no_release:
+          partial: 12
+          complete: 6
+- name: ACCURACY90
+  description: Find sales orders with shipment date 30 March 2027 - penultimate day with high density (90 released, 30 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 30 March 2027
+    shipment_date: '03-30-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 60
+          complete: 30
+        no_release:
+          partial: 20
+          complete: 10
+- name: ACCURACY91
+  description: Find sales orders with shipment date 31 March 2027 - month-end with quarter-end complexity (64 released, 27 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 31 March 2027
+    shipment_date: '03-31-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 45
+          complete: 19
+        no_release:
+          partial: 18
+          complete: 9
+- name: ACCURACY92
+  description: Find sales orders with shipment date 01 April 2027 - April Fools with unexpected patterns (1 released, 99 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 01 April 2027
+    shipment_date: '04-01-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 1
+        no_release:
+          partial: 60
+          complete: 39
+- name: ACCURACY93
+  description: Find sales orders with shipment date 02 April 2027 - Q2 start with aggressive release strategy (93 released, 7 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 02 April 2027
+    shipment_date: '04-02-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 65
+          complete: 28
+        no_release:
+          partial: 5
+          complete: 2
+- name: ACCURACY94
+  description: Find sales orders with shipment date 03 April 2027 - minimal matching with heavy non-matching (6 released, 4 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 03 April 2027
+    shipment_date: '04-03-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 4
+          complete: 2
+        no_release:
+          partial: 2
+          complete: 2
+      - matching: False
+        release:
+          partial: 40
+          complete: 20
+        no_release:
+          partial: 30
+          complete: 25
+- name: ACCURACY95
+  description: Find sales orders with shipment date 04 April 2027 - power of 2 inspired with binary perfection (64 released, 32 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 04 April 2027
+    shipment_date: '04-04-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 40
+          complete: 24
+        no_release:
+          partial: 20
+          complete: 12
+- name: ACCURACY96
+  description: Find sales orders with shipment date 05 April 2027 - multiples theme with high granularity (96 released, 24 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 05 April 2027
+    shipment_date: '04-05-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 70
+          complete: 26
+        no_release:
+          partial: 16
+          complete: 8
+- name: ACCURACY97
+  description: Find sales orders with shipment date 06 April 2027 - near-prime with complete shipping dominance (11 released, 6 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 06 April 2027
+    shipment_date: '04-06-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 3
+          complete: 8
+        no_release:
+          complete: 6
+- name: ACCURACY98
+  description: Find sales orders with shipment date 07 April 2027 - lucky number seven with perfect balance (49 released, 49 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 07 April 2027
+    shipment_date: '04-07-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 28
+          complete: 21
+        no_release:
+          partial: 28
+          complete: 21
+- name: ACCURACY99
+  description: Find sales orders with shipment date 08 April 2027 - penultimate test with extreme volume (120 released, 30 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 08 April 2027
+    shipment_date: '04-08-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 85
+          complete: 35
+        no_release:
+          partial: 20
+          complete: 10
+- name: ACCURACY100
+  description: Find sales orders with shipment date 09 April 2027 - century test with perfect hundred orders (100 released, 50 not released)
+  question:
+    from: Jane Doe
+    message: Run and process all with shipment date 09 April 2027
+    shipment_date: '04-09-2027'
+    sales_orders:
+      - matching: True
+        release:
+          partial: 60
+          complete: 40
+        no_release:
+          partial: 30
+          complete: 20

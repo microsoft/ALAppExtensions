@@ -11,6 +11,8 @@ permissionset 6785 "WHT - Read"
     Access = Public;
     Assignable = true;
 
+    IncludedPermissionSets = "WHT - Objects";
+
     Permissions =
         tabledata "Temp Withholding Tax Entry" = R,
         tabledata "Wthldg. Tax Bus. Post. Group" = R,

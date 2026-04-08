@@ -1,0 +1,3971 @@
+test_setup:
+  genBusinessPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Gen. Business Posting Group for tests
+  genProductPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Gen. Product Posting Group for tests
+  generalPostingSetupToCreate:
+  - Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    Description: Default General Posting Setup for tests
+  vatBusinessPostingGroupToCreate:
+  - Code: PAYABLESAGENT-10
+    Description: VAT Business Posting Group for tests
+  vatProductPostingGroupToCreate:
+  - Code: PAYABLESAGENT-10
+    Description: VAT Product Posting Group for tests
+  vatPostingSetupToCreate:
+  - Description: 10% VAT Posting Setup for tests
+    VAT Identifier: PAYABLESAGENT-10
+    VAT Calculation Type: 0
+    VAT %: 10
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  vendorPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Vendor Posting Group for tests
+  customerPostingGroupToCreate:
+  - Code: PAYABLESAGENT-TEST
+    Description: Default Customer Posting Group for tests
+  vendorTemplToCreate:
+  - Code: DEFAULT
+    Description: Default Vendor Template for tests
+    Vendor Posting Group: PAYABLESAGENT-TEST
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  glAccountsToCreate:
+  - No.: 50100
+    Name: Raw Materials - Hardwood Lumber
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50110
+    Name: Raw Materials - Plywood & Engineered Wood
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50120
+    Name: Raw Materials - Specialty Hardwoods
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50200
+    Name: Furniture Hardware & Fasteners
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50210
+    Name: Furniture Fittings & Components
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50220
+    Name: Decorative Hardware & Accents
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50300
+    Name: Upholstery Materials - Fabric
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50310
+    Name: Upholstery Materials - Leather
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50320
+    Name: Foam & Cushioning Materials
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50400
+    Name: Finishing Materials - Stains & Varnishes
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50410
+    Name: Finishing Materials - Lacquers & Paints
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50420
+    Name: Low-Emission Finishing Products
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50500
+    Name: Packaging Materials - Cardboard & Boxes
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 50510
+    Name: Packaging Materials - Protective Wrapping
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 51100
+    Name: Freight & Transportation - Inbound
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 51110
+    Name: Freight & Transportation - Outbound
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 51200
+    Name: Warehousing & Storage Services
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 52100
+    Name: Equipment Rental - Material Handling
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 52110
+    Name: Equipment Rental - Trucks & Trailers
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 52200
+    Name: Machinery Maintenance & Repairs
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 52210
+    Name: Machinery Parts & Supplies
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 53100
+    Name: Utilities - Electricity
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 53110
+    Name: Utilities - Natural Gas
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 53200
+    Name: Facility Maintenance & Janitorial
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 53300
+    Name: Building Lease & Property Management
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 53400
+    Name: HVAC Maintenance & Air Quality
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 53410
+    Name: Dust Collection & Ventilation Systems
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 54100
+    Name: Safety Equipment & PPE
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 54200
+    Name: Fire Protection & Safety Systems
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 54300
+    Name: Security Systems & Monitoring
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 54400
+    Name: Pest Control Services
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 55100
+    Name: Information Technology - Software
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 55110
+    Name: Information Technology - Hardware
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 55120
+    Name: Information Technology - Cloud Services
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 55200
+    Name: Telecommunications & Internet
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 56100
+    Name: Professional Services - Legal Fees
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 56110
+    Name: Professional Services - Accounting & Tax
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 56120
+    Name: Professional Services - Business Consulting
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 56200
+    Name: Marketing & Sales Tools
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 56210
+    Name: Marketing & Business Development
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 57100
+    Name: Employee Benefits - Group Insurance
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 58100
+    Name: Office Supplies & Stationery
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 58110
+    Name: Office Furniture & Equipment
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 59100
+    Name: Industrial Supplies & Consumables
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 59200
+    Name: Miscellaneous Operating Expenses
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 60100
+    Name: Capital Equipment - Woodworking Machinery
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 61100
+    Name: Research & Development - Product Design
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 62100
+    Name: Training & Professional Development
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  - No.: 63100
+    Name: Trade Association Memberships
+    Gen. Posting Type: 1
+    Account Type: 0
+    Direct Posting: true
+    Account Category: 6
+    Indentation: 0
+    Gen. Prod. Posting Group: PAYABLESAGENT-TEST
+    VAT Prod. Posting Group: PAYABLESAGENT-10
+  deferralTemplatesToCreate:
+  - Deferral Code: 3M
+    No. of Periods: 3
+    Calc. Method: 0
+    Start Date: 0
+    Description: Quarterly deferral, 3 months
+  - Deferral Code: 6M
+    No. of Periods: 6
+    Calc. Method: 0
+    Start Date: 0
+    Description: Semi-annual deferral, 6 months
+  - Deferral Code: 12M
+    No. of Periods: 12
+    Calc. Method: 0
+    Start Date: 0
+    Description: Annual deferral, 12 months
+  - Deferral Code: 24M
+    No. of Periods: 24
+    Calc. Method: 0
+    Start Date: 0
+    Description: Biennial deferral, 24 months
+  - Deferral Code: 36M
+    No. of Periods: 36
+    Calc. Method: 0
+    Start Date: 0
+    Description: Three-year deferral, 36 months
+  vendorsToCreate:
+  - No.: V001
+    Name: Superior Hardwoods Inc.
+    Address: 2450 Industrial Boulevard
+    Address 2: ''
+    City: Thunder Bay
+    Post Code: P7E 6T1
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V002
+    Name: Canadian Plywood & Veneer Corp.
+    Address: 875 Forest Products Road
+    Address 2: ''
+    City: Sault Ste. Marie
+    Post Code: P6A 5K7
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V003
+    Name: Precision Hardware Solutions
+    Address: 1200 Manufacturing Drive
+    Address 2: ''
+    City: Mississauga
+    Post Code: L5T 1R5
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V004
+    Name: Foam Comfort Technologies Ltd.
+    Address: 567 Polymer Avenue
+    Address 2: ''
+    City: Laval
+    Post Code: H7L 3W4
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V005
+    Name: Textile Innovations Canada
+    Address: 3300 Fabric Lane
+    Address 2: ''
+    City: Montreal
+    Post Code: H3C 4G9
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V006
+    Name: Ontario Finishing Products
+    Address: 945 Chemical Court
+    Address 2: ''
+    City: Hamilton
+    Post Code: L8E 3M3
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V007
+    Name: Logistics Express Canada
+    Address: 4100 Transport Boulevard
+    Address 2: ''
+    City: Brampton
+    Post Code: L6T 5M2
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V008
+    Name: EnviroPack Solutions Inc.
+    Address: 2200 Packaging Way
+    Address 2: ''
+    City: Vaughan
+    Post Code: L4K 4B6
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V009
+    Name: Hydro One Business Services
+    Address: 483 Bay Street
+    Address 2: ''
+    City: Toronto
+    Post Code: M5G 2P5
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V010
+    Name: Enbridge Gas Distribution
+    Address: 500 Consumers Road
+    Address 2: ''
+    City: North York
+    Post Code: M2J 1P8
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V011
+    Name: Industrial Equipment Rentals Ontario
+    Address: 1850 Equipment Drive
+    Address 2: ''
+    City: Oakville
+    Post Code: L6H 6T3
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V012
+    Name: MachineTech Services Ltd.
+    Address: 670 Industrial Park Road
+    Address 2: ''
+    City: Kitchener
+    Post Code: N2G 4Y9
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V013
+    Name: SafeWork Canada Inc.
+    Address: 1500 Safety Boulevard
+    Address 2: ''
+    City: Ottawa
+    Post Code: K1P 5G3
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V014
+    Name: Tech Solutions Canada Corp.
+    Address: 2800 Innovation Street
+    Address 2: ''
+    City: Waterloo
+    Post Code: N2L 6R2
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V015
+    Name: Rogers Business Communications
+    Address: 333 Bloor Street East
+    Address 2: ''
+    City: Toronto
+    Post Code: M4W 1G9
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V016
+    Name: McCarthy Tétrault LLP
+    Address: 66 Wellington Street West
+    Address 2: ''
+    City: Toronto
+    Post Code: M5K 1E6
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V017
+    Name: Deloitte Canada
+    Address: 8 Adelaide Street West
+    Address 2: ''
+    City: Toronto
+    Post Code: M5H 0A9
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V018
+    Name: Manulife Financial Group Benefits
+    Address: 200 Bloor Street East
+    Address 2: ''
+    City: Toronto
+    Post Code: M4W 1E5
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V019
+    Name: Staples Business Advantage Canada
+    Address: 6 Staples Avenue
+    Address 2: ''
+    City: Richmond Hill
+    Post Code: L4B 4W3
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V020
+    Name: CleanPro Facility Services
+    Address: 1100 Maintenance Road
+    Address 2: ''
+    City: Markham
+    Post Code: L3R 8G6
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V021
+    Name: Orkin Canada Pest Control
+    Address: 5500 Explorer Drive
+    Address 2: ''
+    City: Mississauga
+    Post Code: L4W 5C7
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V022
+    Name: Cintas Canada Fire Protection
+    Address: 2100 Winston Park Drive
+    Address 2: ''
+    City: Oakville
+    Post Code: L6H 6P5
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V023
+    Name: ADT Commercial Security Canada
+    Address: 1691 Pickering Parkway
+    Address 2: ''
+    City: Pickering
+    Post Code: L1V 5L9
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V024
+    Name: National Truck & Trailer Rentals
+    Address: 4200 Steeles Avenue West
+    Address 2: ''
+    City: Woodbridge
+    Post Code: L4L 3S8
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V025
+    Name: Salesforce Canada
+    Address: 1 York Street
+    Address 2: ''
+    City: Toronto
+    Post Code: M5J 0B6
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V026
+    Name: LinkedIn Sales Solutions
+    Address: 121 Bloor Street East
+    Address 2: ''
+    City: Toronto
+    Post Code: M4W 3M5
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V027
+    Name: Westwood Lumber Supply
+    Address: 780 Forest Avenue
+    Address 2: ''
+    City: Pembroke
+    Post Code: K8A 6W5
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V028
+    Name: Quebec Hardwood Distributors
+    Address: 1950 Rue Industrielle
+    Address 2: ''
+    City: Quebec City
+    Post Code: G1N 4C8
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V029
+    Name: Quebec Hardwood Supply Co.
+    Address: 1955 Rue Industrielle
+    Address 2: ''
+    City: Quebec City
+    Post Code: G1N 4C8
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  - No.: V030
+    Name: Atlas Fasteners Inc.
+    Address: 3400 Steel Road
+    Address 2: ''
+    City: Hamilton
+    Post Code: L8H 7P4
+    Country/Region Code: CA
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+  historicalPurchaseLinesToCreate:
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-017
+    Posting Date: TODAY-25D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: White oak - character grade
+      Quantity: 280
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Cherry - heartwood select
+      Quantity: 130
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Ash lumber - baseball bat grade
+      Quantity: 90
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Yellow birch - structural lumber
+      Quantity: 330
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50120
+      Description: Black walnut - FAS grade
+      Quantity: 150
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-011
+    Posting Date: TODAY-31D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Maple plywood - commercial grade panels
+      Quantity: 175
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-018
+    Posting Date: TODAY-48D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50120
+      Description: Black cherry - cabinet stock
+      Quantity: 140
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-005
+    Posting Date: TODAY-82D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50120
+      Description: Ash - cabinet frame stock
+      Quantity: 170
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Ash - rustic character grade
+      Quantity: 190
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Black walnut - A-grade select
+      Quantity: 95
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Black walnut - dimensional squares
+      Quantity: 110
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Soft maple - cabinet grade
+      Quantity: 280
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50100
+      Description: White oak - Arts and Crafts style
+      Quantity: 165
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - A-grade select
+      Quantity: 380
+      Deferral Code: 3M
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-021
+    Posting Date: TODAY-52D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Cherry veneer - select tight cut
+      Quantity: 105
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - rotary cut
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Particle board - high density
+      Quantity: 295
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50110
+      Description: White oak veneer - straight grain
+      Quantity: 165
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Walnut plywood - North American
+      Quantity: 70
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-009
+    Posting Date: TODAY-35D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Bar handles - leather wrapped 8"
+      Quantity: 250
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-015
+    Posting Date: TODAY-64D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Overlay hinges - face frame mount
+      Quantity: 750
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-017
+    Posting Date: TODAY-20D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: MDF - 3/4 inch high density
+      Quantity: 240
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50110
+      Description: MDF - exterior grade waterproof
+      Quantity: 175
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Baltic birch - 5/8 inch 9-ply
+      Quantity: 140
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Birch plywood - sandeply brand
+      Quantity: 195
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-001
+    Posting Date: TODAY-23D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50120
+      Description: Cherry lumber - sapwood minimal
+      Quantity: 110
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - turning squares
+      Quantity: 150
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Ash - handle and tool stock
+      Quantity: 145
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Soft maple lumber -
+      Quantity: 400
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50120
+      Description: Cherry - wide plank flooring
+      Quantity: 140
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - paneling stock
+      Quantity: 260
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak boards - select grade
+      Quantity: 350
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Ash - sports equipment grade
+      Quantity: 150
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - figured grain
+      Quantity: 80
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - stair treads
+      Quantity: 130
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-001
+    Posting Date: TODAY-78D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: White oak veneer - flake figure
+      Quantity: 100
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Birch plywood - precision cut to size
+      Quantity: 155
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-003
+    Posting Date: TODAY-29D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Cabinet pulls - brushed nickel 4"
+      Quantity: 800
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Drawer slides - tandem box 21 inch
+      Quantity: 400
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Furniture levelers - adjustable chrome
+      Quantity: 2000
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50200
+      Description: Drawer pulls - champagne bronze 5"
+      Quantity: 550
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Hinge screws - Euro compatible
+      Quantity: 15000
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: European hinges - 110 degree overlay
+      Quantity: 1200
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50200
+      Description: Cabinet knobs - glass clear round
+      Quantity: 550
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-015
+    Posting Date: TODAY-68D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - 1 inch thick
+      Quantity: 80
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Ash veneer - white ash
+      Quantity: 160
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-018
+    Posting Date: TODAY-16D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Birch veneer - raw unbacked
+      Quantity: 260
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - mission style
+      Quantity: 120
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-012
+    Posting Date: TODAY-69D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Ash veneer - natural color
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Maple veneer - rotary cut
+      Quantity: 400
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50110
+      Description: Baltic birch - 3/4 inch 11-ply
+      Quantity: 150
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: MDF - fire rated type X
+      Quantity: 150
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Cherry veneer - 10mil paper back
+      Quantity: 140
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-019
+    Posting Date: TODAY-50D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50120
+      Description: Ash lumber - table legs
+      Quantity: 160
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-003
+    Posting Date: TODAY-11D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: Soft maple - 4/4 rough sawn
+      Quantity: 320
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50100
+      Description: Yellow birch - 6/4 kiln dried
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White oak - drawer stock
+      Quantity: 220
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - 16/4 thick beams
+      Quantity: 80
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White oak - beam stock
+      Quantity: 120
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Cherry - premium select grade
+      Quantity: 105
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - kiln dried
+      Quantity: 400
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - curly figure
+      Quantity: 70
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - 12/4 thick
+      Quantity: 120
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-009
+    Posting Date: TODAY-6D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: Red oak - rift and quartersawn
+      Quantity: 150
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Yellow birch - industrial grade
+      Quantity: 420
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50100
+      Description: White birch - veneer grade
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Quarter-sawn white oak
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Cherry lumber - natural edge
+      Quantity: 120
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White oak - craftsman grade
+      Quantity: 230
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Yellow birch - matched sets
+      Quantity: 95
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-021
+    Posting Date: TODAY-51D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Hinge mounting plates - Blum compatible
+      Quantity: 1500
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50210
+      Description: Corner braces - steel angle bracket
+      Quantity: 1800
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-003
+    Posting Date: TODAY-56D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: MDF - ultra-light weight
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Birch veneer - premium grade
+      Quantity: 320
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50110
+      Description: Red oak plywood - panel stock
+      Quantity: 230
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Red oak plywood - shop grade
+      Quantity: 220
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Ash veneer - premium select
+      Quantity: 135
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Cherry plywood - panel-ply
+      Quantity: 92
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Particle board - 3/4 inch industrial
+      Quantity: 320
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50110
+      Description: Maple veneer plywood - AA face
+      Quantity: 120
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Cherry veneer - cathedral pattern
+      Quantity: 110
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-007
+    Posting Date: TODAY-54D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: Yellow birch - cabinet grade
+      Quantity: 250
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - stair tread stock
+      Quantity: 160
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - wide plank flooring
+      Quantity: 210
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - moulding grade
+      Quantity: 340
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50100
+      Description: White birch lumber - premium
+      Quantity: 200
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-002
+    Posting Date: TODAY-84D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: MDF - 1 inch extra thick
+      Quantity: 160
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Red oak veneer - plain sliced
+      Quantity: 350
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50110
+      Description: Maple plywood - paint grade
+      Quantity: 220
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50110
+      Description: Red oak veneer - architectural grade
+      Quantity: 190
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: MDF - medium density fiberboard 3/4"
+      Quantity: 250
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50110
+      Description: Particle board - P2 grade chipboard
+      Quantity: 310
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - 1/4 inch backing
+      Quantity: 210
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Cherry plywood - furniture grade
+      Quantity: 95
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Baltic birch - 1/2 inch 13-ply
+      Quantity: 200
+      Deferral Code: 3M
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-016
+    Posting Date: TODAY-51D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Machine screws - M6 x 20mm socket head
+      Quantity: 6000
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50200
+      Description: Cabinet hinges - surface mount
+      Quantity: 700
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Drawer slides - heavy duty 500 lb
+      Quantity: 280
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Soft-close drawer slides - 18 inch
+      Quantity: 500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Drawer slides - full extension 22 inch
+      Quantity: 400
+      Deferral Code: ''
+    - Type: 1
+      No.: 50210
+      Description: Table slides - extension hardware
+      Quantity: 250
+      Deferral Code: ''
+    - Type: 1
+      No.: 50210
+      Description: Bed frame brackets - corner connectors
+      Quantity: 500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Cabinet pulls - polished chrome 3"
+      Quantity: 650
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-017
+    Posting Date: TODAY-10D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Bar handles - square tube 14 inch
+      Quantity: 310
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Pocket hole screws - 1-1/4" coarse
+      Quantity: 8000
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50210
+      Description: Bed rail fasteners - heavy duty
+      Quantity: 600
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Shelf pins - plastic white 3mm
+      Quantity: 6000
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-008
+    Posting Date: TODAY-65D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Drawer slides - undermount push-open
+      Quantity: 320
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Euro screws - confirmat 5mm x 70mm
+      Quantity: 7000
+      Deferral Code: 6M
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-023
+    Posting Date: TODAY-63D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Assembly hardware - complete hinge pack
+      Quantity: 250
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Concealed hinges - inset mounting
+      Quantity: 900
+      Deferral Code: ''
+    - Type: 1
+      No.: 50210
+      Description: Sofa legs - tapered wood attachment
+      Quantity: 600
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Wire pulls - cup pull vintage brass
+      Quantity: 450
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Keyhole hangers - picture frame mount
+      Quantity: 2000
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Concealed hinges - 165 degree wide angle
+      Quantity: 650
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Cabinet handles - D-pull stainless
+      Quantity: 420
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-006
+    Posting Date: TODAY-45D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Birch veneer - fleece backed
+      Quantity: 220
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Birch veneer - paper backed
+      Quantity: 250
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50110
+      Description: Maple plywood - 1/2 inch shop grade
+      Quantity: 190
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - rift cut face
+      Quantity: 110
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Maple plywood - A1 select face
+      Quantity: 125
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Maple plywood - prefinished natural
+      Quantity: 85
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Walnut veneer - book match set
+      Quantity: 95
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Red oak veneer - sapwood free
+      Quantity: 175
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-016
+    Posting Date: TODAY-70D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: Soft maple - paint grade stock
+      Quantity: 380
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - 8/4 thickness
+      Quantity: 300
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50120
+      Description: Cherry - furniture grade FAS
+      Quantity: 125
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - S3S finished
+      Quantity: 250
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Ash lumber - wide boards
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White birch - plywood core stock
+      Quantity: 310
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50100
+      Description: Red oak - bench top material
+      Quantity: 140
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - No. 1 common
+      Quantity: 280
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White oak - quartersawn premium
+      Quantity: 160
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-005
+    Posting Date: TODAY-19D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: White oak plywood - rift sawn
+      Quantity: 105
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-022
+    Posting Date: TODAY-58D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Bar pulls - stainless steel 8 inch
+      Quantity: 450
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Butt hinges - mortise brass 3 inch
+      Quantity: 500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Soft-close hinges - Blum standard
+      Quantity: 1000
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50210
+      Description: Table leg mounting plates - heavy duty
+      Quantity: 700
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Wire pulls - bin pull industrial
+      Quantity: 410
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Edge pulls - recessed finger pull
+      Quantity: 400
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Decorative pulls - vintage ceramic
+      Quantity: 400
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Cabinet knobs - square modern black
+      Quantity: 550
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Cabinet pulls - wire basket pull
+      Quantity: 380
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-007
+    Posting Date: TODAY-79D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Ash veneer - figured pattern
+      Quantity: 110
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-004
+    Posting Date: TODAY-78D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: Soft maple - spalted
+      Quantity: 110
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Cherry - heirloom furniture grade
+      Quantity: 88
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - architectural millwork
+      Quantity: 220
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Yellow birch - door stock
+      Quantity: 190
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - worktop material
+      Quantity: 175
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Yellow birch -
+      Quantity: 350
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50100
+      Description: Soft maple - cabinetry dimension
+      Quantity: 310
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50100
+      Description: White oak - 6/4 thickness
+      Quantity: 240
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - rift sawn
+      Quantity: 200
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-008
+    Posting Date: TODAY-53D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - engineered core
+      Quantity: 165
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Red oak plywood - quartersawn
+      Quantity: 115
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Maple plywood - industrial grade
+      Quantity: 215
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Maple plywood - hardwood core
+      Quantity: 140
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Cherry plywood - 5/8 inch
+      Quantity: 90
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - cathedral grain
+      Quantity: 155
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Baltic birch - 3/8 inch 7-ply
+      Quantity: 225
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-002
+    Posting Date: TODAY-7D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: White oak - mission trim stock
+      Quantity: 170
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - live edge slabs
+      Quantity: 50
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - S4S surfaced
+      Quantity: 290
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-004
+    Posting Date: TODAY-58D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Walnut veneer - rift cut
+      Quantity: 95
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-010
+    Posting Date: TODAY-24D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Particle board - melamine maple finish
+      Quantity: 250
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50110
+      Description: Red oak veneer - rift sliced
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: White oak plywood - plain sawn
+      Quantity: 145
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-013
+    Posting Date: TODAY-57D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50210
+      Description: Table leg brackets - steel mounting
+      Quantity: 800
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Euro screws - 7mm x 50mm flat head
+      Quantity: 8000
+      Deferral Code: 6M
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-015
+    Posting Date: TODAY-83D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: Hard maple - random width boards
+      Quantity: 270
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - table top blanks
+      Quantity: 100
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Black walnut - live edge
+      Quantity: 80
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White birch - millwork trim
+      Quantity: 240
+      Deferral Code: ''
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-006
+    Posting Date: TODAY-71D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50100
+      Description: White oak - frame and panel stock
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White oak - plain sawn
+      Quantity: 320
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50100
+      Description: Yellow birch - edge glued panels
+      Quantity: 75
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Ash - wide plank flooring stock
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50120
+      Description: Black walnut - gunstock blanks
+      Quantity: 40
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - flooring grade
+      Quantity: 500
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50100
+      Description: Red oak - select white
+      Quantity: 300
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50100
+      Description: Soft maple - stair parts
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: Red oak - clear grade S2S
+      Quantity: 240
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White oak - 8/4 dimension lumber
+      Quantity: 180
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-009
+    Posting Date: TODAY-63D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: White oak veneer - quarter sliced
+      Quantity: 280
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: White oak veneer - live sawn
+      Quantity: 120
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-014
+    Posting Date: TODAY-48D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Drawer handles - arch pull satin nickel
+      Quantity: 500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Wood screws -
+      Quantity: 9000
+      Deferral Code: 6M
+  - Buy-from Vendor No.: V001
+    No.: INV-V001-010
+    Posting Date: TODAY-50D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50120
+      Description: Walnut lumber - steamed
+      Quantity: 100
+      Deferral Code: ''
+    - Type: 1
+      No.: 50100
+      Description: White oak - corbel stock
+      Quantity: 85
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-014
+    Posting Date: TODAY-38D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Cherry plywood - natural finish
+      Quantity: 100
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-024
+    Posting Date: TODAY-83D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Heavy duty drawer slides - 20 inch
+      Quantity: 350
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Wood screws -
+      Quantity: 12000
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50200
+      Description: Drawer slides - soft-close 24 inch
+      Quantity: 300
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Leg levelers - furniture glide adjustable
+      Quantity: 1800
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50200
+      Description: Cam locks - minifix assembly
+      Quantity: 2500
+      Deferral Code: 3M
+    - Type: 1
+      No.: 50200
+      Description: Barrel nuts - cross dowel M6
+      Quantity: 4500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Drawer slides - side mount epoxy 22"
+      Quantity: 440
+      Deferral Code: ''
+  - Buy-from Vendor No.: V003
+    No.: INV-V003-018
+    Posting Date: TODAY-33D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50200
+      Description: Bar handles - brushed steel 12 inch
+      Quantity: 350
+      Deferral Code: ''
+    - Type: 1
+      No.: 50200
+      Description: Undermount drawer slides - 16 inch
+      Quantity: 450
+      Deferral Code: ''
+  - Buy-from Vendor No.: V002
+    No.: INV-V002-016
+    Posting Date: TODAY-41D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50110
+      Description: Ash veneer - brown ash
+      Quantity: 145
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Maple plywood - G2S sanded
+      Quantity: 185
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - white oak veneer
+      Quantity: 140
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: White oak plywood - select grade
+      Quantity: 130
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Maple veneer - birdseye pattern
+      Quantity: 60
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Particle board - melamine coated white
+      Quantity: 280
+      Deferral Code: 6M
+    - Type: 1
+      No.: 50110
+      Description: Baltic birch - 18mm metric
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Oak plywood - red oak face
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50110
+      Description: Walnut plywood - European
+      Quantity: 65
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-011
+    Posting Date: TODAY-20D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Memory gel foam - cooling layer
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Firm density foam - commercial grade
+      Quantity: 390
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Polyester batting - quilting layer
+      Quantity: 420
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Closed cell foam - packaging grade
+      Quantity: 350
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Back cushion inserts - soft
+      Quantity: 300
+      Deferral Code: ''
+  - Buy-from Vendor No.: V010
+    No.: INV-V010-006
+    Posting Date: TODAY-49D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53110
+      Description: Natural gas - process heating
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Enbridge charges - delivery fees
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Natural gas - equipment operations
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Heating bill - warehouse
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Gas bill - production facility
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Natural gas - paint curing ovens
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-004
+    Posting Date: TODAY-49D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Foam bolsters - cylindrical
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Dacron wrap - cushion covering
+      Quantity: 380
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Foam wedges - sectional connectors
+      Quantity: 250
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Throw pillow inserts - polyester
+      Quantity: 500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Foam strips - edge reinforcement
+      Quantity: 520
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: High-density foam - 2 inch thickness
+      Quantity: 500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Upholstery foam kit - assorted sizes
+      Quantity: 95
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Rebond foam - carpet underlay
+      Quantity: 600
+      Deferral Code: ''
+  - Buy-from Vendor No.: V006
+    No.: INV-V006-001
+    Posting Date: TODAY-39D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50420
+      Description: Water-based poly - low VOC
+      Quantity: 220
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Wood stain - walnut dark
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50410
+      Description: Glaze coat - antiquing medium
+      Quantity: 120
+      Deferral Code: ''
+    - Type: 1
+      No.: 50410
+      Description: Spray lacquer - aerosol cans
+      Quantity: 350
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Finish samples kit - color matching
+      Quantity: 80
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Wood bleach - two-part lightener
+      Quantity: 90
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Linseed oil - boiled finish
+      Quantity: 150
+      Deferral Code: ''
+    - Type: 1
+      No.: 50420
+      Description: Eco-friendly stain - zero VOC cherry
+      Quantity: 170
+      Deferral Code: ''
+    - Type: 1
+      No.: 50410
+      Description: Pre-cat lacquer - clear satin
+      Quantity: 150
+      Deferral Code: ''
+  - Buy-from Vendor No.: V006
+    No.: INV-V006-002
+    Posting Date: TODAY-11D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50410
+      Description: Automotive lacquer - high gloss
+      Quantity: 95
+      Deferral Code: ''
+    - Type: 1
+      No.: 50410
+      Description: Clear sealer - sanding base coat
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Shellac - dewaxed blonde
+      Quantity: 85
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Danish oil finish - penetrating
+      Quantity: 160
+      Deferral Code: ''
+    - Type: 1
+      No.: 50410
+      Description: Conversion varnish - clear gloss
+      Quantity: 120
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Toner concentrate - color pigment
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Gel stain - mahogany red
+      Quantity: 140
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Stain controller - blotch prevention
+      Quantity: 170
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Wood filler - natural colored
+      Quantity: 260
+      Deferral Code: ''
+    - Type: 1
+      No.: 50410
+      Description: Post-cat lacquer - production finish
+      Quantity: 115
+      Deferral Code: ''
+  - Buy-from Vendor No.: V008
+    No.: INV-V008-007
+    Posting Date: TODAY-65D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50500
+      Description: Box bundle - assorted sizes pack
+      Quantity: 100
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Packing peanuts - biodegradable
+      Quantity: 40
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Wardrobe boxes - tall standing
+      Quantity: 150
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Strapping bands - polypropylene
+      Quantity: 250
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-008
+    Posting Date: TODAY-75D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Seat cushion foam - contoured
+      Quantity: 350
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Foam comfort layers - multi-density
+      Quantity: 195
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Ottoman cushion inserts - square
+      Quantity: 210
+      Deferral Code: ''
+  - Buy-from Vendor No.: V009
+    No.: INV-V009-008
+    Posting Date: TODAY-88D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53100
+      Description: Demand response credit
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Hydro service - storage warehouse
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Hydro charges - multi-site total
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Hydro service - Ontario facility
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V010
+    No.: INV-V010-003
+    Posting Date: TODAY-30D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53110
+      Description: Gas supply - peak season
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Natural gas - heating main facility
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Natural gas - manufacturing operations
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Enbridge service - monthly charges
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Enbridge service - multi-site
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Enbridge bill - shipping dock
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V006
+    No.: INV-V006-006
+    Posting Date: TODAY-16D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50410
+      Description: Rubbing compound - polishing
+      Quantity: 140
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Stain markers - touch-up assorted
+      Quantity: 500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50420
+      Description: Water-based stain - oak natural
+      Quantity: 180
+      Deferral Code: ''
+  - Buy-from Vendor No.: V009
+    No.: INV-V009-006
+    Posting Date: TODAY-34D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53100
+      Description: Power supply - quality control lab
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Energy efficiency program - annual
+      Quantity: 1
+      Deferral Code: 12M
+    - Type: 1
+      No.: 53100
+      Description: Electricity - woodworking machinery
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Electricity - Woodbridge facility
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Power service - factory floor
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Hydro charges - main facility
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Hydro charges - corporate office
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Power bill - machinery shop
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Energy monitoring - quarterly
+      Quantity: 1
+      Deferral Code: 3M
+    - Type: 1
+      No.: 53100
+      Description: Electricity - dust collection system
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V008
+    No.: INV-V008-002
+    Posting Date: TODAY-42D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50510
+      Description: Protective wrap - anti-static foam
+      Quantity: 220
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Edge board - pallet stabilization
+      Quantity: 400
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Packing paper - recycled newsprint
+      Quantity: 1000
+      Deferral Code: ''
+  - Buy-from Vendor No.: V005
+    No.: INV-V005-006
+    Posting Date: TODAY-43D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50300
+      Description: Linen cotton blend - ivory white
+      Quantity: 260
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Nylon blend - high durability
+      Quantity: 270
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Faux fur - accent throw material
+      Quantity: 100
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Performance fabric - Sunbrella grade
+      Quantity: 200
+      Deferral Code: ''
+  - Buy-from Vendor No.: V010
+    No.: INV-V010-008
+    Posting Date: TODAY-47D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53110
+      Description: Gas service - main production
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Heating charges - showroom
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Heating charges - finishing area
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Gas usage - facility 2
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Natural gas - wood drying process
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53110
+      Description: Heating supply - standard usage
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V008
+    No.: INV-V008-001
+    Posting Date: TODAY-68D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50510
+      Description: Shrink wrap - heat-seal film
+      Quantity: 90
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-003
+    Posting Date: TODAY-22D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Foam blocks - upholstery carving
+      Quantity: 190
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Cushion cores - featherblend down
+      Quantity: 130
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Polyurethane foam - medium firm
+      Quantity: 400
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Cushion support - foam board backing
+      Quantity: 310
+      Deferral Code: ''
+  - Buy-from Vendor No.: V007
+    No.: INV-V007-003
+    Posting Date: TODAY-29D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 51200
+      Description: Pick and pack service - monthly
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: International shipping - US border
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: Pallet shipping - standard ground
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: LTL shipment - Atlantic provinces
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51110
+      Description: Inside delivery - assembly included
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V006
+    No.: INV-V006-005
+    Posting Date: TODAY-87D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50410
+      Description: Lacquer thinner - industrial grade
+      Quantity: 300
+      Deferral Code: ''
+    - Type: 1
+      No.: 50420
+      Description: Low-emission lacquer - CARB compliant
+      Quantity: 130
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Grain filler - pore sealer paste
+      Quantity: 160
+      Deferral Code: ''
+    - Type: 1
+      No.: 50410
+      Description: Flatting agent - satin additive
+      Quantity: 75
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Retarder solution - dry time extender
+      Quantity: 130
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Paste wax - furniture polish
+      Quantity: 240
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-002
+    Posting Date: TODAY-77D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Seat suspension - zigzag springs
+      Quantity: 240
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Latex foam alternative - synthetic
+      Quantity: 160
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Foam padding rolls - 1/2 inch
+      Quantity: 460
+      Deferral Code: ''
+  - Buy-from Vendor No.: V007
+    No.: INV-V007-008
+    Posting Date: TODAY-83D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 51110
+      Description: Furniture delivery - GTA region
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: Freight to Halifax - maritime
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: Consolidation service - multi-pickup
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: Freight charges - Ottawa distribution
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: Dedicated truck - full load service
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51110
+      Description: Lift gate service - residential
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V008
+    No.: INV-V008-005
+    Posting Date: TODAY-16D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50500
+      Description: Packaging tubes - poster/artwork
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Air pillows - inflatable cushions
+      Quantity: 5000
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Foam sheets - protective cushioning
+      Quantity: 600
+      Deferral Code: ''
+  - Buy-from Vendor No.: V007
+    No.: INV-V007-005
+    Posting Date: TODAY-17D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 51110
+      Description: Blanket wrap service - premium protection
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: Freight forwarding - Montreal route
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51110
+      Description: Residential delivery - curbside
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: Container unloading service
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51200
+      Description: Inventory handling - quarterly
+      Quantity: 1
+      Deferral Code: 3M
+    - Type: 1
+      No.: 51100
+      Description: Cross-dock transfer - hub service
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V007
+    No.: INV-V007-007
+    Posting Date: TODAY-5D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 51100
+      Description: Freight - Calgary shipment
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 51100
+      Description: Freight to Winnipeg - standard
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V009
+    No.: INV-V009-002
+    Posting Date: TODAY-54D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53100
+      Description: Hydro service - monthly charges
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Hydro service - peak season
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Power bill - sanding department
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Power supply - manufacturing plant
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-005
+    Posting Date: TODAY-47D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Cushion core - wrapped spring
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Seat base foam - chipfoam
+      Quantity: 340
+      Deferral Code: ''
+  - Buy-from Vendor No.: V006
+    No.: INV-V006-004
+    Posting Date: TODAY-79D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50420
+      Description: Green-cert varnish - sustainable
+      Quantity: 110
+      Deferral Code: ''
+    - Type: 1
+      No.: 50410
+      Description: Nitrocellulose lacquer - spray grade
+      Quantity: 110
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Polyurethane varnish - oil-based
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Wipe-on poly - easy application
+      Quantity: 210
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Wood conditioner - pre-stain
+      Quantity: 190
+      Deferral Code: ''
+  - Buy-from Vendor No.: V007
+    No.: INV-V007-006
+    Posting Date: TODAY-51D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 51110
+      Description: Premium delivery - time-sensitive
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-006
+    Posting Date: TODAY-35D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Foam cut to size - custom dimensions
+      Quantity: 220
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Anti-microbial foam - treated
+      Quantity: 170
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: High resilience foam - HR45
+      Quantity: 320
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Convoluted foam - egg crate pattern
+      Quantity: 240
+      Deferral Code: ''
+  - Buy-from Vendor No.: V009
+    No.: INV-V009-005
+    Posting Date: TODAY-64D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53100
+      Description: Electrical usage - production facility
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Hydro bill - shipping dock
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V008
+    No.: INV-V008-006
+    Posting Date: TODAY-25D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50500
+      Description: Archive boxes - document storage
+      Quantity: 450
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Corner protectors - cardboard edge
+      Quantity: 2000
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Kraft paper - brown wrapping rolls
+      Quantity: 150
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Corrugated sheets - custom cutting
+      Quantity: 500
+      Deferral Code: ''
+  - Buy-from Vendor No.: V005
+    No.: INV-V005-001
+    Posting Date: TODAY-20D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50300
+      Description: Chenille fabric - soft touch charcoal
+      Quantity: 200
+      Deferral Code: ''
+  - Buy-from Vendor No.: V006
+    No.: INV-V006-007
+    Posting Date: TODAY-86D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50400
+      Description: Burnishing compound - high sheen
+      Quantity: 220
+      Deferral Code: ''
+    - Type: 1
+      No.: 50420
+      Description: Bio-based polyurethane - plant oils
+      Quantity: 145
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Tung oil finish - natural
+      Quantity: 130
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Mineral spirits - paint thinner
+      Quantity: 280
+      Deferral Code: ''
+  - Buy-from Vendor No.: V007
+    No.: INV-V007-009
+    Posting Date: TODAY-33D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 51200
+      Description: Warehouse management - annual contract
+      Quantity: 1
+      Deferral Code: 12M
+    - Type: 1
+      No.: 51110
+      Description: Store transfer - inter-location
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V005
+    No.: INV-V005-005
+    Posting Date: TODAY-22D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50300
+      Description: Microfiber suede - stain resistant
+      Quantity: 280
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Printed fabric - contemporary floral
+      Quantity: 190
+      Deferral Code: ''
+    - Type: 1
+      No.: 50310
+      Description: Semi-aniline leather - protected finish
+      Quantity: 65
+      Deferral Code: ''
+    - Type: 1
+      No.: 50310
+      Description: Full grain leather - caramel tan
+      Quantity: 60
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Velour fabric - theater quality
+      Quantity: 160
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Textured weave - basketweave neutral
+      Quantity: 230
+      Deferral Code: ''
+  - Buy-from Vendor No.: V006
+    No.: INV-V006-003
+    Posting Date: TODAY-58D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50410
+      Description: Catalyzed finish - two-part system
+      Quantity: 100
+      Deferral Code: ''
+  - Buy-from Vendor No.: V008
+    No.: INV-V008-003
+    Posting Date: TODAY-75D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50500
+      Description: Cardboard dividers - shelf protection
+      Quantity: 800
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Furniture bags - sofa covers
+      Quantity: 350
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Plastic sheeting - furniture covers
+      Quantity: 400
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Plastic corner protectors - reusable
+      Quantity: 800
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Shipping boxes - medium size
+      Quantity: 800
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Custom boxes - die-cut design
+      Quantity: 250
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Void fill - recycled paper crinkle
+      Quantity: 600
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Banding film - bundle wrapping
+      Quantity: 180
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Packing tape - heavy duty clear
+      Quantity: 300
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Packaging labels - fragile stickers
+      Quantity: 5000
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Bubble wrap - 24 inch wide roll
+      Quantity: 80
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Cartons - double-wall strength
+      Quantity: 400
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Edge protectors - foam U-channel
+      Quantity: 2500
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Flat pack boxes - furniture shipping
+      Quantity: 600
+      Deferral Code: ''
+    - Type: 1
+      No.: 50510
+      Description: Furniture pads - quilted moving
+      Quantity: 300
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Heavy-duty cartons - table shipping
+      Quantity: 280
+      Deferral Code: ''
+    - Type: 1
+      No.: 50500
+      Description: Corrugated boxes - large furniture
+      Quantity: 500
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-001
+    Posting Date: TODAY-69D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Seating foam - extra firm density
+      Quantity: 380
+      Deferral Code: ''
+  - Buy-from Vendor No.: V006
+    No.: INV-V006-008
+    Posting Date: TODAY-30D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50420
+      Description: Zero-VOC topcoat - indoor safe
+      Quantity: 155
+      Deferral Code: ''
+    - Type: 1
+      No.: 50400
+      Description: Ebony stain - jet black
+      Quantity: 125
+      Deferral Code: ''
+  - Buy-from Vendor No.: V005
+    No.: INV-V005-008
+    Posting Date: TODAY-73D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50300
+      Description: Slipcover fabric - washable cotton
+      Quantity: 280
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Boucle fabric - textured cream
+      Quantity: 160
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Ikat pattern - bohemian style
+      Quantity: 125
+      Deferral Code: ''
+    - Type: 1
+      No.: 50300
+      Description: Stripe fabric - classic ticking
+      Quantity: 210
+      Deferral Code: ''
+  - Buy-from Vendor No.: V004
+    No.: INV-V004-010
+    Posting Date: TODAY-71D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 50320
+      Description: Foam padding - 1 inch batting
+      Quantity: 800
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Lumbar support foam - ergonomic
+      Quantity: 280
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Charcoal infused foam - odor control
+      Quantity: 140
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Foam sheets - 3 inch polyfoam
+      Quantity: 450
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Memory foam topper - premium grade
+      Quantity: 250
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Mattress foam core - queen size
+      Quantity: 120
+      Deferral Code: ''
+    - Type: 1
+      No.: 50320
+      Description: Cushion filling - shredded foam
+      Quantity: 280
+      Deferral Code: ''
+  - Buy-from Vendor No.: V009
+    No.: INV-V009-001
+    Posting Date: TODAY-70D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53100
+      Description: Demand charges - peak usage
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53100
+      Description: Electricity - overnight production
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V013
+    No.: INV-V013-001
+    Posting Date: TODAY-12D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 54300
+      Description: Ear muffs - noise reduction 27 dB
+      Quantity: 30
+      Deferral Code: ''
+    - Type: 1
+      No.: 54100
+      Description: Safety harness - fall arrest full body
+      Quantity: 12
+      Deferral Code: ''
+    - Type: 1
+      No.: 54200
+      Description: Safety glasses - clear anti-fog lens
+      Quantity: 100
+      Deferral Code: ''
+    - Type: 1
+      No.: 54100
+      Description: Steel toe work boots - CSA approved
+      Quantity: 40
+      Deferral Code: 6M
+    - Type: 1
+      No.: 54300
+      Description: Hearing protection - banded earplugs
+      Quantity: 40
+      Deferral Code: ''
+  - Buy-from Vendor No.: V018
+    No.: INV-V018-002
+    Posting Date: TODAY-63D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 57100
+      Description: Health spending account - flex benefits
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 57100
+      Description: Occupational health services - workplace injury
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V014
+    No.: INV-V014-003
+    Posting Date: TODAY-12D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55200
+      Description: Wireless access points - enterprise grade
+      Quantity: 6
+      Deferral Code: ''
+    - Type: 1
+      No.: 55100
+      Description: Samsung monitors - 27 inch dual setup
+      Quantity: 12
+      Deferral Code: ''
+    - Type: 1
+      No.: 55100
+      Description: Toner cartridges - HP LaserJet black
+      Quantity: 12
+      Deferral Code: ''
+    - Type: 1
+      No.: 55100
+      Description: Adobe Creative Cloud licenses - annual
+      Quantity: 8
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Uninterruptible power supply - 1500VA
+      Quantity: 10
+      Deferral Code: ''
+    - Type: 1
+      No.: 55100
+      Description: Docking stations - USB-C multi-port
+      Quantity: 15
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: Network cable tester - professional grade
+      Quantity: 2
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: Network attached storage - 12TB RAID
+      Quantity: 1
+      Deferral Code: 12M
+  - Buy-from Vendor No.: V011
+    No.: INV-V011-006
+    Posting Date: TODAY-32D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 52100
+      Description: Towable boom lift rental - 50 ft
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V012
+    No.: INV-V012-005
+    Posting Date: TODAY-79D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 52200
+      Description: Pneumatic tool maintenance kit installation
+      Quantity: 12
+      Deferral Code: ''
+    - Type: 1
+      No.: 52200
+      Description: Spray booth ventilation motor repair
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V016
+    No.: INV-V016-007
+    Posting Date: TODAY-10D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 56100
+      Description: Franchise agreement review - expansion
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56100
+      Description: Real estate transaction - property purchase
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56100
+      Description: Non-disclosure agreement template - custom
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56100
+      Description: Supplier contract drafting and review
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V014
+    No.: INV-V014-002
+    Posting Date: TODAY-74D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55100
+      Description: Wireless keyboard and mouse combos
+      Quantity: 25
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: Cat6 ethernet cables - 50 ft shielded
+      Quantity: 100
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: Network switch - 24-port gigabit managed
+      Quantity: 2
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: Server rack - 42U enclosed cabinet
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V017
+    No.: INV-V017-002
+    Posting Date: TODAY-9D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 56200
+      Description: Corporate tax return preparation - T2
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Internal controls assessment - SOX compliance
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Financial statement review - quarterly
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Payroll tax compliance review - T4 filing
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Risk assessment - enterprise-wide
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Annual financial audit - manufacturing company
+      Quantity: 1
+      Deferral Code: 12M
+    - Type: 1
+      No.: 56200
+      Description: International tax consultation - US expansion
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Inventory valuation review - year-end
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V019
+    No.: INV-V019-001
+    Posting Date: TODAY-52D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 58100
+      Description: Tape dispensers - desktop weighted
+      Quantity: 35
+      Deferral Code: ''
+  - Buy-from Vendor No.: V016
+    No.: INV-V016-006
+    Posting Date: TODAY-53D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 56100
+      Description: Corporate legal retainer - monthly service
+      Quantity: 1
+      Deferral Code: 12M
+    - Type: 1
+      No.: 56100
+      Description: Trademark registration - product line
+      Quantity: 2
+      Deferral Code: ''
+  - Buy-from Vendor No.: V014
+    No.: INV-V014-001
+    Posting Date: TODAY-53D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55200
+      Description: External hard drives - 4TB backup
+      Quantity: 15
+      Deferral Code: ''
+    - Type: 1
+      No.: 55100
+      Description: HP LaserJet printer - network duplex
+      Quantity: 3
+      Deferral Code: ''
+    - Type: 1
+      No.: 55100
+      Description: Surge protectors - 12-outlet rack mount
+      Quantity: 20
+      Deferral Code: ''
+    - Type: 1
+      No.: 55100
+      Description: Scanner - document feeder high-speed
+      Quantity: 2
+      Deferral Code: ''
+  - Buy-from Vendor No.: V016
+    No.: INV-V016-001
+    Posting Date: TODAY-74D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 56100
+      Description: Employment termination consultation
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56100
+      Description: Workplace policy update - employment law
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V012
+    No.: INV-V012-002
+    Posting Date: TODAY-88D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 52200
+      Description: Lathe chuck rebuilding service
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 52200
+      Description: Mortising machine bearing replacement
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 52200
+      Description: Spindle moulder safety guard repair
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 52200
+      Description: Router bit sharpening service - 25 bits
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 52200
+      Description: Hot melt glue system cleaning and calibration
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 52200
+      Description: Jointer table leveling and calibration
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 52200
+      Description: CNC router preventive maintenance - quarterly service
+      Quantity: 1
+      Deferral Code: 3M
+  - Buy-from Vendor No.: V015
+    No.: INV-V015-001
+    Posting Date: TODAY-21D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55200
+      Description: Video conferencing service - Zoom enterprise
+      Quantity: 25
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Conference call service - toll-free line
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: SIP trunking service - voice over IP
+      Quantity: 20
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Long distance calling - Canada/US
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: Call recording service - compliance
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V015
+    No.: INV-V015-005
+    Posting Date: TODAY-64D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55200
+      Description: Mobile hotspots - portable LTE devices
+      Quantity: 10
+      Deferral Code: ''
+  - Buy-from Vendor No.: V011
+    No.: INV-V011-004
+    Posting Date: TODAY-74D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 52100
+      Description: Pallet jack rental - electric
+      Quantity: 3
+      Deferral Code: ''
+  - Buy-from Vendor No.: V015
+    No.: INV-V015-006
+    Posting Date: TODAY-59D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55200
+      Description: Mobile device management - enterprise
+      Quantity: 45
+      Deferral Code: 12M
+  - Buy-from Vendor No.: V015
+    No.: INV-V015-002
+    Posting Date: TODAY-73D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55200
+      Description: Toll-free number - 1-800 customer service
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V020
+    No.: INV-V020-005
+    Posting Date: TODAY-53D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53400
+      Description: Carpet cleaning - office areas deep clean
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53400
+      Description: Grease trap cleaning - cafeteria kitchen
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V020
+    No.: INV-V020-004
+    Posting Date: TODAY-36D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 53400
+      Description: Landscaping maintenance - grounds keeping
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53400
+      Description: Snow removal - parking lots and walkways
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53400
+      Description: Paint touch-up - interior walls and trim
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53400
+      Description: Duct cleaning - ventilation system annual
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 53400
+      Description: Restroom supplies - paper, soap, sanitizer
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V014
+    No.: INV-V014-004
+    Posting Date: TODAY-29D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55100
+      Description: Microsoft 365 Business licenses - annual
+      Quantity: 75
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55100
+      Description: Dell OptiPlex desktop computers - business class
+      Quantity: 8
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55100
+      Description: Laptop computers - Dell Latitude business
+      Quantity: 5
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55100
+      Description: Webcams - HD 1080p business quality
+      Quantity: 20
+      Deferral Code: ''
+  - Buy-from Vendor No.: V017
+    No.: INV-V017-001
+    Posting Date: TODAY-58D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 56200
+      Description: R&D tax credit application - SR&ED
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Transfer pricing policy update
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Financial forecast modeling - 3 year
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Customs duty optimization - import/export
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Transfer pricing documentation - international
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V017
+    No.: INV-V017-005
+    Posting Date: TODAY-13D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 56200
+      Description: GST/HST audit support - CRA inquiry
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Management consulting - operational efficiency
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Budget variance analysis - monthly
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V016
+    No.: INV-V016-003
+    Posting Date: TODAY-9D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 56100
+      Description: Customer agreement template - retail
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56100
+      Description: Partnership agreement review - joint venture
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56100
+      Description: Shareholder agreement amendment
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V017
+    No.: INV-V017-003
+    Posting Date: TODAY-11D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 56200
+      Description: Sales tax advisory - multi-provincial
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 56200
+      Description: Tax planning consultation - quarterly review
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V015
+    No.: INV-V015-003
+    Posting Date: TODAY-10D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55200
+      Description: Office phone system - VoIP 50 extensions
+      Quantity: 1
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Phone system maintenance contract - annual
+      Quantity: 1
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Mobile phone plans - unlimited business
+      Quantity: 45
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: iPhone 15 Pro - business smartphones
+      Quantity: 8
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Business internet service - 1 Gbps fiber
+      Quantity: 1
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Cloud PBX subscription - hosted phone
+      Quantity: 50
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Network security - firewall managed service
+      Quantity: 1
+      Deferral Code: 12M
+    - Type: 1
+      No.: 55200
+      Description: Backup internet connection - 500 Mbps
+      Quantity: 1
+      Deferral Code: 12M
+  - Buy-from Vendor No.: V015
+    No.: INV-V015-004
+    Posting Date: TODAY-69D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 55200
+      Description: Mobile data overages - additional GB
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: SMS messaging service - business alerts
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: Samsung Galaxy tablets - field operations
+      Quantity: 12
+      Deferral Code: ''
+    - Type: 1
+      No.: 55200
+      Description: Auto attendant setup - phone menu system
+      Quantity: 1
+      Deferral Code: ''
+  - Buy-from Vendor No.: V011
+    No.: INV-V011-003
+    Posting Date: TODAY-45D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 52100
+      Description: Floor stripper rental - tile removal
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 52100
+      Description: Floor scrubber rental - ride-on model
+      Quantity: 1
+      Deferral Code: ''
+    - Type: 1
+      No.: 52100
+      Description: Scissor lift rental - 26 ft reach
+      Quantity: 2
+      Deferral Code: ''
+  - Buy-from Vendor No.: V013
+    No.: INV-V013-002
+    Posting Date: TODAY-46D
+    Gen. Bus. Posting Group: PAYABLESAGENT-TEST
+    VAT Bus. Posting Group: PAYABLESAGENT-10
+    lines:
+    - Type: 1
+      No.: 54100
+      Description: High visibility safety vests - Class 2
+      Quantity: 75
+      Deferral Code: ''
+    - Type: 1
+      No.: 54100
+      Description: Cut-resistant gloves - level 4 protection
+      Quantity: 80
+      Deferral Code: ''
+    - Type: 1
+      No.: 54100
+      Description: Rubber boots - steel toe chemical resistant
+      Quantity: 20
+      Deferral Code: ''
+    - Type: 1
+      No.: 54200
+      Description: Safety goggles - chemical splash resistant
+      Quantity: 60
+      Deferral Code: ''
+    - Type: 1
+      No.: 54100
+      Description: Coveralls - flame resistant cotton
+      Quantity: 35
+      Deferral Code: ''
+    - Type: 1
+      No.: 54400
+      Description: First aid kit - Type 2 industrial
+      Quantity: 8
+      Deferral Code: ''
+    - Type: 1
+      No.: 54400
+      Description: Emergency eyewash station - wall mount
+      Quantity: 4
+      Deferral Code: ''
+    - Type: 1
+      No.: 54100
+      Description: Reflective safety jackets - winter insulated
+      Quantity: 45
+      Deferral Code: ''
+    - Type: 1
+      No.: 54200
+      Description: Welding helmets - auto-darkening
+      Quantity: 8
+      Deferral Code: ''
+    - Type: 1
+      No.: 54100
+      Description: Hard hats - CSA Z94.1 approved white
+      Quantity: 50
+      Deferral Code: ''
+    - Type: 1
+      No.: 54300
+      Description: Earplugs - foam disposable 200 pairs
+      Quantity: 10
+      Deferral Code: ''
+    - Type: 1
+      No.: 54200
+      Description: Respirator cartridges - organic vapor
+      Quantity: 100
+      Deferral Code: ''
+    - Type: 1
+      No.: 54200
+      Description: Face shields - full coverage polycarbonate
+      Quantity: 25
+      Deferral Code: ''
+    - Type: 1
+      No.: 54200
+      Description: Respirator masks - N95 particulate
+      Quantity: 200
+      Deferral Code: ''
+    - Type: 1
+      No.: 54100
+      Description: Work gloves - leather palm mechanics
+      Quantity: 150
+      Deferral Code: ''

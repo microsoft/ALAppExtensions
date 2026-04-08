@@ -1,0 +1,510 @@
+tests:
+- name: AllLines10_003
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 685
+      description: Konferenztelefon Polycom Trio
+      quantity: 5
+    - unitPrice: 495
+      description: Videokonferenzkamera 4K
+      quantity: 5
+    - unitPrice: 1250
+      description: Projektor Epson 4000 Lumen
+      quantity: 3
+    - unitPrice: 785
+      description: Projektionsleinwand motorisiert 120 Zoll
+      quantity: 3
+    - unitPrice: 42
+      description: HDMI-Kabel 15 m professionell
+      quantity: 10
+    - unitPrice: 38
+      description: Präsentation Remote-Laser
+      quantity: 15
+    - unitPrice: 325
+      description: Drahtloses Mikrofonsystem
+      quantity: 4
+    - unitPrice: 185
+      description: Deckenmontage für Lautsprechersysteme
+      quantity: 8
+    - unitPrice: 425
+      description: Audiomixer 8 Kanal
+      quantity: 2
+    - unitPrice: 95
+      description: Video-Splitter HDMI 4 Port
+      quantity: 6
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Video-Splitter HDMI 4 Port
+      unit_price: 95
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Epson 4000 Lumen Projektor
+      unit_price: 1250
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Audiomixer 8 Kanal
+      unit_price: 425
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Konferenztelefon Polycom Trio
+      unit_price: 685
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Präsentation Remote-Laser
+      unit_price: 38
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Drahtloses Mikrofonsystem
+      unit_price: 325
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Professionelles HDMI-Kabel 15 m
+      unit_price: 42
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Deckenmontage für Lautsprechersysteme
+      unit_price: 185
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Videokonferenzkamera 4K
+      unit_price: 495
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Projektionsleinwand motorisiert 120 Zoll
+      unit_price: 785
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 8
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 9
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 10
+- name: AllLines3_002
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1200
+      description: Laptop Lenovo ThinkPad
+      quantity: 3
+    - unitPrice: 25
+      description: Drahtlose Maus Logitech
+      quantity: 15
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Logitech Wireless-Maus
+      unit_price: 25
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Laptop Lenovo ThinkPad
+      unit_price: 1200
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+- name: AllLines5_001
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 450
+      description: Büro-Schreibtisch-Führungskraft
+      quantity: 8
+    - unitPrice: 320
+      description: Ergonomischer Bürostuhl Premium
+      quantity: 8
+    - unitPrice: 380
+      description: LED-Monitor 27 Zoll
+      quantity: 12
+    - unitPrice: 65
+      description: Kabelloses Tastatur- und Maus-Set
+      quantity: 15
+    - unitPrice: 42.5
+      description: Schreibtischlampe LED verstellbar
+      quantity: 10
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Büro-Schreibtisch-Führungskraft
+      unit_price: 450
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Ergonomischer Premium-Stuhl für das Büro
+      unit_price: 320
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: LED-Monitor 27 Zoll
+      unit_price: 380
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Kabelloses Tastatur- und Maus-Set
+      unit_price: 65
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Verstellbare LED-Schreibtischlampe
+      unit_price: 42.5
+      quantity: 10
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+- name: AllLines5_005
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 156
+      description: Whiteboard magnetisch 120x90cm
+      quantity: 4
+    - unitPrice: 8.5
+      description: Whiteboard-Marker, sortiertes Set
+      quantity: 20
+    - unitPrice: 5.75
+      description: Magnetischer Whiteboard-Radierer
+      quantity: 10
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Whiteboard-Marker, sortiertes Set
+      unit_price: 8.5
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Magnetisches Whiteboard 120x90cm
+      unit_price: 156
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Magnetischer Whiteboard-Radierer
+      unit_price: 5.75
+      quantity: 10
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+- name: Challenge3_001
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 250
+      description: Schreibtisch-Standard
+      quantity: 5
+    - unitPrice: 180
+      description: Ergonomischer Bürostuhl
+      quantity: 5
+  - lines:
+    - unitPrice: 220
+      description: LED-Monitor 24 Zoll
+      quantity: 10
+    - unitPrice: 45
+      description: Drahtlose Tastatur
+      quantity: 8
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Standard-Büroschreibtisch
+      unit_price: 250
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: 24-Zoll-LED-Monitor
+      unit_price: 220
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Ergonomischer Stuhl für das Büro
+      unit_price: 180
+      quantity: 5
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 2
+- name: Challenge3_005
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 950
+      description: Konferenztisch rechteckig
+      quantity: 1
+    - unitPrice: 425
+      description: Chefbürostuhl Leder
+      quantity: 6
+  - lines:
+    - unitPrice: 285
+      description: Aktenschrank mit 4 Schubladen
+      quantity: 3
+  - lines:
+    - unitPrice: 38
+      description: Schreibtischlampe LED verstellbar
+      quantity: 12
+    - unitPrice: 165
+      description: Bücherregal 5 Etagen
+      quantity: 2
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Rechteckiger Konferenztisch
+      unit_price: 950
+      quantity: 1
+    invoice_no: INV-005
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+- name: Challenge5_004
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 385
+      description: Tablet Samsung Galaxy Tab
+      quantity: 8
+    - unitPrice: 28
+      description: Tablet-Schutzhülle
+      quantity: 10
+  - lines:
+    - unitPrice: 48
+      description: Eingabestift Digital
+      quantity: 8
+    - unitPrice: 12.5
+      description: Displayschutzglas
+      quantity: 15
+    - unitPrice: 8.75
+      description: Ladekabel USB-C 2m
+      quantity: 20
+    - unitPrice: 22
+      description: Wandladegerät Schnellladung
+      quantity: 12
+    - unitPrice: 58
+      description: Tragbare Bluetooth-Tastatur
+      quantity: 6
+  - lines:
+    - unitPrice: 32
+      description: Tablet-Ständer verstellbar
+      quantity: 10
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Samsung Galaxy Tab-Tablet
+      unit_price: 385
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Digitaler Eingabestift
+      unit_price: 48
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: 2 m langes USB-C-Ladekabel
+      unit_price: 8.75
+      quantity: 20
+    invoice_no: INV-004
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+- name: NoLines3_003
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 650
+      description: Stehpult elektrisch
+      quantity: 8
+    - unitPrice: 95
+      description: Monitorarm Dual
+      quantity: 8
+  - lines:
+    - unitPrice: 180
+      description: Whiteboard groß 6x4 Fuß
+      quantity: 4
+    - unitPrice: 12
+      description: Whiteboard-Marker-Paket
+      quantity: 20
+    - unitPrice: 4.5
+      description: Radiergummi magnetisch
+      quantity: 15
+  - lines:
+    - unitPrice: 320
+      description: Aktenschrank mit 4 Schubladen
+      quantity: 6
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Split-Klimaanlage
+      unit_price: 1200
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Tragbare Heizung
+      unit_price: 85
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Luftbefeuchter kommerziell
+      unit_price: 150
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: OneLine3_002
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 350
+      description: Drucker HP LaserJet Pro
+      quantity: 2
+    - unitPrice: 280
+      description: Scanner Fujitsu
+      quantity: 1
+  - lines:
+    - unitPrice: 8.5
+      description: Kopierpapier A3
+      quantity: 30
+    - unitPrice: 0.25
+      description: Binderklammern groß
+      quantity: 100
+    - unitPrice: 3.5
+      description: Notizbuch Spirale A4
+      quantity: 50
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Kaffeemaschinen-Werbung
+      unit_price: 850
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: A3-Kopierpapier
+      unit_price: 8.5
+      quantity: 30
+    - discount: 0
+      tax_rate: 10
+      description: Wasserfilterkartuschen
+      unit_price: 15
+      quantity: 12
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1

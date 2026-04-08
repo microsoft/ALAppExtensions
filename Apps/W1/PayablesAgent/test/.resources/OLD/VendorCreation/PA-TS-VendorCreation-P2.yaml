@@ -1,0 +1,651 @@
+tests:
+- name: PayablesAgent-VendorCreation-101
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-VendorCreation-102
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-VendorCreation-103
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-VendorCreation-104
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-VendorCreation-105
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-VendorCreation-106
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-VendorCreation-107
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-VendorCreation-108
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-VendorCreation-109
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-VendorCreation-110
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-VendorCreation-111
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-VendorCreation-112
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-VendorCreation-113
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-VendorCreation-114
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-VendorCreation-115
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-VendorCreation-116
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-VendorCreation-117
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-VendorCreation-118
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-VendorCreation-119
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-VendorCreation-120
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-VendorCreation-121
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-VendorCreation-122
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-VendorCreation-123
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-VendorCreation-124
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-VendorCreation-125
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-VendorCreation-126
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-VendorCreation-127
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-VendorCreation-128
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-VendorCreation-129
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-VendorCreation-130
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-VendorCreation-131
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-VendorCreation-132
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-VendorCreation-133
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-VendorCreation-134
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-VendorCreation-135
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-VendorCreation-136
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-VendorCreation-137
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-VendorCreation-138
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-VendorCreation-139
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-VendorCreation-140
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-VendorCreation-141
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-VendorCreation-142
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-VendorCreation-143
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-VendorCreation-144
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-VendorCreation-145
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-VendorCreation-146
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-VendorCreation-147
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-VendorCreation-148
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-VendorCreation-149
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-VendorCreation-150
+  description: Process an invoice PDF for an unknown vendor, where customer asks the agent to create said vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSuggestion: true
+    purchaseHeader:
+      invoiceNumber: INV-002
+

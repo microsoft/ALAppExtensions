@@ -80,11 +80,6 @@ table 10686 "Elec. VAT Setup"
         field(8; "Submission App URL"; Text[250])
         {
             Caption = 'Submission App URL';
-
-            trigger OnValidate()
-            begin
-                CheckUrl(Rec."Submission App URL");
-            end;
         }
         field(9; "Redirect URL"; Text[250])
         {

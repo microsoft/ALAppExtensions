@@ -4,14 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AdvancePayments;
 
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
-using System.Security.User;
 
 codeunit 31061 "Vend. Entry-Edit Handler CZZ"
 {
     Permissions = TableData "Purch. Adv. Letter Entry CZZ" = rm;
 
     var
+        ExtDocNoChangingCZL: Codeunit "Ext. Doc. No. Changing CZL";
         RecursionDepth: Integer;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vend. Entry-Edit", 'OnBeforeVendLedgEntryModify', '', false, false)]
@@ -25,7 +26,7 @@ codeunit 31061 "Vend. Entry-Edit Handler CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vend. Entry-Edit", 'OnRunOnAfterVendLedgEntryMofidy', '', false, false)]
     local procedure UpdateRelatedEntriesOnRunOnAfterVendLedgEntryMofidy(var VendorLedgerEntry: Record "Vendor Ledger Entry")
     begin
-        if not IsExtDocNoChangingAllowed() then
+        if not ExtDocNoChangingCZL.IsActivated() then
             exit;
         if VendorLedgerEntry."Advance Letter No. CZZ" <> '' then
             UpdateAdvanceLetterEntries(VendorLedgerEntry);
@@ -65,12 +66,5 @@ codeunit 31061 "Vend. Entry-Edit Handler CZZ"
                 UpdateRelatedAdvanceLetterEntries(RelatedPurchAdvLetterEntryCZZ);
             until RelatedPurchAdvLetterEntryCZZ.Next() = 0;
         RecursionDepth -= 1;
-    end;
-
-    local procedure IsExtDocNoChangingAllowed(): Boolean
-    var
-        UserSetupAdvManagement: Codeunit "User Setup Adv. Management CZL";
-    begin
-        exit(UserSetupAdvManagement.IsExtDocNoChangingAllowed());
     end;
 }

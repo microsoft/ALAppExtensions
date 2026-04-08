@@ -62,7 +62,7 @@ end;
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
-        IRS1099PrintParams: Record "IRS 1099 Print Params";
+        TempIRS1099PrintParams: Record "IRS 1099 Print Params";
         IRSFormsFacade: Codeunit "IRS Forms Facade";
 FormBoxNo: Code[20];
     begin
@@ -83,11 +83,11 @@ FormBoxNo: Code[20];
         Commit();
 
         // [WHEN] Use Save content for document
-        IRS1099PrintParams := CreatePrintParams();
-        IRSFormsFacade.SaveContentForDocument(IRS1099FormDocHeader, IRS1099PrintParams, false);
+        TempIRS1099PrintParams := CreatePrintParams();
+        IRSFormsFacade.SaveContentForDocument(IRS1099FormDocHeader, TempIRS1099PrintParams, false);
 
         // [THEN] Content has beed saved
-        VerifyFileContentExists(IRS1099FormDocHeader, IRS1099PrintParams."Report Type");
+        VerifyFileContentExists(IRS1099FormDocHeader, TempIRS1099PrintParams."Report Type");
 
         // Tear down
         IRS1099FormDocHeader.Delete(true);
@@ -181,10 +181,10 @@ end;
         IRS1099FormDocLine.Insert();
     end;
 
-    local procedure CreatePrintParams() IRS1099PrintParams: Record "IRS 1099 Print Params"
+    local procedure CreatePrintParams() TempIRS1099PrintParams: Record "IRS 1099 Print Params"
     begin
-        IRS1099PrintParams."Report Type" := IRS1099PrintParams."Report Type"::"Copy 2";
-        IRS1099PrintParams.Insert();
+        TempIRS1099PrintParams."Report Type" := TempIRS1099PrintParams."Report Type"::"Copy 2";
+        TempIRS1099PrintParams.Insert();
     end;
 
     local procedure CreateStatementLine(IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; FormBoxNo: Code[20])

@@ -1,0 +1,2032 @@
+name: PA-TS-Metrics-00-es-ES
+language: es-ES
+tests:
+- name: PA-INV-V03-010
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - description: Office Desk Standard
+      quantity: 5
+      unitPrice: 250.0
+    - description: Ergonomic Office Chair
+      quantity: 5
+      unitPrice: 180.0
+  - lines:
+    - description: LED Monitor 24 inch
+      quantity: 10
+      unitPrice: 220.0
+    - description: Wireless Keyboard
+      quantity: 8
+      unitPrice: 45.0
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-010
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602000
+    Description: Microfibra kids lavable
+    Quantity: 75.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 602000
+    Description: Acuerdo anual microfibra antimanchas gris
+    Quantity: 120.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 602000
+    Description: Tejido geométrico moderno
+    Quantity: 45.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 602100
+    Description: Contrato anual espuma HR 35kg densidad
+    Quantity: 200.0
+    Unit Price: 8.5
+  - Type: 1
+    No.: 602100
+    Description: Plumón sintético hipoalergénico
+    Quantity: 55.0
+    Unit Price: 22.0
+  - Type: 1
+    No.: 602100
+    Description: Relleno microfibra premium
+    Quantity: 65.0
+    Unit Price: 18.0
+  - Type: 1
+    No.: 602100
+    Description: Acuerdo anual espuma respaldo 25kg
+    Quantity: 160.0
+    Unit Price: 6.8
+  - Type: 1
+    No.: 602000
+    Description: Loneta estampada tropical
+    Quantity: 95.0
+    Unit Price: 18.0
+  - Type: 1
+    No.: 602100
+    Description: Espuma bicomponente soft/firm
+    Quantity: 45.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 602000
+    Description: Terciopelo lavable rosa palo
+    Quantity: 42.0
+    Unit Price: 55.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-010
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Microfibra kids lavable
+        Quantity: 75.0
+        Unit Cost: 28.0
+        purchaseOrderMatches:
+        - purchaseOrderIndex: 1
+          purchaseOrderLineIndex: 1
+        - purchaseOrderIndex: 2
+          purchaseOrderLineIndex: 1
+      - Line No.: 20000
+        Type: 1
+        No.: 602000
+        Deferral Code: 12M
+        Description: Acuerdo anual microfibra antimanchas gris
+        Quantity: 120.0
+        Unit Cost: 28.0
+      - Line No.: 30000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Tejido geométrico moderno
+        Quantity: 45.0
+        Unit Cost: 48.0
+      - Line No.: 40000
+        Type: 1
+        No.: 602100
+        Deferral Code: 12M
+        Description: Contrato anual espuma HR 35kg densidad
+        Quantity: 200.0
+        Unit Cost: 8.5
+      - Line No.: 50000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Plumón sintético hipoalergénico
+        Quantity: 55.0
+        Unit Cost: 22.0
+      - Line No.: 600000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Relleno microfibra premium
+        Quantity: 65.0
+        Unit Cost: 18.0
+      - Line No.: 70000
+        Type: 1
+        No.: 602100
+        Deferral Code: 12M
+        Description: Acuerdo anual espuma respaldo 25kg
+        Quantity: 160.0
+        Unit Cost: 6.8
+      - Line No.: 80000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Loneta estampada tropical
+        Quantity: 95.0
+        Unit Cost: 18.0
+      - Line No.: 90000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma bicomponente soft/firm
+        Quantity: 45.0
+        Unit Cost: 28.0
+      - Line No.: 100000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Terciopelo lavable rosa palo
+        Quantity: 42.0
+        Unit Cost: 55.0
+- name: PA-INV-V03-005
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-005
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Contrato 12 meses espuma asiento HR 40kg
+    Quantity: 180.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 602100
+    Description: Espuma memoryfoam 60mm
+    Quantity: 60.0
+    Unit Price: 25.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-005
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: 12M
+        Description: Contrato 12 meses espuma asiento HR 40kg
+        Quantity: 180.0
+        Unit Cost: 12.0
+      - Line No.: 20000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma memoryfoam 60mm
+        Quantity: 60.0
+        Unit Cost: 25.0
+- name: PA-INV-V03-019
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-019
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Espuma antibacteriana
+    Quantity: 75.0
+    Unit Price: 14.0
+  - Type: 1
+    No.: 602100
+    Description: Espuma flocada reposacabezas
+    Quantity: 90.0
+    Unit Price: 11.0
+  - Type: 1
+    No.: 602000
+    Description: Terciopelo cortado ocre
+    Quantity: 38.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 602000
+    Description: Tejido mezcla lana gris
+    Quantity: 42.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 602100
+    Description: Espuma camping compacta
+    Quantity: 70.0
+    Unit Price: 5.8
+  - Type: 1
+    No.: 602100
+    Description: Espuma alta resiliencia 45kg
+    Quantity: 95.0
+    Unit Price: 15.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-019
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma antibacteriana
+        Quantity: 75.0
+        Unit Cost: 14.0
+      - Line No.: 20000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma flocada reposacabezas
+        Quantity: 90.0
+        Unit Cost: 11.0
+      - Line No.: 30000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Terciopelo cortado ocre
+        Quantity: 38.0
+        Unit Cost: 62.0
+      - Line No.: 40000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Tejido mezcla lana gris
+        Quantity: 42.0
+        Unit Cost: 55.0
+      - Line No.: 50000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma camping compacta
+        Quantity: 70.0
+        Unit Cost: 5.8
+      - Line No.: 600000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma alta resiliencia 45kg
+        Quantity: 95.0
+        Unit Cost: 15.0
+- name: PA-INV-V01-012
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Maderas del Levante S.L.
+    Address: Polígono Industrial El Castillo, Nave 14
+    Address 2: ''
+    City: Yecla
+    Country/Region Code: ES
+    Post Code: '30510'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V01-012
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 601200
+    Description: Cantos nogal termo 45mm
+    Quantity: 180.0
+    Unit Price: 8.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-012
+        Buy-from Vendor Name: Maderas del Levante S.L.
+        Buy-from Address: Polígono Industrial El Castillo, Nave 14
+        Buy-from Address 2: ''
+        Buy-from City: Yecla
+        Buy-from Post Code: '30510'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 601200
+        Deferral Code: ''
+        Description: Cantos nogal termo 45mm
+        Quantity: 180.0
+        Unit Cost: 8.5
+- name: PA-INV-V03-004
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-004
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Relleno kapok natural
+    Quantity: 25.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 602100
+    Description: Espuma grafeno premium
+    Quantity: 30.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 602000
+    Description: Pana micro pana carbón
+    Quantity: 58.0
+    Unit Price: 38.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-004
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Relleno kapok natural
+        Quantity: 25.0
+        Unit Cost: 38.0
+      - Line No.: 20000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma grafeno premium
+        Quantity: 30.0
+        Unit Cost: 42.0
+      - Line No.: 30000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Pana micro pana carbón
+        Quantity: 58.0
+        Unit Cost: 38.0
+- name: PA-INV-V01-013
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Maderas del Levante S.L.
+    Address: Polígono Industrial El Castillo, Nave 14
+    Address 2: ''
+    City: Yecla
+    Country/Region Code: ES
+    Post Code: '30510'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V01-013
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 601000
+    Description: Haya europea vaporizada
+    Quantity: 42.0
+    Unit Price: 142.0
+  - Type: 1
+    No.: 601000
+    Description: Contrato anual suministro pino macizo 1ª
+    Quantity: 50.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 601000
+    Description: Tablones pino termo tratado
+    Quantity: 42.0
+    Unit Price: 118.0
+  - Type: 1
+    No.: 601000
+    Description: Roble aserrado sin tratar
+    Quantity: 34.0
+    Unit Price: 188.0
+  - Type: 1
+    No.: 601200
+    Description: Chapa makoré africano
+    Quantity: 55.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 601200
+    Description: Canto chapado haya 23mm
+    Quantity: 280.0
+    Unit Price: 4.85
+  - Type: 1
+    No.: 601200
+    Description: Chapa fresno olivo tintado
+    Quantity: 95.0
+    Unit Price: 28.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-013
+        Buy-from Vendor Name: Maderas del Levante S.L.
+        Buy-from Address: Polígono Industrial El Castillo, Nave 14
+        Buy-from Address 2: ''
+        Buy-from City: Yecla
+        Buy-from Post Code: '30510'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Haya europea vaporizada
+        Quantity: 42.0
+        Unit Cost: 142.0
+      - Line No.: 20000
+        Type: 1
+        No.: 601000
+        Deferral Code: 12M
+        Description: Contrato anual suministro pino macizo 1ª
+        Quantity: 50.0
+        Unit Cost: 85.0
+      - Line No.: 30000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Tablones pino termo tratado
+        Quantity: 42.0
+        Unit Cost: 118.0
+      - Line No.: 40000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Roble aserrado sin tratar
+        Quantity: 34.0
+        Unit Cost: 188.0
+      - Line No.: 50000
+        Type: 1
+        No.: 601200
+        Deferral Code: ''
+        Description: Chapa makoré africano
+        Quantity: 55.0
+        Unit Cost: 45.0
+      - Line No.: 600000
+        Type: 1
+        No.: 601200
+        Deferral Code: ''
+        Description: Canto chapado haya 23mm
+        Quantity: 280.0
+        Unit Cost: 4.85
+      - Line No.: 70000
+        Type: 1
+        No.: 601200
+        Deferral Code: ''
+        Description: Chapa fresno olivo tintado
+        Quantity: 95.0
+        Unit Cost: 28.0
+- name: PA-INV-V02-020
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Tableros García Hermanos S.A.
+    Address: Calle de la Industria 78
+    Address 2: ''
+    City: Jumilla
+    Country/Region Code: ES
+    Post Code: '30520'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V02-020
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 601100
+    Description: Tablero partículas P2 16mm
+    Quantity: 95.0
+    Unit Price: 16.0
+  - Type: 1
+    No.: 601100
+    Description: Contrachapado curvo premoldeado
+    Quantity: 25.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 601100
+    Description: Contrato anual tablero MDF 19mm
+    Quantity: 100.0
+    Unit Price: 28.5
+  - Type: 1
+    No.: 601100
+    Description: Aglomerado sync poro roble 18mm
+    Quantity: 52.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 601100
+    Description: Tablero alistonado pino 18mm
+    Quantity: 58.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 601100
+    Description: MDF fresno blanqueado 19mm
+    Quantity: 38.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 601100
+    Description: Contrachapado okume marino
+    Quantity: 42.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 601100
+    Description: Aglomerado postformable 12mm
+    Quantity: 50.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 601100
+    Description: MDF grabado laser 12mm
+    Quantity: 18.0
+    Unit Price: 45.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-020
+        Buy-from Vendor Name: Tableros García Hermanos S.A.
+        Buy-from Address: Calle de la Industria 78
+        Buy-from Address 2: ''
+        Buy-from City: Jumilla
+        Buy-from Post Code: '30520'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Tablero partículas P2 16mm
+        Quantity: 95.0
+        Unit Cost: 16.0
+      - Line No.: 20000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Contrachapado curvo premoldeado
+        Quantity: 25.0
+        Unit Cost: 85.0
+      - Line No.: 30000
+        Type: 1
+        No.: 601100
+        Deferral Code: 12M
+        Description: Contrato anual tablero MDF 19mm
+        Quantity: 100.0
+        Unit Cost: 28.5
+      - Line No.: 40000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Aglomerado sync poro roble 18mm
+        Quantity: 52.0
+        Unit Cost: 35.0
+      - Line No.: 50000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Tablero alistonado pino 18mm
+        Quantity: 58.0
+        Unit Cost: 42.0
+      - Line No.: 600000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: MDF fresno blanqueado 19mm
+        Quantity: 38.0
+        Unit Cost: 45.0
+      - Line No.: 70000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Contrachapado okume marino
+        Quantity: 42.0
+        Unit Cost: 48.0
+      - Line No.: 80000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Aglomerado postformable 12mm
+        Quantity: 50.0
+        Unit Cost: 28.0
+      - Line No.: 90000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: MDF grabado laser 12mm
+        Quantity: 18.0
+        Unit Cost: 45.0
+- name: PA-INV-V02-013
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Tableros García Hermanos S.A.
+    Address: Calle Industria, 78
+    Address 2: ''
+    City: Jumilla (Murcia)
+    Country/Region Code: ES
+    Post Code: '30520'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V02-013
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 601100
+    Description: Aglomerado melamina arena 19mm
+    Quantity: 62.0
+    Unit Price: 22.0
+  - Type: 1
+    No.: 601100
+    Description: Tablero fenólico antideslizante
+    Quantity: 55.0
+    Unit Price: 52.0
+  - Type: 1
+    No.: 601100
+    Description: Contrachapado structural 21mm
+    Quantity: 35.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 601100
+    Description: Contrachapado estructural F17 15mm
+    Quantity: 45.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 601100
+    Description: Tablero HPL decorativo madera
+    Quantity: 28.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 601100
+    Description: Suministro anual tablero OSB3 estructural
+    Quantity: 90.0
+    Unit Price: 15.8
+  - Type: 1
+    No.: 601100
+    Description: Tablero rechapado nogal 16mm
+    Quantity: 32.0
+    Unit Price: 68.0
+  - Type: 1
+    No.: 601100
+    Description: MDF alta densidad 30mm
+    Quantity: 22.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 601100
+    Description: Contrachapado abedul cara/contra
+    Quantity: 32.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 601100
+    Description: MDF acústico perforado 16mm
+    Quantity: 20.0
+    Unit Price: 58.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-013
+        Buy-from Vendor Name: Tableros García Hermanos S.A.
+        Buy-from Address: Calle de la Industria 78
+        Buy-from Address 2: ''
+        Buy-from City: Jumilla
+        Buy-from Post Code: '30520'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Aglomerado melamina arena 19mm
+        Quantity: 62.0
+        Unit Cost: 22.0
+      - Line No.: 20000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Tablero fenólico antideslizante
+        Quantity: 55.0
+        Unit Cost: 52.0
+      - Line No.: 30000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Contrachapado structural 21mm
+        Quantity: 35.0
+        Unit Cost: 42.0
+      - Line No.: 40000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Contrachapado estructural F17 15mm
+        Quantity: 45.0
+        Unit Cost: 38.0
+      - Line No.: 50000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Tablero HPL decorativo madera
+        Quantity: 28.0
+        Unit Cost: 95.0
+      - Line No.: 600000
+        Type: 1
+        No.: 601100
+        Deferral Code: 12M
+        Description: Suministro anual tablero OSB3 estructural
+        Quantity: 90.0
+        Unit Cost: 15.8
+      - Line No.: 70000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Tablero rechapado nogal 16mm
+        Quantity: 32.0
+        Unit Cost: 68.0
+      - Line No.: 80000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: MDF alta densidad 30mm
+        Quantity: 22.0
+        Unit Cost: 62.0
+      - Line No.: 90000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Contrachapado abedul cara/contra
+        Quantity: 32.0
+        Unit Cost: 62.0
+      - Line No.: 100000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: MDF acústico perforado 16mm
+        Quantity: 20.0
+        Unit Cost: 58.0
+- name: PA-INV-V03-001
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterraneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-001
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Fibra microfibra cluster
+    Quantity: 72.0
+    Unit Price: 10.5
+  - Type: 1
+    No.: 602000
+    Description: Suministro semestral lona exterior impermeable
+    Quantity: 75.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 602100
+    Description: Fibra poliéster virgen
+    Quantity: 145.0
+    Unit Price: 5.2
+  - Type: 1
+    No.: 602100
+    Description: Espuma cortada medida
+    Quantity: 130.0
+    Unit Price: 9.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-001
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Fibra microfibra cluster
+        Quantity: 72.0
+        Unit Cost: 10.5
+      - Line No.: 20000
+        Type: 1
+        No.: 602000
+        Deferral Code: 6M
+        Description: Suministro semestral lona exterior impermeable
+        Quantity: 75.0
+        Unit Cost: 28.0
+      - Line No.: 30000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Fibra poliéster virgen
+        Quantity: 145.0
+        Unit Cost: 5.2
+      - Line No.: 40000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma cortada medida
+        Quantity: 130.0
+        Unit Cost: 9.5
+- name: PA-INV-V03-007
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-007
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602000
+    Description: Tela outdoor olefina gris
+    Quantity: 60.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 602000
+    Description: Contrato anual loneta algodón crudo
+    Quantity: 180.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 602100
+    Description: Fibra conjugada relleno
+    Quantity: 80.0
+    Unit Price: 6.8
+  - Type: 1
+    No.: 602100
+    Description: Guata algodón natural
+    Quantity: 55.0
+    Unit Price: 9.5
+  - Type: 1
+    No.: 602000
+    Description: Tejido antiarañazos gatos
+    Quantity: 65.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 602100
+    Description: Espuma gel refrescante
+    Quantity: 35.0
+    Unit Price: 38.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-007
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Tela outdoor olefina gris
+        Quantity: 60.0
+        Unit Cost: 42.0
+      - Line No.: 20000
+        Type: 1
+        No.: 602000
+        Deferral Code: 12M
+        Description: Contrato anual loneta algodón crudo
+        Quantity: 180.0
+        Unit Cost: 12.0
+      - Line No.: 30000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Fibra conjugada relleno
+        Quantity: 80.0
+        Unit Cost: 6.8
+      - Line No.: 40000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Guata algodón natural
+        Quantity: 55.0
+        Unit Cost: 9.5
+      - Line No.: 50000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Tejido antiarañazos gatos
+        Quantity: 65.0
+        Unit Cost: 45.0
+      - Line No.: 600000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma gel refrescante
+        Quantity: 35.0
+        Unit Cost: 38.0
+- name: PA-INV-V01-011
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Maderas del Levante S.L.
+    Address: Pol. Ind. El Castillo, Nave 14
+    Address 2: ''
+    City: Yecla
+    Country/Region Code: ES
+    Post Code: 30510
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V01-011
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 601000
+    Description: Madera aliso para tallado
+    Quantity: 20.0
+    Unit Price: 125.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-011
+        Buy-from Vendor Name: Maderas del Levante S.L.
+        Buy-from Address: Polígono Industrial El Castillo, Nave 14
+        Buy-from Address 2: ''
+        Buy-from City: Yecla
+        Buy-from Post Code: '30510'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Madera aliso para tallado
+        Quantity: 20.0
+        Unit Cost: 125.0
+- name: PA-INV-V03-006
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo, S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-006
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602000
+    Description: Algodón cepillado invierno
+    Quantity: 65.0
+    Unit Price: 28.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-006
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Algodón cepillado invierno
+        Quantity: 65.0
+        Unit Cost: 28.0
+- name: PA-INV-V03-025
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-025
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Espuma ignífuga contract
+    Quantity: 50.0
+    Unit Price: 19.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-025
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma ignífuga contract
+        Quantity: 50.0
+        Unit Cost: 19.0
+- name: PA-INV-V03-012
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-012
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Suministro semestral fibra reciclada
+    Quantity: 100.0
+    Unit Price: 5.8
+  - Type: 1
+    No.: 602100
+    Description: Guata sintética económica
+    Quantity: 140.0
+    Unit Price: 3.2
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-012
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: 6M
+        Description: Suministro semestral fibra reciclada
+        Quantity: 100.0
+        Unit Cost: 5.8
+      - Line No.: 20000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Guata sintética económica
+        Quantity: 140.0
+        Unit Cost: 3.2
+- name: PA-INV-V03-002
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-002
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Guata adherida 150gr
+    Quantity: 180.0
+    Unit Price: 3.8
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-002
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Guata adherida 150gr
+        Quantity: 180.0
+        Unit Cost: 3.8
+- name: PA-INV-V03-020
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida Textil 22
+    Address 2: ''
+    City: Crevillente (Alicante)
+    Country/Region Code: ES
+    Post Code: E-03330
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-020
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Acuerdo anual fibra hueca siliconada
+    Quantity: 120.0
+    Unit Price: 6.5
+  - Type: 1
+    No.: 602100
+    Description: Espuma reposabrazos 30kg
+    Quantity: 110.0
+    Unit Price: 7.5
+  - Type: 1
+    No.: 602000
+    Description: Suministro anual bouclé crema premium
+    Quantity: 45.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 602000
+    Description: Microfibra aquaclean arena
+    Quantity: 78.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 602000
+    Description: Tela rayada mediterránea
+    Quantity: 85.0
+    Unit Price: 22.0
+  - Type: 1
+    No.: 602100
+    Description: Suministro semestral guata poliéster 200gr
+    Quantity: 150.0
+    Unit Price: 4.2
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-020
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: 12M
+        Description: Acuerdo anual fibra hueca siliconada
+        Quantity: 120.0
+        Unit Cost: 6.5
+      - Line No.: 20000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma reposabrazos 30kg
+        Quantity: 110.0
+        Unit Cost: 7.5
+      - Line No.: 30000
+        Type: 1
+        No.: 602000
+        Deferral Code: 12M
+        Description: Suministro anual bouclé crema premium
+        Quantity: 45.0
+        Unit Cost: 65.0
+      - Line No.: 40000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Microfibra aquaclean arena
+        Quantity: 78.0
+        Unit Cost: 38.0
+      - Line No.: 50000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Tela rayada mediterránea
+        Quantity: 85.0
+        Unit Cost: 22.0
+      - Line No.: 600000
+        Type: 1
+        No.: 602100
+        Deferral Code: 6M
+        Description: Suministro semestral guata poliéster 200gr
+        Quantity: 150.0
+        Unit Cost: 4.2
+- name: PA-INV-V01-008
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Maderas del Levante
+    Address: P.I. El Castillo, N. 14
+    Address 2: ''
+    City: Yecla
+    Country/Region Code: ES
+    Post Code: E-30510
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V01-008
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 601200
+    Description: Cantos madera maciza roble 3mm
+    Quantity: 300.0
+    Unit Price: 6.5
+  - Type: 1
+    No.: 601000
+    Description: Nogal europeo premium
+    Quantity: 18.0
+    Unit Price: 365.0
+  - Type: 1
+    No.: 601200
+    Description: Cantos ABS color wengué
+    Quantity: 450.0
+    Unit Price: 2.35
+  - Type: 1
+    No.: 601000
+    Description: Madera ayous africana
+    Quantity: 40.0
+    Unit Price: 68.0
+  - Type: 1
+    No.: 601200
+    Description: Canto PVC gris antracita 2mm
+    Quantity: 550.0
+    Unit Price: 2.15
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-008
+        Buy-from Vendor Name: Maderas del Levante S.L.
+        Buy-from Address: Polígono Industrial El Castillo, Nave 14
+        Buy-from Address 2: ''
+        Buy-from City: Yecla
+        Buy-from Post Code: '30510'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 601200
+        Deferral Code: ''
+        Description: Cantos madera maciza roble 3mm
+        Quantity: 300.0
+        Unit Cost: 6.5
+      - Line No.: 20000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Nogal europeo premium
+        Quantity: 18.0
+        Unit Cost: 365.0
+      - Line No.: 30000
+        Type: 1
+        No.: 601200
+        Deferral Code: ''
+        Description: Cantos ABS color wengué
+        Quantity: 450.0
+        Unit Cost: 2.35
+      - Line No.: 40000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Madera ayous africana
+        Quantity: 40.0
+        Unit Cost: 68.0
+      - Line No.: 50000
+        Type: 1
+        No.: 601200
+        Deferral Code: ''
+        Description: Canto PVC gris antracita 2mm
+        Quantity: 550.0
+        Unit Cost: 2.15
+- name: PA-INV-V02-019
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Tableros García Hermanos S.A.
+    Address: Calle de la Industria 78
+    Address 2: ''
+    City: Jumilla
+    Country/Region Code: ES
+    Post Code: '30520'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V02-019
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 601100
+    Description: MDF ultraligero 22mm
+    Quantity: 42.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 601100
+    Description: Contrachapado fenólico 12mm
+    Quantity: 48.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 601100
+    Description: Contrachapado tropical 18mm
+    Quantity: 42.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 601100
+    Description: Tablero DM standard 10mm
+    Quantity: 145.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 601100
+    Description: Aglomerado supermate blanco 16mm
+    Quantity: 78.0
+    Unit Price: 24.0
+  - Type: 1
+    No.: 601100
+    Description: Tablero multiplex abedul 24mm
+    Quantity: 22.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 601100
+    Description: Suministro semestral contrachapado pino
+    Quantity: 120.0
+    Unit Price: 18.0
+  - Type: 1
+    No.: 601100
+    Description: Aglomerado mate crema 19mm
+    Quantity: 48.0
+    Unit Price: 23.0
+  - Type: 1
+    No.: 601100
+    Description: Acuerdo anual aglomerado chapado haya
+    Quantity: 62.0
+    Unit Price: 32.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-019
+        Buy-from Vendor Name: Tableros García Hermanos S.A.
+        Buy-from Address: Calle de la Industria 78
+        Buy-from Address 2: ''
+        Buy-from City: Jumilla
+        Buy-from Post Code: '30520'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: MDF ultraligero 22mm
+        Quantity: 42.0
+        Unit Cost: 38.0
+      - Line No.: 20000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Contrachapado fenólico 12mm
+        Quantity: 48.0
+        Unit Cost: 45.0
+      - Line No.: 30000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Contrachapado tropical 18mm
+        Quantity: 42.0
+        Unit Cost: 35.0
+      - Line No.: 40000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Tablero DM standard 10mm
+        Quantity: 145.0
+        Unit Cost: 12.0
+      - Line No.: 50000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Aglomerado supermate blanco 16mm
+        Quantity: 78.0
+        Unit Cost: 24.0
+      - Line No.: 600000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Tablero multiplex abedul 24mm
+        Quantity: 22.0
+        Unit Cost: 85.0
+      - Line No.: 70000
+        Type: 1
+        No.: 601100
+        Deferral Code: 6M
+        Description: Suministro semestral contrachapado pino
+        Quantity: 120.0
+        Unit Cost: 18.0
+      - Line No.: 80000
+        Type: 1
+        No.: 601100
+        Deferral Code: ''
+        Description: Aglomerado mate crema 19mm
+        Quantity: 48.0
+        Unit Cost: 23.0
+      - Line No.: 90000
+        Type: 1
+        No.: 601100
+        Deferral Code: 12M
+        Description: Acuerdo anual aglomerado chapado haya
+        Quantity: 62.0
+        Unit Cost: 32.0
+- name: PA-INV-V03-011
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Textiles Mediterráneo S.L.
+    Address: Avenida del Textil 22
+    Address 2: ''
+    City: Crevillente
+    Country/Region Code: ES
+    Post Code: '1752'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V03-011
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 602100
+    Description: Fibra siliconada bolas
+    Quantity: 95.0
+    Unit Price: 8.8
+  - Type: 1
+    No.: 602100
+    Description: Espuma cuna antiácaros
+    Quantity: 55.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 602000
+    Description: Tejido antimicrobiano blanco
+    Quantity: 55.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 602000
+    Description: Microfibra ultrasuave chocolate
+    Quantity: 88.0
+    Unit Price: 30.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-011
+        Buy-from Vendor Name: Textiles Mediterráneo S.L.
+        Buy-from Address: Avenida del Textil 22
+        Buy-from Address 2: ''
+        Buy-from City: Crevillente
+        Buy-from Post Code: '1752'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Fibra siliconada bolas
+        Quantity: 95.0
+        Unit Cost: 8.8
+      - Line No.: 20000
+        Type: 1
+        No.: 602100
+        Deferral Code: ''
+        Description: Espuma cuna antiácaros
+        Quantity: 55.0
+        Unit Cost: 12.0
+      - Line No.: 30000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Tejido antimicrobiano blanco
+        Quantity: 55.0
+        Unit Cost: 45.0
+      - Line No.: 40000
+        Type: 1
+        No.: 602000
+        Deferral Code: ''
+        Description: Microfibra ultrasuave chocolate
+        Quantity: 88.0
+        Unit Cost: 30.0
+- name: PA-INV-V01-014
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Maderas del Levante S.L.
+    Address: Polígono Industrial El Castillo Nave 14
+    Address 2: ''
+    City: Yecla (Murcia)
+    Country/Region Code: ES
+    Post Code: '30510'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V01-014
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 601200
+    Description: Suministro semestral chapa roble 0.6mm
+    Quantity: 200.0
+    Unit Price: 18.5
+  - Type: 1
+    No.: 601000
+    Description: Tablones abedul finlandés
+    Quantity: 30.0
+    Unit Price: 135.0
+  - Type: 1
+    No.: 601000
+    Description: Madera sipo para exterior
+    Quantity: 16.0
+    Unit Price: 225.0
+  - Type: 1
+    No.: 601000
+    Description: Madera koto africano
+    Quantity: 22.0
+    Unit Price: 145.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-014
+        Buy-from Vendor Name: Maderas del Levante S.L.
+        Buy-from Address: Polígono Industrial El Castillo, Nave 14
+        Buy-from Address 2: ''
+        Buy-from City: Yecla
+        Buy-from Post Code: '30510'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 601200
+        Deferral Code: 6M
+        Description: Suministro semestral chapa roble 0.6mm
+        Quantity: 200.0
+        Unit Cost: 18.5
+      - Line No.: 20000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Tablones abedul finlandés
+        Quantity: 30.0
+        Unit Cost: 135.0
+      - Line No.: 30000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Madera sipo para exterior
+        Quantity: 16.0
+        Unit Cost: 225.0
+      - Line No.: 40000
+        Type: 1
+        No.: 601000
+        Deferral Code: ''
+        Description: Madera koto africano
+        Quantity: 22.0
+        Unit Cost: 145.0
+- name: PA-INV-V05-004
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG004;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Barnices y Lacas Valencia S.A.
+    Address: Pol. Fuente del Jarro, C/ 8
+    Address 2: ''
+    City: Paterna
+    Country/Region Code: ES
+    Post Code: 46988
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V05-004
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 604000
+    Description: Barniz endurecedor parquet 10L
+    Quantity: 28.0
+    Unit Price: 92.0
+  - Type: 1
+    No.: 604000
+    Description: Barniz al agua satinado 10L
+    Quantity: 80.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 604000
+    Description: Contrato anual laca nitrocelulosa blanca
+    Quantity: 60.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 604000
+    Description: Barniz poliuretano mate 25L
+    Quantity: 40.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 604000
+    Description: Suministro semestral laca brillante
+    Quantity: 35.0
+    Unit Price: 115.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-004
+        Buy-from Vendor Name: Barnices y Lacas Valencia S.A.
+        Buy-from Address: Polígono Fuente del Jarro, Calle 8
+        Buy-from Address 2: ''
+        Buy-from City: Paterna
+        Buy-from Post Code: '46988'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 604000
+        Deferral Code: ''
+        Description: Barniz endurecedor parquet 10L
+        Quantity: 28.0
+        Unit Cost: 92.0
+      - Line No.: 20000
+        Type: 1
+        No.: 604000
+        Deferral Code: ''
+        Description: Barniz al agua satinado 10L
+        Quantity: 80.0
+        Unit Cost: 55.0
+      - Line No.: 30000
+        Type: 1
+        No.: 604000
+        Deferral Code: 12M
+        Description: Contrato anual laca nitrocelulosa blanca
+        Quantity: 60.0
+        Unit Cost: 95.0
+      - Line No.: 40000
+        Type: 1
+        No.: 604000
+        Deferral Code: ''
+        Description: Barniz poliuretano mate 25L
+        Quantity: 40.0
+        Unit Cost: 125.0
+      - Line No.: 50000
+        Type: 1
+        No.: 604000
+        Deferral Code: 6M
+        Description: Suministro semestral laca brillante
+        Quantity: 35.0
+        Unit Cost: 115.0
+- name: PA-INV-V04-007
+  description: VendorNo=V04;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG003;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Herrajes Industriales Murcia S.L.
+    Address: Carretera Madrid Km. 412
+    Address 2: ''
+    City: Cieza (Murcia)
+    Country/Region Code: ES
+    Post Code: '30530'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V04-007
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 603000
+    Description: Bisagras piano continua 2m
+    Quantity: 50.0
+    Unit Price: 18.0
+  - Type: 1
+    No.: 603000
+    Description: Ruedas giratorias freno 50mm
+    Quantity: 400.0
+    Unit Price: 3.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V04-007
+        Buy-from Vendor Name: Herrajes Industriales Murcia S.L.
+        Buy-from Address: Carretera de Madrid km 412
+        Buy-from Address 2: ''
+        Buy-from City: Cieza
+        Buy-from Post Code: '30530'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 603000
+        Deferral Code: ''
+        Description: Bisagras piano continua 2m
+        Quantity: 50.0
+        Unit Cost: 18.0
+      - Line No.: 20000
+        Type: 1
+        No.: 603000
+        Deferral Code: ''
+        Description: Ruedas giratorias freno 50mm
+        Quantity: 400.0
+        Unit Cost: 3.5
+- name: PA-INV-V05-009
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG004;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Barnices y Lacas Valencia S.A.
+    Address: Polígono Fuente del Jarro, Calle 8
+    Address 2: ''
+    City: Paterna
+    Country/Region Code: ES
+    Post Code: '46988'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V05-009
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 604100
+    Description: Tinte vintage gris lavado 2.5L
+    Quantity: 18.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 604000
+    Description: Contrato anual fondo blanco spray
+    Quantity: 100.0
+    Unit Price: 8.5
+  - Type: 1
+    No.: 604100
+    Description: Tinte envejecedor patina 2.5L
+    Quantity: 20.0
+    Unit Price: 35.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-009
+        Buy-from Vendor Name: Barnices y Lacas Valencia S.A.
+        Buy-from Address: Polígono Fuente del Jarro, Calle 8
+        Buy-from Address 2: ''
+        Buy-from City: Paterna
+        Buy-from Post Code: '46988'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 604100
+        Deferral Code: ''
+        Description: Tinte vintage gris lavado 2.5L
+        Quantity: 18.0
+        Unit Cost: 42.0
+      - Line No.: 20000
+        Type: 1
+        No.: 604000
+        Deferral Code: 12M
+        Description: Contrato anual fondo blanco spray
+        Quantity: 100.0
+        Unit Cost: 8.5
+      - Line No.: 30000
+        Type: 1
+        No.: 604100
+        Deferral Code: ''
+        Description: Tinte envejecedor patina 2.5L
+        Quantity: 20.0
+        Unit Cost: 35.0
+- name: PA-INV-V04-009
+  description: VendorNo=V04;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG003;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Herrajes Industriales Murcia S.L.
+    Address: Ctra. Madrid, km 412
+    Address 2: ''
+    City: Cieza
+    Country/Region Code: ES
+    Post Code: E-30530
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V04-009
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 603000
+    Description: Bisagras cazoleta 26mm
+    Quantity: 380.0
+    Unit Price: 2.45
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V04-009
+        Buy-from Vendor Name: Herrajes Industriales Murcia S.L.
+        Buy-from Address: Carretera de Madrid km 412
+        Buy-from Address 2: ''
+        Buy-from City: Cieza
+        Buy-from Post Code: '30530'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 603000
+        Deferral Code: ''
+        Description: Bisagras cazoleta 26mm
+        Quantity: 380.0
+        Unit Cost: 2.45
+- name: PA-INV-V11-004
+  description: VendorNo=V11;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG006;
+  test_setup: PA-Setup-es-ES.yaml
+  vendor:
+    Name: Naturgy Iberia S.A.
+    Address: Avenida de América 38
+    Address 2: ''
+    City: Madrid
+    Country/Region Code: ES
+    Post Code: '28028'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V11-004
+    Payment Terms Code: 30 DÍAS
+    Shipment Method Code: Entrega
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 621100
+    Description: Suministro semestral tarifa 3.4
+    Quantity: 1.0
+    Unit Price: 24000.0
+  - Type: 1
+    No.: 621100
+    Description: Gas calentamiento prensa
+    Quantity: 1.0
+    Unit Price: 1100.0
+  - Type: 1
+    No.: 621100
+    Description: Consumo generador vapor oct
+    Quantity: 1.0
+    Unit Price: 1580.0
+  - Type: 1
+    No.: 621100
+    Description: Consumo estufa biomasa apoyo
+    Quantity: 1.0
+    Unit Price: 850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V11-004
+        Buy-from Vendor Name: Naturgy Iberia S.A.
+        Buy-from Address: Avenida de América 38
+        Buy-from Address 2: ''
+        Buy-from City: Madrid
+        Buy-from Post Code: '28028'
+        Buy-from Country/Region Code: ES
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 621100
+        Deferral Code: 6M
+        Description: Suministro semestral tarifa 3.4
+        Quantity: 1.0
+        Unit Cost: 24000.0
+      - Line No.: 20000
+        Type: 1
+        No.: 621100
+        Deferral Code: ''
+        Description: Gas calentamiento prensa
+        Quantity: 1.0
+        Unit Cost: 1100.0
+      - Line No.: 30000
+        Type: 1
+        No.: 621100
+        Deferral Code: ''
+        Description: Consumo generador vapor oct
+        Quantity: 1.0
+        Unit Cost: 1580.0
+      - Line No.: 40000
+        Type: 1
+        No.: 621100
+        Deferral Code: ''
+        Description: Consumo estufa biomasa apoyo
+        Quantity: 1.0
+        Unit Cost: 850.0

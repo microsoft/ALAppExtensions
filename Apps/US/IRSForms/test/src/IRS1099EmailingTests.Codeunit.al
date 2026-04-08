@@ -408,12 +408,12 @@ codeunit 148012 "IRS 1099 Emailing Tests"
 
     local procedure DeleteEmailAccounts()
     var
-        EmailAccount: Record "Email Account";
+        TempEmailAccount: Record "Email Account";
         TestEmailAccount: Record "Test Email Account";
         EmailScenarioMock: Codeunit "Email Scenario Mock";
     begin
         EmailScenarioMock.DeleteAllMappings();
-        EmailAccount.DeleteAll(true);
+        TempEmailAccount.DeleteAll(true);
         TestEmailAccount.DeleteAll(true);
     end;
 

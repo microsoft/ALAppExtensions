@@ -842,7 +842,7 @@ codeunit 139737 "APIV1 - Sales CrMemo Lines E2E"
     procedure TestPatchingTheTypeBlanksIds()
     var
         SalesHeader: Record "Sales Header";
-        SalesInvoiceLineAggregate: Record "Sales Invoice Line Aggregate";
+        TempSalesInvoiceLineAggregate: Record "Sales Invoice Line Aggregate";
         SalesLine: Record "Sales Line";
         ResponseText: Text;
         CreditMemoLineJSON: Text;
@@ -857,7 +857,7 @@ codeunit 139737 "APIV1 - Sales CrMemo Lines E2E"
         FindFirstSalesLine(SalesHeader, SalesLine);
         LineNo := SalesLine."Line No.";
 
-        CreditMemoLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(SalesInvoiceLineAggregate."API Type"::Account));
+        CreditMemoLineJSON := STRSUBSTNO('{"%1":"%2"}', LineTypeFieldNameTxt, FORMAT(TempSalesInvoiceLineAggregate."API Type"::Account));
 
         // [WHEN] we PATCH the line
         ModifyCreditMemoLinesThroughAPI(CreditMemoID, LineNo, CreditMemoLineJSON, ResponseText);

@@ -62,14 +62,14 @@ page 6331 "Sust. Emis. Suggestion Subpage"
 
                     trigger OnDrillDown()
                     var
-                        SustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
+                        TempSustainEmissionSuggestion: Record "Sustain. Emission Suggestion";
                         SustEmisSuggestionList: Page "Sust. Emis. Suggestion List";
                     begin
-                        SustainEmissionSuggestion.Copy(Rec, true);
-                        SustainEmissionSuggestion.SetRange("Line No.", Rec."Line No.");
+                        TempSustainEmissionSuggestion.Copy(Rec, true);
+                        TempSustainEmissionSuggestion.SetRange("Line No.", Rec."Line No.");
                         SustEmisSuggestionList.SetWarningVisibility();
-                        SustEmisSuggestionList.Load(SustainEmissionSuggestion);
-                        SustEmisSuggestionList.SetTableView(SustainEmissionSuggestion);
+                        SustEmisSuggestionList.Load(TempSustainEmissionSuggestion);
+                        SustEmisSuggestionList.SetTableView(TempSustainEmissionSuggestion);
                         SustEmisSuggestionList.RunModal();
                     end;
                 }
@@ -99,23 +99,23 @@ page 6331 "Sust. Emis. Suggestion Subpage"
         SourceCO2EmissionList: Page "Source CO2 Emission List";
         NoOfSourceCO2EmissionBuffer: Integer;
     begin
-        SourceCO2EmissionBuffer.SetRange("Line No.", Rec."Line No.");
-        SourceCO2EmissionBuffer.SetFilter("Confidence Value", '>=%1', 0.8);
-        NoOfSourceCO2EmissionBuffer := SourceCO2EmissionBuffer.Count();
+        TempSourceCO2EmissionBuffer.SetRange("Line No.", Rec."Line No.");
+        TempSourceCO2EmissionBuffer.SetFilter("Confidence Value", '>=%1', 0.8);
+        NoOfSourceCO2EmissionBuffer := TempSourceCO2EmissionBuffer.Count();
         if NoOfSourceCO2EmissionBuffer = 0 then
             exit;
         if NoOfSourceCO2EmissionBuffer > 5 then
             Error('');
 
-        SourceCO2EmissionList.Load(SourceCO2EmissionBuffer);
+        SourceCO2EmissionList.Load(TempSourceCO2EmissionBuffer);
         SourceCO2EmissionList.LookupMode(true);
         if SourceCO2EmissionList.RunModal() = Action::LookupOK then begin
-            SourceCO2EmissionList.GetRecord(SourceCO2EmissionBuffer);
-            Rec."Emission Factor Source" := SourceCO2EmissionBuffer."Source Description" + ', ' + SourceCO2EmissionBuffer.Description;
-            Rec."Emission Factor CO2" := SourceCO2EmissionBuffer."Emission Factor CO2";
+            SourceCO2EmissionList.GetRecord(TempSourceCO2EmissionBuffer);
+            Rec."Emission Factor Source" := TempSourceCO2EmissionBuffer."Source Description" + ', ' + TempSourceCO2EmissionBuffer.Description;
+            Rec."Emission Factor CO2" := TempSourceCO2EmissionBuffer."Emission Factor CO2";
             Rec."Factor Taken From Source" := true;
             SustEmissSuggestionWarning.ResetWarnings(Rec);
-            SustainabilityFormula.ApplyFormula(Rec, SourceCO2EmissionBuffer);
+            SustainabilityFormula.ApplyFormula(Rec, TempSourceCO2EmissionBuffer);
             Rec.Modify();
             CurrPage.Update(false);
         end;
@@ -139,8 +139,8 @@ page 6331 "Sust. Emis. Suggestion Subpage"
 
     internal procedure Load(var SourceCO2EmissionBufferFrom: Record "Source CO2 Emission Buffer")
     begin
-        SourceCO2EmissionBuffer.Copy(SourceCO2EmissionBufferFrom, true);
-        SourceCO2EmissionBuffer.Reset();
+        TempSourceCO2EmissionBuffer.Copy(SourceCO2EmissionBufferFrom, true);
+        TempSourceCO2EmissionBuffer.Reset();
     end;
 
     internal procedure GetData(var SustainEmissionSuggestion: Record "Sustain. Emission Suggestion")
@@ -149,7 +149,7 @@ page 6331 "Sust. Emis. Suggestion Subpage"
     end;
 
     var
-        SourceCO2EmissionBuffer: Record "Source CO2 Emission Buffer";
+        TempSourceCO2EmissionBuffer: Record "Source CO2 Emission Buffer";
 
         StyleTxt: Text;
 }

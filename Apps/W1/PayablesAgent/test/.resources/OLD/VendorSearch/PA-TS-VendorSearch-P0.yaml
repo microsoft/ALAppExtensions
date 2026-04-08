@@ -1,0 +1,671 @@
+tests:
+  # --- Exact match ---
+  - name: SEARCH_VENDOR_01
+    description: Exact search using full vendor name and address.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Atlantics Supply LLC"
+    vendor_address: "1201 Ocean Drive, Miami, 33139, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10091
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  # --- Mild typo in vendor name ---
+  - name: SEARCH_VENDOR_02
+    description: Vendor name has a small OCR typo (missing letter).
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Atlanlc Supplies Inc"   # OCR dropped the "i" in Atlantic
+    vendor_address: "1200 Ocean Drive, Miami, 33139, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10090
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  # --- Mild typo in street name ---
+  - name: SEARCH_VENDOR_03
+    description: Vendor name has a small OCR typo (missing letter).
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "tish Clothing"
+    vendor_address: "77 Fashon St, Canterbury, CT2 2AB, GB" # OCR misspelled Fashion and abbreviated Street
+
+    expected_data:
+      vendor:
+        accountNo: 10088
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  # --- City name typo ---
+  - name: SEARCH_VENDOR_04
+    description: City name slightly misspelled by OCR.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Horizon Supply LLC"
+    vendor_address: "88 Bay Street, San Fransisco, 94133, US" # OCR added extra "s" to San Francisco
+
+    expected_data:
+      vendor:
+        accountNo: 10093
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+    # --- City name typo ---
+  - name: SEARCH_VENDOR_04_HARD
+    description: City name slightly misspelled by OCR.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "LLC"
+    vendor_address: "88 Bay Street, San Francisco, 94133, US" # OCR added extra "s" to San Francisco
+
+    expected_data:
+      vendor:
+        accountNo: 10093
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  # --- Postal code off by one digit ---
+  - name: SEARCH_VENDOR_05
+    description: Postal code slightly incorrect due to OCR error.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Northern Supply LLC"
+    vendor_address: "4500 Maple Avenue, Dallas, 75229, US" # Actual should be 75219
+
+    expected_data:
+      vendor:
+        accountNo: 10092
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  # --- Similar vendor names (Kentish vs Kent Clothing) ---
+  - name: SEARCH_VENDOR_06
+    description: Similar vendor names, OCR creates a space making it ambiguous.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Kent Clothing Co"
+    vendor_address: "79 Fashion Street, Canterbury, CT2 2AB, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10089
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_07
+    description: Exact match for Yorkshire Farming Group.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Yorkshire Farming Group"
+    vendor_address: "220 Harvest Lane, Leeds, LS1 4DT, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10044
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_08
+    description: Exact match for York Shire Farms.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "York Shire Farms"
+    vendor_address: "222 Harvest Lane, Leeds, LS1 4DT, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10045
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_09
+    description: Exact match for BritTech Solutions.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "BritTech Solutions"
+    vendor_address: "45 Innovation Road, Cambridge, CB1 1PT, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10046
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_10
+    description: Exact match for British Technologies Ltd.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "British Technologies Ltd"
+    vendor_address: "46 Innovation Road, Cambridge, CB1 1PT, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10047
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_11
+    description: Exact match for Green & Fresh Produce.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Green & Fresh Produce"
+    vendor_address: "88 Market Street, Manchester, M1 1AE, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10048
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_12
+    description: Exact match for Green and Fresh.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Green and Fresh"
+    vendor_address: "89 Market Street, Manchester, M1 1AE, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10049
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_13
+    description: Exact match for Albion Brewery.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Albion Brewery"
+    vendor_address: "100 Beer Street, Birmingham, B1 1AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10050
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_14
+    description: Exact match for Albion Brews Ltd.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Albion Brews Ltd"
+    vendor_address: "102 Beer Street, Birmingham, B1 1AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10051
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_15
+    description: Exact match for Northern Steel Works.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Northern Steel Works"
+    vendor_address: "250 Forge Lane, Sheffield, S1 2AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10052
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_16
+    description: Exact match for London Fashion Group.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "London Fashion Group"
+    vendor_address: "33 Style Avenue, London, W1D 3QA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10054
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  # --- OCR errors in first characters of vendor names ---
+  - name: SEARCH_VENDOR_17
+    description: OCR misread first letter 'G' as 'C' in Great Plains.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Creat Plains Manufacturing"
+    vendor_address: "4555 Pioneer Road, Omaha, 68104, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10002
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_18
+    description: OCR misread first letter 'F' as 'E' in FreshMart.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "EreshMart Foods"
+    vendor_address: "89 Greenway Blvd, Denver, 80202, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10004
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_19
+    description: OCR misread first letter 'C' as 'G' in Clean & Green.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Glean & Green Solutions"
+    vendor_address: "501 Eco Street, Portland, 97204, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10006
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_20
+    description: OCR dropped first letter 'G' in GlobalTech.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "lobalTech Group"
+    vendor_address: "1 Innovation Park, Austin, 73301, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10008
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_21
+    description: OCR misread first letter 'D' as 'O' in Delta Shipping.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Oelta Shipping Company"
+    vendor_address: "400 Harbor Lane, New Orleans, 70130, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10010
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_22
+    description: OCR misread first letter 'P' as 'R' in Prime Office.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Rime Office Solutions"
+    vendor_address: "780 Corporate Ave, Dallas, 75201, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10012
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_23
+    description: OCR misread first letter 'J' as 'I' in Jutland Builders.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Iutland Builders Inc"
+    vendor_address: "900 Construction Road, Phoenix, 85001, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10014
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_24
+    description: OCR misread first letter 'S' as '5' in SuperMart.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "5uperMart USA"
+    vendor_address: "200 Main Street, Chicago, 60601, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10016
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_25
+    description: OCR misread first letter 'H' as 'N' in Horizon Logistics.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Norizon Logistics"
+    vendor_address: "550 Horizon Blvd, Atlanta, 30303, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10018
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_26
+    description: OCR misread first letter 'T' as 'I' in Techies Hub.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Iechies Hub"
+    vendor_address: "340 Silicon Drive, San Jose, 95112, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10020
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_27
+    description: OCR dropped first letter 'G' in Green Valley.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "reen Valley Organics"
+    vendor_address: "88 Farm Lane, Nashville, 37201, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10022
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_28
+    description: OCR misread first letter 'O' as '0' (zero) in Oceanic.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "0ceanic Imports"
+    vendor_address: "120 Pier Street, Boston, 02110, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10024
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_29
+    description: OCR misread first letter 'W' as 'V' in West Coast.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Vest Coast Cycling"
+    vendor_address: "300 Bike Blvd, Seattle, 98101, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10026
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_30
+    description: OCR misread first letter 'A' as '4' in Alpha Medical.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "4lpha Medical Supplies"
+    vendor_address: "999 Health Drive, Houston, 77002, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10028
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_31
+    description: OCR misread first letter 'N' as 'M' in Northern Lights.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Morthern Lights Brewery"
+    vendor_address: "87 Barley Lane, Minneapolis, 55401, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10030
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_32
+    description: OCR misread first letter 'R' as 'P' in Rapid Courier.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Papid Courier Services"
+    vendor_address: "50 Delivery Street, Los Angeles, 90001, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10032
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_33
+    description: OCR misread first letter 'S' as 'Z' in Silver Line.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Zilver Line Textiles"
+    vendor_address: "77 Fabric Road, Charlotte, 28202, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10034
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_34
+    description: OCR dropped first two letters in StarBright.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "arBright Lighting"
+    vendor_address: "15 Light Street, Orlando, 32801, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10036
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_35
+    description: OCR misread first letter 'Q' as 'O' in QuickFix.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "OuickFix Hardware"
+    vendor_address: "600 Tools Ave, Detroit, 48201, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10038
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_36
+    description: OCR misread first letter 'M' as 'W' in Modern Living.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Wodern Living Interiors"
+    vendor_address: "450 Home Road, Tampa, 33602, US"
+
+    expected_data:
+      vendor:
+        accountNo: 10040
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_37
+    description: OCR misread first letter 'L' as 'I' in London Supply.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Iondon Supply Co"
+    vendor_address: "10 River Street, London, SW1A 1AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10042
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_38
+    description: OCR misread first letter 'Y' as 'V' in Yorkshire.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Vorkshire Farming Group"
+    vendor_address: "220 Harvest Lane, Leeds, LS1 4DT, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10044
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_39
+    description: OCR misread first letter 'B' as '8' in BritTech.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "8ritTech Solutions"
+    vendor_address: "45 Innovation Road, Cambridge, CB1 1PT, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10046
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_40
+    description: OCR dropped first letter in Albion Brewery.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "lbion Brewery"
+    vendor_address: "100 Beer Street, Birmingham, B1 1AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10050
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_41
+    description: OCR misread first letter 'N' as 'H' in Northern Steel.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Horthern Steel Works"
+    vendor_address: "250 Forge Lane, Sheffield, S1 2AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10052
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_42
+    description: OCR misread first letter 'B' as 'R' in British Cargo.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Rritish Cargo Ltd"
+    vendor_address: "400 Dock Road, Liverpool, L1 8JQ, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10056
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_43
+    description: OCR misread first letter 'G' as '6' in Glasgow.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "6lasgow Electronics"
+    vendor_address: "57 Circuit Street, Glasgow, G1 2AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10058
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_44
+    description: OCR misread first letter 'R' as 'K' in Royal Marine.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Koyal Marine Shipping"
+    vendor_address: "777 Sea Lane, Southampton, SO14 0AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10060
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_45
+    description: OCR misread first letter 'K' as 'R' in Kentish Office.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Rentish Office Supplies"
+    vendor_address: "10 Paper Street, Canterbury, CT1 2AB, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10062
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_46
+    description: OCR dropped first letter in Bristol Builders.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "ristol Builders"
+    vendor_address: "80 Hammer Lane, Bristol, BS1 1AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10064
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_47
+    description: OCR misread first letter 'O' as 'Q' in Oxford Furniture.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Qxford Furniture Makers"
+    vendor_address: "30 Wood Street, Oxford, OX1 1AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10066
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_48
+    description: OCR misread first letter 'E' as 'F' in Edinburgh Textiles.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Fdinburgh Textiles"
+    vendor_address: "70 Fabric Street, Edinburgh, EH1 1AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10070
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_49
+    description: OCR misread first letter 'M' as 'N' in Midland Metals.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Nidland Metals"
+    vendor_address: "20 Steel Street, Birmingham, B2 1AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10076
+      purchaseHeader:
+        invoiceNumber: "INV-001"
+
+  - name: SEARCH_VENDOR_50
+    description: OCR misread first letter 'C' as 'O' in Cambridge Computing.
+    test_setup: PA-VendorSearch.yaml
+    
+    vendor_name: "Oambridge Computing"
+    vendor_address: "300 Tech Park, Cambridge, CB2 2AA, GB"
+
+    expected_data:
+      vendor:
+        accountNo: 10084
+      purchaseHeader:
+        invoiceNumber: "INV-001"

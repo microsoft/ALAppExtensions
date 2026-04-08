@@ -1,0 +1,1712 @@
+name: PA-TS-Metrics-02-da-DK
+language: da-DK
+tests:
+- name: PA-INV-V011-005
+  description: VendorNo=V011;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG010;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Microsoft Danmark
+    Address: Kanalvej 7
+    Address 2: ''
+    City: Vedbæk
+    Country/Region Code: DK
+    Post Code: '2950'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V011-005
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64000
+    Description: Microsoft 365 E5 Security
+    Quantity: 10.0
+    Unit Price: 1850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V011-005
+        Buy-from Vendor Name: Microsoft Denmark
+        Buy-from Address: Kanalvej 7
+        Buy-from Address 2: ''
+        Buy-from City: Vedbæk
+        Buy-from Post Code: '2950'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64000
+        Deferral Code: 12M
+        Description: Microsoft 365 E5 Security
+        Quantity: 10.0
+        Unit Cost: 1850.0
+- name: PA-INV-V018-003
+  description: VendorNo=V018;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Lindberg & Søn Maskinværksted
+    Address: Byvej 56
+    Address 2: ''
+    City: Esbjerg
+    Country/Region Code: DK
+    Post Code: '6700'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V018-003
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62020
+    Description: Vedligeholdelse hydraulik system
+    Quantity: 1.0
+    Unit Price: 12200.0
+  - Type: 1
+    No.: 62020
+    Description: Vedligeholdelse CNC styring
+    Quantity: 1.0
+    Unit Price: 9500.0
+  - Type: 1
+    No.: 62020
+    Description: Reparation slibemaskine
+    Quantity: 1.0
+    Unit Price: 7800.0
+  - Type: 1
+    No.: 62020
+    Description: Service kantlimsmaskine
+    Quantity: 1.0
+    Unit Price: 8800.0
+  - Type: 1
+    No.: 62020
+    Description: Reparation sav maskine
+    Quantity: 1.0
+    Unit Price: 8200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V018-003
+        Buy-from Vendor Name: Lindberg & Søn Maskinværksted
+        Buy-from Address: Byvej 56
+        Buy-from Address 2: ''
+        Buy-from City: Esbjerg
+        Buy-from Post Code: '6700'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62020
+        Deferral Code: ''
+        Description: Vedligeholdelse hydraulik system
+        Quantity: 1.0
+        Unit Cost: 12200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62020
+        Deferral Code: ''
+        Description: Vedligeholdelse CNC styring
+        Quantity: 1.0
+        Unit Cost: 9500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62020
+        Deferral Code: ''
+        Description: Reparation slibemaskine
+        Quantity: 1.0
+        Unit Cost: 7800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62020
+        Deferral Code: ''
+        Description: Service kantlimsmaskine
+        Quantity: 1.0
+        Unit Cost: 8800.0
+      - Line No.: 50000
+        Type: 1
+        No.: 62020
+        Deferral Code: ''
+        Description: Reparation sav maskine
+        Quantity: 1.0
+        Unit Cost: 8200.0
+- name: PA-INV-V019-005
+  description: VendorNo=V019;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG011;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Arbejdernes Landsbank A/S
+    Address: Vesterbrogade 5
+    Address 2: ''
+    City: København
+    Country/Region Code: DK
+    Post Code: '1620'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V019-005
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65020
+    Description: Betalingsgaranti etablering
+    Quantity: 1.0
+    Unit Price: 4200.0
+  - Type: 1
+    No.: 65020
+    Description: Bankrådgivning timer
+    Quantity: 4.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 65020
+    Description: Betalingsservice administration
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 65020
+    Description: Bankgebyr konto månedlig
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 65020
+    Description: Kassekredit rentegebyr
+    Quantity: 1.0
+    Unit Price: 5400.0
+  - Type: 1
+    No.: 65020
+    Description: Betalingstransaktioner gebyr
+    Quantity: 1.0
+    Unit Price: 950.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V019-005
+        Buy-from Vendor Name: Arbejdernes Landsbank
+        Buy-from Address: Vesterbrogade 5
+        Buy-from Address 2: ''
+        Buy-from City: København
+        Buy-from Post Code: '1620'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Betalingsgaranti etablering
+        Quantity: 1.0
+        Unit Cost: 4200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Bankrådgivning timer
+        Quantity: 4.0
+        Unit Cost: 1450.0
+      - Line No.: 30000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Betalingsservice administration
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 40000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Bankgebyr konto månedlig
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Kassekredit rentegebyr
+        Quantity: 1.0
+        Unit Cost: 5400.0
+      - Line No.: 60000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Betalingstransaktioner gebyr
+        Quantity: 1.0
+        Unit Cost: 950.0
+- name: PA-INV-V012-004
+  description: VendorNo=V012;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Aabenraa Rengøring & Service
+    Address: Slotsgade 45
+    Address 2: ''
+    City: Aabenraa
+    Country/Region Code: DK
+    Post Code: '6200'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V012-004
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63000
+    Description: Rengøring showroom
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 63010
+    Description: Vinduespolering alle lokationer
+    Quantity: 1.0
+    Unit Price: 4800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V012-004
+        Buy-from Vendor Name: Aabenraa Rengøring & Service
+        Buy-from Address: Slotsgade 45
+        Buy-from Address 2: ''
+        Buy-from City: Aabenraa
+        Buy-from Post Code: '6200'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63000
+        Deferral Code: ''
+        Description: Rengøring showroom
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63010
+        Deferral Code: ''
+        Description: Vinduespolering alle lokationer
+        Quantity: 1.0
+        Unit Cost: 4800.0
+- name: PA-INV-V012-001
+  description: VendorNo=V012;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Aabenraa Rengøring & Service
+    Address: Slotsgade 45
+    Address 2: ''
+    City: Aabenraa
+    Country/Region Code: DK
+    Post Code: '6200'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V012-001
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63010
+    Description: Gulvvask produktionslokale
+    Quantity: 1.0
+    Unit Price: 3800.0
+  - Type: 1
+    No.: 63010
+    Description: Gulvbehandling kontor
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 63000
+    Description: Rengøring produktionshal
+    Quantity: 1.0
+    Unit Price: 12500.0
+  - Type: 1
+    No.: 63000
+    Description: Rengøring kantine
+    Quantity: 1.0
+    Unit Price: 3600.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V012-001
+        Buy-from Vendor Name: Aabenraa Rengøring & Service
+        Buy-from Address: Slotsgade 45
+        Buy-from Address 2: ''
+        Buy-from City: Aabenraa
+        Buy-from Post Code: '6200'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63010
+        Deferral Code: ''
+        Description: Gulvvask produktionslokale
+        Quantity: 1.0
+        Unit Cost: 3800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63010
+        Deferral Code: ''
+        Description: Gulvbehandling kontor
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63000
+        Deferral Code: ''
+        Description: Rengøring produktionshal
+        Quantity: 1.0
+        Unit Cost: 12500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 63000
+        Deferral Code: ''
+        Description: Rengøring kantine
+        Quantity: 1.0
+        Unit Cost: 3600.0
+- name: PA-INV-V017-004
+  description: VendorNo=V017;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG005;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: ProPak Danmark
+    Address: Industrivej102
+    Address 2: ''
+    City: Vejle
+    Country/Region Code: DK
+    Post Code: '7100'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V017-004
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 52000
+    Description: Pap indlæg skillevæg
+    Quantity: 3500.0
+    Unit Price: 8.2
+  - Type: 1
+    No.: 52000
+    Description: Emballage præsentationsæske
+    Quantity: 1500.0
+    Unit Price: 35.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V017-004
+        Buy-from Vendor Name: ProPak Danmark
+        Buy-from Address: Industrivej 102
+        Buy-from Address 2: ''
+        Buy-from City: Vejle
+        Buy-from Post Code: '7100'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 52000
+        Deferral Code: ''
+        Description: Pap indlæg skillevæg
+        Quantity: 3500.0
+        Unit Cost: 8.2
+      - Line No.: 20000
+        Type: 1
+        No.: 52000
+        Deferral Code: ''
+        Description: Emballage præsentationsæske
+        Quantity: 1500.0
+        Unit Cost: 35.0
+- name: PA-INV-V019-004
+  description: VendorNo=V019;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Arbejdernes Landsbank
+    Address: Vesterbrogade 5
+    Address 2: ''
+    City: København
+    Country/Region Code: DK
+    Post Code: '1620'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V019-004
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65020
+    Description: Bankgaranti udstedelse
+    Quantity: 1.0
+    Unit Price: 6500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V019-004
+        Buy-from Vendor Name: Arbejdernes Landsbank
+        Buy-from Address: Vesterbrogade 5
+        Buy-from Address 2: ''
+        Buy-from City: København
+        Buy-from Post Code: '1620'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Bankgaranti udstedelse
+        Quantity: 1.0
+        Unit Cost: 6500.0
+- name: PA-INV-V019-002
+  description: VendorNo=V019;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Arbejdernes Landsbank
+    Address: Vesterbrogade 5
+    Address 2: ''
+    City: København
+    Country/Region Code: DK
+    Post Code: '1620'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V019-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65020
+    Description: Bankrådgivning finansiering
+    Quantity: 1.0
+    Unit Price: 8500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V019-002
+        Buy-from Vendor Name: Arbejdernes Landsbank
+        Buy-from Address: Vesterbrogade 5
+        Buy-from Address 2: ''
+        Buy-from City: København
+        Buy-from Post Code: '1620'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Bankrådgivning finansiering
+        Quantity: 1.0
+        Unit Cost: 8500.0
+- name: PA-INV-V012-003
+  description: VendorNo=V012;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Aabenraa Rengøring & Service
+    Address: Slotsgade 45
+    Address 2: ''
+    City: Aabenraa
+    Country/Region Code: DK
+    Post Code: '6200'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V012-003
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63010
+    Description: Højtryksrens udendørs
+    Quantity: 1.0
+    Unit Price: 4200.0
+  - Type: 1
+    No.: 63000
+    Description: Hovedrengøring fabrik
+    Quantity: 1.0
+    Unit Price: 15200.0
+  - Type: 1
+    No.: 63010
+    Description: Ekstra rengøring efter renoveringer
+    Quantity: 1.0
+    Unit Price: 7200.0
+  - Type: 1
+    No.: 63000
+    Description: Rengøring administrationsbygning
+    Quantity: 1.0
+    Unit Price: 6800.0
+  - Type: 1
+    No.: 63000
+    Description: Hovedrengøring lager
+    Quantity: 1.0
+    Unit Price: 9800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V012-003
+        Buy-from Vendor Name: Aabenraa Rengøring & Service
+        Buy-from Address: Slotsgade 45
+        Buy-from Address 2: ''
+        Buy-from City: Aabenraa
+        Buy-from Post Code: '6200'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63010
+        Deferral Code: ''
+        Description: Højtryksrens udendørs
+        Quantity: 1.0
+        Unit Cost: 4200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63000
+        Deferral Code: ''
+        Description: Hovedrengøring fabrik
+        Quantity: 1.0
+        Unit Cost: 15200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63010
+        Deferral Code: ''
+        Description: Ekstra rengøring efter renoveringer
+        Quantity: 1.0
+        Unit Cost: 7200.0
+      - Line No.: 40000
+        Type: 1
+        No.: 63000
+        Deferral Code: ''
+        Description: Rengøring administrationsbygning
+        Quantity: 1.0
+        Unit Cost: 6800.0
+      - Line No.: 50000
+        Type: 1
+        No.: 63000
+        Deferral Code: ''
+        Description: Hovedrengøring lager
+        Quantity: 1.0
+        Unit Cost: 9800.0
+- name: PA-INV-V019-003
+  description: VendorNo=V019;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG011;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: AL Bank
+    Address: Vesterbrogade 5
+    Address 2: ''
+    City: København
+    Country/Region Code: DK
+    Post Code: '1620'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V019-003
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65020
+    Description: Valutaveksling gebyr
+    Quantity: 1.0
+    Unit Price: 2200.0
+  - Type: 1
+    No.: 65020
+    Description: Bankrådgivning investering
+    Quantity: 1.0
+    Unit Price: 6800.0
+  - Type: 1
+    No.: 65020
+    Description: Bankrådgivning M&A
+    Quantity: 1.0
+    Unit Price: 18500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V019-003
+        Buy-from Vendor Name: Arbejdernes Landsbank
+        Buy-from Address: Vesterbrogade 5
+        Buy-from Address 2: ''
+        Buy-from City: København
+        Buy-from Post Code: '1620'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Valutaveksling gebyr
+        Quantity: 1.0
+        Unit Cost: 2200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Bankrådgivning investering
+        Quantity: 1.0
+        Unit Cost: 6800.0
+      - Line No.: 30000
+        Type: 1
+        No.: 65020
+        Deferral Code: ''
+        Description: Bankrådgivning M&A
+        Quantity: 1.0
+        Unit Cost: 18500.0
+- name: PA-INV-V023-002
+  description: VendorNo=V023;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG007;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Solenergi Anlæg A/S
+    Address: Grønningen 12
+    Address 2: ''
+    City: Randers
+    Country/Region Code: DK
+    Post Code: '8900'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V023-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61020
+    Description: Batterisystem energilagring
+    Quantity: 1.0
+    Unit Price: 95000.0
+  - Type: 1
+    No.: 61020
+    Description: Solcellekonsulent projekt
+    Quantity: 1.0
+    Unit Price: 22000.0
+  - Type: 1
+    No.: 61020
+    Description: Inverter vedligeholdelse
+    Quantity: 1.0
+    Unit Price: 4800.0
+  - Type: 1
+    No.: 61020
+    Description: Solcellevedligeholdelse årlig
+    Quantity: 1.0
+    Unit Price: 12500.0
+  - Type: 1
+    No.: 61020
+    Description: Solcellepaneler høj effekt
+    Quantity: 120.0
+    Unit Price: 2200.0
+  - Type: 1
+    No.: 61020
+    Description: Inverter udskiftning defekt
+    Quantity: 1.0
+    Unit Price: 32000.0
+  - Type: 1
+    No.: 61020
+    Description: Solceller ekstra paneler
+    Quantity: 40.0
+    Unit Price: 2150.0
+  - Type: 1
+    No.: 61020
+    Description: Energimonitor abonnement
+    Quantity: 1.0
+    Unit Price: 3600.0
+  - Type: 1
+    No.: 61020
+    Description: Solcelleanlæg inspektion
+    Quantity: 1.0
+    Unit Price: 4200.0
+  - Type: 1
+    No.: 61020
+    Description: Batterisystem vedligeholdelse
+    Quantity: 1.0
+    Unit Price: 6200.0
+  - Type: 1
+    No.: 61020
+    Description: Batterisystem udvidelse
+    Quantity: 1.0
+    Unit Price: 68000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V023-002
+        Buy-from Vendor Name: Dansk Solenergi Anlæg A/S
+        Buy-from Address: Grønningen 12
+        Buy-from Address 2: ''
+        Buy-from City: Randers
+        Buy-from Post Code: '8900'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Batterisystem energilagring
+        Quantity: 1.0
+        Unit Cost: 95000.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solcellekonsulent projekt
+        Quantity: 1.0
+        Unit Cost: 22000.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Inverter vedligeholdelse
+        Quantity: 1.0
+        Unit Cost: 4800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 61020
+        Deferral Code: 12M
+        Description: Solcellevedligeholdelse årlig
+        Quantity: 1.0
+        Unit Cost: 12500.0
+      - Line No.: 50000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solcellepaneler høj effekt
+        Quantity: 120.0
+        Unit Cost: 2200.0
+      - Line No.: 60000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Inverter udskiftning defekt
+        Quantity: 1.0
+        Unit Cost: 32000.0
+      - Line No.: 70000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solceller ekstra paneler
+        Quantity: 40.0
+        Unit Cost: 2150.0
+      - Line No.: 80000
+        Type: 1
+        No.: 61020
+        Deferral Code: 12M
+        Description: Energimonitor abonnement
+        Quantity: 1.0
+        Unit Cost: 3600.0
+      - Line No.: 90000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solcelleanlæg inspektion
+        Quantity: 1.0
+        Unit Cost: 4200.0
+      - Line No.: 100000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Batterisystem vedligeholdelse
+        Quantity: 1.0
+        Unit Cost: 6200.0
+      - Line No.: 110000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Batterisystem udvidelse
+        Quantity: 1.0
+        Unit Cost: 68000.0
+- name: PA-INV-V025-004
+  description: VendorNo=V025;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: BoConcept Logistics
+    Address: Toften 5
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V025-004
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63030
+    Description: Catering arrangement kursus
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 63030
+    Description: Catering showroom åbning
+    Quantity: 1.0
+    Unit Price: 9800.0
+  - Type: 1
+    No.: 63030
+    Description: Frokost smørrebrød
+    Quantity: 1.0
+    Unit Price: 2800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V025-004
+        Buy-from Vendor Name: BoConcept Logistics ApS
+        Buy-from Address: Toften 5
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Catering arrangement kursus
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Catering showroom åbning
+        Quantity: 1.0
+        Unit Cost: 9800.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Frokost smørrebrød
+        Quantity: 1.0
+        Unit Cost: 2800.0
+- name: PA-INV-V028-002
+  description: VendorNo=V028;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Emballage Service
+    Address: Havnevej 78
+    Address 2: ''
+    City: Horsens
+    Country/Region Code: DK
+    Post Code: '8700'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V028-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65040
+    Description: Kvalitetsaudit årlig
+    Quantity: 1.0
+    Unit Price: 24000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V028-002
+        Buy-from Vendor Name: Dansk Emballage Service
+        Buy-from Address: Havnevej 78
+        Buy-from Address 2: ''
+        Buy-from City: Horsens
+        Buy-from Post Code: '8700'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65040
+        Deferral Code: 12M
+        Description: Kvalitetsaudit årlig
+        Quantity: 1.0
+        Unit Cost: 24000.0
+- name: PA-INV-V024-003
+  description: VendorNo=V024;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: BoConcept Supply Services
+    Address: Toften 5
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V024-003
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50600
+    Description: Ben metal konisk design
+    Quantity: 800.0
+    Unit Price: 68.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V024-003
+        Buy-from Vendor Name: BoConcept Supply Services
+        Buy-from Address: Toften 5
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Ben metal konisk design
+        Quantity: 800.0
+        Unit Cost: 68.0
+- name: PA-INV-V027-002
+  description: VendorNo=V027;VendorFrequencyGroup=None;VendorGroup=VG002;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG010;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Scan Furniture Components
+    Address: Vestre Ringvej112
+    Address 2: ''
+    City: Silkeborg
+    Country/Region Code: DK
+    Post Code: '8600'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V027-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64000
+    Description: CAD support kritisk incident
+    Quantity: 1.0
+    Unit Price: 5400.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V027-002
+        Buy-from Vendor Name: Scan Furniture Components
+        Buy-from Address: Vestre Ringvej 112
+        Buy-from Address 2: ''
+        Buy-from City: Silkeborg
+        Buy-from Post Code: '8600'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64000
+        Deferral Code: ''
+        Description: CAD support kritisk incident
+        Quantity: 1.0
+        Unit Cost: 5400.0
+- name: PA-INV-V024-002
+  description: VendorNo=V024;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: BoConcept Supply Services
+    Address: Toften 5
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V024-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50600
+    Description: Understellskomponenter stål
+    Quantity: 200.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 50600
+    Description: Ben aluminium moderne
+    Quantity: 500.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 50600
+    Description: Hjul møbler drejelig
+    Quantity: 2000.0
+    Unit Price: 24.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V024-002
+        Buy-from Vendor Name: BoConcept Supply Services
+        Buy-from Address: Toften 5
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Understellskomponenter stål
+        Quantity: 200.0
+        Unit Cost: 185.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Ben aluminium moderne
+        Quantity: 500.0
+        Unit Cost: 95.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Hjul møbler drejelig
+        Quantity: 2000.0
+        Unit Cost: 24.5
+- name: PA-INV-V029-001
+  description: VendorNo=V029;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=True;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG006;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Carlsberg Facility Services ApS
+    Address: Ny Carlsberg Vej nr. 100
+    Address 2: ''
+    City: København
+    Country/Region Code: DK
+    Post Code: '1799'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V029-001
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60100
+    Description: Specialfragt maskine
+    Quantity: 1.0
+    Unit Price: 22000.0
+  - Type: 1
+    No.: 60100
+    Description: Specialtransport kunst
+    Quantity: 1.0
+    Unit Price: 18500.0
+  - Type: 1
+    No.: 60100
+    Description: Transport kølekøretøj
+    Quantity: 1.0
+    Unit Price: 6800.0
+  - Type: 1
+    No.: 60100
+    Description: Transport montering installation
+    Quantity: 1.0
+    Unit Price: 11500.0
+  - Type: 1
+    No.: 60100
+    Description: Fragt import toldklarering
+    Quantity: 1.0
+    Unit Price: 8200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V029-001
+        Buy-from Vendor Name: Carlsberg Facility Services
+        Buy-from Address: Ny Carlsberg Vej 100
+        Buy-from Address 2: ''
+        Buy-from City: København
+        Buy-from Post Code: '1799'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Specialfragt maskine
+        Quantity: 1.0
+        Unit Cost: 22000.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Specialtransport kunst
+        Quantity: 1.0
+        Unit Cost: 18500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Transport kølekøretøj
+        Quantity: 1.0
+        Unit Cost: 6800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Transport montering installation
+        Quantity: 1.0
+        Unit Cost: 11500.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Fragt import toldklarering
+        Quantity: 1.0
+        Unit Cost: 8200.0
+- name: PA-INV-V025-007
+  description: VendorNo=V025;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: BoConcept Log. ApS
+    Address: Toften 5
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V025-007
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63030
+    Description: Kaffe og kage eftermiddag
+    Quantity: 1.0
+    Unit Price: 1800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V025-007
+        Buy-from Vendor Name: BoConcept Logistics ApS
+        Buy-from Address: Toften 5
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Kaffe og kage eftermiddag
+        Quantity: 1.0
+        Unit Cost: 1800.0
+- name: PA-INV-V028-006
+  description: VendorNo=V028;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Emballage Service
+    Address: Havnevej 78
+    Address 2: ''
+    City: Horsens
+    Country/Region Code: DK
+    Post Code: '8700'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V028-006
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65040
+    Description: Produkttest slidtest
+    Quantity: 1.0
+    Unit Price: 9500.0
+  - Type: 1
+    No.: 65040
+    Description: Kvalitetssystem implementering
+    Quantity: 1.0
+    Unit Price: 42000.0
+  - Type: 1
+    No.: 65040
+    Description: Kvalitetskonsulent timer
+    Quantity: 8.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 65040
+    Description: Kvalitetskontrol stikprøve
+    Quantity: 1.0
+    Unit Price: 6200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V028-006
+        Buy-from Vendor Name: Dansk Emballage Service
+        Buy-from Address: Havnevej 78
+        Buy-from Address 2: ''
+        Buy-from City: Horsens
+        Buy-from Post Code: '8700'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65040
+        Deferral Code: ''
+        Description: Produkttest slidtest
+        Quantity: 1.0
+        Unit Cost: 9500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65040
+        Deferral Code: ''
+        Description: Kvalitetssystem implementering
+        Quantity: 1.0
+        Unit Cost: 42000.0
+      - Line No.: 30000
+        Type: 1
+        No.: 65040
+        Deferral Code: ''
+        Description: Kvalitetskonsulent timer
+        Quantity: 8.0
+        Unit Cost: 1450.0
+      - Line No.: 40000
+        Type: 1
+        No.: 65040
+        Deferral Code: ''
+        Description: Kvalitetskontrol stikprøve
+        Quantity: 1.0
+        Unit Cost: 6200.0
+- name: PA-INV-V025-005
+  description: VendorNo=V025;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: BoConcept Logistics ApS
+    Address: Toften 5
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V025-005
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63030
+    Description: Frokost buffet årsmøde
+    Quantity: 1.0
+    Unit Price: 12500.0
+  - Type: 1
+    No.: 63030
+    Description: Frokost pakket besøg
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 63030
+    Description: Morgenmad bestyrelse
+    Quantity: 1.0
+    Unit Price: 1500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V025-005
+        Buy-from Vendor Name: BoConcept Logistics ApS
+        Buy-from Address: Toften 5
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Frokost buffet årsmøde
+        Quantity: 1.0
+        Unit Cost: 12500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Frokost pakket besøg
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Morgenmad bestyrelse
+        Quantity: 1.0
+        Unit Cost: 1500.0
+- name: PA-INV-V025-002
+  description: VendorNo=V025;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Bo-Concept Logistics ApS
+    Address: Toften 5
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V025-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63030
+    Description: Morgenmad møde 20 personer
+    Quantity: 1.0
+    Unit Price: 2400.0
+  - Type: 1
+    No.: 63030
+    Description: Catering aftenmiddag event
+    Quantity: 1.0
+    Unit Price: 12800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V025-002
+        Buy-from Vendor Name: BoConcept Logistics ApS
+        Buy-from Address: Toften 5
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Morgenmad møde 20 personer
+        Quantity: 1.0
+        Unit Cost: 2400.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63030
+        Deferral Code: ''
+        Description: Catering aftenmiddag event
+        Quantity: 1.0
+        Unit Cost: 12800.0
+- name: PA-INV-V029-002
+  description: VendorNo=V029;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG006;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Carlsberg Facility Services
+    Address: Ny Carlsberg Vej 100
+    Address 2: ''
+    City: København
+    Country/Region Code: DK
+    Post Code: '1799'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V029-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60100
+    Description: Fragt luftfragt ekspres
+    Quantity: 1.0
+    Unit Price: 32000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V029-002
+        Buy-from Vendor Name: Carlsberg Facility Services
+        Buy-from Address: Ny Carlsberg Vej 100
+        Buy-from Address 2: ''
+        Buy-from City: København
+        Buy-from Post Code: '1799'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60100
+        Deferral Code: ''
+        Description: Fragt luftfragt ekspres
+        Quantity: 1.0
+        Unit Cost: 32000.0
+- name: PA-INV-V023-001
+  description: VendorNo=V023;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG007;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Solenergi Anlæg A/S
+    Address: Grønningen 12
+    Address 2: ''
+    City: Randers
+    Country/Region Code: DK
+    Post Code: '8900'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V023-001
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61020
+    Description: Solcellemontage arbejde
+    Quantity: 1.0
+    Unit Price: 48000.0
+  - Type: 1
+    No.: 61020
+    Description: Solcelleovervågning system
+    Quantity: 1.0
+    Unit Price: 18000.0
+  - Type: 1
+    No.: 61020
+    Description: Solcellepaneler specialtype
+    Quantity: 25.0
+    Unit Price: 2400.0
+  - Type: 1
+    No.: 61020
+    Description: Energikonsulentbistand timer
+    Quantity: 12.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 61020
+    Description: Energianalyse rapport
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 61020
+    Description: Energistyring optimering
+    Quantity: 1.0
+    Unit Price: 15800.0
+  - Type: 1
+    No.: 61020
+    Description: Solceller installation tag
+    Quantity: 1.0
+    Unit Price: 285000.0
+  - Type: 1
+    No.: 61020
+    Description: Solcellemontage tilføjelse
+    Quantity: 1.0
+    Unit Price: 28000.0
+  - Type: 1
+    No.: 61020
+    Description: Inverter udstyr solcelleanlæg
+    Quantity: 3.0
+    Unit Price: 28000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V023-001
+        Buy-from Vendor Name: Dansk Solenergi Anlæg A/S
+        Buy-from Address: Grønningen 12
+        Buy-from Address 2: ''
+        Buy-from City: Randers
+        Buy-from Post Code: '8900'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solcellemontage arbejde
+        Quantity: 1.0
+        Unit Cost: 48000.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solcelleovervågning system
+        Quantity: 1.0
+        Unit Cost: 18000.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solcellepaneler specialtype
+        Quantity: 25.0
+        Unit Cost: 2400.0
+      - Line No.: 40000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Energikonsulentbistand timer
+        Quantity: 12.0
+        Unit Cost: 1450.0
+      - Line No.: 50000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Energianalyse rapport
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 60000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Energistyring optimering
+        Quantity: 1.0
+        Unit Cost: 15800.0
+      - Line No.: 70000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solceller installation tag
+        Quantity: 1.0
+        Unit Cost: 285000.0
+      - Line No.: 80000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Solcellemontage tilføjelse
+        Quantity: 1.0
+        Unit Cost: 28000.0
+      - Line No.: 90000
+        Type: 1
+        No.: 61020
+        Deferral Code: ''
+        Description: Inverter udstyr solcelleanlæg
+        Quantity: 3.0
+        Unit Cost: 28000.0
+- name: PA-INV-V026-002
+  description: VendorNo=V026;VendorFrequencyGroup=None;VendorGroup=VG002;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: ScanFurniture A/S
+    Address: Hammerum Hovedgade 56
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V026-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65030
+    Description: Rekruttering lagermedarbejdere
+    Quantity: 1.0
+    Unit Price: 15200.0
+  - Type: 1
+    No.: 65030
+    Description: Reference check kandidater
+    Quantity: 1.0
+    Unit Price: 4200.0
+  - Type: 1
+    No.: 65030
+    Description: Rekrutteringspakke årlig retainer
+    Quantity: 1.0
+    Unit Price: 85000.0
+  - Type: 1
+    No.: 65030
+    Description: Headhunting operations manager
+    Quantity: 1.0
+    Unit Price: 68000.0
+  - Type: 1
+    No.: 65030
+    Description: Rekruttering projektleder
+    Quantity: 1.0
+    Unit Price: 42000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V026-002
+        Buy-from Vendor Name: Scan Furniture A/S
+        Buy-from Address: Hammerum Hovedgade 56
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65030
+        Deferral Code: ''
+        Description: Rekruttering lagermedarbejdere
+        Quantity: 1.0
+        Unit Cost: 15200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65030
+        Deferral Code: ''
+        Description: Reference check kandidater
+        Quantity: 1.0
+        Unit Cost: 4200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 65030
+        Deferral Code: 12M
+        Description: Rekrutteringspakke årlig retainer
+        Quantity: 1.0
+        Unit Cost: 85000.0
+      - Line No.: 40000
+        Type: 1
+        No.: 65030
+        Deferral Code: ''
+        Description: Headhunting operations manager
+        Quantity: 1.0
+        Unit Cost: 68000.0
+      - Line No.: 50000
+        Type: 1
+        No.: 65030
+        Deferral Code: ''
+        Description: Rekruttering projektleder
+        Quantity: 1.0
+        Unit Cost: 42000.0
+- name: PA-INV-V028-004
+  description: VendorNo=V028;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Emballage Service
+    Address: Havnevej 78
+    Address 2: ''
+    City: Horsens
+    Country/Region Code: DK
+    Post Code: '8700'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V028-004
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65040
+    Description: Produkttest belastning
+    Quantity: 1.0
+    Unit Price: 8200.0
+  - Type: 1
+    No.: 65040
+    Description: Kvalitetsstyringssystem audit
+    Quantity: 1.0
+    Unit Price: 18500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V028-004
+        Buy-from Vendor Name: Dansk Emballage Service
+        Buy-from Address: Havnevej 78
+        Buy-from Address 2: ''
+        Buy-from City: Horsens
+        Buy-from Post Code: '8700'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65040
+        Deferral Code: ''
+        Description: Produkttest belastning
+        Quantity: 1.0
+        Unit Cost: 8200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65040
+        Deferral Code: ''
+        Description: Kvalitetsstyringssystem audit
+        Quantity: 1.0
+        Unit Cost: 18500.0

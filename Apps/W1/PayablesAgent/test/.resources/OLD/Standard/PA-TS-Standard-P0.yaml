@@ -1,0 +1,550 @@
+tests:
+  - name: PayablesAgent-Standard-001
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-001
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-001
+
+  - name: PayablesAgent-Standard-002
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-002
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-002
+
+  - name: PayablesAgent-Standard-003
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-003
+    expected_data:
+      vendor:
+        name: Vitalyx Medical
+      purchaseHeader:
+        invoiceNumber: INV-003
+
+  - name: PayablesAgent-Standard-004
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-004
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-004
+
+  - name: PayablesAgent-Standard-005
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-005
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-005
+
+  - name: PayablesAgent-Standard-006
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-006
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-006
+
+  - name: PayablesAgent-Standard-007
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-007
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-007
+
+  - name: PayablesAgent-Standard-008
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-008
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-008
+
+  - name: PayablesAgent-Standard-009
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-009
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-009
+
+  - name: PayablesAgent-Standard-010
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-010
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-010
+
+  - name: PayablesAgent-Standard-011
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-011
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-011
+
+  - name: PayablesAgent-Standard-012
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-012
+    expected_data:
+      vendor:
+        name: Vitalyx Medical
+      purchaseHeader:
+        invoiceNumber: INV-012
+
+  - name: PayablesAgent-Standard-013
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-001
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-001
+
+  - name: PayablesAgent-Standard-014
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-002
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-002
+
+  - name: PayablesAgent-Standard-015
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-003
+    expected_data:
+      vendor:
+        name: Vitalyx Medical
+      purchaseHeader:
+        invoiceNumber: INV-003
+
+  - name: PayablesAgent-Standard-016
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-004
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-004
+
+  - name: PayablesAgent-Standard-017
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-005
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-005
+
+  - name: PayablesAgent-Standard-018
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-006
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-006
+
+  - name: PayablesAgent-Standard-019
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-007
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-007
+
+  - name: PayablesAgent-Standard-020
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-008
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-008
+
+  - name: PayablesAgent-Standard-021
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-009
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-009
+
+  - name: PayablesAgent-Standard-022
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-010
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-010
+
+  - name: PayablesAgent-Standard-023
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-011
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-011
+
+  - name: PayablesAgent-Standard-024
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-012
+    expected_data:
+      vendor:
+        name: Vitalyx Medical
+      purchaseHeader:
+        invoiceNumber: INV-012
+
+  - name: PayablesAgent-Standard-025
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-001
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-001
+
+  - name: PayablesAgent-Standard-026
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-002
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-002
+
+  - name: PayablesAgent-Standard-027
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-003
+    expected_data:
+      vendor:
+        name: Vitalyx Medical
+      purchaseHeader:
+        invoiceNumber: INV-003
+
+  - name: PayablesAgent-Standard-028
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-004
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-004
+
+  - name: PayablesAgent-Standard-029
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-005
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-005
+
+  - name: PayablesAgent-Standard-030
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-006
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-006
+
+  - name: PayablesAgent-Standard-031
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-007
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-007
+
+  - name: PayablesAgent-Standard-032
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-008
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-008
+
+  - name: PayablesAgent-Standard-033
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-009
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-009
+
+  - name: PayablesAgent-Standard-034
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-010
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-010
+
+  - name: PayablesAgent-Standard-035
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-011
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-011
+
+  - name: PayablesAgent-Standard-036
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-012
+    expected_data:
+      vendor:
+        name: Vitalyx Medical
+      purchaseHeader:
+        invoiceNumber: INV-012
+
+  - name: PayablesAgent-Standard-037
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-001
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-001
+
+  - name: PayablesAgent-Standard-038
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-002
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-002
+
+  - name: PayablesAgent-Standard-039
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-003
+    expected_data:
+      vendor:
+        name: Vitalyx Medical
+      purchaseHeader:
+        invoiceNumber: INV-003
+
+  - name: PayablesAgent-Standard-040
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-004
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-004
+
+  - name: PayablesAgent-Standard-041
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-005
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-005
+
+  - name: PayablesAgent-Standard-042
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-006
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-006
+
+  - name: PayablesAgent-Standard-043
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-007
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-007
+
+  - name: PayablesAgent-Standard-044
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-008
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-008
+
+  - name: PayablesAgent-Standard-045
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-009
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-009
+
+  - name: PayablesAgent-Standard-046
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-010
+    expected_data:
+      vendor:
+        name: AgriNova Foods
+      purchaseHeader:
+        invoiceNumber: INV-010
+
+  - name: PayablesAgent-Standard-047
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-011
+    expected_data:
+      vendor:
+        name: Nexora Dynamics
+      purchaseHeader:
+        invoiceNumber: INV-011
+
+  - name: PayablesAgent-Standard-048
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-012
+    expected_data:
+      vendor:
+        name: Vitalyx Medical
+      purchaseHeader:
+        invoiceNumber: INV-012
+
+  - name: PayablesAgent-Standard-049
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-001
+    expected_data:
+      vendor:
+        name: Strauss Medium
+      purchaseHeader:
+        invoiceNumber: INV-001
+
+  - name: PayablesAgent-Standard-050
+    description: Process an invoice PDF for a known vendor where all lines are populated.
+    test_setup: PA-P0.yaml
+    invoice_setup: PA-INV-Standard.yaml
+    invoice_no: INV-002
+    expected_data:
+      vendor:
+        name: Redwave Systems
+      purchaseHeader:
+        invoiceNumber: INV-002

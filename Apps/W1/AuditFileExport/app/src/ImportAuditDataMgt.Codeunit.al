@@ -105,6 +105,8 @@ codeunit 5262 "Import Audit Data Mgt."
             TempChildXMLBuffer.Next();
             if TempChildXMLBuffer.Name = 'CategoryDescription' then
                 TempChildXMLBuffer.Next();
+            if StrLen(TempChildXMLBuffer.Value) > MaxStrLen(StandardAccount."No.") then
+                StandardAccount."Extended No." := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(StandardAccount."Extended No."));
             StandardAccount."No." := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(StandardAccount."No."));
             TempChildXMLBuffer.Next();
             StandardAccount.Description := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(StandardAccount.Description));

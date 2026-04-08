@@ -7,7 +7,7 @@ namespace Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 
-codeunit 11759 "Purch. Inv. Header - Edit CZL"
+codeunit 11759 "Update Purch. Inv. Header CZL"
 {
     Access = Internal;
     EventSubscriberInstance = Manual;

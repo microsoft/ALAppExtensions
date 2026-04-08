@@ -65,5 +65,11 @@ tableextension 18003 "GST General Ledger Setup Ext" extends "General Ledger Setu
             Caption = 'Generate E-Inv. on Sales Post';
             DataClassification = CustomerContent;
         }
+        field(18014; "GST Reversal Distribution Nos."; code[20])
+        {
+            caption = 'GST Reversal Distribution Nos.';
+            TableRelation = "No. Series";
+            DataClassification = CustomerContent;
+        }
     }
 }

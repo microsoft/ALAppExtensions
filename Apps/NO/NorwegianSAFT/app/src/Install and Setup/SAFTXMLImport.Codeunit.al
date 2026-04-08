@@ -223,6 +223,8 @@ codeunit 10671 "SAF-T XML Import"
             TempChildXMLBuffer.Next();
             if TempChildXMLBuffer.Name = 'CategoryDescription' then
                 TempChildXMLBuffer.Next();
+            if StrLen(TempChildXMLBuffer.Value) > MaxStrLen(SAFTMapping."No.") then
+                SAFTMapping."Extended No." := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(SAFTMapping."Extended No."));
             SAFTMapping."No." := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(SAFTMapping."No."));
             TempChildXMLBuffer.Next();
             SAFTMapping.Description := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(SAFTMapping.Description));
