@@ -140,6 +140,25 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifySellerOrderReference();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice from sales order creates electronic document in ZUGFeRD format with seller order reference
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice from Sales Order
+        SalesInvoiceHeader.Get(CreateAndPostSalesInvoiceFromOrder());
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with seller order reference
+        VerifySellerOrderReference(SalesInvoiceHeader."Order No.", TempXMLBuffer, '/rsm:CrossIndustryInvoice');
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatMandateBuyerReferenceAsYourReference();
     var
         SalesHeader: Record "Sales Header";
@@ -560,6 +579,25 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [THEN] ZUGFeRD Electronic Document is created with buyer reference XX
         VerifyBuyerReference(SalesCrMemoHeader."Your Reference", TempXMLBuffer, '/rsm:CrossIndustryInvoice');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatVerifySellerOrderReference();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales cr. memo from return order creates electronic document in ZUGFeRD format with seller order reference
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Cr. Memo from Sales Return Order
+        SalesCrMemoHeader.Get(CreateAndPostSalesCrMemoFromReturnOrder());
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with seller order reference
+        VerifySellerOrderReference(SalesCrMemoHeader."Return Order No.", TempXMLBuffer, '/rsm:CrossIndustryInvoice');
     end;
 
     [Test]
@@ -1437,6 +1475,22 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostSalesInvoiceFromOrder(): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get("Sales Document Type"::Order, CreateSalesDocumentWithLine("Sales Document Type"::Order, Enum::"Sales Line Type"::Item, false));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreateAndPostSalesCrMemoFromReturnOrder(): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get("Sales Document Type"::"Return Order", CreateSalesDocumentWithLine("Sales Document Type"::"Return Order", Enum::"Sales Line Type"::Item, false));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
     local procedure CreateAndPostSalesDocumentWithoutPhone(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20]
     var
         SalesHeader: Record "Sales Header";
@@ -1954,7 +2008,9 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Assert.AreEqual(SalesInvoiceHeader."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString';
         Assert.AreEqual(FormatDate(SalesInvoiceHeader."Posting Date"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-
+        // Verify Seller Order Reference is not present when invoice is posted directly (without order)
+        if SalesInvoiceHeader."Order No." = '' then
+            Assert.IsFalse(NodeExistsByPath(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerOrderReferencedDocument'), 'Seller Order Reference should not exist');
     end;
 
     local procedure VerifyHeaderData(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -1968,6 +2024,9 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Assert.AreEqual(SalesCrMemoHeader."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentCreditNoteTok + '/rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString';
         Assert.AreEqual(FormatDate(SalesCrMemoHeader."Posting Date"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        // Verify Seller Order Reference is not present when cr. memo is posted directly (without return order)
+        if SalesCrMemoHeader."Return Order No." = '' then
+            Assert.IsFalse(NodeExistsByPath(TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerOrderReferencedDocument'), 'Seller Order Reference should not exist');
     end;
 
     local procedure VerifyHeaderData(ServiceInvoiceHeader: Record "Service Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary)
@@ -2002,6 +2061,14 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     begin
         Path := DocumentTok + '/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerReference';
         Assert.AreEqual(BuyerReference, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifySellerOrderReference(OrderNo: Code[20]; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerOrderReferencedDocument/ram:IssuerAssignedID';
+        Assert.AreEqual(OrderNo, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifySellerData(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
