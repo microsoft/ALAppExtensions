@@ -591,13 +591,6 @@ codeunit 13917 "Export ZUGFeRD Document"
         HeaderTradeAgreementElement := XmlElement.Create('ApplicableHeaderTradeAgreement', XmlNamespaceRAM);
         HeaderTradeAgreementElement.Add(XmlElement.Create('BuyerReference', XmlNamespaceRAM, GetBuyerReference(YourReference, CustomerNo)));
 
-        // Seller Order Reference
-        if OrderNo <> '' then begin
-            SellerOrderReferencedDocumentElement := XmlElement.Create('SellerOrderReferencedDocument', XmlNamespaceRAM);
-            SellerOrderReferencedDocumentElement.Add(XmlElement.Create('IssuerAssignedID', XmlNamespaceRAM, OrderNo));
-            HeaderTradeAgreementElement.Add(SellerOrderReferencedDocumentElement);
-        end;
-
         // Seller
         SellerTradePartyElement := XmlElement.Create('SellerTradeParty', XmlNamespaceRAM);
         if CompanyInformation."Use GLN in Electronic Document" and (CompanyInformation.GLN <> '') then begin
@@ -673,6 +666,14 @@ codeunit 13917 "Export ZUGFeRD Document"
             BuyerTradePartyElement.Add(SpecifiedTaxRegistrationElement);
         end;
         HeaderTradeAgreementElement.Add(BuyerTradePartyElement);
+
+        // Seller Order Reference
+        if OrderNo <> '' then begin
+            SellerOrderReferencedDocumentElement := XmlElement.Create('SellerOrderReferencedDocument', XmlNamespaceRAM);
+            SellerOrderReferencedDocumentElement.Add(XmlElement.Create('IssuerAssignedID', XmlNamespaceRAM, OrderNo));
+            HeaderTradeAgreementElement.Add(SellerOrderReferencedDocumentElement);
+        end;
+
         OnAfterInsertApplicableHeaderTradeAgreement(HeaderTradeAgreementElement, HeaderRecordRef);
         RootXMLNode.Add(HeaderTradeAgreementElement);
     end;
