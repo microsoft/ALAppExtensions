@@ -9,12 +9,15 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Clause;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Location;
+using Microsoft.Peppol;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
@@ -387,6 +390,36 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
         VerifyAccountingSupplierParty(TempXMLBuffer, '/ubl:Invoice/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyVATEXCodeAndExemptionReason();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        InvoiceTaxCategoryTok: Label '/ubl:Invoice/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory', Locked = true;
+        Path: Text;
+    begin
+        // [SCENARIO] Export posted sales invoice creates electronic document in XRechnung format with VATEX code and exemption reason from VAT Clause
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [GIVEN] VAT Clause with VATEX Code 'VATEX-EU-O' and Description 'Not subject to VAT' linked to the VAT Posting Setup
+        SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvoiceLine.FindFirst();
+        CreateVATClauseWithVATEXCode(SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group");
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] TaxExemptionReasonCode and TaxExemptionReason are exported with correct values
+        Path := InvoiceTaxCategoryTok + '/cbc:TaxExemptionReasonCode';
+        Assert.AreEqual('VATEX-EU-O', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := InvoiceTaxCategoryTok + '/cbc:TaxExemptionReason';
+        Assert.AreEqual('Not subject to VAT', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
     #endregion
 
@@ -991,6 +1024,36 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
         VerifyAccountingSupplierParty(TempXMLBuffer, '/ns0:CreditNote/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyVATEXCodeAndExemptionReason();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        CrMemoTaxCategoryTok: Label '/ns0:CreditNote/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory', Locked = true;
+        Path: Text;
+    begin
+        // [SCENARIO] Export posted sales cr. memo creates electronic document in XRechnung format with VATEX code and exemption reason from VAT Clause
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Credit Memo.
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [GIVEN] VAT Clause with VATEX Code 'VATEX-EU-O' and Description 'Not subject to VAT' linked to the VAT Posting Setup
+        SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
+        SalesCrMemoLine.FindFirst();
+        CreateVATClauseWithVATEXCode(SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group");
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] TaxExemptionReasonCode and TaxExemptionReason are exported with correct values
+        Path := CrMemoTaxCategoryTok + '/cbc:TaxExemptionReasonCode';
+        Assert.AreEqual('VATEX-EU-O', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := CrMemoTaxCategoryTok + '/cbc:TaxExemptionReason';
+        Assert.AreEqual('Not subject to VAT', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
     #endregion
 
@@ -2891,6 +2954,23 @@ codeunit 13918 "XRechnung XML Document Tests"
         if VarDate = 0D then
             exit('1753-01-01');
         exit(Format(VarDate, 0, '<Year4>-<Month,2>-<Day,2>'));
+    end;
+
+    local procedure CreateVATClauseWithVATEXCode(VATBusPostingGroup: Code[20]; VATProductPostingGroup: Code[20])
+    var
+        VATClause: Record "VAT Clause";
+        VATPostingSetup: Record "VAT Posting Setup";
+        VATClauseCode: Code[10];
+    begin
+        VATClauseCode := LibraryUtility.GenerateRandomCode(VATClause.FieldNo(Code), Database::"VAT Clause");
+        VATClause.Init();
+        VATClause.Validate(Code, VATClauseCode);
+        VATClause.Validate(Description, 'Not subject to VAT');
+        VATClause.Validate("VATEX Code", 'VATEX-EU-O');
+        VATClause.Insert(true);
+        VATPostingSetup.Get(VATBusPostingGroup, VATProductPostingGroup);
+        VATPostingSetup.Validate("VAT Clause Code", VATClauseCode);
+        VATPostingSetup.Modify(true);
     end;
 
     local procedure Initialize();
