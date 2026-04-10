@@ -1074,9 +1074,9 @@ codeunit 13916 "Export XRechnung Document"
             CrMemoLineElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, Format(SalesCrMemoLine."Line No.")));
             CrMemoLineElement.Add(XmlElement.Create('CreditedQuantity', XmlNamespaceCBC, XmlAttribute.Create('unitCode', GetUoMCode(SalesCrMemoLine."Unit of Measure Code")), FormatDecimalUnlimited(SalesCrMemoLine.Quantity)));
             CrMemoLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount", AlwaysIncludeTwoDecimalPlacesForAmountFields)));
-            InsertOrderLineReference(CrMemoLineElement, SalesCrMemoLine."Line No.");
             if SalesCrMemoLine."Shipment Date" <> 0D then
                 InsertInvoicePeriod(CrMemoLineElement, SalesCrMemoLine."Shipment Date", SalesCrMemoLine."Shipment Date");
+            InsertOrderLineReference(CrMemoLineElement, SalesCrMemoLine."Line No.");
             if SalesCrMemoLine."Line Discount Amount" > 0 then
                 InsertAllowanceCharge(
                     CrMemoLineElement, 'LineDiscount', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"),
