@@ -4,6 +4,20 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 
 pageextension 22204 "General Ledger Entries Review" extends "General Ledger Entries"
 {
+    layout
+    {
+        addafter(Amount)
+        {
+            field(RemainingAmount; RemainingAmount)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Remaining Amount';
+                Editable = false;
+                ToolTip = 'Specifies the remaining amount that can be reviewed.';
+            }
+        }
+    }
+
     actions
     {
         addfirst("Ent&ry")
@@ -29,4 +43,13 @@ pageextension 22204 "General Ledger Entries Review" extends "General Ledger Entr
             }
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        Rec.CalcFields("Reviewed Amount");
+        RemainingAmount := Rec.Amount - Rec."Reviewed Amount";
+    end;
+
+    var
+        RemainingAmount: Decimal;
 }
