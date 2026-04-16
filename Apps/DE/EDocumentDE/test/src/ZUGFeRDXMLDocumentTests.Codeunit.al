@@ -428,6 +428,25 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyLegalMonetaryTotalWithMultipleLines();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice with multiple lines creates ZUGFeRD document where LineTotalAmount equals the sum of all line amounts (BR-CO-10)
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with two lines.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] LineTotalAmount reflects the sum of all invoice lines, not just the last line
+        VerifyLegalMonetaryTotal(SalesInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyInvoiceLine();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -809,6 +828,25 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
 
         // [THEN] ZUGFeRD Electronic Document is created with document totals
+        VerifyLegalMonetaryTotal(SalesCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatVerifyLegalMonetaryTotalWithMultipleLines();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales cr. memo with multiple lines creates ZUGFeRD document where LineTotalAmount equals the sum of all line amounts (BR-CO-10)
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Cr. Memo with two lines.
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] LineTotalAmount reflects the sum of all cr. memo lines, not just the last line
         VerifyLegalMonetaryTotal(SalesCrMemoHeader, TempXMLBuffer);
     end;
 
