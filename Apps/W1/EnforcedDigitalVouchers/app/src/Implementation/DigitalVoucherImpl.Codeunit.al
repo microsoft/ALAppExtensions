@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,6 +8,7 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Reports;
+using System.Telemetry;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Purchases.Document;
@@ -24,6 +25,7 @@ using Microsoft.Service.History;
 using Microsoft.Service.Posting;
 using System.Email;
 using System.Environment.Configuration;
+using System.IO;
 using System.Media;
 using System.Reflection;
 using System.Utilities;
@@ -270,6 +272,143 @@ codeunit 5579 "Digital Voucher Impl."
         if not FilterIncomingDocumentRecordFromRecordRef(IncomingDocumentAttachment, IncomingDocument, MainRecordRef) then
             exit(false);
         exit(not IncomingDocumentAttachment.IsEmpty());
+    end;
+
+    local procedure AttachIncomingEDocument(EDocument: Record "E-Document"; SourceDocumentHeader: RecordRef; var TempBlob: Codeunit "Temp Blob")
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+        EDocumentHelper: Codeunit "E-Document Processing";
+        ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        FileNameTok: Label 'E-Document_%1.xml', Locked = true;
+        RecordLinkTxt: Text;
+    begin
+        if not DigitalVoucherFeature.IsFeatureEnabled() then
+            exit;
+
+        GetDigitalVoucherEntrySetup(DigitalVoucherEntrySetup, "Digital Voucher Entry Type"::"Sales Document");
+        if DigitalVoucherEntrySetup."Check Type" <> DigitalVoucherEntrySetup."Check Type"::"E-Document" then
+            exit;
+
+        if not (EDocument."Document Type" in [
+            EDocument."Document Type"::"Sales Invoice",
+            EDocument."Document Type"::"Sales Credit Memo",
+            EDocument."Document Type"::"Sales Order",
+            EDocument."Document Type"::"Sales Quote",
+            EDocument."Document Type"::"Sales Return Order"]) then
+            exit;
+
+        RecordLinkTxt := EDocumentHelper.GetRecordLinkText(EDocument);
+        IncomingDocumentAttachment.SetRange("Document No.", EDocument."Document No.");
+        IncomingDocumentAttachment.SetRange("Posting Date", EDocument."Posting Date");
+        IncomingDocumentAttachment.SetContentFromBlob(TempBlob);
+        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, StrSubstNo(FileNameTok, RecordLinkTxt), TempBlob) then begin
+            FeatureTelemetry.LogError('0000SMC', 'E-Documents', 'AttachIncomingEDocument', 'Cannot import attachment');
+            exit;
+        end;
+
+        IncomingDocumentAttachment."Is E-Document" := true;
+        IncomingDocumentAttachment.Modify(false);
+    end;
+
+    local procedure AttachOutgoingEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant)
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        VoucherEDocumentCheck: Codeunit "Voucher E-Document Check";
+        RecRef: RecordRef;
+        DocNo: Code[20];
+        PostingDate: Date;
+        DocType: Text;
+    begin
+        if not DigitalVoucherFeature.IsFeatureEnabled() then
+            exit;
+
+        GetDigitalVoucherEntrySetup(DigitalVoucherEntrySetup, "Digital Voucher Entry Type"::"Purchase Document");
+        if DigitalVoucherEntrySetup."Check Type" <> DigitalVoucherEntrySetup."Check Type"::"E-Document" then
+            exit;
+
+        if not (EDocument."Document Type" in [
+            EDocument."Document Type"::"Purchase Invoice",
+            EDocument."Document Type"::"Purchase Credit Memo",
+            EDocument."Document Type"::"Purchase Order",
+            EDocument."Document Type"::"Purchase Quote",
+            EDocument."Document Type"::"Purchase Return Order"]) then
+            exit;
+
+        RecRef.GetTable(PostedRecord);
+        DigitalVoucherEntry.GetDocNoAndPostingDateFromRecRef(DocType, DocNo, PostingDate, RecRef);
+        AttachPurchaseEDocument(EDocument, DocNo, PostingDate);
+    end;
+
+    local procedure AttachPurchaseEDocument(EDocument: Record "E-Document"; DocumentNo: Code[20]; PostingDate: Date)
+    var
+        EDocDataStorage: Record "E-Doc. Data Storage";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+        ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
+        TempBlob: Codeunit "Temp Blob";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        EDocumentFileNameLbl: Label 'E-Document_%1.%2', Comment = '%1 = E-Document Entry No., %2 = File Format', Locked = true;
+        FileName: Text[250];
+    begin
+        if EDocument."Unstructured Data Entry No." = 0 then
+            exit;
+
+        if not EDocDataStorage.Get(EDocument."Unstructured Data Entry No.") then
+            exit;
+
+        TempBlob := EDocDataStorage.GetTempBlob();
+        if not TempBlob.HasValue() then
+            exit;
+
+        if EDocument."File Name" <> '' then
+            FileName := CopyStr(EDocument."File Name", 1, MaxStrLen(FileName))
+        else
+            FileName := StrSubstNo(EDocumentFileNameLbl, EDocument."Entry No", EDocDataStorage."File Format");
+
+        IncomingDocumentAttachment.SetRange("Document No.", DocumentNo);
+        IncomingDocumentAttachment.SetRange("Posting Date", PostingDate);
+        IncomingDocumentAttachment.SetContentFromBlob(TempBlob);
+        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, TempBlob) then begin
+            FeatureTelemetry.LogError('0000SMD', 'E-Documents', 'AttachPurchaseEDocument', 'Cannot import attachment');
+            exit;
+        end;
+
+        IncomingDocumentAttachment."Is E-Document" := true;
+        IncomingDocumentAttachment.Modify(false);
+
+        if EDocDataStorage."File Format" = EDocDataStorage."File Format"::PDF then begin
+            FileName := StrSubstNo(EDocumentFileNameLbl, EDocument."Entry No", EDocDataStorage."File Format"::XML);
+            ExtractXMLFromPDF(TempBlob, FileName, IncomingDocumentAttachment);
+        end;
+    end;
+
+    local procedure ExtractXMLFromPDF(var TempBlob: Codeunit System.Utilities."Temp Blob"; FileName: Text[250]; var IncomingDocumentAttachment: Record "Incoming Document Attachment")
+    var
+        ImportAttachmentIncDoc: Codeunit "Import Attachment - Inc. Doc.";
+        PDFDocument: Codeunit "PDF Document";
+        ExtractedXmlBlob: Codeunit "Temp Blob";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        PdfInStream: InStream;
+    begin
+        TempBlob.CreateInStream(PdfInStream);
+        if not PDFDocument.GetDocumentAttachmentStream(PdfInStream, ExtractedXmlBlob) then begin
+            FeatureTelemetry.LogError('0000SME', 'E-Documents', 'ExtractXMLFromPDF', 'Cannot extract XML from PDF');
+            exit;
+        end;
+
+        if not ExtractedXmlBlob.HasValue() then
+            exit;
+
+        IncomingDocumentAttachment.Default := false;
+        IncomingDocumentAttachment."Main Attachment" := false;
+        if not ImportAttachmentIncDoc.ImportAttachment(IncomingDocumentAttachment, FileName, ExtractedXmlBlob) then begin
+            FeatureTelemetry.LogError('0000SMF', 'E-Documents', 'ExtractXMLFromPDF', 'Cannot import extracted XML');
+            exit;
+        end;
+
+        IncomingDocumentAttachment."Is E-Document" := true;
+        IncomingDocumentAttachment.Modify(false);
     end;
 
     local procedure FilterIncomingDocumentRecordFromRecordRef(var IncomingDocumentAttachment: Record "Incoming Document Attachment"; var IncomingDocument: Record "Incoming Document"; MainRecordRef: RecordRef): Boolean
@@ -717,6 +856,7 @@ codeunit 5579 "Digital Voucher Impl."
     local procedure ExcludeDigitalVouchersOnAttachIncomingDocumentsOnAfterSetFilter(var IncomingDocumentAttachment: Record "Incoming Document Attachment")
     begin
         IncomingDocumentAttachment.SetRange("Is Digital Voucher", false);
+        IncomingDocumentAttachment.SetRange("Is E-Document", false);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Digital Voucher Setup", 'OnBeforeDeleteEvent', '', false, false)]
@@ -737,6 +877,21 @@ codeunit 5579 "Digital Voucher Impl."
     begin
         SalesHeader."Incoming Document Entry No." :=
             CopyDigitalVoucherToCorrectiveDocument("Digital Voucher Entry Type"::"Sales Document", SalesInvoiceHeader, SalesHeader."No.", SalesHeader."Posting Date");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Export", OnExportEDocumentAfterCreateEDocument, '', false, false)]
+    local procedure EDocExportOnExportEDocumentAfterCreateEDocument(EDocument: Record "E-Document"; SourceDocumentHeaderMapped: RecordRef; SourceDocumentLineMapped: RecordRef; var TempBlob: Codeunit "Temp Blob"; Success: Boolean)
+    begin
+        if not Success then
+            exit;
+
+        AttachIncomingEDocument(EDocument, SourceDocumentHeaderMapped, TempBlob);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Subscribers", OnAfterUpdateToPostedPurchaseEDocument, '', false, false)]
+    local procedure EDocumentSubscribers_OnAfterUpdateToPostedPurchaseEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant; DocumentType: Enum "E-Document Type")
+    begin
+        AttachOutgoingEDocument(EDocument, PostedRecord);
     end;
 
     [IntegrationEvent(false, false)]

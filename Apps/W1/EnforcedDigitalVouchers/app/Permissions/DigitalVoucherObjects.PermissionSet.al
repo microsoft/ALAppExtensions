@@ -17,6 +17,7 @@ permissionset 5583 "Digital Voucher - Objects"
                   page "Digital Voucher Guide" = X,
                   page "Voucher Entry Source Codes" = X,
                   codeunit "Voucher Attach Or Note Check" = X,
+                  codeunit "Voucher E-Document Check" = X,
                   codeunit "Voucher Attachment Check" = X,
                   codeunit "Voucher No Check" = X,
                   codeunit "Voucher Unknown Check" = X,
