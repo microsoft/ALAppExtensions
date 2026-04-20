@@ -14,6 +14,7 @@ tableextension 11041 "E-Doc Service CrMemo Hdr DE" extends "Service Cr.Memo Head
         {
             Caption = 'Buyer Reference';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the buyer''s reference for routing electronic documents.';
         }
 #pragma warning restore AS0125
     }
