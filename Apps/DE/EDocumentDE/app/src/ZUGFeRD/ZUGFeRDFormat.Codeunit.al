@@ -26,6 +26,7 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
         EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
         EDocPEPPOLValidationDE: Codeunit "EDoc PEPPOL Validation DE";
         EDocImportZUGFeRD: Codeunit "Import ZUGFeRD Document";
+        EDocumentDEHelper: Codeunit "E-Document DE Helper";
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     var
@@ -35,7 +36,7 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
         CheckCompanyInfoMandatory(CompanyInformation);
         CheckBankAccountIBANMandatory(SourceDocumentHeader, CompanyInformation);
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
-        EDocPEPPOLValidationDE.SetBuyerReference(EDocumentService."Buyer Reference");
+        EDocPEPPOLValidationDE.SetSkipVATRegNoCheck(EDocumentDEHelper.HasRoutingNo(SourceDocumentHeader));
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         UnbindSubscription(EDocPEPPOLValidationDE);
@@ -191,6 +192,7 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         Customer: Record Customer;
+        BuyerReferenceFieldRef: FieldRef;
         CustomerNoFieldRef: FieldRef;
         YourReferenceFieldRef: FieldRef;
     begin
@@ -210,27 +212,26 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
         then
             exit;
 
-        case EDocumentService."Buyer Reference" of
-            EDocumentService."Buyer Reference"::"Customer Reference":
-                begin
-                    CustomerNoFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Sell-to Customer No."));
-                    Customer.Get(Format(CustomerNoFieldRef.Value));
-                    Customer.TestField("E-Invoice Routing No.");
-                end;
-            EDocumentService."Buyer Reference"::"Your Reference":
-                begin
-                    YourReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
-                    YourReferenceFieldRef.TestField();
-                end;
-            else
-                OnBuyerReferenceOnElseCase(SourceDocumentHeader, EDocumentService);
-        end;
+        BuyerReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Buyer Reference"));
+        if Format(BuyerReferenceFieldRef.Value) <> '' then
+            exit;
+
+        CustomerNoFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Bill-to Customer No."));
+        if Customer.Get(Format(CustomerNoFieldRef.Value)) then
+            if Customer."E-Invoice Routing No." <> '' then
+                exit;
+
+        YourReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
+        YourReferenceFieldRef.TestField();
     end;
 
+#if not CLEAN29
+    [Obsolete('Buyer Reference enum has been removed. The buyer reference is now resolved from the document and customer fields.', '29.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBuyerReferenceOnElseCase(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service")
     begin
     end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheck(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum Microsoft.eServices.EDocument."E-Document Processing Phase")

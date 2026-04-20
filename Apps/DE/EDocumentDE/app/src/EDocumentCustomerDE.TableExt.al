@@ -14,6 +14,13 @@ tableextension 13914 "E-Document Customer DE" extends Customer
         {
             Caption = 'E-Invoice Routing No.';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                EDocDEHelper: Codeunit "E-Document DE Helper";
+            begin
+                EDocDEHelper.ValidateRoutingNo(Rec."E-Invoice Routing No.");
+            end;
         }
 #pragma warning restore AS0125
     }

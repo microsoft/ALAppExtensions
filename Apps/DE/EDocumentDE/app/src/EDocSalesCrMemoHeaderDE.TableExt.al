@@ -14,6 +14,7 @@ tableextension 11038 "E-Doc Sales CrMemo Header DE" extends "Sales Cr.Memo Heade
         {
             Caption = 'Buyer Reference';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the buyer''s reference for routing electronic documents.';
         }
 #pragma warning restore AS0125
     }

@@ -372,7 +372,7 @@ codeunit 13916 "Export XRechnung Document"
             RootXMLNode.Add(XmlElement.Create('DueDate', XmlNamespaceCBC, FormatDate(SalesInvoiceHeader."Due Date")));
         RootXMLNode.Add(XmlElement.Create('InvoiceTypeCode', XmlNamespaceCBC, '380'));
         RootXMLNode.Add(XmlElement.Create('DocumentCurrencyCode', XmlNamespaceCBC, CurrencyCode));
-        InsertBuyerReference(RootXMLNode, SalesInvoiceHeader."Your Reference", SalesInvoiceHeader."Sell-to Customer No.");
+        InsertBuyerReference(RootXMLNode, SalesInvoiceHeader);
         OnAfterInsertSalesInvHeaderData(RootXMLNode, SalesInvoiceHeader);
     end;
 
@@ -384,23 +384,43 @@ codeunit 13916 "Export XRechnung Document"
         RootXMLNode.Add(XmlElement.Create('IssueDate', XmlNamespaceCBC, FormatDate(SalesCrMemoHeader."Posting Date")));
         RootXMLNode.Add(XmlElement.Create('CreditNoteTypeCode', XmlNamespaceCBC, '381'));
         RootXMLNode.Add(XmlElement.Create('DocumentCurrencyCode', XmlNamespaceCBC, CurrencyCode));
-        InsertBuyerReference(RootXMLNode, SalesCrMemoHeader."Your Reference", SalesCrMemoHeader."Sell-to Customer No.");
+        InsertBuyerReference(RootXMLNode, SalesCrMemoHeader);
         OnAfterInsertSalesCrMemoHeaderData(RootXMLNode, SalesCrMemoHeader);
     end;
 
-    local procedure InsertBuyerReference(var RootXMLNode: XmlElement; YourReference: Text[35]; SellToCustomerNo: Code[20])
+    local procedure InsertBuyerReference(var RootXMLNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
+    var
+        BuyerReferenceValue: Text;
+    begin
+        BuyerReferenceValue := GetBuyerReferenceValue(SalesInvoiceHeader."Buyer Reference", SalesInvoiceHeader."Bill-to Customer No.", SalesInvoiceHeader."Your Reference");
+        if BuyerReferenceValue <> '' then
+            RootXMLNode.Add(XmlElement.Create('BuyerReference', XmlNamespaceCBC, BuyerReferenceValue));
+    end;
+
+    local procedure InsertBuyerReference(var RootXMLNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
+    var
+        BuyerReferenceValue: Text;
+    begin
+        BuyerReferenceValue := GetBuyerReferenceValue(SalesCrMemoHeader."Buyer Reference", SalesCrMemoHeader."Bill-to Customer No.", SalesCrMemoHeader."Your Reference");
+        if BuyerReferenceValue <> '' then
+            RootXMLNode.Add(XmlElement.Create('BuyerReference', XmlNamespaceCBC, BuyerReferenceValue));
+    end;
+
+    local procedure GetBuyerReferenceValue(DocumentBuyerReference: Text[100]; BillToCustomerNo: Code[20]; YourReference: Text[35]): Text
     var
         Customer: Record Customer;
     begin
-        case EDocumentService."Buyer Reference" of
-            EDocumentService."Buyer Reference"::"Customer Reference":
-                begin
-                    Customer.Get(SellToCustomerNo);
-                    RootXMLNode.Add(XmlElement.Create('BuyerReference', XmlNamespaceCBC, Customer."E-Invoice Routing No."));
-                end;
-            EDocumentService."Buyer Reference"::"Your Reference":
-                RootXMLNode.Add(XmlElement.Create('BuyerReference', XmlNamespaceCBC, YourReference));
-        end;
+        // Priority 1: Document Buyer Reference
+        if DocumentBuyerReference <> '' then
+            exit(DocumentBuyerReference);
+
+        // Priority 2: Bill-to Customer E-Invoice Routing No.
+        if Customer.Get(BillToCustomerNo) then
+            if Customer."E-Invoice Routing No." <> '' then
+                exit(Customer."E-Invoice Routing No.");
+
+        // Priority 3: Your Reference
+        exit(YourReference);
     end;
 
     local procedure InsertInvDiscountAllowanceCharge(var LineAmounts: Dictionary of [Text, Decimal]; var SalesInvLine: Record "Sales Invoice Line"; CurrencyCode: Code[10]; var RootXMLNode: XmlElement; LineDiscAmount: Dictionary of [Decimal, Decimal]; LineAmount: Dictionary of [Decimal, Decimal]; RoundingPrecision: Decimal)

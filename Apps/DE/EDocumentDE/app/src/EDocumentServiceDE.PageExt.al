@@ -29,10 +29,16 @@ pageextension 13915 "E-Document Service DE" extends "E-Document Service"
                 {
                     ApplicationArea = All;
                 }
+#if not CLEAN29
                 field("Buyer Reference"; Rec."Buyer Reference")
                 {
                     ApplicationArea = All;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Buyer Reference is resolved automatically via priority chain: Document field > Customer E-Invoice Routing No. > Your Reference.';
+                    ObsoleteTag = '29.0';
+                    Visible = false;
                 }
+#endif
             }
 #pragma warning restore AS0125
         }

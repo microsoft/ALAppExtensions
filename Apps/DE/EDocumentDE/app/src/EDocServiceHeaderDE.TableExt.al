@@ -14,6 +14,7 @@ tableextension 11039 "E-Doc Service Header DE" extends "Service Header"
         {
             Caption = 'Buyer Reference';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the buyer''s reference for routing electronic documents.';
         }
 #pragma warning restore AS0125
     }

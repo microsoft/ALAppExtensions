@@ -49,6 +49,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         LibraryERM: Codeunit "Library - ERM";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryEdocument: Codeunit "Library - E-Document";
+        LibraryEDocDE: Codeunit "Library - E-Doc DE";
         Assert: Codeunit Assert;
         ZUGFeRDFormat: Codeunit "ZUGFeRD Format";
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
@@ -65,13 +66,31 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Initialize();
 
         // [GIVEN] Buyer Reference is Customer Reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+        SetBuyerReferenceMandatory();
 
         // [GIVEN] Sales Invoice for a customer with E-Invoice Routing No. but without VAT Registration No.
         SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithCustomerWithoutVATRegNo("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
 
         // [WHEN/THEN] Check does not throw an error - VAT Registration No. is not required
         CheckSalesHeader(SalesHeader);
+    end;
+
+    [Test]
+    procedure CheckSalesInvoiceInZUGFeRDFormatVATRegNoMandatoryWithYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // [SCENARIO] When Buyer Reference resolves to Your Reference, VAT Registration No. is still required
+        Initialize();
+
+        // [GIVEN] Buyer Reference Mandatory is enabled
+        SetBuyerReferenceMandatory();
+
+        // [GIVEN] Sales Invoice for a customer without VAT Registration No. and without E-Invoice Routing No.
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithCustomerWithoutVATRegNoAndRoutingNo("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+
+        // [WHEN/THEN] Check throws an error - VAT Registration No. is required
+        asserterror CheckSalesHeader(SalesHeader);
     end;
 
     [Test]
@@ -103,9 +122,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [SCENARIO 556034] Export posted sales invoice creates electronic document in ZUGFeRD format with customer reference
         Initialize();
 
-        // [GIVEN] Set Buyer reference = customer reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
-
         // [GIVEN] Create and Post Sales Invoice with Customer X, E-invoice routing no. = XY
         SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
@@ -113,24 +129,24 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
 
         // [THEN] ZUGFeRD Electronic Document is created with buyer reference XY
-        Customer.Get(SalesInvoiceHeader."Sell-to Customer No.");
+        Customer.Get(SalesInvoiceHeader."Bill-to Customer No.");
         VerifyBuyerReference(Customer."E-Invoice Routing No.", TempXMLBuffer, '/rsm:CrossIndustryInvoice');
     end;
 
     [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyBuyerReferenceAsYourReference();
     var
+        SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         TempXMLBuffer: Record "XML Buffer" temporary;
     begin
         // [SCENARIO 556034] Export posted sales invoice creates electronic document in ZUGFeRD format with your reference from the document
         Initialize();
 
-        // [GIVEN] Set Buyer reference = your reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
-
-        // [GIVEN] Create and Post Sales Invoice with your reference = XX
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+        // [GIVEN] Create and Post Sales Invoice for customer without routing no.
+        CreateSalesHeader(SalesHeader, "Sales Document Type"::Invoice, CreateCustomerWithoutRoutingNo());
+        CreateSalesLine(SalesHeader, Enum::"Sales Line Type"::Item, false);
+        SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
 
         // [WHEN] Export ZUGFeRD Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -167,10 +183,11 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Initialize();
 
         // [GIVEN] Set Buyer reference = your reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+        SetBuyerReferenceMandatory();
 
-        // [GIVEN] Create Sales Invoice with your reference = XX
-        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLine("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+        // [GIVEN] Create Sales Invoice for customer without routing no.
+        CreateSalesHeader(SalesHeader, "Sales Document Type"::Invoice, CreateCustomerWithoutRoutingNo());
+        CreateSalesLine(SalesHeader, Enum::"Sales Line Type"::Item, false);
 
         // [WHEN] Remove your reference
         SalesHeader.Validate("Your Reference", '');
@@ -564,9 +581,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [SCENARIO 556034] Export posted sales cr. memo creates electronic document in ZUGFeRD format with customer reference
         Initialize();
 
-        // [GIVEN] Set Buyer reference = customer reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
-
         // [GIVEN] Create and Post sales cr. memo with Customer X, E-invoice routing no. = XY
         SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
@@ -574,24 +588,24 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
 
         // [THEN] ZUGFeRD Electronic Document is created with buyer reference XY
-        Customer.Get(SalesCrMemoHeader."Sell-to Customer No.");
+        Customer.Get(SalesCrMemoHeader."Bill-to Customer No.");
         VerifyBuyerReference(Customer."E-Invoice Routing No.", TempXMLBuffer, '/rsm:CrossIndustryInvoice');
     end;
 
     [Test]
     procedure ExportPostedSalesCrMemoInZUGFeRDFormatVerifyBuyerReferenceAsYourReference();
     var
+        SalesHeader: Record "Sales Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
         TempXMLBuffer: Record "XML Buffer" temporary;
     begin
         // [SCENARIO 556034] Export posted sales cr. memo creates electronic document in ZUGFeRD format with your reference from the document
         Initialize();
 
-        // [GIVEN] Set Buyer reference = your reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
-
-        // [GIVEN] Create and Post sales cr. memo with your reference = XX
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+        // [GIVEN] Create and Post sales cr. memo for customer without routing no.
+        CreateSalesHeader(SalesHeader, "Sales Document Type"::"Credit Memo", CreateCustomerWithoutRoutingNo());
+        CreateSalesLine(SalesHeader, Enum::"Sales Line Type"::Item, false);
+        SalesCrMemoHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
 
         // [WHEN] Export ZUGFeRD Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -628,10 +642,11 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Initialize();
 
         // [GIVEN] Set Buyer reference = your reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+        SetBuyerReferenceMandatory();
 
-        // [GIVEN] Create Sales Invoice with your reference = XX
-        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLine("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+        // [GIVEN] Create Sales Credit Memo for customer without routing no.
+        CreateSalesHeader(SalesHeader, "Sales Document Type"::"Credit Memo", CreateCustomerWithoutRoutingNo());
+        CreateSalesLine(SalesHeader, Enum::"Sales Line Type"::Item, false);
 
         // [WHEN] Remove your reference
         SalesHeader.Validate("Your Reference", '');
@@ -902,9 +917,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [SCENARIO 604872] Export posted service invoice creates electronic document in ZUGFeRD format with customer reference
         Initialize();
 
-        // [GIVEN] Set Buyer reference = customer reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
-
         // [GIVEN] Create and Post Service Invoice with Customer X, E-invoice routing no. = XY
         ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
 
@@ -919,6 +931,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     [Test]
     procedure ExportPostedServiceInvoiceInZUGFeRDFormatVerifyBuyerReferenceAsYourReference();
     var
+        ServiceHeader: Record "Service Header";
         ServiceInvoiceHeader: Record "Service Invoice Header";
         TempXMLBuffer: Record "XML Buffer" temporary;
     begin
@@ -926,11 +939,10 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [SCENARIO 604872] Export posted service invoice creates electronic document in ZUGFeRD format with your reference from the document
         Initialize();
 
-        // [GIVEN] Set Buyer reference = your reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
-
-        // [GIVEN] Create and Post Service Invoice with your reference = XX
-        ServiceInvoiceHeader.Get(CreateAndPostServiceDocument());
+        // [GIVEN] Create and Post Service Invoice for customer without routing no.
+        CreateServiceHeader(ServiceHeader, CreateCustomerWithoutRoutingNo());
+        CreateServiceLine(ServiceHeader);
+        ServiceInvoiceHeader.Get(PostServiceDocument(ServiceHeader));
 
         // [WHEN] Export ZUGFeRD Electronic Document.
         ExportServiceInvoice(ServiceInvoiceHeader, TempXMLBuffer);
@@ -949,10 +961,11 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Initialize();
 
         // [GIVEN] Set Buyer reference = your reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+        SetBuyerReferenceMandatory();
 
-        // [GIVEN] Create Service Invoice with your reference = XX
-        ServiceHeader.Get(ServiceHeader."Document Type"::Invoice, CreateServiceDocumentWithLine());
+        // [GIVEN] Create Service Invoice for customer without routing no.
+        CreateServiceHeader(ServiceHeader, CreateCustomerWithoutRoutingNo());
+        CreateServiceLine(ServiceHeader);
 
         // [WHEN] Remove your reference
         ServiceHeader.Validate("Your Reference", '');
@@ -1160,9 +1173,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [SCENARIO 604872] Export posted service cr. memo creates electronic document in ZUGFeRD format with customer reference
         Initialize();
 
-        // [GIVEN] Set Buyer reference = customer reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
-
         // [GIVEN] Create and Post service cr. memo with Customer X, E-invoice routing no. = XY
         ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
 
@@ -1177,6 +1187,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     [Test]
     procedure ExportPostedServiceCrMemoInZUGFeRDFormatVerifyBuyerReferenceAsYourReference();
     var
+        ServiceHeader: Record "Service Header";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         TempXMLBuffer: Record "XML Buffer" temporary;
     begin
@@ -1184,11 +1195,10 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [SCENARIO 604872] Export posted service cr. memo creates electronic document in ZUGFeRD format with your reference from the document
         Initialize();
 
-        // [GIVEN] Set Buyer reference = your reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
-
-        // [GIVEN] Create and Post service cr. memo with your reference = XX
-        ServiceCrMemoHeader.Get(CreateAndPostServiceCrMemoDocument());
+        // [GIVEN] Create and Post service cr. memo for customer without routing no.
+        CreateServiceCrMemoHeader(ServiceHeader, CreateCustomerWithoutRoutingNo());
+        CreateServiceLine(ServiceHeader);
+        ServiceCrMemoHeader.Get(PostServiceCrMemoDocument(ServiceHeader));
 
         // [WHEN] Export ZUGFeRD Electronic Document.
         ExportServiceCreditMemo(ServiceCrMemoHeader, TempXMLBuffer);
@@ -1207,10 +1217,11 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Initialize();
 
         // [GIVEN] Set Buyer reference = your reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+        SetBuyerReferenceMandatory();
 
-        // [GIVEN] Create Service Credit Memo with your reference = XX
-        ServiceHeader.Get(ServiceHeader."Document Type"::"Credit Memo", CreateServiceCrMemoDocumentWithLine());
+        // [GIVEN] Create Service Credit Memo for customer without routing no.
+        CreateServiceCrMemoHeader(ServiceHeader, CreateCustomerWithoutRoutingNo());
+        CreateServiceLine(ServiceHeader);
 
         // [WHEN] Remove your reference
         ServiceHeader.Validate("Your Reference", '');
@@ -1475,7 +1486,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Initialize();
 
         // [GIVEN] Set Buyer reference = customer reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+        SetBuyerReferenceMandatory();
 
         // [WHEN] Create and release Purchase Invoice
         CreatePurchDocument(PurchaseHeader, "Purchase Document Type"::Invoice);
@@ -1495,7 +1506,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Initialize();
 
         // [GIVEN] Set Buyer reference = customer reference
-        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+        SetBuyerReferenceMandatory();
 
         // [WHEN] Create and release Purchase credit Memo
         CreatePurchDocument(PurchaseHeader, "Purchase Document Type"::"Credit Memo");
@@ -1789,10 +1800,20 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         LibrarySales.CreateCustomer(Customer);
         Customer.Validate("Country/Region Code", CompanyInformation."Country/Region Code");
         Customer.Validate("VAT Registration No.", CompanyInformation."VAT Registration No.");
-        Customer.Validate("E-Invoice Routing No.", LibraryUtility.GenerateRandomText(20));
+        Customer.Validate("E-Invoice Routing No.", LibraryEDocDE.CreateValidRoutingNo());
         Customer.Validate("E-Mail", LibraryUtility.GenerateRandomEmail());
         Customer.Modify(true);
         exit(Customer."No.")
+    end;
+
+    local procedure CreateCustomerWithoutRoutingNo(): Code[20]
+    var
+        Customer: Record Customer;
+    begin
+        Customer.Get(CreateCustomer());
+        Customer."E-Invoice Routing No." := '';
+        Customer.Modify(true);
+        exit(Customer."No.");
     end;
 
     local procedure CreateResponsibilityCenter(var ResponsibilityCenter: Record "Responsibility Center")
@@ -1847,13 +1868,18 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     local procedure CreateServiceHeader(var ServiceHeader: Record "Service Header")
+    begin
+        CreateServiceHeader(ServiceHeader, CreateCustomer());
+    end;
+
+    local procedure CreateServiceHeader(var ServiceHeader: Record "Service Header"; CustomerNo: Code[20])
     var
         PostCode: Record "Post Code";
         PaymentTermsCode: Code[10];
     begin
         LibraryERM.FindPostCode(PostCode);
         PaymentTermsCode := LibraryERM.FindPaymentTermsCode();
-        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Invoice, CreateCustomer());
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Invoice, CustomerNo);
         ServiceHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
         ServiceHeader.Validate("Bill-to City", PostCode.City);
         ServiceHeader.Validate("Ship-to Address", LibraryUtility.GenerateGUID());
@@ -1900,13 +1926,18 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     local procedure CreateServiceCrMemoHeader(var ServiceHeader: Record "Service Header")
+    begin
+        CreateServiceCrMemoHeader(ServiceHeader, CreateCustomer());
+    end;
+
+    local procedure CreateServiceCrMemoHeader(var ServiceHeader: Record "Service Header"; CustomerNo: Code[20])
     var
         PostCode: Record "Post Code";
         PaymentTermsCode: Code[10];
     begin
         LibraryERM.FindPostCode(PostCode);
         PaymentTermsCode := LibraryERM.FindPaymentTermsCode();
-        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::"Credit Memo", CreateCustomer());
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::"Credit Memo", CustomerNo);
         ServiceHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
         ServiceHeader.Validate("Bill-to City", PostCode.City);
         ServiceHeader.Validate("Ship-to Address", LibraryUtility.GenerateGUID());
@@ -1941,6 +1972,20 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     begin
         Customer.Get(CreateCustomer());
         Customer."VAT Registration No." := '';
+        Customer.Modify(true);
+        CreateSalesHeader(SalesHeader, DocumentType, Customer."No.");
+        CreateSalesLine(SalesHeader, LineType, false);
+        exit(SalesHeader."No.");
+    end;
+
+    local procedure CreateSalesDocumentWithCustomerWithoutVATRegNoAndRoutingNo(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+    begin
+        Customer.Get(CreateCustomer());
+        Customer."VAT Registration No." := '';
+        Customer."E-Invoice Routing No." := '';
         Customer.Modify(true);
         CreateSalesHeader(SalesHeader, DocumentType, Customer."No.");
         CreateSalesLine(SalesHeader, LineType, false);
@@ -2637,10 +2682,9 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         exit(GeneralLedgerSetup."LCY Code");
     end;
 
-    local procedure SetEdocumentServiceBuyerReference(EInvoiceBuyerReference: Enum "E-Document Buyer Reference");
+    local procedure SetBuyerReferenceMandatory()
     begin
         EDocumentService."Buyer Reference Mandatory" := true;
-        EDocumentService."Buyer Reference" := EInvoiceBuyerReference;
         EDocumentService.Modify();
     end;
 
