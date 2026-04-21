@@ -1070,6 +1070,7 @@ codeunit 10673 "Generate SAF-T File"
         CustLedgEntry: Record "Cust. Ledger Entry";
         VendLedgEntry: Record "Vendor Ledger Entry";
         BankAccLedgEntry: Record "Bank Account Ledger Entry";
+        GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         CurrencyCode := '';
         ExchangeRate := 0;
@@ -1077,6 +1078,7 @@ codeunit 10673 "Generate SAF-T File"
         EntryAmountLCY := 0;
         if not SAFTExportHeader."Export Currency Information" then
             exit;
+        GeneralLedgerSetup.Get();
 
         if GLEntry."Source Type" in [GLEntry."Source Type"::Customer, GLEntry."Source Type"::" "] then begin
             CustLedgEntry.SetRange("Transaction No.", GLEntry."Transaction No.");
@@ -1084,6 +1086,8 @@ codeunit 10673 "Generate SAF-T File"
             if not CustLedgEntry.FindFirst() then
                 exit;
             if CustLedgEntry."Currency Code" = '' then
+                exit;
+            if CustLedgEntry."Currency Code" = GeneralLedgerSetup."LCY Code" then
                 exit;
             CustLedgEntry.CalcFields(Amount, "Amount (LCY)");
             if CustLedgEntry.Amount = 0 then
@@ -1103,6 +1107,8 @@ codeunit 10673 "Generate SAF-T File"
                 exit;
             if VendLedgEntry."Currency Code" = '' then
                 exit;
+            if VendLedgEntry."Currency Code" = GeneralLedgerSetup."LCY Code" then
+                exit;
             VendLedgEntry.CalcFields(Amount, "Amount (LCY)");
             if VendLedgEntry.Amount = 0 then
                 exit;
@@ -1120,6 +1126,8 @@ codeunit 10673 "Generate SAF-T File"
             if not BankAccLedgEntry.FindFirst() then
                 exit;
             if BankAccLedgEntry."Currency Code" = '' then
+                exit;
+            if BankAccLedgEntry."Currency Code" = GeneralLedgerSetup."LCY Code" then
                 exit;
             if BankAccLedgEntry.Amount = 0 then
                 exit;
