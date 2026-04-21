@@ -638,6 +638,7 @@ page 30038 "APIV2 - Sales Credit Memos"
     trigger OnOpenPage()
     begin
         SetPemissionsFilters();
+        Rec.AddLoadFields("Applies-to Doc. Type", "Currency Code");
     end;
 
     var
@@ -691,7 +692,6 @@ page 30038 "APIV2 - Sales Credit Memos"
 
     local procedure SetCalculatedFields()
     begin
-        Rec.LoadFields("Applies-to Doc. Type", "Currency Code");
         SetInvoiceId();
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, Rec."Currency Code");
     end;

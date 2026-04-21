@@ -679,6 +679,7 @@ page 30037 "APIV2 - Sales Quotes"
     trigger OnOpenPage()
     begin
         CheckPermissions();
+        Rec.AddLoadFields("Currency Code");
     end;
 
     var
@@ -717,7 +718,6 @@ page 30037 "APIV2 - Sales Quotes"
 
     local procedure SetCalculatedFields()
     begin
-        Rec.LoadFields("Currency Code");
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, Rec."Currency Code");
     end;
 
