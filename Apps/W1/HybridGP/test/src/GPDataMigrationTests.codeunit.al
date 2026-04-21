@@ -114,6 +114,8 @@ codeunit 139664 "GP Data Migration Tests"
         StandardSalesLine: Record "Standard Sales Line";
         StandardCustomerSalesCode: Record "Standard Customer Sales Code";
         CustomReportSelection: Record "Custom Report Selection";
+        ReportMetadata: Record "Report Metadata";
+        SalesInvoiceReportId: Integer;
         InitialGenJournalLineCount: Integer;
         CustomerCount: Integer;
     begin
@@ -121,6 +123,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [GIVEN] GP data
         Initialize();
+        SalesInvoiceReportId := 1306;
         InitialGenJournalLineCount := GenJournalLine.Count();
 
         GPTestHelperFunctions.CreateConfigurationSettings();
@@ -241,12 +244,14 @@ codeunit 139664 "GP Data Migration Tests"
         Customer.FindFirst();
         Assert.AreEqual('GoodEmailAddress@testing.tst', Customer."E-Mail", 'E-Mail of Migrated Customer is wrong');
 
-        CustomReportSelection.SetRange("Source Type", Database::Customer);
-        CustomReportSelection.SetRange("Source No.", Customer."No.");
-        CustomReportSelection.SetRange("Report ID", 1306); // Sales - Invoice
-        CustomReportSelection.SetRange(Usage, CustomReportSelection.Usage::"S.Invoice");
-        Assert.IsTrue(CustomReportSelection.FindFirst(), 'Could not locate Custom Report Selection for Customer ' + Customer."No.");
-        Assert.AreEqual('support@testing.tst', CustomReportSelection."Send To Email", 'Extra email address not correct.');
+        if ReportMetadata.Get(SalesInvoiceReportId) then begin
+            CustomReportSelection.SetRange("Source Type", Database::Customer);
+            CustomReportSelection.SetRange("Source No.", Customer."No.");
+            CustomReportSelection.SetRange("Report ID", SalesInvoiceReportId);
+            CustomReportSelection.SetRange(Usage, CustomReportSelection.Usage::"S.Invoice");
+            Assert.IsTrue(CustomReportSelection.FindFirst(), 'Could not locate Custom Report Selection for Customer ' + Customer."No.");
+            Assert.AreEqual('support@testing.tst', CustomReportSelection."Send To Email", 'Extra email address not correct.');
+        end;
 
         Assert.IsTrue(ShipToAddress.Get('#1', 'PRIMARY'), 'Customer primary address does not exist.');
         Assert.AreEqual('GoodEmailAddress@testing.tst', ShipToAddress."E-Mail", 'Customer primary address email was not set correctly.');

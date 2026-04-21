@@ -7,6 +7,7 @@ using Microsoft.Foundation.Reporting;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using System.Integration;
+using System.Reflection;
 
 codeunit 4018 "GP Customer Migrator"
 {
@@ -371,9 +372,13 @@ codeunit 4018 "GP Customer Migrator"
         GPRM00101: Record "GP RM00101";
         Customer: Record Customer;
         CustomReportSelection: Record "Custom Report Selection";
+        ReportMetadata: Record "Report Metadata";
+        SalesInvoiceReportId: Integer;
         EmailAddressList: List of [Text];
         i: Integer;
     begin
+        SalesInvoiceReportId := 1306;
+
         GPRM00101.SetLoadFields(ADRSCODE);
         if not GPRM00101.Get(CustomerNo) then
             exit;
@@ -383,15 +388,16 @@ codeunit 4018 "GP Customer Migrator"
             CustomerDataMigrationFacade.SetEmail(CopyStr(EmailAddressList.Get(1), 1, MaxStrLen(Customer."E-Mail")));
 
             if EmailAddressList.Count() > 1 then
-                For i := 2 to EmailAddressList.Count() do begin
-                    Clear(CustomReportSelection);
-                    CustomReportSelection.Validate("Source Type", Database::Customer);
-                    CustomReportSelection.Validate("Source No.", CustomerNo);
-                    CustomReportSelection.Validate("Report ID", 1306); // Sales - Invoice
-                    CustomReportSelection.Validate(Usage, CustomReportSelection.Usage::"S.Invoice");
-                    CustomReportSelection."Send To Email" := CopyStr(EmailAddressList.Get(i), 1, MaxStrLen(CustomReportSelection."Send To Email"));
-                    CustomReportSelection.Insert(true);
-                end;
+                if ReportMetadata.Get(SalesInvoiceReportId) then
+                    for i := 2 to EmailAddressList.Count() do begin
+                        Clear(CustomReportSelection);
+                        CustomReportSelection.Validate("Source Type", Database::Customer);
+                        CustomReportSelection.Validate("Source No.", CustomerNo);
+                        CustomReportSelection.Validate("Report ID", 1306); // Sales - Invoice
+                        CustomReportSelection.Validate(Usage, CustomReportSelection.Usage::"S.Invoice");
+                        CustomReportSelection."Send To Email" := CopyStr(EmailAddressList.Get(i), 1, MaxStrLen(CustomReportSelection."Send To Email"));
+                        CustomReportSelection.Insert(true);
+                    end;
         end;
     end;
 

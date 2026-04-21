@@ -10,6 +10,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Remittance;
 using Microsoft.Purchases.Vendor;
 using System.Integration;
+using System.Reflection;
 
 codeunit 4022 "GP Vendor Migrator"
 {
@@ -409,9 +410,13 @@ codeunit 4022 "GP Vendor Migrator"
         GPPM00200: Record "GP PM00200";
         Vendor: Record Vendor;
         CustomReportSelection: Record "Custom Report Selection";
+        ReportMetadata: Record "Report Metadata";
+        ExportElectronicPaymentsReportId: Integer;
         EmailAddressList: List of [Text];
         i: Integer;
     begin
+        ExportElectronicPaymentsReportId := 11383;
+
         GPPM00200.SetLoadFields(VADDCDPR);
         if not GPPM00200.Get(VendorNo) then
             exit;
@@ -421,15 +426,16 @@ codeunit 4022 "GP Vendor Migrator"
             VendorDataMigrationFacade.SetEmail(CopyStr(EmailAddressList.Get(1), 1, MaxStrLen(Vendor."E-Mail")));
 
             if EmailAddressList.Count() > 1 then
-                For i := 2 to EmailAddressList.Count() do begin
-                    Clear(CustomReportSelection);
-                    CustomReportSelection.Validate("Source Type", Database::Vendor);
-                    CustomReportSelection.Validate("Source No.", VendorNo);
-                    CustomReportSelection.Validate("Report ID", 11383); // Export Electronic Payments
-                    CustomReportSelection.Validate(Usage, CustomReportSelection.Usage::"V.Remittance");
-                    CustomReportSelection."Send To Email" := CopyStr(EmailAddressList.Get(i), 1, MaxStrLen(CustomReportSelection."Send To Email"));
-                    CustomReportSelection.Insert(true);
-                end;
+                if ReportMetadata.Get(ExportElectronicPaymentsReportId) then
+                    for i := 2 to EmailAddressList.Count() do begin
+                        Clear(CustomReportSelection);
+                        CustomReportSelection.Validate("Source Type", Database::Vendor);
+                        CustomReportSelection.Validate("Source No.", VendorNo);
+                        CustomReportSelection.Validate("Report ID", 11383); // Export Electronic Payments
+                        CustomReportSelection.Validate(Usage, CustomReportSelection.Usage::"V.Remittance");
+                        CustomReportSelection."Send To Email" := CopyStr(EmailAddressList.Get(i), 1, MaxStrLen(CustomReportSelection."Send To Email"));
+                        CustomReportSelection.Insert(true);
+                    end;
         end;
     end;
 
