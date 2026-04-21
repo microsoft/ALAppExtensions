@@ -108,6 +108,11 @@ page 30051 "APIV2 - Bank Accounts"
         CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
 
+    trigger OnOpenPage()
+    begin
+        Rec.AddLoadFields("Currency Code");
+    end;
+
     trigger OnAfterGetRecord()
     begin
         LoadCurrencyInformation();
@@ -127,7 +132,6 @@ page 30051 "APIV2 - Bank Accounts"
     var
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
     begin
-        Rec.LoadFields("Currency Code");
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, Rec."Currency Code");
     end;
 }

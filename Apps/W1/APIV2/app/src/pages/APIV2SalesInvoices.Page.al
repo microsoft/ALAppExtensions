@@ -718,6 +718,7 @@ page 30012 "APIV2 - Sales Invoices"
     trigger OnOpenPage()
     begin
         SetPermissionFilters();
+        Rec.AddLoadFields("No.", "Currency Code", "Amount Including VAT", Posted, Status);
     end;
 
     var
@@ -772,7 +773,6 @@ page 30012 "APIV2 - Sales Invoices"
 
     local procedure SetCalculatedFields()
     begin
-        Rec.LoadFields("No.", "Currency Code", "Amount Including VAT", Posted, Status);
         GetRemainingAmount();
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, Rec."Currency Code");
     end;

@@ -616,6 +616,7 @@ page 30083 "APIV2 - Purchase Credit Memos"
     begin
         CheckDataUpgrade();
         SetPermissionsFilters();
+        Rec.AddLoadFields("Applies-to Doc. Type", "Currency Code");
     end;
 
     var
@@ -670,7 +671,6 @@ page 30083 "APIV2 - Purchase Credit Memos"
 
     local procedure SetCalculatedFields()
     begin
-        Rec.LoadFields("Applies-to Doc. Type", "Currency Code");
         SetInvoiceId();
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, Rec."Currency Code");
     end;
