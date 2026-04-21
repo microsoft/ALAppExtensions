@@ -202,8 +202,11 @@ table 5265 "Audit File Export Header"
     var
         AuditFileExportSetup: Record "Audit File Export Setup";
     begin
-        AuditFileExportSetup.Get();
-        Rec.Validate("Audit File Export Format", AuditFileExportSetup."Audit File Export Format");
+        if Rec."Audit File Export Format" = "Audit File Export Format"::None then begin
+            AuditFileExportSetup.SetLoadFields("Audit File Export Format");
+            AuditFileExportSetup.Get();
+            Rec.Validate("Audit File Export Format", AuditFileExportSetup."Audit File Export Format");
+        end;
         "Parallel Processing" := TaskScheduler.CanCreateTask();
         FeatureTelemetry.LogUsage('0000JN6', AuditFileExportTok, 'Audit File Export Document was created');
     end;
