@@ -466,6 +466,29 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifySellerAssignedID();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        SellerAssignedIDPathTok: Label '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:SellerAssignedID', Locked = true;
+    begin
+        // [SCENARIO] Export posted sales invoice creates electronic document in ZUGFeRD format with seller item number (BT-155) in invoice line
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with an item line.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document contains the seller item number (BT-155) in ram:SpecifiedTradeProduct/ram:SellerAssignedID.
+        SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvoiceLine.FindFirst();
+        Assert.AreEqual(SalesInvoiceLine."No.", GetNodeByPathWithError(TempXMLBuffer, SellerAssignedIDPathTok), StrSubstNo(IncorrectValueErr, SellerAssignedIDPathTok));
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyInvoiceLineWithLineDiscount();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -868,6 +891,30 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         // [THEN] ZUGFeRD Electronic Document is created with 2 cr.memo lines
         VerifyCrMemoLine(SalesCrMemoHeader, TempXMLBuffer);
     end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatVerifySellerAssignedID();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        SellerAssignedIDPathTok: Label '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:SellerAssignedID', Locked = true;
+    begin
+        // [SCENARIO] Export posted sales cr. memo creates electronic document in ZUGFeRD format with seller item number (BT-155) in cr. memo line
+        Initialize();
+
+        // [GIVEN] Create and Post sales cr. memo with an item line.
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document contains the seller item number (BT-155) in ram:SpecifiedTradeProduct/ram:SellerAssignedID.
+        SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
+        SalesCrMemoLine.FindFirst();
+        Assert.AreEqual(SalesCrMemoLine."No.", GetNodeByPathWithError(TempXMLBuffer, SellerAssignedIDPathTok), StrSubstNo(IncorrectValueErr, SellerAssignedIDPathTok));
+    end;
+
     #endregion
 
     #region ServiceInvoice
