@@ -103,6 +103,11 @@ codeunit 1950 "LP Prediction Mgt."
             MLPredictionManagement.InitializeWithKeyVaultCredentials(GetDefaultTimeoutSeconds());
 
         LPMLInputData.SetRange(Closed, false);
+        if LPMLInputData.IsEmpty() then begin
+            Result := false;
+            OnAfterPredictIsLate(LPMachineLearningSetup."Selected Model", SalesHeader, Result);
+            exit;
+        end;
         LPMLInputData.AddParametersToMgt(MLPredictionManagement);
         MLPredictionManagement.Predict(LPMachineLearningSetup.GetModelAsText(LPMachineLearningSetup."Selected Model"));
         if LPMLInputData.FindSet() then;

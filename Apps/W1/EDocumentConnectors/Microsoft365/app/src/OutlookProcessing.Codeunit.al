@@ -54,10 +54,8 @@ codeunit 6385 "Outlook Processing"
     procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     var
         OutlookSetup: Record "Outlook Setup";
-        TempFilters: Record "Email Retrieval Filters" temporary;
-        OutlookProcessing: Codeunit "Outlook Processing";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        DocumentsArray: JsonArray;
+        LatestReceivedDateTime: DateTime;
     begin
         CheckSetupEnabled(OutlookSetup);
         if DailyEmailLimitReached(EDocumentService) then begin
@@ -71,6 +69,23 @@ codeunit 6385 "Outlook Processing"
         end;
         FeatureTelemetry.LogUptake('0000OGS', FeatureName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000OGV', FeatureName(), Format(EDocumentService."Service Integration V2"));
+        RetrieveEmailsWithRecovery(OutlookSetup, EDocumentService);
+        Session.LogMessage('0000PKG', 'Retrieved emails from the email connector', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName(), 'EmailsReceived', Format(RetrievedEmailInbox.Count()));
+        BuildDocumentsList(RetrievedEmailInbox, Documents);
+
+        LatestReceivedDateTime := GetLatestReceivedDateTime();
+        if LatestReceivedDateTime > OutlookSetup."Last Sync At" then begin
+            OutlookSetup.Get();
+            OutlookSetup."Last Sync At" := LatestReceivedDateTime;
+            OutlookSetup.Modify();
+        end;
+    end;
+
+    local procedure RetrieveEmailsWithRecovery(var OutlookSetup: Record "Outlook Setup"; var EDocumentService: Record "E-Document Service")
+    var
+        TempFilters: Record "Email Retrieval Filters" temporary;
+        OutlookProcessing: Codeunit "Outlook Processing";
+    begin
         TempFilters."Load Attachments" := true;
         TempFilters."Max No. of Emails" := GetMaxNoOfEmails();
         TempFilters."Earliest Email" := OutlookSetup."Last Sync At";
@@ -78,16 +93,14 @@ codeunit 6385 "Outlook Processing"
         TempFilters.AddCategoryFilter(GetOutlookCategoryDescription(EDocumentService));
         OutlookProcessing.ConfigureForEmailRetrieval(TempFilters);
         Commit();
-        if not OutlookProcessing.Run() then begin // Email.RetrieveEmails() called this way to "catch" and recover
-            // If email retrieval fails, the problem may be triggered by a specific email, so we attempt to recover by pushing the date of the emails retrieved so that we skip the problematic email
-
-            // This has as a possible side-effect that we may skip some valid emails.
-            // In principle this should not happen, but if it happens then we are not completely stuck.
+        if not OutlookProcessing.Run() then begin
+            // If email retrieval fails, the problem may be triggered by a specific email,
+            // so we attempt to recover by pushing the sync date forward to skip it.
+            // Side-effect: we may skip some valid emails, but we avoid getting completely stuck.
             if EDocumentService."Batch Minutes between runs" = 0 then
                 OutlookSetup."Last Sync At" := CurrentDateTime()
             else
                 OutlookSetup."Last Sync At" := OutlookSetup."Last Sync At" + (EDocumentService."Batch Minutes between runs" * 60 * 1000);
-
             if OutlookSetup."Last Sync At" > CurrentDateTime() then
                 OutlookSetup."Last Sync At" := CurrentDateTime();
             OutlookSetup.Modify();
@@ -95,9 +108,20 @@ codeunit 6385 "Outlook Processing"
             Error(RetrieveEmailsErr);
         end;
         OutlookProcessing.GetRetrievedEmailsInbox(RetrievedEmailInbox);
-        Session.LogMessage('0000PKG', 'Retrieved emails from the email connector', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName(), 'EmailsReceived', Format(RetrievedEmailInbox.Count()));
-        BuildDocumentsArray(RetrievedEmailInbox, DocumentsArray);
-        BuildDocumentsList(Documents, DocumentsArray);
+    end;
+
+    local procedure GetLatestReceivedDateTime(): DateTime
+    var
+        LatestDateTime: DateTime;
+    begin
+        LatestDateTime := 0DT;
+        if not RetrievedEmailInbox.FindSet() then
+            exit(0DT);
+        repeat
+            if RetrievedEmailInbox."Received DateTime" > LatestDateTime then
+                LatestDateTime := RetrievedEmailInbox."Received DateTime";
+        until RetrievedEmailInbox.Next() = 0;
+        exit(LatestDateTime);
     end;
 
     local procedure DailyEmailLimitReached(var EDocumentService: Record "E-Document Service"): Boolean
@@ -163,11 +187,16 @@ codeunit 6385 "Outlook Processing"
         exit('Microsoft 365 E-Document Connector')
     end;
 
-    local procedure BuildDocumentsArray(var EmailInbox: Record "Email Inbox"; var DocumentsArray: JsonArray)
+    local procedure BuildDocumentsList(var EmailInbox: Record "Email Inbox"; Documents: Codeunit "Temp Blob List")
     var
         EmailMessage: Codeunit "Email Message";
+        TempBlob: Codeunit "Temp Blob";
         Attachment: JsonObject;
+        EmailAttachments: JsonArray;
+        AttachmentJson: JsonToken;
         TelemetryCustomDimensions: Dictionary of [Text, Text];
+        OutStream: OutStream;
+        AttachmentTxt: Text;
         AttachmentsAdded, IgnoredBecauseExisting, AttachmentsLoaded : Integer;
     begin
         if not EmailInbox.FindSet() then
@@ -177,6 +206,7 @@ codeunit 6385 "Outlook Processing"
                 Session.LogMessage('0000PKH', 'E-mail retrieved but not found afterwards', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
                 continue;
             end;
+            Clear(EmailAttachments);
             AttachmentsLoaded := 0;
             AttachmentsAdded := 0;
             IgnoredBecauseExisting := 0;
@@ -193,15 +223,21 @@ codeunit 6385 "Outlook Processing"
                         Attachment.Add('contentType', EmailMessage.Attachments_GetContentType());
                         Attachment.Add('contentId', EmailMessage.Attachments_GetContentId());
                         Attachment.Add('name', EmailMessage.Attachments_GetName());
-                        DocumentsArray.Add(Attachment);
+                        EmailAttachments.Add(Attachment);
                         AttachmentsAdded += 1;
                     end;
                     AttachmentsLoaded += 1;
                 until EmailMessage.Attachments_Next() = 0;
-            if AttachmentsAdded > GetMaxNoOfAttachmentsPerEmail() then begin
-                Clear(DocumentsArray);
+            if AttachmentsAdded <= GetMaxNoOfAttachmentsPerEmail() then
+                foreach AttachmentJson in EmailAttachments do begin
+                    Clear(TempBlob);
+                    TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+                    AttachmentJson.WriteTo(AttachmentTxt);
+                    OutStream.WriteText(AttachmentTxt);
+                    Documents.Add(TempBlob);
+                end
+            else
                 AttachmentsAdded := 0;
-            end;
             Clear(TelemetryCustomDimensions);
             TelemetryCustomDimensions.Add('Category', FeatureName());
             TelemetryCustomDimensions.Add('ReceivedDateTime', Format(EmailInbox."Received DateTime"));
@@ -210,22 +246,6 @@ codeunit 6385 "Outlook Processing"
             TelemetryCustomDimensions.Add('AttachmentsIgnoredBecauseExisting', Format(IgnoredBecauseExisting));
             Session.LogMessage('0000PFP', ProcessingEmailTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryCustomDimensions);
         until EmailInbox.Next() = 0;
-    end;
-
-    internal procedure BuildDocumentsList(Documents: Codeunit "Temp Blob List"; var AttachmentsJson: JsonArray)
-    var
-        TempBlob: Codeunit "Temp Blob";
-        AttachmentJson: JsonToken;
-        OutStream: OutStream;
-        AttachmentTxt: Text;
-    begin
-        foreach AttachmentJson in AttachmentsJson do begin
-            Clear(TempBlob);
-            TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
-            AttachmentJson.WriteTo(AttachmentTxt);
-            OutStream.WriteText(AttachmentTxt);
-            Documents.Add(TempBlob);
-        end;
     end;
 
     internal procedure IgnoreMailAttachment(AttachmentLength: Integer; AttachmentContentType: Text; FileName: Text): Boolean // this procedure is internal to be called by tests
@@ -318,11 +338,6 @@ codeunit 6385 "Outlook Processing"
 
         ExtractMessageAndAttachmentIds(DocumentMetadataBlob, EmailInboxId, MessageId, ExternalMessageId, FileId, AttachmentId, ReceivedDateTime, ContentType, ContentId);
         ReceiveContext.SetName(CopyStr(FileId, 1, 250));
-
-        if ReceivedDateTime > OutlookSetup."Last Sync At" then begin
-            OutlookSetup."Last Sync At" := ReceivedDateTime;
-            OutlookSetup.Modify();
-        end;
 
         if not EmailInbox.Get(EmailInboxId) then
             Error(InvalidAttachmentIdErr);

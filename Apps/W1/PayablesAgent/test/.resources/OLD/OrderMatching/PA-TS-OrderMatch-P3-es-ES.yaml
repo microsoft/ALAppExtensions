@@ -1,0 +1,649 @@
+tests:
+- name: AllLines10_004
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 325
+      description: Gabinete de almacenamiento de metal con cerradura
+      quantity: 8
+    - unitPrice: 285
+      description: Archivador 4 Cajones Vertical
+      quantity: 12
+    - unitPrice: 195
+      description: Estantería de madera de 5 niveles
+      quantity: 10
+    - unitPrice: 42
+      description: Soporte de pared para revistero
+      quantity: 15
+    - unitPrice: 68
+      description: Perchero De Pie Metal
+      quantity: 6
+    - unitPrice: 35
+      description: Paragüero Acero Inoxidable
+      quantity: 8
+    - unitPrice: 28.5
+      description: Tablón de anuncios Corcho 90x60cm
+      quantity: 10
+    - unitPrice: 12.5
+      description: Placa de nombre Escritorio Aluminio
+      quantity: 25
+    - unitPrice: 85
+      description: Papelera Reciclaje 3 Contenedores
+      quantity: 12
+    - unitPrice: 38
+      description: Taburete con escalón plegable de 2 escalones
+      quantity: 8
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Paragüero Acero Inoxidable
+      unit_price: 35
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Gabinete de almacenamiento de metal con cerradura
+      unit_price: 325
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Taburete con escalón plegable de 2 escalones
+      unit_price: 38
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Placa de nombre Escritorio Aluminio
+      unit_price: 12.5
+      quantity: 25
+    - discount: 0
+      tax_rate: 10
+      description: Estantería de madera de 5 niveles
+      unit_price: 195
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Tablón de anuncios Corcho 90x60cm
+      unit_price: 28.5
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Archivador vertical de 4 cajones
+      unit_price: 285
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Papelera Reciclaje 3 Contenedores
+      unit_price: 85
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Soporte de pared para revistero
+      unit_price: 42
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Perchero De Pie Metal
+      unit_price: 68
+      quantity: 6
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 8
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 9
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 10
+- name: AllLines3_003
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 45.5
+      description: Cartucho de impresora negro HP
+      quantity: 8
+    - unitPrice: 5.75
+      description: Resma de papel A4 500 hojas
+      quantity: 20
+    - unitPrice: 18
+      description: Grapadora de servicio pesado
+      quantity: 12
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Resma de papel A4 500 hojas
+      unit_price: 5.75
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Grapadora de servicio pesado
+      unit_price: 18
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Cartucho de impresora HP negro
+      unit_price: 45.5
+      quantity: 8
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 3
+- name: AllLines5_002
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1850
+      description: Portátil Dell Precisión 5570
+      quantity: 5
+    - unitPrice: 245
+      description: Estación de acoplamiento USB-C
+      quantity: 5
+    - unitPrice: 68
+      description: Bolsa para portátil profesional
+      quantity: 5
+    - unitPrice: 38
+      description: Mando a distancia inalámbrico para presentador
+      quantity: 10
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Mando a distancia inalámbrico para presentador
+      unit_price: 38
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Computadora portátil Dell Precision 5570
+      unit_price: 1850
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Bolsa para portátil profesional
+      unit_price: 68
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Estación de acoplamiento USB-C
+      unit_price: 245
+      quantity: 5
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 4
+- name: Challenge10_001
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1485
+      description: Portátil Lenovo ThinkPad X1
+      quantity: 15
+    - unitPrice: 185
+      description: Estación de acoplamiento para computadora portátil USB-C
+      quantity: 15
+    - unitPrice: 68
+      description: Bolsa para portátil profesional
+      quantity: 18
+    - unitPrice: 88
+      description: Ratón Inalámbrico Logitech MX Master
+      quantity: 20
+  - lines:
+    - unitPrice: 425
+      description: Monitor Dell 27 pulgadas UHD
+      quantity: 30
+    - unitPrice: 95
+      description: Brazo para monitor doble ajustable
+      quantity: 15
+    - unitPrice: 15.5
+      description: Cable HDMI 3m Premium
+      quantity: 35
+    - unitPrice: 18
+      description: Cable DisplayPort 2m
+      quantity: 20
+    - unitPrice: 78
+      description: Cámara web Logitech C920 HD
+      quantity: 18
+  - lines:
+    - unitPrice: 125
+      description: Teclado Mecánico Inalámbrico
+      quantity: 22
+    - unitPrice: 185
+      description: Auriculares Jabra Evolve2 65
+      quantity: 18
+    - unitPrice: 48
+      description: Concentrador USB de 10 puertos alimentado
+      quantity: 12
+    - unitPrice: 245
+      description: SSD Externo 2TB Samsung
+      quantity: 10
+    - unitPrice: 42
+      description: Soporte para portátil de aluminio
+      quantity: 16
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Portátil Lenovo ThinkPad X1
+      unit_price: 1485
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Estación de acoplamiento para computadora portátil USB-C
+      unit_price: 185
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Ratón inalámbrico Logitech MX Master
+      unit_price: 88
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Monitor Dell UHD de 27"
+      unit_price: 425
+      quantity: 30
+    - discount: 0
+      tax_rate: 10
+      description: Brazo de monitor doble ajustable
+      unit_price: 95
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Cámara web Logitech C920 HD
+      unit_price: 78
+      quantity: 18
+    - discount: 0
+      tax_rate: 10
+      description: Teclado inalámbrico mecánico
+      unit_price: 125
+      quantity: 22
+    - discount: 0
+      tax_rate: 10
+      description: Auriculares Jabra Evolve2 65
+      unit_price: 185
+      quantity: 18
+    - discount: 0
+      tax_rate: 10
+      description: SSD externo Samsung de 2 TB
+      unit_price: 245
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Soporte de aluminio para computadora portátil
+      unit_price: 42
+      quantity: 16
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 5
+- name: Challenge3_002
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1350
+      description: Laptop Dell XPS
+      quantity: 3
+  - lines:
+    - unitPrice: 175
+      description: Estación de acoplamiento USB-C
+      quantity: 4
+    - unitPrice: 28.5
+      description: Ratón Inalámbrico Logitech
+      quantity: 10
+  - lines:
+    - unitPrice: 65
+      description: Bolsa para portátil ejecutiva
+      quantity: 5
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Ratón inalámbrico Logitech
+      unit_price: 28.5
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Portátil Dell XPS
+      unit_price: 1350
+      quantity: 3
+    invoice_no: INV-002
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+- name: Challenge5_001
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 875
+      description: Computadora de escritorio Dell OptiPlex
+      quantity: 8
+    - unitPrice: 385
+      description: Monitor 4K de 27 pulgadas
+      quantity: 10
+    - unitPrice: 95
+      description: Teclado mecánico RGB
+      quantity: 12
+  - lines:
+    - unitPrice: 42.5
+      description: Ratón inalámbrico ergonómico
+      quantity: 15
+    - unitPrice: 68
+      description: Cámara web HD 1080p
+      quantity: 8
+    - unitPrice: 55
+      description: Auriculares con micrófono
+      quantity: 10
+  - lines:
+    - unitPrice: 28
+      description: Concentrador USB de 7 puertos
+      quantity: 20
+    - unitPrice: 18.5
+      description: Alfombrilla de ratón grande para juegos
+      quantity: 15
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Computadora de escritorio Dell OptiPlex
+      unit_price: 875
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Monitor 4K de 27"
+      unit_price: 385
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Ratón inalámbrico ergonómico
+      unit_price: 42.5
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Cámara web HD de 1080p
+      unit_price: 68
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Concentrador USB - 7 puertos
+      unit_price: 28
+      quantity: 20
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 1
+- name: Challenge5_005
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 185
+      description: Pizarra blanca montada en la pared grande
+      quantity: 3
+    - unitPrice: 8.5
+      description: Marcadores de Pizarra Blanca Surtidos
+      quantity: 24
+    - unitPrice: 6.75
+      description: Borrador de pizarra magnética
+      quantity: 6
+  - lines:
+    - unitPrice: 95
+      description: Soporte para rotafolio portátil
+      quantity: 2
+    - unitPrice: 18
+      description: Bloc de papel para rotafolio 50 hojas
+      quantity: 10
+  - lines:
+    - unitPrice: 35
+      description: Presentación puntero láser
+      quantity: 4
+    - unitPrice: 225
+      description: Pantalla de proyector portátil
+      quantity: 2
+    - unitPrice: 28
+      description: Kit adaptador HDMI
+      quantity: 8
+    - unitPrice: 15.5
+      description: Cable de extensión de 5m
+      quantity: 12
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Pizarra blanca grande montada en la pared
+      unit_price: 185
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Marcadores de pizarra surtidos
+      unit_price: 8.5
+      quantity: 24
+    - discount: 0
+      tax_rate: 10
+      description: Soporte portátil para rotafolios
+      unit_price: 95
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Bloc de papel para rotafolios - 50 hojas
+      unit_price: 18
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Puntero de presentación láser
+      unit_price: 35
+      quantity: 4
+    invoice_no: INV-005
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 1
+- name: NoLines3_004
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 950
+      description: Bastidor de servidores 42U
+      quantity: 1
+    - unitPrice: 280
+      description: Batería de Respaldo UPS 1500VA
+      quantity: 3
+    - unitPrice: 120
+      description: Panel de conexión de 48 puertos
+      quantity: 2
+  - lines:
+    - unitPrice: 45
+      description: Kit de gestión de cables
+      quantity: 5
+  - lines:
+    - unitPrice: 65
+      description: Extintor 5kg
+      quantity: 8
+    - unitPrice: 35
+      description: Botiquín de primeros auxilios completo
+      quantity: 10
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Servicio de limpieza mensual
+      unit_price: 550
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: Solución de limpieza de ventanas 5L
+      unit_price: 18
+      quantity: 4
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: OneLine3_003
+  test_setup: PA-OrderMatch-es-ES.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 650
+      description: Escritorio de pie eléctrico
+      quantity: 8
+    - unitPrice: 95
+      description: Brazo para monitor doble
+      quantity: 8
+    - unitPrice: 22
+      description: Bandeja organizadora de cables
+      quantity: 15
+  - lines:
+    - unitPrice: 180
+      description: Pizarra Blanca Grande 6x4 pies
+      quantity: 4
+    - unitPrice: 12
+      description: Paquete de marcadores de pizarra
+      quantity: 20
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Mantenimiento de aire acondicionado
+      unit_price: 450
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: Paquete de artículos de limpieza
+      unit_price: 75
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Escritorio eléctrico de pie
+      unit_price: 650
+      quantity: 8
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1

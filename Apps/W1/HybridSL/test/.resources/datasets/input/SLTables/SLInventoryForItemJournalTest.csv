@@ -1,0 +1,11 @@
+InvtID,ClassID,Descr,DfltPOUnit,LastCost,LotSerIssMthd,LotSerTrack,SerAssign,StdCost,StkBasePrc,StkItem,StkUnit,TranStatusCode,ValMthd
+0RCHAINGUARD                  ,MMGWO ,Bicycle Chainguard                                          ,EA    ,1.80000000000000004,,NN,,1.97999999999999998,0,1,EA    ,AC,A
+0RFRONTWHEEL24                ,MMGWO ,24" Front Wheel Assembly                                  ,EA    ,45,,NN,,45.4279999999999973,0,1,EA    ,AC,A
+0RSEAT-PERF                   ,MMGWO ,Performance Bicycle Seat                                    ,EA    ,5,,NN,,0,10,1,EA    ,AC,A
+0RREARWHEEL24                 ,MMGWO ,24" Rear Wheel Assembly                                   ,EA    ,52.9969999999999999,,NN,,52.9969999999999999,0,1,EA    ,AC,T
+HON-672L-L                    ,FILCAB,"600 Series Wide Lateral, Two Drawer File Cabinet",EA    ,300,,NN,,300,380,1,EA    ,AC,T
+HON-672L-P                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,300,,NN,,300,380,1,EA    ,AC,T
+HON-672L-Q                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,300,,NN,,300,380,1,EA    ,AC,T
+UNV-14113                     ,FILFLD,Hanging File Folder -- Letter Size w/ 3 tabs                ,CARTON,9,,NN,,9,14.6999999999999993,1,CARTON,AC,T
+UNV-14115                     ,FILFLD,Hanging File Folder -- Letter Size w/ 5 tabs                ,CARTON,9,,NN,,9,14.1999999999999993,1,CARTON,AC,T
+VIDLED50                      ,CPUHWD,Video Monitor LED 50"                                     ,EA    ,500,,NN,,0,789,1,EA    ,AC,A

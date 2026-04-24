@@ -36,6 +36,9 @@ xmlport 147608 "SL AcctHist Data"
                 textelement(FiscYr)
                 {
                 }
+                textelement(BegBal)
+                {
+                }
                 textelement(PtdBal00)
                 {
                 }
@@ -98,6 +101,7 @@ xmlport 147608 "SL AcctHist Data"
                     SLAcctHist.Sub := Sub;
                     SLAcctHist.LedgerID := LedgerID;
                     SLAcctHist.FiscYr := FiscYr;
+                    Evaluate(SLAcctHist.BegBal, BegBal);
                     Evaluate(SLAcctHist.PtdBal00, PtdBal00);
                     Evaluate(SLAcctHist.PtdBal01, PtdBal01);
                     Evaluate(SLAcctHist.PtdBal02, PtdBal02);

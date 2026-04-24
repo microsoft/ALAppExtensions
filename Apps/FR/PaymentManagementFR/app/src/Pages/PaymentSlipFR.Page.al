@@ -377,6 +377,19 @@ page 10843 "Payment Slip FR"
         CurrPage.Lines.PAGE.Editable(true);
     end;
 
+#if not CLEAN28
+    trigger OnOpenPage()
+    var
+        FeaturePaymentManagement: Codeunit "Payment Management Feature FR";
+    begin
+        if not FeaturePaymentManagement.IsEnabled() then
+            Error(EnablePaymentManagementFRPageErr);
+    end;
+
+    var
+        EnablePaymentManagementFRPageErr: Label 'Enable Payment Management FR feature to use this functionality';
+#endif
+
     var
         PaymentStep: Record "Payment Step FR";
         FeatureTelemetry: Codeunit "Feature Telemetry";

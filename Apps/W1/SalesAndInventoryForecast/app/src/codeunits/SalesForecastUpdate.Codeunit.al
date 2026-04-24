@@ -33,12 +33,19 @@ codeunit 1853 "Sales Forecast Update"
 
         if Item.FindSet() then
             repeat
-                if SalesForecastHandler.CalculateForecast(Item, TimeSeriesManagement) then;
+                if not TryCalculateForecast(SalesForecastHandler, Item, TimeSeriesManagement) then
+                    Session.LogMessage('0000TBO', ForecastFailedLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', 'Sales & Inventory Forecast');
             until Item.Next() = 0;
 
         WorkDate := OriginalWorkDate;
 
         UpdateLastRunCompleted();
+    end;
+
+    [TryFunction]
+    local procedure TryCalculateForecast(var SalesForecastHandler: Codeunit "Sales Forecast Handler"; var Item: Record Item; var TimeSeriesManagement: Codeunit "Time Series Management")
+    begin
+        if SalesForecastHandler.CalculateForecast(Item, TimeSeriesManagement) then;
     end;
 
     local procedure UpdateLastRunCompleted()
@@ -50,5 +57,8 @@ codeunit 1853 "Sales Forecast Update"
         MSSalesForecastSetup."Last Run Completed" := CurrentDateTime();
         MSSalesForecastSetup.Modify();
     end;
+
+    var
+        ForecastFailedLbl: Label 'Sales forecast calculation failed.', Locked = true;
 }
 

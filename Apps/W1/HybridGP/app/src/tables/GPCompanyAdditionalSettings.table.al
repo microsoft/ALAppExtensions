@@ -420,6 +420,7 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Item Classes", false);
                     Rec.Validate("Migrate Vendor Classes", false);
                     Rec.Validate("Migrate Only GL Master", false);
+                    Rec.Validate("Migrate Inactive Alloc. Accts.", false);
 
                     if Rec."Migrate Bank Module" then
                         Rec.Validate("Migrate Only Bank Master", true);
@@ -490,6 +491,15 @@ table 40105 "GP Company Additional Settings"
         field(47; "Item Desc. 2 Source"; enum "GP Item Desc. 2 Source")
         {
             DataClassification = SystemMetadata;
+        }
+        field(48; "Migrate Inactive Alloc. Accts."; Boolean)
+        {
+            DataClassification = SystemMetadata;
+        }
+        field(49; "Migrate Hist. Payroll Detail"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
         }
     }
 
@@ -590,6 +600,12 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Kit Items");
+    end;
+
+    procedure GetMigrateInactiveAllocationAccounts(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Inactive Alloc. Accts.");
     end;
 
     // Classes
@@ -750,6 +766,12 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Hist. Purch. Trx.");
+    end;
+
+    procedure GetMigrateHistPayrollDetail(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Hist. Payroll Detail");
     end;
 
     procedure GetMigrateHistory(): Boolean

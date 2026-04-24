@@ -1,0 +1,8 @@
+﻿Document Type,No.,Buy-from Vendor No.,Vendor No.,Ship-to Name,Ship-to Address,Ship-to Address 2,Ship-to City,Ship-to Contact,Order Date,Posting Date,Posting Description,Shipment Method Code,Prices Including Tax,Ship-to ZIP Code,Ship-to State,Ship-to Country/Region Code,Order Address Code,Document Date,Posting No. Series,Receiving No. Series,Status
+Order,000004,VT0123,VT0123,Accounts Payable,100 Main St.,Suite 100,Chicago,,1999-03-19,1999-03-19,Migrated from SL,,false,60606,IL,US,,1999-03-19,P-INV+,P-RCPT,Open
+Order,000011,VT0122,VT0122,Receiving Dock,100 Main St.,Door 100-B,Chicago,,2016-09-27,2016-09-27,Migrated from SL,,false,60606,IL,US,,2016-09-27,P-INV+,P-RCPT,Open
+Order,000012,V00152,V00152,Receiving Dock,100 Main St.,Door 100-B,Chicago,,2016-10-25,2016-10-25,Migrated from SL,,false,60606,IL,US,,2016-10-25,P-INV+,P-RCPT,Open
+Order,000013,V00152,V00152,Receiving Dock,100 Main St.,Door 100-B,Chicago,,2016-10-25,2016-10-25,Migrated from SL,,false,60606,IL,US,,2016-10-25,P-INV+,P-RCPT,Open
+Order,000024,V00205,V00205,Receiving Dock,100 Main St.,Door 100-B,Chicago,,2022-06-03,2022-06-03,Migrated from SL,,false,60606,IL,US,,2022-06-03,P-INV+,P-RCPT,Open
+Order,000025,V00205,V00205,Receiving Dock,100 Main St.,Door 100-B,Chicago,,2022-07-07,2022-07-07,Migrated from SL,,false,60606,IL,US,,2022-07-07,P-INV+,P-RCPT,Open
+Order,000026,V00209,V00209,Receiving Dock,100 Main St.,Door 100-B,Chicago,,2022-07-13,2022-07-13,Migrated from SL,,false,60606,IL,US,,2022-07-13,P-INV+,P-RCPT,Open

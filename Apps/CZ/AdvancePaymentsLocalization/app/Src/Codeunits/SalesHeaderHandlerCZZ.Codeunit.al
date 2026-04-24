@@ -4,7 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AdvancePayments;
 
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
 
 codeunit 31092 "Sales Header Handler CZZ"
 {
@@ -18,5 +20,24 @@ codeunit 31092 "Sales Header Handler CZZ"
 
         SalesAdvLetterHeaderCZZ.SetRange("Order No.", Rec."No.");
         SalesAdvLetterHeaderCZZ.ModifyAll("Order No.", '');
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Invoice Line", 'OnBeforeCalcVATAmountLines', '', false, false)]
+    local procedure ExcludePrepaymentLinesOnBeforeCalcVATAmountLines(SalesInvLine: Record "Sales Invoice Line"; SalesInvHeader: Record "Sales Invoice Header"; var TempVATAmountLine: Record "VAT Amount Line" temporary; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+
+        TempVATAmountLine.DeleteAll();
+        SalesInvLine.SetRange("Document No.", SalesInvHeader."No.");
+        SalesInvLine.SetRange("Prepayment Line", false); // Exclude prepayment lines created by the legacy advance payment implementation
+        if SalesInvLine.FindSet() then
+            repeat
+                TempVATAmountLine.Init();
+                TempVATAmountLine.CopyFromSalesInvLine(SalesInvLine);
+                TempVATAmountLine.InsertLine();
+            until SalesInvLine.Next() = 0;
+
+        IsHandled := true;
     end;
 }

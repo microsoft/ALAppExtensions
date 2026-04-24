@@ -16,7 +16,7 @@ pageextension 9408 "IPC Employee Card" extends "Employee Card"
         }
         modify("Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();

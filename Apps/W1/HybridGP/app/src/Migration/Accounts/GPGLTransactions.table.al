@@ -103,6 +103,10 @@ table 4091 "GP GLTransactions"
         {
 
         }
+        key(KeyActIndx; ACTINDX)
+        {
+
+        }
     }
 
     fieldgroups

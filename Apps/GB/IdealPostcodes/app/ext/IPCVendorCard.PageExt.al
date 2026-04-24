@@ -16,7 +16,7 @@ pageextension 9401 "IPC Vendor Card" extends "Vendor Card"
         }
         modify("Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();

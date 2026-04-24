@@ -4,16 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Purchases.Payables;
 
-using Microsoft.Purchases.History;
-
 pageextension 31016 "Vendor Ledger Entries CZL" extends "Vendor Ledger Entries"
 {
     layout
     {
-        modify("External Document No.")
-        {
-            Editable = IsExtDocNoEditable;
-        }
         addafter("Message to Recipient")
         {
             field("Vendor Posting Group CZL"; Rec."Vendor Posting Group")
@@ -96,14 +90,4 @@ pageextension 31016 "Vendor Ledger Entries CZL" extends "Vendor Ledger Entries"
             }
         }
     }
-
-    trigger OnOpenPage()
-    var
-    begin
-        IsExtDocNoEditable := ExtDocNoChangingCZL.IsAllowed();
-    end;
-
-    var
-        ExtDocNoChangingCZL: Codeunit "Ext. Doc. No. Changing CZL";
-        IsExtDocNoEditable: Boolean;
 }

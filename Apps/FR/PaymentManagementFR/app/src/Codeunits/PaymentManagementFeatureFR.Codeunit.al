@@ -14,7 +14,7 @@ codeunit 10835 "Payment Management Feature FR"
     InherentPermissions = X;
 
     var
-        FeatureKeyIdTok: Label 'PaymentManagementFR', Locked = true;
+        FeatureKeyIdTok: Label 'Payment', Locked = true;
 
     procedure IsEnabled() Enabled: Boolean
     var

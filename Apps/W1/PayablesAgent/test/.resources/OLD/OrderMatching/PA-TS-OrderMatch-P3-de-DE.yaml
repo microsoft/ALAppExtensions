@@ -1,0 +1,649 @@
+tests:
+- name: AllLines10_004
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 325
+      description: Abschließbarer Aufbewahrungsschrank aus Metall
+      quantity: 8
+    - unitPrice: 285
+      description: Vertikaler Aktenschrank mit 4 Schubladen
+      quantity: 12
+    - unitPrice: 195
+      description: Bücherregal aus Holz mit 5 Etagen
+      quantity: 10
+    - unitPrice: 42
+      description: Wandhalterung für Zeitschriftenständer
+      quantity: 15
+    - unitPrice: 68
+      description: Garderobenständer aus Metall
+      quantity: 6
+    - unitPrice: 35
+      description: Schirmständer aus Edelstahl
+      quantity: 8
+    - unitPrice: 28.5
+      description: Pinnwand aus Kork, 90 x 60 cm
+      quantity: 10
+    - unitPrice: 12.5
+      description: Namensschild Schreibtisch Aluminium
+      quantity: 25
+    - unitPrice: 85
+      description: Mülleimer Recycling 3 Behälter
+      quantity: 12
+    - unitPrice: 38
+      description: Tritthocker 2 Stufen klappbar
+      quantity: 8
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Schirmständer aus Edelstahl
+      unit_price: 35
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Abschließbarer Aufbewahrungsschrank aus Metall
+      unit_price: 325
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Tritthocker 2 Stufen klappbar
+      unit_price: 38
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Namensschild Schreibtisch Aluminium
+      unit_price: 12.5
+      quantity: 25
+    - discount: 0
+      tax_rate: 10
+      description: Bücherregal aus Holz mit 5 Etagen
+      unit_price: 195
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Pinnwand aus Kork, 90 x 60 cm
+      unit_price: 28.5
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Vertikaler Aktenschrank mit 4 Schubladen
+      unit_price: 285
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Mülleimer Recycling 3 Behälter
+      unit_price: 85
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Wandhalterung für Zeitschriftenständer
+      unit_price: 42
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Garderobenständer aus Metall
+      unit_price: 68
+      quantity: 6
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 8
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 9
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 10
+- name: AllLines3_003
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 45.5
+      description: Druckerpatrone Schwarz HP
+      quantity: 8
+    - unitPrice: 5.75
+      description: A4-Papierriese 500 Blatt
+      quantity: 20
+    - unitPrice: 18
+      description: Hefter Heavy Duty
+      quantity: 12
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: A4-Papierriese 500 Blatt
+      unit_price: 5.75
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Hefter Heavy Duty
+      unit_price: 18
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Schwarze HP-Druckerpatrone
+      unit_price: 45.5
+      quantity: 8
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 3
+- name: AllLines5_002
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1850
+      description: Laptop Dell Precision 5570
+      quantity: 5
+    - unitPrice: 245
+      description: Dockingstation USB-C
+      quantity: 5
+    - unitPrice: 68
+      description: Laptoptasche Profi
+      quantity: 5
+    - unitPrice: 38
+      description: Drahtlose Presenter-Fernbedienung
+      quantity: 10
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Drahtlose Presenter-Fernbedienung
+      unit_price: 38
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Dell Precision 5570 Laptop
+      unit_price: 1850
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Laptoptasche Profi
+      unit_price: 68
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Dockingstation USB-C
+      unit_price: 245
+      quantity: 5
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 4
+- name: Challenge10_001
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1485
+      description: Laptop Lenovo ThinkPad X1
+      quantity: 15
+    - unitPrice: 185
+      description: Laptop-Dockingstation USB-C
+      quantity: 15
+    - unitPrice: 68
+      description: Laptoptasche Profi
+      quantity: 18
+    - unitPrice: 88
+      description: Kabellose Maus Logitech MX Master
+      quantity: 20
+  - lines:
+    - unitPrice: 425
+      description: Monitor Dell 27 Zoll UHD
+      quantity: 30
+    - unitPrice: 95
+      description: Monitorarm zweifach verstellbar
+      quantity: 15
+    - unitPrice: 15.5
+      description: HDMI-Kabel 3 m Premium
+      quantity: 35
+    - unitPrice: 18
+      description: DisplayPort-Kabel 2 m
+      quantity: 20
+    - unitPrice: 78
+      description: Webcam Logitech C920 HD
+      quantity: 18
+  - lines:
+    - unitPrice: 125
+      description: Tastatur mechanisch kabellos
+      quantity: 22
+    - unitPrice: 185
+      description: Headset Jabra Evolve2 65
+      quantity: 18
+    - unitPrice: 48
+      description: USB-Hub mit 10 Anschlüssen und Stromversorgung
+      quantity: 12
+    - unitPrice: 245
+      description: Externe SSD 2 TB Samsung
+      quantity: 10
+    - unitPrice: 42
+      description: Laptopständer Aluminium
+      quantity: 16
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Lenovo ThinkPad X1 Laptop
+      unit_price: 1485
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: USB-C-Laptop-Dockingstation
+      unit_price: 185
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Logitech MX Master kabellose Maus
+      unit_price: 88
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Dell 27" UHD-Monitor
+      unit_price: 425
+      quantity: 30
+    - discount: 0
+      tax_rate: 10
+      description: Doppelt verstellbarer Monitorarm
+      unit_price: 95
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Logitech C920 HD-Webcam
+      unit_price: 78
+      quantity: 18
+    - discount: 0
+      tax_rate: 10
+      description: Mechanische kabellose Tastatur
+      unit_price: 125
+      quantity: 22
+    - discount: 0
+      tax_rate: 10
+      description: Jabra Evolve2 65 Headset
+      unit_price: 185
+      quantity: 18
+    - discount: 0
+      tax_rate: 10
+      description: Samsung 2 TB externe SSD
+      unit_price: 245
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Laptopständer aus Aluminium
+      unit_price: 42
+      quantity: 16
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 5
+- name: Challenge3_002
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1350
+      description: Laptop Dell XPS
+      quantity: 3
+  - lines:
+    - unitPrice: 175
+      description: USB-C-Dockingstation
+      quantity: 4
+    - unitPrice: 28.5
+      description: Drahtlose Maus Logitech
+      quantity: 10
+  - lines:
+    - unitPrice: 65
+      description: Laptoptasche Executive
+      quantity: 5
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Logitech Wireless-Maus
+      unit_price: 28.5
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Dell XPS-Laptop
+      unit_price: 1350
+      quantity: 3
+    invoice_no: INV-002
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+- name: Challenge5_001
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 875
+      description: Desktop-Computer Dell OptiPlex
+      quantity: 8
+    - unitPrice: 385
+      description: Monitor 27 Zoll 4K
+      quantity: 10
+    - unitPrice: 95
+      description: Mechanische Tastatur RGB
+      quantity: 12
+  - lines:
+    - unitPrice: 42.5
+      description: Ergonomische kabellose Maus
+      quantity: 15
+    - unitPrice: 68
+      description: Webcam HD 1080p
+      quantity: 8
+    - unitPrice: 55
+      description: Headset mit Mikrofon
+      quantity: 10
+  - lines:
+    - unitPrice: 28
+      description: USB-Hub 7-Port
+      quantity: 20
+    - unitPrice: 18.5
+      description: Großes Gaming-Mauspad
+      quantity: 15
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Dell OptiPlex Desktop-Computer
+      unit_price: 875
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: 27" 4K-Monitor
+      unit_price: 385
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Ergonomische kabellose Maus
+      unit_price: 42.5
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: HD 1080p-Webcam
+      unit_price: 68
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: USB-Hub – 7 Anschlüsse
+      unit_price: 28
+      quantity: 20
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 1
+- name: Challenge5_005
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 185
+      description: Whiteboard zur Wandmontage, groß
+      quantity: 3
+    - unitPrice: 8.5
+      description: Whiteboard-Marker sortiert
+      quantity: 24
+    - unitPrice: 6.75
+      description: Magnetischer Whiteboard-Radierer
+      quantity: 6
+  - lines:
+    - unitPrice: 95
+      description: Tragbarer Flipchart-Ständer
+      quantity: 2
+    - unitPrice: 18
+      description: Flipchart-Papierblock 50 Blatt
+      quantity: 10
+  - lines:
+    - unitPrice: 35
+      description: Präsentationspointer-Laser
+      quantity: 4
+    - unitPrice: 225
+      description: Projektor-Leinwand tragbar
+      quantity: 2
+    - unitPrice: 28
+      description: HDMI-Adapter-Kit
+      quantity: 8
+    - unitPrice: 15.5
+      description: Verlängerungskabel 5 m
+      quantity: 12
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Großes Whiteboard zur Wandmontage
+      unit_price: 185
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Verschiedene Whiteboard-Marker
+      unit_price: 8.5
+      quantity: 24
+    - discount: 0
+      tax_rate: 10
+      description: Tragbarer Flipchart-Ständer
+      unit_price: 95
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Flipchart-Papierblock – 50 Blatt
+      unit_price: 18
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Laser-Präsentationspointer
+      unit_price: 35
+      quantity: 4
+    invoice_no: INV-005
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 1
+- name: NoLines3_004
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 950
+      description: Server-Rack 42U
+      quantity: 1
+    - unitPrice: 280
+      description: USV-Batterie-Backup 1500 VA
+      quantity: 3
+    - unitPrice: 120
+      description: Patchpanel 48 Port
+      quantity: 2
+  - lines:
+    - unitPrice: 45
+      description: Kabelmanagement-Kit
+      quantity: 5
+  - lines:
+    - unitPrice: 65
+      description: Feuerlöscher 5kg
+      quantity: 8
+    - unitPrice: 35
+      description: Erste-Hilfe-Kasten komplett
+      quantity: 10
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Reinigungsservice monatlich
+      unit_price: 550
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: Fensterreinigungslösung 5L
+      unit_price: 18
+      quantity: 4
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: OneLine3_003
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 650
+      description: Stehpult elektrisch
+      quantity: 8
+    - unitPrice: 95
+      description: Monitorarm Dual
+      quantity: 8
+    - unitPrice: 22
+      description: Kabel-Organizer-Tablett
+      quantity: 15
+  - lines:
+    - unitPrice: 180
+      description: Whiteboard groß 6x4 Fuß
+      quantity: 4
+    - unitPrice: 12
+      description: Whiteboard-Marker-Paket
+      quantity: 20
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Wartung der Klimaanlage
+      unit_price: 450
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: Reinigungsmittelpaket
+      unit_price: 75
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Elektrischer Stehpult
+      unit_price: 650
+      quantity: 8
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1

@@ -2,7 +2,7 @@
   {
     "CaseID": "{A8E114BF-F8CD-44DB-A2B3-614BC18F4442}",
     "Description": "Calculation of Tax Deduction at Source on Vendor Invoice where  PAN No. is specified without Concessional Codes.\n",
-    "Version": 32,
+    "Version": 33,
     "MinorVersion": 0,
     "TaxType": "TDS",
     "ChangedBy": "Microsoft",
@@ -10,7 +10,7 @@
     "TaxEntity": "Purchase Line",
     "ParentUseCase": "Calculation of Tax Deduction at Source on Vendor Invoice (through Purchase Order/Purchase Invoice).\n",
     "ParentCaseId": "{B8483E82-4EAB-43DE-B423-B1371AAA9CE0}",
-    "PresentationOrder": 570,
+    "PresentationOrder": 51,
     "Indent": 1,
     "PostingTableName": "TDS Posting Setup",
     "PostingTableFilters": [
@@ -404,6 +404,18 @@
       },
       {
         "Name": "TotalPrevAndCurrentInvAmt",
+        "Datatype": "Number"
+      },
+      {
+        "Name": "PaymentTDSBaseAmount",
+        "Datatype": "Number"
+      },
+      {
+        "Name": "ConsumedOriginalInvAmount",
+        "Datatype": "Number"
+      },
+      {
+        "Name": "TDSBasedRemainingAmount",
         "Datatype": "Number"
       }
     ],
@@ -1958,6 +1970,347 @@
                     ]
                   }
                 }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "ActivityType": "COMMENT",
+        "Activity": {
+          "Comment": "Adjust AppliedAmount using TDS Entry remaining when payment carries GST-inclusive invoices"
+        }
+      },
+      {
+        "ActivityType": "IFSTATEMENT",
+        "Activity": {
+          "Condition": {
+            "Body": [
+              {
+                "Operator": " ",
+                "ConditionType": "Equals",
+                "LHS": {
+                  "Lookup": {
+                    "SourceType": "Table",
+                    "TableName": "Purchase Header",
+                    "TableFieldName": "Applies-to Doc. Type",
+                    "Method": "First",
+                    "TableFilters": [
+                      {
+                        "FiterFieldName": "Document Type",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Document Type"
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "No.",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Document No."
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "RHS": {
+                  "Type": "Constant",
+                  "Value": "Payment"
+                }
+              },
+              {
+                "Operator": "and",
+                "ConditionType": "Not Equals",
+                "LHS": {
+                  "Lookup": {
+                    "SourceType": "Table",
+                    "TableName": "Purchase Header",
+                    "TableFieldName": "Applies-to Doc. No.",
+                    "Method": "First",
+                    "TableFilters": [
+                      {
+                        "FiterFieldName": "Document Type",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Document Type"
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "No.",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Document No."
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "RHS": {
+                  "Type": "Constant",
+                  "Value": ""
+                }
+              }
+            ]
+          },
+          "Body": [
+            {
+              "ActivityType": "SETVARIABLE",
+              "Activity": {
+                "OutputVariableName": "PaymentTDSBaseAmount",
+                "OutputValue": {
+                  "Type": "Lookup",
+                  "Lookup": {
+                    "SourceType": "Table",
+                    "TableName": "TDS Entry",
+                    "TableFieldName": "TDS Base Amount",
+                    "Method": "Sum",
+                    "TableFilters": [
+                      {
+                        "FiterFieldName": "Vendor No.",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Pay-to Vendor No."
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "Section",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "TDS Section Code"
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "Assessee Code",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Tax Attributes",
+                            "AttributeName": "Assessee Code"
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "Document Type",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Constant",
+                          "Value": "Payment"
+                        }
+                      },
+                      {
+                        "FiterFieldName": "Document No.",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Purchase Header",
+                            "TableFieldName": "Applies-to Doc. No.",
+                            "Method": "First",
+                            "TableFilters": [
+                              {
+                                "FiterFieldName": "Document Type",
+                                "FilterType": "Equals",
+                                "FilterValue": {
+                                  "Type": "Lookup",
+                                  "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Purchase Line",
+                                    "FieldName": "Document Type"
+                                  }
+                                }
+                              },
+                              {
+                                "FiterFieldName": "No.",
+                                "FilterType": "Equals",
+                                "FilterValue": {
+                                  "Type": "Lookup",
+                                  "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Purchase Line",
+                                    "FieldName": "Document No."
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "ActivityType": "SETVARIABLE",
+              "Activity": {
+                "OutputVariableName": "ConsumedOriginalInvAmount",
+                "OutputValue": {
+                  "Type": "Lookup",
+                  "Lookup": {
+                    "SourceType": "Table",
+                    "TableName": "TDS Entry",
+                    "TableFieldName": "Original Invoice Amount",
+                    "Method": "First",
+                    "TableFilters": [
+                      {
+                        "FiterFieldName": "Vendor No.",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Pay-to Vendor No."
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "Section",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "TDS Section Code"
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "Assessee Code",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Tax Attributes",
+                            "AttributeName": "Assessee Code"
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "Posting Date",
+                        "FilterType": "CAL Filter",
+                        "FilterValue": {
+                          "Type": "Lookup",
+                          "Lookup": {
+                            "SourceType": "Variable",
+                            "VariableName": "AccountingDateFilter"
+                          }
+                        }
+                      },
+                      {
+                        "FiterFieldName": "Document Type",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                          "Type": "Constant",
+                          "Value": "Invoice"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "ActivityType": "NUMERICEXPRESSION",
+              "Activity": {
+                "VariableName": "TDSBasedRemainingAmount",
+                "Expression": "PaymentTDSBase-ConsumedInvBase",
+                "Tokens": [
+                  {
+                    "TokenName": "ConsumedInvBase",
+                    "TokenValue": {
+                      "Type": "Lookup",
+                      "Lookup": {
+                        "SourceType": "Variable",
+                        "VariableName": "ConsumedOriginalInvAmount"
+                      }
+                    }
+                  },
+                  {
+                    "TokenName": "PaymentTDSBase",
+                    "TokenValue": {
+                      "Type": "Lookup",
+                      "Lookup": {
+                        "SourceType": "Variable",
+                        "VariableName": "PaymentTDSBaseAmount"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "ActivityType": "IFSTATEMENT",
+              "Activity": {
+                "Condition": {
+                  "Body": [
+                    {
+                      "Operator": " ",
+                      "ConditionType": "Is Greater Than",
+                      "LHS": {
+                        "Lookup": {
+                          "SourceType": "Variable",
+                          "VariableName": "TDSBasedRemainingAmount"
+                        }
+                      },
+                      "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                          "SourceType": "Variable",
+                          "VariableName": "AppliedAmount"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "Body": [
+                  {
+                    "ActivityType": "SETVARIABLE",
+                    "Activity": {
+                      "OutputVariableName": "AppliedAmount",
+                      "OutputValue": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                          "SourceType": "Variable",
+                          "VariableName": "TDSBasedRemainingAmount"
+                        }
+                      }
+                    }
+                  }
+                ]
               }
             }
           ]
@@ -3608,6 +3961,17 @@
                                             "Lookup": {
                                               "SourceType": "Tax Attributes",
                                               "AttributeName": "Assessee Code"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "FiterFieldName": "Posting Date",
+                                          "FilterType": "CAL Filter",
+                                          "FilterValue": {
+                                            "Type": "Lookup",
+                                            "Lookup": {
+                                              "SourceType": "Variable",
+                                              "VariableName": "AccountingDateFilter"
                                             }
                                           }
                                         },
@@ -5771,6 +6135,17 @@
                     "Type": "Constant",
                     "Value": "0"
                   }
+                },
+                {
+                  "FiterFieldName": "Posting Date",
+                  "FilterType": "CAL Filter",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Variable",
+                      "VariableName": "AccountingDateFilter"
+                    }
+                  }
                 }
               ]
             }
@@ -5821,6 +6196,17 @@
                     "Lookup": {
                       "SourceType": "Tax Attributes",
                       "AttributeName": "Assessee Code"
+                    }
+                  }
+                },
+                {
+                  "FiterFieldName": "Posting Date",
+                  "FilterType": "CAL Filter",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Variable",
+                      "VariableName": "AccountingDateFilter"
                     }
                   }
                 },
@@ -6721,6 +7107,17 @@
                     "Lookup": {
                       "SourceType": "Tax Attributes",
                       "AttributeName": "Assessee Code"
+                    }
+                  }
+                },
+                {
+                  "FiterFieldName": "Posting Date",
+                  "FilterType": "CAL Filter",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Variable",
+                      "VariableName": "AccountingDateFilter"
                     }
                   }
                 }
@@ -8853,7 +9250,7 @@
             "Lookup": {
               "SourceType": "Table",
               "TableName": "TDS Entry",
-              "TableFieldName": "Original Invoice Amount",
+              "TableFieldName": "Invoice Amount",
               "Method": "Sum",
               "TableFilters": [
                 {
@@ -8877,6 +9274,17 @@
                       "SourceType": "Current Record",
                       "TableName": "Purchase Line",
                       "FieldName": "TDS Section Code"
+                    }
+                  }
+                },
+                {
+                  "FiterFieldName": "Posting Date",
+                  "FilterType": "CAL Filter",
+                  "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                      "SourceType": "Variable",
+                      "VariableName": "AccountingDateFilter"
                     }
                   }
                 }
@@ -12840,29 +13248,39 @@
     ],
     "Components": [
       {
-        "ComponentName": "Surcharge",
-        "Sequence": 2,
+        "ComponentName": "eCESS",
+        "Sequence": 3,
         "Formula": {
-          "VariableName": "Surcharge",
-          "Expression": "SurchargeTaxableAmount*SurchargePercent/100",
+          "VariableName": "eCESS",
+          "Expression": "(TDSAmount+SurchargeAmount)*EcessPercent/100",
           "Tokens": [
             {
-              "TokenName": "SurchargePercent",
+              "TokenName": "EcessPercent",
               "TokenValue": {
                 "Type": "Lookup",
                 "Lookup": {
                   "SourceType": "Component Percent",
+                  "ComponentName": "eCESS"
+                }
+              }
+            },
+            {
+              "TokenName": "SurchargeAmount",
+              "TokenValue": {
+                "Type": "Lookup",
+                "Lookup": {
+                  "SourceType": "Component",
                   "ComponentName": "Surcharge"
                 }
               }
             },
             {
-              "TokenName": "SurchargeTaxableAmount",
+              "TokenName": "TDSAmount",
               "TokenValue": {
                 "Type": "Lookup",
                 "Lookup": {
-                  "SourceType": "Variable",
-                  "VariableName": "SurchargeBaseAmt"
+                  "SourceType": "Component",
+                  "ComponentName": "TDS"
                 }
               }
             }
@@ -12870,29 +13288,59 @@
         }
       },
       {
-        "ComponentName": "TDS",
-        "Sequence": 1,
+        "ComponentName": "TDS Base Amount",
+        "Sequence": 6,
         "Formula": {
-          "VariableName": "TDS",
-          "Expression": "TDSTaxableAmount*TDSPercent/100",
+          "VariableName": "TDS Base Amount",
+          "Expression": "TDSBaseAmount",
           "Tokens": [
             {
-              "TokenName": "TDSPercent",
-              "TokenValue": {
-                "Type": "Lookup",
-                "Lookup": {
-                  "SourceType": "Component Percent",
-                  "ComponentName": "TDS"
-                }
-              }
-            },
-            {
-              "TokenName": "TDSTaxableAmount",
+              "TokenName": "TDSBaseAmount",
               "TokenValue": {
                 "Type": "Lookup",
                 "Lookup": {
                   "SourceType": "Variable",
-                  "VariableName": "TDSTaxableAmount"
+                  "VariableName": "TDSBaseAmt"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "ComponentName": "SHE Cess ",
+        "Sequence": 4,
+        "Formula": {
+          "VariableName": "SHE Cess ",
+          "Expression": "(TDSAmount+SurchargeAmount)*SHECessPercent/100",
+          "Tokens": [
+            {
+              "TokenName": "SHECessPercent",
+              "TokenValue": {
+                "Type": "Lookup",
+                "Lookup": {
+                  "SourceType": "Component Percent",
+                  "ComponentName": "SHE Cess "
+                }
+              }
+            },
+            {
+              "TokenName": "SurchargeAmount",
+              "TokenValue": {
+                "Type": "Lookup",
+                "Lookup": {
+                  "SourceType": "Component",
+                  "ComponentName": "Surcharge"
+                }
+              }
+            },
+            {
+              "TokenName": "TDSAmount",
+              "TokenValue": {
+                "Type": "Lookup",
+                "Lookup": {
+                  "SourceType": "Component",
+                  "ComponentName": "TDS"
                 }
               }
             }
@@ -12950,19 +13398,29 @@
         }
       },
       {
-        "ComponentName": "TDS Base Amount",
-        "Sequence": 6,
+        "ComponentName": "Surcharge",
+        "Sequence": 2,
         "Formula": {
-          "VariableName": "TDS Base Amount",
-          "Expression": "TDSBaseAmount",
+          "VariableName": "Surcharge",
+          "Expression": "SurchargeTaxableAmount*SurchargePercent/100",
           "Tokens": [
             {
-              "TokenName": "TDSBaseAmount",
+              "TokenName": "SurchargePercent",
+              "TokenValue": {
+                "Type": "Lookup",
+                "Lookup": {
+                  "SourceType": "Component Percent",
+                  "ComponentName": "Surcharge"
+                }
+              }
+            },
+            {
+              "TokenName": "SurchargeTaxableAmount",
               "TokenValue": {
                 "Type": "Lookup",
                 "Lookup": {
                   "SourceType": "Variable",
-                  "VariableName": "TDSBaseAmt"
+                  "VariableName": "SurchargeBaseAmt"
                 }
               }
             }
@@ -12970,79 +13428,29 @@
         }
       },
       {
-        "ComponentName": "eCESS",
-        "Sequence": 3,
+        "ComponentName": "TDS",
+        "Sequence": 1,
         "Formula": {
-          "VariableName": "eCESS",
-          "Expression": "(TDSAmount+SurchargeAmount)*EcessPercent/100",
+          "VariableName": "TDS",
+          "Expression": "TDSTaxableAmount*TDSPercent/100",
           "Tokens": [
             {
-              "TokenName": "EcessPercent",
+              "TokenName": "TDSPercent",
               "TokenValue": {
                 "Type": "Lookup",
                 "Lookup": {
                   "SourceType": "Component Percent",
-                  "ComponentName": "eCESS"
-                }
-              }
-            },
-            {
-              "TokenName": "SurchargeAmount",
-              "TokenValue": {
-                "Type": "Lookup",
-                "Lookup": {
-                  "SourceType": "Component",
-                  "ComponentName": "Surcharge"
-                }
-              }
-            },
-            {
-              "TokenName": "TDSAmount",
-              "TokenValue": {
-                "Type": "Lookup",
-                "Lookup": {
-                  "SourceType": "Component",
                   "ComponentName": "TDS"
                 }
               }
-            }
-          ]
-        }
-      },
-      {
-        "ComponentName": "SHE Cess ",
-        "Sequence": 4,
-        "Formula": {
-          "VariableName": "SHE Cess ",
-          "Expression": "(TDSAmount+SurchargeAmount)*SHECessPercent/100",
-          "Tokens": [
-            {
-              "TokenName": "SHECessPercent",
-              "TokenValue": {
-                "Type": "Lookup",
-                "Lookup": {
-                  "SourceType": "Component Percent",
-                  "ComponentName": "SHE Cess "
-                }
-              }
             },
             {
-              "TokenName": "SurchargeAmount",
+              "TokenName": "TDSTaxableAmount",
               "TokenValue": {
                 "Type": "Lookup",
                 "Lookup": {
-                  "SourceType": "Component",
-                  "ComponentName": "Surcharge"
-                }
-              }
-            },
-            {
-              "TokenName": "TDSAmount",
-              "TokenValue": {
-                "Type": "Lookup",
-                "Lookup": {
-                  "SourceType": "Component",
-                  "ComponentName": "TDS"
+                  "SourceType": "Variable",
+                  "VariableName": "TDSTaxableAmount"
                 }
               }
             }

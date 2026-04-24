@@ -12,6 +12,11 @@ pageextension 18142 "GST Customer Card Ext" extends "Customer Card"
         {
             group("GST")
             {
+                field("Govt. Undertaking"; Rec."Govt. Undertaking")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the vendor as Government authorized body.';
+                }
                 field("GST customer Type"; Rec."GST customer Type")
                 {
                     ApplicationArea = Basic, Suite;

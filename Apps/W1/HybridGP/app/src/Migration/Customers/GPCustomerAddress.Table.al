@@ -2,7 +2,6 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.Finance.SalesTax;
 using Microsoft.Sales.Customer;
-using System.Email;
 
 table 4048 "GP Customer Address"
 {
@@ -79,8 +78,7 @@ table 4048 "GP Customer Address"
         ShipToAddress: Record "Ship-to Address";
         Customer: Record Customer;
         GPSY01200: Record "GP SY01200";
-        MailManagement: Codeunit "Mail Management";
-        EmailAddress: Text[80];
+        EmailAddressList: List of [Text];
         TaxAreaCode: Code[20];
         Exists: Boolean;
     begin
@@ -111,13 +109,9 @@ table 4048 "GP Customer Address"
             if (CopyStr(ShipToAddress."Fax No.", 1, 14) = '00000000000000') then
                 ShipToAddress."Fax No." := '';
 
-            if GPSY01200.Get(CustomerEmailTypeCodeLbl, CUSTNMBR, ADRSCODE) then
-                EmailAddress := CopyStr(GPSY01200.GetSingleEmailAddress(MaxStrLen(ShipToAddress."E-Mail")), 1, MaxStrLen(ShipToAddress."E-Mail"));
-
-#pragma warning disable AA0139
-            if MailManagement.ValidateEmailAddressField(EmailAddress) then
-                ShipToAddress."E-Mail" := EmailAddress;
-#pragma warning restore AA0139
+            EmailAddressList := GPSY01200.GetEmailAddresses(CustomerEmailTypeCodeLbl, Rec.CUSTNMBR, Rec.ADRSCODE, true);
+            if EmailAddressList.Count() > 0 then
+                ShipToAddress."E-Mail" := CopyStr(EmailAddressList.Get(1), 1, MaxStrLen(ShipToAddress."E-Mail"));
 
             if not Exists then
                 ShipToAddress.Insert()

@@ -1,0 +1,1820 @@
+name: PA-TS-Metrics-01-fr-CA
+language: fr-CA
+tests:
+- name: PA-INV-V010-001
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Services Professionnels Comptables Beauchamp
+    Address: 1100 Boulevard René-Lévesque Ouest
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1S 1E5
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60400
+    Description: Tenue livres et comptes - contrat annuel
+    Quantity: 1.0
+    Unit Price: 32500.0
+  - Type: 1
+    No.: 60410
+    Description: Conseil restructuration fiscale
+    Quantity: 1.0
+    Unit Price: 7850.0
+  - Type: 1
+    No.: 60400
+    Description: Gestion comptes clients
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 60400
+    Description: Évaluation entreprise
+    Quantity: 1.0
+    Unit Price: 8500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-001
+        Buy-from Vendor Name: Services Professionnels Comptables Beauchamp
+        Buy-from Address: 1100 Boulevard René-Lévesque Ouest
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1S 1E5
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60400
+        Deferral Code: 12M
+        Description: Tenue livres et comptes - contrat annuel
+        Quantity: 1.0
+        Unit Cost: 32500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60410
+        Deferral Code: ''
+        Description: Conseil restructuration fiscale
+        Quantity: 1.0
+        Unit Cost: 7850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60400
+        Deferral Code: ''
+        Description: Gestion comptes clients
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60400
+        Deferral Code: ''
+        Description: Évaluation entreprise
+        Quantity: 1.0
+        Unit Cost: 8500.0
+- name: PA-INV-V010-003
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Services Professionnels Comptables Beauchamp
+    Address: 1100 Boulevard René-Lévesque Ouest
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1S 1E5
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60400
+    Description: Services compilation états financiers
+    Quantity: 1.0
+    Unit Price: 3450.0
+  - Type: 1
+    No.: 60410
+    Description: Préparation déclarations fiscales
+    Quantity: 1.0
+    Unit Price: 4250.0
+  - Type: 1
+    No.: 60410
+    Description: Planification transfert entreprise
+    Quantity: 1.0
+    Unit Price: 5250.0
+  - Type: 1
+    No.: 60410
+    Description: Conseil fusion acquisition
+    Quantity: 1.0
+    Unit Price: 12500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-003
+        Buy-from Vendor Name: Services Professionnels Comptables Beauchamp
+        Buy-from Address: 1100 Boulevard René-Lévesque Ouest
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1S 1E5
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60400
+        Deferral Code: ''
+        Description: Services compilation états financiers
+        Quantity: 1.0
+        Unit Cost: 3450.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60410
+        Deferral Code: ''
+        Description: Préparation déclarations fiscales
+        Quantity: 1.0
+        Unit Cost: 4250.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60410
+        Deferral Code: ''
+        Description: Planification transfert entreprise
+        Quantity: 1.0
+        Unit Cost: 5250.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60410
+        Deferral Code: ''
+        Description: Conseil fusion acquisition
+        Quantity: 1.0
+        Unit Cost: 12500.0
+- name: PA-INV-V005-009
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG005;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Vernis & Finitions Pro Ltée
+    Address: 445 Rue du Parc-Industriel
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1P 4B3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-009
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50430
+    Description: Laque acrylique deux composants
+    Quantity: 34.0
+    Unit Price: 118.0
+  - Type: 1
+    No.: 50420
+    Description: Vernis acrylique brillant
+    Quantity: 70.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 50430
+    Description: Finition antibactérienne certifiée
+    Quantity: 26.0
+    Unit Price: 165.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-009
+        Buy-from Vendor Name: Vernis & Finitions Pro Ltée
+        Buy-from Address: 445 Rue du Parc-Industriel
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1P 4B3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50430
+        Deferral Code: ''
+        Description: Laque acrylique deux composants
+        Quantity: 34.0
+        Unit Cost: 118.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Vernis acrylique brillant
+        Quantity: 70.0
+        Unit Cost: 62.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50430
+        Deferral Code: ''
+        Description: Finition antibactérienne certifiée
+        Quantity: 26.0
+        Unit Cost: 165.0
+- name: PA-INV-V010-009
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Comptables Beauchamp
+    Address: 1100 Boulevard René-Lévesque Ouest
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1S 1E5
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-009
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60400
+    Description: Analyse coûts production
+    Quantity: 1.0
+    Unit Price: 2150.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-009
+        Buy-from Vendor Name: Services Professionnels Comptables Beauchamp
+        Buy-from Address: 1100 Boulevard René-Lévesque Ouest
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1S 1E5
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60400
+        Deferral Code: ''
+        Description: Analyse coûts production
+        Quantity: 1.0
+        Unit Cost: 2150.0
+- name: PA-INV-V007-002
+  description: VendorNo=V007;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Emballage Industriel Québec Inc.
+    Address: 1820 Avenue des Entreprises
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1N 4H2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V007-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50510
+    Description: Enveloppes matelassées
+    Quantity: 400.0
+    Unit Price: 3.25
+  - Type: 1
+    No.: 50500
+    Description: Housses protection meubles
+    Quantity: 250.0
+    Unit Price: 6.5
+  - Type: 1
+    No.: 61400
+    Description: Certification emballage écologique - annuelle
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 50500
+    Description: Palettes carton jetables
+    Quantity: 75.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 50500
+    Description: Cartons triple cannelure
+    Quantity: 110.0
+    Unit Price: 19.5
+  - Type: 1
+    No.: 50500
+    Description: Cartons plats pliables
+    Quantity: 400.0
+    Unit Price: 9.75
+  - Type: 1
+    No.: 60500
+    Description: Formation emballage sécuritaire - annuelle
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 60900
+    Description: Recyclage matériaux emballage - trimestriel
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 50500
+    Description: Boîtes format télévision
+    Quantity: 150.0
+    Unit Price: 15.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V007-002
+        Buy-from Vendor Name: Emballage Industriel Québec Inc.
+        Buy-from Address: 1820 Avenue des Entreprises
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1N 4H2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Enveloppes matelassées
+        Quantity: 400.0
+        Unit Cost: 3.25
+      - Line No.: 20000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Housses protection meubles
+        Quantity: 250.0
+        Unit Cost: 6.5
+      - Line No.: 30000
+        Type: 1
+        No.: 61400
+        Deferral Code: 12M
+        Description: Certification emballage écologique - annuelle
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Palettes carton jetables
+        Quantity: 75.0
+        Unit Cost: 45.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Cartons triple cannelure
+        Quantity: 110.0
+        Unit Cost: 19.5
+      - Line No.: 60000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Cartons plats pliables
+        Quantity: 400.0
+        Unit Cost: 9.75
+      - Line No.: 70000
+        Type: 1
+        No.: 60500
+        Deferral Code: 12M
+        Description: Formation emballage sécuritaire - annuelle
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 80000
+        Type: 1
+        No.: 60900
+        Deferral Code: 3M
+        Description: Recyclage matériaux emballage - trimestriel
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Boîtes format télévision
+        Quantity: 150.0
+        Unit Cost: 15.0
+- name: PA-INV-V007-004
+  description: VendorNo=V007;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Emballage Ind. Québec Inc.
+    Address: 1820 Avenue des Entreprises
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1N 4H2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V007-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50510
+    Description: Film étirable main
+    Quantity: 95.0
+    Unit Price: 22.5
+  - Type: 1
+    No.: 50500
+    Description: Coins protection carton
+    Quantity: 1000.0
+    Unit Price: 1.85
+  - Type: 1
+    No.: 50510
+    Description: Film antistatique électronique
+    Quantity: 75.0
+    Unit Price: 52.0
+  - Type: 1
+    No.: 50510
+    Description: Mousse polyéthylène feuilles
+    Quantity: 200.0
+    Unit Price: 18.5
+  - Type: 1
+    No.: 50510
+    Description: Papier soie protection
+    Quantity: 250.0
+    Unit Price: 5.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V007-004
+        Buy-from Vendor Name: Emballage Industriel Québec Inc.
+        Buy-from Address: 1820 Avenue des Entreprises
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1N 4H2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Film étirable main
+        Quantity: 95.0
+        Unit Cost: 22.5
+      - Line No.: 20000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Coins protection carton
+        Quantity: 1000.0
+        Unit Cost: 1.85
+      - Line No.: 30000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Film antistatique électronique
+        Quantity: 75.0
+        Unit Cost: 52.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Mousse polyéthylène feuilles
+        Quantity: 200.0
+        Unit Cost: 18.5
+      - Line No.: 50000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Papier soie protection
+        Quantity: 250.0
+        Unit Cost: 5.5
+- name: PA-INV-V010-007
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Services Professionnels Comptables Beauchamp
+    Address: 1100 Boulevard René-Lévesque Ouest
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1S 1E5
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-007
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60400
+    Description: Audit interne procédures
+    Quantity: 1.0
+    Unit Price: 4850.0
+  - Type: 1
+    No.: 60410
+    Description: Déclarations employés relevés
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 60410
+    Description: Conformité fiscale internationale
+    Quantity: 1.0
+    Unit Price: 4950.0
+  - Type: 1
+    No.: 60400
+    Description: Préparation budget prévisionnel
+    Quantity: 1.0
+    Unit Price: 2450.0
+  - Type: 1
+    No.: 60400
+    Description: Service conseil financier - annuel
+    Quantity: 1.0
+    Unit Price: 18500.0
+  - Type: 1
+    No.: 60400
+    Description: Gestion comptes fournisseurs
+    Quantity: 1.0
+    Unit Price: 1250.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-007
+        Buy-from Vendor Name: Services Professionnels Comptables Beauchamp
+        Buy-from Address: 1100 Boulevard René-Lévesque Ouest
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1S 1E5
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60400
+        Deferral Code: ''
+        Description: Audit interne procédures
+        Quantity: 1.0
+        Unit Cost: 4850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60410
+        Deferral Code: ''
+        Description: Déclarations employés relevés
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60410
+        Deferral Code: ''
+        Description: Conformité fiscale internationale
+        Quantity: 1.0
+        Unit Cost: 4950.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60400
+        Deferral Code: ''
+        Description: Préparation budget prévisionnel
+        Quantity: 1.0
+        Unit Cost: 2450.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60400
+        Deferral Code: 12M
+        Description: Service conseil financier - annuel
+        Quantity: 1.0
+        Unit Cost: 18500.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60400
+        Deferral Code: ''
+        Description: Gestion comptes fournisseurs
+        Quantity: 1.0
+        Unit Cost: 1250.0
+- name: PA-INV-V009-001
+  description: VendorNo=V009;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG007;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Énergie Hydro Solutions
+    Address: 505 Rue Bouvier
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G2J 1E3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V009-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60210
+    Description: Gaz chaudière industrielle
+    Quantity: 1.0
+    Unit Price: 2850.0
+  - Type: 1
+    No.: 60200
+    Description: Électricité systèmes automatisés
+    Quantity: 1.0
+    Unit Price: 2950.0
+  - Type: 1
+    No.: 60200
+    Description: Analyse consommation énergétique
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 60200
+    Description: Contrat fourniture électrique - trimestriel
+    Quantity: 1.0
+    Unit Price: 24850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V009-001
+        Buy-from Vendor Name: Énergie Hydro Solutions
+        Buy-from Address: 505 Rue Bouvier
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G2J 1E3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60210
+        Deferral Code: ''
+        Description: Gaz chaudière industrielle
+        Quantity: 1.0
+        Unit Cost: 2850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Électricité systèmes automatisés
+        Quantity: 1.0
+        Unit Cost: 2950.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Analyse consommation énergétique
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60200
+        Deferral Code: 3M
+        Description: Contrat fourniture électrique - trimestriel
+        Quantity: 1.0
+        Unit Cost: 24850.0
+- name: PA-INV-V005-002
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG005;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Vernis & Finitions Pro Ltée
+    Address: 445 Rue du Parc-Industriel
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1P 4B3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50420
+    Description: Teinture chêne moyen
+    Quantity: 55.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 50420
+    Description: Teinture merisier rougeâtre
+    Quantity: 58.0
+    Unit Price: 46.75
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-002
+        Buy-from Vendor Name: Vernis & Finitions Pro Ltée
+        Buy-from Address: 445 Rue du Parc-Industriel
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1P 4B3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Teinture chêne moyen
+        Quantity: 55.0
+        Unit Cost: 48.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Teinture merisier rougeâtre
+        Quantity: 58.0
+        Unit Cost: 46.75
+- name: PA-INV-V005-003
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Vernis & Finitions Pro Ltée
+    Address: 445 Rue du Parc-Industriel
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1P 4B3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61400
+    Description: Licence logiciel formulation couleurs - annuelle
+    Quantity: 1.0
+    Unit Price: 1950.0
+  - Type: 1
+    No.: 50430
+    Description: Laque vinylique séchage rapide
+    Quantity: 36.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 50420
+    Description: Vernis marin extérieur
+    Quantity: 38.0
+    Unit Price: 98.5
+  - Type: 1
+    No.: 50420
+    Description: Teinture aniline poudre
+    Quantity: 25.0
+    Unit Price: 92.0
+  - Type: 1
+    No.: 50420
+    Description: Vernis polyuréthane satiné
+    Quantity: 85.0
+    Unit Price: 68.5
+  - Type: 1
+    No.: 50420
+    Description: Vernis époxy résistant chimique
+    Quantity: 30.0
+    Unit Price: 135.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-003
+        Buy-from Vendor Name: Vernis & Finitions Pro Ltée
+        Buy-from Address: 445 Rue du Parc-Industriel
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1P 4B3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61400
+        Deferral Code: 12M
+        Description: Licence logiciel formulation couleurs - annuelle
+        Quantity: 1.0
+        Unit Cost: 1950.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50430
+        Deferral Code: ''
+        Description: Laque vinylique séchage rapide
+        Quantity: 36.0
+        Unit Cost: 85.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Vernis marin extérieur
+        Quantity: 38.0
+        Unit Cost: 98.5
+      - Line No.: 40000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Teinture aniline poudre
+        Quantity: 25.0
+        Unit Cost: 92.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Vernis polyuréthane satiné
+        Quantity: 85.0
+        Unit Cost: 68.5
+      - Line No.: 60000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Vernis époxy résistant chimique
+        Quantity: 30.0
+        Unit Cost: 135.0
+- name: PA-INV-V009-005
+  description: VendorNo=V009;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG007;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Énergie Hydro Solutions
+    Address: 505 Rue Bouvier
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G2J 1E3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V009-005
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60200
+    Description: Électricité bureaux administration
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 60200
+    Description: Facturation électricité usine
+    Quantity: 1.0
+    Unit Price: 12680.0
+  - Type: 1
+    No.: 60210
+    Description: Optimisation combustion - contrat trimestriel
+    Quantity: 1.0
+    Unit Price: 2100.0
+  - Type: 1
+    No.: 60200
+    Description: Facturation équilibrage réseau
+    Quantity: 1.0
+    Unit Price: 550.0
+  - Type: 1
+    No.: 60200
+    Description: Facteur puissance correction
+    Quantity: 1.0
+    Unit Price: 650.0
+  - Type: 1
+    No.: 60200
+    Description: Audit énergétique installations
+    Quantity: 1.0
+    Unit Price: 1950.0
+  - Type: 1
+    No.: 60200
+    Description: Programme équilibrage tarifs - semestriel
+    Quantity: 1.0
+    Unit Price: 8450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V009-005
+        Buy-from Vendor Name: Énergie Hydro Solutions
+        Buy-from Address: 505 Rue Bouvier
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G2J 1E3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Électricité bureaux administration
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Facturation électricité usine
+        Quantity: 1.0
+        Unit Cost: 12680.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60210
+        Deferral Code: 3M
+        Description: Optimisation combustion - contrat trimestriel
+        Quantity: 1.0
+        Unit Cost: 2100.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Facturation équilibrage réseau
+        Quantity: 1.0
+        Unit Cost: 550.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Facteur puissance correction
+        Quantity: 1.0
+        Unit Cost: 650.0
+      - Line No.: 60000
+        Type: 1
+        No.: 60200
+        Deferral Code: ''
+        Description: Audit énergétique installations
+        Quantity: 1.0
+        Unit Cost: 1950.0
+      - Line No.: 70000
+        Type: 1
+        No.: 60200
+        Deferral Code: 6M
+        Description: Programme équilibrage tarifs - semestriel
+        Quantity: 1.0
+        Unit Cost: 8450.0
+- name: PA-INV-V008-002
+  description: VendorNo=V008;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Systèmes Informatiques Nexus
+    Address: 750 Boulevard Charest Est
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1K 3J6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V008-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60730
+    Description: Mise en place sauvegarde automatisée
+    Quantity: 1.0
+    Unit Price: 1580.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V008-002
+        Buy-from Vendor Name: Systèmes Informatiques Nexus
+        Buy-from Address: 750 Boulevard Charest Est
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1K 3J6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60730
+        Deferral Code: ''
+        Description: Mise en place sauvegarde automatisée
+        Quantity: 1.0
+        Unit Cost: 1580.0
+- name: PA-INV-V005-007
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG005;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Vernis & Finitions Pro Ltée
+    Address: 445 Rue du Parc-Industriel
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1P 4B3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-007
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50420
+    Description: Teinture frêne clair
+    Quantity: 64.0
+    Unit Price: 44.5
+  - Type: 1
+    No.: 50430
+    Description: Finition catalysée résistante
+    Quantity: 35.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 50420
+    Description: Vernis shellac naturel
+    Quantity: 22.0
+    Unit Price: 156.0
+  - Type: 1
+    No.: 50420
+    Description: Teinture cerisier naturel
+    Quantity: 54.0
+    Unit Price: 49.5
+  - Type: 1
+    No.: 50420
+    Description: Teinture bois exotique
+    Quantity: 42.0
+    Unit Price: 86.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-007
+        Buy-from Vendor Name: Vernis & Finitions Pro Ltée
+        Buy-from Address: 445 Rue du Parc-Industriel
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1P 4B3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Teinture frêne clair
+        Quantity: 64.0
+        Unit Cost: 44.5
+      - Line No.: 20000
+        Type: 1
+        No.: 50430
+        Deferral Code: ''
+        Description: Finition catalysée résistante
+        Quantity: 35.0
+        Unit Cost: 95.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Vernis shellac naturel
+        Quantity: 22.0
+        Unit Cost: 156.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Teinture cerisier naturel
+        Quantity: 54.0
+        Unit Cost: 49.5
+      - Line No.: 50000
+        Type: 1
+        No.: 50420
+        Deferral Code: ''
+        Description: Teinture bois exotique
+        Quantity: 42.0
+        Unit Cost: 86.0
+- name: PA-INV-V007-001
+  description: VendorNo=V007;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Emballage Industriel Québec Inc.
+    Address: 1820 Avenue des Entreprises
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1N 4H2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V007-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50510
+    Description: Ruban adhésif haute résistance
+    Quantity: 300.0
+    Unit Price: 4.25
+  - Type: 1
+    No.: 50500
+    Description: Cartons sur mesure
+    Quantity: 120.0
+    Unit Price: 18.5
+  - Type: 1
+    No.: 50500
+    Description: Boîtes compartiments multiples
+    Quantity: 180.0
+    Unit Price: 14.5
+  - Type: 1
+    No.: 50500
+    Description: Cartons kraft recyclé
+    Quantity: 320.0
+    Unit Price: 10.25
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V007-001
+        Buy-from Vendor Name: Emballage Industriel Québec Inc.
+        Buy-from Address: 1820 Avenue des Entreprises
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1N 4H2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Ruban adhésif haute résistance
+        Quantity: 300.0
+        Unit Cost: 4.25
+      - Line No.: 20000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Cartons sur mesure
+        Quantity: 120.0
+        Unit Cost: 18.5
+      - Line No.: 30000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Boîtes compartiments multiples
+        Quantity: 180.0
+        Unit Cost: 14.5
+      - Line No.: 40000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Cartons kraft recyclé
+        Quantity: 320.0
+        Unit Cost: 10.25
+- name: PA-INV-V008-006
+  description: VendorNo=V008;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Systemes Informatiques Nexus
+    Address: 750 Boulevard Charest Est
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1K 3J6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V008-006
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60720
+    Description: Réparation matériel informatique
+    Quantity: 18.0
+    Unit Price: 145.0
+  - Type: 1
+    No.: 60720
+    Description: Dépannage urgence informatique
+    Quantity: 12.0
+    Unit Price: 165.0
+  - Type: 1
+    No.: 60700
+    Description: Suite protection endpoint - annuelle
+    Quantity: 1.0
+    Unit Price: 3150.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V008-006
+        Buy-from Vendor Name: Systèmes Informatiques Nexus
+        Buy-from Address: 750 Boulevard Charest Est
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1K 3J6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60720
+        Deferral Code: ''
+        Description: Réparation matériel informatique
+        Quantity: 18.0
+        Unit Cost: 145.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60720
+        Deferral Code: ''
+        Description: Dépannage urgence informatique
+        Quantity: 12.0
+        Unit Cost: 165.0
+      - Line No.: 30000
+        Type: 1
+        No.: 60700
+        Deferral Code: 12M
+        Description: Suite protection endpoint - annuelle
+        Quantity: 1.0
+        Unit Cost: 3150.0
+- name: PA-INV-V017-001
+  description: VendorNo=V017;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG017;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Publicité & Marketing Stratégique
+    Address: 895 Ave Honoré-Beaugrand
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1S 3A2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V017-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61200
+    Description: Brochures promotionnelles impression
+    Quantity: 2000.0
+    Unit Price: 4.5
+  - Type: 1
+    No.: 61210
+    Description: Consultation stratégie marque
+    Quantity: 4.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 61200
+    Description: Design logo marque
+    Quantity: 1.0
+    Unit Price: 5850.0
+  - Type: 1
+    No.: 61210
+    Description: Campagne emailing marketing
+    Quantity: 6.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 61210
+    Description: Production vidéo promotionnelle
+    Quantity: 2.0
+    Unit Price: 3250.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V017-001
+        Buy-from Vendor Name: Publicité & Marketing Stratégique
+        Buy-from Address: 895 Avenue Honoré-Beaugrand
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1S 3A2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61200
+        Deferral Code: ''
+        Description: Brochures promotionnelles impression
+        Quantity: 2000.0
+        Unit Cost: 4.5
+      - Line No.: 20000
+        Type: 1
+        No.: 61210
+        Deferral Code: ''
+        Description: Consultation stratégie marque
+        Quantity: 4.0
+        Unit Cost: 1250.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61200
+        Deferral Code: ''
+        Description: Design logo marque
+        Quantity: 1.0
+        Unit Cost: 5850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 61210
+        Deferral Code: ''
+        Description: Campagne emailing marketing
+        Quantity: 6.0
+        Unit Cost: 850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 61210
+        Deferral Code: ''
+        Description: Production vidéo promotionnelle
+        Quantity: 2.0
+        Unit Cost: 3250.0
+- name: PA-INV-V011-001
+  description: VendorNo=V011;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Cabinet Juridique Tremblay & Associés
+    Address: 2600 Boulevard Laurier
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1V 4T3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V011-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60410
+    Description: Veille juridique réglementaire - trimestrielle
+    Quantity: 1.0
+    Unit Price: 1950.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V011-001
+        Buy-from Vendor Name: Cabinet Juridique Tremblay & Associés
+        Buy-from Address: 2600 Boulevard Laurier
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1V 4T3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60410
+        Deferral Code: 3M
+        Description: Veille juridique réglementaire - trimestrielle
+        Quantity: 1.0
+        Unit Cost: 1950.0
+- name: PA-INV-V018-003
+  description: VendorNo=V018;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Ressources Humaines Pro-Conseil
+    Address: 320 Rue Saint-Joseph Est
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1K 3B2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V018-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61300
+    Description: Formation harcèlement prévention
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 61300
+    Description: Médiation relations travail
+    Quantity: 1.0
+    Unit Price: 2250.0
+  - Type: 1
+    No.: 61310
+    Description: Planification succession postes
+    Quantity: 1.0
+    Unit Price: 4250.0
+  - Type: 1
+    No.: 61300
+    Description: Sondage satisfaction employés
+    Quantity: 1.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 61310
+    Description: Services RH complets - annuel
+    Quantity: 1.0
+    Unit Price: 24000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V018-003
+        Buy-from Vendor Name: Ressources Humaines Pro-Conseil
+        Buy-from Address: 320 Rue Saint-Joseph Est
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1K 3B2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61300
+        Deferral Code: ''
+        Description: Formation harcèlement prévention
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61300
+        Deferral Code: ''
+        Description: Médiation relations travail
+        Quantity: 1.0
+        Unit Cost: 2250.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61310
+        Deferral Code: ''
+        Description: Planification succession postes
+        Quantity: 1.0
+        Unit Cost: 4250.0
+      - Line No.: 40000
+        Type: 1
+        No.: 61300
+        Deferral Code: ''
+        Description: Sondage satisfaction employés
+        Quantity: 1.0
+        Unit Cost: 1450.0
+      - Line No.: 50000
+        Type: 1
+        No.: 61310
+        Deferral Code: 12M
+        Description: Services RH complets - annuel
+        Quantity: 1.0
+        Unit Cost: 24000.0
+- name: PA-INV-V019-002
+  description: VendorNo=V019;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Assurance Industrielle Desjardins
+    Address: 1 Complexe Desjardins
+    Address 2: ''
+    City: Montréal
+    Country/Region Code: CA
+    Post Code: H5B 1B2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V019-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61410
+    Description: Couverture transport marchandises
+    Quantity: 1.0
+    Unit Price: 3650.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V019-002
+        Buy-from Vendor Name: Assurance Industrielle Desjardins
+        Buy-from Address: 1 Complexe Desjardins
+        Buy-from Address 2: ''
+        Buy-from City: Montréal
+        Buy-from Post Code: H5B 1B2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61410
+        Deferral Code: ''
+        Description: Couverture transport marchandises
+        Quantity: 1.0
+        Unit Cost: 3650.0
+- name: PA-INV-V012-002
+  description: VendorNo=V012;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=True;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Machinerie CNC Précision Ltée
+    Address: 980 Rue de la Technologie
+    Address 2: ''
+    City: Levis
+    Country/Region Code: CA
+    Post Code: G6V 8T9
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V012-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50600
+    Description: Guidages linéaires précision
+    Quantity: 8.0
+    Unit Price: 485.0
+  - Type: 1
+    No.: 50600
+    Description: Consoles commandes tactiles
+    Quantity: 3.0
+    Unit Price: 1650.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V012-002
+        Buy-from Vendor Name: Machinerie CNC Précision Ltée
+        Buy-from Address: 980 Rue de la Technologie
+        Buy-from Address 2: ''
+        Buy-from City: Lévis
+        Buy-from Post Code: G6V 8T9
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Guidages linéaires précision
+        Quantity: 8.0
+        Unit Cost: 485.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Consoles commandes tactiles
+        Quantity: 3.0
+        Unit Cost: 1650.0
+- name: PA-INV-V016-003
+  description: VendorNo=V016;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Maintenance Bâtiments Capital
+    Address: 1455 Rue Frank-Carrel
+    Address 2: ''
+    City: Québec
+    Country/Region Code: CA
+    Post Code: G1N 4N7
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V016-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61110
+    Description: Inspection bâtiment préventive - annuelle
+    Quantity: 1.0
+    Unit Price: 3650.0
+  - Type: 1
+    No.: 61100
+    Description: Nettoyage vitres extérieures
+    Quantity: 2.0
+    Unit Price: 2250.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V016-003
+        Buy-from Vendor Name: Maintenance Bâtiments Capital
+        Buy-from Address: 1455 Rue Frank-Carrel
+        Buy-from Address 2: ''
+        Buy-from City: Québec
+        Buy-from Post Code: G1N 4N7
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61110
+        Deferral Code: 12M
+        Description: Inspection bâtiment préventive - annuelle
+        Quantity: 1.0
+        Unit Cost: 3650.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Nettoyage vitres extérieures
+        Quantity: 2.0
+        Unit Cost: 2250.0
+- name: PA-INV-V019-003
+  description: VendorNo=V019;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Desjardins Assurance Ind.
+    Address: 1 Complexe Desjardins
+    Address 2: ''
+    City: Montréal
+    Country/Region Code: CA
+    Post Code: H5B 1B2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V019-003
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61400
+    Description: Assurance erreurs omissions
+    Quantity: 1.0
+    Unit Price: 3850.0
+  - Type: 1
+    No.: 61410
+    Description: Consultation réduction primes
+    Quantity: 1.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 61410
+    Description: Formation gestion risques
+    Quantity: 1.0
+    Unit Price: 1850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V019-003
+        Buy-from Vendor Name: Assurance Industrielle Desjardins
+        Buy-from Address: 1 Complexe Desjardins
+        Buy-from Address 2: ''
+        Buy-from City: Montréal
+        Buy-from Post Code: H5B 1B2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61400
+        Deferral Code: ''
+        Description: Assurance erreurs omissions
+        Quantity: 1.0
+        Unit Cost: 3850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61410
+        Deferral Code: ''
+        Description: Consultation réduction primes
+        Quantity: 1.0
+        Unit Cost: 1450.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61410
+        Deferral Code: ''
+        Description: Formation gestion risques
+        Quantity: 1.0
+        Unit Cost: 1850.0
+- name: PA-INV-V012-004
+  description: VendorNo=V012;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG011;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Machinerie CNC Precision Ltée
+    Address: 980 Rue de la Technologie
+    Address 2: ''
+    City: Lévis
+    Country/Region Code: CA
+    Post Code: G6V 8T9
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V012-004
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60500
+    Description: Garantie pièces étendue - semestrielle
+    Quantity: 1.0
+    Unit Price: 9000.0
+  - Type: 1
+    No.: 60500
+    Description: Support technique prioritaire - semestriel
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 50600
+    Description: Broches découpe haute vitesse
+    Quantity: 6.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 60500
+    Description: Calibration équipements CNC
+    Quantity: 2.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 60500
+    Description: Contrat entretien machines - annuel
+    Quantity: 1.0
+    Unit Price: 8500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V012-004
+        Buy-from Vendor Name: Machinerie CNC Précision Ltée
+        Buy-from Address: 980 Rue de la Technologie
+        Buy-from Address 2: ''
+        Buy-from City: Lévis
+        Buy-from Post Code: G6V 8T9
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60500
+        Deferral Code: 6M
+        Description: Garantie pièces étendue - semestrielle
+        Quantity: 1.0
+        Unit Cost: 9000.0
+      - Line No.: 20000
+        Type: 1
+        No.: 60500
+        Deferral Code: 6M
+        Description: Support technique prioritaire - semestriel
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Broches découpe haute vitesse
+        Quantity: 6.0
+        Unit Cost: 1850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 60500
+        Deferral Code: ''
+        Description: Calibration équipements CNC
+        Quantity: 2.0
+        Unit Cost: 1450.0
+      - Line No.: 50000
+        Type: 1
+        No.: 60500
+        Deferral Code: 12M
+        Description: Contrat entretien machines - annuel
+        Quantity: 1.0
+        Unit Cost: 8500.0
+- name: PA-INV-V020-002
+  description: VendorNo=V020;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG015;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Services Environnementaux ÉcoGestion
+    Address: 455 Boulevard de la Gappe
+    Address 2: ''
+    City: Gatineau
+    Country/Region Code: CA
+    Post Code: J8T 8G2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V020-002
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 60910
+    Description: Gestion déchets dangereux - annuelle
+    Quantity: 1.0
+    Unit Price: 12500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V020-002
+        Buy-from Vendor Name: Services Environnementaux ÉcoGestion
+        Buy-from Address: 455 Boulevard de la Gappe
+        Buy-from Address 2: ''
+        Buy-from City: Gatineau
+        Buy-from Post Code: J8T 8G2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 60910
+        Deferral Code: 12M
+        Description: Gestion déchets dangereux - annuelle
+        Quantity: 1.0
+        Unit Cost: 12500.0
+- name: PA-INV-V012-001
+  description: VendorNo=V012;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-fr-CA.yaml
+  vendor:
+    Name: Machinerie CNC Précision Ltée
+    Address: 980 Rue de la Technologie
+    Address 2: ''
+    City: Lévis
+    Country/Region Code: CA
+    Post Code: G6V 8T9
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V012-001
+    Payment Terms Code: 30 JOURS
+    Shipment Method Code: Livraison
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50600
+    Description: Moteurs pas-à-pas remplacement
+    Quantity: 4.0
+    Unit Price: 725.0
+  - Type: 1
+    No.: 50600
+    Description: Pièces de rechange CNC
+    Quantity: 12.0
+    Unit Price: 385.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V012-001
+        Buy-from Vendor Name: Machinerie CNC Précision Ltée
+        Buy-from Address: 980 Rue de la Technologie
+        Buy-from Address 2: ''
+        Buy-from City: Lévis
+        Buy-from Post Code: G6V 8T9
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Moteurs pas-à-pas remplacement
+        Quantity: 4.0
+        Unit Cost: 725.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50600
+        Deferral Code: ''
+        Description: Pièces de rechange CNC
+        Quantity: 12.0
+        Unit Cost: 385.0

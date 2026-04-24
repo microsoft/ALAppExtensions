@@ -113,6 +113,9 @@ codeunit 139664 "GP Data Migration Tests"
         ShipToAddress: Record "Ship-to Address";
         StandardSalesLine: Record "Standard Sales Line";
         StandardCustomerSalesCode: Record "Standard Customer Sales Code";
+        CustomReportSelection: Record "Custom Report Selection";
+        ReportMetadata: Record "Report Metadata";
+        SalesInvoiceReportId: Integer;
         InitialGenJournalLineCount: Integer;
         CustomerCount: Integer;
     begin
@@ -120,6 +123,7 @@ codeunit 139664 "GP Data Migration Tests"
 
         // [GIVEN] GP data
         Initialize();
+        SalesInvoiceReportId := 1306;
         InitialGenJournalLineCount := GenJournalLine.Count();
 
         GPTestHelperFunctions.CreateConfigurationSettings();
@@ -238,7 +242,16 @@ codeunit 139664 "GP Data Migration Tests"
         // [THEN] Email addresses are included with the addresses when they are valid
         Customer.SetRange("No.", '#1');
         Customer.FindFirst();
-        Assert.AreEqual('GoodEmailAddress@testing.tst;support@testing.tst', Customer."E-Mail", 'E-Mail of Migrated Customer is wrong');
+        Assert.AreEqual('GoodEmailAddress@testing.tst', Customer."E-Mail", 'E-Mail of Migrated Customer is wrong');
+
+        if ReportMetadata.Get(SalesInvoiceReportId) then begin
+            CustomReportSelection.SetRange("Source Type", Database::Customer);
+            CustomReportSelection.SetRange("Source No.", Customer."No.");
+            CustomReportSelection.SetRange("Report ID", SalesInvoiceReportId);
+            CustomReportSelection.SetRange(Usage, CustomReportSelection.Usage::"S.Invoice");
+            Assert.IsTrue(CustomReportSelection.FindFirst(), 'Could not locate Custom Report Selection for Customer ' + Customer."No.");
+            Assert.AreEqual('support@testing.tst', CustomReportSelection."Send To Email", 'Extra email address not correct.');
+        end;
 
         Assert.IsTrue(ShipToAddress.Get('#1', 'PRIMARY'), 'Customer primary address does not exist.');
         Assert.AreEqual('GoodEmailAddress@testing.tst', ShipToAddress."E-Mail", 'Customer primary address email was not set correctly.');
@@ -251,7 +264,6 @@ codeunit 139664 "GP Data Migration Tests"
 
         Assert.IsTrue(ShipToAddress.Get('#1', 'OTHER'), 'Customer other address does not exist.');
         Assert.AreEqual('', ShipToAddress."E-Mail", 'Customer other address email should be empty.');
-
 
         // [THEN] Assigned sales codes/recurring lines will be correct.
 
@@ -300,47 +312,6 @@ codeunit 139664 "GP Data Migration Tests"
         // Names >50 <=100 characters should not be truncated.
         Customer.Get('BIGCUSTNAME');
         Assert.AreEqual(CompanyNameLargeTxt, Customer.Name, 'Large Name of Migrated Customer is wrong');
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestEmailAddressSelection()
-    begin
-        // [SCENARIO] Data migrated from GP contains records and email info in SY01200
-
-        Clear(GPSY01200);
-        GPSY01200.EmailToAddress := 'longeremailaddressshouldnotbeselected@test.net';
-        GPSY01200.EmailCcAddress := 'ANOTHEREMAILADDRESS@test.net';
-        GPSY01200.EmailBccAddress := 'anotheremailaddress@test.net';
-        GPSY01200.INET1 := 'shortemail@test.net';
-
-        // [WHEN] 20 is the max length
-        // [THEN] The shorter email in INET1 will be selected
-        Assert.AreEqual('shortemail@test.net', GPSY01200.GetSingleEmailAddress(20), 'Incorrect email address. (20 max length)');
-        Assert.AreEqual('shortemail@test.net', GPSY01200.GetAllEmailAddressesText(20), 'Incorrect multiple email text. (20 max length)');
-
-        // [WHEN] 50 is the max length
-        // [THEN] Only the EmailToAddress will be selected
-        Assert.AreEqual('longeremailaddressshouldnotbeselected@test.net', GPSY01200.GetSingleEmailAddress(50), 'Incorrect email address. (50 max length)');
-        Assert.AreEqual('longeremailaddressshouldnotbeselected@test.net', GPSY01200.GetAllEmailAddressesText(50), 'Incorrect multiple email text. (50 max length)');
-
-        // [WHEN] 100 is the max length
-        // [THEN] The EmailToAddress will be selected since the max is large enough
-        Assert.AreEqual('longeremailaddressshouldnotbeselected@test.net', GPSY01200.GetSingleEmailAddress(100), 'Incorrect email address. (100 max length)');
-
-        // [THEN] All non-duplicate email addresses will be selected
-        Assert.AreEqual('longeremailaddressshouldnotbeselected@test.net;ANOTHEREMAILADDRESS@test.net;shortemail@test.net', GPSY01200.GetAllEmailAddressesText(100), 'Incorrect multiple email text. (100 max length)');
-
-        // [WHEN] The only valid email address is INET1, and it's within the max length boundary
-        Clear(GPSY01200);
-        GPSY01200.EmailToAddress := '';
-        GPSY01200.EmailCcAddress := 'bad data;';
-        GPSY01200.EmailBccAddress := '';
-        GPSY01200.INET1 := 'OnlyEmailAddress@test.net';
-
-        // [THEN] The correct email address will be selected
-        Assert.AreEqual('OnlyEmailAddress@test.net', GPSY01200.GetSingleEmailAddress(80), 'Incorrect email address. (80 max length)');
-        Assert.AreEqual('OnlyEmailAddress@test.net', GPSY01200.GetAllEmailAddressesText(80), 'Incorrect email address. (80 max length)');
     end;
 
     [Test]

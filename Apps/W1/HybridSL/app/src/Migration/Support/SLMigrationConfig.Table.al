@@ -88,6 +88,18 @@ table 47017 "SL Migration Config"
         {
             InitValue = false;
         }
+        field(23; "Cash Manager Data Created"; Boolean)
+        {
+            InitValue = false;
+        }
+        field(24; "Open PO Data Created"; Boolean)
+        {
+            InitValue = false;
+        }
+        field(25; "Open SO Data Created"; Boolean)
+        {
+            InitValue = false;
+        }
     }
 
     keys

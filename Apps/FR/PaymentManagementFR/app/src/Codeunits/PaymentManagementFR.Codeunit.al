@@ -27,7 +27,15 @@ codeunit 10837 "Payment Management FR"
                   TableData "Vendor Ledger Entry" = rm;
 
     trigger OnRun()
+#if not CLEAN28
+    var
+        FeaturePaymentManagement: Codeunit "Payment Management Feature FR";
     begin
+        if not FeaturePaymentManagement.IsEnabled() then
+            Error(EnablePaymentManagementFRFeatureErr);
+#else
+    begin
+#endif
         CreatePaymentHeaders();
     end;
 
@@ -79,6 +87,9 @@ codeunit 10837 "Payment Management FR"
         CheckDimVauePostingLineErr: Label 'A dimension used in %1 %2 %3 has caused an error. %4', Comment = '%1=Payment Header No., %2=tablecaption, %3=Payment Line No., %4=Error text';
         CheckDimVauePostingHeaderErr: Label 'A dimension used in %1 has caused an error. %2', Comment = '%1=Payment Header No., %2=Error text';
         Text100Lbl: Label 'Rounding on %1', Comment = '%1 = Description';
+#if not CLEAN28
+        EnablePaymentManagementFRFeatureErr: Label 'Enable Payment Management FR feature to use this functionality';
+#endif
 
     local procedure ProcessPaymentStep(PaymentHeaderNo: Code[20]; PaymentStep: Record "Payment Step FR")
     var

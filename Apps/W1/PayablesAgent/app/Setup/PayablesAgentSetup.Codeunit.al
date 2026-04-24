@@ -12,6 +12,7 @@ using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.EServices.EDocumentConnector.Microsoft365;
+using Microsoft.Purchases.History;
 using System.Agents;
 using System.Azure.Identity;
 using System.Azure.KeyVault;
@@ -97,7 +98,6 @@ codeunit 3307 "Payables Agent Setup"
         EmailConnectionMessageErr: Label 'Connection to mailbox failed. Please review the email account configuration for email %1', Comment = '%1 - Email account name';
         EmailConnectionNavigationActionLbl: Label 'Show email accounts';
         ActivateWithoutMailboxNameErr: Label 'To activate the agent with the current settings, a mailbox must be selected first.';
-        ActivateAgentWithoutMonitorErr: Label 'To activate the agent "Monitor incoming information" must be enabled.';
     begin
         if AzureADGraphUser.IsUserDelegatedAdmin() or AzureADGraphUser.IsUserDelegatedHelpdesk() then
             Error(DelegatedAdminErr);
@@ -108,7 +108,8 @@ codeunit 3307 "Payables Agent Setup"
         // This has to happen before any write transactions since the consent runs modally (and will block the session)
         // Similarly we delay the insert/modify of OutlookSetup until we verify that the email connection is succesful (i.e. Codeunit.Run completes succesfully, this forces to have no open write transactions)
         OutlookSetupExistedPreviously := OutlookSetup.FindFirst();
-        if PASetupConfiguration.GetAgentSetupBuffer().State = PASetupConfiguration.GetAgentSetupBuffer().State::Enabled then begin
+        if (PASetupConfiguration.GetAgentSetupBuffer().State = PASetupConfiguration.GetAgentSetupBuffer().State::Enabled) and
+            (PASetupConfiguration.GetPayablesAgentSetup()."Monitor Outlook") then begin
             ConsentManager := "Service Integration"::Outlook;
             if not ConsentManager.ObtainPrivacyConsent() then
                 Error(EmailMonitoringRequiresPrivacyConsentErr);
@@ -134,12 +135,7 @@ codeunit 3307 "Payables Agent Setup"
                 PASetupConfiguration.SetPayablesAgentSetup(TempPayablesAgentSetup);
 
                 // SaaS only requirement.
-                if EnvironmentInformation.IsSaaS() then begin
-
-                    // We validate the email connection before applying any changes to avoid leaving the agent in a partially configured state
-                    if not PASetupConfiguration.GetPayablesAgentSetup()."Monitor Outlook" then
-                        Error(ActivateAgentWithoutMonitorErr);
-
+                if EnvironmentInformation.IsSaaS() and PASetupConfiguration.GetPayablesAgentSetup()."Monitor Outlook" then begin
                     PAValidateSetup.SetOutlookSetup(OutlookSetup);
                     if not PAValidateSetup.Run() then begin
                         ErrorAccountNotConnecting.Title(EmailConnectionErr);
@@ -156,6 +152,10 @@ codeunit 3307 "Payables Agent Setup"
         else
             OutlookSetup.Insert();
 
+        // Initialize trial BEFORE creating the agent so IsEligibleForTrial() can detect first activation
+        if PASetupConfiguration.GetAgentSetupBuffer().State = PASetupConfiguration.GetAgentSetupBuffer().State::Enabled then
+            InitializeTrialIfEligible();
+
         // We apply the changes to the "Payables Agent Setup" record
         PayablesAgentSetup.GetSetup();
         TempPayablesAgentSetup := PASetupConfiguration.GetPayablesAgentSetup();
@@ -170,6 +170,8 @@ codeunit 3307 "Payables Agent Setup"
 
         EDocPOMatching.ConfigureDefaultPOMatchingSettings();
         PADemoGuide.SendDemoEmail(PASetupConfiguration);
+
+        InsertAccessControlForEligibleUsers(PayablesAgentSetup."User Security Id");
     end;
 
     procedure GetOrCreateAgentEDocumentService() EDocumentService: Record "E-Document Service"
@@ -215,7 +217,7 @@ codeunit 3307 "Payables Agent Setup"
         Agent: Codeunit Agent;
         SecurityPromptSecretText, CompletePromptSecretText : SecretText;
         PayablesAgentPromptText: Text;
-        PayablesAgentPromptTok: Label 'Prompts/PayablesAgent-SystemPrompt.md', Locked = true;
+        PayablesAgentPromptTok: Label 'Prompts/PayablesAgent-AgentInstructions.md', Locked = true;
         SecurityPromptTok: Label 'PayablesAgent-SecurityPromptV280', Locked = true;
         UnableToConfigureAgentInstructionsErr: Label 'Unable to configure agent instructions.';
     begin
@@ -232,24 +234,75 @@ codeunit 3307 "Payables Agent Setup"
         Agent.SetInstructions(AgentUserSecurityId, CompletePromptSecretText);
     end;
 
-    internal procedure AllowCreateNewAgent(): Boolean
+    internal procedure CanShowAgentActions(): Boolean
     var
-        PayableAgentSetup: Record "Payables Agent Setup";
         Agent: Record Agent;
+        AgentAccessControl: Record "Agent Access Control";
+        PayablesAgentSetup: Codeunit "Payables Agent Setup";
         AgentSystemPermissions: Codeunit "Agent System Permissions";
+        AgentUtilities: Codeunit "Agent Utilities";
     begin
-        if not AgentSystemPermissions.CurrentUserHasCanManageAllAgentsPermission() then
-            // Limit agent creation to agent admins.
+        if not AgentUtilities.IsAgentsFeatureEnabled() then
             exit(false);
 
-        // If there is no setup record, we can create a new payables agent
-        if not PayableAgentSetup.FindFirst() then
+        if not PayablesAgentSetup.GetAgent(Agent) then
+            exit(AllowCreateNewAgent());
+
+        if AgentSystemPermissions.CurrentUserHasCanManageAllAgentsPermission() then
             exit(true);
-        // The setup record can be created without an agent linked to it (for example, when launching the setup page)
-        // Therefore we need to check if there is an agent linked to the setup record
-        Agent.SetRange("User Security ID", PayableAgentSetup."User Security Id");
-        // If there is no agent linked to the setup record, we can create a new payables agent
-        exit(Agent.IsEmpty());
+
+        // Configuration rights are not needed to see the badge.
+        AgentAccessControl.SetRange("Agent User Security ID", Agent."User Security ID");
+        AgentAccessControl.SetRange("Company Name", CompanyName());
+        AgentAccessControl.SetRange("User Security ID", UserSecurityId());
+#pragma warning disable AA0175 // Platform Bug 630559
+        exit(AgentAccessControl.FindFirst());
+#pragma warning restore AA0175
+    end;
+
+    internal procedure InsertAccessControlForEligibleUsers(AgentUserSecurityId: Guid)
+    var
+        AgentAccessControl: Record "Agent Access Control";
+        UserSecIds: List of [Guid];
+        SecId: Guid;
+    begin
+        UserSecIds := GetUsersThatHaveCreatedPostedPurchInvoice();
+        foreach SecId in UserSecIds do begin
+            Clear(AgentAccessControl);
+
+            // Platform Bug 630717: Access Control Table is virtual (Doing a if then on the insert does not capture the error, it gets surfaced)
+            AgentAccessControl.SetRange("Agent User Security ID", AgentUserSecurityId);
+            AgentAccessControl.SetRange("Company Name", CompanyName());
+            AgentAccessControl.SetRange("User Security ID", SecId);
+            if not AgentAccessControl.IsEmpty() then
+                continue;
+
+            AgentAccessControl."Agent User Security ID" := AgentUserSecurityId;
+            AgentAccessControl."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(AgentAccessControl."Company Name"));
+            AgentAccessControl."User Security ID" := SecId;
+            AgentAccessControl.Insert();
+        end;
+    end;
+
+
+    /// <summary>
+    /// Returns true if a new Payables Agent can be created.
+    /// Blocked if an agent already exists. Otherwise allowed for SUPER users
+    /// or any user who has created a posted purchase invoice.
+    /// </summary>
+    internal procedure AllowCreateNewAgent(): Boolean
+    var
+        Agent: Record Agent;
+        PayablesAgentSetup: Codeunit "Payables Agent Setup";
+        AgentSystemPermissions: Codeunit "Agent System Permissions";
+    begin
+        if PayablesAgentSetup.GetAgent(Agent) then
+            exit(false);
+
+        if AgentSystemPermissions.CurrentUserHasCanManageAllAgentsPermission() then
+            exit(true);
+
+        exit(HasUserCreatedPostedPurchInvoice());
     end;
 
     internal procedure AgentUserName(): Code[50]
@@ -315,7 +368,6 @@ codeunit 3307 "Payables Agent Setup"
         end;
         EDocumentService := GetOrCreateAgentEDocumentService();
         // We configure the default E-Document Service settings
-        EDocumentService.Validate("Service Integration V2", "Service Integration"::Outlook);
         EDocumentService.Validate("Automatic Import Processing", "E-Doc. Automatic Processing"::No);
         EDocumentService.Validate("Import Process", "E-Document Import Process"::"Version 2.0");
         Clear(EDocumentService."Import Start Time");
@@ -324,8 +376,9 @@ codeunit 3307 "Payables Agent Setup"
         EDocumentService.Modify();
         if ReactivateAutoImport then
             EDocumentService.Validate("Auto Import", false);
-        // If monitoring outlook is requested, we set auto-import in the service and configure the Outlook Setup
+        // If monitoring outlook is requested, we set the integration, auto-import and configure the Outlook Setup
         if PASetupConfiguration.GetPayablesAgentSetup()."Monitor Outlook" then begin
+            EDocumentService.Validate("Service Integration V2", "Service Integration"::Outlook);
             EDocumentService.Validate("Auto Import", true);
             OutlookSetup.FindFirst();
             OutlookSetup.Validate(Enabled, true);
@@ -335,6 +388,47 @@ codeunit 3307 "Payables Agent Setup"
             EDocumentService.Validate("Auto Import", false);
         EDocumentService.Modify();
         exit(PayablesAgentEDocServiceTok);
+    end;
+
+    local procedure InitializeTrialIfEligible()
+    var
+        PATrial: Codeunit "PA Trial";
+    begin
+        if PATrial.IsEligible() then begin
+            PATrial.InitializeTrial();
+            Session.LogMessage('0000SEF', TrialModeInitializedTok, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', PayablesAgentTelemetryTok);
+        end;
+    end;
+
+
+    /// <summary>
+    /// Ensures the agent is activated. If the agent does not exist, it is activated silently
+    /// with trial mode initialized if eligible. Email monitoring is not enabled.
+    /// </summary>
+    internal procedure EnsureAgentActivated(var AlreadyActivated: Boolean)
+    var
+        Agent: Record Agent;
+        PayablesAgentSetupRec: Record "Payables Agent Setup";
+        TempAgentSetupBuffer: Record "Agent Setup Buffer";
+        PASetupConfiguration: Codeunit "PA Setup Configuration";
+    begin
+        PayablesAgentSetupRec.GetSetup();
+        if Agent.Get(PayablesAgentSetupRec."User Security Id") then
+            if Agent.State = Agent.State::Enabled then begin
+                AlreadyActivated := true;
+                exit;
+            end;
+
+        LoadSetupConfiguration(PASetupConfiguration);
+        PayablesAgentSetupRec := PASetupConfiguration.GetPayablesAgentSetup();
+        PayablesAgentSetupRec."Monitor Outlook" := false;
+        PASetupConfiguration.SetPayablesAgentSetup(PayablesAgentSetupRec);
+        PASetupConfiguration.GetAgentSetupBuffer(TempAgentSetupBuffer);
+        TempAgentSetupBuffer.Validate(State, TempAgentSetupBuffer.State::Enabled);
+        PASetupConfiguration.SetAgentSetupBuffer(TempAgentSetupBuffer);
+        PASetupConfiguration.SetSkipEmailVerification(true);
+        ApplyPayablesAgentSetup(PASetupConfiguration);
+        AlreadyActivated := false;
     end;
 
     internal procedure GetDefaultProfile(var TempAllProfile: Record "All Profile" temporary)
@@ -377,6 +471,62 @@ codeunit 3307 "Payables Agent Setup"
         exit(PayablesAgentTelemetryTok);
     end;
 
+    /// <summary>
+    /// Computes is the session user has created a purchase invoice in the past 30 days. 
+    /// This is used as a heuristic to determine if the user should be allowed to setup the agent. 
+    /// </summary>
+    /// <returns>true if the user has created a purchase invoice in the past 30 days, false otherwise.</returns>
+    internal procedure HasUserCreatedPostedPurchInvoice(): Boolean
+    var
+        PurchaseInvHeader: Record "Purch. Inv. Header";
+        Days30Ago: Date;
+    begin
+        Days30Ago := CalcDate('<-30D>', Today());
+
+        PurchaseInvHeader.SetRange(SystemCreatedAt, CreateDateTime(Days30Ago, 0T), CurrentDateTime());
+        PurchaseInvHeader.SetRange(SystemCreatedBy, UserSecurityId());
+        exit(not PurchaseInvHeader.IsEmpty());
+    end;
+
+    /// <summary>
+    /// Returns the list of user security IDs that have created posted purchase invoices in the past 30 days.
+    /// This is used as a heuristic to determine which users should be given access to the agent.
+    /// </summary>
+    /// <returns>List of user security IDs that have created posted purchase invoices in the past 30 days.</returns>
+    internal procedure GetUsersThatHaveCreatedPostedPurchInvoice(): List of [Guid]
+    var
+        User: Record User;
+        PAPostedPurchInvUsers: Query "PA Posted Purch. Inv. Users";
+        Users: List of [Guid];
+        Days30Ago: Date;
+    begin
+        Days30Ago := CalcDate('<-30D>', Today());
+        PAPostedPurchInvUsers.SetRange(SystemCreatedAt, CreateDateTime(Days30Ago, 0T), CurrentDateTime());
+        PAPostedPurchInvUsers.Open();
+        while PAPostedPurchInvUsers.Read() do
+            if User.Get(PAPostedPurchInvUsers.SystemCreatedBy) then
+                Users.Add(PAPostedPurchInvUsers.SystemCreatedBy);
+        PAPostedPurchInvUsers.Close();
+        exit(Users);
+    end;
+
+    /// <summary>
+    /// Creates an E-Document from an uploaded invoice file and triggers agent processing.
+    /// </summary>
+    /// <param name="FileName">The name of the uploaded file.</param>
+    /// <param name="InStream">The stream containing the file data.</param>
+    procedure ImportInvoiceFile(FileName: Text; InStream: InStream)
+    var
+        EDocument: Record "E-Document";
+        EDocImport: Codeunit "E-Doc. Import";
+        PayablesAgentSetup: Codeunit "Payables Agent Setup";
+    begin
+        EDocImport.CreateFromType(EDocument, PayablesAgentSetup.GetOrCreateAgentEDocumentService(), "E-Doc. File Format"::PDF, FileName, InStream);
+        EDocument."Source Details" := CopyStr(FileName, 1, MaxStrLen(EDocument."Source Details"));
+        EDocument.Modify();
+        EDocImport.ProcessAutomaticallyIncomingEDocument(EDocument);
+    end;
+
     var
         AgentUserNameLbl: Label 'Payables Agent', Comment = 'User name of the agent.', Locked = true;
         AgentSummaryLbl: Label 'Monitors incoming emails for vendor invoices, matches senders to registered vendors, and creates purchase document drafts for review.';
@@ -385,4 +535,5 @@ codeunit 3307 "Payables Agent Setup"
         PayablesAgentEDocServiceTok: Label 'AGENT', Locked = true;
         PayablesAgentProfileTok: Label 'Payables Agent', Locked = true;
         PayablesAgentPermissionSetTok: Label 'Payables Ag. - Run', Locked = true;
+        TrialModeInitializedTok: Label 'Trial mode initialized for Payables Agent', Locked = true;
 }

@@ -17,6 +17,7 @@ page 47018 "SL Migration Configuration"
     PageType = Card;
     SourceTable = "SL Company Additional Settings";
     SourceTableView = where(Name = filter(= ''));
+    UsageCategory = Administration;
 
     layout
     {
@@ -84,9 +85,7 @@ page 47018 "SL Migration Configuration"
                 field("Migrate Open POs"; Rec."Migrate Open POs")
                 {
                     Caption = 'Open Purchase Orders';
-                    Enabled = false;
                     ToolTip = 'Specifies whether to migrate the open Purchase Orders.';
-                    Visible = false;
 
                     trigger OnValidate()
                     begin
@@ -111,7 +110,20 @@ page 47018 "SL Migration Configuration"
                             until SLCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
+                field("Migrate Open SOs"; Rec."Migrate Open SOs")
+                {
+                    Caption = 'Open Sales Orders';
+                    ToolTip = 'Specifies whether to migrate open Sales Orders.';
 
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                SLCompanyAdditionalSettings.Validate("Migrate Open SOs", Rec."Migrate Open SOs");
+                                SLCompanyAdditionalSettings.Modify();
+                            until SLCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
                 field("Migrate Inventory Module"; Rec."Migrate Inventory Module")
                 {
                     Caption = 'Inventory';
@@ -150,6 +162,20 @@ page 47018 "SL Migration Configuration"
                             SLCompanyAdditionalSettings.Validate("Task Master Only", Rec."Include Project Module");
                             SLCompanyAdditionalSettings.Modify();
                         until SLCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Cash Manager Module"; Rec."Migrate Cash Manager Module")
+                {
+                    Caption = 'Cash Manager';
+                    ToolTip = 'Specifies whether to migrate the Cash Manager module.';
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                SLCompanyAdditionalSettings.Validate("Migrate Cash Manager Module", Rec."Migrate Cash Manager Module");
+                                SLCompanyAdditionalSettings.Modify();
+                            until SLCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
             }
@@ -211,6 +237,20 @@ page 47018 "SL Migration Configuration"
                         if PrepSettingsForFieldUpdate() then
                             repeat
                                 SLCompanyAdditionalSettings.Validate("Migrate Only Inventory Master", Rec."Migrate Only Inventory Master");
+                                SLCompanyAdditionalSettings.Modify();
+                            until SLCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Only CashAcct Master"; Rec."Migrate Only CashAcct Master")
+                {
+                    Caption = 'Cash Accounts';
+                    ToolTip = 'Specifies whether to migrate Cash Account master data only.';
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                SLCompanyAdditionalSettings.Validate("Migrate Only CashAcct Master", Rec."Migrate Only CashAcct Master");
                                 SLCompanyAdditionalSettings.Modify();
                             until SLCompanyAdditionalSettings.Next() = 0;
                     end;
@@ -728,13 +768,16 @@ page 47018 "SL Migration Configuration"
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Payables Module", Rec."Migrate Payables Module");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Receivables Module", Rec."Migrate Receivables Module");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Open POs", Rec."Migrate Open POs");
+                    SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Open SOs", Rec."Migrate Open SOs");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Inventory Module", Rec."Migrate Inventory Module");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Include Project Module", Rec."Include Project Module");
+                    SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Cash Manager Module", Rec."Migrate Cash Manager Module");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Oldest GL Year to Migrate", Rec."Oldest GL Year to Migrate");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Only GL Master", Rec."Migrate Only GL Master");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Only Payables Master", Rec."Migrate Only Payables Master");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Only Rec. Master", Rec."Migrate Only Rec. Master");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Only Inventory Master", Rec."Migrate Only Inventory Master");
+                    SLCompanyAdditionalSettingsEachCompany.Validate("Migrate Only CashAcct Master", Rec."Migrate Only CashAcct Master");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Resource Master Only", Rec."Resource Master Only");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Project Master Only", Rec."Project Master Only");
                     SLCompanyAdditionalSettingsEachCompany.Validate("Task Master Only", Rec."Task Master Only");
@@ -792,12 +835,15 @@ page 47018 "SL Migration Configuration"
         Rec.Validate("Migrate Payables Module", SLCompanyAdditionalSettingsInit."Migrate Payables Module");
         Rec.Validate("Migrate Receivables Module", SLCompanyAdditionalSettingsInit."Migrate Receivables Module");
         Rec.Validate("Migrate Open POs", SLCompanyAdditionalSettingsInit."Migrate Open POs");
+        Rec.Validate("Migrate Open SOs", SLCompanyAdditionalSettingsInit."Migrate Open SOs");
         Rec.Validate("Migrate Inventory Module", SLCompanyAdditionalSettingsInit."Migrate Inventory Module");
         Rec.Validate("Include Project Module", SLCompanyAdditionalSettingsInit."Include Project Module");
+        Rec.Validate("Migrate Cash Manager Module", SLCompanyAdditionalSettingsInit."Migrate Cash Manager Module");
         Rec.Validate("Migrate Only GL Master", SLCompanyAdditionalSettingsInit."Migrate Only GL Master");
         Rec.Validate("Migrate Only Payables Master", SLCompanyAdditionalSettingsInit."Migrate Only Payables Master");
         Rec.Validate("Migrate Only Rec. Master", SLCompanyAdditionalSettingsInit."Migrate Only Rec. Master");
         Rec.Validate("Migrate Only Inventory Master", SLCompanyAdditionalSettingsInit."Migrate Only Inventory Master");
+        Rec.Validate("Migrate Only CashAcct Master", SLCompanyAdditionalSettingsInit."Migrate Only CashAcct Master");
         Rec.Validate("Resource Master Only", SLCompanyAdditionalSettingsInit."Resource Master Only");
         Rec.Validate("Project Master Only", SLCompanyAdditionalSettingsInit."Project Master Only");
         Rec.Validate("Task Master Only", SLCompanyAdditionalSettingsInit."Task Master Only");

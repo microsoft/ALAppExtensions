@@ -41,8 +41,8 @@ codeunit 12213 "Create VAT Posting Groups IT"
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Standard(), CreateITGLAccounts.SalesVat20Perc(), CreateITGLAccounts.PurchaseVat20Perc(), CreateVATPostingGroups.Standard(), 22, Enum::"Tax Calculation Type"::"Reverse Charge VAT", '', CreateITGLAccounts.PurchaseVat20PercEu(), '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.NoVAT(), CreateITGLAccounts.SalesVat20Perc(), CreateITGLAccounts.PurchaseVat20Perc(), CreateVATPostingGroups.NoVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", '', '', CreateVATPostingGroups.NoVAT(), false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Reduced(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), CreateVATPostingGroups.Reduced(), 10, Enum::"Tax Calculation Type"::"Reverse Charge VAT", '', CreateGLAccount.PurchaseVAT10EU(), CreateVATPostingGroups.Reduced(), false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Reduced(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), CreateVATPostingGroups.Reduced(), 10, Enum::"Tax Calculation Type"::"Normal VAT", '', '', CreateVATPostingGroups.Reduced(), false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Standard(), CreateITGLAccounts.SalesVat20Perc(), CreateITGLAccounts.PurchaseVat20Perc(), CreateVATPostingGroups.Standard(), 22, Enum::"Tax Calculation Type"::"Normal VAT", '', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Reduced(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), CreateVATPostingGroups.Reduced(), 0, Enum::"Tax Calculation Type"::"Normal VAT", '', '', CreateVATPostingGroups.Reduced(), false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Standard(), CreateITGLAccounts.SalesVat20Perc(), CreateITGLAccounts.PurchaseVat20Perc(), CreateVATPostingGroups.Standard(), 0, Enum::"Tax Calculation Type"::"Normal VAT", '', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.NoVAT(), CreateITGLAccounts.SalesVat20Perc(), CreateITGLAccounts.PurchaseVat20Perc(), CreateVATPostingGroups.NoVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", '', '', CreateVATPostingGroups.NoVAT(), false);
         ContosoPostingSetup.SetOverwriteData(false);
 
@@ -96,7 +96,7 @@ codeunit 12213 "Create VAT Posting Groups IT"
                 CreateVATPostingGroups.Domestic(),
                 CreateVATPostingGroups.EU(),
                 CreateVATPostingGroups.Export():
-                    ValidateRecFields(Rec, 20, 100);
+                    ValidateRecFields(Rec, 0, 100);
                 '':
                     Rec.Validate(Description, '');
             end;
@@ -117,7 +117,7 @@ codeunit 12213 "Create VAT Posting Groups IT"
                 CreateVATPostingGroups.EU():
                     ValidateRecFields(Rec, 0, 100);
                 CreateVATPostingGroups.Export():
-                    ValidateRecFields(Rec, 10, 100);
+                    ValidateRecFields(Rec, 0, 100);
                 '':
                     Rec.Validate(Description, '');
             end;

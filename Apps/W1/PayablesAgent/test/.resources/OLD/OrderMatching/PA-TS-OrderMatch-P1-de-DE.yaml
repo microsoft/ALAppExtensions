@@ -1,0 +1,638 @@
+tests:
+- name: AllLines10_002
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1250
+      description: Server-Rack 42U Standard
+      quantity: 2
+    - unitPrice: 4800
+      description: Server Dell PowerEdge R750
+      quantity: 2
+    - unitPrice: 185
+      description: RAM DDR4 32 GB ECC-Modul
+      quantity: 16
+    - unitPrice: 425
+      description: SSD NVMe 2 TB Enterprise
+      quantity: 8
+    - unitPrice: 385
+      description: Netzwerkkarte 10 GB Dual Port
+      quantity: 4
+    - unitPrice: 295
+      description: KVM-Switch 8-Port-Rackmontage
+      quantity: 2
+    - unitPrice: 225
+      description: Stromverteilungseinheit PDU
+      quantity: 4
+    - unitPrice: 68
+      description: Rackmontage-Regal 2U
+      quantity: 6
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: SSD NVMe 2 TB Enterprise
+      unit_price: 425
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Dell PowerEdge R750 Server
+      unit_price: 4800
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: KVM-Switch 8-Port-Rackmontage
+      unit_price: 295
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Rackmontage-Regal 2U
+      unit_price: 68
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: 32 GB DDR4 ECC RAM-Modul
+      unit_price: 185
+      quantity: 16
+    - discount: 0
+      tax_rate: 10
+      description: Stromverteilungseinheit PDU
+      unit_price: 225
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Server-Rack 42U Standard
+      unit_price: 1250
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Netzwerkkarte 10 GB Dual Port
+      unit_price: 385
+      quantity: 4
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 8
+- name: AllLines3_001
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 250
+      description: Schreibtisch-Standard
+      quantity: 5
+    - unitPrice: 180
+      description: Ergonomischer Bürostuhl
+      quantity: 5
+    - unitPrice: 220
+      description: LED-Monitor 24 Zoll
+      quantity: 10
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Standard-Büroschreibtisch
+      unit_price: 250
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Ergonomischer Bürostuhl
+      unit_price: 180
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: 24-Zoll-LED-Monitor
+      unit_price: 220
+      quantity: 10
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+- name: AllLines3_005
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 850
+      description: Konferenztisch groß
+      quantity: 1
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Konferenztisch groß
+      unit_price: 850
+      quantity: 1
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+- name: AllLines5_004
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 385
+      description: Netzwerk-Switch 24-Port-Gigabit
+      quantity: 2
+    - unitPrice: 4.5
+      description: Patchkabel Cat6 2m Blau
+      quantity: 30
+    - unitPrice: 28
+      description: Kabelmanagementfach
+      quantity: 8
+    - unitPrice: 195
+      description: USV-Batterie-Backup 1500 VA
+      quantity: 4
+    - unitPrice: 32.5
+      description: Überspannungsschutz 8 Ausgänge
+      quantity: 12
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: USV-Batterie-Backup 1500 VA
+      unit_price: 195
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Überspannungsschutz 8 Ausgänge
+      unit_price: 32.5
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Gigabit-Netzwerk-Switch mit 24 Ports
+      unit_price: 385
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Kabelmanagementfach
+      unit_price: 28
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Cat6 Patchkabel Blau 2m
+      unit_price: 4.5
+      quantity: 30
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 5
+- name: Challenge10_003
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 1285
+      description: Drucker-Farblaser-Unternehmen
+      quantity: 4
+    - unitPrice: 125
+      description: Papierfach 500 Blatt
+      quantity: 8
+    - unitPrice: 285
+      description: Automatische Duplexeinheit
+      quantity: 4
+    - unitPrice: 95
+      description: Toner Schwarz mit hoher Ergiebigkeit
+      quantity: 12
+    - unitPrice: 108
+      description: Toner Cyan mit hoher Ergiebigkeit
+      quantity: 10
+    - unitPrice: 108
+      description: Toner Magenta mit hoher Ergiebigkeit
+      quantity: 10
+    - unitPrice: 108
+      description: Toner Gelb mit hoher Ergiebigkeit
+      quantity: 10
+  - lines:
+    - unitPrice: 185
+      description: Wartungskit-Drucker
+      quantity: 4
+    - unitPrice: 225
+      description: Transferbandeinheit
+      quantity: 4
+    - unitPrice: 385
+      description: Fixiereinheit
+      quantity: 3
+  - lines:
+    - unitPrice: 685
+      description: Scanner-Netzwerkdokument
+      quantity: 3
+    - unitPrice: 425
+      description: Laminiergerät A3 Professional
+      quantity: 2
+    - unitPrice: 185
+      description: Aktenvernichter mit Querschnitt
+      quantity: 5
+    - unitPrice: 225
+      description: Bindemaschinenkamm
+      quantity: 3
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Farblaserdrucker für Unternehmen
+      unit_price: 1285
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: 500-Blatt-Papierfach
+      unit_price: 125
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Automatische Duplexeinheit
+      unit_price: 285
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Schwarzer Toner mit hoher Ergiebigkeit
+      unit_price: 95
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Cyan-Toner mit hoher Ergiebigkeit
+      unit_price: 108
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Magenta-Toner mit hoher Ergiebigkeit
+      unit_price: 108
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Gelber Toner mit hoher Ergiebigkeit
+      unit_price: 108
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Druckerwartungskit
+      unit_price: 185
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Transferbandeinheit
+      unit_price: 225
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Netzwerk-Dokumentenscanner
+      unit_price: 685
+      quantity: 3
+    invoice_no: INV-003
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 1
+- name: Challenge3_004
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 285
+      description: Netzwerk-Switch 24 Port
+      quantity: 2
+    - unitPrice: 4.5
+      description: Ethernet-Kabel Cat6 5m
+      quantity: 50
+  - lines:
+    - unitPrice: 9.75
+      description: USB-Flash-Laufwerk 32 GB
+      quantity: 30
+    - unitPrice: 8
+      description: HDMI-Kabel 2m
+      quantity: 20
+    - unitPrice: 125
+      description: Externe SSD 1 TB
+      quantity: 4
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Cat6-Ethernet-Kabel – 5 Meter
+      unit_price: 4.5
+      quantity: 50
+    - discount: 0
+      tax_rate: 10
+      description: 32 GB USB-Flash-Laufwerk
+      unit_price: 9.75
+      quantity: 30
+    - discount: 0
+      tax_rate: 10
+      description: 1 TB externe SSD
+      unit_price: 125
+      quantity: 4
+    invoice_no: INV-004
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+- name: Challenge5_003
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 295
+      description: Bürostuhl Executive Mesh
+      quantity: 10
+    - unitPrice: 575
+      description: Stehpult verstellbar
+      quantity: 5
+    - unitPrice: 125
+      description: Mobiler Schreibtisch-Schubladenschrank
+      quantity: 8
+    - unitPrice: 88
+      description: Monitorarm Dual
+      quantity: 6
+    - unitPrice: 22
+      description: Kabelmanagementfach
+      quantity: 15
+  - lines:
+    - unitPrice: 35
+      description: Ergonomische Fußstütze
+      quantity: 12
+    - unitPrice: 28.5
+      description: Schreibtischunterlage Kork groß
+      quantity: 10
+  - lines:
+    - unitPrice: 42
+      description: LED-Klemme für Arbeitsplatzleuchten
+      quantity: 14
+    - unitPrice: 32
+      description: Überspannungsschutz für Steckdosenleiste
+      quantity: 20
+    - unitPrice: 16.5
+      description: Abfallbehälter-Büronetz
+      quantity: 18
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Verstellbarer Stehschreibtisch
+      unit_price: 575
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Doppelter Monitorarm
+      unit_price: 88
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Ergonomische Fußstütze
+      unit_price: 35
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: LED-Arbeitsplatzleuchte mit Klemme
+      unit_price: 42
+      quantity: 14
+    - discount: 0
+      tax_rate: 10
+      description: Steckdosenleiste mit Überspannungsschutz
+      unit_price: 32
+      quantity: 20
+    invoice_no: INV-003
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 2
+- name: NoLines3_002
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 350
+      description: Drucker HP LaserJet Pro
+      quantity: 2
+    - unitPrice: 280
+      description: Scanner Fujitsu
+      quantity: 1
+    - unitPrice: 65
+      description: Tonerkartusche Schwarz
+      quantity: 12
+  - lines:
+    - unitPrice: 8.5
+      description: Kopierpapier A3
+      quantity: 30
+    - unitPrice: 0.25
+      description: Binderklammern groß
+      quantity: 100
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Kaffeemaschinen-Werbung
+      unit_price: 850
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: Kaffeebohnen Premium 1kg
+      unit_price: 22
+      quantity: 10
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: OneLine3_001
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 250
+      description: Schreibtisch-Standard
+      quantity: 5
+    - unitPrice: 180
+      description: Ergonomischer Bürostuhl
+      quantity: 5
+    - unitPrice: 220
+      description: LED-Monitor 24 Zoll
+      quantity: 10
+  - lines:
+    - unitPrice: 1500
+      description: Laptop Dell XPS
+      quantity: 3
+    - unitPrice: 45
+      description: Drahtlose Tastatur
+      quantity: 8
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: 24-Zoll-LED-Monitor
+      unit_price: 220
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Industrielles Regal
+      unit_price: 280
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Schutzbrillenpaket
+      unit_price: 8.5
+      quantity: 50
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 3
+- name: OneLine3_005
+  test_setup: PA-OrderMatch-de-DE.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 780
+      description: Projektor Epson HD
+      quantity: 2
+    - unitPrice: 450
+      description: Projektionswand motorisiert
+      quantity: 2
+    - unitPrice: 25
+      description: HDMI-Kabel 10 m
+      quantity: 10
+  - lines:
+    - unitPrice: 320
+      description: Konferenztelefon Polycom
+      quantity: 3
+    - unitPrice: 180
+      description: Webcam Logitech 4K
+      quantity: 5
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Epson HD-Projektor
+      unit_price: 780
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Wasserkühler-Verleih monatlich
+      unit_price: 35
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: Schreibtischlampe LED verstellbar
+      unit_price: 45
+      quantity: 12
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1

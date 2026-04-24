@@ -145,6 +145,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "Whse. Journal Line Handler CZL" = X,
                   codeunit "Whse. Worksht.Line Handler CZL" = X,
                   codeunit "Workflow Response Handling CZL" = X,
+                  codeunit "Purch. Inv. Header - Edit CZL" = X,
                   page "Accountant CZ Role Center CZL" = X,
                   page "Acc. Sched.page.Drill-Down CZL" = X,
                   page "Acc. Sched. Res. Hdr. List CZL" = X,

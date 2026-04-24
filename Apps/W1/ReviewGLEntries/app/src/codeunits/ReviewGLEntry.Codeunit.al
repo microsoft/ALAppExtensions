@@ -158,6 +158,31 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"G/L Entry", 'OnSkipGLEntryByReviewStatus', '', false, false)]
+    local procedure OnSkipGLEntryByReviewStatus(var GLEntry: Record "G/L Entry"; ReviewStatus: Option All,Reviewed,"Not Reviewed"; EvaluationDate: Date; Skip: Boolean)
+    begin
+        if EvaluationDate <> 0D then
+            case ReviewStatus of
+                ReviewStatus::Reviewed:
+                    if GLEntry."Reviewed Date" = 0DT then
+                        Skip := true
+                    else
+                        Skip := (DT2Date(GLEntry."Reviewed Date") > EvaluationDate);
+                ReviewStatus::"Not Reviewed":
+                    if GLEntry."Reviewed Date" = 0DT then
+                        Skip := false
+                    else
+                        Skip := (DT2Date(GLEntry."Reviewed Date") <= EvaluationDate);
+            end
+        else
+            case ReviewStatus of
+                ReviewStatus::Reviewed:
+                    Skip := (GLEntry."Reviewed Date" = 0DT);
+                ReviewStatus::"Not Reviewed":
+                    Skip := (GLEntry."Reviewed Date" <> 0DT);
+            end;
+    end;
+
 #if not CLEAN27
 #pragma warning disable AL0432
     [Obsolete('Use the event OnAfterReviewEntriesLog instead.', '27.0')]

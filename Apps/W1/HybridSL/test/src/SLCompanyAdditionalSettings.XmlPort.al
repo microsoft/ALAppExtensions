@@ -131,7 +131,6 @@ xmlport 147612 "SL Company Additional Settings"
                 }
                 textelement(IncludePlanStatusProjects)
                 {
-                    MinOccurs = Once;
                 }
                 textelement(IncludeHoldStatusResources)
                 {

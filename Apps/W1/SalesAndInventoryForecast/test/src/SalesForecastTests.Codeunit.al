@@ -802,6 +802,8 @@ codeunit 139540 "Sales Forecast Tests"
     begin
         // [Scenario] Notification is shown then disabled
         // [Scenario] Notification is shown
+        Initialize();
+        
         // [Given]
         // [When] Item list page is opened
         ItemList.OpenView();
@@ -816,6 +818,8 @@ codeunit 139540 "Sales Forecast Tests"
         ItemList: TestPage "Item List";
     begin
         // [Scenario] Notification is shown
+        Initialize();
+        
         // [Given]
         // [When] Item list page is opened
         ItemList.OpenView();

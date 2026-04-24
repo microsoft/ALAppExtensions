@@ -103,7 +103,7 @@ page 41010 "Hist. Inventory Trx."
                     HistGenJournalLines: Page "Hist. Gen. Journal Lines";
                 begin
                     HistGenJournalLines.SetFilterOriginatingTrxSourceNo(Rec."Audit Code");
-                    HistGenJournalLines.Run();
+                    HistGenJournalLines.RunModal();
                 end;
             }
         }

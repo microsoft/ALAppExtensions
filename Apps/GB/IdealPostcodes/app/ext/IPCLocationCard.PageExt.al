@@ -16,7 +16,7 @@ pageextension 9409 "IPC Location Card" extends "Location Card"
         }
         modify("Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();

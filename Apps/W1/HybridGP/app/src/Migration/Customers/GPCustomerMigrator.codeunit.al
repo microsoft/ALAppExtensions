@@ -3,9 +3,11 @@ namespace Microsoft.DataMigration.GP;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Reporting;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using System.Integration;
+using System.Reflection;
 
 codeunit 4018 "GP Customer Migrator"
 {
@@ -273,9 +275,6 @@ codeunit 4018 "GP Customer Migrator"
     var
         CompanyInformation: Record "Company Information";
         GPKnownCountries: Record "GP Known Countries";
-        GPRM00101: Record "GP RM00101";
-        GPSY01200: Record "GP SY01200";
-        Customer: Record Customer;
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PaymentTermsFormula: DateFormula;
@@ -328,11 +327,6 @@ codeunit 4018 "GP Customer Migrator"
 
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
 
-        GPRM00101.SetLoadFields(ADRSCODE);
-        if GPRM00101.Get(CustomerNo) then
-            if GPSY01200.Get(CustomerEmailTypeCodeLbl, GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then
-                CustomerDataMigrationFacade.SetEmail(CopyStr(GPSY01200.GetAllEmailAddressesText(MaxStrLen(Customer."E-Mail")), 1, MaxStrLen(Customer."E-Mail")));
-
         if MigrationGPCustomer.STMTCYCL = true then
             CustomerDataMigrationFacade.SetPrintStatement(true);
 
@@ -367,7 +361,44 @@ codeunit 4018 "GP Customer Migrator"
             CustomerDataMigrationFacade.SetTaxLiable(true);
         end;
 
+        MigrateEmailAddresses(CustomerNo, CustomerDataMigrationFacade);
+
         CustomerDataMigrationFacade.ModifyCustomer(true);
+    end;
+
+    local procedure MigrateEmailAddresses(CustomerNo: Code[20]; var CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
+    var
+        GPSY01200: Record "GP SY01200";
+        GPRM00101: Record "GP RM00101";
+        Customer: Record Customer;
+        CustomReportSelection: Record "Custom Report Selection";
+        ReportMetadata: Record "Report Metadata";
+        SalesInvoiceReportId: Integer;
+        EmailAddressList: List of [Text];
+        i: Integer;
+    begin
+        SalesInvoiceReportId := 1306;
+
+        GPRM00101.SetLoadFields(ADRSCODE);
+        if not GPRM00101.Get(CustomerNo) then
+            exit;
+
+        EmailAddressList := GPSY01200.GetEmailAddresses(CustomerEmailTypeCodeLbl, CustomerNo, GPRM00101.ADRSCODE, false);
+        if EmailAddressList.Count() > 0 then begin
+            CustomerDataMigrationFacade.SetEmail(CopyStr(EmailAddressList.Get(1), 1, MaxStrLen(Customer."E-Mail")));
+
+            if EmailAddressList.Count() > 1 then
+                if ReportMetadata.Get(SalesInvoiceReportId) then
+                    for i := 2 to EmailAddressList.Count() do begin
+                        Clear(CustomReportSelection);
+                        CustomReportSelection.Validate("Source Type", Database::Customer);
+                        CustomReportSelection.Validate("Source No.", CustomerNo);
+                        CustomReportSelection.Validate("Report ID", SalesInvoiceReportId);
+                        CustomReportSelection.Validate(Usage, CustomReportSelection.Usage::"S.Invoice");
+                        CustomReportSelection."Send To Email" := CopyStr(EmailAddressList.Get(i), 1, MaxStrLen(CustomReportSelection."Send To Email"));
+                        CustomReportSelection.Insert(true);
+                    end;
+        end;
     end;
 
     local procedure SetPhoneAndFaxNumberIfValid(var MigrationGPCustomer: Record "GP Customer"; var CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")

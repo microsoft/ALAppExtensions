@@ -267,6 +267,7 @@ table 11756 "Registration Log CZL"
                     RecordRef.GetTable(Contact);
         end;
 
+        OnAfterGetAccountRecordRef(Rec, RecordRef);
         exit(RecordRef.Number <> 0);
     end;
 
@@ -284,7 +285,8 @@ table 11756 "Registration Log CZL"
         TotalCount: Integer;
         ValidCount: Integer;
     begin
-        GetAccountRecordRef(RecordRef);
+        if not GetAccountRecordRef(RecordRef) then
+            exit(false);
 
         LogDetail(
           TotalCount, ValidCount, Enum::"Reg. Log Detail Field CZL"::Name, GetFieldByName(RecordRef, DummyCustomer.FieldName(Name)), "Verified Name");
@@ -355,6 +357,11 @@ table 11756 "Registration Log CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateField(var RecordRef: RecordRef; FieldName: Text; var Value: Text; var Validate: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAccountRecordRef(RegistrationLog: Record "Registration Log CZL"; var RecordRef: RecordRef)
     begin
     end;
 }

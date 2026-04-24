@@ -1,0 +1,2360 @@
+name: PA-TS-Metrics-01-en-CA
+language: en-CA
+tests:
+- name: PA-INV-V010-002
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG009;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Enbridge Gas Distribution
+    Address: 500 Consumers Rd
+    Address 2: ''
+    City: North York
+    Country/Region Code: CA
+    Post Code: M2J 1P8
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53110
+    Description: Gas usage - climate control
+    Quantity: 1.0
+    Unit Price: 8200.0
+  - Type: 1
+    No.: 53110
+    Description: Gas bill - storage warehouse
+    Quantity: 1.0
+    Unit Price: 3400.0
+  - Type: 1
+    No.: 53110
+    Description: Gas supply - production plant
+    Quantity: 1.0
+    Unit Price: 12400.0
+  - Type: 1
+    No.: 53110
+    Description: Natural gas - backup generator
+    Quantity: 1.0
+    Unit Price: 1500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-002
+        Buy-from Vendor Name: Enbridge Gas Distribution
+        Buy-from Address: 500 Consumers Road
+        Buy-from Address 2: ''
+        Buy-from City: North York
+        Buy-from Post Code: M2J 1P8
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Gas usage - climate control
+        Quantity: 1.0
+        Unit Cost: 8200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Gas bill - storage warehouse
+        Quantity: 1.0
+        Unit Cost: 3400.0
+      - Line No.: 30000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Gas supply - production plant
+        Quantity: 1.0
+        Unit Cost: 12400.0
+      - Line No.: 40000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Natural gas - backup generator
+        Quantity: 1.0
+        Unit Cost: 1500.0
+- name: PA-INV-V010-001
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Enbridge Gas Distribution
+    Address: 500 Consumers Road
+    Address 2: ''
+    City: North York
+    Country/Region Code: CA
+    Post Code: M2J 1P8
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53110
+    Description: Enbridge bill - corporate office
+    Quantity: 1.0
+    Unit Price: 1650.0
+  - Type: 1
+    No.: 53110
+    Description: Winter heating - peak usage
+    Quantity: 1.0
+    Unit Price: 16800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-001
+        Buy-from Vendor Name: Enbridge Gas Distribution
+        Buy-from Address: 500 Consumers Road
+        Buy-from Address 2: ''
+        Buy-from City: North York
+        Buy-from Post Code: M2J 1P8
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Enbridge bill - corporate office
+        Quantity: 1.0
+        Unit Cost: 1650.0
+      - Line No.: 20000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Winter heating - peak usage
+        Quantity: 1.0
+        Unit Cost: 16800.0
+- name: PA-INV-V009-004
+  description: VendorNo=V009;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Hydro One Business Services
+    Address: 483 Bay Street
+    Address 2: ''
+    City: Toronto
+    Country/Region Code: CA
+    Post Code: M5G 2P5
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V009-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53100
+    Description: Power service - upholstery facility
+    Quantity: 1.0
+    Unit Price: 10800.0
+  - Type: 1
+    No.: 53100
+    Description: Electricity supply - Quebec plant
+    Quantity: 1.0
+    Unit Price: 20100.0
+  - Type: 1
+    No.: 53100
+    Description: Energy audit service
+    Quantity: 1.0
+    Unit Price: 1800.0
+  - Type: 1
+    No.: 53100
+    Description: Electrical service - distribution center
+    Quantity: 1.0
+    Unit Price: 14200.0
+  - Type: 1
+    No.: 53100
+    Description: Energy management service - annual
+    Quantity: 1.0
+    Unit Price: 2400.0
+  - Type: 1
+    No.: 53100
+    Description: Electrical supply - cutting department
+    Quantity: 1.0
+    Unit Price: 13400.0
+  - Type: 1
+    No.: 53100
+    Description: Capacity charges - transformer fee
+    Quantity: 1.0
+    Unit Price: 4800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V009-004
+        Buy-from Vendor Name: Hydro One Business Services
+        Buy-from Address: 483 Bay Street
+        Buy-from Address 2: ''
+        Buy-from City: Toronto
+        Buy-from Post Code: M5G 2P5
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Power service - upholstery facility
+        Quantity: 1.0
+        Unit Cost: 10800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Electricity supply - Quebec plant
+        Quantity: 1.0
+        Unit Cost: 20100.0
+      - Line No.: 30000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Energy audit service
+        Quantity: 1.0
+        Unit Cost: 1800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Electrical service - distribution center
+        Quantity: 1.0
+        Unit Cost: 14200.0
+      - Line No.: 50000
+        Type: 1
+        No.: 53100
+        Deferral Code: 12M
+        Description: Energy management service - annual
+        Quantity: 1.0
+        Unit Cost: 2400.0
+      - Line No.: 60000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Electrical supply - cutting department
+        Quantity: 1.0
+        Unit Cost: 13400.0
+      - Line No.: 70000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Capacity charges - transformer fee
+        Quantity: 1.0
+        Unit Cost: 4800.0
+- name: PA-INV-V010-007
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG009;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Enbridge Gas Distribution
+    Address: 500 Consumers Road Suite 500
+    Address 2: ''
+    City: North York
+    Country/Region Code: CA
+    Post Code: M2J1P8
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-007
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53110
+    Description: Natural gas - space heating
+    Quantity: 1.0
+    Unit Price: 6200.0
+  - Type: 1
+    No.: 53110
+    Description: Natural gas - machinery operations
+    Quantity: 1.0
+    Unit Price: 4800.0
+  - Type: 1
+    No.: 53110
+    Description: Natural gas - finishing ovens
+    Quantity: 1.0
+    Unit Price: 6800.0
+  - Type: 1
+    No.: 53110
+    Description: Gas supply - facility heating
+    Quantity: 1.0
+    Unit Price: 7600.0
+  - Type: 1
+    No.: 53110
+    Description: Natural gas - spray booth heating
+    Quantity: 1.0
+    Unit Price: 3800.0
+  - Type: 1
+    No.: 53110
+    Description: Heating supply - winter months
+    Quantity: 1.0
+    Unit Price: 18500.0
+  - Type: 1
+    No.: 53110
+    Description: Gas service - Ontario plant
+    Quantity: 1.0
+    Unit Price: 11600.0
+  - Type: 1
+    No.: 53110
+    Description: Enbridge service - distribution center
+    Quantity: 1.0
+    Unit Price: 5400.0
+  - Type: 1
+    No.: 53110
+    Description: Gas usage - assembly plant
+    Quantity: 1.0
+    Unit Price: 7200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-007
+        Buy-from Vendor Name: Enbridge Gas Distribution
+        Buy-from Address: 500 Consumers Road
+        Buy-from Address 2: ''
+        Buy-from City: North York
+        Buy-from Post Code: M2J 1P8
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Natural gas - space heating
+        Quantity: 1.0
+        Unit Cost: 6200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Natural gas - machinery operations
+        Quantity: 1.0
+        Unit Cost: 4800.0
+      - Line No.: 30000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Natural gas - finishing ovens
+        Quantity: 1.0
+        Unit Cost: 6800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Gas supply - facility heating
+        Quantity: 1.0
+        Unit Cost: 7600.0
+      - Line No.: 50000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Natural gas - spray booth heating
+        Quantity: 1.0
+        Unit Cost: 3800.0
+      - Line No.: 60000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Heating supply - winter months
+        Quantity: 1.0
+        Unit Cost: 18500.0
+      - Line No.: 70000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Gas service - Ontario plant
+        Quantity: 1.0
+        Unit Cost: 11600.0
+      - Line No.: 80000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Enbridge service - distribution center
+        Quantity: 1.0
+        Unit Cost: 5400.0
+      - Line No.: 90000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Gas usage - assembly plant
+        Quantity: 1.0
+        Unit Cost: 7200.0
+- name: PA-INV-V007-001
+  description: VendorNo=V007;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Logistics Express Canada
+    Address: 4100 Transport Boulevard
+    Address 2: ''
+    City: Brampton
+    Country/Region Code: CA
+    Post Code: L6T 5M2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V007-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 51200
+    Description: Climate-controlled storage - monthly
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 51110
+    Description: Furniture transport - protected crating
+    Quantity: 1.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 51110
+    Description: Express delivery - next day
+    Quantity: 1.0
+    Unit Price: 975.0
+  - Type: 1
+    No.: 51200
+    Description: Storage fees - overflow inventory
+    Quantity: 1.0
+    Unit Price: 1500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V007-001
+        Buy-from Vendor Name: Logistics Express Canada
+        Buy-from Address: 4100 Transport Boulevard
+        Buy-from Address 2: ''
+        Buy-from City: Brampton
+        Buy-from Post Code: L6T 5M2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 51200
+        Deferral Code: ''
+        Description: Climate-controlled storage - monthly
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: Furniture transport - protected crating
+        Quantity: 1.0
+        Unit Cost: 680.0
+      - Line No.: 30000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: Express delivery - next day
+        Quantity: 1.0
+        Unit Cost: 975.0
+      - Line No.: 40000
+        Type: 1
+        No.: 51200
+        Deferral Code: ''
+        Description: Storage fees - overflow inventory
+        Quantity: 1.0
+        Unit Cost: 1500.0
+- name: PA-INV-V005-007
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG003;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Textile Innovations Canada
+    Address: 3300 Fabric Lane
+    Address 2: ''
+    City: Montreal
+    Country/Region Code: CA
+    Post Code: H3C 4G9
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-007
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Polyester blend - durable charcoal
+    Quantity: 320.0
+    Unit Price: 18.5
+  - Type: 1
+    No.: 50300
+    Description: Velvet fabric - jewel tone teal
+    Quantity: 180.0
+    Unit Price: 35.0
+  - Type: 1
+    No.: 50300
+    Description: Outdoor fabric - weather resistant
+    Quantity: 180.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 50300
+    Description: Jacquard weave - geometric pattern
+    Quantity: 140.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 50310
+    Description: Pull-up leather - oil-tanned
+    Quantity: 75.0
+    Unit Price: 105.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-007
+        Buy-from Vendor Name: Textile Innovations Canada
+        Buy-from Address: 3300 Fabric Lane
+        Buy-from Address 2: ''
+        Buy-from City: Montreal
+        Buy-from Post Code: H3C 4G9
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polyester blend - durable charcoal
+        Quantity: 320.0
+        Unit Cost: 18.5
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Velvet fabric - jewel tone teal
+        Quantity: 180.0
+        Unit Cost: 35.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Outdoor fabric - weather resistant
+        Quantity: 180.0
+        Unit Cost: 32.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Jacquard weave - geometric pattern
+        Quantity: 140.0
+        Unit Cost: 42.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50310
+        Deferral Code: ''
+        Description: Pull-up leather - oil-tanned
+        Quantity: 75.0
+        Unit Cost: 105.0
+- name: PA-INV-V009-007
+  description: VendorNo=V009;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Hydro One Business Services
+    Address: 483 Bay Street
+    Address 2: ''
+    City: Toronto
+    Country/Region Code: CA
+    Post Code: M5G 2P5
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V009-007
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53100
+    Description: Energy rebate adjustment
+    Quantity: 1.0
+    Unit Price: -1500.0
+  - Type: 1
+    No.: 53100
+    Description: Power distribution - facility 2
+    Quantity: 1.0
+    Unit Price: 21800.0
+  - Type: 1
+    No.: 53100
+    Description: Power usage - assembly operations
+    Quantity: 1.0
+    Unit Price: 19800.0
+  - Type: 1
+    No.: 53100
+    Description: Electricity - facility lighting
+    Quantity: 1.0
+    Unit Price: 7800.0
+  - Type: 1
+    No.: 53100
+    Description: Hydro bill - office building
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 53100
+    Description: Electricity - warehouse operations
+    Quantity: 1.0
+    Unit Price: 12500.0
+  - Type: 1
+    No.: 53100
+    Description: Electricity - finishing department
+    Quantity: 1.0
+    Unit Price: 11500.0
+  - Type: 1
+    No.: 53100
+    Description: Electricity - paint booth operations
+    Quantity: 1.0
+    Unit Price: 9500.0
+  - Type: 1
+    No.: 53100
+    Description: Power connection - new equipment
+    Quantity: 1.0
+    Unit Price: 5400.0
+  - Type: 1
+    No.: 53100
+    Description: Power usage - HVAC systems
+    Quantity: 1.0
+    Unit Price: 12600.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V009-007
+        Buy-from Vendor Name: Hydro One Business Services
+        Buy-from Address: 483 Bay Street
+        Buy-from Address 2: ''
+        Buy-from City: Toronto
+        Buy-from Post Code: M5G 2P5
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Energy rebate adjustment
+        Quantity: 1.0
+        Unit Cost: -1500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Power distribution - facility 2
+        Quantity: 1.0
+        Unit Cost: 21800.0
+      - Line No.: 30000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Power usage - assembly operations
+        Quantity: 1.0
+        Unit Cost: 19800.0
+      - Line No.: 40000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Electricity - facility lighting
+        Quantity: 1.0
+        Unit Cost: 7800.0
+      - Line No.: 50000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Hydro bill - office building
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 60000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Electricity - warehouse operations
+        Quantity: 1.0
+        Unit Cost: 12500.0
+      - Line No.: 70000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Electricity - finishing department
+        Quantity: 1.0
+        Unit Cost: 11500.0
+      - Line No.: 80000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Electricity - paint booth operations
+        Quantity: 1.0
+        Unit Cost: 9500.0
+      - Line No.: 90000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Power connection - new equipment
+        Quantity: 1.0
+        Unit Cost: 5400.0
+      - Line No.: 100000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Power usage - HVAC systems
+        Quantity: 1.0
+        Unit Cost: 12600.0
+- name: PA-INV-V008-004
+  description: VendorNo=V008;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG005;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: EnviroPack Solutions Inc.
+    Address: 2200 Packaging Way
+    Address 2: ''
+    City: Vaughan
+    Country/Region Code: CA
+    Post Code: L4K 4B6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V008-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50500
+    Description: Shipping labels - thermal printable
+    Quantity: 10000.0
+    Unit Price: 0.08
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V008-004
+        Buy-from Vendor Name: EnviroPack Solutions Inc.
+        Buy-from Address: 2200 Packaging Way
+        Buy-from Address 2: ''
+        Buy-from City: Vaughan
+        Buy-from Post Code: L4K 4B6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Shipping labels - thermal printable
+        Quantity: 10000.0
+        Unit Cost: 0.08
+- name: PA-INV-V005-002
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG003;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Textile Innovations Canada
+    Address: 3300 Fabric Lane
+    Address 2: ''
+    City: Montreal
+    Country/Region Code: CA
+    Post Code: H3C 4G9
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Ultrasuede - microfiber luxury
+    Quantity: 140.0
+    Unit Price: 58.0
+  - Type: 1
+    No.: 50300
+    Description: Corduroy fabric - wide wale sage
+    Quantity: 150.0
+    Unit Price: 29.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-002
+        Buy-from Vendor Name: Textile Innovations Canada
+        Buy-from Address: 3300 Fabric Lane
+        Buy-from Address 2: ''
+        Buy-from City: Montreal
+        Buy-from Post Code: H3C 4G9
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Ultrasuede - microfiber luxury
+        Quantity: 140.0
+        Unit Cost: 58.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Corduroy fabric - wide wale sage
+        Quantity: 150.0
+        Unit Cost: 29.0
+- name: PA-INV-V005-003
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG003;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Textile Innovations Canada
+    Address: 3300 Fabric Lane
+    Address 2: ''
+    City: Montreal
+    Country/Region Code: CA
+    Post Code: H3C 4G9
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-003
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Faux leather - vegan alternative grey
+    Quantity: 220.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 50310
+    Description: Genuine leather - espresso dark
+    Quantity: 95.0
+    Unit Price: 88.0
+  - Type: 1
+    No.: 50300
+    Description: Damask pattern - elegant silver
+    Quantity: 120.0
+    Unit Price: 44.0
+  - Type: 1
+    No.: 50300
+    Description: Crypton fabric - pet-friendly navy
+    Quantity: 190.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 50300
+    Description: Canvas fabric - heavy duty natural
+    Quantity: 240.0
+    Unit Price: 16.0
+  - Type: 1
+    No.: 50310
+    Description: Nappa leather - soft taupe
+    Quantity: 70.0
+    Unit Price: 112.0
+  - Type: 1
+    No.: 50300
+    Description: Velvet crushed - luxury burgundy
+    Quantity: 110.0
+    Unit Price: 52.0
+  - Type: 1
+    No.: 50300
+    Description: Solid color fabric - designer palette
+    Quantity: 340.0
+    Unit Price: 19.0
+  - Type: 1
+    No.: 50300
+    Description: Tweed fabric - herringbone pattern
+    Quantity: 130.0
+    Unit Price: 36.0
+  - Type: 1
+    No.: 50310
+    Description: Aniline leather - natural grain
+    Quantity: 55.0
+    Unit Price: 135.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-003
+        Buy-from Vendor Name: Textile Innovations Canada
+        Buy-from Address: 3300 Fabric Lane
+        Buy-from Address 2: ''
+        Buy-from City: Montreal
+        Buy-from Post Code: H3C 4G9
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Faux leather - vegan alternative grey
+        Quantity: 220.0
+        Unit Cost: 28.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50310
+        Deferral Code: ''
+        Description: Genuine leather - espresso dark
+        Quantity: 95.0
+        Unit Cost: 88.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Damask pattern - elegant silver
+        Quantity: 120.0
+        Unit Cost: 44.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Crypton fabric - pet-friendly navy
+        Quantity: 190.0
+        Unit Cost: 38.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Canvas fabric - heavy duty natural
+        Quantity: 240.0
+        Unit Cost: 16.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50310
+        Deferral Code: ''
+        Description: Nappa leather - soft taupe
+        Quantity: 70.0
+        Unit Cost: 112.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Velvet crushed - luxury burgundy
+        Quantity: 110.0
+        Unit Cost: 52.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Solid color fabric - designer palette
+        Quantity: 340.0
+        Unit Cost: 19.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Tweed fabric - herringbone pattern
+        Quantity: 130.0
+        Unit Cost: 36.0
+      - Line No.: 100000
+        Type: 1
+        No.: 50310
+        Deferral Code: ''
+        Description: Aniline leather - natural grain
+        Quantity: 55.0
+        Unit Cost: 135.0
+- name: PA-INV-V009-003
+  description: VendorNo=V009;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG009;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Hydro One Business Services
+    Address: 483 Bay St.
+    Address 2: ''
+    City: Toronto
+    Country/Region Code: CA
+    Post Code: M5G 2P5
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V009-003
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53100
+    Description: Regulatory charges - delivery fees
+    Quantity: 1.0
+    Unit Price: 1450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V009-003
+        Buy-from Vendor Name: Hydro One Business Services
+        Buy-from Address: 483 Bay Street
+        Buy-from Address 2: ''
+        Buy-from City: Toronto
+        Buy-from Post Code: M5G 2P5
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53100
+        Deferral Code: ''
+        Description: Regulatory charges - delivery fees
+        Quantity: 1.0
+        Unit Cost: 1450.0
+- name: PA-INV-V007-002
+  description: VendorNo=V007;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG006;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Logistics Express Canada
+    Address: 4100 Transport Boulevard Warehouse 3
+    Address 2: ''
+    City: Brampton
+    Country/Region Code: CA
+    Post Code: L6T5M2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V007-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 51110
+    Description: Local delivery - within 50km
+    Quantity: 1.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 51200
+    Description: Warehousing services - monthly
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 51100
+    Description: Freight - Quebec City route
+    Quantity: 1.0
+    Unit Price: 685.0
+  - Type: 1
+    No.: 51110
+    Description: Two-man delivery team - installation
+    Quantity: 1.0
+    Unit Price: 625.0
+  - Type: 1
+    No.: 51110
+    Description: White glove delivery service
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 51100
+    Description: Return logistics - damaged goods
+    Quantity: 1.0
+    Unit Price: 425.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V007-002
+        Buy-from Vendor Name: Logistics Express Canada
+        Buy-from Address: 4100 Transport Boulevard
+        Buy-from Address 2: ''
+        Buy-from City: Brampton
+        Buy-from Post Code: L6T 5M2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: Local delivery - within 50km
+        Quantity: 1.0
+        Unit Cost: 185.0
+      - Line No.: 20000
+        Type: 1
+        No.: 51200
+        Deferral Code: 12M
+        Description: Warehousing services - monthly
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Freight - Quebec City route
+        Quantity: 1.0
+        Unit Cost: 685.0
+      - Line No.: 40000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: Two-man delivery team - installation
+        Quantity: 1.0
+        Unit Cost: 625.0
+      - Line No.: 50000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: White glove delivery service
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 60000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Return logistics - damaged goods
+        Quantity: 1.0
+        Unit Cost: 425.0
+- name: PA-INV-V010-005
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Enbridge Gas Distribution
+    Address: 500 Consumers Road
+    Address 2: ''
+    City: North York
+    Country/Region Code: CA
+    Post Code: M2J 1P8
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-005
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53110
+    Description: Natural gas - drying kilns
+    Quantity: 1.0
+    Unit Price: 14200.0
+  - Type: 1
+    No.: 53110
+    Description: Natural gas - facility heating system
+    Quantity: 1.0
+    Unit Price: 12800.0
+  - Type: 1
+    No.: 53110
+    Description: Enbridge charges - office building
+    Quantity: 1.0
+    Unit Price: 1850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-005
+        Buy-from Vendor Name: Enbridge Gas Distribution
+        Buy-from Address: 500 Consumers Road
+        Buy-from Address 2: ''
+        Buy-from City: North York
+        Buy-from Post Code: M2J 1P8
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Natural gas - drying kilns
+        Quantity: 1.0
+        Unit Cost: 14200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Natural gas - facility heating system
+        Quantity: 1.0
+        Unit Cost: 12800.0
+      - Line No.: 30000
+        Type: 1
+        No.: 53110
+        Deferral Code: ''
+        Description: Enbridge charges - office building
+        Quantity: 1.0
+        Unit Cost: 1850.0
+- name: PA-INV-V007-004
+  description: VendorNo=V007;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG006;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Logistics Express Canada
+    Address: 4100 Transport Blvd
+    Address 2: ''
+    City: Brampton
+    Country/Region Code: CA
+    Post Code: L6T 5M2
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V007-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 51110
+    Description: Retail store delivery - scheduled
+    Quantity: 1.0
+    Unit Price: 550.0
+  - Type: 1
+    No.: 51100
+    Description: Inbound shipping - supplier pickup
+    Quantity: 1.0
+    Unit Price: 650.0
+  - Type: 1
+    No.: 51110
+    Description: Commercial delivery - loading dock
+    Quantity: 1.0
+    Unit Price: 395.0
+  - Type: 1
+    No.: 51110
+    Description: Trade show logistics - booth delivery
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 51100
+    Description: LTL freight - Toronto to Vancouver
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 51200
+    Description: Fulfillment services - annual
+    Quantity: 1.0
+    Unit Price: 42000.0
+  - Type: 1
+    No.: 51100
+    Description: Bulk shipping - truckload direct
+    Quantity: 1.0
+    Unit Price: 2800.0
+  - Type: 1
+    No.: 51110
+    Description: Cross-border shipping - US delivery
+    Quantity: 1.0
+    Unit Price: 1200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V007-004
+        Buy-from Vendor Name: Logistics Express Canada
+        Buy-from Address: 4100 Transport Boulevard
+        Buy-from Address 2: ''
+        Buy-from City: Brampton
+        Buy-from Post Code: L6T 5M2
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: Retail store delivery - scheduled
+        Quantity: 1.0
+        Unit Cost: 550.0
+      - Line No.: 20000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Inbound shipping - supplier pickup
+        Quantity: 1.0
+        Unit Cost: 650.0
+      - Line No.: 30000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: Commercial delivery - loading dock
+        Quantity: 1.0
+        Unit Cost: 395.0
+      - Line No.: 40000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: Trade show logistics - booth delivery
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: LTL freight - Toronto to Vancouver
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 60000
+        Type: 1
+        No.: 51200
+        Deferral Code: 12M
+        Description: Fulfillment services - annual
+        Quantity: 1.0
+        Unit Cost: 42000.0
+      - Line No.: 70000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Bulk shipping - truckload direct
+        Quantity: 1.0
+        Unit Cost: 2800.0
+      - Line No.: 80000
+        Type: 1
+        No.: 51110
+        Deferral Code: ''
+        Description: Cross-border shipping - US delivery
+        Quantity: 1.0
+        Unit Cost: 1200.0
+- name: PA-INV-V008-008
+  description: VendorNo=V008;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG005;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: EnviroPack Solutions
+    Address: 2200 Packaging Way
+    Address 2: ''
+    City: Vaughan
+    Country/Region Code: CA
+    Post Code: L4K 4B6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V008-008
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50500
+    Description: Packing cartons - sofa size
+    Quantity: 200.0
+    Unit Price: 15.5
+  - Type: 1
+    No.: 50510
+    Description: Foam rolls - protective wrapping
+    Quantity: 100.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 50510
+    Description: Foam corner guards - L-shaped
+    Quantity: 1500.0
+    Unit Price: 0.65
+  - Type: 1
+    No.: 50500
+    Description: Mailer boxes - e-commerce size
+    Quantity: 700.0
+    Unit Price: 1.85
+  - Type: 1
+    No.: 50510
+    Description: Stretch film - industrial pallet wrap
+    Quantity: 120.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 50500
+    Description: Chipboard pads - sheet separator
+    Quantity: 1200.0
+    Unit Price: 0.95
+  - Type: 1
+    No.: 50500
+    Description: Eco-friendly boxes - biodegradable
+    Quantity: 350.0
+    Unit Price: 5.25
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V008-008
+        Buy-from Vendor Name: EnviroPack Solutions Inc.
+        Buy-from Address: 2200 Packaging Way
+        Buy-from Address 2: ''
+        Buy-from City: Vaughan
+        Buy-from Post Code: L4K 4B6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Packing cartons - sofa size
+        Quantity: 200.0
+        Unit Cost: 15.5
+      - Line No.: 20000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Foam rolls - protective wrapping
+        Quantity: 100.0
+        Unit Cost: 38.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Foam corner guards - L-shaped
+        Quantity: 1500.0
+        Unit Cost: 0.65
+      - Line No.: 40000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Mailer boxes - e-commerce size
+        Quantity: 700.0
+        Unit Cost: 1.85
+      - Line No.: 50000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Stretch film - industrial pallet wrap
+        Quantity: 120.0
+        Unit Cost: 28.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Chipboard pads - sheet separator
+        Quantity: 1200.0
+        Unit Cost: 0.95
+      - Line No.: 70000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Eco-friendly boxes - biodegradable
+        Quantity: 350.0
+        Unit Cost: 5.25
+- name: PA-INV-V011-001
+  description: VendorNo=V011;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG007;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Industrial Equipment Rentals ON
+    Address: 1850 Equipment Drive
+    Address 2: ''
+    City: Oakville
+    Country/Region Code: CA
+    Post Code: L6H 6T3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V011-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 52100
+    Description: Forklift rental - 5000 lb capacity weekly
+    Quantity: 4.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 52100
+    Description: Concrete mixer rental - portable
+    Quantity: 1.0
+    Unit Price: 195.0
+  - Type: 1
+    No.: 52100
+    Description: Portable heater rental - propane 400K BTU
+    Quantity: 3.0
+    Unit Price: 225.0
+  - Type: 1
+    No.: 52100
+    Description: Telehandler rental - 6000 lb reach forklift
+    Quantity: 1.0
+    Unit Price: 795.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V011-001
+        Buy-from Vendor Name: Industrial Equipment Rentals Ontario
+        Buy-from Address: 1850 Equipment Drive
+        Buy-from Address 2: ''
+        Buy-from City: Oakville
+        Buy-from Post Code: L6H 6T3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Forklift rental - 5000 lb capacity weekly
+        Quantity: 4.0
+        Unit Cost: 450.0
+      - Line No.: 20000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Concrete mixer rental - portable
+        Quantity: 1.0
+        Unit Cost: 195.0
+      - Line No.: 30000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Portable heater rental - propane 400K BTU
+        Quantity: 3.0
+        Unit Cost: 225.0
+      - Line No.: 40000
+        Type: 1
+        No.: 52100
+        Deferral Code: 6M
+        Description: Telehandler rental - 6000 lb reach forklift
+        Quantity: 1.0
+        Unit Cost: 795.0
+- name: PA-INV-V018-001
+  description: VendorNo=V018;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Manulife Financial Group Benefits
+    Address: 200 Bloor St E
+    Address 2: ''
+    City: Toronto
+    Country/Region Code: CA
+    Post Code: M4W 1E5
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V018-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 57100
+    Description: Life insurance - 2x salary coverage
+    Quantity: 1.0
+    Unit Price: 28500.0
+  - Type: 1
+    No.: 57100
+    Description: Benefits administration fee - annual
+    Quantity: 1.0
+    Unit Price: 6500.0
+  - Type: 1
+    No.: 57100
+    Description: Short-term disability - weekly benefits
+    Quantity: 1.0
+    Unit Price: 22500.0
+  - Type: 1
+    No.: 57100
+    Description: Paramedical services - physio/massage
+    Quantity: 1.0
+    Unit Price: 18500.0
+  - Type: 1
+    No.: 57100
+    Description: Long-term disability insurance - group plan
+    Quantity: 1.0
+    Unit Price: 35200.0
+  - Type: 1
+    No.: 57100
+    Description: Retirement savings plan - RRSP matching
+    Quantity: 1.0
+    Unit Price: 95000.0
+  - Type: 1
+    No.: 57100
+    Description: Employee assistance program - counseling
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 57100
+    Description: Critical illness insurance - optional benefit
+    Quantity: 185.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 57100
+    Description: Travel health insurance - business trips
+    Quantity: 1.0
+    Unit Price: 5500.0
+  - Type: 1
+    No.: 57100
+    Description: Group health insurance - 620 employees
+    Quantity: 1.0
+    Unit Price: 125000.0
+  - Type: 1
+    No.: 57100
+    Description: Prescription drug plan - enhanced formulary
+    Quantity: 1.0
+    Unit Price: 62000.0
+  - Type: 1
+    No.: 57100
+    Description: Vision care plan - annual eye exams
+    Quantity: 1.0
+    Unit Price: 12800.0
+  - Type: 1
+    No.: 57100
+    Description: Mental health benefits - psychologist visits
+    Quantity: 1.0
+    Unit Price: 25000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V018-001
+        Buy-from Vendor Name: Manulife Financial Group Benefits
+        Buy-from Address: 200 Bloor Street East
+        Buy-from Address 2: ''
+        Buy-from City: Toronto
+        Buy-from Post Code: M4W 1E5
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 57100
+        Deferral Code: 12M
+        Description: Life insurance - 2x salary coverage
+        Quantity: 1.0
+        Unit Cost: 28500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 57100
+        Deferral Code: ''
+        Description: Benefits administration fee - annual
+        Quantity: 1.0
+        Unit Cost: 6500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 57100
+        Deferral Code: 12M
+        Description: Short-term disability - weekly benefits
+        Quantity: 1.0
+        Unit Cost: 22500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 57100
+        Deferral Code: ''
+        Description: Paramedical services - physio/massage
+        Quantity: 1.0
+        Unit Cost: 18500.0
+      - Line No.: 50000
+        Type: 1
+        No.: 57100
+        Deferral Code: 12M
+        Description: Long-term disability insurance - group plan
+        Quantity: 1.0
+        Unit Cost: 35200.0
+      - Line No.: 60000
+        Type: 1
+        No.: 57100
+        Deferral Code: 12M
+        Description: Retirement savings plan - RRSP matching
+        Quantity: 1.0
+        Unit Cost: 95000.0
+      - Line No.: 70000
+        Type: 1
+        No.: 57100
+        Deferral Code: 12M
+        Description: Employee assistance program - counseling
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 80000
+        Type: 1
+        No.: 57100
+        Deferral Code: ''
+        Description: Critical illness insurance - optional benefit
+        Quantity: 185.0
+        Unit Cost: 45.0
+      - Line No.: 90000
+        Type: 1
+        No.: 57100
+        Deferral Code: ''
+        Description: Travel health insurance - business trips
+        Quantity: 1.0
+        Unit Cost: 5500.0
+      - Line No.: 100000
+        Type: 1
+        No.: 57100
+        Deferral Code: 12M
+        Description: Group health insurance - 620 employees
+        Quantity: 1.0
+        Unit Cost: 125000.0
+      - Line No.: 110000
+        Type: 1
+        No.: 57100
+        Deferral Code: 12M
+        Description: Prescription drug plan - enhanced formulary
+        Quantity: 1.0
+        Unit Cost: 62000.0
+      - Line No.: 120000
+        Type: 1
+        No.: 57100
+        Deferral Code: 12M
+        Description: Vision care plan - annual eye exams
+        Quantity: 1.0
+        Unit Cost: 12800.0
+      - Line No.: 130000
+        Type: 1
+        No.: 57100
+        Deferral Code: ''
+        Description: Mental health benefits - psychologist visits
+        Quantity: 1.0
+        Unit Cost: 25000.0
+- name: PA-INV-V020-001
+  description: VendorNo=V020;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: CleanPro Facility Services
+    Address: 1100 Maintenance Road
+    Address 2: ''
+    City: Markham
+    Country/Region Code: CA
+    Post Code: L3R 8G6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V020-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53400
+    Description: Floor mat rental - entrance and safety mats
+    Quantity: 1.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 53400
+    Description: Janitorial service - manufacturing floor weekly
+    Quantity: 4.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 53400
+    Description: Parking lot sweeping - monthly service
+    Quantity: 1.0
+    Unit Price: 295.0
+  - Type: 1
+    No.: 53400
+    Description: Floor stripping and waxing - warehouse
+    Quantity: 1.0
+    Unit Price: 2850.0
+  - Type: 1
+    No.: 53400
+    Description: Pressure washing - loading dock areas
+    Quantity: 1.0
+    Unit Price: 685.0
+  - Type: 1
+    No.: 53400
+    Description: Waste removal - industrial bins weekly
+    Quantity: 4.0
+    Unit Price: 485.0
+  - Type: 1
+    No.: 53400
+    Description: Power washing - building exterior walls
+    Quantity: 1.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 53400
+    Description: Recycling service - cardboard and paper
+    Quantity: 4.0
+    Unit Price: 325.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V020-001
+        Buy-from Vendor Name: CleanPro Facility Services
+        Buy-from Address: 1100 Maintenance Road
+        Buy-from Address 2: ''
+        Buy-from City: Markham
+        Buy-from Post Code: L3R 8G6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53400
+        Deferral Code: 12M
+        Description: Floor mat rental - entrance and safety mats
+        Quantity: 1.0
+        Unit Cost: 185.0
+      - Line No.: 20000
+        Type: 1
+        No.: 53400
+        Deferral Code: 12M
+        Description: Janitorial service - manufacturing floor weekly
+        Quantity: 4.0
+        Unit Cost: 1850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 53400
+        Deferral Code: ''
+        Description: Parking lot sweeping - monthly service
+        Quantity: 1.0
+        Unit Cost: 295.0
+      - Line No.: 40000
+        Type: 1
+        No.: 53400
+        Deferral Code: ''
+        Description: Floor stripping and waxing - warehouse
+        Quantity: 1.0
+        Unit Cost: 2850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 53400
+        Deferral Code: ''
+        Description: Pressure washing - loading dock areas
+        Quantity: 1.0
+        Unit Cost: 685.0
+      - Line No.: 60000
+        Type: 1
+        No.: 53400
+        Deferral Code: 12M
+        Description: Waste removal - industrial bins weekly
+        Quantity: 4.0
+        Unit Cost: 485.0
+      - Line No.: 70000
+        Type: 1
+        No.: 53400
+        Deferral Code: ''
+        Description: Power washing - building exterior walls
+        Quantity: 1.0
+        Unit Cost: 1450.0
+      - Line No.: 80000
+        Type: 1
+        No.: 53400
+        Deferral Code: 12M
+        Description: Recycling service - cardboard and paper
+        Quantity: 4.0
+        Unit Cost: 325.0
+- name: PA-INV-V016-002
+  description: VendorNo=V016;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG012;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: McCarthy Tétrault LLP
+    Address: 66 Wellington Street West
+    Address 2: ''
+    City: Toronto
+    Country/Region Code: CA
+    Post Code: M5K 1E6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V016-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 56100
+    Description: Intellectual property consultation - design
+    Quantity: 1.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 56100
+    Description: Employment contract review - senior executive
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 56100
+    Description: Litigation support - contract dispute
+    Quantity: 8.0
+    Unit Price: 425.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V016-002
+        Buy-from Vendor Name: McCarthy Tétrault LLP
+        Buy-from Address: 66 Wellington Street West
+        Buy-from Address 2: ''
+        Buy-from City: Toronto
+        Buy-from Post Code: M5K 1E6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Intellectual property consultation - design
+        Quantity: 1.0
+        Unit Cost: 1450.0
+      - Line No.: 20000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Employment contract review - senior executive
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Litigation support - contract dispute
+        Quantity: 8.0
+        Unit Cost: 425.0
+- name: PA-INV-V016-004
+  description: VendorNo=V016;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG012;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: McCarthy Tétrault
+    Address: 66 Wellington St. W
+    Address 2: ''
+    City: Toronto
+    Country/Region Code: CA
+    Post Code: M5K 1E6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V016-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 56100
+    Description: Corporate governance advice - board meeting
+    Quantity: 1.0
+    Unit Price: 2200.0
+  - Type: 1
+    No.: 56100
+    Description: Product liability insurance review
+    Quantity: 1.0
+    Unit Price: 985.0
+  - Type: 1
+    No.: 56100
+    Description: Commercial lease negotiation - warehouse space
+    Quantity: 1.0
+    Unit Price: 4200.0
+  - Type: 1
+    No.: 56100
+    Description: Privacy policy drafting - PIPEDA compliance
+    Quantity: 1.0
+    Unit Price: 1850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V016-004
+        Buy-from Vendor Name: McCarthy Tétrault LLP
+        Buy-from Address: 66 Wellington Street West
+        Buy-from Address 2: ''
+        Buy-from City: Toronto
+        Buy-from Post Code: M5K 1E6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Corporate governance advice - board meeting
+        Quantity: 1.0
+        Unit Cost: 2200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Product liability insurance review
+        Quantity: 1.0
+        Unit Cost: 985.0
+      - Line No.: 30000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Commercial lease negotiation - warehouse space
+        Quantity: 1.0
+        Unit Cost: 4200.0
+      - Line No.: 40000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Privacy policy drafting - PIPEDA compliance
+        Quantity: 1.0
+        Unit Cost: 1850.0
+- name: PA-INV-V020-002
+  description: VendorNo=V020;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: CleanPro Facility Services
+    Address: 1100 Maintenance Road
+    Address 2: ''
+    City: Markham
+    Country/Region Code: CA
+    Post Code: L3R 8G6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V020-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53400
+    Description: Office cleaning - daily service 5 days/week
+    Quantity: 4.0
+    Unit Price: 2200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V020-002
+        Buy-from Vendor Name: CleanPro Facility Services
+        Buy-from Address: 1100 Maintenance Road
+        Buy-from Address 2: ''
+        Buy-from City: Markham
+        Buy-from Post Code: L3R 8G6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53400
+        Deferral Code: 12M
+        Description: Office cleaning - daily service 5 days/week
+        Quantity: 4.0
+        Unit Cost: 2200.0
+- name: PA-INV-V019-006
+  description: VendorNo=V019;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG014;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Staples Business Advantage Canada Inc.
+    Address: 6 Staples Avenue
+    Address 2: ''
+    City: Richmond Hill
+    Country/Region Code: CA
+    Post Code: L4B 4W3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V019-006
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 58100
+    Description: Scissors - 8 inch stainless steel
+    Quantity: 25.0
+    Unit Price: 7.25
+  - Type: 1
+    No.: 58110
+    Description: Adjustable desks - standing workstation
+    Quantity: 8.0
+    Unit Price: 685.0
+  - Type: 1
+    No.: 58100
+    Description: Binder clips - assorted sizes 200 pack
+    Quantity: 15.0
+    Unit Price: 11.25
+  - Type: 1
+    No.: 58100
+    Description: Desk calendars - monthly planner 2026
+    Quantity: 50.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 58100
+    Description: Coffee supplies - cups, stir sticks, sugar
+    Quantity: 1.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 58100
+    Description: File folders - letter size manila
+    Quantity: 100.0
+    Unit Price: 8.75
+  - Type: 1
+    No.: 58110
+    Description: Filing cabinets - 4 drawer vertical
+    Quantity: 6.0
+    Unit Price: 425.0
+  - Type: 1
+    No.: 58100
+    Description: Three-ring binders - 2 inch capacity
+    Quantity: 80.0
+    Unit Price: 4.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V019-006
+        Buy-from Vendor Name: Staples Business Advantage Canada
+        Buy-from Address: 6 Staples Avenue
+        Buy-from Address 2: ''
+        Buy-from City: Richmond Hill
+        Buy-from Post Code: L4B 4W3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 58100
+        Deferral Code: ''
+        Description: Scissors - 8 inch stainless steel
+        Quantity: 25.0
+        Unit Cost: 7.25
+      - Line No.: 20000
+        Type: 1
+        No.: 58110
+        Deferral Code: 12M
+        Description: Adjustable desks - standing workstation
+        Quantity: 8.0
+        Unit Cost: 685.0
+      - Line No.: 30000
+        Type: 1
+        No.: 58100
+        Deferral Code: ''
+        Description: Binder clips - assorted sizes 200 pack
+        Quantity: 15.0
+        Unit Cost: 11.25
+      - Line No.: 40000
+        Type: 1
+        No.: 58100
+        Deferral Code: ''
+        Description: Desk calendars - monthly planner 2026
+        Quantity: 50.0
+        Unit Cost: 12.0
+      - Line No.: 50000
+        Type: 1
+        No.: 58100
+        Deferral Code: ''
+        Description: Coffee supplies - cups, stir sticks, sugar
+        Quantity: 1.0
+        Unit Cost: 125.0
+      - Line No.: 60000
+        Type: 1
+        No.: 58100
+        Deferral Code: ''
+        Description: File folders - letter size manila
+        Quantity: 100.0
+        Unit Cost: 8.75
+      - Line No.: 70000
+        Type: 1
+        No.: 58110
+        Deferral Code: 6M
+        Description: Filing cabinets - 4 drawer vertical
+        Quantity: 6.0
+        Unit Cost: 425.0
+      - Line No.: 80000
+        Type: 1
+        No.: 58100
+        Deferral Code: ''
+        Description: Three-ring binders - 2 inch capacity
+        Quantity: 80.0
+        Unit Cost: 4.5
+- name: PA-INV-V020-003
+  description: VendorNo=V020;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG010;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: CleanPro Facility Services Inc.
+    Address: 1100 Maintenance Road
+    Address 2: ''
+    City: Markham
+    Country/Region Code: CA
+    Post Code: L3R 8G6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V020-003
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 53400
+    Description: Emergency spill cleanup - industrial floor
+    Quantity: 1.0
+    Unit Price: 625.0
+  - Type: 1
+    No.: 53400
+    Description: HVAC filter replacement - quarterly
+    Quantity: 1.0
+    Unit Price: 575.0
+  - Type: 1
+    No.: 53400
+    Description: Window washing - exterior quarterly service
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 53400
+    Description: Light bulb replacement service - facility-wide
+    Quantity: 1.0
+    Unit Price: 425.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V020-003
+        Buy-from Vendor Name: CleanPro Facility Services
+        Buy-from Address: 1100 Maintenance Road
+        Buy-from Address 2: ''
+        Buy-from City: Markham
+        Buy-from Post Code: L3R 8G6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 53400
+        Deferral Code: ''
+        Description: Emergency spill cleanup - industrial floor
+        Quantity: 1.0
+        Unit Cost: 625.0
+      - Line No.: 20000
+        Type: 1
+        No.: 53400
+        Deferral Code: ''
+        Description: HVAC filter replacement - quarterly
+        Quantity: 1.0
+        Unit Cost: 575.0
+      - Line No.: 30000
+        Type: 1
+        No.: 53400
+        Deferral Code: ''
+        Description: Window washing - exterior quarterly service
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 40000
+        Type: 1
+        No.: 53400
+        Deferral Code: ''
+        Description: Light bulb replacement service - facility-wide
+        Quantity: 1.0
+        Unit Cost: 425.0
+- name: PA-INV-V011-002
+  description: VendorNo=V011;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG007;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: Industrial Equipment Rentals Ontario
+    Address: 1850 Equipment Drive
+    Address 2: ''
+    City: Oakville
+    Country/Region Code: CA
+    Post Code: L6H 6T3
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V011-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 52100
+    Description: Pressure washer rental - commercial
+    Quantity: 2.0
+    Unit Price: 165.0
+  - Type: 1
+    No.: 52100
+    Description: Boom lift rental - articulating 40 ft
+    Quantity: 1.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 52100
+    Description: Forklift rental - 8000 lb capacity
+    Quantity: 2.0
+    Unit Price: 585.0
+  - Type: 1
+    No.: 52100
+    Description: Generator rental - 20 kW diesel
+    Quantity: 1.0
+    Unit Price: 425.0
+  - Type: 1
+    No.: 52100
+    Description: Welding equipment rental - MIG welder
+    Quantity: 1.0
+    Unit Price: 275.0
+  - Type: 1
+    No.: 52100
+    Description: Air compressor rental - industrial grade
+    Quantity: 1.0
+    Unit Price: 295.0
+  - Type: 1
+    No.: 52100
+    Description: Scissor lift rental - narrow electric 19 ft
+    Quantity: 2.0
+    Unit Price: 295.0
+  - Type: 1
+    No.: 52100
+    Description: Dust collector rental - portable 3 HP
+    Quantity: 2.0
+    Unit Price: 325.0
+  - Type: 1
+    No.: 52100
+    Description: Carpet cleaner rental - industrial
+    Quantity: 1.0
+    Unit Price: 145.0
+  - Type: 1
+    No.: 52100
+    Description: Light tower rental - diesel 4-lamp
+    Quantity: 1.0
+    Unit Price: 285.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V011-002
+        Buy-from Vendor Name: Industrial Equipment Rentals Ontario
+        Buy-from Address: 1850 Equipment Drive
+        Buy-from Address 2: ''
+        Buy-from City: Oakville
+        Buy-from Post Code: L6H 6T3
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Pressure washer rental - commercial
+        Quantity: 2.0
+        Unit Cost: 165.0
+      - Line No.: 20000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Boom lift rental - articulating 40 ft
+        Quantity: 1.0
+        Unit Cost: 680.0
+      - Line No.: 30000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Forklift rental - 8000 lb capacity
+        Quantity: 2.0
+        Unit Cost: 585.0
+      - Line No.: 40000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Generator rental - 20 kW diesel
+        Quantity: 1.0
+        Unit Cost: 425.0
+      - Line No.: 50000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Welding equipment rental - MIG welder
+        Quantity: 1.0
+        Unit Cost: 275.0
+      - Line No.: 60000
+        Type: 1
+        No.: 52100
+        Deferral Code: 3M
+        Description: Air compressor rental - industrial grade
+        Quantity: 1.0
+        Unit Cost: 295.0
+      - Line No.: 70000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Scissor lift rental - narrow electric 19 ft
+        Quantity: 2.0
+        Unit Cost: 295.0
+      - Line No.: 80000
+        Type: 1
+        No.: 52100
+        Deferral Code: 3M
+        Description: Dust collector rental - portable 3 HP
+        Quantity: 2.0
+        Unit Cost: 325.0
+      - Line No.: 90000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Carpet cleaner rental - industrial
+        Quantity: 1.0
+        Unit Cost: 145.0
+      - Line No.: 100000
+        Type: 1
+        No.: 52100
+        Deferral Code: ''
+        Description: Light tower rental - diesel 4-lamp
+        Quantity: 1.0
+        Unit Cost: 285.0
+- name: PA-INV-V016-005
+  description: VendorNo=V016;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG012;
+  test_setup: PA-Setup-en-CA.yaml
+  vendor:
+    Name: McCarthy Tétrault LLP
+    Address: 66 Wellington Street West
+    Address 2: ''
+    City: Toronto
+    Country/Region Code: CA
+    Post Code: M5K 1E6
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V016-005
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 56100
+    Description: Import/export compliance consultation
+    Quantity: 1.0
+    Unit Price: 1425.0
+  - Type: 1
+    No.: 56100
+    Description: Regulatory compliance review - manufacturing
+    Quantity: 1.0
+    Unit Price: 3850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V016-005
+        Buy-from Vendor Name: McCarthy Tétrault LLP
+        Buy-from Address: 66 Wellington Street West
+        Buy-from Address 2: ''
+        Buy-from City: Toronto
+        Buy-from Post Code: M5K 1E6
+        Buy-from Country/Region Code: CA
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Import/export compliance consultation
+        Quantity: 1.0
+        Unit Cost: 1425.0
+      - Line No.: 20000
+        Type: 1
+        No.: 56100
+        Deferral Code: ''
+        Description: Regulatory compliance review - manufacturing
+        Quantity: 1.0
+        Unit Cost: 3850.0

@@ -144,15 +144,14 @@ codeunit 4019 "GP Item Migrator"
         if not ChartOfAccountsMigrated then
             exit;
 
-        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
-            exit;
-
-        if GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
-            exit;
-
         if GPItem.Get(RecordIdToMigrate) then begin
             if not Sender.DoesItemExist(CopyStr(GPItem.No, 1, MaxStrLen(Item."No."))) then
                 exit;
+
+            if not GPCompanyAdditionalSettings.GetGLModuleEnabled() or GPCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then begin
+                SetItemAsBlockedIfNeeded(Item, GPItem, DataMigrationErrorLogging);
+                exit;
+            end;
 
             if GPItem.ItemType = 0 then
                 case GetCostingMethod(GPItem) of
@@ -226,18 +225,23 @@ codeunit 4019 "GP Item Migrator"
                         end;
                 end;
 
-            DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItem.RecordId));
-            if GPItem.InActive then begin
-                Item.Reset();
-                if Item.Get(GPItem.No) then begin
-                    Item.Blocked := true;
-                    Item.Modify(true);
-                end;
-            end;
+            SetItemAsBlockedIfNeeded(Item, GPItem, DataMigrationErrorLogging);
         end;
 
         if ErrorText <> '' then
             Error(ErrorText);
+    end;
+
+    local procedure SetItemAsBlockedIfNeeded(var Item: Record Item; var GPItem: Record "GP Item"; var DataMigrationErrorLogging: Codeunit "Data Migration Error Logging")
+    begin
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItem.RecordId));
+        if GPItem.InActive then begin
+            Item.Reset();
+            if Item.Get(GPItem.No) then begin
+                Item.Blocked := true;
+                Item.Modify(true);
+            end;
+        end;
     end;
 
     local procedure MigrateItemInventoryPostingGroupImp(var GPItem: Record "GP Item"; var Sender: Codeunit "Item Data Migration Facade")
@@ -555,7 +559,11 @@ codeunit 4019 "GP Item Migrator"
     var
         GeneralPostingSetup: Record "General Posting Setup";
         AccountNumber: Code[20];
+        InventoryAdjmtAccount: Code[20];
     begin
+        if GeneralPostingSetup.Get('', DefaultPostingGroupCodeTxt) then
+            InventoryAdjmtAccount := GeneralPostingSetup."Inventory Adjmt. Account";
+
         if ItemDataMigrationFacade.CreateGeneralProductPostingSetupIfNeeded(PostingGroupCode, GeneralProdPostingGroupDescription, GeneralBusPostingGroupCode) then
             if GeneralPostingSetup.Get(GeneralBusPostingGroupCode, PostingGroupCode) then begin
                 if CanAddGenProductPostingAccount(GPIV40400.IVSLSIDX, AccountNumber, '') then
@@ -564,13 +572,13 @@ codeunit 4019 "GP Item Migrator"
                 if CanAddGenProductPostingAccount(GPIV40400.IVSLDSIX, AccountNumber, '') then
                     GeneralPostingSetup.Validate("Sales Line Disc. Account", AccountNumber);
 
-                if CanAddGenProductPostingAccount(GPIV40400.IVIVINDX, AccountNumber, '') then
+                if CanAddGenProductPostingAccount(GPIV40400.IVIVINDX, AccountNumber, InventoryAdjmtAccount) then
                     GeneralPostingSetup.Validate("Purch. Account", AccountNumber);
 
                 if CanAddGenProductPostingAccount(GPIV40400.IVCOGSIX, AccountNumber, '') then
                     GeneralPostingSetup.Validate("COGS Account", AccountNumber);
 
-                if CanAddGenProductPostingAccount(GPIV40400.IVIVINDX, AccountNumber, '') then
+                if CanAddGenProductPostingAccount(GPIV40400.IVIVINDX, AccountNumber, InventoryAdjmtAccount) then
                     GeneralPostingSetup.Validate("Direct Cost Applied Account", AccountNumber);
 
                 if CanAddGenProductPostingAccount(GPIV40400.PURPVIDX, AccountNumber, '') then
@@ -634,7 +642,7 @@ codeunit 4019 "GP Item Migrator"
         AccountNumber := DefaultAccountNo;
 
         if GPAccountIdx < 1 then
-            exit;
+            exit(AccountNumber <> '');
 
         if (GLAccount.Get(HelperFunctions.GetGPAccountNumberByIndex(GPAccountIdx))) then
             AccountNumber := GLAccount."No.";

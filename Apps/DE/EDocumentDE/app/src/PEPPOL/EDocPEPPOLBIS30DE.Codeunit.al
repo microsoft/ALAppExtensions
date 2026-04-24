@@ -2,6 +2,7 @@ namespace Microsoft.eServices.EDocument.IO.Peppol;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Formats;
+using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Document;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
@@ -13,7 +14,6 @@ using System.Utilities;
 
 codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 {
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
     Permissions =
@@ -57,6 +57,8 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
         DefaultNamespaceUri: Text;
         XmlDocText: Text;
     begin
+        if not TempBlob.HasValue() then
+            exit;
         TempBlob.CreateInStream(InStream);
         XmlDocument.ReadFrom(InStream, XMLDoc);
         XmlNSManager.NameTable(XMLDoc.NameTable());
@@ -77,9 +79,10 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
         if AttributeNodeList.Count() = 0 then
             exit;
 
-        // remove the "schemeID" attribute from each found element
+        // remove the "schemeID" attribute from each found element, except EndpointID (BR-62, BR-63 require schemeID)
         foreach XmlNode in AttributeNodeList do
-            XmlNode.AsXmlElement().RemoveAttribute('schemeID');
+            if XmlNode.AsXmlElement().LocalName() <> 'EndpointID' then
+                XmlNode.AsXmlElement().RemoveAttribute('schemeID');
 
         Clear(TempBlob);
         TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
@@ -265,6 +268,17 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
             BuyerReference := '';
     end;
 
+    local procedure SetSellerContactFromCompanyInformation(var ContactName: Text; var PhoneNumber: Text; var EmailAddress: Text)
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.SetLoadFields("Contact Person", "Phone No.", "E-Mail");
+        CompanyInformation.Get();
+        ContactName := CompanyInformation."Contact Person";
+        PhoneNumber := CompanyInformation."Phone No.";
+        EmailAddress := CompanyInformation."E-Mail";
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnCheckBuyerReferenceOnElseCase(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service")
     begin
@@ -274,5 +288,12 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
     local procedure SetReferenceOnAfterGetBuyerReference(SalesHeader: Record "Sales Header"; var BuyerReference: Text)
     begin
         BuyerReference := SalesHeader."Buyer Reference";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", 'OnAfterGetAccountingSupplierPartyContact', '', false, false)]
+    local procedure SetContactInfoOnAfterGetAccountingSupplierPartyContact(SalesHeader: Record "Sales Header"; var ContactID: Text; var ContactName: Text; var Telephone: Text; var Telefax: Text; var ElectronicMail: Text)
+    begin
+        if SalesHeader."Salesperson Code" = '' then
+            SetSellerContactFromCompanyInformation(ContactName, Telephone, ElectronicMail);
     end;
 }

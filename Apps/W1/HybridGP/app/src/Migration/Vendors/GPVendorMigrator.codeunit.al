@@ -5,11 +5,12 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Reporting;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Remittance;
 using Microsoft.Purchases.Vendor;
-using System.Email;
 using System.Integration;
+using System.Reflection;
 
 codeunit 4022 "GP Vendor Migrator"
 {
@@ -293,8 +294,6 @@ codeunit 4022 "GP Vendor Migrator"
         GenBusinessPostingGroup: Record "Gen. Business Posting Group";
         VendorPostingGroup: Record "Vendor Posting Group";
         GPKnownCountries: Record "GP Known Countries";
-        GPPM00200: Record "GP PM00200";
-        GPSY01200: Record "GP SY01200";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPMigrationWarnings: Record "GP Migration Warnings";
         HelperFunctions: Codeunit "Helper Functions";
@@ -383,11 +382,6 @@ codeunit 4022 "GP Vendor Migrator"
 
         VendorDataMigrationFacade.SetHomePage(HomePage);
 
-        GPPM00200.SetLoadFields(VADDCDPR);
-        if GPPM00200.Get(VendorNo) then
-            if GPSY01200.Get(VendorEmailTypeCodeLbl, VendorNo, GPPM00200.VADDCDPR) then
-                VendorDataMigrationFacade.SetEmail(CopyStr(GPSY01200.GetAllEmailAddressesText(MaxStrLen(Vendor."E-Mail")), 1, MaxStrLen(Vendor."E-Mail")));
-
         if (ShipMethod <> '') then begin
             VendorDataMigrationFacade.CreateShipmentMethodIfNeeded(ShipMethod, '');
             VendorDataMigrationFacade.SetShipmentMethodCode(ShipMethod);
@@ -405,7 +399,44 @@ codeunit 4022 "GP Vendor Migrator"
             VendorDataMigrationFacade.SetTaxLiable(true);
         end;
 
+        MigrateEmailAddresses(VendorNo, VendorDataMigrationFacade);
+
         VendorDataMigrationFacade.ModifyVendor(true);
+    end;
+
+    local procedure MigrateEmailAddresses(VendorNo: Code[20]; var VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
+    var
+        GPSY01200: Record "GP SY01200";
+        GPPM00200: Record "GP PM00200";
+        Vendor: Record Vendor;
+        CustomReportSelection: Record "Custom Report Selection";
+        ReportMetadata: Record "Report Metadata";
+        ExportElectronicPaymentsReportId: Integer;
+        EmailAddressList: List of [Text];
+        i: Integer;
+    begin
+        ExportElectronicPaymentsReportId := 11383;
+
+        GPPM00200.SetLoadFields(VADDCDPR);
+        if not GPPM00200.Get(VendorNo) then
+            exit;
+
+        EmailAddressList := GPSY01200.GetEmailAddresses(VendorEmailTypeCodeLbl, VendorNo, GPPM00200.VADDCDPR, false);
+        if EmailAddressList.Count() > 0 then begin
+            VendorDataMigrationFacade.SetEmail(CopyStr(EmailAddressList.Get(1), 1, MaxStrLen(Vendor."E-Mail")));
+
+            if EmailAddressList.Count() > 1 then
+                if ReportMetadata.Get(ExportElectronicPaymentsReportId) then
+                    for i := 2 to EmailAddressList.Count() do begin
+                        Clear(CustomReportSelection);
+                        CustomReportSelection.Validate("Source Type", Database::Vendor);
+                        CustomReportSelection.Validate("Source No.", VendorNo);
+                        CustomReportSelection.Validate("Report ID", ExportElectronicPaymentsReportId);
+                        CustomReportSelection.Validate(Usage, CustomReportSelection.Usage::"V.Remittance");
+                        CustomReportSelection."Send To Email" := CopyStr(EmailAddressList.Get(i), 1, MaxStrLen(CustomReportSelection."Send To Email"));
+                        CustomReportSelection.Insert(true);
+                    end;
+        end;
     end;
 
     local procedure SetPhoneAndFaxNumberIfValid(var GPVendor: Record "GP Vendor"; var VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
@@ -470,8 +501,7 @@ codeunit 4022 "GP Vendor Migrator"
         GPSY01200: Record "GP SY01200";
         Vendor: Record Vendor;
         HelperFunctions: Codeunit "Helper Functions";
-        MailManagement: Codeunit "Mail Management";
-        EmailAddress: Text[80];
+        EmailAddressList: List of [Text];
     begin
         if not OrderAddress.Get(VendorNo, AddressCode) then begin
             OrderAddress."Vendor No." := VendorNo;
@@ -489,13 +519,9 @@ codeunit 4022 "GP Vendor Migrator"
         OrderAddress."Post Code" := CopyStr(GPVendorAddress.ZIPCODE.TrimEnd(), 1, MaxStrLen(OrderAddress."Post Code"));
         OrderAddress.County := CopyStr(GPVendorAddress.STATE.TrimEnd(), 1, MaxStrLen(OrderAddress.County));
 
-        if GPSY01200.Get(VendorEmailTypeCodeLbl, VendorNo, AddressCode) then
-            EmailAddress := CopyStr(GPSY01200.GetSingleEmailAddress(MaxStrLen(OrderAddress."E-Mail")), 1, MaxStrLen(OrderAddress."E-Mail"));
-
-#pragma warning disable AA0139
-        if MailManagement.ValidateEmailAddressField(EmailAddress) then
-            OrderAddress."E-Mail" := EmailAddress;
-#pragma warning restore AA0139
+        EmailAddressList := GPSY01200.GetEmailAddresses(VendorEmailTypeCodeLbl, VendorNo, AddressCode, true);
+        if EmailAddressList.Count() > 0 then
+            OrderAddress."E-Mail" := CopyStr(EmailAddressList.Get(1), 1, MaxStrLen(OrderAddress."E-Mail"));
 
         OrderAddress.Modify();
     end;
@@ -506,8 +532,7 @@ codeunit 4022 "GP Vendor Migrator"
         GPSY01200: Record "GP SY01200";
         Vendor: Record Vendor;
         HelperFunctions: Codeunit "Helper Functions";
-        MailManagement: Codeunit "Mail Management";
-        EmailAddress: Text[80];
+        EmailAddressList: List of [Text];
     begin
         if not RemitAddress.Get(AddressCode, VendorNo) then begin
             RemitAddress."Vendor No." := VendorNo;
@@ -525,13 +550,9 @@ codeunit 4022 "GP Vendor Migrator"
         RemitAddress."Post Code" := CopyStr(GPVendorAddress.ZIPCODE.TrimEnd(), 1, MaxStrLen(RemitAddress."Post Code"));
         RemitAddress.County := CopyStr(GPVendorAddress.STATE.TrimEnd(), 1, MaxStrLen(RemitAddress.County));
 
-        if GPSY01200.Get(VendorEmailTypeCodeLbl, VendorNo, AddressCode) then
-            EmailAddress := CopyStr(GPSY01200.GetSingleEmailAddress(MaxStrLen(RemitAddress."E-Mail")), 1, MaxStrLen(RemitAddress."E-Mail"));
-
-#pragma warning disable AA0139
-        if MailManagement.ValidateEmailAddressField(EmailAddress) then
-            RemitAddress."E-Mail" := EmailAddress;
-#pragma warning restore AA0139
+        EmailAddressList := GPSY01200.GetEmailAddresses(VendorEmailTypeCodeLbl, VendorNo, AddressCode, true);
+        if EmailAddressList.Count() > 0 then
+            RemitAddress."E-Mail" := CopyStr(EmailAddressList.Get(1), 1, MaxStrLen(RemitAddress."E-Mail"));
 
         RemitAddress.Modify();
     end;

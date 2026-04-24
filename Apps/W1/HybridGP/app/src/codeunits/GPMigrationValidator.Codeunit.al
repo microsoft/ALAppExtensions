@@ -702,8 +702,8 @@ codeunit 40903 "GP Migration Validator"
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         Vendor: Record Vendor;
-        GPPOHeaderValidationBuffer: Record "GP PO Validation Buffer";
-        GPPOLineValidationBuffer: Record "GP PO Validation Buffer";
+        GPPOHeaderValidationBufferTemp: Record "GP PO Validation Buffer";
+        GPPOLineValidationBufferTemp: Record "GP PO Validation Buffer";
         PONumber: Code[20];
         EntityType: Text[50];
         LineEntityType: Text[50];
@@ -723,14 +723,14 @@ codeunit 40903 "GP Migration Validator"
 
                     PONumber := CopyStr(GPPOP10100.PONUMBER.TrimEnd(), 1, MaxStrLen(PurchaseHeader."No."));
                     if Vendor.Get(GPPOP10100.VENDORID) then
-                        if not GPPOHeaderValidationBuffer.Get(PONumber) then begin
-                            GPPOHeaderValidationBuffer."No." := PONumber;
-                            GPPOHeaderValidationBuffer."Text 1" := CopyStr(GPPOP10100.VENDORID.TrimEnd(), 1, MaxStrLen(Vendor."No."));
-                            GPPOHeaderValidationBuffer."Date 1" := GPPOP10100.DOCDATE;
-                            GPPOHeaderValidationBuffer.Insert();
+                        if not GPPOHeaderValidationBufferTemp.Get(PONumber) then begin
+                            GPPOHeaderValidationBufferTemp."No." := PONumber;
+                            GPPOHeaderValidationBufferTemp."Text 1" := CopyStr(GPPOP10100.VENDORID.TrimEnd(), 1, MaxStrLen(Vendor."No."));
+                            GPPOHeaderValidationBufferTemp."Date 1" := GPPOP10100.DOCDATE;
+                            GPPOHeaderValidationBufferTemp.Insert();
 
-                            if not PopulatePOLineBuffer(PONumber, GPPOLineValidationBuffer) then
-                                GPPOHeaderValidationBuffer.Delete();
+                            if not PopulatePOLineBuffer(PONumber, GPPOLineValidationBufferTemp) then
+                                GPPOHeaderValidationBufferTemp.Delete();
                         end;
 
                     MigrationValidationAssert.SetSourceRowValidated(ValidationSuiteIdTok, GPPOP10100);
@@ -738,34 +738,34 @@ codeunit 40903 "GP Migration Validator"
         end;
 
         // Validate - Purchase Orders
-        if GPPOHeaderValidationBuffer.FindSet() then
+        if GPPOHeaderValidationBufferTemp.FindSet() then
             repeat
-                MigrationValidationAssert.SetContext(ValidationSuiteIdTok, EntityType, GPPOHeaderValidationBuffer."No.");
+                MigrationValidationAssert.SetContext(ValidationSuiteIdTok, EntityType, GPPOHeaderValidationBufferTemp."No.");
 
-                if not MigrationValidationAssert.ValidateRecordExists(Test_POEXISTS_Tok, PurchaseHeader.Get("Purchase Document Type"::Order, GPPOHeaderValidationBuffer."No."), StrSubstNo(MissingEntityTok, EntityType)) then
+                if not MigrationValidationAssert.ValidateRecordExists(Test_POEXISTS_Tok, PurchaseHeader.Get("Purchase Document Type"::Order, GPPOHeaderValidationBufferTemp."No."), StrSubstNo(MissingEntityTok, EntityType)) then
                     continue;
 
-                MigrationValidationAssert.ValidateAreEqual(Test_POBUYFROMVEND_Tok, GPPOHeaderValidationBuffer."Text 1", PurchaseHeader."Buy-from Vendor No.", PurchaseOrderBuyFromVendorNoLbl);
-                MigrationValidationAssert.ValidateAreEqual(Test_POPAYTOVEND_Tok, GPPOHeaderValidationBuffer."Text 1", PurchaseHeader."Pay-to Vendor No.", PurchaseOrderPayToVendorNoLbl);
-                MigrationValidationAssert.ValidateAreEqual(Test_PODOCDATE_Tok, GPPOHeaderValidationBuffer."Date 1", PurchaseHeader."Document Date", DocumentDateLbl);
+                MigrationValidationAssert.ValidateAreEqual(Test_POBUYFROMVEND_Tok, GPPOHeaderValidationBufferTemp."Text 1", PurchaseHeader."Buy-from Vendor No.", PurchaseOrderBuyFromVendorNoLbl);
+                MigrationValidationAssert.ValidateAreEqual(Test_POPAYTOVEND_Tok, GPPOHeaderValidationBufferTemp."Text 1", PurchaseHeader."Pay-to Vendor No.", PurchaseOrderPayToVendorNoLbl);
+                MigrationValidationAssert.ValidateAreEqual(Test_PODOCDATE_Tok, GPPOHeaderValidationBufferTemp."Date 1", PurchaseHeader."Document Date", DocumentDateLbl);
 
                 // Lines
-                GPPOLineValidationBuffer.Reset();
-                GPPOLineValidationBuffer.SetRange("Parent No.", GPPOHeaderValidationBuffer."No.");
-                if GPPOLineValidationBuffer.FindSet() then
+                GPPOLineValidationBufferTemp.Reset();
+                GPPOLineValidationBufferTemp.SetRange("Parent No.", GPPOHeaderValidationBufferTemp."No.");
+                if GPPOLineValidationBufferTemp.FindSet() then
                     repeat
-                        MigrationValidationAssert.SetContext(ValidationSuiteIdTok, LineEntityType, GPPOLineValidationBuffer."No.");
+                        MigrationValidationAssert.SetContext(ValidationSuiteIdTok, LineEntityType, GPPOLineValidationBufferTemp."No.");
 
                         PurchaseLine.SetRange("Document Type", "Purchase Document Type"::Order);
-                        PurchaseLine.SetRange("Document No.", GPPOHeaderValidationBuffer."No.");
-                        PurchaseLine.SetRange("No.", GPPOLineValidationBuffer."Text 1");
+                        PurchaseLine.SetRange("Document No.", GPPOHeaderValidationBufferTemp."No.");
+                        PurchaseLine.SetRange("No.", GPPOLineValidationBufferTemp."Text 1");
                         if not MigrationValidationAssert.ValidateRecordExists(Test_POLINEEXISTS_Tok, PurchaseLine.FindFirst(), StrSubstNo(MissingEntityTok, LineEntityType)) then
                             continue;
 
-                        MigrationValidationAssert.ValidateAreEqual(Test_POLINEQTY_Tok, GPPOLineValidationBuffer."Decimal 1", PurchaseLine.Quantity, QuantityLbl, true);
-                        MigrationValidationAssert.ValidateAreEqual(Test_POLINEQTYRECV_Tok, GPPOLineValidationBuffer."Decimal 2", PurchaseLine."Quantity Received", QuantityRecLbl, true);
-                    until GPPOLineValidationBuffer.Next() = 0;
-            until GPPOHeaderValidationBuffer.Next() = 0;
+                        MigrationValidationAssert.ValidateAreEqual(Test_POLINEQTY_Tok, GPPOLineValidationBufferTemp."Decimal 1", PurchaseLine.Quantity, QuantityLbl, true);
+                        MigrationValidationAssert.ValidateAreEqual(Test_POLINEQTYRECV_Tok, GPPOLineValidationBufferTemp."Decimal 2", PurchaseLine."Quantity Received", QuantityRecLbl, true);
+                    until GPPOLineValidationBufferTemp.Next() = 0;
+            until GPPOHeaderValidationBufferTemp.Next() = 0;
     end;
 
     local procedure PopulatePOLineBuffer(PONumber: Code[20]; var LineBuffer: Record "GP PO Validation Buffer"): Boolean
@@ -794,9 +794,9 @@ codeunit 40903 "GP Migration Validator"
             ShouldCreateLine := true;
 
             ItemNo := CopyStr(GPPOP10110.ITEMNMBR.Trim(), 1, MaxStrLen(Item."No."));
-            Item.SetLoadFields(Blocked);
+            Item.SetLoadFields(Blocked, "Purchasing Blocked");
             if Item.Get(ItemNo) then begin
-                if Item.Blocked then
+                if (Item.Blocked or Item."Purchasing Blocked") then
                     ShouldCreateLine := false
             end else
                 if GPPOP10110.NONINVEN = 0 then

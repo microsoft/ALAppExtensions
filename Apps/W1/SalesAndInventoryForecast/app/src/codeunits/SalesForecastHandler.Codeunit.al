@@ -25,6 +25,7 @@ codeunit 1850 "Sales Forecast Handler"
         SalesForecastSetupTitleTxt: Label 'Set up Sales & Inventory Forecast';
         SalesForecastSetupShortTitleTxt: Label 'Sales & Inventory Forecast';
         SalesForecastSetupDescriptionTxt: Label 'Let Business Central analyze historical data to predict future demand, so you can base procurement decisions on accurate and reliable forecasts, and help your company avoid lost revenue, optimize shipping costs, discover trends, and boost your brand reputation by always delivering on orders. Set it up now.';
+        TimeSeriesInitialized: Boolean;
 
 
     procedure CalculateForecast(var Item: Record Item; TimeSeriesManagement: Codeunit "Time Series Management"): Boolean
@@ -58,9 +59,6 @@ codeunit 1850 "Sales Forecast Handler"
         HasMinimumHistory: Boolean;
         HasMinimumHistoryLoc: Boolean;
     begin
-        if not InitializeSetup() then
-            exit(false);
-
         // Clean up
         MSSalesForecastParameter.SetRange("Item No.", ItemNo);
         MSSalesForecastParameter.DeleteAll();
@@ -92,7 +90,6 @@ codeunit 1850 "Sales Forecast Handler"
             NumberOfPeriodsWithHistory := NumberOfPeriodsWithHistoryLoc; // Otherwise, NumberOfPeriodsWithHistory is already the bigger number
         if not HasMinimumHistory then begin
             Status := Status::"Not enough historical data";
-            Commit();
             exit(false);
         end;
 
@@ -123,6 +120,9 @@ codeunit 1850 "Sales Forecast Handler"
         LimitType: Option;
         Limit: Decimal;
     begin
+        if TimeSeriesInitialized then
+            exit(true);
+
         // if null, then using standard credentials
         if IsNullGuid(MSSalesForecastSetupRec."API Key ID") then begin
             TimeSeriesManagement.GetMLForecastCredentials(APIURI, APIKey, LimitType, Limit);
@@ -145,6 +145,8 @@ codeunit 1850 "Sales Forecast Handler"
                 Status := Status::"Failed Time Series initialization";
                 exit(false);
             end;
+
+        TimeSeriesInitialized := true;
         exit(true);
     end;
 

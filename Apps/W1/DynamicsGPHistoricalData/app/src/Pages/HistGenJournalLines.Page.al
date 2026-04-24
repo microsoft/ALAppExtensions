@@ -138,6 +138,29 @@ page 41001 "Hist. Gen. Journal Lines"
                     HistPageNavigationHandler.NavigateToTransactionDetail(Rec);
                 end;
             }
+            action(ViewPayrollDetails)
+            {
+                ApplicationArea = All;
+                Caption = 'View Payroll Details';
+                ToolTip = 'View the payroll details for this transaction.';
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Image = View;
+                Visible = HasAccessiblePayrollDetails;
+
+                trigger OnAction()
+                var
+                    HistPayrollDetailsRec: Record "Hist. Payroll Details";
+                    HistPayrollDetailsPage: Page "Hist. Payroll Details";
+                begin
+                    if HistPayrollDetailsRec.Get(Rec."Primary Key") then begin
+                        HistPayrollDetailsPage.SetRecord(HistPayrollDetailsRec);
+                        HistPayrollDetailsPage.RunModal();
+                    end else
+                        Error(RecordNotFoundErr);
+                end;
+            }
         }
     }
 
@@ -148,6 +171,18 @@ page 41001 "Hist. Gen. Journal Lines"
 
         if FilterOriginatingTrxSourceNo <> '' then
             Rec.SetRange("Orig. Trx. Source No.", FilterOriginatingTrxSourceNo);
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    var
+        HistPayrollDetails: Record "Hist. Payroll Details";
+    begin
+        HasAccessiblePayrollDetails := false;
+
+        if HistPayrollDetails.ReadPermission() then begin
+            HistPayrollDetails.SetRange("Hist. Gen. Journal Line Key", Rec."Primary Key");
+            HasAccessiblePayrollDetails := (not HistPayrollDetails.IsEmpty());
+        end;
     end;
 
     procedure SetFilterAccountNo(AccountNo: Code[130])
@@ -163,4 +198,6 @@ page 41001 "Hist. Gen. Journal Lines"
     var
         FilterAccountNo: Code[130];
         FilterOriginatingTrxSourceNo: Code[35];
+        HasAccessiblePayrollDetails: Boolean;
+        RecordNotFoundErr: Label 'Record could not be found!';
 }

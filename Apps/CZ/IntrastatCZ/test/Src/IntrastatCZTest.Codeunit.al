@@ -3204,7 +3204,7 @@ codeunit 148125 "Intrastat CZ Test"
 
         // [GIVEN] Inventory Setup with "Direct Transfer" as "Direct Transfer Posting"
         InventorySetup.Get();
-        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Direct Transfer";
+        InventorySetup."Direct Transfer Posting Type" := InventorySetup."Direct Transfer Posting Type"::"Direct Transfer";
         InventorySetup.Modify();
 
         // [GIVEN] Create Transfer Order
@@ -3264,7 +3264,7 @@ codeunit 148125 "Intrastat CZ Test"
 
         // [GIVEN] Inventory Setup with "Direct Transfer" as "Direct Transfer Posting"
         InventorySetup.Get();
-        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Direct Transfer";
+        InventorySetup."Direct Transfer Posting Type" := InventorySetup."Direct Transfer Posting Type"::"Direct Transfer";
         InventorySetup.Modify();
 
         // [GIVEN] Create Transfer Order
@@ -3323,7 +3323,7 @@ codeunit 148125 "Intrastat CZ Test"
 
         // [GIVEN] Inventory Setup with "Receipt and Shipment" as "Direct Transfer Posting"
         InventorySetup.Get();
-        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Receipt and Shipment";
+        InventorySetup."Direct Transfer Posting Type" := InventorySetup."Direct Transfer Posting Type"::"Shipment and Receipt";
         InventorySetup.Modify();
 
         // [GIVEN] Create Transfer Order
@@ -3385,7 +3385,7 @@ codeunit 148125 "Intrastat CZ Test"
 
         // [GIVEN] Inventory Setup with "Receipt and Shipment" as "Direct Transfer Posting"
         InventorySetup.Get();
-        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Receipt and Shipment";
+        InventorySetup."Direct Transfer Posting Type" := InventorySetup."Direct Transfer Posting Type"::"Shipment and Receipt";
         InventorySetup.Modify();
 
         // [GIVEN] Create Transfer Order
@@ -3448,7 +3448,7 @@ codeunit 148125 "Intrastat CZ Test"
 
         // [GIVEN] Inventory Setup with "Receipt and Shipment" as "Direct Transfer Posting"
         InventorySetup.Get();
-        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Receipt and Shipment";
+        InventorySetup."Direct Transfer Posting Type" := InventorySetup."Direct Transfer Posting Type"::"Shipment and Receipt";
         InventorySetup.Modify();
 
         // [GIVEN] Create Transfer Order
@@ -3509,7 +3509,7 @@ codeunit 148125 "Intrastat CZ Test"
 
         // [GIVEN] Inventory Setup with "Receipt and Shipment" as "Direct Transfer Posting"
         InventorySetup.Get();
-        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Receipt and Shipment";
+        InventorySetup."Direct Transfer Posting Type" := InventorySetup."Direct Transfer Posting Type"::"Shipment and Receipt";
         InventorySetup.Modify();
 
         // [GIVEN] Create Transfer Order

@@ -1,0 +1,45 @@
+{
+  "id": "f78952ee-aed3-43bb-896e-6598f98a3a35",
+  "name": "AI Development Toolkit - Design",
+  "publisher": "Microsoft",
+  "version": "29.0.0.0",
+  "brief": "A toolkit for developing AI capabilities within Business Central.",
+  "description": "Provides a set of tools for developing AI capabilities in Business Central such as experiences for envisioning and prototyping new AI, Copilot, and agents features tailored to your own business scenarios.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "url": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "logo": "ExtensionLogo.png",
+  "screenshots": [],
+  "application": "29.0.0.0",
+  "platform": "29.0.0.0",
+  "propagateDependencies": true,
+  "dependencies": [
+    {
+      "id": "00155c68-8cdd-4d60-a451-2034ad094223",
+      "name": "Agent Design Experience",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "698cfedb-66b9-44a8-b5ae-1ec18bd32fa7",
+      "name": "Agent Samples",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 1
+    }
+  ],
+  "target": "Cloud",
+  "features": [
+    "GenerateCaptions",
+    "TranslationFile",
+    "NoImplicitWith",
+    "NoPromotedActionProperties"
+  ]
+}

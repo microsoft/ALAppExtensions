@@ -11,6 +11,7 @@ using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using System.Agents;
 using System.AI;
 using System.Reflection;
+using System.Security;
 
 codeunit 3311 "PA Billing"
 {
@@ -20,7 +21,7 @@ codeunit 3311 "PA Billing"
     InherentPermissions = X;
     Permissions = tabledata "Agent Task Message" = r, tabledata "E-Document Purchase Line" = r;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Purchase Draft Utility", 'OnInsertedEDocumentPurchaseLines', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Purchase Draft Utility", OnInsertedEDocumentPurchaseLines, '', false, false)]
     local procedure LogPurchaseDocumentDraftLinesProcessed(EDocument: Record "E-Document"; EDocumentPurchaseHeader: Record "E-Document Purchase Header")
     var
         AgentSession: Codeunit "Agent Session";
@@ -133,31 +134,37 @@ codeunit 3311 "PA Billing"
         exit(true);
     end;
 
-    local procedure LogPATrackingRecord(
-    AgentTaskID: BigInteger;
-    Operation: Enum "PA Billing Operation";
-                   Description: Text;
-                   RecordSystemID: Guid;
-                   RecordTable: Integer;
-                   Usage: Integer)
+    local procedure LogPATrackingRecord(AgentTaskID: BigInteger; Operation: Enum "PA Billing Operation"; Description: Text; RecordSystemID: Guid; RecordTable: Integer; Usage: Integer)
     var
+        AgentTask: Record "Agent Task";
         PayablesAgent: Codeunit "Payables Agent";
         CopilotQuota: Codeunit "Copilot Quota";
+        PATrial: Codeunit "PA Trial";
         UniqueID: Text[1024];
         TelemetryDimensions: Dictionary of [Text, Text];
         NewUsageConsumed: Decimal;
         CopilotQuotaUsageType: Enum "Copilot Quota Usage Type";
+        ExcludeBilling: Boolean;
     begin
+        if not AgentTask.Get(AgentTaskID) then begin
+            Session.LogMessage('0000TCT', 'Agent Task not found for logging billing record.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
+            exit;
+        end;
+
+        // Todo: Deliverable 631113
+        // ExcludeBilling := AgentTask."Billing Type" = AgentTaskBillingType::Exclude;
+        ExcludeBilling := false;
+
         UniqueID := GetUniqueID(AgentTaskID, Operation, RecordSystemID, RecordTable);
         TelemetryDimensions := PayablesAgent.GetCustomDimensions();
-        if CopilotQuota.IsAgentUserAIConsumptionLogged(UniqueID) then begin
+        if CopilotQuota.IsAgentUserAIConsumptionLogged(UniqueID) and not ExcludeBilling then begin
             Session.LogMessage('0000R34', 'Billing log already exists for this operation. Skipping duplicate log.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
             exit;
         end;
 
         CopilotQuotaUsageType := Enum::"Copilot Quota Usage Type"::"Autonomous Action";
         NewUsageConsumed := UpdateTotalAmountDailyCount(Usage);
-        if NewUsageConsumed > GetMaximumNumberOfChargeableAutonomousActionsPerDay() then begin
+        if (NewUsageConsumed > GetMaximumNumberOfChargeableAutonomousActionsPerDay()) and not ExcludeBilling then begin
             TelemetryDimensions.Add(PayablesAgentAAChargedTok, Format(NewUsageConsumed, 0, 9));
             Session.LogMessage('0000QIP', 'Daily credit limit reached. Billing log will not be created.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
             exit;
@@ -167,7 +174,9 @@ codeunit 3311 "PA Billing"
         TelemetryDimensions.Add('Operation', Format(Operation, 0, 9));
         Session.LogMessage('0000PO3', CreatedPABillingOperationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
 
-        CopilotQuota.LogAgentUserAIConsumption(Enum::"Copilot Capability"::"Payables Agent", Usage, CopilotQuotaUsageType, AgentTaskID, Format(Operation), Description, UniqueID);
+        //TODO: Deliverable 631113
+        if not PATrial.IsActive() then
+            CopilotQuota.LogAgentUserAIConsumption(Enum::"Copilot Capability"::"Payables Agent", Usage, CopilotQuotaUsageType, AgentTaskID, Format(Operation), Description, UniqueID);
     end;
 
     local procedure GetUniqueID(AgentTaskID: BigInteger; Operation: Enum "PA Billing Operation"; RecordSystemID: Guid; RecordTable: Integer): Text[1024]
@@ -180,9 +189,11 @@ codeunit 3311 "PA Billing"
 
     local procedure IncrementNoLinesDocumentsDailyCount() TotalNonDocuments: Integer
     var
+        IsolatedStorageRec: Record "Isolated Storage";
         UsageJsonObject: JsonObject;
         NewUsageJsonText: Text;
     begin
+        IsolatedStorageRec.LockTable();
         UsageJsonObject := GetTodayUsageJsonObject();
         TotalNonDocuments := UsageJsonObject.GetInteger(PayablesAgentNoLinesDocumentCountTok, true) + 1;
         UsageJsonObject.Replace(PayablesAgentNoLinesDocumentCountTok, TotalNonDocuments);
@@ -193,9 +204,11 @@ codeunit 3311 "PA Billing"
 
     local procedure UpdateTotalAmountDailyCount(NewAutonomousActions: Integer) TotalDailyAutonomousActions: Integer
     var
+        IsolatedStorageRec: Record "Isolated Storage";
         UsageJsonObject: JsonObject;
         NewUsageJsonText: Text;
     begin
+        IsolatedStorageRec.LockTable();
         UsageJsonObject := GetTodayUsageJsonObject();
         TotalDailyAutonomousActions := UsageJsonObject.GetInteger(PayablesAgentAAChargedTok, true) + NewAutonomousActions;
         UsageJsonObject.Replace(PayablesAgentAAChargedTok, TotalDailyAutonomousActions);

@@ -1,0 +1,2037 @@
+name: PA-TS-Metrics-00-it-IT
+language: it-IT
+tests:
+- name: PA-INV-V03-010
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-010
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: Pannello HDF retro grigio - accordo semestrale
+    Quantity: 80.0
+    Unit Price: 15.0
+  - Type: 1
+    No.: 50120
+    Description: Pannello OSB3 strutturale - contratto annuale
+    Quantity: 120.0
+    Unit Price: 15.5
+  - Type: 1
+    No.: 50120
+    Description: MDF E1 bassa emissione - contratto annuale
+    Quantity: 95.0
+    Unit Price: 22.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare melamminico olmo - contratto annuale
+    Quantity: 50.0
+    Unit Price: 34.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare melamminico avorio
+    Quantity: 55.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare postformabile
+    Quantity: 40.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare impiallacciato acero
+    Quantity: 35.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 50120
+    Description: Pannello HDF sottile mm 3
+    Quantity: 90.0
+    Unit Price: 12.0
+  - Type: 1
+    No.: 63120
+    Description: Trasporto Veneto
+    Quantity: 1.0
+    Unit Price: 220.0
+  - Type: 1
+    No.: 50120
+    Description: MDF V313 resistente umidità
+    Quantity: 55.0
+    Unit Price: 35.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-010
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: 6M
+        Description: Pannello HDF retro grigio - accordo semestrale
+        Quantity: 80.0
+        Unit Cost: 15.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50120
+        Deferral Code: 12M
+        Description: Pannello OSB3 strutturale - contratto annuale
+        Quantity: 120.0
+        Unit Cost: 15.5
+      - Line No.: 30000
+        Type: 1
+        No.: 50120
+        Deferral Code: 12M
+        Description: MDF E1 bassa emissione - contratto annuale
+        Quantity: 95.0
+        Unit Cost: 22.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50120
+        Deferral Code: 12M
+        Description: Truciolare melamminico olmo - contratto annuale
+        Quantity: 50.0
+        Unit Cost: 34.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare melamminico avorio
+        Quantity: 55.0
+        Unit Cost: 32.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare postformabile
+        Quantity: 40.0
+        Unit Cost: 42.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare impiallacciato acero
+        Quantity: 35.0
+        Unit Cost: 48.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Pannello HDF sottile mm 3
+        Quantity: 90.0
+        Unit Cost: 12.0
+      - Line No.: 90000
+        Type: 1
+        No.: 63120
+        Deferral Code: ''
+        Description: Trasporto Veneto
+        Quantity: 1.0
+        Unit Cost: 220.0
+      - Line No.: 100000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF V313 resistente umidità
+        Quantity: 55.0
+        Unit Cost: 35.0
+- name: PA-INV-V03-005
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-005
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: MDF per porte interne - fornitura semestrale
+    Quantity: 70.0
+    Unit Price: 25.0
+  - Type: 1
+    No.: 50110
+    Description: Fornitura multistrato annuale
+    Quantity: 1.0
+    Unit Price: 18000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-005
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: 6M
+        Description: MDF per porte interne - fornitura semestrale
+        Quantity: 70.0
+        Unit Cost: 25.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50110
+        Deferral Code: 12M
+        Description: Fornitura multistrato annuale
+        Quantity: 1.0
+        Unit Cost: 18000.0
+- name: PA-INV-V03-019
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-019
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: Pannello fibra alta qualità
+    Quantity: 70.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare impiallacciato teak
+    Quantity: 28.0
+    Unit Price: 68.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare idrorepellente P3
+    Quantity: 65.0
+    Unit Price: 26.0
+  - Type: 1
+    No.: 50110
+    Description: Compensato marino classe III
+    Quantity: 35.0
+    Unit Price: 72.0
+  - Type: 1
+    No.: 50110
+    Description: Multistrato flessibile 3mm
+    Quantity: 48.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 63120
+    Description: Consegna express 24h
+    Quantity: 1.0
+    Unit Price: 285.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-019
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Pannello fibra alta qualità
+        Quantity: 70.0
+        Unit Cost: 32.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare impiallacciato teak
+        Quantity: 28.0
+        Unit Cost: 68.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare idrorepellente P3
+        Quantity: 65.0
+        Unit Cost: 26.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Compensato marino classe III
+        Quantity: 35.0
+        Unit Cost: 72.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Multistrato flessibile 3mm
+        Quantity: 48.0
+        Unit Cost: 28.0
+      - Line No.: 60000
+        Type: 1
+        No.: 63120
+        Deferral Code: ''
+        Description: Consegna express 24h
+        Quantity: 1.0
+        Unit Cost: 285.0
+- name: PA-INV-V01-012
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Legname Brianza S.r.l.
+    Address: Via dell'Industria 45
+    Address 2: ''
+    City: Seregno
+    Country/Region Code: IT
+    Post Code: '20831'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-012
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50100
+    Description: Tavole quercia austriaca
+    Quantity: 20.0
+    Unit Price: 172.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-012
+        Buy-from Vendor Name: Legname Brianza S.r.l.
+        Buy-from Address: Via dell'Industria 45
+        Buy-from Address 2: ''
+        Buy-from City: Seregno
+        Buy-from Post Code: '20831'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Tavole quercia austriaca
+        Quantity: 20.0
+        Unit Cost: 172.0
+- name: PA-INV-V03-004
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-004
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50110
+    Description: Compensato pioppo mm 30
+    Quantity: 55.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 50120
+    Description: MDF leggero per ante
+    Quantity: 60.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 50120
+    Description: Contratto MDF annuale
+    Quantity: 1.0
+    Unit Price: 35000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-004
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Compensato pioppo mm 30
+        Quantity: 55.0
+        Unit Cost: 38.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF leggero per ante
+        Quantity: 60.0
+        Unit Cost: 28.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50120
+        Deferral Code: 12M
+        Description: Contratto MDF annuale
+        Quantity: 1.0
+        Unit Cost: 35000.0
+- name: PA-INV-V01-013
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Legname Brianza S.r.l.
+    Address: Via dell'Industria 45
+    Address 2: ''
+    City: Seregno
+    Country/Region Code: IT
+    Post Code: '20831'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-013
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50110
+    Description: Multistrato betulla mm 18 - fornitura Q1-Q4
+    Quantity: 80.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 50100
+    Description: Tavole noce nazionale spessore 40mm
+    Quantity: 25.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 50110
+    Description: Compensato betulla verniciato
+    Quantity: 42.0
+    Unit Price: 58.0
+  - Type: 1
+    No.: 50100
+    Description: Sorbo domestico selezionato
+    Quantity: 6.0
+    Unit Price: 295.0
+  - Type: 1
+    No.: 50100
+    Description: Melo selvatico da frutteto
+    Quantity: 6.0
+    Unit Price: 265.0
+  - Type: 1
+    No.: 50100
+    Description: Douglasia americana mm 40
+    Quantity: 35.0
+    Unit Price: 118.0
+  - Type: 1
+    No.: 50110
+    Description: Contratto multistrato annuale
+    Quantity: 1.0
+    Unit Price: 12000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-013
+        Buy-from Vendor Name: Legname Brianza S.r.l.
+        Buy-from Address: Via dell'Industria 45
+        Buy-from Address 2: ''
+        Buy-from City: Seregno
+        Buy-from Post Code: '20831'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50110
+        Deferral Code: 3M
+        Description: Multistrato betulla mm 18 - fornitura Q1-Q4
+        Quantity: 80.0
+        Unit Cost: 42.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Tavole noce nazionale spessore 40mm
+        Quantity: 25.0
+        Unit Cost: 185.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Compensato betulla verniciato
+        Quantity: 42.0
+        Unit Cost: 58.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Sorbo domestico selezionato
+        Quantity: 6.0
+        Unit Cost: 295.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Melo selvatico da frutteto
+        Quantity: 6.0
+        Unit Cost: 265.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Douglasia americana mm 40
+        Quantity: 35.0
+        Unit Cost: 118.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50110
+        Deferral Code: 12M
+        Description: Contratto multistrato annuale
+        Quantity: 1.0
+        Unit Cost: 12000.0
+- name: PA-INV-V02-020
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Segheria Valtellina S.p.A.
+    Address: Zona Industriale Nord 12
+    Address 2: ''
+    City: Morbegno
+    Country/Region Code: IT
+    Post Code: '23017'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V02-020
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50110
+    Description: Pannelli abete finger joint
+    Quantity: 50.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 50110
+    Description: Tavole lamellari cirmolo
+    Quantity: 15.0
+    Unit Price: 195.0
+  - Type: 1
+    No.: 50100
+    Description: Larice alpino prima scelta - ordine trimestrale
+    Quantity: 40.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 50100
+    Description: Abete maschiato femmina
+    Quantity: 60.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 50100
+    Description: Abete piallato pronto uso
+    Quantity: 65.0
+    Unit Price: 75.0
+  - Type: 1
+    No.: 50100
+    Description: Larice spaccato naturale
+    Quantity: 20.0
+    Unit Price: 145.0
+  - Type: 1
+    No.: 63120
+    Description: Ritiro presso segheria
+    Quantity: 1.0
+    Unit Price: 420.0
+  - Type: 1
+    No.: 50100
+    Description: Tavole larice termotrattato
+    Quantity: 28.0
+    Unit Price: 175.0
+  - Type: 1
+    No.: 50100
+    Description: Cirmolo stuccato naturale
+    Quantity: 16.0
+    Unit Price: 205.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-020
+        Buy-from Vendor Name: Segheria Valtellina S.p.A.
+        Buy-from Address: Zona Industriale Nord 12
+        Buy-from Address 2: ''
+        Buy-from City: Morbegno
+        Buy-from Post Code: '23017'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Pannelli abete finger joint
+        Quantity: 50.0
+        Unit Cost: 48.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Tavole lamellari cirmolo
+        Quantity: 15.0
+        Unit Cost: 195.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50100
+        Deferral Code: 3M
+        Description: Larice alpino prima scelta - ordine trimestrale
+        Quantity: 40.0
+        Unit Cost: 125.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Abete maschiato femmina
+        Quantity: 60.0
+        Unit Cost: 55.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Abete piallato pronto uso
+        Quantity: 65.0
+        Unit Cost: 75.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Larice spaccato naturale
+        Quantity: 20.0
+        Unit Cost: 145.0
+      - Line No.: 70000
+        Type: 1
+        No.: 63120
+        Deferral Code: ''
+        Description: Ritiro presso segheria
+        Quantity: 1.0
+        Unit Cost: 420.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Tavole larice termotrattato
+        Quantity: 28.0
+        Unit Cost: 175.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Cirmolo stuccato naturale
+        Quantity: 16.0
+        Unit Cost: 205.0
+- name: PA-INV-V02-013
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Segheria Valtellina S.p.A.
+    Address: Z.I. Nord 12
+    Address 2: ''
+    City: Morbegno (SO)
+    Country/Region Code: IT
+    Post Code: 23017
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V02-013
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50100
+    Description: Tavole abete di montagna
+    Quantity: 55.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 50100
+    Description: Pino silvestre nordico - ordine Q1
+    Quantity: 45.0
+    Unit Price: 72.0
+  - Type: 1
+    No.: 50100
+    Description: Cirmolo profumato extra
+    Quantity: 12.0
+    Unit Price: 245.0
+  - Type: 1
+    No.: 50110
+    Description: Lamellare larice per mensole
+    Quantity: 22.0
+    Unit Price: 155.0
+  - Type: 1
+    No.: 50100
+    Description: Larice segato quarti
+    Quantity: 30.0
+    Unit Price: 168.0
+  - Type: 1
+    No.: 50100
+    Description: Larice vecchio di recupero
+    Quantity: 15.0
+    Unit Price: 245.0
+  - Type: 1
+    No.: 50100
+    Description: Castagno per esterni
+    Quantity: 38.0
+    Unit Price: 115.0
+  - Type: 1
+    No.: 50110
+    Description: Pannelli abete incollati
+    Quantity: 45.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 50100
+    Description: Larice FSC sostenibile
+    Quantity: 25.0
+    Unit Price: 162.0
+  - Type: 1
+    No.: 50100
+    Description: Larice fiammato artistico
+    Quantity: 15.0
+    Unit Price: 198.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-013
+        Buy-from Vendor Name: Segheria Valtellina S.p.A.
+        Buy-from Address: Zona Industriale Nord 12
+        Buy-from Address 2: ''
+        Buy-from City: Morbegno
+        Buy-from Post Code: '23017'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Tavole abete di montagna
+        Quantity: 55.0
+        Unit Cost: 62.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50100
+        Deferral Code: 3M
+        Description: Pino silvestre nordico - ordine Q1
+        Quantity: 45.0
+        Unit Cost: 72.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Cirmolo profumato extra
+        Quantity: 12.0
+        Unit Cost: 245.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Lamellare larice per mensole
+        Quantity: 22.0
+        Unit Cost: 155.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Larice segato quarti
+        Quantity: 30.0
+        Unit Cost: 168.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Larice vecchio di recupero
+        Quantity: 15.0
+        Unit Cost: 245.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Castagno per esterni
+        Quantity: 38.0
+        Unit Cost: 115.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Pannelli abete incollati
+        Quantity: 45.0
+        Unit Cost: 55.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Larice FSC sostenibile
+        Quantity: 25.0
+        Unit Cost: 162.0
+      - Line No.: 100000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Larice fiammato artistico
+        Quantity: 15.0
+        Unit Cost: 198.0
+- name: PA-INV-V03-001
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-001
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: MDF fresato sagomato
+    Quantity: 38.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare laminato HPL grigio
+    Quantity: 50.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 50120
+    Description: MDF primer verniciato
+    Quantity: 55.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare melamminico antracite
+    Quantity: 48.0
+    Unit Price: 38.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-001
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF fresato sagomato
+        Quantity: 38.0
+        Unit Cost: 48.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare laminato HPL grigio
+        Quantity: 50.0
+        Unit Cost: 55.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF primer verniciato
+        Quantity: 55.0
+        Unit Cost: 45.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare melamminico antracite
+        Quantity: 48.0
+        Unit Cost: 38.0
+- name: PA-INV-V03-007
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli ltalia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-007
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: Truciolare laminato metallizzato
+    Quantity: 30.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 50120
+    Description: MDF nero passante
+    Quantity: 40.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 50120
+    Description: MDF resistente al fuoco REI
+    Quantity: 35.0
+    Unit Price: 55.0
+  - Type: 1
+    No.: 50120
+    Description: MDF laccato nero lucido
+    Quantity: 42.0
+    Unit Price: 58.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare bilaminato frassino - fornitura semestrale
+    Quantity: 60.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 50120
+    Description: Truciolare melamminico beige
+    Quantity: 55.0
+    Unit Price: 32.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-007
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare laminato metallizzato
+        Quantity: 30.0
+        Unit Cost: 65.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF nero passante
+        Quantity: 40.0
+        Unit Cost: 42.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF resistente al fuoco REI
+        Quantity: 35.0
+        Unit Cost: 55.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF laccato nero lucido
+        Quantity: 42.0
+        Unit Cost: 58.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50120
+        Deferral Code: 6M
+        Description: Truciolare bilaminato frassino - fornitura semestrale
+        Quantity: 60.0
+        Unit Cost: 38.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare melamminico beige
+        Quantity: 55.0
+        Unit Cost: 32.0
+- name: PA-INV-V01-011
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Legname Brianza S.r.l.
+    Address: Via Industria 45
+    Address 2: ''
+    City: Seregno
+    Country/Region Code: IT
+    Post Code: '20831'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-011
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50110
+    Description: Compensato antigraffio
+    Quantity: 65.0
+    Unit Price: 48.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-011
+        Buy-from Vendor Name: Legname Brianza S.r.l.
+        Buy-from Address: Via dell'Industria 45
+        Buy-from Address 2: ''
+        Buy-from City: Seregno
+        Buy-from Post Code: '20831'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Compensato antigraffio
+        Quantity: 65.0
+        Unit Cost: 48.0
+- name: PA-INV-V03-006
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG007;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia SRL
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-006
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 63120
+    Description: Trasporto bancali pannelli
+    Quantity: 1.0
+    Unit Price: 320.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-006
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 63120
+        Deferral Code: ''
+        Description: Trasporto bancali pannelli
+        Quantity: 1.0
+        Unit Cost: 320.0
+- name: PA-INV-V03-025
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-025
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50110
+    Description: Multistrato betulla carrelato
+    Quantity: 42.0
+    Unit Price: 55.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-025
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Multistrato betulla carrelato
+        Quantity: 42.0
+        Unit Cost: 55.0
+- name: PA-INV-V03-012
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-012
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: Truciolare bilaminato grigio
+    Quantity: 65.0
+    Unit Price: 30.0
+  - Type: 1
+    No.: 63120
+    Description: Trasporto Emilia Romagna
+    Quantity: 1.0
+    Unit Price: 275.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-012
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Truciolare bilaminato grigio
+        Quantity: 65.0
+        Unit Cost: 30.0
+      - Line No.: 20000
+        Type: 1
+        No.: 63120
+        Deferral Code: ''
+        Description: Trasporto Emilia Romagna
+        Quantity: 1.0
+        Unit Cost: 275.0
+- name: PA-INV-V03-002
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-002
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50110
+    Description: Compensato impiallacciato noce
+    Quantity: 35.0
+    Unit Price: 85.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-002
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Compensato impiallacciato noce
+        Quantity: 35.0
+        Unit Cost: 85.0
+- name: PA-INV-V03-020
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: V. Emilia Est 234
+    Address 2: ''
+    City: Modena (MO)
+    Country/Region Code: IT
+    Post Code: 41124
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-020
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: Truciolare laminato quercia - ordine Q1-Q4
+    Quantity: 55.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 50120
+    Description: Pannello HDF semirigido
+    Quantity: 65.0
+    Unit Price: 18.0
+  - Type: 1
+    No.: 50120
+    Description: MDF laccabile mm 19 - ordine trimestrale
+    Quantity: 90.0
+    Unit Price: 24.0
+  - Type: 1
+    No.: 50110
+    Description: Compensato betulla finlandese - accordo semestrale
+    Quantity: 60.0
+    Unit Price: 48.0
+  - Type: 1
+    No.: 50120
+    Description: MDF fresabile mm 25 - ordine trimestrale
+    Quantity: 65.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 50120
+    Description: MDF mm 30 spessore
+    Quantity: 40.0
+    Unit Price: 42.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-020
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: 3M
+        Description: Truciolare laminato quercia - ordine Q1-Q4
+        Quantity: 55.0
+        Unit Cost: 42.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Pannello HDF semirigido
+        Quantity: 65.0
+        Unit Cost: 18.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50120
+        Deferral Code: 3M
+        Description: MDF laccabile mm 19 - ordine trimestrale
+        Quantity: 90.0
+        Unit Cost: 24.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50110
+        Deferral Code: 6M
+        Description: Compensato betulla finlandese - accordo semestrale
+        Quantity: 60.0
+        Unit Cost: 48.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50120
+        Deferral Code: 3M
+        Description: MDF fresabile mm 25 - ordine trimestrale
+        Quantity: 65.0
+        Unit Cost: 32.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF mm 30 spessore
+        Quantity: 40.0
+        Unit Cost: 42.0
+- name: PA-INV-V01-008
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Legname Brianza Srl
+    Address: V. dell'Industria 45
+    Address 2: ''
+    City: Seregno (MB)
+    Country/Region Code: IT
+    Post Code: 20831
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-008
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50100
+    Description: Legno larice siberiano
+    Quantity: 28.0
+    Unit Price: 145.0
+  - Type: 1
+    No.: 50100
+    Description: Tavole quercia francese
+    Quantity: 14.0
+    Unit Price: 265.0
+  - Type: 1
+    No.: 50100
+    Description: Mogano sapele massello
+    Quantity: 14.0
+    Unit Price: 298.0
+  - Type: 1
+    No.: 50100
+    Description: Bosso europeo per particolari
+    Quantity: 5.0
+    Unit Price: 420.0
+  - Type: 1
+    No.: 50110
+    Description: Lamellare frassino per piani
+    Quantity: 18.0
+    Unit Price: 195.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-008
+        Buy-from Vendor Name: Legname Brianza S.r.l.
+        Buy-from Address: Via dell'Industria 45
+        Buy-from Address 2: ''
+        Buy-from City: Seregno
+        Buy-from Post Code: '20831'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Legno larice siberiano
+        Quantity: 28.0
+        Unit Cost: 145.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Tavole quercia francese
+        Quantity: 14.0
+        Unit Cost: 265.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Mogano sapele massello
+        Quantity: 14.0
+        Unit Cost: 298.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Bosso europeo per particolari
+        Quantity: 5.0
+        Unit Cost: 420.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Lamellare frassino per piani
+        Quantity: 18.0
+        Unit Cost: 195.0
+- name: PA-INV-V02-019
+  description: VendorNo=V02;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Segheria Valtellina S.p.A.
+    Address: Zona Industriale Nord 12
+    Address 2: ''
+    City: Morbegno
+    Country/Region Code: IT
+    Post Code: '23017'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V02-019
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50100
+    Description: Castagno fiammato decorativo
+    Quantity: 22.0
+    Unit Price: 142.0
+  - Type: 1
+    No.: 50100
+    Description: Tavole larice nodoso
+    Quantity: 55.0
+    Unit Price: 98.0
+  - Type: 1
+    No.: 50100
+    Description: Larice impregnato autoclave
+    Quantity: 30.0
+    Unit Price: 148.0
+  - Type: 1
+    No.: 50110
+    Description: Pannelli abete massiccio
+    Quantity: 40.0
+    Unit Price: 65.0
+  - Type: 1
+    No.: 50100
+    Description: Contratto fornitura larice annuale
+    Quantity: 1.0
+    Unit Price: 28000.0
+  - Type: 1
+    No.: 50100
+    Description: Larice decking esterni
+    Quantity: 40.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 50100
+    Description: Abete antico da baite
+    Quantity: 12.0
+    Unit Price: 285.0
+  - Type: 1
+    No.: 50110
+    Description: Lamellare cirmolo anticato
+    Quantity: 12.0
+    Unit Price: 195.0
+  - Type: 1
+    No.: 50100
+    Description: Castagno per botti
+    Quantity: 15.0
+    Unit Price: 165.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V02-019
+        Buy-from Vendor Name: Segheria Valtellina S.p.A.
+        Buy-from Address: Zona Industriale Nord 12
+        Buy-from Address 2: ''
+        Buy-from City: Morbegno
+        Buy-from Post Code: '23017'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Castagno fiammato decorativo
+        Quantity: 22.0
+        Unit Cost: 142.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Tavole larice nodoso
+        Quantity: 55.0
+        Unit Cost: 98.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Larice impregnato autoclave
+        Quantity: 30.0
+        Unit Cost: 148.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Pannelli abete massiccio
+        Quantity: 40.0
+        Unit Cost: 65.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50100
+        Deferral Code: 12M
+        Description: Contratto fornitura larice annuale
+        Quantity: 1.0
+        Unit Cost: 28000.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Larice decking esterni
+        Quantity: 40.0
+        Unit Cost: 125.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Abete antico da baite
+        Quantity: 12.0
+        Unit Cost: 285.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Lamellare cirmolo anticato
+        Quantity: 12.0
+        Unit Cost: 195.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Castagno per botti
+        Quantity: 15.0
+        Unit Cost: 165.0
+- name: PA-INV-V03-011
+  description: VendorNo=V03;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pannelli Italia S.r.l.
+    Address: Via Emilia Est 234
+    Address 2: ''
+    City: Modena
+    Country/Region Code: IT
+    Post Code: '41124'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V03-011
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: MDF doppia faccia nobilitato
+    Quantity: 50.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 50110
+    Description: Multistrato pioppo verniciato
+    Quantity: 48.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 50120
+    Description: OSB verniciato bianco
+    Quantity: 45.0
+    Unit Price: 22.0
+  - Type: 1
+    No.: 50120
+    Description: Pannello tamburato 40mm
+    Quantity: 30.0
+    Unit Price: 48.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V03-011
+        Buy-from Vendor Name: Pannelli Italia S.r.l.
+        Buy-from Address: Via Emilia Est 234
+        Buy-from Address 2: ''
+        Buy-from City: Modena
+        Buy-from Post Code: '41124'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: MDF doppia faccia nobilitato
+        Quantity: 50.0
+        Unit Cost: 38.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Multistrato pioppo verniciato
+        Quantity: 48.0
+        Unit Cost: 38.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: OSB verniciato bianco
+        Quantity: 45.0
+        Unit Cost: 22.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Pannello tamburato 40mm
+        Quantity: 30.0
+        Unit Cost: 48.0
+- name: PA-INV-V01-014
+  description: VendorNo=V01;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Legname Brianza S.r.l.
+    Address: Via dell'Industria, 45
+    Address 2: ''
+    City: Seregno
+    Country/Region Code: IT
+    Post Code: 20831
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V01-014
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50110
+    Description: Pannelli lamellari rovere - contratto annuale
+    Quantity: 35.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 50110
+    Description: Pannello lamellare ciliegio
+    Quantity: 20.0
+    Unit Price: 175.0
+  - Type: 1
+    No.: 50100
+    Description: Ziricote messicano
+    Quantity: 4.0
+    Unit Price: 725.0
+  - Type: 1
+    No.: 50100
+    Description: Rovere affumicato
+    Quantity: 18.0
+    Unit Price: 225.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V01-014
+        Buy-from Vendor Name: Legname Brianza S.r.l.
+        Buy-from Address: Via dell'Industria 45
+        Buy-from Address 2: ''
+        Buy-from City: Seregno
+        Buy-from Post Code: '20831'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50110
+        Deferral Code: 12M
+        Description: Pannelli lamellari rovere - contratto annuale
+        Quantity: 35.0
+        Unit Cost: 125.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Pannello lamellare ciliegio
+        Quantity: 20.0
+        Unit Cost: 175.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Ziricote messicano
+        Quantity: 4.0
+        Unit Cost: 725.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Rovere affumicato
+        Quantity: 18.0
+        Unit Cost: 225.0
+- name: PA-INV-V05-004
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pelletteria Toscana S.r.l.
+    Address: V. del Cuoio 15
+    Address 2: ''
+    City: S. Croce sull'Arno (PI)
+    Country/Region Code: IT
+    Post Code: 56029
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V05-004
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50210
+    Description: Pellame anticato effetto used - riordino mensile
+    Quantity: 32.0
+    Unit Price: 245.0
+  - Type: 1
+    No.: 50210
+    Description: Pellame vaccino aniline nero
+    Quantity: 50.0
+    Unit Price: 198.0
+  - Type: 1
+    No.: 50210
+    Description: Cuoio nabuk grigio perla - fornitura semestrale
+    Quantity: 60.0
+    Unit Price: 142.0
+  - Type: 1
+    No.: 50210
+    Description: Pelle pieno fiore toro naturale
+    Quantity: 45.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 50210
+    Description: Pelle fiore corretto bianco
+    Quantity: 40.0
+    Unit Price: 155.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-004
+        Buy-from Vendor Name: Pelletteria Toscana S.r.l.
+        Buy-from Address: Via del Cuoio 15
+        Buy-from Address 2: ''
+        Buy-from City: Santa Croce sull'Arno
+        Buy-from Post Code: '56029'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Pellame anticato effetto used - riordino mensile
+        Quantity: 32.0
+        Unit Cost: 245.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Pellame vaccino aniline nero
+        Quantity: 50.0
+        Unit Cost: 198.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50210
+        Deferral Code: 6M
+        Description: Cuoio nabuk grigio perla - fornitura semestrale
+        Quantity: 60.0
+        Unit Cost: 142.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Pelle pieno fiore toro naturale
+        Quantity: 45.0
+        Unit Cost: 185.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Pelle fiore corretto bianco
+        Quantity: 40.0
+        Unit Cost: 155.0
+- name: PA-INV-V04-007
+  description: VendorNo=V04;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=True;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Tessiture di Como S.p.A.
+    Address: V. della Seta 78
+    Address 2: ''
+    City: Como (CO)
+    Country/Region Code: IT
+    Post Code: 22100
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V04-007
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50200
+    Description: Velluto stretch per sedute ergonomiche
+    Quantity: 90.0
+    Unit Price: 62.0
+  - Type: 1
+    No.: 50200
+    Description: Stoffa cotone organico certificato - fornitura semestrale
+    Quantity: 200.0
+    Unit Price: 25.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V04-007
+        Buy-from Vendor Name: Tessiture di Como S.p.A.
+        Buy-from Address: Via della Seta 78
+        Buy-from Address 2: ''
+        Buy-from City: Como
+        Buy-from Post Code: '22100'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Velluto stretch per sedute ergonomiche
+        Quantity: 90.0
+        Unit Cost: 62.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50200
+        Deferral Code: 6M
+        Description: Stoffa cotone organico certificato - fornitura semestrale
+        Quantity: 200.0
+        Unit Cost: 25.0
+- name: PA-INV-V05-009
+  description: VendorNo=V05;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Pelletteria Toscana S.r.l.
+    Address: Via del Cuoio 15
+    Address 2: ''
+    City: Santa Croce sull'Arno
+    Country/Region Code: IT
+    Post Code: '56029'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V05-009
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50210
+    Description: Pellame stampato intrecciato
+    Quantity: 18.0
+    Unit Price: 275.0
+  - Type: 1
+    No.: 50210
+    Description: Nabuk premium caffè - contratto annuale
+    Quantity: 55.0
+    Unit Price: 172.0
+  - Type: 1
+    No.: 50210
+    Description: Pelle vitello pieno fiore champagne
+    Quantity: 38.0
+    Unit Price: 198.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V05-009
+        Buy-from Vendor Name: Pelletteria Toscana S.r.l.
+        Buy-from Address: Via del Cuoio 15
+        Buy-from Address 2: ''
+        Buy-from City: Santa Croce sull'Arno
+        Buy-from Post Code: '56029'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Pellame stampato intrecciato
+        Quantity: 18.0
+        Unit Cost: 275.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50210
+        Deferral Code: 12M
+        Description: Nabuk premium caffè - contratto annuale
+        Quantity: 55.0
+        Unit Cost: 172.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Pelle vitello pieno fiore champagne
+        Quantity: 38.0
+        Unit Cost: 198.0
+- name: PA-INV-V04-009
+  description: VendorNo=V04;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG002;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Tessiture di Como S.p.A.
+    Address: Via della Seta, 78
+    Address 2: ''
+    City: Como
+    Country/Region Code: IT
+    Post Code: 22100
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V04-009
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50200
+    Description: Tessuto ecopelle traspirante grigio
+    Quantity: 95.0
+    Unit Price: 36.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V04-009
+        Buy-from Vendor Name: Tessiture di Como S.p.A.
+        Buy-from Address: Via della Seta 78
+        Buy-from Address 2: ''
+        Buy-from City: Como
+        Buy-from Post Code: '22100'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Tessuto ecopelle traspirante grigio
+        Quantity: 95.0
+        Unit Cost: 36.0
+- name: PA-INV-V22-004
+  description: VendorNo=V22;VendorFrequencyGroup=High;VendorGroup=VG004;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-it-IT.yaml
+  vendor:
+    Name: Studio Design Milano S.r.l.
+    Address: Via Tortona 54
+    Address 2: ''
+    City: Milano
+    Country/Region Code: IT
+    Post Code: '20144'
+  inboundInvoice:
+    Operation Occurred Date: '2025-12-05'
+    Posting Date: '2025-12-05'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V22-004
+    Payment Terms Code: 30 GIORNI
+    Shipment Method Code: CNL
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64200
+    Description: Design esclusivo poltrona firma - progetto annuale
+    Quantity: 1.0
+    Unit Price: 25000.0
+  - Type: 1
+    No.: 64200
+    Description: Progetto madie e contenitori
+    Quantity: 1.0
+    Unit Price: 4800.0
+  - Type: 1
+    No.: 64200
+    Description: Consulenza design contract hospitality - accordo annuale
+    Quantity: 1.0
+    Unit Price: 18000.0
+  - Type: 1
+    No.: 64200
+    Description: Progettazione scrivania direzionale
+    Quantity: 1.0
+    Unit Price: 4500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V22-004
+        Buy-from Vendor Name: Studio Design Milano S.r.l.
+        Buy-from Address: Via Tortona 54
+        Buy-from Address 2: ''
+        Buy-from City: Milano
+        Buy-from Post Code: '20144'
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64200
+        Deferral Code: 12M
+        Description: Design esclusivo poltrona firma - progetto annuale
+        Quantity: 1.0
+        Unit Cost: 25000.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: Progetto madie e contenitori
+        Quantity: 1.0
+        Unit Cost: 4800.0
+      - Line No.: 30000
+        Type: 1
+        No.: 64200
+        Deferral Code: 12M
+        Description: Consulenza design contract hospitality - accordo annuale
+        Quantity: 1.0
+        Unit Cost: 18000.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: Progettazione scrivania direzionale
+        Quantity: 1.0
+        Unit Cost: 4500.0

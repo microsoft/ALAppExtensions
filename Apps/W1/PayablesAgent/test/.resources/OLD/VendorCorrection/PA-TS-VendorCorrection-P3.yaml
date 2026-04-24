@@ -1,0 +1,700 @@
+tests:
+- name: PayablesAgent-VendorCorrection-151
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-023
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-023
+
+- name: PayablesAgent-VendorCorrection-152
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-024
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-024
+
+- name: PayablesAgent-VendorCorrection-153
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-025
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-025
+
+- name: PayablesAgent-VendorCorrection-154
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-026
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-026
+
+- name: PayablesAgent-VendorCorrection-155
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-027
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-027
+
+- name: PayablesAgent-VendorCorrection-156
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-028
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-028
+
+- name: PayablesAgent-VendorCorrection-157
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-029
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-029
+
+- name: PayablesAgent-VendorCorrection-158
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-030
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-030
+
+- name: PayablesAgent-VendorCorrection-159
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-VendorCorrection-160
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-VendorCorrection-161
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-VendorCorrection-162
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-VendorCorrection-163
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-VendorCorrection-164
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-VendorCorrection-165
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-VendorCorrection-166
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-VendorCorrection-167
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-VendorCorrection-168
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-VendorCorrection-169
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-VendorCorrection-170
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-VendorCorrection-171
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-013
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-013
+
+- name: PayablesAgent-VendorCorrection-172
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-014
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-014
+
+- name: PayablesAgent-VendorCorrection-173
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-015
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-015
+
+- name: PayablesAgent-VendorCorrection-174
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-016
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-016
+
+- name: PayablesAgent-VendorCorrection-175
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-017
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-017
+
+- name: PayablesAgent-VendorCorrection-176
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-018
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-018
+
+- name: PayablesAgent-VendorCorrection-177
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-019
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-019
+
+- name: PayablesAgent-VendorCorrection-178
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-020
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-020
+
+- name: PayablesAgent-VendorCorrection-179
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-021
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-021
+
+- name: PayablesAgent-VendorCorrection-180
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-022
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-022
+
+- name: PayablesAgent-VendorCorrection-181
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-023
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-023
+
+- name: PayablesAgent-VendorCorrection-182
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-024
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-024
+
+- name: PayablesAgent-VendorCorrection-183
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-025
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-025
+
+- name: PayablesAgent-VendorCorrection-184
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-026
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-026
+
+- name: PayablesAgent-VendorCorrection-185
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-027
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-027
+
+- name: PayablesAgent-VendorCorrection-186
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-028
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-028
+
+- name: PayablesAgent-VendorCorrection-187
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-029
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-029
+
+- name: PayablesAgent-VendorCorrection-188
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-030
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-030
+
+- name: PayablesAgent-VendorCorrection-189
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-VendorCorrection-190
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-VendorCorrection-191
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-VendorCorrection-192
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-VendorCorrection-193
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-VendorCorrection-194
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-VendorCorrection-195
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-VendorCorrection-196
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: AgriNova Foods
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-VendorCorrection-197
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Vitalyx Medical
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-VendorCorrection-198
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Nexora Dynamics
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-VendorCorrection-199
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Strauss Medium
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-VendorCorrection-200
+  description: Process an invoice PDF for an unknown vendor, where customer selects an existing vendor and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-UnknownVendor.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Vendor not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      vendorName: Redwave Systems
+    purchaseHeader:
+      invoiceNumber: INV-012

@@ -1,0 +1,700 @@
+tests:
+- name: PayablesAgent-LineCorrection-151
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-LineCorrection-152
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-LineCorrection-153
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-LineCorrection-154
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-LineCorrection-155
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-LineCorrection-156
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-LineCorrection-157
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-LineCorrection-158
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-LineCorrection-159
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-LineCorrection-160
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-LineCorrection-161
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-LineCorrection-162
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-LineCorrection-163
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-LineCorrection-164
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-LineCorrection-165
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-LineCorrection-166
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-LineCorrection-167
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-LineCorrection-168
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-LineCorrection-169
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-LineCorrection-170
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-LineCorrection-171
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-LineCorrection-172
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-LineCorrection-173
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-LineCorrection-174
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-LineCorrection-175
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-LineCorrection-176
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-LineCorrection-177
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-LineCorrection-178
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-LineCorrection-179
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-LineCorrection-180
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-LineCorrection-181
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-LineCorrection-182
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-LineCorrection-183
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-LineCorrection-184
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-LineCorrection-185
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-LineCorrection-186
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-LineCorrection-187
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-LineCorrection-188
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-004
+
+- name: PayablesAgent-LineCorrection-189
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-005
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-005
+
+- name: PayablesAgent-LineCorrection-190
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-006
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-006
+
+- name: PayablesAgent-LineCorrection-191
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-007
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-007
+
+- name: PayablesAgent-LineCorrection-192
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-008
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-008
+
+- name: PayablesAgent-LineCorrection-193
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-009
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-009
+
+- name: PayablesAgent-LineCorrection-194
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-010
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-010
+
+- name: PayablesAgent-LineCorrection-195
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-011
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-011
+
+- name: PayablesAgent-LineCorrection-196
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-012
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-012
+
+- name: PayablesAgent-LineCorrection-197
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-001
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-001
+
+- name: PayablesAgent-LineCorrection-198
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-002
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-002
+
+- name: PayablesAgent-LineCorrection-199
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-003
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-003
+
+- name: PayablesAgent-LineCorrection-200
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-P0.yaml
+  invoice_setup: PA-INV-LineCorrection.yaml
+  invoice_no: INV-004
+  expected_data:
+    userIntervention: true
+    userInterventionReason: Account number not found
+    userInterventionContinue: true
+    userInterventionSelection:
+      accountNumber: GLTEST1234
+    purchaseHeader:
+      invoiceNumber: INV-004

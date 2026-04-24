@@ -18,13 +18,13 @@ codeunit 10831 "Feature - PaymentMgt FR" implements "Feature Data Update"
     Permissions = TableData "Feature Data Update Status" = rm;
     InherentEntitlements = X;
     InherentPermissions = X;
-    ObsoleteReason = 'Feature Payment Management will be enabled by default in version 28.0.';
+    ObsoleteReason = 'Feature Payment Management will be enabled by default in version 31.0.';
     ObsoleteState = Pending;
     ObsoleteTag = '28.0';
 
     var
         TempDocumentEntry: Record "Document Entry" temporary;
-        DescriptionTxt: Label 'Existing records in GB BaseApp fields will be copied to Payment App fields';
+        DescriptionTxt: Label 'Existing records in FR BaseApp fields will be copied to Payment App fields';
 
     procedure IsDataUpdateRequired(): Boolean;
     begin

@@ -6,7 +6,6 @@ namespace Microsoft.Bank;
 
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
-using Microsoft.Purchases.Payables;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
@@ -220,35 +219,6 @@ codeunit 31447 "Company Bank Acc. Handler CZL"
             CustLedgerEntry.Validate("Constant Symbol CZL", ConstantSymbolCZL);
             Codeunit.Run(Codeunit::"Cust. Entry-Edit", CustLedgerEntry);
         end;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Inv. Header - Edit", 'OnBeforePurchInvHeaderModify', '', false, false)]
-    local procedure PurchInvoiceEditOnBeforePurchInvHeaderModify(var PurchInvHeader: Record "Purch. Inv. Header"; PurchInvHeaderRec: Record "Purch. Inv. Header")
-    var
-        ExtDocNoChangingCZL: Codeunit "Ext. Doc. No. Changing CZL";
-    begin
-        ExtDocNoChangingCZL.Init(PurchInvHeaderRec, PurchInvHeader);
-
-        PurchInvHeader.Validate("Due Date", PurchInvHeaderRec."Due Date");
-        PurchInvHeader.Validate("Bank Account Code CZL", PurchInvHeaderRec."Bank Account Code CZL");
-        PurchInvHeader.Validate("Specific Symbol CZL", PurchInvHeaderRec."Specific Symbol CZL");
-        PurchInvHeader.Validate("Variable Symbol CZL", PurchInvHeaderRec."Variable Symbol CZL");
-        PurchInvHeader.Validate("Constant Symbol CZL", PurchInvHeaderRec."Constant Symbol CZL");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Inv. Header - Edit", 'OnBeforeUpdateVendorLedgerEntryAfterSetValues', '', false, false)]
-    local procedure PurchInvoiceEditOnBeforeUpdateVendorLedgerEntryAfterSetValues(var VendorLedgerEntry: Record "Vendor Ledger Entry"; PurchInvHeader: Record "Purch. Inv. Header")
-    begin
-        VendorLedgerEntry."Due Date" := PurchInvHeader."Due Date";
-        VendorLedgerEntry."Bank Account Code CZL" := PurchInvHeader."Bank Account Code CZL";
-        VendorLedgerEntry."Bank Account No. CZL" := PurchInvHeader."Bank Account No. CZL";
-        VendorLedgerEntry."Transit No. CZL" := PurchInvHeader."Transit No. CZL";
-        VendorLedgerEntry."IBAN CZL" := PurchInvHeader."IBAN CZL";
-        VendorLedgerEntry."SWIFT Code CZL" := PurchInvHeader."SWIFT Code CZL";
-        VendorLedgerEntry."External Document No." := PurchInvHeader."Vendor Invoice No.";
-        VendorLedgerEntry."Specific Symbol CZL" := PurchInvHeader."Specific Symbol CZL";
-        VendorLedgerEntry."Variable Symbol CZL" := PurchInvHeader."Variable Symbol CZL";
-        VendorLedgerEntry."Constant Symbol CZL" := PurchInvHeader."Constant Symbol CZL";
     end;
     #endregion edit posted documents
 }

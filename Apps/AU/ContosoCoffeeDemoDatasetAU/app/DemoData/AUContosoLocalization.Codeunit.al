@@ -15,6 +15,7 @@ using Microsoft.DemoData.Job;
 using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.Sales;
 using Microsoft.DemoTool;
+using Microsoft.Finance.VAT.Setup;
 
 codeunit 17131 "AU Contoso Localization"
 {
@@ -314,9 +315,18 @@ codeunit 17131 "AU Contoso Localization"
                     UnbindSubscription(CreateAUAccScheduleLine);
                     UnbindSubscription(CreateAUCurrency);
                     UnbindSubscription(CreateCurrencyExRateAU);
+                    DeleteEUVATPostingSetup(); 
                 end;
             Enum::"Contoso Demo Data Module"::"Job Module":
                 UnbindSubscription(CreateAUJobPostingGroup);
         end;
+    end;
+    local procedure DeleteEUVATPostingSetup()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        CreatePostingGroups: Codeunit "Create Posting Groups";
+    begin
+        VATPostingSetup.SetRange("VAT Bus. Posting Group", CreatePostingGroups.EUPostingGroup());
+        VATPostingSetup.DeleteAll();
     end;
 }

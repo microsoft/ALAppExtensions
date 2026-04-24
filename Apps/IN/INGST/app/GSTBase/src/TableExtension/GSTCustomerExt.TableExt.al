@@ -40,5 +40,10 @@ tableextension 18016 "GST Customer Ext" extends Customer
             Caption = 'Post GST to Customer';
             DataClassification = CustomerContent;
         }
+        field(18006; "Govt. Undertaking"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Govt. Undertaking';
+        }
     }
 }

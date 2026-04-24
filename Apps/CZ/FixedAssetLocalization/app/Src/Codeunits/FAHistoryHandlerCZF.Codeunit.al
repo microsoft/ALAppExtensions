@@ -10,7 +10,6 @@ using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Journal;
 using Microsoft.FixedAssets.Posting;
 using Microsoft.FixedAssets.Setup;
-using Microsoft.Foundation.NoSeries;
 
 codeunit 31238 "FA History Handler CZF"
 {
@@ -44,22 +43,6 @@ codeunit 31238 "FA History Handler CZF"
         FASetup.Get();
         if FASetup."Fixed Asset History CZF" then
             FAHistoryManagementCZF.CreateFAHistoryEntry(FAHistoryTypeCZF::"Responsible Employee", Rec, xRec);
-    end;
-
-    [EventSubscriber(ObjectType::Report, Report::"Copy Fixed Asset", 'OnAfterFixedAssetCopied', '', false, false)]
-    local procedure InitializeHistoryOnAfterFixedAssetCopied(FixedAsset2: Record "Fixed Asset")
-    var
-        NoSeries: Codeunit "No. Series";
-        DocumentNo: Code[20];
-    begin
-        FASetup.Get();
-        if FASetup."Fixed Asset History CZF" then begin
-            if (FixedAsset2."FA Location Code" <> '') or (FixedAsset2."Responsible Employee" <> '') then begin
-                FASetup.TestField("Fixed Asset History Nos. CZF");
-                DocumentNo := NoSeries.GetNextNo(FASetup."Fixed Asset History Nos. CZF");
-            end;
-            FAHistoryManagementCZF.InitializeFAHistory(FixedAsset2, WorkDate(), DocumentNo);
-        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Jnl.-Post Line", 'OnAfterFAJnlPostLine', '', false, false)]

@@ -1,0 +1,1928 @@
+name: PA-TS-Metrics-03-de-DE
+language: de-DE
+tests:
+- name: PA-INV-V26-004
+  description: VendorNo=V26;VendorFrequencyGroup=None;VendorGroup=VG004;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG010;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Meier Spedition und Logistik
+    Address: Am Gueterbahnhof 12
+    Address 2: ''
+    City: Hannover
+    Country/Region Code: DE
+    Post Code: '30159'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V26-004
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 66020
+    Description: Temperaturen Lagerung kontrolliert
+    Quantity: 1.0
+    Unit Price: 1650.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V26-004
+        Buy-from Vendor Name: Meier Spedition und Logistik
+        Buy-from Address: Am Güterbahnhof 12
+        Buy-from Address 2: ''
+        Buy-from City: Hannover
+        Buy-from Post Code: '30159'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 66020
+        Deferral Code: ''
+        Description: Temperaturen Lagerung kontrolliert
+        Quantity: 1.0
+        Unit Cost: 1650.0
+- name: PA-INV-V25-005
+  description: VendorNo=V25;VendorFrequencyGroup=None;VendorGroup=VG004;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Spedition Meier GmbH
+    Address: Hafenstraße 44
+    Address 2: ''
+    City: Bremen
+    Country/Region Code: DE
+    Post Code: '28217'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V25-005
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 66000
+    Description: Fährüberfahrt Skandinavien
+    Quantity: 1.0
+    Unit Price: 1980.0
+  - Type: 1
+    No.: 66000
+    Description: Messegut Hin- und Rücktransport
+    Quantity: 1.0
+    Unit Price: 3200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V25-005
+        Buy-from Vendor Name: Spedition Meier GmbH
+        Buy-from Address: Hafenstraße 44
+        Buy-from Address 2: ''
+        Buy-from City: Bremen
+        Buy-from Post Code: '28217'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 66000
+        Deferral Code: ''
+        Description: Fährüberfahrt Skandinavien
+        Quantity: 1.0
+        Unit Cost: 1980.0
+      - Line No.: 20000
+        Type: 1
+        No.: 66000
+        Deferral Code: ''
+        Description: Messegut Hin- und Rücktransport
+        Quantity: 1.0
+        Unit Cost: 3200.0
+- name: PA-INV-V20-001
+  description: VendorNo=V20;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Bechtle AG
+    Address: Bechtle Platz 1
+    Address 2: ''
+    City: Neckarsulm
+    Country/Region Code: DE
+    Post Code: '74172'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V20-001
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64020
+    Description: Headset Jabra Wireless
+    Quantity: 35.0
+    Unit Price: 120.0
+  - Type: 1
+    No.: 64020
+    Description: Scanner Dokumentenscanner
+    Quantity: 2.0
+    Unit Price: 980.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V20-001
+        Buy-from Vendor Name: Bechtle AG
+        Buy-from Address: Bechtle Platz 1
+        Buy-from Address 2: ''
+        Buy-from City: Neckarsulm
+        Buy-from Post Code: '74172'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64020
+        Deferral Code: ''
+        Description: Headset Jabra Wireless
+        Quantity: 35.0
+        Unit Cost: 120.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64020
+        Deferral Code: ''
+        Description: Scanner Dokumentenscanner
+        Quantity: 2.0
+        Unit Cost: 980.0
+- name: PA-INV-V22-004
+  description: VendorNo=V22;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG009;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: LYRECO Deutschland GmbH
+    Address: Stanley-Black-Decker-Straße 1
+    Address 2: ''
+    City: Barsinghausen
+    Country/Region Code: DE
+    Post Code: '30890'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V22-004
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65000
+    Description: Aktenvernichter Schnittgut
+    Quantity: 8.0
+    Unit Price: 42.0
+  - Type: 1
+    No.: 65000
+    Description: Briefumschläge C4 weiß
+    Quantity: 2000.0
+    Unit Price: 0.35
+  - Type: 1
+    No.: 65000
+    Description: Schnellhefter PP Farben
+    Quantity: 120.0
+    Unit Price: 1.85
+  - Type: 1
+    No.: 65000
+    Description: Tischkalender 2026
+    Quantity: 25.0
+    Unit Price: 12.8
+  - Type: 1
+    No.: 65000
+    Description: Bürobedarf Jahresliefervertrag
+    Quantity: 1.0
+    Unit Price: 9600.0
+  - Type: 1
+    No.: 65000
+    Description: Kugelschreiber Großpackung
+    Quantity: 5.0
+    Unit Price: 45.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V22-004
+        Buy-from Vendor Name: Lyreco Deutschland GmbH
+        Buy-from Address: Stanley-Black-Decker-Straße 1
+        Buy-from Address 2: ''
+        Buy-from City: Barsinghausen
+        Buy-from Post Code: '30890'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65000
+        Deferral Code: ''
+        Description: Aktenvernichter Schnittgut
+        Quantity: 8.0
+        Unit Cost: 42.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65000
+        Deferral Code: ''
+        Description: Briefumschläge C4 weiß
+        Quantity: 2000.0
+        Unit Cost: 0.35
+      - Line No.: 30000
+        Type: 1
+        No.: 65000
+        Deferral Code: ''
+        Description: Schnellhefter PP Farben
+        Quantity: 120.0
+        Unit Cost: 1.85
+      - Line No.: 40000
+        Type: 1
+        No.: 65000
+        Deferral Code: ''
+        Description: Tischkalender 2026
+        Quantity: 25.0
+        Unit Cost: 12.8
+      - Line No.: 50000
+        Type: 1
+        No.: 65000
+        Deferral Code: 12M
+        Description: Bürobedarf Jahresliefervertrag
+        Quantity: 1.0
+        Unit Cost: 9600.0
+      - Line No.: 60000
+        Type: 1
+        No.: 65000
+        Deferral Code: ''
+        Description: Kugelschreiber Großpackung
+        Quantity: 5.0
+        Unit Cost: 45.0
+- name: PA-INV-V19-005
+  description: VendorNo=V19;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Microsoft Ireland Operations Ltd
+    Address: One Microsoft Place
+    Address 2: ''
+    City: Dublin
+    Country/Region Code: IE
+    Post Code: D18 P521
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V19-005
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64010
+    Description: Azure DevOps Services
+    Quantity: 1.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 64000
+    Description: Dynamics 365 Sales
+    Quantity: 1.0
+    Unit Price: 7200.0
+  - Type: 1
+    No.: 64000
+    Description: Visio Professional
+    Quantity: 8.0
+    Unit Price: 580.0
+  - Type: 1
+    No.: 64010
+    Description: SharePoint Online
+    Quantity: 1.0
+    Unit Price: 2850.0
+  - Type: 1
+    No.: 64000
+    Description: Windows 11 Enterprise
+    Quantity: 1.0
+    Unit Price: 6800.0
+  - Type: 1
+    No.: 64010
+    Description: OneDrive for Business Storage
+    Quantity: 1.0
+    Unit Price: 1200.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V19-005
+        Buy-from Vendor Name: Microsoft Ireland Operations Ltd
+        Buy-from Address: One Microsoft Place
+        Buy-from Address 2: ''
+        Buy-from City: Dublin
+        Buy-from Post Code: D18 P521
+        Buy-from Country/Region Code: IE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64010
+        Deferral Code: 12M
+        Description: Azure DevOps Services
+        Quantity: 1.0
+        Unit Cost: 1450.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64000
+        Deferral Code: 12M
+        Description: Dynamics 365 Sales
+        Quantity: 1.0
+        Unit Cost: 7200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 64000
+        Deferral Code: 12M
+        Description: Visio Professional
+        Quantity: 8.0
+        Unit Cost: 580.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64010
+        Deferral Code: 12M
+        Description: SharePoint Online
+        Quantity: 1.0
+        Unit Cost: 2850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 64000
+        Deferral Code: 12M
+        Description: Windows 11 Enterprise
+        Quantity: 1.0
+        Unit Cost: 6800.0
+      - Line No.: 60000
+        Type: 1
+        No.: 64010
+        Deferral Code: 12M
+        Description: OneDrive for Business Storage
+        Quantity: 1.0
+        Unit Cost: 1200.0
+- name: PA-INV-V34-002
+  description: VendorNo=V34;VendorFrequencyGroup=New;VendorGroup=VG005;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Westfälische Versicherung AG
+    Address: Am Lippeglacis 6
+    Address 2: ''
+    City: Münster
+    Country/Region Code: DE
+    Post Code: '48151'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V34-002
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 67000
+    Description: Maschinenpark Versicherung
+    Quantity: 1.0
+    Unit Price: 5400.0
+  - Type: 1
+    No.: 67000
+    Description: Betriebsinhaltsversicherung
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 67010
+    Description: Cyber-Risiko Absicherung
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 67000
+    Description: Versicherungsschutz Gesamtpaket
+    Quantity: 1.0
+    Unit Price: 72000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V34-002
+        Buy-from Vendor Name: Westfälische Versicherung AG
+        Buy-from Address: Am Lippeglacis 6
+        Buy-from Address 2: ''
+        Buy-from City: Münster
+        Buy-from Post Code: '48151'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Maschinenpark Versicherung
+        Quantity: 1.0
+        Unit Cost: 5400.0
+      - Line No.: 20000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Betriebsinhaltsversicherung
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 67010
+        Deferral Code: 12M
+        Description: Cyber-Risiko Absicherung
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 40000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Versicherungsschutz Gesamtpaket
+        Quantity: 1.0
+        Unit Cost: 72000.0
+- name: PA-INV-V28-003
+  description: VendorNo=V28;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG006;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Gebäudereinigung Becker
+    Address: Reinigungsweg 5
+    Address 2: ''
+    City: Bad Salzuflen
+    Country/Region Code: DE
+    Post Code: '32107'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V28-003
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62000
+    Description: Küchen- und Sozialraumreinigung
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 62000
+    Description: Sonderreinigung nach Umbau
+    Quantity: 1.0
+    Unit Price: 5800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V28-003
+        Buy-from Vendor Name: Gebäudereinigung Becker
+        Buy-from Address: Reinigungsweg 5
+        Buy-from Address 2: ''
+        Buy-from City: Bad Salzuflen
+        Buy-from Post Code: '32107'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Küchen- und Sozialraumreinigung
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Sonderreinigung nach Umbau
+        Quantity: 1.0
+        Unit Cost: 5800.0
+- name: PA-INV-V38-005
+  description: VendorNo=V38;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG012;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Koelnmesse GmbH
+    Address: Messeplatz 1
+    Address 2: ''
+    City: Köln
+    Country/Region Code: DE
+    Post Code: '50679'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V38-005
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 68010
+    Description: Parkausweise Aussteller
+    Quantity: 10.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 68010
+    Description: Eintrittskarten Gäste
+    Quantity: 50.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 68010
+    Description: Beleuchtung Spotlight
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 68010
+    Description: Messemöbel Miete
+    Quantity: 1.0
+    Unit Price: 2850.0
+  - Type: 1
+    No.: 68010
+    Description: Internet-Anbindung Messe
+    Quantity: 1.0
+    Unit Price: 680.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V38-005
+        Buy-from Vendor Name: Koelnmesse GmbH
+        Buy-from Address: Messeplatz 1
+        Buy-from Address 2: ''
+        Buy-from City: Köln
+        Buy-from Post Code: '50679'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 68010
+        Deferral Code: ''
+        Description: Parkausweise Aussteller
+        Quantity: 10.0
+        Unit Cost: 45.0
+      - Line No.: 20000
+        Type: 1
+        No.: 68010
+        Deferral Code: ''
+        Description: Eintrittskarten Gäste
+        Quantity: 50.0
+        Unit Cost: 28.0
+      - Line No.: 30000
+        Type: 1
+        No.: 68010
+        Deferral Code: ''
+        Description: Beleuchtung Spotlight
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 68010
+        Deferral Code: ''
+        Description: Messemöbel Miete
+        Quantity: 1.0
+        Unit Cost: 2850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 68010
+        Deferral Code: ''
+        Description: Internet-Anbindung Messe
+        Quantity: 1.0
+        Unit Cost: 680.0
+- name: PA-INV-V38-003
+  description: VendorNo=V38;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG012;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Koelnmesse GmbH
+    Address: Messeplatz 1
+    Address 2: ''
+    City: Köln
+    Country/Region Code: DE
+    Post Code: '50679'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V38-003
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 68010
+    Description: Standaufbau und Abbau
+    Quantity: 1.0
+    Unit Price: 4500.0
+  - Type: 1
+    No.: 68010
+    Description: Messelogistik Anlieferung
+    Quantity: 1.0
+    Unit Price: 980.0
+  - Type: 1
+    No.: 68010
+    Description: Stromanschluss Messestand
+    Quantity: 1.0
+    Unit Price: 850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V38-003
+        Buy-from Vendor Name: Koelnmesse GmbH
+        Buy-from Address: Messeplatz 1
+        Buy-from Address 2: ''
+        Buy-from City: Köln
+        Buy-from Post Code: '50679'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 68010
+        Deferral Code: ''
+        Description: Standaufbau und Abbau
+        Quantity: 1.0
+        Unit Cost: 4500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 68010
+        Deferral Code: ''
+        Description: Messelogistik Anlieferung
+        Quantity: 1.0
+        Unit Cost: 980.0
+      - Line No.: 30000
+        Type: 1
+        No.: 68010
+        Deferral Code: ''
+        Description: Stromanschluss Messestand
+        Quantity: 1.0
+        Unit Cost: 850.0
+- name: PA-INV-V37-003
+  description: VendorNo=V37;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Stretchfolien-Zentrum Minden
+    Address: Folienstraße 8
+    Address 2: ''
+    City: Minden
+    Country/Region Code: DE
+    Post Code: '32427'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V37-003
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50510
+    Description: Antistatik-Folie ESD-Schutz
+    Quantity: 35.0
+    Unit Price: 78.5
+  - Type: 1
+    No.: 50510
+    Description: Maschinenstretchfolie 20µ
+    Quantity: 150.0
+    Unit Price: 38.6
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V37-003
+        Buy-from Vendor Name: Stretchfolien-Zentrum Minden
+        Buy-from Address: Folienstraße 8
+        Buy-from Address 2: ''
+        Buy-from City: Minden
+        Buy-from Post Code: '32427'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Antistatik-Folie ESD-Schutz
+        Quantity: 35.0
+        Unit Cost: 78.5
+      - Line No.: 20000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Maschinenstretchfolie 20µ
+        Quantity: 150.0
+        Unit Cost: 38.6
+- name: PA-INV-V27-002
+  description: VendorNo=V27;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG006;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Kärcher Professional
+    Address: Alfred-Kärcher-Straße 28-40
+    Address 2: ''
+    City: Winnenden
+    Country/Region Code: DE
+    Post Code: '71364'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V27-002
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62000
+    Description: Wartungsvertrag Reinigungsgeräte
+    Quantity: 1.0
+    Unit Price: 2400.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V27-002
+        Buy-from Vendor Name: Kärcher Professional
+        Buy-from Address: Alfred-Kärcher-Straße 28-40
+        Buy-from Address 2: ''
+        Buy-from City: Winnenden
+        Buy-from Post Code: '71364'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62000
+        Deferral Code: 12M
+        Description: Wartungsvertrag Reinigungsgeräte
+        Quantity: 1.0
+        Unit Cost: 2400.0
+- name: PA-INV-V27-001
+  description: VendorNo=V27;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG006;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Kärcher Professional
+    Address: Alfred-Kärcher-Straße 28-40
+    Address 2: ''
+    City: Winnenden
+    Country/Region Code: DE
+    Post Code: '71364'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V27-001
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62000
+    Description: Nassabsaugung mit Pumpe
+    Quantity: 1.0
+    Unit Price: 1650.0
+  - Type: 1
+    No.: 62000
+    Description: Zubehör-Paket Staubsauger
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 62000
+    Description: Schulung Bedienung Geräte
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 62000
+    Description: Heißwasser-Hochdruckreiniger
+    Quantity: 1.0
+    Unit Price: 5800.0
+  - Type: 1
+    No.: 62000
+    Description: Reinigungsmittel RM 99 Universal
+    Quantity: 36.0
+    Unit Price: 38.9
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V27-001
+        Buy-from Vendor Name: Kärcher Professional
+        Buy-from Address: Alfred-Kärcher-Straße 28-40
+        Buy-from Address 2: ''
+        Buy-from City: Winnenden
+        Buy-from Post Code: '71364'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Nassabsaugung mit Pumpe
+        Quantity: 1.0
+        Unit Cost: 1650.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Zubehör-Paket Staubsauger
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Schulung Bedienung Geräte
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Heißwasser-Hochdruckreiniger
+        Quantity: 1.0
+        Unit Cost: 5800.0
+      - Line No.: 50000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Reinigungsmittel RM 99 Universal
+        Quantity: 36.0
+        Unit Cost: 38.9
+- name: PA-INV-V27-004
+  description: VendorNo=V27;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG006;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Kärcher Professional
+    Address: Alfred-Kärcher-Straße 28-40
+    Address 2: ''
+    City: Winnenden
+    Country/Region Code: DE
+    Post Code: '71364'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V27-004
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62000
+    Description: Flächenreiniger FR 30 ME
+    Quantity: 2.0
+    Unit Price: 380.0
+  - Type: 1
+    No.: 62000
+    Description: Reinigungsmittel RM 69 Kanister
+    Quantity: 24.0
+    Unit Price: 45.5
+  - Type: 1
+    No.: 62000
+    Description: Dampfreiniger SG 4/4
+    Quantity: 2.0
+    Unit Price: 1280.0
+  - Type: 1
+    No.: 62000
+    Description: Hochdruckreiniger HD 10/25-4 S
+    Quantity: 2.0
+    Unit Price: 1850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V27-004
+        Buy-from Vendor Name: Kärcher Professional
+        Buy-from Address: Alfred-Kärcher-Straße 28-40
+        Buy-from Address 2: ''
+        Buy-from City: Winnenden
+        Buy-from Post Code: '71364'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Flächenreiniger FR 30 ME
+        Quantity: 2.0
+        Unit Cost: 380.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Reinigungsmittel RM 69 Kanister
+        Quantity: 24.0
+        Unit Cost: 45.5
+      - Line No.: 30000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Dampfreiniger SG 4/4
+        Quantity: 2.0
+        Unit Cost: 1280.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62000
+        Deferral Code: ''
+        Description: Hochdruckreiniger HD 10/25-4 S
+        Quantity: 2.0
+        Unit Cost: 1850.0
+- name: PA-INV-V33-005
+  description: VendorNo=V33;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: R+V Versicherung AG
+    Address: Raiffeisenplatz 1
+    Address 2: ''
+    City: Wiesbaden
+    Country/Region Code: DE
+    Post Code: '65189'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V33-005
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 67000
+    Description: Ausstellungsversicherung Messe
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 67000
+    Description: Rohstoffversicherung Lager
+    Quantity: 1.0
+    Unit Price: 6800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V33-005
+        Buy-from Vendor Name: R+V Versicherung AG
+        Buy-from Address: Raiffeisenplatz 1
+        Buy-from Address 2: ''
+        Buy-from City: Wiesbaden
+        Buy-from Post Code: '65189'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 67000
+        Deferral Code: ''
+        Description: Ausstellungsversicherung Messe
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Rohstoffversicherung Lager
+        Quantity: 1.0
+        Unit Cost: 6800.0
+- name: PA-INV-V30-003
+  description: VendorNo=V30;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG013;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: HOMAG Group AG
+    Address: Homagstraße 3-5
+    Address 2: ''
+    City: Schopfloch
+    Country/Region Code: DE
+    Post Code: '72296'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V30-003
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 70020
+    Description: Verschleißteile Jahrespaket
+    Quantity: 1.0
+    Unit Price: 9600.0
+  - Type: 1
+    No.: 70010
+    Description: Fernwartung Jahresgebühr
+    Quantity: 1.0
+    Unit Price: 1200.0
+  - Type: 1
+    No.: 70010
+    Description: Präventive Instandhaltung
+    Quantity: 1.0
+    Unit Price: 3850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V30-003
+        Buy-from Vendor Name: HOMAG Group AG
+        Buy-from Address: Homagstraße 3-5
+        Buy-from Address 2: ''
+        Buy-from City: Schopfloch
+        Buy-from Post Code: '72296'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 70020
+        Deferral Code: 12M
+        Description: Verschleißteile Jahrespaket
+        Quantity: 1.0
+        Unit Cost: 9600.0
+      - Line No.: 20000
+        Type: 1
+        No.: 70010
+        Deferral Code: 12M
+        Description: Fernwartung Jahresgebühr
+        Quantity: 1.0
+        Unit Cost: 1200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 70010
+        Deferral Code: ''
+        Description: Präventive Instandhaltung
+        Quantity: 1.0
+        Unit Cost: 3850.0
+- name: PA-INV-V31-003
+  description: VendorNo=V31;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG013;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: SCM Group Deutschland
+    Address: Im Stockmädle 13
+    Address 2: ''
+    City: Nürtingen
+    Country/Region Code: DE
+    Post Code: '72622'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V31-003
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 70010
+    Description: Generalüberholung Aggregat
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 70010
+    Description: Schulung Bedienpersonal
+    Quantity: 1.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 70010
+    Description: Service-Einsatz Techniker
+    Quantity: 1.0
+    Unit Price: 980.0
+  - Type: 1
+    No.: 70010
+    Description: Justierung Parallelanschlag
+    Quantity: 1.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 70020
+    Description: Schutzhaube Sägeblatt
+    Quantity: 2.0
+    Unit Price: 420.0
+  - Type: 1
+    No.: 70020
+    Description: Fräswerkzeug Hartmetall
+    Quantity: 12.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 70010
+    Description: Ferndiagnose Service
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 70020
+    Description: Sägeblatt HW 450mm
+    Quantity: 4.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 70020
+    Description: Leimaggregat Austausch
+    Quantity: 1.0
+    Unit Price: 2400.0
+  - Type: 1
+    No.: 70010
+    Description: Reparatur Vorschubsystem
+    Quantity: 1.0
+    Unit Price: 2850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V31-003
+        Buy-from Vendor Name: SCM Group Deutschland
+        Buy-from Address: Im Stockmädle 13
+        Buy-from Address 2: ''
+        Buy-from City: Nürtingen
+        Buy-from Post Code: '72622'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 70010
+        Deferral Code: ''
+        Description: Generalüberholung Aggregat
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 70010
+        Deferral Code: ''
+        Description: Schulung Bedienpersonal
+        Quantity: 1.0
+        Unit Cost: 1450.0
+      - Line No.: 30000
+        Type: 1
+        No.: 70010
+        Deferral Code: ''
+        Description: Service-Einsatz Techniker
+        Quantity: 1.0
+        Unit Cost: 980.0
+      - Line No.: 40000
+        Type: 1
+        No.: 70010
+        Deferral Code: ''
+        Description: Justierung Parallelanschlag
+        Quantity: 1.0
+        Unit Cost: 680.0
+      - Line No.: 50000
+        Type: 1
+        No.: 70020
+        Deferral Code: ''
+        Description: Schutzhaube Sägeblatt
+        Quantity: 2.0
+        Unit Cost: 420.0
+      - Line No.: 60000
+        Type: 1
+        No.: 70020
+        Deferral Code: ''
+        Description: Fräswerkzeug Hartmetall
+        Quantity: 12.0
+        Unit Cost: 280.0
+      - Line No.: 70000
+        Type: 1
+        No.: 70010
+        Deferral Code: ''
+        Description: Ferndiagnose Service
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 80000
+        Type: 1
+        No.: 70020
+        Deferral Code: ''
+        Description: Sägeblatt HW 450mm
+        Quantity: 4.0
+        Unit Cost: 680.0
+      - Line No.: 90000
+        Type: 1
+        No.: 70020
+        Deferral Code: ''
+        Description: Leimaggregat Austausch
+        Quantity: 1.0
+        Unit Cost: 2400.0
+      - Line No.: 100000
+        Type: 1
+        No.: 70010
+        Deferral Code: ''
+        Description: Reparatur Vorschubsystem
+        Quantity: 1.0
+        Unit Cost: 2850.0
+- name: PA-INV-V32-002
+  description: VendorNo=V32;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Allianz Versicherungs-AG
+    Address: Königinstraße 28
+    Address 2: ''
+    City: München
+    Country/Region Code: DE
+    Post Code: '80802'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V32-002
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 67000
+    Description: Feuerversicherung
+    Quantity: 1.0
+    Unit Price: 5400.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V32-002
+        Buy-from Vendor Name: Allianz Versicherungs-AG
+        Buy-from Address: Königinstraße 28
+        Buy-from Address 2: ''
+        Buy-from City: München
+        Buy-from Post Code: '80802'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Feuerversicherung
+        Quantity: 1.0
+        Unit Cost: 5400.0
+- name: PA-INV-V37-001
+  description: VendorNo=V37;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Stretchfolien-Zentrum Minden
+    Address: Folienstraße 8
+    Address 2: ''
+    City: Minden
+    Country/Region Code: DE
+    Post Code: '32427'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V37-001
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50510
+    Description: Stretchfolie 500mm transparent
+    Quantity: 120.0
+    Unit Price: 28.5
+  - Type: 1
+    No.: 50510
+    Description: Jahresliefervertrag Folien
+    Quantity: 1.0
+    Unit Price: 24000.0
+  - Type: 1
+    No.: 50510
+    Description: UV-Schutzfolie außen
+    Quantity: 60.0
+    Unit Price: 48.9
+  - Type: 1
+    No.: 50510
+    Description: Folienspender-Station mobil
+    Quantity: 2.0
+    Unit Price: 680.0
+  - Type: 1
+    No.: 50510
+    Description: Schrumpfhaube 1400x1600mm
+    Quantity: 500.0
+    Unit Price: 3.85
+  - Type: 1
+    No.: 50510
+    Description: VCI-Korrosionsschutzfolie
+    Quantity: 40.0
+    Unit Price: 68.5
+  - Type: 1
+    No.: 50510
+    Description: Schrumpffolie-Tunnelgröße
+    Quantity: 75.0
+    Unit Price: 52.3
+  - Type: 1
+    No.: 50510
+    Description: Stretchfolie vorgedehnt Cast
+    Quantity: 140.0
+    Unit Price: 35.9
+  - Type: 1
+    No.: 50510
+    Description: Stretchfolie schwarz blickdicht
+    Quantity: 95.0
+    Unit Price: 32.5
+  - Type: 1
+    No.: 50510
+    Description: Schrumpfschlauch Möbelverpackung
+    Quantity: 280.0
+    Unit Price: 15.6
+  - Type: 1
+    No.: 50510
+    Description: Handstretchfolie 450mm
+    Quantity: 200.0
+    Unit Price: 12.9
+  - Type: 1
+    No.: 50510
+    Description: Mini-Stretchfolie 100mm
+    Quantity: 300.0
+    Unit Price: 4.5
+  - Type: 1
+    No.: 50510
+    Description: Abroller Handstretchfolie
+    Quantity: 12.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 50510
+    Description: Palette Stretchfolie gemischt
+    Quantity: 4.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 50510
+    Description: Stretchfolie extra stark 23µ
+    Quantity: 110.0
+    Unit Price: 45.8
+  - Type: 1
+    No.: 50510
+    Description: Schrumpffolie 1250mm PE
+    Quantity: 85.0
+    Unit Price: 42.8
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V37-001
+        Buy-from Vendor Name: Stretchfolien-Zentrum Minden
+        Buy-from Address: Folienstraße 8
+        Buy-from Address 2: ''
+        Buy-from City: Minden
+        Buy-from Post Code: '32427'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Stretchfolie 500mm transparent
+        Quantity: 120.0
+        Unit Cost: 28.5
+      - Line No.: 20000
+        Type: 1
+        No.: 50510
+        Deferral Code: 12M
+        Description: Jahresliefervertrag Folien
+        Quantity: 1.0
+        Unit Cost: 24000.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: UV-Schutzfolie außen
+        Quantity: 60.0
+        Unit Cost: 48.9
+      - Line No.: 40000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Folienspender-Station mobil
+        Quantity: 2.0
+        Unit Cost: 680.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Schrumpfhaube 1400x1600mm
+        Quantity: 500.0
+        Unit Cost: 3.85
+      - Line No.: 60000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: VCI-Korrosionsschutzfolie
+        Quantity: 40.0
+        Unit Cost: 68.5
+      - Line No.: 70000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Schrumpffolie-Tunnelgröße
+        Quantity: 75.0
+        Unit Cost: 52.3
+      - Line No.: 80000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Stretchfolie vorgedehnt Cast
+        Quantity: 140.0
+        Unit Cost: 35.9
+      - Line No.: 90000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Stretchfolie schwarz blickdicht
+        Quantity: 95.0
+        Unit Cost: 32.5
+      - Line No.: 100000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Schrumpfschlauch Möbelverpackung
+        Quantity: 280.0
+        Unit Cost: 15.6
+      - Line No.: 110000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Handstretchfolie 450mm
+        Quantity: 200.0
+        Unit Cost: 12.9
+      - Line No.: 120000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Mini-Stretchfolie 100mm
+        Quantity: 300.0
+        Unit Cost: 4.5
+      - Line No.: 130000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Abroller Handstretchfolie
+        Quantity: 12.0
+        Unit Cost: 85.0
+      - Line No.: 140000
+        Type: 1
+        No.: 50510
+        Deferral Code: 6M
+        Description: Palette Stretchfolie gemischt
+        Quantity: 4.0
+        Unit Cost: 1850.0
+      - Line No.: 150000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Stretchfolie extra stark 23µ
+        Quantity: 110.0
+        Unit Cost: 45.8
+      - Line No.: 160000
+        Type: 1
+        No.: 50510
+        Deferral Code: ''
+        Description: Schrumpffolie 1250mm PE
+        Quantity: 85.0
+        Unit Cost: 42.8
+- name: PA-INV-V32-005
+  description: VendorNo=V32;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Allianz Versicherungs-AG
+    Address: Königinstraße 28
+    Address 2: ''
+    City: München
+    Country/Region Code: DE
+    Post Code: '80802'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V32-005
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 67010
+    Description: Umweltschadenversicherung
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 67010
+    Description: D&O Versicherung
+    Quantity: 1.0
+    Unit Price: 6800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V32-005
+        Buy-from Vendor Name: Allianz Versicherungs-AG
+        Buy-from Address: Königinstraße 28
+        Buy-from Address 2: ''
+        Buy-from City: München
+        Buy-from Post Code: '80802'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 67010
+        Deferral Code: 12M
+        Description: Umweltschadenversicherung
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 67010
+        Deferral Code: 12M
+        Description: D&O Versicherung
+        Quantity: 1.0
+        Unit Cost: 6800.0
+- name: PA-INV-V32-006
+  description: VendorNo=V32;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Allianz Versicherungs-AG
+    Address: Königinstraße 28
+    Address 2: ''
+    City: München
+    Country/Region Code: DE
+    Post Code: '80802'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V32-006
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 67010
+    Description: Cyber-Versicherung
+    Quantity: 1.0
+    Unit Price: 3850.0
+  - Type: 1
+    No.: 67000
+    Description: Schadensregulierung Bearbeitungsgebühr
+    Quantity: 1.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 67010
+    Description: Betriebshaftpflicht Jahresbeitrag
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 67000
+    Description: Glasversicherung
+    Quantity: 1.0
+    Unit Price: 980.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V32-006
+        Buy-from Vendor Name: Allianz Versicherungs-AG
+        Buy-from Address: Königinstraße 28
+        Buy-from Address 2: ''
+        Buy-from City: München
+        Buy-from Post Code: '80802'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 67010
+        Deferral Code: 12M
+        Description: Cyber-Versicherung
+        Quantity: 1.0
+        Unit Cost: 3850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 67000
+        Deferral Code: ''
+        Description: Schadensregulierung Bearbeitungsgebühr
+        Quantity: 1.0
+        Unit Cost: 450.0
+      - Line No.: 30000
+        Type: 1
+        No.: 67010
+        Deferral Code: 12M
+        Description: Betriebshaftpflicht Jahresbeitrag
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Glasversicherung
+        Quantity: 1.0
+        Unit Cost: 980.0
+- name: PA-INV-V33-002
+  description: VendorNo=V33;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: R+V Versicherung AG
+    Address: Raiffeisenplatz 1
+    Address 2: ''
+    City: Wiesbaden
+    Country/Region Code: DE
+    Post Code: '65189'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V33-002
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 67000
+    Description: Maschinenbruchversicherung
+    Quantity: 1.0
+    Unit Price: 5800.0
+  - Type: 1
+    No.: 67000
+    Description: Warentransportversicherung
+    Quantity: 1.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 67000
+    Description: Montageversicherung
+    Quantity: 1.0
+    Unit Price: 2850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V33-002
+        Buy-from Vendor Name: R+V Versicherung AG
+        Buy-from Address: Raiffeisenplatz 1
+        Buy-from Address 2: ''
+        Buy-from City: Wiesbaden
+        Buy-from Post Code: '65189'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Maschinenbruchversicherung
+        Quantity: 1.0
+        Unit Cost: 5800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Warentransportversicherung
+        Quantity: 1.0
+        Unit Cost: 3200.0
+      - Line No.: 30000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Montageversicherung
+        Quantity: 1.0
+        Unit Cost: 2850.0
+- name: PA-INV-V34-004
+  description: VendorNo=V34;VendorFrequencyGroup=New;VendorGroup=VG005;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG011;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Westfälische Versicherung AG
+    Address: Am Lippeglacis 6
+    Address 2: ''
+    City: Münster
+    Country/Region Code: DE
+    Post Code: '48151'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V34-004
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 67020
+    Description: Flottenrabatt Optimierung
+    Quantity: 1.0
+    Unit Price: -850.0
+  - Type: 1
+    No.: 67000
+    Description: Feuer-Betriebsunterbrechung
+    Quantity: 1.0
+    Unit Price: 3850.0
+  - Type: 1
+    No.: 67000
+    Description: Transportgüterversicherung
+    Quantity: 1.0
+    Unit Price: 2650.0
+  - Type: 1
+    No.: 67010
+    Description: Umwelthaftpflicht Basisschutz
+    Quantity: 1.0
+    Unit Price: 2850.0
+  - Type: 1
+    No.: 67020
+    Description: Kfz-Versicherung Gewerbe
+    Quantity: 1.0
+    Unit Price: 9500.0
+  - Type: 1
+    No.: 67010
+    Description: Produkthaftpflicht Deutschland
+    Quantity: 1.0
+    Unit Price: 7800.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V34-004
+        Buy-from Vendor Name: Westfälische Versicherung AG
+        Buy-from Address: Am Lippeglacis 6
+        Buy-from Address 2: ''
+        Buy-from City: Münster
+        Buy-from Post Code: '48151'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 67020
+        Deferral Code: 12M
+        Description: Flottenrabatt Optimierung
+        Quantity: 1.0
+        Unit Cost: -850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Feuer-Betriebsunterbrechung
+        Quantity: 1.0
+        Unit Cost: 3850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 67000
+        Deferral Code: 12M
+        Description: Transportgüterversicherung
+        Quantity: 1.0
+        Unit Cost: 2650.0
+      - Line No.: 40000
+        Type: 1
+        No.: 67010
+        Deferral Code: 12M
+        Description: Umwelthaftpflicht Basisschutz
+        Quantity: 1.0
+        Unit Cost: 2850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 67020
+        Deferral Code: 12M
+        Description: Kfz-Versicherung Gewerbe
+        Quantity: 1.0
+        Unit Cost: 9500.0
+      - Line No.: 60000
+        Type: 1
+        No.: 67010
+        Deferral Code: 12M
+        Description: Produkthaftpflicht Deutschland
+        Quantity: 1.0
+        Unit Cost: 7800.0
+- name: PA-INV-V29-003
+  description: VendorNo=V29;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG006;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: Haustechnik Schröder GmbH
+    Address: Handwerkerstraße 18
+    Address 2: ''
+    City: Lemgo
+    Country/Region Code: DE
+    Post Code: '32657'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V29-003
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62020
+    Description: Filterwechsel Klimaanlagen
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 62010
+    Description: Sanitär-Notfallreparatur
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 62020
+    Description: Wärmerückgewinnung Installation
+    Quantity: 1.0
+    Unit Price: 12500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V29-003
+        Buy-from Vendor Name: Haustechnik Schröder GmbH
+        Buy-from Address: Handwerkerstraße 18
+        Buy-from Address 2: ''
+        Buy-from City: Lemgo
+        Buy-from Post Code: '32657'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62020
+        Deferral Code: ''
+        Description: Filterwechsel Klimaanlagen
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62010
+        Deferral Code: ''
+        Description: Sanitär-Notfallreparatur
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62020
+        Deferral Code: ''
+        Description: Wärmerückgewinnung Installation
+        Quantity: 1.0
+        Unit Cost: 12500.0
+- name: PA-INV-V31-002
+  description: VendorNo=V31;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG013;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: SCM Group Deutschland
+    Address: Im Stockmädle 13
+    Address 2: ''
+    City: Nürtingen
+    Country/Region Code: DE
+    Post Code: '72622'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V31-002
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 70010
+    Description: Wartungsvertrag SCM Maschinen
+    Quantity: 1.0
+    Unit Price: 4800.0
+  - Type: 1
+    No.: 70020
+    Description: Pneumatikzylinder Ersatz
+    Quantity: 3.0
+    Unit Price: 580.0
+  - Type: 1
+    No.: 70010
+    Description: Jahres-Servicevertrag Komplett
+    Quantity: 1.0
+    Unit Price: 12000.0
+  - Type: 1
+    No.: 70020
+    Description: Ersatzteile Notfallpaket
+    Quantity: 1.0
+    Unit Price: 2850.0
+  - Type: 1
+    No.: 70010
+    Description: Maschinenoptimierung
+    Quantity: 1.0
+    Unit Price: 4500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V31-002
+        Buy-from Vendor Name: SCM Group Deutschland
+        Buy-from Address: Im Stockmädle 13
+        Buy-from Address 2: ''
+        Buy-from City: Nürtingen
+        Buy-from Post Code: '72622'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 70010
+        Deferral Code: 12M
+        Description: Wartungsvertrag SCM Maschinen
+        Quantity: 1.0
+        Unit Cost: 4800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 70020
+        Deferral Code: ''
+        Description: Pneumatikzylinder Ersatz
+        Quantity: 3.0
+        Unit Cost: 580.0
+      - Line No.: 30000
+        Type: 1
+        No.: 70010
+        Deferral Code: 12M
+        Description: Jahres-Servicevertrag Komplett
+        Quantity: 1.0
+        Unit Cost: 12000.0
+      - Line No.: 40000
+        Type: 1
+        No.: 70020
+        Deferral Code: ''
+        Description: Ersatzteile Notfallpaket
+        Quantity: 1.0
+        Unit Cost: 2850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 70010
+        Deferral Code: ''
+        Description: Maschinenoptimierung
+        Quantity: 1.0
+        Unit Cost: 4500.0
+- name: PA-INV-V30-005
+  description: VendorNo=V30;VendorFrequencyGroup=New;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG013;
+  test_setup: PA-Setup-de-DE.yaml
+  vendor:
+    Name: HOMAG Group AG
+    Address: Homagstraße 3-5
+    Address 2: ''
+    City: Schopfloch
+    Country/Region Code: DE
+    Post Code: '72296'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V30-005
+    Payment Terms Code: 30 TAGE
+    Shipment Method Code: Lieferung
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 70020
+    Description: Aggregatwerkzeug-Set
+    Quantity: 1.0
+    Unit Price: 5800.0
+  - Type: 1
+    No.: 70000
+    Description: CNC-Bearbeitungszentrum
+    Quantity: 1.0
+    Unit Price: 185000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V30-005
+        Buy-from Vendor Name: HOMAG Group AG
+        Buy-from Address: Homagstraße 3-5
+        Buy-from Address 2: ''
+        Buy-from City: Schopfloch
+        Buy-from Post Code: '72296'
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 70020
+        Deferral Code: ''
+        Description: Aggregatwerkzeug-Set
+        Quantity: 1.0
+        Unit Cost: 5800.0
+      - Line No.: 20000
+        Type: 1
+        No.: 70000
+        Deferral Code: ''
+        Description: CNC-Bearbeitungszentrum
+        Quantity: 1.0
+        Unit Cost: 185000.0

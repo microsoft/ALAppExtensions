@@ -245,6 +245,19 @@ report 10841 "GL/Cust Ledger Reconciliation"
         TempGLAccountNetChange.DeleteAll();
     end;
 
+#if not CLEAN28
+    trigger OnInitReport()
+    var
+        FeaturePaymentManagement: Codeunit "Payment Management Feature FR";
+    begin
+        if not FeaturePaymentManagement.IsEnabled() then
+            Error(EnablePaymentManagementFRReportErr);
+    end;
+
+    var
+        EnablePaymentManagementFRReportErr: Label 'Enable Payment Management FR feature to use this functionality';
+#endif
+
     var
         TempPostingBuffer: Record "Payment Post. Buffer FR" temporary;
         TempGLAccountNetChange: Record "G/L Account Net Change";

@@ -16,7 +16,7 @@ pageextension 9407 "IPC Customer Card" extends "Customer Card"
         }
         modify("Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();

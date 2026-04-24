@@ -96,6 +96,19 @@ report 10845 "Payment List FR"
     {
     }
 
+#if not CLEAN28
+    trigger OnInitReport()
+    var
+        FeaturePaymentManagement: Codeunit "Payment Management Feature FR";
+    begin
+        if not FeaturePaymentManagement.IsEnabled() then
+            Error(EnablePaymentManagementFRReportErr);
+    end;
+
+    var
+        EnablePaymentManagementFRReportErr: Label 'Enable Payment Management FR feature to use this functionality';
+#endif
+
     var
         Payments_LinesCaptionLbl: Label 'Payments Lines';
         CurrReport_PAGENOCaptionLbl: Label 'Page';

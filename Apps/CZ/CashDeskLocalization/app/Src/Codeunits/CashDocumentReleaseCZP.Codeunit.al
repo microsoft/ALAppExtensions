@@ -200,7 +200,12 @@ codeunit 11725 "Cash Document-Release CZP"
     end;
 
     local procedure CheckMandatoryFields(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    var
+        SkipPaymentPurposeTestField: Boolean;
     begin
+        SkipPaymentPurposeTestField := false;
+        OnBeforeCheckMandatoryFields(CashDocumentHeaderCZP, SkipPaymentPurposeTestField);
+
         CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."No.");
         CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."Posting Date");
         CashDocumentHeaderCZP.VATRounding();
@@ -208,7 +213,8 @@ codeunit 11725 "Cash Document-Release CZP"
         CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."Amount Including VAT");
         CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."Amount Including VAT (LCY)");
         CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."Document Date");
-        CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."Payment Purpose");
+        if not SkipPaymentPurposeTestField then
+            CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."Payment Purpose");
         if CashDocumentHeaderCZP."Currency Code" <> '' then
             CashDocumentHeaderCZP.TestField(CashDocumentHeaderCZP."Currency Factor");
 
@@ -363,6 +369,11 @@ codeunit 11725 "Cash Document-Release CZP"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeCheckCashDocumentLines(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckMandatoryFields(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var SkipPaymentPurposeTestField: Boolean)
     begin
     end;
 }

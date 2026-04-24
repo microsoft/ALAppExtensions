@@ -5,7 +5,7 @@
 namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Inventory.Item;
-xmlport 147620 "SL BC Item Data"
+xmlport 147620 "SL BC Item Data Expected"
 {
     Caption = 'BC Item data for import/export';
     Direction = Both;

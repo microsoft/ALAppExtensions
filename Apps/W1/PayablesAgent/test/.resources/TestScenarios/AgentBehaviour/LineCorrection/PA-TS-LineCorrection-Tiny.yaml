@@ -1,0 +1,163 @@
+tests:
+- name: PayablesAgent-LineCorrection-001
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Strauss Medium
+    Address: Max-Joseph-Platz 2
+    Address 2: ''
+    Country/Region Code: DE
+    City: München
+    Post Code: 80539
+  inboundInvoice:
+    Posting Date: 2025-05-12
+    Due Date: 2025-06-11
+    Document Date: 2025-05-12
+    No.: INV-001
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: CYWA-034T
+    Quantity: 10
+    Unit Price: 120
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 4
+    Unit Price: 350
+  expected:
+    user_intervention:
+    - reason: A validation error occurred while finalizing the draft
+      selected_account: GLTEST1234
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-001
+        Buy-from Vendor Name: Strauss Medium
+        Buy-from Address: Max-Joseph-Platz 2
+        Buy-from Address 2: ''
+        Buy-from City: München
+        Buy-from Post Code: 80539
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Description: CYWA-034T
+        Quantity: 10
+        Unit Cost: 120
+      - Line No.: 20000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 4
+        Unit Cost: 350
+- name: PayablesAgent-LineCorrection-002
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Strauss Medium
+    Address: Max-Joseph-Platz 2
+    Address 2: ''
+    Country/Region Code: DE
+    City: München
+    Post Code: 80539
+  inboundInvoice:
+    Posting Date: 2025-05-14
+    Due Date: 2025-06-13
+    Document Date: 2025-05-14
+    No.: INV-002
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 80
+    Unit Price: 95.5
+  - Type: 1
+    No.: GLTEST1234
+    Description: CYWA-034T
+    Quantity: 1
+    Unit Price: 1500
+  expected:
+    user_intervention:
+    - reason: A validation error occurred while finalizing the draft
+      selected_account: GLTEST1234
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-002
+        Buy-from Vendor Name: Strauss Medium
+        Buy-from Address: Max-Joseph-Platz 2
+        Buy-from Address 2: ''
+        Buy-from City: München
+        Buy-from Post Code: 80539
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 80
+        Unit Cost: 95.5
+      - Line No.: 20000
+        Type: 1
+        No.: GLTEST1234
+        Description: CYWA-034T
+        Quantity: 1
+        Unit Cost: 1500
+- name: PayablesAgent-LineCorrection-003
+  description: Process an invoice PDF where one or more lines couldn't be match, where customer selects an existing account and continue.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Strauss Medium
+    Address: Max-Joseph-Platz 2
+    Address 2: ''
+    Country/Region Code: DE
+    City: München
+    Post Code: 80539
+  inboundInvoice:
+    Posting Date: 2025-05-15
+    Due Date: 2025-06-14
+    Document Date: 2025-05-15
+    No.: INV-003
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: CYWA-034T
+    Quantity: 5
+    Unit Price: 200
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 40
+    Unit Price: 85
+  expected:
+    user_intervention:
+    - reason: A validation error occurred while finalizing the draft
+      selected_account: GLTEST1234
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-003
+        Buy-from Vendor Name: Strauss Medium
+        Buy-from Address: Max-Joseph-Platz 2
+        Buy-from Address 2: ''
+        Buy-from City: München
+        Buy-from Post Code: 80539
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Description: CYWA-034T
+        Quantity: 5
+        Unit Cost: 200
+      - Line No.: 20000
+        Type: 1
+        No.: GLTEST1234
+        Description: Consulting
+        Quantity: 40
+        Unit Cost: 85

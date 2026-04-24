@@ -1,0 +1,4 @@
+﻿Document Type,No.,Sell-to Customer No.,Bill-to Customer No.,Ship-to Name,Ship-to Address,Ship-to Address 2,Ship-to City,Ship-to Contact,Order Date,Posting Date,Posting Description,Shipment Method Code,Ship-to ZIP Code,Ship-to State,Ship-to Country/Region Code,Document Date,Posting No. Series,Shipping No. Series,Status,Shipping Advice
+Order,O1005215,C315,C315,Sarah Mitchell,123 Maple Street,,Dublin,,2026-02-19,2026-02-19,Migrated from SL,UPS,43016,OH,US,2026-02-19,S-INV+,S-SHPT,Open,Complete
+Order,O1005216,C421,C421,Britta Simon,7237 E Gage Ave,,Commerce,,2026-03-02,2026-03-02,Migrated from SL,FEDEX,90040-3812,CA,US,2026-03-02,S-INV+,S-SHPT,Open,Complete
+Order,O1005217,C389,C389,Tom Youtsey,Main Street,,Pittsburgh,Tom,2026-03-02,2026-03-02,Migrated from SL,FIXEDFRT,33222,PA,US,2026-03-02,S-INV+,S-SHPT,Open,Partial
