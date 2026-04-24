@@ -46,7 +46,7 @@ codeunit 4591 "SOA Item Search"
         ItemNoFilter: Text;
     begin
         // If we can get the item uniquely by it's key fields i.e. No., then we don't need to perform extensive search when there is ItemNoFilter.
-        if SearchPrimaryKeyWords.Count = 1 then begin
+        if SearchPrimaryKeyWords.Count > 0 then begin
             ItemNoFilter := SearchPrimaryKeyWords.Get(1);
             if (ItemNoFilter <> '') and (StrLen(ItemNoFilter) <= MaxStrLen(Item."No.")) then begin
                 Clear(Item);

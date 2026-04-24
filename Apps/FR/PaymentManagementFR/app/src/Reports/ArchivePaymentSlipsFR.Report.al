@@ -62,6 +62,19 @@ report 10831 "Archive Payment Slips FR"
         ArchivedDocs := 0;
     end;
 
+#if not CLEAN28
+    trigger OnInitReport()
+    var
+        FeaturePaymentManagement: Codeunit "Payment Management Feature FR";
+    begin
+        if not FeaturePaymentManagement.IsEnabled() then
+            Error(EnablePaymentManagementFRReportErr);
+    end;
+
+    var
+        EnablePaymentManagementFRReportErr: Label 'Enable Payment Management FR feature to use this functionality';
+#endif
+
     var
         PaymentManagement: Codeunit "Payment Management FR";
         ArchivedDocs: Integer;

@@ -541,6 +541,46 @@ codeunit 139575 "LP Prediction Test"
         Assert.AreEqual(50 + 15, TotalInvoiceCount, 'Total invoice count does not match number of invoices created');
     end;
 
+    [Test]
+    procedure PredictAllPaymentsDoesNotErrorWhenAllInvoicesClosed()
+    var
+        SalesHeader: Record "Sales Header";
+        LPMachineLearningSetup: Record "LP Machine Learning Setup";
+        LPMLInputData: Record "LP ML Input Data";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        LPPredictionMgt: Codeunit "LP Prediction Mgt.";
+        Result: Boolean;
+    begin
+        // [FEATURE] [AI test 0.3]
+        // [SCENARIO] PredictIsLateAllPayments exits gracefully when all invoices are closed
+        Initialize();
+
+        // [GIVEN] ML setup is enabled with predictions and custom credentials to avoid KeyVault dependency
+        SalesInvoiceHeader.DeleteAll();
+        LPMLInputData.DeleteAll();
+        LPMachineLearningSetup.DeleteAll();
+        LPMachineLearningSetup.Init();
+        LPMachineLearningSetup."Standard Model Quality" := 0.6;
+        LPMachineLearningSetup."Make Predictions" := true;
+        LPMachineLearningSetup."Use My Model Credentials" := true;
+        LPMachineLearningSetup.Insert();
+
+        // [GIVEN] Only closed (paid) invoices exist - no open invoices
+        CreateSalesInvoiceHeader(false, SalesInvoiceHeader);
+        CreateSalesInvoiceHeader(false, SalesInvoiceHeader);
+
+        // [WHEN] PredictIsLateAllPayments is called
+        Result := LPPredictionMgt.PredictIsLateAllPayments(SalesHeader, LPMachineLearningSetup, LPMLInputData);
+
+        // [THEN] No error is thrown and result is false
+        Assert.IsFalse(Result, 'Expected no late predictions when all invoices are closed');
+
+        // [THEN] No prediction data remains in the input table for unclosed invoices
+        LPMLInputData.Reset();
+        LPMLInputData.SetRange(Closed, false);
+        Assert.IsTrue(LPMLInputData.IsEmpty(), 'Expected no open invoice records in input data');
+    end;
+
     local procedure Initialize()
     var
         LibraryERM: Codeunit "Library - ERM";

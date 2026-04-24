@@ -16,7 +16,7 @@ pageextension 9411 "IPC Ship-to Address" extends "Ship-to Address"
         }
         modify("Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();

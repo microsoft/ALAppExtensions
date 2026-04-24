@@ -16,7 +16,7 @@ pageextension 9403 "IPC Company Information" extends "Company Information"
         }
         modify("Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
@@ -32,7 +32,7 @@ pageextension 9403 "IPC Company Information" extends "Company Information"
         }
         modify("Ship-to Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();
                 ShowPostcodeLookupForShipToAddress(false);

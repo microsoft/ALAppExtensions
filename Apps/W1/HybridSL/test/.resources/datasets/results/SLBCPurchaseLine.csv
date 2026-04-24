@@ -1,0 +1,30 @@
+﻿Document Type,Document No.,Line No.,Buy-from Vendor No.,Type,No.,Location Code,Description,Quantity,Direct Unit Cost,Dimension Set ID,Unit of Measure Code,Promised Receipt Date
+Order,000004,1,VT0123,Item,UNV-14115,LA,Hanging File Folder -- Letter Size w/ 5 tabs      ,100,9,11,CARTON,1999-03-19
+Order,000011,1,VT0122,Item,UNV-14116,LA,Hanging File Folder -- Letter Size w/ 5 tabs      ,1,1000,11,CARTON,2016-09-27
+Order,000012,1,V00152,Item,HON-672L-L,LA,600 Series Wide Lateral Two Drawer File Cabinet   ,5,300,11,EA,2016-10-25
+Order,000012,2,V00152,Item,HON-672L-P,LA,600 Series Wide Lateral Two Drawer File Cabinet   ,5,300,11,EA,2016-10-25
+Order,000012,3,V00152,Item,HON-672L-Q,LA,600 Series Wide Lateral Two Drawer File Cabinet   ,9,300,11,EA,2016-10-25
+Order,000013,1,V00152,Item,HON-672L-L,LA,600 Series Wide Lateral Two Drawer File Cabinet   ,9,300,11,EA,2016-10-25
+Order,000013,2,V00152,Item,HON-672L-P,LA,600 Series Wide Lateral Two Drawer File Cabinet   ,9,300,11,EA,2016-10-25
+Order,000013,3,V00152,Item,HON-672L-Q,LA,600 Series Wide Lateral Two Drawer File Cabinet   ,9,300,11,EA,2016-10-25
+Order,000024,1,V00205,G/L Account,4030,,Clorox Wipes,5,10,11,,2022-06-03
+Order,000024,2,V00205,G/L Account,7270,,Freight Charges,1,5,11,,
+Order,000024,3,V00205,G/L Account,4030,,Misc Charges,1,2.5,11,,
+Order,000024,4,V00205,G/L Account,4030,,Purell,3,10,11,,2022-06-03
+Order,000024,5,,,,,My Description Line,0,0,,,
+Order,000024,6,V00205,G/L Account,7271,,Freight Charges,1,7.5,107,,
+Order,000024,7,V00205,Item,HON-672L-L,200,600 Series Wide Lateral Two Drawer File Cabinet   ,1,300,11,EA,2022-06-06
+Order,000024,8,,,,,My Description Line 2,0,0,,,
+Order,000025,1,V00205,Item,HON-672L-L,200,600 Series Wide Lateral Two Drawer File Cabinet   ,5,300,109,EA,2022-07-07
+Order,000025,2,,,,,Description line test,0,0,,,
+Order,000025,3,V00205,G/L Account,7271,,Freight Charges,1,30,109,,
+Order,000025,4,V00205,Item,HON-672L-P,200,600 Series Wide Lateral Two Drawer File Cabinet   ,1,300,11,EA,2022-07-08
+Order,000025,6,V00205,Item,HON-672L-L,LA,600 Series Wide Lateral Two Drawer File Cabinet   ,1,300,11,EA,2022-07-08
+Order,000025,8,V00205,G/L Account,4030,,Misc Charges,1,25,109,,
+Order,000025,9,V00205,G/L Account,4030,,Non-Inventory Good,3,20,109,,2022-07-08
+Order,000025,10,V00205,Item,0RBOLT,200,Carriage Bolts                                    ,25,0.299999999999999989,11,EA,2022-07-08
+Order,000025,11,V00205,Item,0RBOLT,200,Carriage Bolts                                    ,10,0.299999999999999989,11,EA,2022-07-08
+Order,000025,12,V00205,Item,0RBOLT,200,Carriage Bolts                                    ,50,0.299999999999999989,11,EA,2022-07-08
+Order,000025,13,V00205,G/L Account,6020,,Answering Services,1,10,11,,2022-07-08
+Order,000025,14,V00205,G/L Account,6010,,Advertsing Services,1,15,109,,2022-07-08
+Order,000026,1,V00209,Item,UNV-14113,200,Hanging File Folder -- Letter Size w/ 3 tabs      ,1,45,11,BOX,2022-07-13

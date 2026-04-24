@@ -38,9 +38,9 @@ codeunit 47026 "SL Item Migrator"
         SerialTrackedWhenReceivedTxt: Label 'SERRCVD', Locked = true;
         SerialTrackedWhenReceivedWithExpirationTxt: Label 'SERRCVDEXP', Locked = true;
         SerialTrackedWhenUsedTxt: Label 'SERUSED', Locked = true;
-        SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
         SLItemImportPostingGroupCodeTxt: Label 'SLITEMIMPORT', Locked = true;
         SLItemImportPostingGroupDescriptionTxt: Label 'SL Item Import (No impact to GL)', Locked = true;
+        SLItemJournalBatchDescriptionTxt: Label 'SL Migration of On-hand Quantities and Costs', Locked = true;
         SpecificIdentificationValuationMethodTxt: Label 'S', Locked = true;
         StandardCostValuationMethodTxt: Label 'T', Locked = true;
         TranStatusCodeDeleteTxt: Label 'DE', Locked = true;
@@ -214,7 +214,7 @@ codeunit 47026 "SL Item Migrator"
                 AverageCostValuationMethodTxt, StandardCostValuationMethodTxt, UserSpecifiedCostValuationMethodTxt:
                     begin
                         SLItemSite.SetRange(InvtID, SLInventory.InvtID);
-                        SLItemSite.SetFilter(CpnyID, CompanyName);
+                        SLItemSite.SetFilter(CpnyID, CopyStr(CompanyName, 1, MaxStrLen(SLItemSite.CpnyID)));
                         SLItemSite.SetFilter(QtyOnHand, '<>%1', 0);
                         if SLItemSite.FindSet() then
                             repeat
@@ -226,7 +226,7 @@ codeunit 47026 "SL Item Migrator"
                 FIFOValuationMethodTxt, LIFOValuationMethodTxt, SpecificIdentificationValuationMethodTxt:
                     begin
                         SLItemSite.SetRange(InvtID, SLInventory.InvtID);
-                        SLItemSite.SetFilter(CpnyID, CompanyName);
+                        SLItemSite.SetFilter(CpnyID, CopyStr(CompanyName, 1, MaxStrLen(SLItemSite.CpnyID)));
                         SLItemSite.SetFilter(QtyOnHand, '<>%1', 0);
                         if SLItemSite.FindSet() then
                             repeat
@@ -273,8 +273,15 @@ codeunit 47026 "SL Item Migrator"
     var
         ItemJournalBatch: Record "Item Journal Batch";
         ItemJournalLine: Record "Item Journal Line";
+        DefaultItemJournalBatchNameTxt: Label 'DEFAULT', Locked = true;
     begin
+        ItemJournalBatch.SetFilter(Name, '<>%1', DefaultItemJournalBatchNameTxt);
         CurrentBatchNumber := ItemJournalBatch.Count();
+
+        if CurrentBatchNumber = 0 then begin
+            CurrentBatchLineNo := 0;
+            exit;
+        end;
 
         if ItemJournalBatch.FindLast() then begin
             ItemJournalLine.SetRange("Journal Template Name", ItemJournalBatch."Journal Template Name");
@@ -302,7 +309,7 @@ codeunit 47026 "SL Item Migrator"
             Clear(ItemJnlBatch);
             ItemJnlBatch."Journal Template Name" := TemplateName;
             ItemJnlBatch.Name := BatchName;
-            ItemJnlBatch.Description := SimpleInvJnlNameTxt;
+            ItemJnlBatch.Description := SLItemJournalBatchDescriptionTxt;
             ItemJnlBatch.Insert();
         end;
 

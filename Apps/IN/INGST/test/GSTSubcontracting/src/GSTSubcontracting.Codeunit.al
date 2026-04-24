@@ -1,7 +1,11 @@
+#if not CLEAN29
 codeunit 18479 "GST Subcontracting"
 {
     Subtype = Test;
     TestPermissions = NonRestrictive;
+    ObsoleteReason = ' Subcontracting is moving to a separate extension. This codeunit will be removed in future.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '29.0';
 
     var
         SourceCode: Record "Source Code";
@@ -1473,7 +1477,9 @@ codeunit 18479 "GST Subcontracting"
             ProdOrderRoutingLine.SetRange("Routing Reference No.", ProdOrderLine."Routing Reference No.");
             ProdOrderRoutingLine.SetRange("Routing No.", ProdOrderLine."Routing No.");
             if ProdOrderRoutingLine.FindSet() then
+#pragma warning disable AL0432 
                 LibraryMfg.CalculateSubcontractOrderWithProdOrderRoutingLine(ProdOrderRoutingLine);
+#pragma warning restore AL0432
         end;
 
         FindRequisitionLineForProductionOrder(RequisitionLine, ProductionOrder);
@@ -2113,7 +2119,9 @@ codeunit 18479 "GST Subcontracting"
             ProdOrderRoutingLine.SetRange("Routing Reference No.", ProdOrderLine."Routing Reference No.");
             ProdOrderRoutingLine.SetRange("Routing No.", ProdOrderLine."Routing No.");
             if ProdOrderRoutingLine.FindSet() then
+#pragma warning disable AL0432
                 LibraryMfg.CalculateSubcontractOrderWithProdOrderRoutingLine(ProdOrderRoutingLine);
+#pragma warning restore AL0432
         end;
     end;
 
@@ -2266,7 +2274,9 @@ codeunit 18479 "GST Subcontracting"
             ProdOrderRoutingLine.SetRange("Routing Reference No.", ProdOrderLine."Routing Reference No.");
             ProdOrderRoutingLine.SetRange("Routing No.", ProdOrderLine."Routing No.");
             if ProdOrderRoutingLine.FindSet() then
+#pragma warning disable AL0432
                 LibraryMfg.CalculateSubcontractOrderWithProdOrderRoutingLine(ProdOrderRoutingLine);
+#pragma warning restore AL0432
         end;
 
         FindRequisitionLineForProductionOrder(RequisitionLine, ProductionOrder);
@@ -2390,7 +2400,9 @@ codeunit 18479 "GST Subcontracting"
             ProdOrderRoutingLine.SetRange("Routing Reference No.", ProdOrderLine."Routing Reference No.");
             ProdOrderRoutingLine.SetRange("Routing No.", ProdOrderLine."Routing No.");
             if ProdOrderRoutingLine.FindSet() then
+#pragma warning disable AL0432
                 LibraryMfg.CalculateSubcontractOrderWithProdOrderRoutingLine(ProdOrderRoutingLine);
+#pragma warning restore AL0432
         end;
 
         FindRequisitionLineForProductionOrder(RequisitionLine, ProductionOrder);
@@ -2636,3 +2648,4 @@ codeunit 18479 "GST Subcontracting"
     begin
     end;
 }
+#endif

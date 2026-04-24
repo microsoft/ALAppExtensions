@@ -969,6 +969,7 @@ table 31257 "Payment Order Line CZB"
     procedure AppliesToCustLedgEntryNo()
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
+        SkipFillBankInformation: Boolean;
     begin
         CustLedgerEntry.Get("Applies-to C/V/E Entry No.");
         "Applies-to Doc. Type" := CustLedgerEntry."Document Type";
@@ -982,13 +983,16 @@ table 31257 "Payment Order Line CZB"
         Type := Type::Customer;
         "No." := CustLedgerEntry."Customer No.";
         Validate("No.", CustLedgerEntry."Customer No.");
-        "Cust./Vendor Bank Account Code" :=
-          CopyStr(CustLedgerEntry."Bank Account Code CZL", 1, MaxStrLen("Cust./Vendor Bank Account Code"));
-        "Account No." := CustLedgerEntry."Bank Account No. CZL";
-        "Specific Symbol" := CustLedgerEntry."Specific Symbol CZL";
-        "Transit No." := CustLedgerEntry."Transit No. CZL";
-        IBAN := CustLedgerEntry."IBAN CZL";
-        "SWIFT Code" := CustLedgerEntry."SWIFT Code CZL";
+        OnAppliesToCustLedgEntryNoOnBeforeFillBankInformation(Rec, CustLedgerEntry, SkipFillBankInformation);
+        if not SkipFillBankInformation then begin
+            "Cust./Vendor Bank Account Code" :=
+            CopyStr(CustLedgerEntry."Bank Account Code CZL", 1, MaxStrLen("Cust./Vendor Bank Account Code"));
+            "Account No." := CustLedgerEntry."Bank Account No. CZL";
+            "Specific Symbol" := CustLedgerEntry."Specific Symbol CZL";
+            "Transit No." := CustLedgerEntry."Transit No. CZL";
+            IBAN := CustLedgerEntry."IBAN CZL";
+            "SWIFT Code" := CustLedgerEntry."SWIFT Code CZL";
+        end;
         Validate("Applied Currency Code", CustLedgerEntry."Currency Code");
         if CustLedgerEntry."Due Date" > "Due Date" then
             "Due Date" := CustLedgerEntry."Due Date";
@@ -1000,6 +1004,7 @@ table 31257 "Payment Order Line CZB"
     procedure AppliesToVendLedgEntryNo()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        SkipFillBankInformation: Boolean;
     begin
         VendorLedgerEntry.Get("Applies-to C/V/E Entry No.");
         "Applies-to Doc. Type" := VendorLedgerEntry."Document Type";
@@ -1013,13 +1018,16 @@ table 31257 "Payment Order Line CZB"
         Type := Type::Vendor;
         "No." := VendorLedgerEntry."Vendor No.";
         Validate("No.", VendorLedgerEntry."Vendor No.");
-        "Cust./Vendor Bank Account Code" :=
-          CopyStr(VendorLedgerEntry."Bank Account Code CZL", 1, MaxStrLen("Cust./Vendor Bank Account Code"));
-        "Account No." := VendorLedgerEntry."Bank Account No. CZL";
-        "Specific Symbol" := VendorLedgerEntry."Specific Symbol CZL";
-        "Transit No." := VendorLedgerEntry."Transit No. CZL";
-        IBAN := VendorLedgerEntry."IBAN CZL";
-        "SWIFT Code" := VendorLedgerEntry."SWIFT Code CZL";
+        OnAppliesToVendLedgEntryNoOnBeforeFillBankInformation(Rec, VendorLedgerEntry, SkipFillBankInformation);
+        if not SkipFillBankInformation then begin
+            "Cust./Vendor Bank Account Code" :=
+              CopyStr(VendorLedgerEntry."Bank Account Code CZL", 1, MaxStrLen("Cust./Vendor Bank Account Code"));
+            "Account No." := VendorLedgerEntry."Bank Account No. CZL";
+            "Specific Symbol" := VendorLedgerEntry."Specific Symbol CZL";
+            "Transit No." := VendorLedgerEntry."Transit No. CZL";
+            IBAN := VendorLedgerEntry."IBAN CZL";
+            "SWIFT Code" := VendorLedgerEntry."SWIFT Code CZL";
+        end;
         Validate("Applied Currency Code", VendorLedgerEntry."Currency Code");
         if VendorLedgerEntry."Due Date" > "Due Date" then
             "Due Date" := VendorLedgerEntry."Due Date";
@@ -1366,6 +1374,16 @@ table 31257 "Payment Order Line CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnAppliesToCVEEntryNoLookupOnAfterSetEmployeeLedgerEntryFilters(var EmployeeLedgerEntry: Record "Employee Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCustLedgEntryNoOnBeforeFillBankInformation(var PaymentOrderLineCZB: Record "Payment Order Line CZB"; CustLedgerEntry: Record "Cust. Ledger Entry"; var SkipFillBankInformation: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToVendLedgEntryNoOnBeforeFillBankInformation(var PaymentOrderLineCZB: Record "Payment Order Line CZB"; VendorLedgerEntry: Record "Vendor Ledger Entry"; var SkipFillBankInformation: Boolean)
     begin
     end;
 }

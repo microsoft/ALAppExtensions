@@ -1,0 +1,4 @@
+﻿No.,Name,Search Name,Name 2,Address,Address 2,City,Contact,Phone No.,Bank Account No.,Transit No.,Bank Acc. Posting Group,Country/Region Code,Amount,Blocked,Fax No.,ZIP Code,State
+1030,Corporate Account,CORPORATE ACCOUNT,,123 World Wide Ave,Suite 900,Columbus,,5555551177,0000000000,37914070 ,SL1,US,0,false,5555551188,43022,OH
+1041,General US Cash Account,GENERAL US CASH ACCOUNT,,Park Place,,New York                      ,Uncle Pennybags,555555555,07041973,23       ,SL2,US,0,false,8888888888,01234,NY
+1070,Payroll Checking,PAYROLL CHECKING,,,,,,,0000000001,,SL3,,0,false,,,

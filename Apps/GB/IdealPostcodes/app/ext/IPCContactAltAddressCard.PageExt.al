@@ -16,7 +16,7 @@ pageextension 9404 "IPC Contact Alt. Address Card" extends "Contact Alt. Address
         }
         modify("Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();

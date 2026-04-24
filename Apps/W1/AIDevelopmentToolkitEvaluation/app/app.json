@@ -1,0 +1,81 @@
+{
+  "id": "517f890c-b49f-47de-8120-d0327974b89d",
+  "name": "AI Development Toolkit - Evaluation",
+  "publisher": "Microsoft",
+  "version": "29.0.0.0",
+  "brief": "A toolkit for running automated evaluations of AI capabilities within Business Central.",
+  "description": "Provides a set of tools for running automated evaluations of AI, Copilot, and agents features in Business Central to help verify their accuracy, and resilience across different inputs and model versions.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "url": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "logo": "ExtensionLogo.png",
+  "screenshots": [],
+  "application": "29.0.0.0",
+  "platform": "29.0.0.0",
+  "propagateDependencies": true,
+  "dependencies": [
+    {
+      "id": "5afe217e-507a-40b4-9aa5-f4325b6e8230",
+      "name": "Agent Test Library",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "2156302a-872f-4568-be0b-60968696f0d5",
+      "name": "AI Test Toolkit",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "23de40a6-dfe8-4f80-80db-d70f83ce8caf",
+      "name": "Test Runner",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+      "name": "Any",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "name": "Library Variable Storage",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "name": "Library Assert",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "bee8cf2f-494a-42f4-aabd-650e87934d39",
+      "name": "Business Foundation Test Libraries",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "d852d5d2-a39d-4179-baeb-f99a19e32510",
+      "name": "Application Test Library",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 1
+    }
+  ],
+  "target": "Cloud",
+  "features": [
+    "GenerateCaptions",
+    "TranslationFile",
+    "NoImplicitWith",
+    "NoPromotedActionProperties"
+  ]
+}

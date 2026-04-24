@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Purchases.History;
+using System.Security.User;
 
 pageextension 31144 "Posted Purch. Inv. Update CZL" extends "Posted Purch. Invoice - Update"
 {
@@ -60,10 +61,10 @@ pageextension 31144 "Posted Purch. Inv. Update CZL" extends "Posted Purch. Invoi
 
     trigger OnOpenPage()
     begin
-        IsExtDocNoEditable := ExtDocNoChangingCZL.IsAllowed();
+        IsExtDocNoEditable := UserSetupAdvManagementCZL.IsExtDocNoChangingAllowed();
     end;
 
     var
-        ExtDocNoChangingCZL: Codeunit "Ext. Doc. No. Changing CZL";
+        UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
         IsExtDocNoEditable: Boolean;
 }

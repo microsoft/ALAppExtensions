@@ -37,6 +37,9 @@ codeunit 14627 "Create Vat Posting Groups IS"
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
         ContosoPostingSetup.SetOverwriteData(true);
+
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.Reduced(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), CreateVATPostingGroups.Reduced(), 11, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', CreateVATPostingGroups.Reduced(), false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Reduced(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), CreateVATPostingGroups.Reduced(), 11, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateGLAccount.PurchaseVAT10EU(), CreateVATPostingGroups.Reduced(), true);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Standard(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), CreateVATPostingGroups.Standard(), 24, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateGLAccount.PurchaseVAT25EU(), '', false);
         ContosoPostingSetup.SetOverwriteData(false);
     end;

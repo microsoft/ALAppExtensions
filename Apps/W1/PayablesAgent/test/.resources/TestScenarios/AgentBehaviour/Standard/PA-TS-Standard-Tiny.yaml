@@ -1,0 +1,160 @@
+tests:
+- name: PayablesAgent-Tiny-Standard-001
+  description: Process an invoice PDF for a known vendor where all lines are populated.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Strauss Medium
+    Address: Max-Joseph-Platz 2
+    Address 2: ''
+    Country/Region Code: DE
+    City: München
+    Post Code: 80539
+  inboundInvoice:
+    Posting Date: 2025-01-21
+    Due Date: 2025-02-21
+    Document Date: 2025-01-21
+    No.: INV-001
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 4
+    Unit Price: 74.41
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-001
+        Buy-from Vendor Name: Strauss Medium
+        Buy-from Address: Max-Joseph-Platz 2
+        Buy-from Address 2: ''
+        Buy-from City: München
+        Buy-from Post Code: 80539
+        Buy-from Country/Region Code: DE
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Deferral Code: ''
+        Description: Consulting
+        Quantity: 4
+        Unit Cost: 74.41
+- name: PayablesAgent-Tiny-Standard-002
+  description: Process an invoice PDF for a known vendor where all lines are populated.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Redwave Systems
+    Address: 88 Fremont Street
+    Address 2: ''
+    Country/Region Code: US
+    City: San Francisco
+    Post Code: 94105
+  inboundInvoice:
+    Posting Date: 2025-02-24
+    Due Date: 2025-03-24
+    Document Date: 2025-02-24
+    No.: INV-002
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 87
+    Unit Price: 74.33
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 55
+    Unit Price: 4.15
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-002
+        Buy-from Vendor Name: Redwave Systems
+        Buy-from Address: 88 Fremont Street
+        Buy-from Address 2: ''
+        Buy-from City: San Francisco
+        Buy-from Post Code: 94105
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Deferral Code: ''
+        Description: Consulting
+        Quantity: 87
+        Unit Cost: 74.33
+      - Line No.: 20000
+        Type: 1
+        No.: GLTEST1234
+        Deferral Code: ''
+        Description: Consulting
+        Quantity: 55
+        Unit Cost: 4.15
+- name: PayablesAgent-Tiny-Standard-003
+  description: Process an invoice PDF for a known vendor where all lines are populated.
+  test_setup: PA-Setup-TINY.yaml
+  vendor:
+    Name: Vitalyx Medical
+    Address: Via Alessandro Volta 10
+    Address 2: ''
+    Country/Region Code: IT
+    City: Milano
+    Post Code: 20121
+  inboundInvoice:
+    Posting Date: 2025-03-17
+    Due Date: 2025-04-16
+    Document Date: 2025-03-17
+    No.: INV-003
+    Payment Terms Code: 30 Days
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 4
+    Unit Price: 56.56
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 70
+    Unit Price: 42.53
+  - Type: 1
+    No.: GLTEST1234
+    Description: Consulting
+    Quantity: 1
+    Unit Price: 76.12
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-003
+        Buy-from Vendor Name: Vitalyx Medical
+        Buy-from Address: Via Alessandro Volta 10
+        Buy-from Address 2: ''
+        Buy-from City: Milano
+        Buy-from Post Code: 20121
+        Buy-from Country/Region Code: IT
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: GLTEST1234
+        Deferral Code: ''
+        Description: Consulting
+        Quantity: 4
+        Unit Cost: 56.56
+      - Line No.: 20000
+        Type: 1
+        No.: GLTEST1234
+        Deferral Code: ''
+        Description: Consulting
+        Quantity: 70
+        Unit Cost: 42.53
+      - Line No.: 30000
+        Type: 1
+        No.: GLTEST1234
+        Deferral Code: ''
+        Description: Consulting
+        Quantity: 1
+        Unit Cost: 76.12

@@ -1,0 +1,2012 @@
+name: PA-TS-Metrics-00-da-DK
+language: da-DK
+tests:
+- name: PA-INV-V003-010
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-010
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Polyuretanskum special ordre
+    Quantity: 24.0
+    Unit Price: 340.0
+  - Type: 1
+    No.: 50300
+    Description: Rygpolstring standard
+    Quantity: 40.0
+    Unit Price: 165.0
+  - Type: 1
+    No.: 50300
+    Description: Koldskum ekstra quality
+    Quantity: 16.0
+    Unit Price: 480.0
+  - Type: 1
+    No.: 50300
+    Description: Skum til taburetter
+    Quantity: 58.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 50300
+    Description: HR46 ekstra komfort
+    Quantity: 24.0
+    Unit Price: 330.0
+  - Type: 1
+    No.: 50300
+    Description: HR44 fast quality
+    Quantity: 26.0
+    Unit Price: 295.0
+  - Type: 1
+    No.: 50300
+    Description: Skum til armstøtter bred
+    Quantity: 52.0
+    Unit Price: 105.0
+  - Type: 1
+    No.: 50300
+    Description: Skum til hovedgærder
+    Quantity: 20.0
+    Unit Price: 210.0
+  - Type: 1
+    No.: 50300
+    Description: Koldskum til babyudstyr
+    Quantity: 24.0
+    Unit Price: 390.0
+  - Type: 1
+    No.: 50300
+    Description: Skum til nakkepuder
+    Quantity: 80.0
+    Unit Price: 52.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-010
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polyuretanskum special ordre
+        Quantity: 24.0
+        Unit Cost: 340.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Rygpolstring standard
+        Quantity: 40.0
+        Unit Cost: 165.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Koldskum ekstra quality
+        Quantity: 16.0
+        Unit Cost: 480.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til taburetter
+        Quantity: 58.0
+        Unit Cost: 95.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: HR46 ekstra komfort
+        Quantity: 24.0
+        Unit Cost: 330.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: HR44 fast quality
+        Quantity: 26.0
+        Unit Cost: 295.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til armstøtter bred
+        Quantity: 52.0
+        Unit Cost: 105.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til hovedgærder
+        Quantity: 20.0
+        Unit Cost: 210.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Koldskum til babyudstyr
+        Quantity: 24.0
+        Unit Cost: 390.0
+      - Line No.: 100000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til nakkepuder
+        Quantity: 80.0
+        Unit Cost: 52.0
+- name: PA-INV-V003-005
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-005
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Polyuretanskum til hjørnesofaer
+    Quantity: 20.0
+    Unit Price: 410.0
+  - Type: 1
+    No.: 50300
+    Description: Koldskum til special design
+    Quantity: 14.0
+    Unit Price: 500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-005
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polyuretanskum til hjørnesofaer
+        Quantity: 20.0
+        Unit Cost: 410.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Koldskum til special design
+        Quantity: 14.0
+        Unit Cost: 500.0
+- name: PA-INV-V003-019
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-019
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Skum til klapstole
+    Quantity: 60.0
+    Unit Price: 72.0
+  - Type: 1
+    No.: 50300
+    Description: Polyuretanskum bred til L-sofaer
+    Quantity: 18.0
+    Unit Price: 425.0
+  - Type: 1
+    No.: 50300
+    Description: Hynder ergonomiske
+    Quantity: 52.0
+    Unit Price: 135.0
+  - Type: 1
+    No.: 50300
+    Description: Skum til ryghynder
+    Quantity: 50.0
+    Unit Price: 115.0
+  - Type: 1
+    No.: 50300
+    Description: Skum HR47 høj kvalitet
+    Quantity: 28.0
+    Unit Price: 335.0
+  - Type: 1
+    No.: 50300
+    Description: Skum HR41 standard plus
+    Quantity: 32.0
+    Unit Price: 280.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-019
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til klapstole
+        Quantity: 60.0
+        Unit Cost: 72.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polyuretanskum bred til L-sofaer
+        Quantity: 18.0
+        Unit Cost: 425.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Hynder ergonomiske
+        Quantity: 52.0
+        Unit Cost: 135.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til ryghynder
+        Quantity: 50.0
+        Unit Cost: 115.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum HR47 høj kvalitet
+        Quantity: 28.0
+        Unit Cost: 335.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum HR41 standard plus
+        Quantity: 32.0
+        Unit Cost: 280.0
+- name: PA-INV-V001-012
+  description: VendorNo=V001;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Nordjysk Træindustri ApS
+    Address: Industrivej 45
+    Address 2: ''
+    City: Aalborg
+    Country/Region Code: DK
+    Post Code: '9000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V001-012
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50100
+    Description: Egetræ til kantineborde
+    Quantity: 20.0
+    Unit Price: 740.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V001-012
+        Buy-from Vendor Name: Nordjysk Træindustri ApS
+        Buy-from Address: Industrivej 45
+        Buy-from Address 2: ''
+        Buy-from City: Aalborg
+        Buy-from Post Code: '9000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Egetræ til kantineborde
+        Quantity: 20.0
+        Unit Cost: 740.0
+- name: PA-INV-V003-004
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-004
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Polstervat tyk til luxury
+    Quantity: 42.0
+    Unit Price: 98.0
+  - Type: 1
+    No.: 50300
+    Description: Polstring til reclinere
+    Quantity: 16.0
+    Unit Price: 385.0
+  - Type: 1
+    No.: 50300
+    Description: Polyuretanskum smal
+    Quantity: 44.0
+    Unit Price: 190.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-004
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polstervat tyk til luxury
+        Quantity: 42.0
+        Unit Cost: 98.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polstring til reclinere
+        Quantity: 16.0
+        Unit Cost: 385.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polyuretanskum smal
+        Quantity: 44.0
+        Unit Cost: 190.0
+- name: PA-INV-V001-013
+  description: VendorNo=V001;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Nordjysk Træindustri ApS
+    Address: Industrivej 45
+    Address 2: ''
+    City: Aalborg
+    Country/Region Code: DK
+    Post Code: '9000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V001-013
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50100
+    Description: Egetræ til garderobestel
+    Quantity: 28.0
+    Unit Price: 510.0
+  - Type: 1
+    No.: 50100
+    Description: Egetræ planker 40mm
+    Quantity: 50.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 50120
+    Description: Asketræ bræt til kontormøbler
+    Quantity: 28.0
+    Unit Price: 545.0
+  - Type: 1
+    No.: 50110
+    Description: Bøgetræ bræt til natborde
+    Quantity: 36.0
+    Unit Price: 370.0
+  - Type: 1
+    No.: 50110
+    Description: Bøgetræ til barstole
+    Quantity: 38.0
+    Unit Price: 360.0
+  - Type: 1
+    No.: 50110
+    Description: Bøgetræ til børnestole
+    Quantity: 40.0
+    Unit Price: 300.0
+  - Type: 1
+    No.: 50110
+    Description: Bøgetræ bræt til skænkeben
+    Quantity: 40.0
+    Unit Price: 305.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V001-013
+        Buy-from Vendor Name: Nordjysk Træindustri ApS
+        Buy-from Address: Industrivej 45
+        Buy-from Address 2: ''
+        Buy-from City: Aalborg
+        Buy-from Post Code: '9000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Egetræ til garderobestel
+        Quantity: 28.0
+        Unit Cost: 510.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Egetræ planker 40mm
+        Quantity: 50.0
+        Unit Cost: 450.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Asketræ bræt til kontormøbler
+        Quantity: 28.0
+        Unit Cost: 545.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Bøgetræ bræt til natborde
+        Quantity: 36.0
+        Unit Cost: 370.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Bøgetræ til barstole
+        Quantity: 38.0
+        Unit Cost: 360.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Bøgetræ til børnestole
+        Quantity: 40.0
+        Unit Cost: 300.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Bøgetræ bræt til skænkeben
+        Quantity: 40.0
+        Unit Cost: 305.0
+- name: PA-INV-V002-020
+  description: VendorNo=V002;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Fyn Finér & Pladematerialer
+    Address: Havnegade 12
+    Address 2: ''
+    City: Svendborg
+    Country/Region Code: DK
+    Post Code: '5700'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V002-020
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 18mm til kommoder
+    Quantity: 52.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 50210
+    Description: Laminatplader creme
+    Quantity: 46.0
+    Unit Price: 190.0
+  - Type: 1
+    No.: 50200
+    Description: Birkefinér 0.6mm naturfarvet
+    Quantity: 100.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 12mm til skabsrygge
+    Quantity: 76.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 50200
+    Description: Birkefinér ekstra bred
+    Quantity: 70.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 15mm til reoler
+    Quantity: 66.0
+    Unit Price: 160.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 21mm tykt
+    Quantity: 44.0
+    Unit Price: 230.0
+  - Type: 1
+    No.: 50200
+    Description: Valnødfinér eksklusiv
+    Quantity: 35.0
+    Unit Price: 280.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 15mm FSC certificeret
+    Quantity: 60.0
+    Unit Price: 175.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V002-020
+        Buy-from Vendor Name: Fyn Finér & Pladematerialer
+        Buy-from Address: Havnegade 12
+        Buy-from Address 2: ''
+        Buy-from City: Svendborg
+        Buy-from Post Code: '5700'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 18mm til kommoder
+        Quantity: 52.0
+        Unit Cost: 185.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Laminatplader creme
+        Quantity: 46.0
+        Unit Cost: 190.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Birkefinér 0.6mm naturfarvet
+        Quantity: 100.0
+        Unit Cost: 85.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 12mm til skabsrygge
+        Quantity: 76.0
+        Unit Cost: 125.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Birkefinér ekstra bred
+        Quantity: 70.0
+        Unit Cost: 125.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 15mm til reoler
+        Quantity: 66.0
+        Unit Cost: 160.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 21mm tykt
+        Quantity: 44.0
+        Unit Cost: 230.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Valnødfinér eksklusiv
+        Quantity: 35.0
+        Unit Cost: 280.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 15mm FSC certificeret
+        Quantity: 60.0
+        Unit Cost: 175.0
+- name: PA-INV-V002-013
+  description: VendorNo=V002;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Fyn Finér & Pladematerialer
+    Address: Havnegade 12
+    Address 2: ''
+    City: Svendborg
+    Country/Region Code: DK
+    Post Code: '5700'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V002-013
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50200
+    Description: Birkefinér til bordplader
+    Quantity: 78.0
+    Unit Price: 100.0
+  - Type: 1
+    No.: 50200
+    Description: Asketræs finér naturlig
+    Quantity: 55.0
+    Unit Price: 135.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 18mm til skabsbunde
+    Quantity: 54.0
+    Unit Price: 180.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 9mm FSC til export
+    Quantity: 78.0
+    Unit Price: 98.0
+  - Type: 1
+    No.: 50210
+    Description: Laminat asketræs struktur
+    Quantity: 36.0
+    Unit Price: 200.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 18mm standard
+    Quantity: 70.0
+    Unit Price: 165.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 9mm til skuffeglider
+    Quantity: 82.0
+    Unit Price: 88.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 12mm standard kvalitet
+    Quantity: 75.0
+    Unit Price: 130.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 12mm til skænksider
+    Quantity: 68.0
+    Unit Price: 135.0
+  - Type: 1
+    No.: 50200
+    Description: Bøgetræs finér klar lak
+    Quantity: 70.0
+    Unit Price: 112.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V002-013
+        Buy-from Vendor Name: Fyn Finér & Pladematerialer
+        Buy-from Address: Havnegade 12
+        Buy-from Address 2: ''
+        Buy-from City: Svendborg
+        Buy-from Post Code: '5700'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Birkefinér til bordplader
+        Quantity: 78.0
+        Unit Cost: 100.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Asketræs finér naturlig
+        Quantity: 55.0
+        Unit Cost: 135.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 18mm til skabsbunde
+        Quantity: 54.0
+        Unit Cost: 180.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 9mm FSC til export
+        Quantity: 78.0
+        Unit Cost: 98.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Laminat asketræs struktur
+        Quantity: 36.0
+        Unit Cost: 200.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 18mm standard
+        Quantity: 70.0
+        Unit Cost: 165.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 9mm til skuffeglider
+        Quantity: 82.0
+        Unit Cost: 88.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 12mm standard kvalitet
+        Quantity: 75.0
+        Unit Cost: 130.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 12mm til skænksider
+        Quantity: 68.0
+        Unit Cost: 135.0
+      - Line No.: 100000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Bøgetræs finér klar lak
+        Quantity: 70.0
+        Unit Cost: 112.0
+- name: PA-INV-V003-001
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring AS
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-001
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: HR40 til konferencemøbler
+    Quantity: 30.0
+    Unit Price: 285.0
+  - Type: 1
+    No.: 50300
+    Description: HR skum premium HR55
+    Quantity: 22.0
+    Unit Price: 390.0
+  - Type: 1
+    No.: 50300
+    Description: Polyuretanskum tynd profil
+    Quantity: 44.0
+    Unit Price: 175.0
+  - Type: 1
+    No.: 50300
+    Description: Hynder til udendørs møbler
+    Quantity: 50.0
+    Unit Price: 92.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-001
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: HR40 til konferencemøbler
+        Quantity: 30.0
+        Unit Cost: 285.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: HR skum premium HR55
+        Quantity: 22.0
+        Unit Cost: 390.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polyuretanskum tynd profil
+        Quantity: 44.0
+        Unit Cost: 175.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Hynder til udendørs møbler
+        Quantity: 50.0
+        Unit Cost: 92.0
+- name: PA-INV-V003-007
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum & Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-007
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: HR skum til restaurant
+    Quantity: 36.0
+    Unit Price: 265.0
+  - Type: 1
+    No.: 50300
+    Description: Skum HR45 ekstra fast
+    Quantity: 28.0
+    Unit Price: 310.0
+  - Type: 1
+    No.: 50300
+    Description: Skum til sidepuder
+    Quantity: 62.0
+    Unit Price: 78.0
+  - Type: 1
+    No.: 50300
+    Description: Polyuretanskum specialskåret
+    Quantity: 20.0
+    Unit Price: 315.0
+  - Type: 1
+    No.: 50300
+    Description: Sædepuder til spisebordsstole
+    Quantity: 65.0
+    Unit Price: 88.0
+  - Type: 1
+    No.: 50300
+    Description: Skum til hovedbræt med kant
+    Quantity: 26.0
+    Unit Price: 235.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-007
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: HR skum til restaurant
+        Quantity: 36.0
+        Unit Cost: 265.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum HR45 ekstra fast
+        Quantity: 28.0
+        Unit Cost: 310.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til sidepuder
+        Quantity: 62.0
+        Unit Cost: 78.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polyuretanskum specialskåret
+        Quantity: 20.0
+        Unit Cost: 315.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Sædepuder til spisebordsstole
+        Quantity: 65.0
+        Unit Cost: 88.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til hovedbræt med kant
+        Quantity: 26.0
+        Unit Cost: 235.0
+- name: PA-INV-V001-011
+  description: VendorNo=V001;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Nordjysk Træindustri ApS
+    Address: Industrivej no. 45
+    Address 2: ''
+    City: Aalborg
+    Country/Region Code: DK
+    Post Code: '9000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V001-011
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: Asketræ bræt til hyldesystemer
+    Quantity: 38.0
+    Unit Price: 475.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V001-011
+        Buy-from Vendor Name: Nordjysk Træindustri ApS
+        Buy-from Address: Industrivej 45
+        Buy-from Address 2: ''
+        Buy-from City: Aalborg
+        Buy-from Post Code: '9000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Asketræ bræt til hyldesystemer
+        Quantity: 38.0
+        Unit Cost: 475.0
+- name: PA-INV-V003-006
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-006
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Polstring ekstra tyk
+    Quantity: 26.0
+    Unit Price: 205.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-006
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polstring ekstra tyk
+        Quantity: 26.0
+        Unit Cost: 205.0
+- name: PA-INV-V003-025
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-025
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: HR38 mellemblød
+    Quantity: 36.0
+    Unit Price: 250.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-025
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: HR38 mellemblød
+        Quantity: 36.0
+        Unit Cost: 250.0
+- name: PA-INV-V003-012
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-012
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Hynder til vindueskarme
+    Quantity: 38.0
+    Unit Price: 128.0
+  - Type: 1
+    No.: 50300
+    Description: Skum til retail seating
+    Quantity: 38.0
+    Unit Price: 205.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-012
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Hynder til vindueskarme
+        Quantity: 38.0
+        Unit Cost: 128.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til retail seating
+        Quantity: 38.0
+        Unit Cost: 205.0
+- name: PA-INV-V003-002
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-002
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Polstervat for designer puder
+    Quantity: 68.0
+    Unit Price: 58.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-002
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polstervat for designer puder
+        Quantity: 68.0
+        Unit Cost: 58.0
+- name: PA-INV-V003-020
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-020
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Sædehynder rund form
+    Quantity: 42.0
+    Unit Price: 112.0
+  - Type: 1
+    No.: 50300
+    Description: Koldskum ergonomisk
+    Quantity: 18.0
+    Unit Price: 465.0
+  - Type: 1
+    No.: 50300
+    Description: Polyuretanskum HR35 basis
+    Quantity: 35.0
+    Unit Price: 240.0
+  - Type: 1
+    No.: 50300
+    Description: Sædehynder til cafestole
+    Quantity: 62.0
+    Unit Price: 98.0
+  - Type: 1
+    No.: 50300
+    Description: Polstring lænestole
+    Quantity: 32.0
+    Unit Price: 195.0
+  - Type: 1
+    No.: 50300
+    Description: HR43 til kontormøbler
+    Quantity: 28.0
+    Unit Price: 305.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-020
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Sædehynder rund form
+        Quantity: 42.0
+        Unit Cost: 112.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Koldskum ergonomisk
+        Quantity: 18.0
+        Unit Cost: 465.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polyuretanskum HR35 basis
+        Quantity: 35.0
+        Unit Cost: 240.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Sædehynder til cafestole
+        Quantity: 62.0
+        Unit Cost: 98.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Polstring lænestole
+        Quantity: 32.0
+        Unit Cost: 195.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: HR43 til kontormøbler
+        Quantity: 28.0
+        Unit Cost: 305.0
+- name: PA-INV-V001-008
+  description: VendorNo=V001;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=True;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG001;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Nordjysk Træ-Industri ApS
+    Address: Industrivej45
+    Address 2: ''
+    City: Aalborg
+    Country/Region Code: DK
+    Post Code: '9000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V001-008
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50120
+    Description: Asketræ til barskamler
+    Quantity: 26.0
+    Unit Price: 515.0
+  - Type: 1
+    No.: 50100
+    Description: Egetræ til bordben
+    Quantity: 40.0
+    Unit Price: 390.0
+  - Type: 1
+    No.: 50100
+    Description: Egetræ bræt ekstra lang
+    Quantity: 20.0
+    Unit Price: 780.0
+  - Type: 1
+    No.: 50100
+    Description: Egetræ til vitrinestel
+    Quantity: 24.0
+    Unit Price: 580.0
+  - Type: 1
+    No.: 50100
+    Description: Egetræ lameller til garderobedøre
+    Quantity: 38.0
+    Unit Price: 520.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V001-008
+        Buy-from Vendor Name: Nordjysk Træindustri ApS
+        Buy-from Address: Industrivej 45
+        Buy-from Address 2: ''
+        Buy-from City: Aalborg
+        Buy-from Post Code: '9000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Asketræ til barskamler
+        Quantity: 26.0
+        Unit Cost: 515.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Egetræ til bordben
+        Quantity: 40.0
+        Unit Cost: 390.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Egetræ bræt ekstra lang
+        Quantity: 20.0
+        Unit Cost: 780.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Egetræ til vitrinestel
+        Quantity: 24.0
+        Unit Cost: 580.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Egetræ lameller til garderobedøre
+        Quantity: 38.0
+        Unit Cost: 520.0
+- name: PA-INV-V002-019
+  description: VendorNo=V002;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG002;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Fyn Finér & Pladematerialer
+    Address: Havnegade 12
+    Address 2: ''
+    City: Svendborg
+    Country/Region Code: DK
+    Post Code: '5700'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V002-019
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 12mm vandfast
+    Quantity: 60.0
+    Unit Price: 155.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 15mm FSC
+    Quantity: 58.0
+    Unit Price: 170.0
+  - Type: 1
+    No.: 50200
+    Description: Bøgetræs finér eksport kvalitet
+    Quantity: 66.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 50210
+    Description: Laminat kirsebærtræ struktur
+    Quantity: 34.0
+    Unit Price: 225.0
+  - Type: 1
+    No.: 50200
+    Description: Asketræs finér let bejdset
+    Quantity: 56.0
+    Unit Price: 150.0
+  - Type: 1
+    No.: 50200
+    Description: Valnødfinér mørk
+    Quantity: 36.0
+    Unit Price: 290.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 21mm ekstra
+    Quantity: 50.0
+    Unit Price: 210.0
+  - Type: 1
+    No.: 50200
+    Description: Birkefinér standard bred
+    Quantity: 80.0
+    Unit Price: 92.0
+  - Type: 1
+    No.: 50200
+    Description: Krydsfiner 18mm premium
+    Quantity: 55.0
+    Unit Price: 190.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V002-019
+        Buy-from Vendor Name: Fyn Finér & Pladematerialer
+        Buy-from Address: Havnegade 12
+        Buy-from Address 2: ''
+        Buy-from City: Svendborg
+        Buy-from Post Code: '5700'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 12mm vandfast
+        Quantity: 60.0
+        Unit Cost: 155.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 15mm FSC
+        Quantity: 58.0
+        Unit Cost: 170.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Bøgetræs finér eksport kvalitet
+        Quantity: 66.0
+        Unit Cost: 125.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50210
+        Deferral Code: ''
+        Description: Laminat kirsebærtræ struktur
+        Quantity: 34.0
+        Unit Cost: 225.0
+      - Line No.: 50000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Asketræs finér let bejdset
+        Quantity: 56.0
+        Unit Cost: 150.0
+      - Line No.: 60000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Valnødfinér mørk
+        Quantity: 36.0
+        Unit Cost: 290.0
+      - Line No.: 70000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 21mm ekstra
+        Quantity: 50.0
+        Unit Cost: 210.0
+      - Line No.: 80000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Birkefinér standard bred
+        Quantity: 80.0
+        Unit Cost: 92.0
+      - Line No.: 90000
+        Type: 1
+        No.: 50200
+        Deferral Code: ''
+        Description: Krydsfiner 18mm premium
+        Quantity: 55.0
+        Unit Cost: 190.0
+- name: PA-INV-V003-011
+  description: VendorNo=V003;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Dansk Skum og Polstring A/S
+    Address: Fabriksvej 78
+    Address 2: ''
+    City: Kolding
+    Country/Region Code: DK
+    Post Code: '6000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V003-011
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50300
+    Description: Skum til lændestøtte
+    Quantity: 48.0
+    Unit Price: 118.0
+  - Type: 1
+    No.: 50300
+    Description: Sædehynder til office seating
+    Quantity: 44.0
+    Unit Price: 122.0
+  - Type: 1
+    No.: 50300
+    Description: Koldskum til topmadras
+    Quantity: 16.0
+    Unit Price: 450.0
+  - Type: 1
+    No.: 50300
+    Description: Sædehynder barskamler
+    Quantity: 44.0
+    Unit Price: 105.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V003-011
+        Buy-from Vendor Name: Dansk Skum og Polstring A/S
+        Buy-from Address: Fabriksvej 78
+        Buy-from Address 2: ''
+        Buy-from City: Kolding
+        Buy-from Post Code: '6000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Skum til lændestøtte
+        Quantity: 48.0
+        Unit Cost: 118.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Sædehynder til office seating
+        Quantity: 44.0
+        Unit Cost: 122.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Koldskum til topmadras
+        Quantity: 16.0
+        Unit Cost: 450.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50300
+        Deferral Code: ''
+        Description: Sædehynder barskamler
+        Quantity: 44.0
+        Unit Cost: 105.0
+- name: PA-INV-V001-014
+  description: VendorNo=V001;VendorFrequencyGroup=Top;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Nordjysk Træindustri ApS
+    Address: Industrivej 45
+    Address 2: ''
+    City: Aalborg
+    Country/Region Code: DK
+    Post Code: '9000'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V001-014
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50110
+    Description: Bøgetræ til sengegavle
+    Quantity: 30.0
+    Unit Price: 385.0
+  - Type: 1
+    No.: 50120
+    Description: Asketræ bræt til tv-bænke
+    Quantity: 28.0
+    Unit Price: 570.0
+  - Type: 1
+    No.: 50100
+    Description: Egetræ lameller til skydedøre
+    Quantity: 26.0
+    Unit Price: 660.0
+  - Type: 1
+    No.: 50110
+    Description: Bøgetræ planker til garderobeskabe
+    Quantity: 36.0
+    Unit Price: 415.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V001-014
+        Buy-from Vendor Name: Nordjysk Træindustri ApS
+        Buy-from Address: Industrivej 45
+        Buy-from Address 2: ''
+        Buy-from City: Aalborg
+        Buy-from Post Code: '9000'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Bøgetræ til sengegavle
+        Quantity: 30.0
+        Unit Cost: 385.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50120
+        Deferral Code: ''
+        Description: Asketræ bræt til tv-bænke
+        Quantity: 28.0
+        Unit Cost: 570.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: Egetræ lameller til skydedøre
+        Quantity: 26.0
+        Unit Cost: 660.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50110
+        Deferral Code: ''
+        Description: Bøgetræ planker til garderobeskabe
+        Quantity: 36.0
+        Unit Cost: 415.0
+- name: PA-INV-V005-004
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG003;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Jysk Metalbeslag
+    Address: Ringkobingvej 156
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-004
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50500
+    Description: Skruer messing 4x30mm
+    Quantity: 3200.0
+    Unit Price: 1.15
+  - Type: 1
+    No.: 50500
+    Description: Skruer sorte 5x40mm
+    Quantity: 4000.0
+    Unit Price: 0.95
+  - Type: 1
+    No.: 50500
+    Description: Hængsler soft-close 110 grader
+    Quantity: 200.0
+    Unit Price: 45.0
+  - Type: 1
+    No.: 50500
+    Description: Skruer rustfri 4x30mm
+    Quantity: 5000.0
+    Unit Price: 0.85
+  - Type: 1
+    No.: 50500
+    Description: Hængsler standard 90 grader
+    Quantity: 180.0
+    Unit Price: 28.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-004
+        Buy-from Vendor Name: Jysk Metalbeslag
+        Buy-from Address: Ringkøbingvej 156
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Skruer messing 4x30mm
+        Quantity: 3200.0
+        Unit Cost: 1.15
+      - Line No.: 20000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Skruer sorte 5x40mm
+        Quantity: 4000.0
+        Unit Cost: 0.95
+      - Line No.: 30000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Hængsler soft-close 110 grader
+        Quantity: 200.0
+        Unit Cost: 45.0
+      - Line No.: 40000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Skruer rustfri 4x30mm
+        Quantity: 5000.0
+        Unit Cost: 0.85
+      - Line No.: 50000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Hængsler standard 90 grader
+        Quantity: 180.0
+        Unit Cost: 28.0
+- name: PA-INV-V004-007
+  description: VendorNo=V004;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Nordic Tekstil Import
+    Address: Øresundsvej nr. 23
+    Address 2: ''
+    City: København
+    Country/Region Code: DK
+    Post Code: '2300'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V004-007
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50400
+    Description: Læder sort semi-anilin
+    Quantity: 40.0
+    Unit Price: 495.0
+  - Type: 1
+    No.: 50400
+    Description: Læder hvid semi-anilin
+    Quantity: 35.0
+    Unit Price: 540.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V004-007
+        Buy-from Vendor Name: Nordic Tekstil Import
+        Buy-from Address: Øresundsvej 23
+        Buy-from Address 2: ''
+        Buy-from City: København
+        Buy-from Post Code: '2300'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50400
+        Deferral Code: ''
+        Description: Læder sort semi-anilin
+        Quantity: 40.0
+        Unit Cost: 495.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50400
+        Deferral Code: ''
+        Description: Læder hvid semi-anilin
+        Quantity: 35.0
+        Unit Cost: 540.0
+- name: PA-INV-V005-009
+  description: VendorNo=V005;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG003;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Jysk Metalbeslag
+    Address: Ringkøbingvej 156
+    Address 2: ''
+    City: Herning
+    Country/Region Code: DK
+    Post Code: '7400'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V005-009
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50500
+    Description: Beslag til fast hyldemontering
+    Quantity: 350.0
+    Unit Price: 9.0
+  - Type: 1
+    No.: 50500
+    Description: Monteringsbeslag vinkel
+    Quantity: 220.0
+    Unit Price: 15.0
+  - Type: 1
+    No.: 50500
+    Description: Monteringsbeslag til bordplader
+    Quantity: 160.0
+    Unit Price: 28.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V005-009
+        Buy-from Vendor Name: Jysk Metalbeslag
+        Buy-from Address: Ringkøbingvej 156
+        Buy-from Address 2: ''
+        Buy-from City: Herning
+        Buy-from Post Code: '7400'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Beslag til fast hyldemontering
+        Quantity: 350.0
+        Unit Cost: 9.0
+      - Line No.: 20000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Monteringsbeslag vinkel
+        Quantity: 220.0
+        Unit Cost: 15.0
+      - Line No.: 30000
+        Type: 1
+        No.: 50500
+        Deferral Code: ''
+        Description: Monteringsbeslag til bordplader
+        Quantity: 160.0
+        Unit Cost: 28.0
+- name: PA-INV-V004-009
+  description: VendorNo=V004;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: Nordic Tekstil Import
+    Address: Oresundsvej 23
+    Address 2: ''
+    City: København
+    Country/Region Code: DK
+    Post Code: '2300'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V004-009
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50400
+    Description: Hør-bomuld blend natur
+    Quantity: 88.0
+    Unit Price: 135.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V004-009
+        Buy-from Vendor Name: Nordic Tekstil Import
+        Buy-from Address: Øresundsvej 23
+        Buy-from Address 2: ''
+        Buy-from City: København
+        Buy-from Post Code: '2300'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50400
+        Deferral Code: ''
+        Description: Hør-bomuld blend natur
+        Quantity: 88.0
+        Unit Cost: 135.0
+- name: PA-INV-V010-004
+  description: VendorNo=V010;VendorFrequencyGroup=High;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup-da-DK.yaml
+  vendor:
+    Name: SAP Danmark ApS
+    Address: Tuborg Boulevard 12
+    Address 2: ''
+    City: Hellerup
+    Country/Region Code: DK
+    Post Code: '2900'
+  inboundInvoice:
+    Posting Date: '2025-12-04'
+    Due Date: '2026-01-03'
+    Document Date: '2025-12-04'
+    No.: INV-V010-004
+    Payment Terms Code: 30 DAGE
+    Shipment Method Code: LEVERET
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64000
+    Description: SAP brugerlisensfornylese
+    Quantity: 25.0
+    Unit Price: 3200.0
+  - Type: 1
+    No.: 64000
+    Description: SAP support helpdesk halvår
+    Quantity: 1.0
+    Unit Price: 24000.0
+  - Type: 1
+    No.: 64000
+    Description: SAP årlig vedligeholdelse ERP
+    Quantity: 1.0
+    Unit Price: 95000.0
+  - Type: 1
+    No.: 64000
+    Description: SAP licens CRM modul årlig
+    Quantity: 1.0
+    Unit Price: 18000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V010-004
+        Buy-from Vendor Name: SAP Danmark ApS
+        Buy-from Address: Tuborg Boulevard 12
+        Buy-from Address 2: ''
+        Buy-from City: Hellerup
+        Buy-from Post Code: '2900'
+        Buy-from Country/Region Code: DK
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64000
+        Deferral Code: 12M
+        Description: SAP brugerlisensfornylese
+        Quantity: 25.0
+        Unit Cost: 3200.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64000
+        Deferral Code: 6M
+        Description: SAP support helpdesk halvår
+        Quantity: 1.0
+        Unit Cost: 24000.0
+      - Line No.: 30000
+        Type: 1
+        No.: 64000
+        Deferral Code: 12M
+        Description: SAP årlig vedligeholdelse ERP
+        Quantity: 1.0
+        Unit Cost: 95000.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64000
+        Deferral Code: 12M
+        Description: SAP licens CRM modul årlig
+        Quantity: 1.0
+        Unit Cost: 18000.0

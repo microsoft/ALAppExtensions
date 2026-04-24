@@ -411,6 +411,10 @@ table 4066 "GPRMOpen"
         {
             Clustered = false;
         }
+        key(Key3; PYMTRMID)
+        {
+            Clustered = false;
+        }
     }
 
     fieldgroups

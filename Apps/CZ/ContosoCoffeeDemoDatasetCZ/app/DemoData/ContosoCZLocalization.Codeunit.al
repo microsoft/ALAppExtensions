@@ -149,6 +149,7 @@ codeunit 31215 "Contoso CZ Localization"
                     CreateStatRepSetupCZ.CreateFinanceStatutoryReportingSetup();
                     Codeunit.Run(Codeunit::"Create Currency Ex. Rate CZ");
                     CreateCurrencyExRateCZ.DeleteLocalCurrencyExchangeRate();
+                    Codeunit.Run(Codeunit::"Create Add. Rep. Currency CZ");
                 end;
         end;
     end;

@@ -76,6 +76,12 @@ table 4094 "GP Customer Transactions"
         {
             Clustered = true;
         }
+        key(Key2; PYMTRMID)
+        {
+        }
+        key(Key3; CUSTNMBR, TransType)
+        {
+        }
     }
 
     fieldgroups

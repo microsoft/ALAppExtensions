@@ -241,8 +241,8 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL POReceipt", 'POReceipt');
         UpdateOrInsertRecord(Database::"SL POSetup", 'POSetup');
         UpdateOrInsertRecord(Database::"SL POTran", 'POTran');
-        UpdateOrInsertRecord(Database::"SL PurchOrd", 'PurchOrd');
-        UpdateOrInsertRecord(Database::"SL PurOrdDet", 'PurOrdDet');
+        UpdateOrInsertRecord(Database::"SL PurchOrd Buffer", 'PurchOrd');
+        UpdateOrInsertRecord(Database::"SL PurOrdDet Buffer", 'PurOrdDet');
         UpdateOrInsertRecord(Database::"SL VendClass", 'VendClass');
         UpdateOrInsertRecord(Database::"SL Vendor", 'Vendor');
         // Receivables
@@ -254,16 +254,17 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL CustClass", 'CustClass');
         UpdateOrInsertRecord(Database::"SL Customer", 'Customer');
         UpdateOrInsertRecord(Database::"SL SOAddress", 'SOAddress');
-        UpdateOrInsertRecord(Database::"SL SOHeader", 'SOHeader');
-        UpdateOrInsertRecord(Database::"SL SOLine", 'SOLine');
+        UpdateOrInsertRecord(Database::"SL SOHeader Buffer", 'SOHeader');
+        UpdateOrInsertRecord(Database::"SL SOLine Buffer", 'SOLine');
         UpdateOrInsertRecord(Database::"SL SOSetup", 'SOSetup');
         UpdateOrInsertRecord(Database::"SL SOShipHeader", 'SOShipHeader');
         UpdateOrInsertRecord(Database::"SL SOShipLine", 'SOShipLine');
         UpdateOrInsertRecord(Database::"SL SOShipLot", 'SOShipLot');
-        UpdateOrInsertRecord(Database::"SL SOType", 'SOType');
+        UpdateOrInsertRecord(Database::"SL SOType Buffer", 'SOType');
         // Items
         UpdateOrInsertRecord(Database::"SL INSetup", 'INSetup');
         UpdateOrInsertRecord(Database::"SL INTran Buffer", 'INTran');
+        UpdateOrInsertRecord(Database::"SL INUnit", 'INUnit');
         UpdateOrInsertRecord(Database::"SL Inventory Buffer", 'Inventory');
         UpdateOrInsertRecord(Database::"SL InventoryADG", 'InventoryADG');
         UpdateOrInsertRecord(Database::"SL ItemCost Buffer", 'ItemCost');
@@ -286,6 +287,11 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL PJEQRate Buffer", 'PJEQRate');
         UpdateOrInsertRecord(Database::"SL PJPent Buffer", 'PJPent');
         UpdateOrInsertRecord(Database::"SL PJProj Buffer", 'PJProj');
+        // Cash Manager
+        UpdateOrInsertRecord(Database::"SL Address", 'Address');
+        UpdateOrInsertRecord(Database::"SL CASetup", 'CASetup');
+        UpdateOrInsertRecord(Database::"SL CashAcct", 'CashAcct');
+        UpdateOrInsertRecord(Database::"SL CashSumD", 'CashSumD');
     end;
 
     internal procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])

@@ -13,6 +13,7 @@ page 3306 "Payables Agent KPI"
     PageType = CardPart;
     ApplicationArea = All;
     SourceTable = Agent;
+    SourceTableView = where("Can Access Current Company" = const(true));
     InherentEntitlements = X;
     InherentPermissions = X;
 

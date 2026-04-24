@@ -37,6 +37,7 @@ codeunit 9401 "IPC Address Lookup Helper"
         CountryCode := CopyStr(GetFieldValue(RecRef, CountryCodeFieldNo), 1, MaxStrLen(CountryCode));
 
         // Perform lookup
+        Commit();
         IPCManagement.LookupAddress(Address, Address2, City, PostCode, County, CountryCode);
 
         // Update record

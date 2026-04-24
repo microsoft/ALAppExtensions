@@ -19,6 +19,7 @@ table 47000 "SL Account Staging"
         }
         field(2; Name; Text[30])
         {
+            Caption = 'Name';
         }
         field(3; SearchName; Text[30])
         {

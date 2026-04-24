@@ -15,6 +15,8 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         TableNotMarkedForReplicationErr: Label 'Table %1 was not correctly marked for replication';
         CustomerId1Tok: Label 'TEST-1', Locked = true;
         CustomerId2Tok: Label 'TEST-2', Locked = true;
+        SourceTableMetadataNotFoundErr: Label 'Source table metadata not found for table ID %1.', Comment = '%1 - Table ID';
+        DestinationTableMetadataNotFoundErr: Label 'Destination table metadata not found for table ID %1.', Comment = '%1 - Table ID';
 
     local procedure Initialize()
     var
@@ -1080,5 +1082,421 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         RecordLink.CalcFields(Note);
         RecordLink.Note.CreateInStream(InStream);
         InStream.Read(Result);
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingWithValidTableIDs()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping creates mapping when both source and destination table IDs are valid
+        Initialize();
+
+        // [GIVEN] Valid table IDs for Customer table (18)
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called with valid table IDs
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::Customer, Database::Customer);
+
+        // [THEN] The replication mapping record is created successfully
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'Customer');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created for valid table IDs');
+        Assert.IsTrue(ReplicationMapping."Source Sql Table Name".Contains('Customer'), 'Source SQL table name should contain Customer');
+        Assert.IsTrue(ReplicationMapping."Destination Sql Table Name".Contains('Customer'), 'Destination SQL table name should contain Customer');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingWithInvalidSourceTableID()
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        InvalidTableId: Integer;
+    begin
+        // [SCENARIO] CreateReplicationMapping throws error when source table ID does not exist in Table Metadata
+        Initialize();
+
+        // [GIVEN] An invalid/non-existent source table ID
+        InvalidTableId := 99999999;
+
+        // [WHEN] CreateReplicationMapping is called with invalid source table ID
+        // [THEN] An error is thrown with the appropriate message
+        asserterror HybridCloudManagement.CreateReplicationMapping('TestCompany', InvalidTableId, Database::Customer);
+        Assert.ExpectedError(StrSubstNo(SourceTableMetadataNotFoundErr, InvalidTableId));
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingWithInvalidDestinationTableID()
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        InvalidTableId: Integer;
+    begin
+        // [SCENARIO] CreateReplicationMapping throws error when destination table ID does not exist in Table Metadata
+        Initialize();
+
+        // [GIVEN] A valid source table ID and invalid destination table ID
+        InvalidTableId := 99999999;
+
+        // [WHEN] CreateReplicationMapping is called with invalid destination table ID
+        // [THEN] An error is thrown with the appropriate message
+        asserterror HybridCloudManagement.CreateReplicationMapping('TestCompany', Database::Customer, InvalidTableId);
+        Assert.ExpectedError(StrSubstNo(DestinationTableMetadataNotFoundErr, InvalidTableId));
+    end;
+
+    [Test]
+    procedure CreateMigrationSetupMappingWithValidTableIDs()
+    var
+        SetupMapping: Record "Migration Setup Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateMigrationSetupMapping creates mapping when both source and destination table IDs are valid
+        Initialize();
+
+        // [GIVEN] Valid table IDs for Vendor table (23)
+        CompanyName := 'CRONUS International Ltd.';
+        SetupMapping.DeleteAll();
+
+        // [WHEN] CreateMigrationSetupMapping is called with valid table IDs
+        HybridCloudManagement.CreateMigrationSetupMapping(CompanyName, Database::Vendor, Database::Vendor);
+
+        // [THEN] The migration setup mapping record is created successfully
+        SetupMapping.SetRange("Company Name", CompanyName);
+        SetupMapping.SetFilter("Table Name", 'Vendor');
+        Assert.IsTrue(SetupMapping.FindFirst(), 'Migration setup mapping should be created for valid table IDs');
+        Assert.IsTrue(SetupMapping."Source Sql Table Name".Contains('Vendor'), 'Source SQL table name should contain Vendor');
+        Assert.IsTrue(SetupMapping."Destination Sql Table Name".Contains('Vendor'), 'Destination SQL table name should contain Vendor');
+    end;
+
+    [Test]
+    procedure CreateMigrationSetupMappingWithInvalidSourceTableID()
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        InvalidTableId: Integer;
+    begin
+        // [SCENARIO] CreateMigrationSetupMapping throws error when source table ID does not exist in Table Metadata
+        Initialize();
+
+        // [GIVEN] An invalid/non-existent source table ID
+        InvalidTableId := 99999999;
+
+        // [WHEN] CreateMigrationSetupMapping is called with invalid source table ID
+        // [THEN] An error is thrown with the appropriate message
+        asserterror HybridCloudManagement.CreateMigrationSetupMapping('TestCompany', InvalidTableId, Database::Vendor);
+        Assert.ExpectedError(StrSubstNo(SourceTableMetadataNotFoundErr, InvalidTableId));
+    end;
+
+    [Test]
+    procedure CreateMigrationSetupMappingWithInvalidDestinationTableID()
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        InvalidTableId: Integer;
+    begin
+        // [SCENARIO] CreateMigrationSetupMapping throws error when destination table ID does not exist in Table Metadata
+        Initialize();
+
+        // [GIVEN] A valid source table ID and invalid destination table ID
+        InvalidTableId := 99999999;
+
+        // [WHEN] CreateMigrationSetupMapping is called with invalid destination table ID
+        // [THEN] An error is thrown with the appropriate message
+        asserterror HybridCloudManagement.CreateMigrationSetupMapping('TestCompany', Database::Vendor, InvalidTableId);
+        Assert.ExpectedError(StrSubstNo(DestinationTableMetadataNotFoundErr, InvalidTableId));
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingWithSpecialCharactersInCompanyName()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping correctly handles company names with special SQL characters (. \ /)
+        Initialize();
+
+        // [GIVEN] A company name containing special characters that need SQL escaping
+        CompanyName := 'Test.Company/Name\Special';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::Item, Database::Item);
+
+        // [THEN] The mapping is created with special characters replaced by underscores
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created');
+        Assert.IsFalse(ReplicationMapping."Source Sql Table Name".Contains('.'), 'Source SQL table name should not contain dot');
+        Assert.IsFalse(ReplicationMapping."Source Sql Table Name".Contains('/'), 'Source SQL table name should not contain slash');
+        Assert.IsFalse(ReplicationMapping."Source Sql Table Name".Contains('\'), 'Source SQL table name should not contain backslash');
+        Assert.IsTrue(ReplicationMapping."Source Sql Table Name".Contains('Test_Company_Name_Special'), 'Company name special chars should be replaced with underscores');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingForGLEntry()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping handles G/L Entry table which has special character "/" in its name
+        Initialize();
+
+        // [GIVEN] G/L Entry table ID (17) with "/" in its name
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called for G/L Entry
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"G/L Entry", Database::"G/L Entry");
+
+        // [THEN] The mapping is created with "/" replaced by "_" in SQL table name
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'G/L Entry');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created for G/L Entry');
+        Assert.IsTrue(ReplicationMapping."Source Sql Table Name".Contains('G_L Entry'), 'Source SQL table name should have / replaced with _');
+        Assert.IsFalse(ReplicationMapping."Source Sql Table Name".Contains('G/L'), 'Source SQL table name should not contain /');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingForGLAccount()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping handles G/L Account table which has special character "/" in its name
+        Initialize();
+
+        // [GIVEN] G/L Account table ID (15) with "/" in its name
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called for G/L Account
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"G/L Account", Database::"G/L Account");
+
+        // [THEN] The mapping is created with "/" replaced by "_" in SQL table name
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'G/L Account');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created for G/L Account');
+        Assert.IsTrue(ReplicationMapping."Source Sql Table Name".Contains('G_L Account'), 'Source SQL table name should have / replaced with _');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingForSalesInvoiceHeader()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping handles Sales Invoice Header table
+        Initialize();
+
+        // [GIVEN] Sales Invoice Header table ID (112)
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called for Sales Invoice Header
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"Sales Invoice Header", Database::"Sales Invoice Header");
+
+        // [THEN] The mapping is created successfully
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'Sales Invoice Header');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created for Sales Invoice Header');
+        Assert.IsTrue(ReplicationMapping."Source Sql Table Name".Contains('Sales Invoice Header'), 'Source SQL table name should contain Sales Invoice Header');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingForSalesInvoiceLine()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping handles Sales Invoice Line table
+        Initialize();
+
+        // [GIVEN] Sales Invoice Line table ID (113)
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called for Sales Invoice Line
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"Sales Invoice Line", Database::"Sales Invoice Line");
+
+        // [THEN] The mapping is created successfully
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'Sales Invoice Line');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created for Sales Invoice Line');
+        Assert.IsTrue(ReplicationMapping."Source Sql Table Name".Contains('Sales Invoice Line'), 'Source SQL table name should contain Sales Invoice Line');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingWithDifferentSourceAndDestinationTables()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping handles mapping from one table to a different table (typical BC14 migration scenario)
+        Initialize();
+
+        // [GIVEN] Different source and destination table IDs (e.g., BC14 custom table to standard BC table)
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called with Customer as source and Vendor as destination (simulating cross-table mapping)
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::Customer, Database::Vendor);
+
+        // [THEN] The mapping is created with correct source and destination SQL names
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'Vendor');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created');
+        Assert.IsTrue(ReplicationMapping."Source Sql Table Name".Contains('Customer'), 'Source SQL table name should reference Customer table');
+        Assert.IsTrue(ReplicationMapping."Destination Sql Table Name".Contains('Vendor'), 'Destination SQL table name should reference Vendor table');
+    end;
+
+    [Test]
+    procedure CreateMigrationSetupMappingForGLEntry()
+    var
+        SetupMapping: Record "Migration Setup Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateMigrationSetupMapping handles G/L Entry table which has special character "/" in its name
+        Initialize();
+
+        // [GIVEN] G/L Entry table ID (17) with "/" in its name
+        CompanyName := 'CRONUS International Ltd.';
+        SetupMapping.DeleteAll();
+
+        // [WHEN] CreateMigrationSetupMapping is called for G/L Entry
+        HybridCloudManagement.CreateMigrationSetupMapping(CompanyName, Database::"G/L Entry", Database::"G/L Entry");
+
+        // [THEN] The mapping is created with "/" replaced by "_" in SQL table name
+        SetupMapping.SetRange("Company Name", CompanyName);
+        SetupMapping.SetFilter("Table Name", 'G/L Entry');
+        Assert.IsTrue(SetupMapping.FindFirst(), 'Migration setup mapping should be created for G/L Entry');
+        Assert.IsTrue(SetupMapping."Source Sql Table Name".Contains('G_L Entry'), 'Source SQL table name should have / replaced with _');
+        Assert.IsFalse(SetupMapping."Source Sql Table Name".Contains('G/L'), 'Source SQL table name should not contain /');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingMultipleTablesSequentially()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] Multiple replication mappings can be created sequentially without conflicts
+        Initialize();
+
+        // [GIVEN] Multiple table mappings need to be created for migration
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] Multiple CreateReplicationMapping calls are made
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::Customer, Database::Customer);
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::Vendor, Database::Vendor);
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::Item, Database::Item);
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"G/L Entry", Database::"G/L Entry");
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"G/L Account", Database::"G/L Account");
+
+        // [THEN] All mappings are created successfully
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        Assert.AreEqual(5, ReplicationMapping.Count(), 'All 5 replication mappings should be created');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingDuplicateIsIgnored()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] Creating duplicate replication mapping does not cause an error and is silently ignored
+        Initialize();
+
+        // [GIVEN] A replication mapping already exists
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::Customer, Database::Customer);
+
+        // [WHEN] The same mapping is created again
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::Customer, Database::Customer);
+
+        // [THEN] Only one mapping exists (duplicate was ignored)
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'Customer');
+        Assert.AreEqual(1, ReplicationMapping.Count(), 'Duplicate mapping should be ignored, only one record should exist');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingForVATEntry()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping handles VAT Entry table
+        Initialize();
+
+        // [GIVEN] VAT Entry table ID (254)
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called for VAT Entry
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"VAT Entry", Database::"VAT Entry");
+
+        // [THEN] The mapping is created successfully
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'VAT Entry');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created for VAT Entry');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingForCustLedgerEntry()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping handles Cust. Ledger Entry table with "." in its name
+        Initialize();
+
+        // [GIVEN] Cust. Ledger Entry table ID (21) with "." in its name
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called for Cust. Ledger Entry
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"Cust. Ledger Entry", Database::"Cust. Ledger Entry");
+
+        // [THEN] The mapping is created with "." replaced by "_" in SQL table name
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'Cust. Ledger Entry');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created for Cust. Ledger Entry');
+        Assert.IsTrue(ReplicationMapping."Source Sql Table Name".Contains('Cust_ Ledger Entry'), 'Source SQL table name should have . replaced with _');
+        Assert.IsFalse(ReplicationMapping."Source Sql Table Name".Contains('Cust.'), 'Source SQL table name should not contain .');
+    end;
+
+    [Test]
+    procedure CreateReplicationMappingForVendorLedgerEntry()
+    var
+        ReplicationMapping: Record "Replication Table Mapping";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompanyName: Text;
+    begin
+        // [SCENARIO] CreateReplicationMapping handles Vendor Ledger Entry table
+        Initialize();
+
+        // [GIVEN] Vendor Ledger Entry table ID (25)
+        CompanyName := 'CRONUS International Ltd.';
+        ReplicationMapping.DeleteAll();
+
+        // [WHEN] CreateReplicationMapping is called for Vendor Ledger Entry
+        HybridCloudManagement.CreateReplicationMapping(CompanyName, Database::"Vendor Ledger Entry", Database::"Vendor Ledger Entry");
+
+        // [THEN] The mapping is created successfully
+        ReplicationMapping.SetRange("Company Name", CompanyName);
+        ReplicationMapping.SetFilter("Table Name", 'Vendor Ledger Entry');
+        Assert.IsTrue(ReplicationMapping.FindFirst(), 'Replication mapping should be created for Vendor Ledger Entry');
     end;
 }

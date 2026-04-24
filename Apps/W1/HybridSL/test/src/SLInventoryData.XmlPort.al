@@ -16,7 +16,7 @@ xmlport 147619 "SL Inventory Data"
     {
         textelement(root)
         {
-            tableelement("SL Inventory"; "SL Inventory")
+            tableelement("SL Inventory"; "SL Inventory Buffer")
             {
                 AutoSave = false;
                 XmlName = 'SLInventory';
@@ -74,7 +74,7 @@ xmlport 147619 "SL Inventory Data"
 
                 trigger OnBeforeInsertRecord()
                 var
-                    SLInventory: Record "SL Inventory";
+                    SLInventory: Record "SL Inventory Buffer";
                 begin
                     if CaptionRow then begin
                         CaptionRow := false;
@@ -109,5 +109,5 @@ xmlport 147619 "SL Inventory Data"
 
     var
         CaptionRow: Boolean;
-        SLInventory: Record "SL Inventory";
+        SLInventory: Record "SL Inventory Buffer";
 }

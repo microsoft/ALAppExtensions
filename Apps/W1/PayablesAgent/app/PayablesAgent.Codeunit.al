@@ -173,18 +173,34 @@ codeunit 3303 "Payables Agent" implements IAgentMetadata, IAgentFactory
     procedure BuildAgentTask(EDocument: Record "E-Document"; Agent: Record Agent)
     var
         PayablesAgentSetup: Record "Payables Agent Setup";
+        PayablesAgent: Codeunit "Payables Agent";
         AgentTaskBuilder: Codeunit "Agent Task Builder";
         AgentTaskMessageBuilder: Codeunit "Agent Task Message Builder";
+        PATrial: Codeunit "PA Trial";
         AgentTaskTitle: Text[150];
         Message: Text;
         MustRequestReviewOfMessage: Boolean;
+        ExcludeBilling: Boolean;
+        TelemetryDictionary: Dictionary of [Text, Text];
         TaskTitleLbl: Label 'E-Document from %1', Comment = '%1 is the sender''s email address.';
         MessageLbl: Label 'A new electronic document %1 has been received. Your task is to create a Purchase Invoice in Business Central.', Locked = true, Comment = '%1 is the e-document entry number.';
+        TrialModeTok: Label 'Agent Task created in trial mode. Skipping billing for invoice.', Locked = true;
     begin
         PayablesAgentSetup.GetSetup();
         MustRequestReviewOfMessage := PayablesAgentSetup."Review Incoming Invoice";
         Message := StrSubstNo(MessageLbl, EDocument."Entry No");
         AgentTaskTitle := CopyStr(StrSubstNo(TaskTitleLbl, LowerCase(EDocument."Source Details")), 1, MaxStrLen(AgentTaskTitle));
+
+        ExcludeBilling := false;
+        if PATrial.IsActive() then begin
+            PATrial.IncrementTrialInvoiceCount();
+            TelemetryDictionary := PayablesAgent.GetCustomDimensions();
+            TelemetryDictionary.Add('TrialInvoiceCount', Format(PATrial.GetTrialInvoiceCount(), 0, 9));
+            TelemetryDictionary.Add('TrialInvoiceLimit', Format(PATrial.GetTrialInvoiceLimit(), 0, 9));
+            TelemetryDictionary.Add('ExcludeBilling', Format(ExcludeBilling, 0, 9));
+            Session.LogMessage('0000SEE', TrialModeTok, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+            ExcludeBilling := true;
+        end;
 
         AgentTaskMessageBuilder
             .Initialize(CopyStr(EDocument."Source Details", 1, 250), Message)
@@ -195,6 +211,7 @@ codeunit 3303 "Payables Agent" implements IAgentMetadata, IAgentFactory
             .Initialize(Agent."User Security ID", AgentTaskTitle)
             .SetExternalId(Format(EDocument."Entry No"))
             .AddTaskMessage(AgentTaskMessageBuilder)
+            //.SetBillingType(ExcludeBilling ? AgentTaskBillingType::Exclude : AgentTaskBillingType::Include) TODO: Deliverable 631113
             .Create();
     end;
 

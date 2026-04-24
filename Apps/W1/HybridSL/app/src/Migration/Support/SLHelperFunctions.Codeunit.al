@@ -13,6 +13,7 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Costing;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -111,6 +112,35 @@ codeunit 47023 "SL Helper Functions"
             'PurchPaymentDiscDebitAccount':
                 exit(SLAccountStagingSetup.PurchPmtDiscDebitAccount);
         end;
+    end;
+
+    procedure GetDimSetIDByFullSubaccount(Subaccount: Text[24]): Integer
+    var
+        SLAccountMigrator: Codeunit "SL Account Migrator";
+        SLPopulateAccountHistory: Codeunit "SL Populate Account History";
+        SubSegment_1: Code[20];
+        SubSegment_2: Code[20];
+        SubSegment_3: Code[20];
+        SubSegment_4: Code[20];
+        SubSegment_5: Code[20];
+        SubSegment_6: Code[20];
+        SubSegment_7: Code[20];
+        SubSegment_8: Code[20];
+        DimSetID: Integer;
+        NbrOfSegments: Integer;
+    begin
+        NbrOfSegments := SLPopulateAccountHistory.GetNumberOfSegments();
+        SubSegment_1 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 1, NbrOfSegments);
+        SubSegment_2 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 2, NbrOfSegments);
+        SubSegment_3 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 3, NbrOfSegments);
+        SubSegment_4 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 4, NbrOfSegments);
+        SubSegment_5 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 5, NbrOfSegments);
+        SubSegment_6 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 6, NbrOfSegments);
+        SubSegment_7 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 7, NbrOfSegments);
+        SubSegment_8 := SLAccountMigrator.GetSegmentValueFromSubaccount(Subaccount, 8, NbrOfSegments);
+
+        DimSetID := SLAccountMigrator.CreateDimSetFromSubSegments(SubSegment_1, SubSegment_2, SubSegment_3, SubSegment_4, SubSegment_5, SubSegment_6, SubSegment_7, SubSegment_8);
+        exit(DimSetID);
     end;
 
     procedure GetMigrationTypeTxt(): Text[250]
@@ -966,14 +996,16 @@ codeunit 47023 "SL Helper Functions"
         if SLSite.FindSet() then
             repeat
                 Location.Init();
-                Location.Code := Text.CopyStr(SLSite.SiteId, 1, 10);
+                Location.Code := CopyStr(SLSite.SiteId, 1, 10);
                 Location.Name := SLSite.Name;
                 Location.Address := SLSite.Addr1;
-                Location."Address 2" := Text.CopyStr(SLSite.Addr2, 1, 50);
-                Location.City := Text.CopyStr(SLSite.City, 1, 30);
+                Location."Address 2" := CopyStr(SLSite.Addr2, 1, 50);
+                Location.City := CopyStr(SLSite.City, 1, 30);
                 Location."Phone No." := SLSite.Phone;
                 Location."Fax No." := SLSite.Fax;
                 Location."Post Code" := SLSite.Zip;
+                Location.County := SLSite.State;
+                Location."Country/Region Code" := SLSite.Country;
                 Location.Insert(true);
             until SLSite.Next() = 0;
         Session.LogMessage('0000BK6', 'Created Locations', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
@@ -987,6 +1019,33 @@ codeunit 47023 "SL Helper Functions"
         SLConfiguration.Modify();
     end;
 
+    internal procedure CreateBankAccounts()
+    var
+        SLCashManagerMigrator: Codeunit "SL Cash Manager Migrator";
+    begin
+        SLCashManagerMigrator.MigrateCashManagerModule();
+        Session.LogMessage('0000BAC', 'Created Bank Accounts', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetBankAccountsCreated();
+    end;
+
+    internal procedure CreateOpenPurchaseOrders()
+    var
+        SLPOMigrator: Codeunit "SL PO Migrator";
+    begin
+        SLPOMigrator.MigrateOpenPurchaseOrders();
+        Session.LogMessage('0000OPO', 'Created Open Purchase Orders', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetOpenPOsCreated();
+    end;
+
+    internal procedure CreateOpenSalesOrders()
+    var
+        SLSOMigrator: Codeunit "SL SO Migrator";
+    begin
+        SLSOMigrator.MigrateOpenSalesOrders();
+        Session.LogMessage('0000OSO', 'Created Open Sales Orders', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetOpenSOsCreated();
+    end;
+
     internal procedure CreateProjectData()
     var
         SLProjectMigrator: Codeunit "SL Project Migrator";
@@ -994,6 +1053,18 @@ codeunit 47023 "SL Helper Functions"
         SLProjectMigrator.MigrateProjectModule();
         Session.LogMessage('0000PJD', 'Created Project Data', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
         SetProjectDataCreated();
+    end;
+
+    internal procedure CreateUnitOfMeasureIfNeeded(CodeToSet: Code[10]; DescriptionToSet: Text[50])
+    var
+        UnitOfMeasure: Record "Unit of Measure";
+    begin
+        if not UnitOfMeasure.Get(CodeToSet) then begin
+            UnitOfMeasure.Init();
+            UnitOfMeasure.Code := CodeToSet;
+            UnitOfMeasure.Description := DescriptionToSet;
+            UnitOfMeasure.Insert(true);
+        end;
     end;
 
     internal procedure DeleteExistingCustomerPostingGroups()
@@ -1139,7 +1210,30 @@ codeunit 47023 "SL Helper Functions"
             if not ProjectDataCreated() then
                 CreateProjectData();
 
+        if SLCompanyAdditionalSettings.GetCashManagerModuleEnabled() then
+            if not CashManagerDataCreated() then
+                CreateBankAccounts();
+
+        if SLCompanyAdditionalSettings.GetMigrateOpenPOs() then
+            if not OpenPODataCreated() then
+                CreateOpenPurchaseOrders();
+
+        if SLCompanyAdditionalSettings.GetMigrateOpenSOs() then
+            if not OpenSODataCreated() then
+                CreateOpenSalesOrders();
+
         exit(SLConfiguration.IsAllPostMigationDataCreated());
+    end;
+
+    procedure LogPostMigrationDataMessage(PostMigrationType: Code[30]; TableRef: Text[30]; MessageCode: Text[100]; MessageText: Text[250])
+    var
+        SLPostMigrationDataLog: Record "SL Post Migration Data Log";
+    begin
+        SLPostMigrationDataLog."Post Migration Type" := PostMigrationType;
+        SLPostMigrationDataLog."Table Reference" := TableRef;
+        SLPostMigrationDataLog."Message Code" := MessageCode;
+        SLPostMigrationDataLog."Message Text" := MessageText;
+        SLPostMigrationDataLog.Insert();
     end;
 
     internal procedure CheckMigrationStatus()
@@ -1189,10 +1283,49 @@ codeunit 47023 "SL Helper Functions"
         exit(SLConfiguration."Locations Created");
     end;
 
+    internal procedure CashManagerDataCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Cash Manager Data Created");
+    end;
+
+    internal procedure OpenPODataCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Open PO Data Created");
+    end;
+
+    internal procedure OpenSODataCreated(): Boolean
+    begin
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Open SO Data Created");
+    end;
+
     internal procedure ProjectDataCreated(): Boolean
     begin
         SLConfiguration.GetSingleInstance();
         exit(SLConfiguration."Project Data Created");
+    end;
+
+    internal procedure SetBankAccountsCreated()
+    begin
+        SLConfiguration.GetSingleInstance();
+        SLConfiguration."Cash Manager Data Created" := true;
+        SLConfiguration.Modify();
+    end;
+
+    internal procedure SetOpenPOsCreated()
+    begin
+        SLConfiguration.GetSingleInstance();
+        SLConfiguration."Open PO Data Created" := true;
+        SLConfiguration.Modify();
+    end;
+
+    internal procedure SetOpenSOsCreated()
+    begin
+        SLConfiguration.GetSingleInstance();
+        SLConfiguration."Open SO Data Created" := true;
+        SLConfiguration.Modify();
     end;
 
     internal procedure SetProjectDataCreated()

@@ -1,0 +1,704 @@
+tests:
+- name: AllLines10_001
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 685
+      description: Sta-bureau Elektrisch verstelbaar
+      quantity: 6
+    - unitPrice: 125
+      description: Monitorarm dubbele montage
+      quantity: 12
+    - unitPrice: 48
+      description: Laptopstandaard aluminium
+      quantity: 15
+    - unitPrice: 18.5
+      description: Kabelorganisator bureauset
+      quantity: 20
+    - unitPrice: 38
+      description: Voetsteun Ergonomisch verstelbaar
+      quantity: 10
+    - unitPrice: 42
+      description: Bureaumat groot leer
+      quantity: 8
+    - unitPrice: 24.5
+      description: Documenthouder verstelbaar
+      quantity: 12
+    - unitPrice: 85
+      description: Webcam HD 1080p Logitech
+      quantity: 10
+    - unitPrice: 95
+      description: Headset Ruisonderdrukkende USB
+      quantity: 15
+    - unitPrice: 28.5
+      description: Bureau-organizer Bamboe
+      quantity: 18
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Sta-bureau Elektrisch verstelbaar
+      unit_price: 685
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Monitorarm met dubbele montage
+      unit_price: 125
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Laptopstandaard aluminium
+      unit_price: 48
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Kabelorganisator bureauset
+      unit_price: 18.5
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Voetsteun Ergonomisch verstelbaar
+      unit_price: 38
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Bureaumat groot leer
+      unit_price: 42
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: Documenthouder verstelbaar
+      unit_price: 24.5
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Logitech HD 1080p-webcam
+      unit_price: 85
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Headset Ruisonderdrukkende USB
+      unit_price: 95
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Bureau-organizer Bamboe
+      unit_price: 28.5
+      quantity: 18
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 7
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 8
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 9
+      purchaseOrderLineIndex: 9
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 10
+      purchaseOrderLineIndex: 10
+- name: AllLines10_005
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 2850
+      description: Koffiezetapparaat Commerciële espresso
+      quantity: 2
+    - unitPrice: 385
+      description: Waterkoeler vloerstaand
+      quantity: 4
+    - unitPrice: 425
+      description: Magnetron Commercieel 1200W
+      quantity: 3
+    - unitPrice: 285
+      description: Koelkast Mini Compact 120L
+      quantity: 5
+    - unitPrice: 24.5
+      description: Koffiebonen Premium Blend 1kg
+      quantity: 20
+    - unitPrice: 8.5
+      description: Wegwerpbekers 12oz, verpakking 100
+      quantity: 30
+    - unitPrice: 35
+      description: Vervangingsset voor waterfilter
+      quantity: 12
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Vervangingsset voor waterfilter
+      unit_price: 35
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Commerciële espressomachine
+      unit_price: 2850
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: Wegwerpbekers 12oz, verpakking 100
+      unit_price: 8.5
+      quantity: 30
+    - discount: 0
+      tax_rate: 10
+      description: Commerciële magnetronoven van 1200 W
+      unit_price: 425
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Koffiebonen Premium Blend 1kg
+      unit_price: 24.5
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Koelkast Mini Compact 120L
+      unit_price: 285
+      quantity: 5
+    - discount: 0
+      tax_rate: 10
+      description: Waterkoeler vloerstaand
+      unit_price: 385
+      quantity: 4
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 6
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 7
+- name: AllLines3_004
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 85
+      description: Netwerkkabel Cat6 100m
+      quantity: 2
+    - unitPrice: 12.5
+      description: USB-flashdrive 64 GB
+      quantity: 25
+    - unitPrice: 95
+      description: Externe harde schijf 2TB
+      quantity: 6
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Externe harde schijf 2TB
+      unit_price: 95
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Netwerkkabel Cat6 100m
+      unit_price: 85
+      quantity: 2
+    - discount: 0
+      tax_rate: 10
+      description: USB-flashdrive van 64 GB
+      unit_price: 12.5
+      quantity: 25
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 3
+- name: AllLines5_003
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 425
+      description: PrinterHP LaserJet Pro
+      quantity: 3
+    - unitPrice: 78.5
+      description: Tonercartridge zwart
+      quantity: 12
+    - unitPrice: 82
+      description: Tonercartridge cyaan
+      quantity: 6
+    - unitPrice: 82
+      description: Tonercartridge magenta
+      quantity: 6
+    - unitPrice: 82
+      description: Tonercartridge geel
+      quantity: 6
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Tonercartridge cyaan
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Tonercartridge geel
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: HP LaserJet Pro-printer
+      unit_price: 425
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Tonercartridge magenta
+      unit_price: 82
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Tonercartridge zwart
+      unit_price: 78.5
+      quantity: 12
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 5
+- name: Challenge10_002
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 685
+      description: Bureau Staand Elektrisch
+      quantity: 12
+    - unitPrice: 895
+      description: Bureaustoel Herman Miller
+      quantity: 12
+    - unitPrice: 185
+      description: Bureauladevoetstuk met 3 lades
+      quantity: 10
+    - unitPrice: 35
+      description: Kabelbeheerset onder bureau
+      quantity: 15
+    - unitPrice: 48
+      description: Bureaumat Leer Groot
+      quantity: 14
+    - unitPrice: 58
+      description: Monitor Riser Hout
+      quantity: 8
+  - lines:
+    - unitPrice: 68
+      description: Taaklamp LED Architect
+      quantity: 14
+    - unitPrice: 28.5
+      description: Bureau-organizer Bamboe
+      quantity: 12
+    - unitPrice: 42
+      description: Voetsteun onder bureau verstelbaar
+      quantity: 10
+    - unitPrice: 52
+      description: Bureauhouder voor stopcontact
+      quantity: 15
+  - lines:
+    - unitPrice: 325
+      description: Archiefkast 4 Lade Staal
+      quantity: 6
+    - unitPrice: 245
+      description: Boekenkast 5 Planken Hout
+      quantity: 4
+    - unitPrice: 18.5
+      description: Plantpot Kantoor Keramiek
+      quantity: 20
+    - unitPrice: 32
+      description: Wandklok Modern Stil
+      quantity: 8
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Elektrisch staand bureau
+      unit_price: 685
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Herman Miller bureaustoel
+      unit_price: 895
+      quantity: 12
+    - discount: 0
+      tax_rate: 10
+      description: Bureauonderstel met 3 laden
+      unit_price: 185
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Kabelbeheerset voor onder het bureau
+      unit_price: 35
+      quantity: 15
+    - discount: 0
+      tax_rate: 10
+      description: Grote lederen bureaumat
+      unit_price: 48
+      quantity: 14
+    - discount: 0
+      tax_rate: 10
+      description: LED-architect-taaklamp
+      unit_price: 68
+      quantity: 14
+    - discount: 0
+      tax_rate: 10
+      description: Verstelbare voetsteun onder het bureau
+      unit_price: 42
+      quantity: 10
+    - discount: 0
+      tax_rate: 10
+      description: Stalen archiefkast met 4 laden
+      unit_price: 325
+      quantity: 6
+    invoice_no: INV-002
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 5
+      purchaseOrderLineIndex: 5
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 6
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 7
+      purchaseOrderLineIndex: 3
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 8
+      purchaseOrderLineIndex: 1
+- name: Challenge3_003
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 5.75
+      description: A4-papierriem 500 vel
+      quantity: 25
+    - unitPrice: 3.5
+      description: Ringmappen A4
+      quantity: 30
+    - unitPrice: 8.25
+      description: Whiteboard-markeringen ingesteld
+      quantity: 12
+  - lines:
+    - unitPrice: 18
+      description: Nietmachine, zwaar uitgevoerd
+      quantity: 15
+  - lines:
+    - unitPrice: 12
+      description: Bureauorganizer Kunststof
+      quantity: 20
+    - unitPrice: 45.5
+      description: Printercartridge Zwart HP
+      quantity: 8
+  invoice:
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: HP zwarte printercartridge
+      unit_price: 45.5
+      quantity: 8
+    - discount: 0
+      tax_rate: 10
+      description: A4-papierriem - 500 vellen
+      unit_price: 5.75
+      quantity: 25
+    - discount: 0
+      tax_rate: 10
+      description: Zware nietmachine
+      unit_price: 18
+      quantity: 15
+    invoice_no: INV-003
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 3
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 1
+- name: Challenge5_002
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 485
+      description: Printer Laserkleuren HP
+      quantity: 3
+    - unitPrice: 295
+      description: Flatbedscannerdocument
+      quantity: 2
+    - unitPrice: 75
+      description: Papierlade extra
+      quantity: 5
+    - unitPrice: 68.5
+      description: Tonercartridge cyaan
+      quantity: 6
+  - lines:
+    - unitPrice: 68.5
+      description: Tonercartridge magenta
+      quantity: 6
+    - unitPrice: 68.5
+      description: Tonercartridge geel
+      quantity: 6
+    - unitPrice: 58
+      description: Tonercartridge zwart
+      quantity: 8
+  - lines:
+    - unitPrice: 12
+      description: Printerkabel USB
+      quantity: 10
+  invoice:
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: HP kleurenlaserprinter
+      unit_price: 485
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Cyaan tonercartridge
+      unit_price: 68.5
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Gele tonercartridge
+      unit_price: 68.5
+      quantity: 6
+    - discount: 0
+      tax_rate: 10
+      description: Zwarte tonercartridge
+      unit_price: 58
+      quantity: 8
+    invoice_no: INV-002
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 1
+      purchaseOrderLineIndex: 1
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 4
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 3
+      purchaseOrderLineIndex: 2
+    - purchaseOrderIndex: 2
+      invoiceLineIndex: 4
+      purchaseOrderLineIndex: 3
+- name: NoLines3_001
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 250
+      description: Bureau Standaard
+      quantity: 5
+    - unitPrice: 180
+      description: Ergonomische bureaustoel
+      quantity: 5
+    - unitPrice: 220
+      description: LED-monitor 24 inch
+      quantity: 10
+  - lines:
+    - unitPrice: 1500
+      description: Dell XPS-laptop
+      quantity: 3
+    - unitPrice: 45
+      description: Draadloos toetsenbord
+      quantity: 8
+  - lines:
+    - unitPrice: 350
+      description: Netwerkswitch 24 poort
+      quantity: 2
+  invoice:
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Industriële stellingkast
+      unit_price: 280
+      quantity: 4
+    - discount: 0
+      tax_rate: 10
+      description: Veiligheidsbrilpakket
+      unit_price: 8.5
+      quantity: 50
+    - discount: 0
+      tax_rate: 10
+      description: Onderhoudsdienst voor heftrucks
+      unit_price: 450
+      quantity: 1
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: NoLines3_005
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 780
+      description: Projector Epson HD
+      quantity: 2
+    - unitPrice: 450
+      description: Projectiescherm Gemotoriseerd
+      quantity: 2
+    - unitPrice: 25
+      description: HDMI-kabel 10m
+      quantity: 10
+  - lines:
+    - unitPrice: 320
+      description: Conferentietelefoon Polycom
+      quantity: 3
+    - unitPrice: 180
+      description: WebcamLogitech 4K
+      quantity: 5
+    - unitPrice: 650
+      description: Luidsprekersysteem Bose
+      quantity: 2
+  invoice:
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Waterkoeler vloerstaand
+      unit_price: 220
+      quantity: 3
+    - discount: 0
+      tax_rate: 10
+      description: Waterflessen, 5 gallonverpakking
+      unit_price: 8
+      quantity: 20
+    - discount: 0
+      tax_rate: 10
+      description: Papieren bekerdispenser
+      unit_price: 15
+      quantity: 5
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    noOrderLineMatches: true
+- name: OneLine3_004
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+  - lines:
+    - unitPrice: 950
+      description: Serverrek 42U
+      quantity: 1
+    - unitPrice: 280
+      description: UPS-batterijback-up 1500VA
+      quantity: 3
+  - lines:
+    - unitPrice: 120
+      description: Patchpaneel 48 poort
+      quantity: 2
+    - unitPrice: 45
+      description: Kabelbeheerkit
+      quantity: 5
+    - unitPrice: 95
+      description: Netwerkkabel Cat6 Box
+      quantity: 4
+  invoice:
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    items:
+    - discount: 0
+      tax_rate: 10
+      description: Testservice voor brandalarmen
+      unit_price: 350
+      quantity: 1
+    - discount: 0
+      tax_rate: 10
+      description: 1500 VA UPS-batterijback-up
+      unit_price: 280
+      quantity: 3
+    invoice_no: INV-001
+    vendor_name: Strauss Medium
+  expected_data:
+    orderLineMatches:
+    - purchaseOrderIndex: 1
+      invoiceLineIndex: 2
+      purchaseOrderLineIndex: 2

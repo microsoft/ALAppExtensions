@@ -1,0 +1,575 @@
+# # Scenario AllLines10
+
+# **Description**: All invoice lines (up to 10) match a single open purchase order (up to 10 lines) for the same vendor.
+# **Purpose**: Extended scenario with more lines to test matching reliability with larger datasets.
+
+#  ## GIVEN
+#  - An invoice with maximum 10 lines 
+#  - A maximum of 1 open purchase order exists for the vendor.
+#  - Each order has maximum 10 lines.
+#  - Every line on the invoice matches a line on the purchase order.
+#  ## WHEN
+#  The agent processes the invoice.
+#  ## THEN
+#  All the invoice's lines match the open purchase order lines.
+
+tests:
+- name: AllLines10_001
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Standing Desk Electric Adjustable
+          quantity: 6
+          unitPrice: 685.00
+        - description: Monitor Arm Dual Mount
+          quantity: 12
+          unitPrice: 125.00
+        - description: Laptop Stand Aluminum
+          quantity: 15
+          unitPrice: 48.00
+        - description: Cable Organizer Desk Set
+          quantity: 20
+          unitPrice: 18.50
+        - description: Footrest Ergonomic Adjustable
+          quantity: 10
+          unitPrice: 38.00
+        - description: Desk Mat Large Leather
+          quantity: 8
+          unitPrice: 42.00
+        - description: Document Holder Adjustable
+          quantity: 12
+          unitPrice: 24.50
+        - description: Webcam HD 1080p Logitech
+          quantity: 10
+          unitPrice: 85.00
+        - description: Headset Noise Cancelling USB
+          quantity: 15
+          unitPrice: 95.00
+        - description: Desk Organizer Bamboo
+          quantity: 18
+          unitPrice: 28.50
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 15/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Standing Desk Electric Adjustable
+      quantity: 6
+      unit_price: 685.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Dual Mount Monitor Arm
+      quantity: 12
+      unit_price: 125.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Laptop Stand Aluminum
+      quantity: 15
+      unit_price: 48.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Cable Organizer Desk Set
+      quantity: 20
+      unit_price: 18.50
+      discount: 0.00
+      tax_rate: 10
+    - description: Footrest Ergonomic Adjustable
+      quantity: 10
+      unit_price: 38.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Desk Mat Large Leather
+      quantity: 8
+      unit_price: 42.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Document Holder Adjustable
+      quantity: 12
+      unit_price: 24.50
+      discount: 0.00
+      tax_rate: 10
+    - description: Logitech HD 1080p Webcam
+      quantity: 10
+      unit_price: 85.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Headset Noise Cancelling USB
+      quantity: 15
+      unit_price: 95.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Desk Organizer Bamboo
+      quantity: 18
+      unit_price: 28.50
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Standing Desk Electric Adjustable
+        invoiceLineIndex: 1 # Standing Desk Electric Adjustable
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # Monitor Arm Dual Mount
+        invoiceLineIndex: 2 # Dual Mount Monitor Arm
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 3 # Laptop Stand Aluminum
+        invoiceLineIndex: 3 # Laptop Stand Aluminum
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 4 # Cable Organizer Desk Set
+        invoiceLineIndex: 4 # Cable Organizer Desk Set
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 5 # Footrest Ergonomic Adjustable
+        invoiceLineIndex: 5 # Footrest Ergonomic Adjustable
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 6 # Desk Mat Large Leather
+        invoiceLineIndex: 6 # Desk Mat Large Leather
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 7 # Document Holder Adjustable
+        invoiceLineIndex: 7 # Document Holder Adjustable
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 8 # Webcam HD 1080p Logitech
+        invoiceLineIndex: 8 # Logitech HD 1080p Webcam
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 9 # Headset Noise Cancelling USB
+        invoiceLineIndex: 9 # Headset Noise Cancelling USB
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 10 # Desk Organizer Bamboo
+        invoiceLineIndex: 10 # Desk Organizer Bamboo
+
+- name: AllLines10_002
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Server Rack 42U Standard
+          quantity: 2
+          unitPrice: 1250.00
+        - description: Server Dell PowerEdge R750
+          quantity: 2
+          unitPrice: 4800.00
+        - description: RAM DDR4 32GB ECC Module
+          quantity: 16
+          unitPrice: 185.00
+        - description: SSD NVMe 2TB Enterprise
+          quantity: 8
+          unitPrice: 425.00
+        - description: Network Card 10Gb Dual Port
+          quantity: 4
+          unitPrice: 385.00
+        - description: KVM Switch 8 Port Rack Mount
+          quantity: 2
+          unitPrice: 295.00
+        - description: Power Distribution Unit PDU
+          quantity: 4
+          unitPrice: 225.00
+        - description: Rack Mount Shelf 2U
+          quantity: 6
+          unitPrice: 68.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 16/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: SSD NVMe 2TB Enterprise
+      quantity: 8
+      unit_price: 425.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Dell PowerEdge R750 Server
+      quantity: 2
+      unit_price: 4800.00
+      discount: 0.00
+      tax_rate: 10
+    - description: KVM Switch 8 Port Rack Mount
+      quantity: 2
+      unit_price: 295.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Rack Mount Shelf 2U
+      quantity: 6
+      unit_price: 68.00
+      discount: 0.00
+      tax_rate: 10
+    - description: 32GB DDR4 ECC RAM Module
+      quantity: 16
+      unit_price: 185.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Power Distribution Unit PDU
+      quantity: 4
+      unit_price: 225.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Server Rack 42U Standard
+      quantity: 2
+      unit_price: 1250.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Network Card 10Gb Dual Port
+      quantity: 4
+      unit_price: 385.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Server Rack 42U Standard
+        invoiceLineIndex: 7 # Server Rack 42U Standard
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # Server Dell PowerEdge R750
+        invoiceLineIndex: 2 # Dell PowerEdge R750 Server
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 3 # RAM DDR4 32GB ECC Module
+        invoiceLineIndex: 5 # 32GB DDR4 ECC RAM Module
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 4 # SSD NVMe 2TB Enterprise
+        invoiceLineIndex: 1 # SSD NVMe 2TB Enterprise
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 5 # Network Card 10Gb Dual Port
+        invoiceLineIndex: 8 # Network Card 10Gb Dual Port
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 6 # KVM Switch 8 Port Rack Mount
+        invoiceLineIndex: 3 # KVM Switch 8 Port Rack Mount
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 7 # Power Distribution Unit PDU
+        invoiceLineIndex: 6 # Power Distribution Unit PDU
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 8 # Rack Mount Shelf 2U
+        invoiceLineIndex: 4 # Rack Mount Shelf 2U
+
+- name: AllLines10_003
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Conference Phone Polycom Trio
+          quantity: 5
+          unitPrice: 685.00
+        - description: Video Conference Camera 4K
+          quantity: 5
+          unitPrice: 495.00
+        - description: Projector Epson 4000 Lumens
+          quantity: 3
+          unitPrice: 1250.00
+        - description: Projection Screen Motorized 120in
+          quantity: 3
+          unitPrice: 785.00
+        - description: HDMI Cable 15m Professional
+          quantity: 10
+          unitPrice: 42.00
+        - description: Presentation Remote Laser
+          quantity: 15
+          unitPrice: 38.00
+        - description: Wireless Microphone System
+          quantity: 4
+          unitPrice: 325.00
+        - description: Speaker System Ceiling Mount
+          quantity: 8
+          unitPrice: 185.00
+        - description: Audio Mixer 8 Channel
+          quantity: 2
+          unitPrice: 425.00
+        - description: Video Splitter HDMI 4 Port
+          quantity: 6
+          unitPrice: 95.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 17/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Video Splitter HDMI 4 Port
+      quantity: 6
+      unit_price: 95.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Epson 4000 Lumens Projector
+      quantity: 3
+      unit_price: 1250.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Audio Mixer 8 Channel
+      quantity: 2
+      unit_price: 425.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Conference Phone Polycom Trio
+      quantity: 5
+      unit_price: 685.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Presentation Remote Laser
+      quantity: 15
+      unit_price: 38.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Wireless Microphone System
+      quantity: 4
+      unit_price: 325.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Professional HDMI Cable 15m
+      quantity: 10
+      unit_price: 42.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Speaker System Ceiling Mount
+      quantity: 8
+      unit_price: 185.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Video Conference Camera 4K
+      quantity: 5
+      unit_price: 495.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Projection Screen Motorized 120in
+      quantity: 3
+      unit_price: 785.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Conference Phone Polycom Trio
+        invoiceLineIndex: 4 # Conference Phone Polycom Trio
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # Video Conference Camera 4K
+        invoiceLineIndex: 9 # Video Conference Camera 4K
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 3 # Projector Epson 4000 Lumens
+        invoiceLineIndex: 2 # Epson 4000 Lumens Projector
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 4 # Projection Screen Motorized 120in
+        invoiceLineIndex: 10 # Projection Screen Motorized 120in
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 5 # HDMI Cable 15m Professional
+        invoiceLineIndex: 7 # Professional HDMI Cable 15m
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 6 # Presentation Remote Laser
+        invoiceLineIndex: 5 # Presentation Remote Laser
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 7 # Wireless Microphone System
+        invoiceLineIndex: 6 # Wireless Microphone System
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 8 # Speaker System Ceiling Mount
+        invoiceLineIndex: 8 # Speaker System Ceiling Mount
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 9 # Audio Mixer 8 Channel
+        invoiceLineIndex: 3 # Audio Mixer 8 Channel
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 10 # Video Splitter HDMI 4 Port
+        invoiceLineIndex: 1 # Video Splitter HDMI 4 Port
+
+- name: AllLines10_004
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Storage Cabinet Lockable Metal
+          quantity: 8
+          unitPrice: 325.00
+        - description: Filing Cabinet 4 Drawer Vertical
+          quantity: 12
+          unitPrice: 285.00
+        - description: Bookshelf 5 Tier Wooden
+          quantity: 10
+          unitPrice: 195.00
+        - description: Magazine Rack Wall Mount
+          quantity: 15
+          unitPrice: 42.00
+        - description: Coat Rack Standing Metal
+          quantity: 6
+          unitPrice: 68.00
+        - description: Umbrella Stand Stainless Steel
+          quantity: 8
+          unitPrice: 35.00
+        - description: Bulletin Board Cork 90x60cm
+          quantity: 10
+          unitPrice: 28.50
+        - description: Name Plate Desk Aluminum
+          quantity: 25
+          unitPrice: 12.50
+        - description: Trash Can Recycling 3 Bin
+          quantity: 12
+          unitPrice: 85.00
+        - description: Step Stool 2 Step Foldable
+          quantity: 8
+          unitPrice: 38.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 18/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Umbrella Stand Stainless Steel
+      quantity: 8
+      unit_price: 35.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Storage Cabinet Lockable Metal
+      quantity: 8
+      unit_price: 325.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Step Stool 2 Step Foldable
+      quantity: 8
+      unit_price: 38.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Name Plate Desk Aluminum
+      quantity: 25
+      unit_price: 12.50
+      discount: 0.00
+      tax_rate: 10
+    - description: Bookshelf 5 Tier Wooden
+      quantity: 10
+      unit_price: 195.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Bulletin Board Cork 90x60cm
+      quantity: 10
+      unit_price: 28.50
+      discount: 0.00
+      tax_rate: 10
+    - description: Vertical Filing Cabinet 4 Drawer
+      quantity: 12
+      unit_price: 285.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Trash Can Recycling 3 Bin
+      quantity: 12
+      unit_price: 85.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Magazine Rack Wall Mount
+      quantity: 15
+      unit_price: 42.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Coat Rack Standing Metal
+      quantity: 6
+      unit_price: 68.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Storage Cabinet Lockable Metal
+        invoiceLineIndex: 2 # Storage Cabinet Lockable Metal
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # Filing Cabinet 4 Drawer Vertical
+        invoiceLineIndex: 7 # Vertical Filing Cabinet 4 Drawer
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 3 # Bookshelf 5 Tier Wooden
+        invoiceLineIndex: 5 # Bookshelf 5 Tier Wooden
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 4 # Magazine Rack Wall Mount
+        invoiceLineIndex: 9 # Magazine Rack Wall Mount
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 5 # Coat Rack Standing Metal
+        invoiceLineIndex: 10 # Coat Rack Standing Metal
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 6 # Umbrella Stand Stainless Steel
+        invoiceLineIndex: 1 # Umbrella Stand Stainless Steel
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 7 # Bulletin Board Cork 90x60cm
+        invoiceLineIndex: 6 # Bulletin Board Cork 90x60cm
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 8 # Name Plate Desk Aluminum
+        invoiceLineIndex: 4 # Name Plate Desk Aluminum
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 9 # Trash Can Recycling 3 Bin
+        invoiceLineIndex: 8 # Trash Can Recycling 3 Bin
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 10 # Step Stool 2 Step Foldable
+        invoiceLineIndex: 3 # Step Stool 2 Step Foldable
+
+- name: AllLines10_005
+  test_setup: PA-OrderMatch.yaml
+  purchaseOrdersToCreate:
+    - lines:
+        - description: Coffee Machine Commercial Espresso
+          quantity: 2
+          unitPrice: 2850.00
+        - description: Water Cooler Floor Standing
+          quantity: 4
+          unitPrice: 385.00
+        - description: Microwave Oven Commercial 1200W
+          quantity: 3
+          unitPrice: 425.00
+        - description: Refrigerator Mini Compact 120L
+          quantity: 5
+          unitPrice: 285.00
+        - description: Coffee Beans Premium Blend 1kg
+          quantity: 20
+          unitPrice: 24.50
+        - description: Disposable Cups 12oz Pack 100
+          quantity: 30
+          unitPrice: 8.50
+        - description: Water Filter Replacement Set
+          quantity: 12
+          unitPrice: 35.00
+  invoice:
+    invoice_no: INV-001
+    invoice_date: 19/11/2025
+    template: invoice_basic.html
+    vendor_name: "Strauss Medium"
+    items:
+    - description: Water Filter Replacement Set
+      quantity: 12
+      unit_price: 35.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Commercial Espresso Coffee Machine
+      quantity: 2
+      unit_price: 2850.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Disposable Cups 12oz Pack 100
+      quantity: 30
+      unit_price: 8.50
+      discount: 0.00
+      tax_rate: 10
+    - description: 1200W Commercial Microwave Oven
+      quantity: 3
+      unit_price: 425.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Coffee Beans Premium Blend 1kg
+      quantity: 20
+      unit_price: 24.50
+      discount: 0.00
+      tax_rate: 10
+    - description: Refrigerator Mini Compact 120L
+      quantity: 5
+      unit_price: 285.00
+      discount: 0.00
+      tax_rate: 10
+    - description: Water Cooler Floor Standing
+      quantity: 4
+      unit_price: 385.00
+      discount: 0.00
+      tax_rate: 10
+  expected_data:
+    orderLineMatches:
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 1 # Coffee Machine Commercial Espresso
+        invoiceLineIndex: 2 # Commercial Espresso Coffee Machine
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 2 # Water Cooler Floor Standing
+        invoiceLineIndex: 7 # Water Cooler Floor Standing
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 3 # Microwave Oven Commercial 1200W
+        invoiceLineIndex: 4 # 1200W Commercial Microwave Oven
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 4 # Refrigerator Mini Compact 120L
+        invoiceLineIndex: 6 # Refrigerator Mini Compact 120L
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 5 # Coffee Beans Premium Blend 1kg
+        invoiceLineIndex: 5 # Coffee Beans Premium Blend 1kg
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 6 # Disposable Cups 12oz Pack 100
+        invoiceLineIndex: 3 # Disposable Cups 12oz Pack 100
+      - purchaseOrderIndex: 1
+        purchaseOrderLineIndex: 7 # Water Filter Replacement Set
+        invoiceLineIndex: 1 # Water Filter Replacement Set

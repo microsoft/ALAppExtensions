@@ -83,6 +83,7 @@ codeunit 139511 "Intrastat IT Test"
                             Locked = true;
         AmountErr: Label 'Amount must be %1 in %2.', Comment = '%1= Amount Value, %2= Table Caption.';
         SourceEntryNoErr: Label 'Source Entry No. should match FA Ledger Entry No.';
+        DateNotInRageErr: Label 'Date %1 is not within the reporting period.', Comment = '%1 - Date';
 
     [Test]
     [Scope('OnPrem')]
@@ -3078,6 +3079,64 @@ codeunit 139511 "Intrastat IT Test"
 
         // [THEN] Verify Source Entry No. is set and matches the FA Ledger Entry.
         Assert.AreEqual(FALedgerEntry."Entry No.", IntrastatReportLine."Source Entry No.", SourceEntryNoErr);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure ValidateIntrastatReportLineDateWithMonthlyPeriod()
+    var
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        PeriodDate: Date;
+    begin
+        // [SCENARIO 618895] Validate Date field on Intrastat Report Line is within Monthly Statistics Period range
+        Initialize();
+
+        // [GIVEN] Create Intrastat Report with Statistics Period 
+        LibraryIntrastat.CreateIntrastatReportLine(IntrastatReportLine);
+
+        // [GIVEN] Update Intrastat Report Header with Periodicity = Month
+        IntrastatReportHeader.Get(IntrastatReportLine."Intrastat No.");
+        IntrastatReportHeader.Validate("Periodicity", IntrastatReportHeader.Periodicity::Month);
+        IntrastatReportHeader.Modify();
+
+        // [GIVEN] Intrastat Report Line with outside of period range
+        PeriodDate := CalcDate('<-2M>', WorkDate());
+
+        // [WHEN] Update Line Date to value outside Statistics Period range
+        asserterror IntrastatReportLine.Validate(Date, PeriodDate);
+
+        // [THEN] Error is thrown that Date must be within period range
+        Assert.ExpectedError(StrSubstNo(DateNotInRageErr, PeriodDate));
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure ValidateIntrastatReportLineDateWithQuarterlyPeriod()
+    var
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        PeriodDate: Date;
+    begin
+        // [SCENARIO 618895] Validate Date field on Intrastat Report Line is within Monthly Statistics Period range
+        Initialize();
+
+        // [GIVEN] Create Intrastat Report with Statistics Period 
+        LibraryIntrastat.CreateIntrastatReportLine(IntrastatReportLine);
+
+        // [GIVEN] Update Intrastat Report Header with Periodicity = Month
+        IntrastatReportHeader.Get(IntrastatReportLine."Intrastat No.");
+        IntrastatReportHeader.Validate("Periodicity", IntrastatReportHeader.Periodicity::Quarter);
+        IntrastatReportHeader.Modify();
+
+        // [GIVEN] Intrastat Report Line with outside of period range
+        PeriodDate := CalcDate('<+4M>', WorkDate());
+
+        // [WHEN] Update Line Date to value outside Statistics Period range
+        asserterror IntrastatReportLine.Validate(Date, PeriodDate);
+
+        // [THEN] Error is thrown that Date must be within period range
+        Assert.ExpectedError(StrSubstNo(DateNotInRageErr, PeriodDate));
     end;
 
     local procedure Initialize()

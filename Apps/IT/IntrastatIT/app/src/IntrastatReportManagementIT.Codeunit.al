@@ -193,30 +193,8 @@ codeunit 148121 "Intrastat Report Management IT"
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnAfterInitRequestPage', '', true, true)]
     local procedure OnAfterInitRequestPage(var IntrastatReportHeader: Record "Intrastat Report Header"; var AmountInclItemCharges: Boolean; var StartDate: Date; var EndDate: Date; var CostRegulationEnable: Boolean);
-    var
-        Century, Year, Quarter, Month : Integer;
     begin
-        IntrastatReportHeader.TestField("Statistics Period");
-        Century := Date2DMY(WorkDate(), 3) div 100;
-        Evaluate(Year, CopyStr(IntrastatReportHeader."Statistics Period", 1, 2));
-        Year := Year + Century * 100;
-
-        if IntrastatReportHeader.Periodicity = IntrastatReportHeader.Periodicity::Month then begin
-            Evaluate(Month, CopyStr(IntrastatReportHeader."Statistics Period", 3, 2));
-            StartDate := DMY2Date(1, Month, Year);
-        end else begin
-            Evaluate(Quarter, CopyStr(IntrastatReportHeader."Statistics Period", 4, 1));
-            StartDate := CalcDate(StrSubstNo('<+%1Q>', Quarter - 1), DMY2Date(1, 1, Year));
-        end;
-
-        case IntrastatReportHeader.Periodicity of
-            IntrastatReportHeader.Periodicity::Month:
-                EndDate := CalcDate('<+1M-1D>', StartDate);
-            IntrastatReportHeader.Periodicity::Quarter:
-                EndDate := CalcDate('<+1Q-1D>', StartDate);
-            IntrastatReportHeader.Periodicity::Year:
-                EndDate := CalcDate('<+1Y-1D>', StartDate);
-        end;
+        IntrastatReportHeader.GetStartEndOfPeriod(StartDate, EndDate);
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeFilterItemLedgerEntry', '', true, true)]
@@ -388,6 +366,22 @@ codeunit 148121 "Intrastat Report Management IT"
     begin
         if IntrastatReportLine."Source Entry No." = 0 then
             IntrastatReportLine."Source Entry No." := FALedgerEntry."Entry No.";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Intrastat Report Line", 'OnBeforeCheckDateInRange', '', true, true)]
+    local procedure OnBeforeCheckDateInRange(var IntrastatReportLine: Record "Intrastat Report Line"; var IsHandled: Boolean);
+    var
+        IntrastatReportHeader2: Record "Intrastat Report Header";
+        StartDate: Date;
+        EndDate: Date;
+    begin
+        IsHandled := true;
+
+        IntrastatReportHeader2.SetLoadFields("Statistics Period", Periodicity);
+        IntrastatReportHeader2.Get(IntrastatReportLine."Intrastat No.");
+        IntrastatReportHeader2.GetStartEndOfPeriod(StartDate, EndDate);
+        if (IntrastatReportLine.Date < StartDate) or (IntrastatReportLine.Date > EndDate) then
+            Error(DateNotInRageErr, IntrastatReportLine.Date);
     end;
 
     local procedure CalculateTotals(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; AddCurrencyFactor: Decimal; var CurrReportSkip: Boolean; AmountInclItemCharges: Boolean)
@@ -1289,6 +1283,7 @@ codeunit 148121 "Intrastat Report Management IT"
         FileNameLbl: Label 'scambi.cee', Locked = true;
         TotalInvoicedQty, TotalAmt : Decimal;
         TotalRoundedAmount, LineCount : Integer;
+        DateNotInRageErr: Label 'Date %1 is not within the reporting period.', Comment = '%1 - Date';
         PeriodAlreadyReportedQst: Label 'You''ve already submitted the report for this period.\Do you want to continue?';
         DataExchangeXMLNPMP1Txt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><root><DataExchDef Code="INTRA-2022-IT-NPM" Name="Intrastat Report 2022 IT (Normal Purchase Monthly)" Type="5" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="148122" ColumnSeparator="1" FileType="2" ReadingWritingCodeunit="1276"><DataExchLineDef LineType="0" Code="DEFAULT" Name="DEFAULT" ColumnCount="20"><DataExchColumnDef ColumnNo="1" Name="EUROX" Show="false" DataType="0" Length="5" TextPaddingRequired="false" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="2" Name="Company VAT" Show="false" DataType="0" Length="11" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="3" Name="File No." Show="false" DataType="0" Length="6" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="4" Name="Type" Show="false" DataType="0" Length="1" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="5" Name="Progressive No." Show="false" DataType="0" Length="5" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="6" Name="Country/Region Code" Show="false" DataType="0" Length="2" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="7" Name="Partner VAT ID" Show="false" DataType="0" Length="12" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="8" Name="Amount" Show="false" DataType="0" Length="13" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="9" Name="Source Currency Amount" Show="false" DataType="0" Length="13" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="10" Name="Transaction Type" Show="false" DataType="0" Length="1" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="11" Name="Tariff No." Show="false" DataType="0" Length="8" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="12" Name="Total Weight" Show="false" DataType="0" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="13" Name="Supplementary Quantity" Show="false" DataType="0" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="14" Name="Statistical Value" Show="false" DataType="0" Length="13" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="15" Name="Group Code" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="16" Name="Transport Method" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="17" Name="Transaction Specification" Show="false" DataType="0" Length="2" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="18" Name="Country/Region of Origin Code" Show="false" DataType="0" Length="2" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="19" Name="Area" Show="false" DataType="0" Length="2" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchColumnDef ColumnNo="20" Name="Transaction Type" Show="false" DataType="0" Length="1" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" /><DataExchMapping TableId="4812" Name="" KeyIndex="10" MappingCodeunit="1269" PostMappingCodeunit="148123"><DataExchFieldMapping ColumnNo="1" Optional="true" UseDefaultValue="true" DefaultValue="EUROX" /><DataExchFieldMapping ColumnNo="2" FieldID="148121" Optional="true" /><DataExchFieldMapping ColumnNo="3" FieldID="148122" Optional="true" TransformationRule="NUMBERSONLY"><TransformationRules><Code>NUMBERSONLY</Code><Description>Numbers Only</Description><TransformationType>6</TransformationType><FindValue>\D+</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="4" Optional="true" UseDefaultValue="true" DefaultValue="1" /><DataExchFieldMapping ColumnNo="5" FieldID="46" Optional="true" /><DataExchFieldMapping ColumnNo="6" FieldID="101" Optional="true" /><DataExchFieldMapping ColumnNo="7" FieldID="29" Optional="true" /><DataExchFieldMapping ColumnNo="8" FieldID="13" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules><Code>ALPHANUM_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture />',
                             Locked = true; // will be replaced with file import when available

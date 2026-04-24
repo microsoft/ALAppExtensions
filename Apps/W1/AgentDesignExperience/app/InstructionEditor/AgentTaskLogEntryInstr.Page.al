@@ -336,9 +336,9 @@ page 4362 "Agent Task Log Entry Instr"
     local procedure UpdateControls()
     var
         User: Record User;
-        AgentTaskImpl: Codeunit "Agent Task Impl.";
+        AgentTask: Codeunit "Agent Task";
     begin
-        DetailsTxt := AgentTaskImpl.GetDetailsForAgentTaskLogEntry(Rec);
+        DetailsTxt := AgentTask.GetLogEntryDetails(Rec);
         case Rec.Level of
             Rec.Level::Error:
                 TypeStyle := Format(PageStyle::Unfavorable);

@@ -55,6 +55,7 @@ codeunit 18143 "GST Sales Validation"
         NonExemptedLinesErr: Label 'All lines in the document are not GST Exempted, the preferred Invoice type should be according to GST Customer Type.';
         GSTDependencyTypeErr: Label 'GST dependency type must be Bill to Address or Ship to Address';
         GSTGroupCodeEqualErr: Label 'GST Group Code must be same in Sales Document Lines for the Document Type %1 and Document No. %2.', Comment = '%1 = Document Type ; %2 = Document No.';
+        LengthErr: Label 'The Length of the GST Registration Nos. must be 15.';
 
     procedure GetPostInvoiceNoSeries(var SalesHeader: Record "Sales Header")
     var
@@ -428,7 +429,10 @@ codeunit 18143 "GST Sales Validation"
     [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'GST Registration No.', False, False)]
     local procedure ValidateGSTRegistrationNo(var Rec: Record Customer)
     begin
-        CustGSTRegistrationNo(Rec);
+        if Rec."Govt. Undertaking" then
+            CheckGSTRegistrationLength(Rec."GST Registration No.")
+        else
+            CustGSTRegistrationNo(Rec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'GST Registration Type', False, False)]
@@ -437,10 +441,22 @@ codeunit 18143 "GST Sales Validation"
         CustGSTRegistrationType(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'GST Customer Type', False, False)]
+    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'GST Customer Type', false, false)]
     local procedure ValidateCustGSTCustomerType(var Rec: Record Customer)
     begin
-        CustGSTCustomerType(Rec);
+        if Rec."Govt. Undertaking" then
+            CheckGSTRegistrationLength(Rec."GST Registration No.")
+        else
+            CustGSTCustomerType(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'Govt. Undertaking', false, false)]
+    local procedure ValidateCustGSTGovtUndertaking(var Rec: Record Customer)
+    begin
+        if not Rec."Govt. Undertaking" then
+            CustGSTCustomerType(Rec)
+        else
+            CheckGSTRegistrationLength(Rec."GST Registration No.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'ARN No.', False, False)]
@@ -1436,6 +1452,21 @@ codeunit 18143 "GST Sales Validation"
                 Customer."GST Customer Type" := "GST Customer Type"::" ";
     end;
 
+    local procedure CheckGSTRegistrationLength(RegistrationNo: Code[20])
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckCustomerGSTRegistrationNo(RegistrationNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        if RegistrationNo = '' then
+            exit;
+
+        if StrLen(RegistrationNo) <> 15 then
+            Error(LengthErr);
+    end;
+
     local procedure CustGSTRegistrationType(var Customer: Record Customer)
     begin
         if not (Customer."GST Customer Type" in ["GST Customer Type"::Registered, "GST Customer Type"::" "]) and
@@ -2091,6 +2122,11 @@ codeunit 18143 "GST Sales Validation"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterShipToAddrfields(var SalesHeader: Record "Sales Header"; ShipToAddress: Record "Ship-to Address")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckcustomerGSTRegistrationNo(RegistrationNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

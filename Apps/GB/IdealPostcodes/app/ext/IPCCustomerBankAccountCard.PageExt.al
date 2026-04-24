@@ -16,7 +16,7 @@ pageextension 9406 "IPC Customer Bank Account Card" extends "Customer Bank Accou
         }
         modify("Post Code")
         {
-            trigger OnBeforeValidate()
+            trigger OnAfterValidate()
             begin
                 HandleAddressLookupVisibility();
                 IPCAddressLookupHelper.NotifyUserAboutAddressProviderCapabilities();

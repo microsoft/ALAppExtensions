@@ -1,0 +1,8 @@
+﻿Code,Name,Address,Address 2,City,Phone No.,Fax No.,ZIP Code,State,Country/Region Code
+200,Building 200                  ,,,,,,,,
+400,Building 400                  ,,,,,,,,
+CH,Chicago                       ,12345 Main                                                  ,,Chicago                       ,3125550100                    ,3125550101                    ,019010,,
+LA,Los Angeles                   ,1 World Way                                                 ,,Los Angeles                   ,5555550150                    ,5555550151                    ,90045-5803,,
+NY,New York                      ,123 Avenue St                                               ,,New York                      ,5555550168                    ,5555550169                    ,45860,,
+OH-DUB,Ohio - Dublin                 ,,,Dublin                        ,,,,,
+SF,San Francisco                 ,324 Fifth Street                                            ,,San Francisco                 ,5555550199                    ,5555550198                    ,01009,,

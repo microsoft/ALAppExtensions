@@ -1,0 +1,2120 @@
+name: PA-TS-Metrics-02
+language: en-US
+tests:
+- name: PA-INV-V028-002
+  description: VendorNo=V028;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=AG014;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Precision Cutting Tools Inc.
+    Address: 2341 Blade Avenue
+    Address 2: ''
+    City: Greensboro
+    Country/Region Code: US
+    Post Code: '27408'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V028-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 66100
+    Description: Circular saw blades 12 inch
+    Quantity: 18.0
+    Unit Price: 125.0
+  - Type: 1
+    No.: 66100
+    Description: Countersink bits set
+    Quantity: 12.0
+    Unit Price: 38.5
+  - Type: 1
+    No.: 66100
+    Description: Forstner bits woodworking
+    Quantity: 18.0
+    Unit Price: 28.0
+  - Type: 1
+    No.: 66100
+    Description: Planer blades carbide
+    Quantity: 8.0
+    Unit Price: 185.0
+  - Type: 1
+    No.: 66100
+    Description: Shaper cutters profile
+    Quantity: 12.0
+    Unit Price: 95.0
+  - Type: 1
+    No.: 66100
+    Description: Carbide saw blades 10 inch
+    Quantity: 24.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 66100
+    Description: Tool holder accessories
+    Quantity: 28.0
+    Unit Price: 38.0
+  - Type: 1
+    No.: 66100
+    Description: Annual tooling supply contract
+    Quantity: 1.0
+    Unit Price: 12000.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V028-002
+        Buy-from Vendor Name: Precision Cutting Tools
+        Buy-from Address: 2341 Blade Avenue
+        Buy-from Address 2: ''
+        Buy-from City: Greensboro
+        Buy-from Post Code: '27408'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Circular saw blades 12 inch
+        Quantity: 18.0
+        Unit Cost: 125.0
+      - Line No.: 20000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Countersink bits set
+        Quantity: 12.0
+        Unit Cost: 38.5
+      - Line No.: 30000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Forstner bits woodworking
+        Quantity: 18.0
+        Unit Cost: 28.0
+      - Line No.: 40000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Planer blades carbide
+        Quantity: 8.0
+        Unit Cost: 185.0
+      - Line No.: 50000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Shaper cutters profile
+        Quantity: 12.0
+        Unit Cost: 95.0
+      - Line No.: 60000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Carbide saw blades 10 inch
+        Quantity: 24.0
+        Unit Cost: 85.0
+      - Line No.: 70000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Tool holder accessories
+        Quantity: 28.0
+        Unit Cost: 38.0
+      - Line No.: 80000
+        Type: 1
+        No.: 66100
+        Deferral Code: 12M
+        Description: Annual tooling supply contract
+        Quantity: 1.0
+        Unit Cost: 12000.0
+- name: PA-INV-V013-001
+  description: VendorNo=V013;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG005;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Precision CNC Manufacturing
+    Address: 4521 Machine Shop Road
+    Address 2: ''
+    City: Concord
+    Country/Region Code: US
+    Post Code: '28025'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V013-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 51100
+    Description: Custom mounting plates
+    Quantity: 285.0
+    Unit Price: 22.0
+  - Type: 1
+    No.: 51100
+    Description: Custom joint connectors
+    Quantity: 685.0
+    Unit Price: 8.95
+  - Type: 1
+    No.: 51100
+    Description: Aluminum spacers machined
+    Quantity: 1450.0
+    Unit Price: 3.25
+  - Type: 1
+    No.: 51100
+    Description: CNC machined hinges specialty
+    Quantity: 685.0
+    Unit Price: 6.95
+  - Type: 1
+    No.: 51100
+    Description: CNC machined pivot points
+    Quantity: 485.0
+    Unit Price: 14.75
+  - Type: 1
+    No.: 51100
+    Description: Custom metal brackets CNC
+    Quantity: 850.0
+    Unit Price: 8.5
+  - Type: 1
+    No.: 51100
+    Description: CNC machined shafts
+    Quantity: 325.0
+    Unit Price: 24.0
+  - Type: 1
+    No.: 51100
+    Description: Precision drawer slides machined
+    Quantity: 425.0
+    Unit Price: 12.75
+  - Type: 1
+    No.: 51100
+    Description: Custom cam mechanisms
+    Quantity: 185.0
+    Unit Price: 32.0
+  - Type: 1
+    No.: 51100
+    Description: Machined leveling feet
+    Quantity: 950.0
+    Unit Price: 5.75
+  - Type: 1
+    No.: 51100
+    Description: Precision locking components
+    Quantity: 685.0
+    Unit Price: 11.5
+  - Type: 1
+    No.: 51100
+    Description: CNC routed metal parts
+    Quantity: 425.0
+    Unit Price: 16.5
+  - Type: 1
+    No.: 51100
+    Description: Steel support brackets heavy
+    Quantity: 485.0
+    Unit Price: 14.25
+  - Type: 1
+    No.: 51100
+    Description: Precision turned pins
+    Quantity: 1850.0
+    Unit Price: 2.45
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V013-001
+        Buy-from Vendor Name: Precision CNC Manufacturing
+        Buy-from Address: 4521 Machine Shop Road
+        Buy-from Address 2: ''
+        Buy-from City: Concord
+        Buy-from Post Code: '28025'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Custom mounting plates
+        Quantity: 285.0
+        Unit Cost: 22.0
+      - Line No.: 20000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Custom joint connectors
+        Quantity: 685.0
+        Unit Cost: 8.95
+      - Line No.: 30000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Aluminum spacers machined
+        Quantity: 1450.0
+        Unit Cost: 3.25
+      - Line No.: 40000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: CNC machined hinges specialty
+        Quantity: 685.0
+        Unit Cost: 6.95
+      - Line No.: 50000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: CNC machined pivot points
+        Quantity: 485.0
+        Unit Cost: 14.75
+      - Line No.: 60000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Custom metal brackets CNC
+        Quantity: 850.0
+        Unit Cost: 8.5
+      - Line No.: 70000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: CNC machined shafts
+        Quantity: 325.0
+        Unit Cost: 24.0
+      - Line No.: 80000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Precision drawer slides machined
+        Quantity: 425.0
+        Unit Cost: 12.75
+      - Line No.: 90000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Custom cam mechanisms
+        Quantity: 185.0
+        Unit Cost: 32.0
+      - Line No.: 100000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Machined leveling feet
+        Quantity: 950.0
+        Unit Cost: 5.75
+      - Line No.: 110000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Precision locking components
+        Quantity: 685.0
+        Unit Cost: 11.5
+      - Line No.: 120000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: CNC routed metal parts
+        Quantity: 425.0
+        Unit Cost: 16.5
+      - Line No.: 130000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Steel support brackets heavy
+        Quantity: 485.0
+        Unit Cost: 14.25
+      - Line No.: 140000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Precision turned pins
+        Quantity: 1850.0
+        Unit Cost: 2.45
+- name: PA-INV-V012-005
+  description: VendorNo=V012;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Carolina Business Supplies
+    Address: 234 Commerce Street
+    Address 2: ''
+    City: Durham
+    Country/Region Code: US
+    Post Code: '27701'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V012-005
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64200
+    Description: Pens ballpoint boxes
+    Quantity: 48.0
+    Unit Price: 8.95
+  - Type: 1
+    No.: 64200
+    Description: Binder clips assorted sizes
+    Quantity: 58.0
+    Unit Price: 5.5
+  - Type: 1
+    No.: 64200
+    Description: Envelopes business size
+    Quantity: 48.0
+    Unit Price: 18.5
+  - Type: 1
+    No.: 64200
+    Description: Office supplies quarterly agreement
+    Quantity: 1.0
+    Unit Price: 3500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V012-005
+        Buy-from Vendor Name: Carolina Business Supplies
+        Buy-from Address: 234 Commerce Street
+        Buy-from Address 2: ''
+        Buy-from City: Durham
+        Buy-from Post Code: '27701'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: Pens ballpoint boxes
+        Quantity: 48.0
+        Unit Cost: 8.95
+      - Line No.: 20000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: Binder clips assorted sizes
+        Quantity: 58.0
+        Unit Cost: 5.5
+      - Line No.: 30000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: Envelopes business size
+        Quantity: 48.0
+        Unit Cost: 18.5
+      - Line No.: 40000
+        Type: 1
+        No.: 64200
+        Deferral Code: 3M
+        Description: Office supplies quarterly agreement
+        Quantity: 1.0
+        Unit Cost: 3500.0
+- name: PA-INV-V031-004
+  description: VendorNo=V031;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG001;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Sustainable Wood Resources
+    Address: 4532 Forest Products Way
+    Address 2: ''
+    City: Asheville
+    Country/Region Code: US
+    Post Code: '28801'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V031-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 50100
+    Description: FSC ash lumber certified
+    Quantity: 1250.0
+    Unit Price: 5.95
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V031-004
+        Buy-from Vendor Name: Sustainable Wood Resources
+        Buy-from Address: 4532 Forest Products Way
+        Buy-from Address 2: ''
+        Buy-from City: Asheville
+        Buy-from Post Code: '28801'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 50100
+        Deferral Code: ''
+        Description: FSC ash lumber certified
+        Quantity: 1250.0
+        Unit Cost: 5.95
+- name: PA-INV-V025-003
+  description: VendorNo=V025;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: CloudTech Solutions Inc.
+    Address: 1200 Server Farm Road
+    Address 2: ''
+    City: Raleigh
+    Country/Region Code: US
+    Post Code: '27603'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V025-003
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64200
+    Description: IT training sessions
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 64100
+    Description: Disaster recovery planning
+    Quantity: 1.0
+    Unit Price: 2450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V025-003
+        Buy-from Vendor Name: CloudTech Solutions Inc.
+        Buy-from Address: 1200 Server Farm Road
+        Buy-from Address 2: ''
+        Buy-from City: Raleigh
+        Buy-from Post Code: '27603'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: IT training sessions
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Disaster recovery planning
+        Quantity: 1.0
+        Unit Cost: 2450.0
+- name: PA-INV-V028-004
+  description: VendorNo=V028;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG014;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Precision Cutting Tools
+    Address: 2341 Blade Avenue
+    Address 2: ''
+    City: Greensboro
+    Country/Region Code: US
+    Post Code: '27408'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V028-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 66100
+    Description: Abrasive wheels grinding
+    Quantity: 18.0
+    Unit Price: 28.5
+  - Type: 1
+    No.: 66100
+    Description: Hole saws bi-metal
+    Quantity: 24.0
+    Unit Price: 32.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V028-004
+        Buy-from Vendor Name: Precision Cutting Tools
+        Buy-from Address: 2341 Blade Avenue
+        Buy-from Address 2: ''
+        Buy-from City: Greensboro
+        Buy-from Post Code: '27408'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Abrasive wheels grinding
+        Quantity: 18.0
+        Unit Cost: 28.5
+      - Line No.: 20000
+        Type: 1
+        No.: 66100
+        Deferral Code: ''
+        Description: Hole saws bi-metal
+        Quantity: 24.0
+        Unit Cost: 32.5
+- name: PA-INV-V013-002
+  description: VendorNo=V013;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG005;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Precision CNC Manufacturing
+    Address: 4521 Machine Shop Road
+    Address 2: ''
+    City: Concord
+    Country/Region Code: US
+    Post Code: '28025'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V013-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 51100
+    Description: Precision bearing housings
+    Quantity: 185.0
+    Unit Price: 28.5
+  - Type: 1
+    No.: 51100
+    Description: Annual CNC machining contract
+    Quantity: 1.0
+    Unit Price: 18000.0
+  - Type: 1
+    No.: 51100
+    Description: Tooling and setup charges
+    Quantity: 1.0
+    Unit Price: 2850.0
+  - Type: 1
+    No.: 51100
+    Description: Aluminum frame components
+    Quantity: 325.0
+    Unit Price: 18.5
+  - Type: 1
+    No.: 51100
+    Description: Steel reinforcement plates
+    Quantity: 425.0
+    Unit Price: 18.75
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V013-002
+        Buy-from Vendor Name: Precision CNC Manufacturing
+        Buy-from Address: 4521 Machine Shop Road
+        Buy-from Address 2: ''
+        Buy-from City: Concord
+        Buy-from Post Code: '28025'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Precision bearing housings
+        Quantity: 185.0
+        Unit Cost: 28.5
+      - Line No.: 20000
+        Type: 1
+        No.: 51100
+        Deferral Code: 12M
+        Description: Annual CNC machining contract
+        Quantity: 1.0
+        Unit Cost: 18000.0
+      - Line No.: 30000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Tooling and setup charges
+        Quantity: 1.0
+        Unit Cost: 2850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Aluminum frame components
+        Quantity: 325.0
+        Unit Cost: 18.5
+      - Line No.: 50000
+        Type: 1
+        No.: 51100
+        Deferral Code: ''
+        Description: Steel reinforcement plates
+        Quantity: 425.0
+        Unit Cost: 18.75
+- name: PA-INV-V011-001
+  description: VendorNo=V011;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: TechOffice Systems
+    Address: 890 Technology Park
+    Address 2: ''
+    City: Raleigh
+    Country/Region Code: US
+    Post Code: '27601'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V011-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64200
+    Description: Office chairs ergonomic
+    Quantity: 35.0
+    Unit Price: 485.0
+  - Type: 1
+    No.: 64100
+    Description: Uninterruptible power supply
+    Quantity: 8.0
+    Unit Price: 750.0
+  - Type: 1
+    No.: 64100
+    Description: Monitors dual display
+    Quantity: 24.0
+    Unit Price: 385.0
+  - Type: 1
+    No.: 64100
+    Description: Network server upgrade
+    Quantity: 2.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 64100
+    Description: Scanner document management
+    Quantity: 3.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 64200
+    Description: Filing cabinets metal
+    Quantity: 12.0
+    Unit Price: 385.0
+  - Type: 1
+    No.: 64200
+    Description: Office desks executive
+    Quantity: 6.0
+    Unit Price: 1450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V011-001
+        Buy-from Vendor Name: TechOffice Systems Inc.
+        Buy-from Address: 890 Technology Park
+        Buy-from Address 2: ''
+        Buy-from City: Raleigh
+        Buy-from Post Code: '27601'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: Office chairs ergonomic
+        Quantity: 35.0
+        Unit Cost: 485.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Uninterruptible power supply
+        Quantity: 8.0
+        Unit Cost: 750.0
+      - Line No.: 30000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Monitors dual display
+        Quantity: 24.0
+        Unit Cost: 385.0
+      - Line No.: 40000
+        Type: 1
+        No.: 64100
+        Deferral Code: 36M
+        Description: Network server upgrade
+        Quantity: 2.0
+        Unit Cost: 8500.0
+      - Line No.: 50000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Scanner document management
+        Quantity: 3.0
+        Unit Cost: 1850.0
+      - Line No.: 60000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: Filing cabinets metal
+        Quantity: 12.0
+        Unit Cost: 385.0
+      - Line No.: 70000
+        Type: 1
+        No.: 64200
+        Deferral Code: ''
+        Description: Office desks executive
+        Quantity: 6.0
+        Unit Cost: 1450.0
+- name: PA-INV-V025-004
+  description: VendorNo=V025;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG013;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: CloudTech Solutions Inc.
+    Address: 1200 Server Farm Road
+    Address 2: ''
+    City: Raleigh
+    Country/Region Code: US
+    Post Code: '27603'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V025-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 64100
+    Description: Annual IT support contract
+    Quantity: 1.0
+    Unit Price: 36000.0
+  - Type: 1
+    No.: 64100
+    Description: Cloud backup services
+    Quantity: 1.0
+    Unit Price: 1250.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V025-004
+        Buy-from Vendor Name: CloudTech Solutions Inc.
+        Buy-from Address: 1200 Server Farm Road
+        Buy-from Address 2: ''
+        Buy-from City: Raleigh
+        Buy-from Post Code: '27603'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 64100
+        Deferral Code: 12M
+        Description: Annual IT support contract
+        Quantity: 1.0
+        Unit Cost: 36000.0
+      - Line No.: 20000
+        Type: 1
+        No.: 64100
+        Deferral Code: ''
+        Description: Cloud backup services
+        Quantity: 1.0
+        Unit Cost: 1250.0
+- name: PA-INV-V017-002
+  description: VendorNo=V017;VendorFrequencyGroup=Low;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Reliable Facility Maintenance
+    Address: 678 Service Drive
+    Address 2: ''
+    City: Greensboro
+    Country/Region Code: US
+    Post Code: '27406'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V017-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 62300
+    Description: Fire extinguisher inspection
+    Quantity: 1.0
+    Unit Price: 285.0
+  - Type: 1
+    No.: 62100
+    Description: Carpet cleaning factory offices
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 62100
+    Description: Pest control services
+    Quantity: 1.0
+    Unit Price: 385.0
+  - Type: 1
+    No.: 62200
+    Description: Air conditioning repair service
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 62100
+    Description: Janitorial services monthly
+    Quantity: 1.0
+    Unit Price: 4850.0
+  - Type: 1
+    No.: 62200
+    Description: Ventilation system cleaning
+    Quantity: 1.0
+    Unit Price: 1450.0
+  - Type: 1
+    No.: 62300
+    Description: Electrical repairs facility
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 62100
+    Description: Restroom supplies refill
+    Quantity: 1.0
+    Unit Price: 325.0
+  - Type: 1
+    No.: 62200
+    Description: HVAC filter replacement
+    Quantity: 48.0
+    Unit Price: 42.5
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V017-002
+        Buy-from Vendor Name: Reliable Facility Maintenance
+        Buy-from Address: 678 Service Drive
+        Buy-from Address 2: ''
+        Buy-from City: Greensboro
+        Buy-from Post Code: '27406'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 62300
+        Deferral Code: ''
+        Description: Fire extinguisher inspection
+        Quantity: 1.0
+        Unit Cost: 285.0
+      - Line No.: 20000
+        Type: 1
+        No.: 62100
+        Deferral Code: ''
+        Description: Carpet cleaning factory offices
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 30000
+        Type: 1
+        No.: 62100
+        Deferral Code: ''
+        Description: Pest control services
+        Quantity: 1.0
+        Unit Cost: 385.0
+      - Line No.: 40000
+        Type: 1
+        No.: 62200
+        Deferral Code: ''
+        Description: Air conditioning repair service
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 62100
+        Deferral Code: ''
+        Description: Janitorial services monthly
+        Quantity: 1.0
+        Unit Cost: 4850.0
+      - Line No.: 60000
+        Type: 1
+        No.: 62200
+        Deferral Code: ''
+        Description: Ventilation system cleaning
+        Quantity: 1.0
+        Unit Cost: 1450.0
+      - Line No.: 70000
+        Type: 1
+        No.: 62300
+        Deferral Code: ''
+        Description: Electrical repairs facility
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 80000
+        Type: 1
+        No.: 62100
+        Deferral Code: ''
+        Description: Restroom supplies refill
+        Quantity: 1.0
+        Unit Cost: 325.0
+      - Line No.: 90000
+        Type: 1
+        No.: 62200
+        Deferral Code: ''
+        Description: HVAC filter replacement
+        Quantity: 48.0
+        Unit Cost: 42.5
+- name: PA-INV-V014-001
+  description: VendorNo=V014;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Smith & Associates Legal Group
+    Address: 1200 Corporate Center Drive Suite 400
+    Address 2: ''
+    City: High Point
+    Country/Region Code: US
+    Post Code: '27265'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V014-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61100
+    Description: Legal opinion letters
+    Quantity: 3.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 61100
+    Description: Corporate legal retainer
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 61100
+    Description: Trade secret protection
+    Quantity: 1.0
+    Unit Price: 5850.0
+  - Type: 1
+    No.: 61100
+    Description: Patent application legal fees
+    Quantity: 1.0
+    Unit Price: 12500.0
+  - Type: 1
+    No.: 61100
+    Description: Vendor contract negotiation
+    Quantity: 5.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 61100
+    Description: Litigation support services
+    Quantity: 1.0
+    Unit Price: 18500.0
+  - Type: 1
+    No.: 61100
+    Description: Shareholder agreements draft
+    Quantity: 1.0
+    Unit Price: 6850.0
+  - Type: 1
+    No.: 61100
+    Description: Business formation legal work
+    Quantity: 1.0
+    Unit Price: 4850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V014-001
+        Buy-from Vendor Name: Smith & Associates Legal Group
+        Buy-from Address: 1200 Corporate Center Drive Suite 400
+        Buy-from Address 2: ''
+        Buy-from City: High Point
+        Buy-from Post Code: '27265'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Legal opinion letters
+        Quantity: 3.0
+        Unit Cost: 1250.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Corporate legal retainer
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Trade secret protection
+        Quantity: 1.0
+        Unit Cost: 5850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Patent application legal fees
+        Quantity: 1.0
+        Unit Cost: 12500.0
+      - Line No.: 50000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Vendor contract negotiation
+        Quantity: 5.0
+        Unit Cost: 850.0
+      - Line No.: 60000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Litigation support services
+        Quantity: 1.0
+        Unit Cost: 18500.0
+      - Line No.: 70000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Shareholder agreements draft
+        Quantity: 1.0
+        Unit Cost: 6850.0
+      - Line No.: 80000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Business formation legal work
+        Quantity: 1.0
+        Unit Cost: 4850.0
+- name: PA-INV-V026-004
+  description: VendorNo=V026;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Carolina Marketing Associates
+    Address: 3421 Creative Boulevard
+    Address 2: ''
+    City: Charlotte
+    Country/Region Code: US
+    Post Code: '28206'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V026-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65100
+    Description: SEO optimization services
+    Quantity: 1.0
+    Unit Price: 3850.0
+  - Type: 1
+    No.: 65100
+    Description: Product catalog design
+    Quantity: 1.0
+    Unit Price: 6850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V026-004
+        Buy-from Vendor Name: Carolina Marketing Associates
+        Buy-from Address: 3421 Creative Boulevard
+        Buy-from Address 2: ''
+        Buy-from City: Charlotte
+        Buy-from Post Code: '28206'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: SEO optimization services
+        Quantity: 1.0
+        Unit Cost: 3850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Product catalog design
+        Quantity: 1.0
+        Unit Cost: 6850.0
+- name: PA-INV-V026-001
+  description: VendorNo=V026;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Carolina Mktg Associates
+    Address: 3421 Creative Boulevard
+    Address 2: ''
+    City: Charlotte
+    Country/Region Code: US
+    Post Code: '28206'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V026-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65100
+    Description: Marketing strategy development
+    Quantity: 1.0
+    Unit Price: 12500.0
+  - Type: 1
+    No.: 65100
+    Description: Event marketing planning
+    Quantity: 1.0
+    Unit Price: 9500.0
+  - Type: 1
+    No.: 65100
+    Description: Video production commercial
+    Quantity: 1.0
+    Unit Price: 22500.0
+  - Type: 1
+    No.: 65100
+    Description: Email marketing campaign
+    Quantity: 1.0
+    Unit Price: 4250.0
+  - Type: 1
+    No.: 65100
+    Description: Print advertising campaign
+    Quantity: 1.0
+    Unit Price: 9500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V026-001
+        Buy-from Vendor Name: Carolina Marketing Associates
+        Buy-from Address: 3421 Creative Boulevard
+        Buy-from Address 2: ''
+        Buy-from City: Charlotte
+        Buy-from Post Code: '28206'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Marketing strategy development
+        Quantity: 1.0
+        Unit Cost: 12500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Event marketing planning
+        Quantity: 1.0
+        Unit Cost: 9500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Video production commercial
+        Quantity: 1.0
+        Unit Cost: 22500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Email marketing campaign
+        Quantity: 1.0
+        Unit Cost: 4250.0
+      - Line No.: 50000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Print advertising campaign
+        Quantity: 1.0
+        Unit Cost: 9500.0
+- name: PA-INV-V027-005
+  description: VendorNo=V027;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=True;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG014;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Southern States Machine
+    Address: 678 Equipment Sales Dr
+    Address 2: ''
+    City: High Point
+    Country/Region Code: US
+    Post Code: 27263
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V027-005
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 66110
+    Description: Panel saw industrial
+    Quantity: 1.0
+    Unit Price: 28500.0
+  - Type: 1
+    No.: 66110
+    Description: Band saw resaw
+    Quantity: 1.0
+    Unit Price: 15500.0
+  - Type: 1
+    No.: 66110
+    Description: Material handling conveyor
+    Quantity: 1.0
+    Unit Price: 22500.0
+  - Type: 1
+    No.: 66110
+    Description: Edge banding machine
+    Quantity: 1.0
+    Unit Price: 42500.0
+  - Type: 1
+    No.: 66110
+    Description: Router table industrial
+    Quantity: 1.0
+    Unit Price: 9500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V027-005
+        Buy-from Vendor Name: Southern States Machinery
+        Buy-from Address: 678 Equipment Sales Drive
+        Buy-from Address 2: ''
+        Buy-from City: High Point
+        Buy-from Post Code: '27263'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 66110
+        Deferral Code: 36M
+        Description: Panel saw industrial
+        Quantity: 1.0
+        Unit Cost: 28500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 66110
+        Deferral Code: ''
+        Description: Band saw resaw
+        Quantity: 1.0
+        Unit Cost: 15500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 66110
+        Deferral Code: ''
+        Description: Material handling conveyor
+        Quantity: 1.0
+        Unit Cost: 22500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 66110
+        Deferral Code: 36M
+        Description: Edge banding machine
+        Quantity: 1.0
+        Unit Cost: 42500.0
+      - Line No.: 50000
+        Type: 1
+        No.: 66110
+        Deferral Code: ''
+        Description: Router table industrial
+        Quantity: 1.0
+        Unit Cost: 9500.0
+- name: PA-INV-V023-004
+  description: VendorNo=V023;VendorFrequencyGroup=None;VendorGroup=VG002;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG010;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Premier Consulting Group
+    Address: 890 Advisory Plaza Suite 300
+    Address 2: ''
+    City: Raleigh
+    Country/Region Code: US
+    Post Code: '27602'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V023-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61310
+    Description: Organizational restructuring
+    Quantity: 1.0
+    Unit Price: 22500.0
+  - Type: 1
+    No.: 61310
+    Description: Quality management system
+    Quantity: 1.0
+    Unit Price: 11500.0
+  - Type: 1
+    No.: 61310
+    Description: ISO certification consulting
+    Quantity: 1.0
+    Unit Price: 24500.0
+  - Type: 1
+    No.: 61310
+    Description: Risk assessment analysis
+    Quantity: 1.0
+    Unit Price: 8850.0
+  - Type: 1
+    No.: 61310
+    Description: Annual consulting retainer
+    Quantity: 1.0
+    Unit Price: 72000.0
+  - Type: 1
+    No.: 61310
+    Description: Operational efficiency study
+    Quantity: 1.0
+    Unit Price: 15500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V023-004
+        Buy-from Vendor Name: Premier Consulting Group
+        Buy-from Address: 890 Advisory Plaza Suite 300
+        Buy-from Address 2: ''
+        Buy-from City: Raleigh
+        Buy-from Post Code: '27602'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61310
+        Deferral Code: ''
+        Description: Organizational restructuring
+        Quantity: 1.0
+        Unit Cost: 22500.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61310
+        Deferral Code: ''
+        Description: Quality management system
+        Quantity: 1.0
+        Unit Cost: 11500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61310
+        Deferral Code: ''
+        Description: ISO certification consulting
+        Quantity: 1.0
+        Unit Cost: 24500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 61310
+        Deferral Code: ''
+        Description: Risk assessment analysis
+        Quantity: 1.0
+        Unit Cost: 8850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 61310
+        Deferral Code: 12M
+        Description: Annual consulting retainer
+        Quantity: 1.0
+        Unit Cost: 72000.0
+      - Line No.: 60000
+        Type: 1
+        No.: 61310
+        Deferral Code: ''
+        Description: Operational efficiency study
+        Quantity: 1.0
+        Unit Cost: 15500.0
+- name: PA-INV-V021-003
+  description: VendorNo=V021;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Quality Control Laboratory Services
+    Address: 4532 Testing Ln.
+    Address 2: ''
+    City: Hickory
+    Country/Region Code: US
+    Post Code: 28602
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V021-003
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 68100
+    Description: ISTA package testing
+    Quantity: 1.0
+    Unit Price: 1850.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V021-003
+        Buy-from Vendor Name: Quality Control Laboratory Services
+        Buy-from Address: 4532 Testing Lane
+        Buy-from Address 2: ''
+        Buy-from City: Hickory
+        Buy-from Post Code: '28602'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 68100
+        Deferral Code: ''
+        Description: ISTA package testing
+        Quantity: 1.0
+        Unit Cost: 1850.0
+- name: PA-INV-V022-003
+  description: VendorNo=V022;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Auto Fleet Leasing & Management
+    Address: 234 Vehicle Park Drive
+    Address 2: ''
+    City: Charlotte
+    Country/Region Code: US
+    Post Code: '28205'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V022-003
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 69100
+    Description: Box truck lease 26 foot
+    Quantity: 4.0
+    Unit Price: 2450.0
+  - Type: 1
+    No.: 69100
+    Description: Flatbed truck lease
+    Quantity: 3.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 69100
+    Description: Oil changes fleet service
+    Quantity: 1.0
+    Unit Price: 1250.0
+  - Type: 1
+    No.: 69100
+    Description: Forklift lease monthly
+    Quantity: 8.0
+    Unit Price: 950.0
+  - Type: 1
+    No.: 69100
+    Description: Delivery truck lease monthly
+    Quantity: 12.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 69100
+    Description: Vehicle maintenance service
+    Quantity: 1.0
+    Unit Price: 4850.0
+  - Type: 1
+    No.: 69100
+    Description: Company car lease executive
+    Quantity: 6.0
+    Unit Price: 685.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V022-003
+        Buy-from Vendor Name: AutoFleet Leasing & Management
+        Buy-from Address: 234 Vehicle Park Drive
+        Buy-from Address 2: ''
+        Buy-from City: Charlotte
+        Buy-from Post Code: '28205'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Box truck lease 26 foot
+        Quantity: 4.0
+        Unit Cost: 2450.0
+      - Line No.: 20000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Flatbed truck lease
+        Quantity: 3.0
+        Unit Cost: 1850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Oil changes fleet service
+        Quantity: 1.0
+        Unit Cost: 1250.0
+      - Line No.: 40000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Forklift lease monthly
+        Quantity: 8.0
+        Unit Cost: 950.0
+      - Line No.: 50000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Delivery truck lease monthly
+        Quantity: 12.0
+        Unit Cost: 1850.0
+      - Line No.: 60000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Vehicle maintenance service
+        Quantity: 1.0
+        Unit Cost: 4850.0
+      - Line No.: 70000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Company car lease executive
+        Quantity: 6.0
+        Unit Cost: 685.0
+- name: PA-INV-V021-004
+  description: VendorNo=V021;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Quality Control Laboratory Services
+    Address: 4532 Testing Lane
+    Address 2: ''
+    City: Hickory
+    Country/Region Code: US
+    Post Code: '28602'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V021-004
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 68100
+    Description: Wood moisture content testing
+    Quantity: 45.0
+    Unit Price: 85.0
+  - Type: 1
+    No.: 68200
+    Description: VOC emissions testing
+    Quantity: 8.0
+    Unit Price: 485.0
+  - Type: 1
+    No.: 68200
+    Description: Flammability testing textiles
+    Quantity: 18.0
+    Unit Price: 285.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V021-004
+        Buy-from Vendor Name: Quality Control Laboratory Services
+        Buy-from Address: 4532 Testing Lane
+        Buy-from Address 2: ''
+        Buy-from City: Hickory
+        Buy-from Post Code: '28602'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 68100
+        Deferral Code: ''
+        Description: Wood moisture content testing
+        Quantity: 45.0
+        Unit Cost: 85.0
+      - Line No.: 20000
+        Type: 1
+        No.: 68200
+        Deferral Code: ''
+        Description: VOC emissions testing
+        Quantity: 8.0
+        Unit Cost: 485.0
+      - Line No.: 30000
+        Type: 1
+        No.: 68200
+        Deferral Code: ''
+        Description: Flammability testing textiles
+        Quantity: 18.0
+        Unit Cost: 285.0
+- name: PA-INV-V014-002
+  description: VendorNo=V014;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Smith & Associates Legal Group
+    Address: 1200 Corporate Center Drive Suite 400
+    Address 2: ''
+    City: High Point
+    Country/Region Code: US
+    Post Code: '27265'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V014-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61100
+    Description: Contract review services
+    Quantity: 12.0
+    Unit Price: 650.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V014-002
+        Buy-from Vendor Name: Smith & Associates Legal Group
+        Buy-from Address: 1200 Corporate Center Drive Suite 400
+        Buy-from Address 2: ''
+        Buy-from City: High Point
+        Buy-from Post Code: '27265'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Contract review services
+        Quantity: 12.0
+        Unit Cost: 650.0
+- name: PA-INV-V022-001
+  description: VendorNo=V022;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: AutoFleet Leasing & Management
+    Address: 234 Vehlcle Park Dr.
+    Address 2: ''
+    City: Charlotte
+    Country/Region Code: US
+    Post Code: 28205
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V022-001
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 69100
+    Description: Accident management service
+    Quantity: 1.0
+    Unit Price: 2450.0
+  - Type: 1
+    No.: 69100
+    Description: Fleet management software
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 69100
+    Description: Vehicle detailing service
+    Quantity: 1.0
+    Unit Price: 850.0
+  - Type: 1
+    No.: 69100
+    Description: Tire replacement service
+    Quantity: 1.0
+    Unit Price: 2850.0
+  - Type: 1
+    No.: 69100
+    Description: Brake service fleet
+    Quantity: 1.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 69100
+    Description: GPS tracking monthly
+    Quantity: 1.0
+    Unit Price: 485.0
+  - Type: 1
+    No.: 69100
+    Description: Cargo van lease
+    Quantity: 8.0
+    Unit Price: 485.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V022-001
+        Buy-from Vendor Name: AutoFleet Leasing & Management
+        Buy-from Address: 234 Vehicle Park Drive
+        Buy-from Address 2: ''
+        Buy-from City: Charlotte
+        Buy-from Post Code: '28205'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Accident management service
+        Quantity: 1.0
+        Unit Cost: 2450.0
+      - Line No.: 20000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Fleet management software
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 30000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Vehicle detailing service
+        Quantity: 1.0
+        Unit Cost: 850.0
+      - Line No.: 40000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Tire replacement service
+        Quantity: 1.0
+        Unit Cost: 2850.0
+      - Line No.: 50000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Brake service fleet
+        Quantity: 1.0
+        Unit Cost: 1850.0
+      - Line No.: 60000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: GPS tracking monthly
+        Quantity: 1.0
+        Unit Cost: 485.0
+      - Line No.: 70000
+        Type: 1
+        No.: 69100
+        Deferral Code: ''
+        Description: Cargo van lease
+        Quantity: 8.0
+        Unit Cost: 485.0
+- name: PA-INV-V014-005
+  description: VendorNo=V014;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=False;AddressAlt=True;CityAlt=False;PostCodeAlt=True;AnyAlt=True;GLAccountGroup=AG008;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Smith & Associates Legal Group
+    Address: 1200 Corporate Center Drive, Suite 400
+    Address 2: ''
+    City: High Point
+    Country/Region Code: US
+    Post Code: 27265
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V014-005
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61100
+    Description: Intellectual property consultation
+    Quantity: 8.0
+    Unit Price: 425.0
+  - Type: 1
+    No.: 61100
+    Description: Merger due diligence legal
+    Quantity: 1.0
+    Unit Price: 24500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V014-005
+        Buy-from Vendor Name: Smith & Associates Legal Group
+        Buy-from Address: 1200 Corporate Center Drive Suite 400
+        Buy-from Address 2: ''
+        Buy-from City: High Point
+        Buy-from Post Code: '27265'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Intellectual property consultation
+        Quantity: 8.0
+        Unit Cost: 425.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Merger due diligence legal
+        Quantity: 1.0
+        Unit Cost: 24500.0
+- name: PA-INV-V026-006
+  description: VendorNo=V026;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=True;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=True;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Carolina Marketing Assoc.
+    Address: 3421 Creative Boulevard
+    Address 2: ''
+    City: Charlotte
+    Country/Region Code: US
+    Post Code: '28206'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V026-006
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65100
+    Description: Market research survey
+    Quantity: 1.0
+    Unit Price: 7850.0
+  - Type: 1
+    No.: 65100
+    Description: Logo redesign branding
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 65100
+    Description: Social media campaign
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 65100
+    Description: Press release writing
+    Quantity: 8.0
+    Unit Price: 425.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V026-006
+        Buy-from Vendor Name: Carolina Marketing Associates
+        Buy-from Address: 3421 Creative Boulevard
+        Buy-from Address 2: ''
+        Buy-from City: Charlotte
+        Buy-from Post Code: '28206'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Market research survey
+        Quantity: 1.0
+        Unit Cost: 7850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Logo redesign branding
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Social media campaign
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Press release writing
+        Quantity: 8.0
+        Unit Cost: 425.0
+- name: PA-INV-V026-003
+  description: VendorNo=V026;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=None;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Carolina Marketing Associates
+    Address: 3421 Creative Boulevard
+    Address 2: ''
+    City: Charlotte
+    Country/Region Code: US
+    Post Code: '28206'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V026-003
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 65100
+    Description: Digital advertising management
+    Quantity: 1.0
+    Unit Price: 5850.0
+  - Type: 1
+    No.: 65100
+    Description: Trade show booth design
+    Quantity: 1.0
+    Unit Price: 15500.0
+  - Type: 1
+    No.: 65100
+    Description: Content marketing strategy
+    Quantity: 1.0
+    Unit Price: 6500.0
+  - Type: 1
+    No.: 65100
+    Description: Public relations campaign
+    Quantity: 1.0
+    Unit Price: 11500.0
+  - Type: 1
+    No.: 65100
+    Description: Website design development
+    Quantity: 1.0
+    Unit Price: 24500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V026-003
+        Buy-from Vendor Name: Carolina Marketing Associates
+        Buy-from Address: 3421 Creative Boulevard
+        Buy-from Address 2: ''
+        Buy-from City: Charlotte
+        Buy-from Post Code: '28206'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Digital advertising management
+        Quantity: 1.0
+        Unit Cost: 5850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Trade show booth design
+        Quantity: 1.0
+        Unit Cost: 15500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Content marketing strategy
+        Quantity: 1.0
+        Unit Cost: 6500.0
+      - Line No.: 40000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Public relations campaign
+        Quantity: 1.0
+        Unit Cost: 11500.0
+      - Line No.: 50000
+        Type: 1
+        No.: 65100
+        Deferral Code: ''
+        Description: Website design development
+        Quantity: 1.0
+        Unit Cost: 24500.0
+- name: PA-INV-V016-003
+  description: VendorNo=V016;VendorFrequencyGroup=None;VendorGroup=None;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG009;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Mitchell & Johnson CPAs
+    Address: 3450 Financial Plaza
+    Address 2: ''
+    City: Charlotte
+    Country/Region Code: US
+    Post Code: '28203'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V016-003
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61200
+    Description: Payroll tax filing services
+    Quantity: 12.0
+    Unit Price: 425.0
+  - Type: 1
+    No.: 61200
+    Description: Accounting system implementation
+    Quantity: 1.0
+    Unit Price: 8500.0
+  - Type: 1
+    No.: 61200
+    Description: Annual financial audit
+    Quantity: 1.0
+    Unit Price: 24500.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V016-003
+        Buy-from Vendor Name: Mitchell & Johnson CPAs
+        Buy-from Address: 3450 Financial Plaza
+        Buy-from Address 2: ''
+        Buy-from City: Charlotte
+        Buy-from Post Code: '28203'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61200
+        Deferral Code: ''
+        Description: Payroll tax filing services
+        Quantity: 12.0
+        Unit Cost: 425.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61200
+        Deferral Code: ''
+        Description: Accounting system implementation
+        Quantity: 1.0
+        Unit Cost: 8500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61200
+        Deferral Code: ''
+        Description: Annual financial audit
+        Quantity: 1.0
+        Unit Cost: 24500.0
+- name: PA-INV-V015-002
+  description: VendorNo=V015;VendorFrequencyGroup=None;VendorGroup=VG001;NameAlt=False;AddressAlt=False;CityAlt=False;PostCodeAlt=False;AnyAlt=False;GLAccountGroup=AG008;
+  test_setup: PA-Setup.yaml
+  vendor:
+    Name: Smith Legal Services LLC
+    Address: 1200 Corporate Center Drive Suite 400
+    Address 2: ''
+    City: High Point
+    Country/Region Code: US
+    Post Code: '27265'
+  inboundInvoice:
+    Posting Date: '2025-12-03'
+    Due Date: '2026-01-02'
+    Document Date: '2025-12-03'
+    No.: INV-V015-002
+    Payment Terms Code: 30 DAYS
+    Shipment Method Code: DELIVERY
+  inboundInvoiceLines:
+  - Type: 1
+    No.: 61100
+    Description: Severance package negotiation
+    Quantity: 3.0
+    Unit Price: 1850.0
+  - Type: 1
+    No.: 61100
+    Description: EEOC investigation defense
+    Quantity: 1.0
+    Unit Price: 11500.0
+  - Type: 1
+    No.: 61100
+    Description: Benefits compliance review
+    Quantity: 1.0
+    Unit Price: 2450.0
+  expected:
+    data:
+      purchaseHeader:
+        Vendor Invoice No.: INV-V015-002
+        Buy-from Vendor Name: Smith Legal Services LLC
+        Buy-from Address: 1200 Corporate Center Drive Suite 400
+        Buy-from Address 2: ''
+        Buy-from City: High Point
+        Buy-from Post Code: '27265'
+        Buy-from Country/Region Code: US
+      purchaseLines:
+      - Line No.: 10000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Severance package negotiation
+        Quantity: 3.0
+        Unit Cost: 1850.0
+      - Line No.: 20000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: EEOC investigation defense
+        Quantity: 1.0
+        Unit Cost: 11500.0
+      - Line No.: 30000
+        Type: 1
+        No.: 61100
+        Deferral Code: ''
+        Description: Benefits compliance review
+        Quantity: 1.0
+        Unit Cost: 2450.0

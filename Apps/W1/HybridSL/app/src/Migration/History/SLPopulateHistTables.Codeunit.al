@@ -373,15 +373,14 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalSOHeader()
     var
-        SLSOHeader: Record "SL SOHeader";
+        SLSOHeader: Record "SL SOHeader Buffer";
         SLHistSOHeader: Record "SL Hist. SOHeader";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL SOHeader";
+        SourceTableId := Database::"SL SOHeader Buffer";
         if InitialHistYear > 0 then
-            SLSOHeader.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
-
+            SLSOHeader.SetFilter(OrdDate, '>= %1', InitialYearDate);
         SLSOHeader.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLSOHeader.FindSet() then
@@ -404,32 +403,53 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalSOLine()
     var
-        SLSOLine: Record "SL SOLine";
         SLHistSOLine: Record "SL Hist. SOLine";
+        SLSOHeader: Record "SL SOHeader Buffer";
+        SLSOLine: Record "SL SOLine Buffer";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL SOLine";
-        if InitialHistYear > 0 then
-            SLSOLine.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
+        SourceTableId := Database::"SL SOLine Buffer";
+        if InitialHistYear > 0 then begin
+            SLSOHeader.SetFilter(CpnyID, '= %1', GetCpnyID());
+            SLSOHeader.SetFilter(OrdDate, '>= %1', InitialYearDate);
+            if not SLSOHeader.FindSet() then
+                exit;
+            repeat
+                SLSOLine.SetFilter(CpnyID, '= %1', GetCpnyID());
+                SLSOLine.SetFilter(OrdNbr, '= %1', SLSOHeader.OrdNbr);
+                if not SLSOLine.FindSet() then
+                    continue;
+                repeat
+                    LastSourceRecordId := SLSOLine.SystemRowVersion;
+                    Clear(SLHistSOLine);
+                    SLHistSOLine.TransferFields(SLSOLine);
+                    if SLHistSOLine.Insert() then
+                        ReportLastSuccess(SourceTableId, LastSourceRecordId)
+                    else
+                        ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Receivables Trx.", SLSOLine.CpnyID + '-' + SLSOLine.OrdNbr + '-' + SLSOLine.LineRef);
 
-        SLSOLine.SetFilter(CpnyID, '= %1', GetCpnyID());
+                    AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
+                until SLSOLine.Next() = 0;
+            until SLSOHeader.Next() = 0;
+        end else begin
+            SLSOLine.SetFilter(CpnyID, '= %1', GetCpnyID());
+            if not SLSOLine.FindSet() then
+                exit;
+            repeat
+                LastSourceRecordId := SLSOLine.SystemRowVersion;
+                Clear(SLHistSOLine);
+                SLHistSOLine.TransferFields(SLSOLine);
 
-        if not SLSOLine.FindSet() then
-            exit;
+                if SLHistSOLine.Insert() then
+                    ReportLastSuccess(SourceTableId, LastSourceRecordId)
+                else
+                    ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Receivables Trx.", SLSOLine.CpnyID + '-' + SLSOLine.OrdNbr + '-' + SLSOLine.LineRef);
 
-        repeat
-            LastSourceRecordId := SLSOLine.SystemRowVersion;
-            Clear(SLHistSOLine);
-            SLHistSOLine.TransferFields(SLSOLine);
+                AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
+            until SLSOLine.Next() = 0;
+        end;
 
-            if SLHistSOLine.Insert() then
-                ReportLastSuccess(SourceTableId, LastSourceRecordId)
-            else
-                ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Receivables Trx.", SLSOLine.CpnyID + '-' + SLSOLine.OrdNbr + '-' + SLSOLine.LineRef);
-
-            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
-        until SLSOLine.Next() = 0;
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
@@ -475,7 +495,7 @@ codeunit 47025 "SL Populate Hist. Tables"
         if InitialHistYear > 0 then
             SLSOShipLine.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
-        SLSOShipLine.SetFilter(CpnyID, '= %1', CompanyName);
+        SLSOShipLine.SetFilter(CpnyID, '= %1', GetCpnyID());
 
         if not SLSOShipLine.FindSet() then
             exit;
@@ -497,20 +517,16 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalSOType()
     var
-        SLSOType: Record "SL SOType";
+        SLSOType: Record "SL SOType Buffer";
         SLHistSOType: Record "SL Hist. SOType";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
         Inactive: Integer;
     begin
-        SourceTableId := Database::"SL SOType";
+        SourceTableId := Database::"SL SOType Buffer";
         Inactive := 0;
-        if InitialHistYear > 0 then
-            SLSOType.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
-
         SLSOType.SetFilter(CpnyID, '= %1', GetCpnyID());
         SLSOType.SetFilter(Active, '<> %1', Inactive);
-
         if not SLSOType.FindSet() then
             exit;
 
@@ -679,17 +695,15 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalPurOrdDet()
     var
-        SLPurOrdDet: Record "SL PurOrdDet";
+        SLPurOrdDet: Record "SL PurOrdDet Buffer";
         SLHistPurOrdDet: Record "SL Hist. PurOrdDet";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL PurOrdDet";
+        SourceTableId := Database::"SL PurOrdDet Buffer";
         if InitialHistYear > 0 then
             SLPurOrdDet.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
-
         SLPurOrdDet.SetFilter(CpnyID, '= %1', GetCpnyID());
-
         if not SLPurOrdDet.FindSet() then
             exit;
 
@@ -710,14 +724,14 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalPurchOrd()
     var
-        SLPurchOrd: Record "SL PurchOrd";
+        SLPurchOrd: Record "SL PurchOrd Buffer";
         SLHistPurchOrd: Record "SL Hist. PurchOrd";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL PurchOrd";
+        SourceTableId := Database::"SL PurchOrd Buffer";
         if InitialHistYear > 0 then
-            SLPurchOrd.SetFilter(PODate, '>= %1', InitialDateTime);
+            SLPurchOrd.SetFilter(PODate, '>= %1', InitialYearDate);
 
         SLPurchOrd.SetFilter(CpnyID, '= %1', GetCpnyID());
 

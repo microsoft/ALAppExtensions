@@ -23,7 +23,7 @@ codeunit 10839 "Create ES Vat Setup Post Grp"
 
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVATPostingGroupES.NoTax(), true, 0, CreateESGLAccount.VatCollByTheComp(), CreateESGLAccount.GovVatDeductible(), true, 1, SetupExportNoTaxDescLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", true, 0, CreateESGLAccount.VatCollByTheComp(), CreateESGLAccount.GovVatDeductible(), true, 1, SetupExportReducedDescLbl);
-        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Reduced", true, 7, CreateESGLAccount.VatCollByTheComp(), CreateESGLAccount.GovVatDeductible(), true, 1, SetupExportStandardDescLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Reduced", true, 10, CreateESGLAccount.VatCollByTheComp(), CreateESGLAccount.GovVatDeductible(), true, 1, SetupExportStandardDescLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVATPostingGroupES.VAT4(), true, 4, CreateESGLAccount.VatCollByTheComp(), CreateESGLAccount.GovVatDeductible(), true, 1, SetupExportDecreaseDescLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Standard", true, 21, CreateESGLAccount.VatCollByTheComp(), CreateESGLAccount.GovVatDeductible(), true, 1, SetupExportIncreaseDescLbl);
     end;

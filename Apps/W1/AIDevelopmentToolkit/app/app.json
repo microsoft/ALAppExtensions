@@ -1,0 +1,45 @@
+{
+  "id": "f2d0130c-4b0e-437a-bcfd-0dc9f84ac961",
+  "name": "AI Development Toolkit",
+  "publisher": "Microsoft",
+  "version": "29.0.0.0",
+  "brief": "A toolkit for developing and evaluating AI capabilities within Business Central.",
+  "description": "Provides a set of tools for developing and evaluating AI capabilities in Business Central such as experiences for envisioning, prototyping, testing, and validating AI, Copilot, and agents features tailored to your own business scenarios.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "url": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2344702",
+  "logo": "ExtensionLogo.png",
+  "screenshots": [],
+  "application": "29.0.0.0",
+  "platform": "29.0.0.0",
+  "propagateDependencies": true,
+  "dependencies": [
+    {
+      "id": "f78952ee-aed3-43bb-896e-6598f98a3a35",
+      "name": "AI Development Toolkit - Design",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    },
+    {
+      "id": "517f890c-b49f-47de-8120-d0327974b89d",
+      "name": "AI Development Toolkit - Evaluation",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 1
+    }
+  ],
+  "target": "Cloud",
+  "features": [
+    "GenerateCaptions",
+    "TranslationFile",
+    "NoImplicitWith",
+    "NoPromotedActionProperties"
+  ]
+}

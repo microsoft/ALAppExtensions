@@ -127,6 +127,10 @@ codeunit 4001 "Hybrid Cloud Management"
         RecordLinkMigrationDocumentationHyperlinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2335385', Locked = true;
         WarnRecordLinkMigrationNotificationsTxt: Label 'Cloud Migration - Record Link Migration Warning';
         WarnRecordLinkMigrationDescriptionTxt: Label 'Warning to the users to read the documentation before managing the record links during cloud migration.';
+        InvalidSqlCharactersTok: Label '.\/', Locked = true;
+        ValidSqlReplacementTok: Label '___', Locked = true;
+        SourceTableMetadataNotFoundErr: Label 'Source table metadata not found for table ID %1.', Comment = '%1 - Table ID';
+        DestinationTableMetadataNotFoundErr: Label 'Destination table metadata not found for table ID %1.', Comment = '%1 - Table ID';
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -1112,6 +1116,65 @@ codeunit 4001 "Hybrid Cloud Management"
             end;
         end;
         exit(TableName);
+    end;
+
+    procedure CreateReplicationMapping(CompanyName: Text; SourceTableID: Integer; DestinationTableID: Integer)
+    var
+        ExistingReplicationMapping: Record "Replication Table Mapping";
+        ReplicationMapping: Record "Replication Table Mapping";
+        SourceSqlName: Text;
+        DestinationSqlName: Text;
+        DestinationTableName: Text;
+    begin
+        ResolveSqlTableNames(CompanyName, SourceTableID, DestinationTableID, SourceSqlName, DestinationSqlName, DestinationTableName);
+        ReplicationMapping."Source Sql Table Name" := CopyStr(SourceSqlName, 1, MaxStrLen(ReplicationMapping."Source Sql Table Name"));
+        ReplicationMapping."Destination Sql Table Name" := CopyStr(DestinationSqlName, 1, MaxStrLen(ReplicationMapping."Destination Sql Table Name"));
+        ReplicationMapping."Company Name" := CopyStr(CompanyName, 1, MaxStrLen(ReplicationMapping."Company Name"));
+        ReplicationMapping."Table Name" := CopyStr(DestinationTableName, 1, MaxStrLen(ReplicationMapping."Table Name"));
+        ReplicationMapping."Preserve Cloud Data" := false;
+        if ExistingReplicationMapping.Get(ReplicationMapping.RecordId) then
+            exit;
+
+        ReplicationMapping.Insert(true);
+    end;
+
+    procedure CreateMigrationSetupMapping(CompanyName: Text; SourceTableID: Integer; DestinationTableID: Integer)
+    var
+        ExistingSetupMapping: Record "Migration Setup Table Mapping";
+        SetupMapping: Record "Migration Setup Table Mapping";
+        SourceSqlName: Text;
+        DestinationSqlName: Text;
+        DestinationTableName: Text;
+    begin
+        ResolveSqlTableNames(CompanyName, SourceTableID, DestinationTableID, SourceSqlName, DestinationSqlName, DestinationTableName);
+        SetupMapping."Source Sql Table Name" := CopyStr(SourceSqlName, 1, MaxStrLen(SetupMapping."Source Sql Table Name"));
+        SetupMapping."Destination Sql Table Name" := CopyStr(DestinationSqlName, 1, MaxStrLen(SetupMapping."Destination Sql Table Name"));
+        SetupMapping."Company Name" := CopyStr(CompanyName, 1, MaxStrLen(SetupMapping."Company Name"));
+        SetupMapping."Table Name" := CopyStr(DestinationTableName, 1, MaxStrLen(SetupMapping."Table Name"));
+        SetupMapping."Preserve Cloud Data" := false;
+        if ExistingSetupMapping.Get(SetupMapping.RecordId) then
+            exit;
+
+        SetupMapping.Insert(true);
+    end;
+
+    local procedure ResolveSqlTableNames(CompanyName: Text; SourceTableID: Integer; DestinationTableID: Integer; var SourceSqlName: Text; var DestinationSqlName: Text; var DestinationTableName: Text)
+    var
+        SourceTableMetadata: Record "Table Metadata";
+        DestinationTableMetadata: Record "Table Metadata";
+    begin
+        if not SourceTableMetadata.Get(SourceTableID) then begin
+            Session.LogMessage('0000MRO', StrSubstNo(SourceTableMetadataNotFoundErr, SourceTableID), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+            Error(SourceTableMetadataNotFoundErr, SourceTableID);
+        end;
+        if not DestinationTableMetadata.Get(DestinationTableID) then begin
+            Session.LogMessage('0000MRP', StrSubstNo(DestinationTableMetadataNotFoundErr, DestinationTableID), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+            Error(DestinationTableMetadataNotFoundErr, DestinationTableID);
+        end;
+
+        SourceSqlName := ConvertStr(CompanyName + '$' + SourceTableMetadata.Name, InvalidSqlCharactersTok, ValidSqlReplacementTok);
+        DestinationSqlName := ConvertStr(CompanyName + '$' + ConstructTableName(CopyStr(DestinationTableMetadata.Name, 1, 30), DestinationTableID), InvalidSqlCharactersTok, ValidSqlReplacementTok);
+        DestinationTableName := DestinationTableMetadata.Name;
     end;
 
     [Scope('OnPrem')]

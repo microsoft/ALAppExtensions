@@ -224,6 +224,134 @@ codeunit 139760 "SMTP Connector Test"
         Assert.AreEqual(Format(SMTPAccountMock.SenderType()), SMTPAccount.SenderTypeField.Value(), 'A different sender type was expected.');
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure AddSingleAttachmentSucceeds()
+    var
+        SMTPMessage: Codeunit "SMTP Message";
+        TempBlob: Codeunit "Temp Blob";
+        OutStr: OutStream;
+        InStr: InStream;
+    begin
+        // [Scenario] Adding a single attachment to an SMTP message should succeed
+        // [Given] A valid InStream with content
+        TempBlob.CreateOutStream(OutStr);
+        OutStr.WriteText('Test attachment content');
+        TempBlob.CreateInStream(InStr);
+
+        // [When] AddAttachment is called
+        // [Then] It returns true
+        Assert.IsTrue(SMTPMessage.AddAttachment(InStr, 'test.pdf'), 'AddAttachment should succeed for a valid InStream.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure AddMultipleAttachmentsSucceeds()
+    var
+        SMTPMessage: Codeunit "SMTP Message";
+        TempBlob: Codeunit "Temp Blob";
+        OutStr: OutStream;
+        InStr: InStream;
+        i: Integer;
+    begin
+        // [Scenario] Adding multiple attachments should all succeed
+        for i := 1 to 3 do begin
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(OutStr);
+            OutStr.WriteText('Attachment content #' + Format(i));
+            TempBlob.CreateInStream(InStr);
+
+            Assert.IsTrue(
+                SMTPMessage.AddAttachment(InStr, 'file' + Format(i) + '.txt'),
+                StrSubstNo('AddAttachment should succeed for attachment %1.', i));
+        end;
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure AddAttachmentWithMinimalContent()
+    var
+        SMTPMessage: Codeunit "SMTP Message";
+        TempBlob: Codeunit "Temp Blob";
+        OutStr: OutStream;
+        InStr: InStream;
+    begin
+        // [Scenario] Adding an attachment with minimal (1 byte) content should succeed
+        TempBlob.CreateOutStream(OutStr);
+        OutStr.WriteText('x');
+        TempBlob.CreateInStream(InStr);
+
+        Assert.IsTrue(SMTPMessage.AddAttachment(InStr, 'minimal.txt'), 'AddAttachment should succeed for minimal content.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure AddAttachmentWithLargeContent()
+    var
+        SMTPMessage: Codeunit "SMTP Message";
+        TempBlob: Codeunit "Temp Blob";
+        OutStr: OutStream;
+        InStr: InStream;
+        i: Integer;
+    begin
+        // [Scenario] Adding a large attachment should succeed
+        TempBlob.CreateOutStream(OutStr);
+        for i := 1 to 1024 do
+            OutStr.WriteText('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/abcdefghijklmnopqrstuv');
+        TempBlob.CreateInStream(InStr);
+
+        Assert.IsTrue(SMTPMessage.AddAttachment(InStr, 'large-file.bin'), 'AddAttachment should succeed for large content.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure AddAttachmentAfterSettingBody()
+    var
+        SMTPMessage: Codeunit "SMTP Message";
+        TempBlob: Codeunit "Temp Blob";
+        OutStr: OutStream;
+        InStr: InStream;
+    begin
+        // [Scenario] Adding attachment after setting email body should succeed
+        SMTPMessage.SetBody('<html><body><p>Hello</p></body></html>', true);
+
+        TempBlob.CreateOutStream(OutStr);
+        OutStr.WriteText('Attachment after body');
+        TempBlob.CreateInStream(InStr);
+
+        Assert.IsTrue(SMTPMessage.AddAttachment(InStr, 'after-body.pdf'), 'AddAttachment should succeed after setting body.');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure AddAttachmentVariousFileTypes()
+    var
+        SMTPMessage: Codeunit "SMTP Message";
+        TempBlob: Codeunit "Temp Blob";
+        OutStr: OutStream;
+        InStr: InStream;
+        FileNames: List of [Text];
+        FileName: Text;
+    begin
+        // [Scenario] Adding attachments with various file extensions should succeed
+        FileNames.Add('document.pdf');
+        FileNames.Add('spreadsheet.xlsx');
+        FileNames.Add('image.png');
+        FileNames.Add('archive.zip');
+        FileNames.Add('textfile.txt');
+
+        foreach FileName in FileNames do begin
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(OutStr);
+            OutStr.WriteText('Content for ' + FileName);
+            TempBlob.CreateInStream(InStr);
+
+            Assert.IsTrue(
+                SMTPMessage.AddAttachment(InStr, FileName),
+                StrSubstNo('AddAttachment should succeed for file type %1.', FileName));
+        end;
+    end;
+
     var
         Any: Codeunit Any;
         Assert: Codeunit "Library Assert";

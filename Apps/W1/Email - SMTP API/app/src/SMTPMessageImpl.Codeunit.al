@@ -14,6 +14,7 @@ codeunit 4614 "SMTP Message Impl"
     var
         EmailMimeMessage: DotNet MimeMessage;
         MimeBodyBuilder: Dotnet MimeBodyBuilder;
+        CancellationToken: DotNet CancellationToken;
         FromEmailParseFailureErr: Label 'The From address %1 could not be parsed correctly.', Comment = '%1=The email address';
         EngRecipientErr: Label 'Could not add recipient %1.', Comment = '%1 = email address', Locked = true;
         RecipientErr: Label 'Could not add recipient %1.', Comment = '%1 = email address';
@@ -142,14 +143,14 @@ codeunit 4614 "SMTP Message Impl"
     [TryFunction]
     local procedure TryAddAttachment(FileName: Text; AttachmentInStream: InStream; var BodyBuilder: Dotnet MimeBodyBuilder)
     begin
-        BodyBuilder.Attachments.Add(FileName, AttachmentInStream)
+        BodyBuilder.Attachments.Add(FileName, AttachmentInStream, CancellationToken);
     end;
 
     local procedure AddToInternetAddressList(InternetAddressList: DotNet InternetAddressList; Recipients: List of [Text])
     begin
         InternetAddressList.Clear();
         if not TryParseInternetAddressList(InternetAddressList, Recipients) then begin
-            Session.LogMessage('0000B5N', StrSubstNo(EngRecipientErr, FormatListToString(Recipients, true)), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::ExtensionPublisher, 'Category', SmtpCategoryLbl);
+            Session.LogMessage('0000B5N', StrSubstNo(EngRecipientErr, FormatListToString(Recipients, true)), Verbosity::Error, DataClassification::EndUserPseudonymousIdentifiers, TelemetryScope::All, 'Category', SmtpCategoryLbl);
             Error(RecipientErr, FormatListToString(Recipients, false));
         end;
     end;

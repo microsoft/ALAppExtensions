@@ -347,8 +347,11 @@ codeunit 148198 "Outlook Int. Test"
 
     internal procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; Documents: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     var
-        OutlookProcessing: Codeunit "Outlook Processing";
+        TempBlob: Codeunit "Temp Blob";
+        AttachmentJson: JsonToken;
         MockArray: JsonArray;
+        OutStream: OutStream;
+        AttachmentTxt: Text;
     begin
         case EDocumentService.Description of
             TestImportOneDocumentTxt:
@@ -389,7 +392,13 @@ codeunit 148198 "Outlook Int. Test"
                     AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "11", "contentId": "11", "name": "D11.pdf", "contentType": "application/pdf", "size": 199264 }');
                 end;
         end;
-        OutlookProcessing.BuildDocumentsList(Documents, MockArray);
+        foreach AttachmentJson in MockArray do begin
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
+            AttachmentJson.WriteTo(AttachmentTxt);
+            OutStream.WriteText(AttachmentTxt);
+            Documents.Add(TempBlob);
+        end;
     end;
 
     local procedure AddMockAttachment(var MockArray: JsonArray; JsonText: Text)

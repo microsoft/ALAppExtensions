@@ -25,6 +25,7 @@ permissionset 11762 "CZ Fixed Asset - Objects CZF"
                   Codeunit "Substitute Report Handler CZF" = X,
                   Codeunit "Upgrade Application CZF" = X,
                   Codeunit "Upgrade Tag Definitions CZF" = X,
+                  Codeunit "Copy Fixed Asset Handler CZF" = X,
                   Page "Classification Codes CZF" = X,
                   Page "Create FA History CZF" = X,
                   Page "FA Extended Posting Groups CZF" = X,

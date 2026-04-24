@@ -62,5 +62,18 @@ page 10857 "View/Edit Payment Line FR"
             }
         }
     }
+
+#if not CLEAN28
+    trigger OnOpenPage()
+    var
+        FeaturePaymentManagement: Codeunit "Payment Management Feature FR";
+    begin
+        if not FeaturePaymentManagement.IsEnabled() then
+            Error(EnablePaymentManagementFRPageErr);
+    end;
+
+    var
+        EnablePaymentManagementFRPageErr: Label 'Enable Payment Management FR feature to use this functionality';
+#endif
 }
 

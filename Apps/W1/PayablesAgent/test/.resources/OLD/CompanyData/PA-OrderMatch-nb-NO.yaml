@@ -1,0 +1,13 @@
+test_setup:
+  vendorsToCreate:
+  - vendorNo: V01
+    name: Strauss Medium
+    vendorNo: VTEST0001
+    address: Max-Joseph-Platz 2
+    city: München
+    postCode: 80539
+    vatId: 123456789
+  glAccountsToCreate:
+  - name: Konsulenttjenester
+    accountCategory: 6
+    accountNo: GLTEST1234

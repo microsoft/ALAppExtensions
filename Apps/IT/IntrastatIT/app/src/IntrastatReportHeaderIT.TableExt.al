@@ -69,4 +69,31 @@ tableextension 148121 "Intrastat Report Header IT" extends "Intrastat Report Hea
         NoValueWithinTheFilterErr: Label 'There is no %1 with in the filter.\\Filters: %2', Comment = '%1 - Corrected Intrastat Report No., %2 - Filters';
         StatistiscPeriodFormatErr: Label '%1 must be 4 characters, for example, 9402 for the second quarter, 1994.', Comment = '%1 - Statistics Period';
         QuarterNrErr: Label 'Please check the quarter number.';
+
+    procedure GetStartEndOfPeriod(var StartDate: Date; var EndDate: Date)
+    var
+        Century, Year, Quarter, Month : Integer;
+    begin
+        Rec.TestField("Statistics Period");
+        Century := Date2DMY(WorkDate(), 3) div 100;
+        Evaluate(Year, CopyStr(Rec."Statistics Period", 1, 2));
+        Year := Year + Century * 100;
+
+        if Rec.Periodicity = Rec.Periodicity::Month then begin
+            Evaluate(Month, CopyStr(Rec."Statistics Period", 3, 2));
+            StartDate := DMY2Date(1, Month, Year);
+        end else begin
+            Evaluate(Quarter, CopyStr(Rec."Statistics Period", 4, 1));
+            StartDate := CalcDate(StrSubstNo('<+%1Q>', Quarter - 1), DMY2Date(1, 1, Year));
+        end;
+
+        case Rec.Periodicity of
+            Rec.Periodicity::Month:
+                EndDate := CalcDate('<+1M-1D>', StartDate);
+            Rec.Periodicity::Quarter:
+                EndDate := CalcDate('<+1Q-1D>', StartDate);
+            Rec.Periodicity::Year:
+                EndDate := CalcDate('<+1Y-1D>', StartDate);
+        end;
+    end;
 }

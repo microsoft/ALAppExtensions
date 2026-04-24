@@ -9,6 +9,7 @@ namespace Microsoft.Agent.PayablesAgent;
 using Microsoft.eServices.EDocument;
 using System.Agents;
 using System.Email;
+using System.Utilities;
 
 /// <summary>
 /// To be used as a state variable with the all the related records used to configure the agent.
@@ -24,6 +25,9 @@ codeunit 3304 "PA Setup Configuration"
         TempPayablesAgentSetup: Record "Payables Agent Setup" temporary;
         TempEDocumentService: Record "E-Document Service" temporary;
         TempEmailAccount: Record "Email Account" temporary;
+        TempBlobTrialUpload: Codeunit "Temp Blob";
+        TrialUploadFileName: Text;
+        TrialUploadPending: Boolean;
         SkipAgentConfiguration: Boolean;
         SkipEmailVerification: Boolean;
 
@@ -94,6 +98,59 @@ codeunit 3304 "PA Setup Configuration"
         AgentSetup: Codeunit "Agent Setup";
     begin
         AgentSetup.CopySetupRecord(TempAgentSetupBuffer, SourceAgentSetupBuffer);
+    end;
+
+
+    /// <summary>
+    /// Stores the trial upload file data for later processing.
+    /// </summary>
+    /// <param name="FileName">The name of the uploaded file.</param>
+    /// <param name="InStream">The stream containing the file data.</param>
+    procedure SetTrialUpload(FileName: Text; InStream: InStream)
+    var
+        OutStream: OutStream;
+    begin
+        TempBlobTrialUpload.CreateOutStream(OutStream);
+        CopyStream(OutStream, InStream);
+        TrialUploadFileName := FileName;
+        TrialUploadPending := true;
+    end;
+
+    /// <summary>
+    /// Checks if there is a pending trial upload to process.
+    /// </summary>
+    /// <returns>True if a trial upload is pending; otherwise, false.</returns>
+    procedure GetTrialUploadPending(): Boolean
+    begin
+        exit(TrialUploadPending);
+    end;
+
+    /// <summary>
+    /// Gets the file name of the pending trial upload.
+    /// </summary>
+    /// <returns>The file name.</returns>
+    procedure GetTrialUploadFileName(): Text
+    begin
+        exit(TrialUploadFileName);
+    end;
+
+    /// <summary>
+    /// Gets the blob containing the trial upload file content.
+    /// </summary>
+    /// <param name="TempBlob">The Temp Blob codeunit to receive the file data.</param>
+    procedure GetTrialUploadBlob(var TempBlob: Codeunit "Temp Blob")
+    begin
+        TempBlob := TempBlobTrialUpload;
+    end;
+
+    /// <summary>
+    /// Clears the pending trial upload data.
+    /// </summary>
+    procedure ClearTrialUpload()
+    begin
+        Clear(TempBlobTrialUpload);
+        Clear(TrialUploadFileName);
+        TrialUploadPending := false;
     end;
 
 }
