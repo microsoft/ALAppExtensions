@@ -2,12 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Automation;
+namespace Microsoft.API.V2;
+
+using System.Automation;
 
 page 2146 "APIV2 - Workflow Resp. Options"
 {
-    APIGroup = 'auditing';
-    APIPublisher = 'microsoft';
     APIVersion = 'v2.0';
     EntityCaption = 'Workflow Response Option';
     EntitySetCaption = 'Workflow Response Options';
@@ -19,7 +19,7 @@ page 2146 "APIV2 - Workflow Resp. Options"
     ModifyAllowed = false;
     DataAccessIntent = ReadOnly;
     PageType = API;
-    SourceTable = "Workflow step argument";
+    SourceTable = "Workflow Step Argument";
     ODataKeyFields = SystemId;
     layout
     {

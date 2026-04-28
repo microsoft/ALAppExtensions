@@ -1,0 +1,40 @@
+{
+  "@odata.count": 1,
+  "value": [
+    {
+      "id": "test-message-id-001",
+      "conversationId": "test-conversation-id-001",
+      "subject": "Test Inline Attachment",
+      "receivedDateTime": "2026-04-21T10:00:00Z",
+      "sentDateTime": "2026-04-21T09:55:00Z",
+      "sender": {
+        "emailAddress": {
+          "name": "Test Sender",
+          "address": "sender@test.com"
+        }
+      },
+      "body": {
+        "contentType": "HTML",
+        "content": "<p>Body with inline image</p>"
+      },
+      "hasAttachments": true,
+      "isRead": false,
+      "isDraft": false,
+      "attachments": [
+        {
+          "name": "inline.txt",
+          "contentType": "text/plain",
+          "isInline": true,
+          "contentId": "cid123",
+          "contentBytes": "SW5saW5lQ29udGVudA=="
+        },
+        {
+          "name": "doc.txt",
+          "contentType": "text/plain",
+          "isInline": false,
+          "contentBytes": "UmVndWxhckNvbnRlbnQ="
+        }
+      ]
+    }
+  ]
+}

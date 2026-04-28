@@ -1,4 +1,4 @@
-codeunit 139913 "APIV2 - Workflow Approvers E2E"
+codeunit 139920 "APIV2 - Workflow Approvers E2E"
 {
 
     Subtype = Test;
@@ -12,7 +12,7 @@ codeunit 139913 "APIV2 - Workflow Approvers E2E"
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         WorkflowEventHandling: Codeunit "Workflow Event Handling";
         WorkflowResponseHandling: Codeunit "Workflow Response Handling";
-        ServiceNameTxt: Label 'workflowApprovers';
+        ServiceNameTxt: Label 'workflowApprovers', Locked = true;
 
 
     [Test]
@@ -39,8 +39,8 @@ codeunit 139913 "APIV2 - Workflow Approvers E2E"
         EntryPointEventID := LibraryWorkflow.InsertEntryPointEventStep(Workflow, WorkflowEventHandling.RunWorkflowOnSendSalesDocForApprovalCode());
         ResponseID := LibraryWorkflow.InsertResponseStep(Workflow, WorkflowResponseHandling.CreateApprovalRequestsCode(), EntryPointEventID);
         WorkflowStep.Get(Workflow.Code, ResponseID);
-        LibraryWorkflow.InsertApprovalArgument(ResponseID, Enum::"Workflow Approver Type"::Approver, enum::"Workflow Approver Limit Type"::"Specific Approver", '', true);
-        LibraryWorkflow.UpdateWorkflowStepArgumentApproverLimitType(WorkflowStep.Argument, Enum::"Workflow Approver Type"::Approver, enum::"Workflow Approver Limit Type"::"Specific Approver", '', User."User Name");
+        LibraryWorkflow.InsertApprovalArgument(ResponseID, Enum::"Workflow Approver Type"::Approver, Enum::"Workflow Approver Limit Type"::"Specific Approver", '', true);
+        LibraryWorkflow.UpdateWorkflowStepArgumentApproverLimitType(WorkflowStep.Argument, Enum::"Workflow Approver Type"::Approver, Enum::"Workflow Approver Limit Type"::"Specific Approver", '', User."User Name");
 
         Commit();
 

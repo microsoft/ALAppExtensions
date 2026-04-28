@@ -64,7 +64,7 @@ codeunit 133514 "Item Entity Search"
             AITestContext.GetInput().Element('ItemResultsArray').AsJsonToken().AsArray(),
             SearchStyle,
             AITestContext.GetInput().Element('Intent').ValueAsText(),
-            AITestContext.GetQuestion().ValueAsText(),
+            AITestContext.GetQuery().ValueAsText(),
             AITestContext.GetInput().Element('Top').ValueAsInteger(),
             AITestContext.GetInput().Element('MaximumQueryResultsToRank').ValueAsInteger(),
             AITestContext.GetInput().Element('IncludeSynonyms').ValueAsBoolean(),

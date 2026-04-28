@@ -1,4 +1,4 @@
-codeunit 139910 "APIV2 - Approval Entries E2E"
+codeunit 139917 "APIV2 - Approval Entries E2E"
 {
 
     Subtype = Test;
@@ -10,7 +10,7 @@ codeunit 139910 "APIV2 - Approval Entries E2E"
         LibraryApproval: Codeunit "Library - Document Approvals";
         LibrarySales: Codeunit "Library - Sales";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
-        ServiceNameTxt: Label 'approvalEntries';
+        ServiceNameTxt: Label 'approvalEntries', Locked = true;
 
 
     [Test]

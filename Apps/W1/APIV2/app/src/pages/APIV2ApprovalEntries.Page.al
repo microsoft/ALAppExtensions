@@ -2,12 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Automation;
+namespace Microsoft.API.V2;
+
+using System.Automation;
 
 page 30094 "APIV2 - Approval Entries"
 {
-    APIGroup = 'auditing';
-    APIPublisher = 'microsoft';
     APIVersion = 'v2.0';
     EntityCaption = 'Approval Entry';
     EntitySetCaption = 'Approval Entries';
@@ -38,7 +38,7 @@ page 30094 "APIV2 - Approval Entries"
                 }
                 field(tableId; Rec."Table ID")
                 {
-                    Caption = 'Table ID';
+                    Caption = 'Table Id';
                 }
                 field(documentType; Rec."Document Type")
                 {
@@ -128,7 +128,7 @@ page 30094 "APIV2 - Approval Entries"
                 {
                     Caption = 'Pending Approvals';
                 }
-                field(recordId; Rec."Record ID to Approve")
+                field(recordIdToApprove; Rec."Record ID to Approve")
                 {
                     Caption = 'Record Id to Approve';
                 }

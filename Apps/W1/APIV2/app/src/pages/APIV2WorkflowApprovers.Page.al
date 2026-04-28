@@ -2,12 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Automation;
+namespace Microsoft.API.V2;
+
+using System.Automation;
 
 page 2148 "APIV2 - Workflow Approvers"
 {
-    APIGroup = 'auditing';
-    APIPublisher = 'microsoft';
     APIVersion = 'v2.0';
     ApplicationArea = All;
     EntityCaption = 'Workflow Approver';

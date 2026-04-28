@@ -34,7 +34,7 @@ codeunit 133516 "SLS Prompt Test"
         ExpectedDocProps := AITestContext.GetInput().Element('Expected').ElementExists('results', ExpectedResultsExist);
 
         // [WHEN] Sales lines are suggested
-        TestUtil.RepeatAtMost3TimesToFetchCompletion(CallCompletionAnswerTxt, AITestContext.GetQuestion().ValueAsText());
+        TestUtil.RepeatAtMost3TimesToFetchCompletion(CallCompletionAnswerTxt, AITestContext.GetQuery().ValueAsText());
 
         // [THEN] Copilot response is based on the expected properties
         AITestContext.SetTestOutput(CallCompletionAnswerTxt); // Log the response

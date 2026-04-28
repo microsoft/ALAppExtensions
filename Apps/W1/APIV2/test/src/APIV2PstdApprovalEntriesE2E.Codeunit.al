@@ -1,4 +1,4 @@
-codeunit 139911 "APIV2 PstdApprovalEntries E2E"
+codeunit 139919 "APIV2 PstdApprovalEntries E2E"
 {
     Subtype = Test;
     TestType = IntegrationTest;
@@ -9,7 +9,7 @@ codeunit 139911 "APIV2 PstdApprovalEntries E2E"
         LibrarySales: Codeunit "Library - Sales";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         LibraryRandom: Codeunit "Library - Random";
-        ServiceNameTxt: Label 'postedApprovalEntries';
+        ServiceNameTxt: Label 'postedApprovalEntries', Locked = true;
 
 
     [Test]

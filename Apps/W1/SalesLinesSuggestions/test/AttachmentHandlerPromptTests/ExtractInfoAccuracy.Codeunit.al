@@ -19,7 +19,7 @@ codeunit 133518 "Extract Info. Accuracy"
         AITTestContext: Codeunit "AIT Test Context";
     begin
         Initialize();
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText(), ExtractInformationFromCsvFunctionLbl);
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuery().ValueAsText(), ExtractInformationFromCsvFunctionLbl);
     end;
 
     local procedure Initialize()

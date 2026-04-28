@@ -75,7 +75,7 @@ codeunit 133512 "Search Items With Filters Test"
     begin
         repeat
             AttemptNo += 1;
-            CreateSalesOrderAndGetSalesLinesSuggestions(AITestContext.GetQuestion().ValueAsText(), SalesHeader, SalesLineAISuggestions);
+            CreateSalesOrderAndGetSalesLinesSuggestions(AITestContext.GetQuery().ValueAsText(), SalesHeader, SalesLineAISuggestions);
             Result := VerifySalesLines(SalesHeader, AITestContext.GetInput().Element('Expected'));
         until Result or (AttemptNo >= 3);
 

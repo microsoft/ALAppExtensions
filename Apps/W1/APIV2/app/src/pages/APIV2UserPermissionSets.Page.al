@@ -3,9 +3,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Security.AccessControl;
+namespace Microsoft.API.V2;
 
-page 30058 "APIV2 - User Permission Sets"
+using System.Security.AccessControl;
+
+page 20769 "APIV2 - User Permission Sets"
 {
     APIGroup = 'automation';
     APIPublisher = 'microsoft';
@@ -33,17 +35,17 @@ page 30058 "APIV2 - User Permission Sets"
                 {
                     Caption = 'Id';
                 }
-                field(userSecurityID; Rec."User Security ID")
+                field(userSecurityId; Rec."User Security ID")
                 {
-                    Caption = 'User Security ID';
+                    Caption = 'User Security Id';
                 }
                 field(type; Rec.Type)
                 {
                     Caption = 'Type';
                 }
-                field(roleID; Rec."Role ID")
+                field(roleId; Rec."Role ID")
                 {
-                    Caption = 'Role ID';
+                    Caption = 'Role Id';
                 }
                 field(roleName; Rec."Role Name")
                 {
@@ -61,9 +63,9 @@ page 30058 "APIV2 - User Permission Sets"
                 {
                     Caption = 'Scope';
                 }
-                field(appID; Rec."App ID")
+                field(appId; Rec."App ID")
                 {
-                    Caption = 'App ID';
+                    Caption = 'App Id';
                 }
                 field(appName; Rec."App Name")
                 {

@@ -2,9 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Security.AccessControl;
+namespace Microsoft.API.V2;
 
-page 30003 "APIV2 - Permission Sets"
+using System.Security.AccessControl;
+
+page 20770 "APIV2 - Permission Sets"
 {
     APIGroup = 'automation';
     APIPublisher = 'microsoft';
@@ -33,7 +35,7 @@ page 30003 "APIV2 - Permission Sets"
                 {
                     Caption = 'Id';
                 }
-                field(appID; Rec."App ID")
+                field(appId; Rec."App ID")
                 {
                     Caption = 'App Id';
                 }
@@ -45,7 +47,7 @@ page 30003 "APIV2 - Permission Sets"
                 {
                     Caption = 'Name';
                 }
-                field(roleID; Rec."Role ID")
+                field(roleId; Rec."Role ID")
                 {
                     Caption = 'Role Id';
                 }

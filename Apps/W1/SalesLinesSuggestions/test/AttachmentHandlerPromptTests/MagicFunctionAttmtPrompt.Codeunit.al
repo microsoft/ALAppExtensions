@@ -20,7 +20,7 @@ codeunit 133523 "Magic Function Attmt. Prompt"
         AITTestContext: Codeunit "AIT Test Context";
     begin
         Initialize();
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText());
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuery().ValueAsText());
     end;
 
     local procedure Initialize()

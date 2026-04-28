@@ -35,7 +35,7 @@ codeunit 133515 "Magic Function Prompt Test"
         // [WHEN] Sales lines are suggested based on the question from the dataset
         SalesLineAISuggestionsPage.Trap();
         SalesOrderPage.SalesLines."Suggest Sales Lines Prompting".Invoke();
-        SalesLineAISuggestionsPage.SearchQueryTxt.SetValue(AITestContext.GetQuestion().ValueAsText());
+        SalesLineAISuggestionsPage.SearchQueryTxt.SetValue(AITestContext.GetQuery().ValueAsText());
         SalesLineAISuggestionsPage.Generate.Invoke(); // AssertErrorNotificationHandler will be called
 
         // [THEN] There should not be any suggestions
@@ -53,7 +53,7 @@ codeunit 133515 "Magic Function Prompt Test"
 
         // [GIVEN] A question from the dataset
         // [WHEN] Sales lines are suggested
-        TestUtil.RepeatAtMost3TimesToFetchCompletion(CompletionAnswerTxt, AITestContext.GetQuestion().ValueAsText());
+        TestUtil.RepeatAtMost3TimesToFetchCompletion(CompletionAnswerTxt, AITestContext.GetQuery().ValueAsText());
 
         // [THEN] Magic function should be returned or the response should be empty
         if StrLen(CompletionAnswerTxt) > 0 then // CompletionAnswerTxt is empty if there is no function returned form the api call
@@ -72,7 +72,7 @@ codeunit 133515 "Magic Function Prompt Test"
 
         // [GIVEN] A question from the dataset
         // [WHEN] Sales lines are suggested
-        TestUtil.RepeatAtMost3TimesToFetchCompletion(CompletionAnswerTxt, StrSubstNo(InputTemplateLbl, AITestContext.GetQuestion().ValueAsText()));
+        TestUtil.RepeatAtMost3TimesToFetchCompletion(CompletionAnswerTxt, StrSubstNo(InputTemplateLbl, AITestContext.GetQuery().ValueAsText()));
 
         // [THEN] Magic function should be returned or the response should be empty
         if StrLen(CompletionAnswerTxt) > 0 then // CompletionAnswerTxt is empty if there is no function returned form the api call

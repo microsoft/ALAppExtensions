@@ -19,8 +19,8 @@ codeunit 133745 "SVA Utilities"
     /// </summary>
     procedure GetFromAndMessageFromTestData(var FromValue: Text; var MessageValue: Text)
     begin
-        FromValue := AITTestContext.GetQuestion().Element('from').ToText().Trim().TrimStart('"').TrimEnd('"');
-        MessageValue := AITTestContext.GetQuestion().Element('message').ToText();
+        FromValue := AITTestContext.GetQuery().Element('from').ToText().Trim().TrimStart('"').TrimEnd('"');
+        MessageValue := AITTestContext.GetQuery().Element('message').ToText();
     end;
 
     /// <summary>
@@ -30,7 +30,7 @@ codeunit 133745 "SVA Utilities"
     var
         ShipmentDate: Date;
     begin
-        Evaluate(ShipmentDate, AITTestContext.GetQuestion().Element('shipment_date').ToText());
+        Evaluate(ShipmentDate, AITTestContext.GetQuery().Element('shipment_date').ToText());
         exit(ShipmentDate);
     end;
 
@@ -64,7 +64,7 @@ codeunit 133745 "SVA Utilities"
         CleanupSalesOrdersByShipmentDate(ShipmentDate);
         CleanupSalesOrdersByShipmentDate(NonMatchingShipmentDate);
 
-        SalesOrderInput := AITTestContext.GetQuestion().Element('sales_orders');
+        SalesOrderInput := AITTestContext.GetQuery().Element('sales_orders');
         NoOfSalesOrders := SalesOrderInput.GetElementCount();
 
         for IdxSO := 0 to NoOfSalesOrders - 1 do begin

@@ -2,13 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Security.AccessControl;
+namespace Microsoft.API.V2;
 
 using System.Apps;
+using System.Security.AccessControl;
 
 page 20766 "APIV2 Expanded Permission Sets"
 {
-    APIGroup = 'auditing';
+    APIGroup = 'automation';
     APIPublisher = 'microsoft';
     APIVersion = 'v2.0';
     EntityCaption = 'Expanded Permission Set';
@@ -22,7 +23,6 @@ page 20766 "APIV2 Expanded Permission Sets"
     DataAccessIntent = ReadOnly;
     PageType = API;
     SourceTable = "Expanded Permission";
-    SourceTableView = where(Ap = filter('<> Exclude'));
     ODataKeyFields = SystemId;
 
     layout
@@ -35,17 +35,17 @@ page 20766 "APIV2 Expanded Permission Sets"
                 {
                     Caption = 'Id';
                 }
-                field(appID; Rec."App ID")
+                field(appId; Rec."App ID")
                 {
-                    Caption = 'App ID';
+                    Caption = 'App Id';
                 }
                 field(appName; AppName)
                 {
                     Caption = 'App Name';
                 }
-                field(roleID; Rec."Role ID")
+                field(roleId; Rec."Role ID")
                 {
-                    Caption = 'Role ID';
+                    Caption = 'Role Id';
                 }
                 field(roleName; Rec."Role Name")
                 {
@@ -55,9 +55,9 @@ page 20766 "APIV2 Expanded Permission Sets"
                 {
                     Caption = 'Object Type';
                 }
-                field(objectID; Rec."Object ID")
+                field(objectId; Rec."Object ID")
                 {
-                    Caption = 'Object ID';
+                    Caption = 'Object Id';
                 }
                 field(objectName; Rec."Object Name")
                 {

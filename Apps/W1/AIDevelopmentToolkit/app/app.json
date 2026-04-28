@@ -27,6 +27,12 @@
       "name": "AI Development Toolkit - Evaluation",
       "publisher": "Microsoft",
       "version": "29.0.0.0"
+    },
+    {
+      "id": "f1ede36c-2f5f-47f1-ba20-258b509c0238",
+      "name": "Agent Samples Tests",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
     }
   ],
   "idRanges": [

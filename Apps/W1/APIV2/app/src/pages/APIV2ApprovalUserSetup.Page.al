@@ -2,19 +2,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Automation;
+namespace Microsoft.API.V2;
+
 using System.Security.AccessControl;
 using System.Security.User;
 
 page 30095 "APIV2 - Approval User Setup"
 {
-    APIGroup = 'auditing';
-    APIPublisher = 'microsoft';
     APIVersion = 'v2.0';
     EntityCaption = 'Approval User Setup';
     EntitySetCaption = 'Approval User Setups';
     EntityName = 'approvalUserSetup';
-    EntitySetName = 'approvalUserSetup';
+    EntitySetName = 'approvalUserSetups';
     Editable = false;
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -101,6 +100,7 @@ page 30095 "APIV2 - Approval User Setup"
     var
         User: Record User;
     begin
+        User.SetLoadFields("Full Name");
         User.SetRange("User Name", Rec."User ID");
         if User.FindFirst() then
             UserFullName := User."Full Name";

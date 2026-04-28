@@ -134,6 +134,7 @@ codeunit 1690 "Bank Deposit-Post"
         ShowDialog := true;
         OnAfterBankDepositPost(Rec, PostedBankDepositHeader, ShowDialog);
 
+        BankDepositPost.GetPostedBankDepositHeader(PostedBankDepositHeader);
         if ShowDialog then
             Page.Run(Page::"Posted Bank Deposit", PostedBankDepositHeader);
     end;
@@ -380,6 +381,11 @@ codeunit 1690 "Bank Deposit-Post"
         PostedBankDepositHeader.Insert();
         SetPostedBankDepositHeaderCreated(true);
         RecordLinkManagement.CopyLinks(BankDepositHeader, PostedBankDepositHeader);
+    end;
+
+    internal procedure GetPostedBankDepositHeader(var ReturnPostedBankDepositHeader: Record "Posted Bank Deposit Header")
+    begin
+        ReturnPostedBankDepositHeader.Copy(PostedBankDepositHeader);
     end;
 
     internal procedure SetCurrentDeposit(BankDepositHeader: Record "Bank Deposit Header")

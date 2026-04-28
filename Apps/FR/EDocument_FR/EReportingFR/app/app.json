@@ -1,0 +1,47 @@
+{
+  "id": "44469049-4bb4-4a32-82ab-f6c34d0204d3",
+  "name": "E-Reporting FR",
+  "publisher": "Microsoft",
+  "brief": "The E-Reporting extension makes it easy to export the transactions in the format that the tax authorities in France require.",
+  "description": "The E-Reporting extension makes it easy to export the transactions in the format that the tax authorities in France require. This is currently mandated for: sales to individuals (B2C), cross-border business-to-business transactions, exports outside the EU, intra-community deliveries and acquisitions and transactions involving French overseas territories.",
+  "version": "29.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "dependencies": [
+    {
+      "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+      "name": "E-Document Core",
+      "publisher": "Microsoft",
+      "version": "29.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "29.0.0.0",
+  "idRanges": [
+    {
+      "from": 10970,
+      "to": 10975
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "29.0.0.0",
+  "internalsVisibleTo": [
+    {
+      "id": "9b8abc90-e306-4da0-9d3f-2b10111d3a04",
+      "name": "E-Reporting FR Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "target": "Cloud",
+  "features": [
+    "TranslationFile"
+  ]
+}

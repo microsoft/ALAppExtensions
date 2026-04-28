@@ -42,7 +42,7 @@ page 30082 "APIV2 - Aut. Security Groups"
                     Caption = 'Group Name';
                     Editable = false;
                 }
-                field(groupUserSecurityID; Rec."Group User SID")
+                field(groupUserSecurityId; Rec."Group User SID")
                 {
                     Caption = 'Group User Security Id';
                 }

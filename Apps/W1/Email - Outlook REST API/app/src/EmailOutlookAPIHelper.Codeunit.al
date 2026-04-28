@@ -7,6 +7,8 @@ namespace System.Email;
 
 using System.DataAdministration;
 using System.Environment;
+using System.Text;
+using System.Utilities;
 
 codeunit 4509 "Email - Outlook API Helper"
 {
@@ -195,7 +197,6 @@ codeunit 4509 "Email - Outlook API Helper"
         exit(RecipientsJson);
     end;
 
-
     procedure GetClientIDAndSecret(var ClientId: Text; var ClientSecret: SecretText)
     var
         Setup: Record "Email - Outlook API Setup";
@@ -259,7 +260,6 @@ codeunit 4509 "Email - Outlook API Helper"
         if IsolatedStorage.Contains(Rec.ClientSecret, DataScope::Module) then
             IsolatedStorage.Delete(Rec.ClientSecret, DataScope::Module);
     end;
-
 
 #if not CLEAN28
 #pragma warning disable AL0432
@@ -573,13 +573,19 @@ codeunit 4509 "Email - Outlook API Helper"
 
     local procedure AddAttachmentsToMessage(EmailJsonObject: JsonObject; var EmailMessage: Codeunit "Email Message")
     var
+        Base64Convert: Codeunit "Base64 Convert";
+        TempBlob: Codeunit "Temp Blob";
         AttachmentsArray: JsonArray;
         AttachmentObject: JsonObject;
         JsonToken: JsonToken;
+        AttachmentInStream: InStream;
+        AttachmentOutStream: OutStream;
         Counter: Integer;
         AttachmentName: Text[250];
         ContentType: Text[250];
+        ContentId: Text[40];
         ContentBytesBase64: Text;
+        IsInline: Boolean;
     begin
         if not EmailJsonObject.Get('attachments', JsonToken) then
             exit;
@@ -592,8 +598,17 @@ codeunit 4509 "Email - Outlook API Helper"
             AttachmentName := CopyStr(GetTextFromJsonObject(AttachmentObject, 'name'), 1, MaxStrLen(AttachmentName));
             ContentType := CopyStr(GetTextFromJsonObject(AttachmentObject, 'contentType'), 1, MaxStrLen(ContentType));
             ContentBytesBase64 := GetTextFromJsonObject(AttachmentObject, 'contentBytes');
+            IsInline := GetBooleanFromJsonObject(AttachmentObject, 'isInline');
+            if AttachmentObject.Get('contentId', JsonToken) then
+                ContentId := CopyStr(JsonToken.AsValue().AsText(), 1, MaxStrLen(ContentId))
+            else
+                ContentId := '';
 
-            EmailMessage.AddAttachment(AttachmentName, ContentType, ContentBytesBase64);
+            Clear(TempBlob);
+            TempBlob.CreateOutStream(AttachmentOutStream);
+            Base64Convert.FromBase64(ContentBytesBase64, AttachmentOutStream);
+            TempBlob.CreateInStream(AttachmentInStream);
+            EmailMessage.AddAttachment(AttachmentName, ContentType, IsInline, ContentId, AttachmentInStream);
         end;
     end;
 

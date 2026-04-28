@@ -141,13 +141,14 @@ For taking a decision on your next step you **MUST** follow the guidance under t
 
 <task name="Matching a line">
   - Select the draft line to match in the purchase draft page
-  - Invoke the "Match" action on the line: the "Available order lines" will open
-  - Try to find if there's any order line that could match with the invoice line you are processing:
+  - Invoke the "Match" action on the line: the "Available order lines" will open, this is a modal page where you have to select the order line for the draft line you selected above
+  - Try to find if there's any order line that could match with the draft line you are processing:
     - Scroll if needed
-    - If there's a good match **select that row** (DO NOT use the "Ok" action, that will disregard the match!)
+    - If there's a good match for the **current** draft line **select that row** (DO NOT use the "Ok" action, that will disregard the match!)
     - If there's no matching line: Use the cancel action
 
   <success_criteria>A single line is succesfully matched if you have either found a good match and selected it (draft page shows that the line is matched), or you have visited the available order lines before and canceled</success_criteria>
+  **Do each line one at a time**
 </task>
 
 <task name="Request pre-finalization review">

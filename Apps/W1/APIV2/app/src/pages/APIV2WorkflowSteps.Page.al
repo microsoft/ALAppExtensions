@@ -2,12 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Automation;
+namespace Microsoft.API.V2;
+
+using System.Automation;
 
 page 2147 "APIV2 - Workflow Steps"
 {
-    APIGroup = 'auditing';
-    APIPublisher = 'microsoft';
     APIVersion = 'v2.0';
     EntityCaption = 'Workflow Step';
     EntitySetCaption = 'Workflow Steps';
@@ -68,7 +68,7 @@ page 2147 "APIV2 - Workflow Steps"
                 {
                     Caption = 'Argument';
                 }
-                field(sequenceNo; Rec."Sequence No.")
+                field(sequenceNumber; Rec."Sequence No.")
                 {
                     Caption = 'Sequence No.';
                 }

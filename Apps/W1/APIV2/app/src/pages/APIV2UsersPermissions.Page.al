@@ -2,8 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Security.AccessControl;
-page 30099 "APIV2 - Users Permissions"
+namespace Microsoft.API.V2;
+
+using System.Security.AccessControl;
+
+page 20768 "APIV2 - Users Permissions"
 {
     APIGroup = 'automation';
     APIPublisher = 'microsoft';
@@ -32,7 +35,7 @@ page 30099 "APIV2 - Users Permissions"
                 {
                     Caption = 'Id';
                 }
-                field(userSecurityID; Rec."User Security ID")
+                field(userSecurityId; Rec."User Security ID")
                 {
                     Caption = 'User Security Id';
                 }
@@ -76,7 +79,7 @@ page 30099 "APIV2 - Users Permissions"
                 {
                     Caption = 'Exchange Identifier';
                 }
-                field(applicationID; Rec."Application ID")
+                field(applicationId; Rec."Application ID")
                 {
                     Caption = 'Application Id';
                 }

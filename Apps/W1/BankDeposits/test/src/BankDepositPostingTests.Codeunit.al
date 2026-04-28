@@ -1086,6 +1086,43 @@ codeunit 139769 "Bank Deposit Posting Tests"
         VerifyCustomerLedgerEntry(Customer."No.");
     end;
 
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PostedBankDepositPageShowsCorrectRecordAfterPosting()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        BankDepositHeader2: Record "Bank Deposit Header";
+        GLAccount: Record "G/L Account";
+        GenJournalLine: Record "Gen. Journal Line";
+        PostedBankDeposit: TestPage "Posted Bank Deposit";
+        PostedBankDepositHeaderNo: Code[20];
+    begin
+        // [FEATURE] [AI test 0.4]
+        // [SCENARIO 630225] After posting a bank deposit, the Posted Bank Deposit page shows the just-posted deposit
+        Initialize();
+
+        // [GIVEN] G/L Account "G"
+        LibraryERM.CreateGLAccount(GLAccount);
+
+        // [GIVEN] Posted Bank Deposit "BD1"
+        CreateBankDeposit(BankDepositHeader, GLAccount."No.", GenJournalLine."Account Type"::"G/L Account", -1);
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+        PostBankDeposit(BankDepositHeader);
+
+        // [GIVEN] Bank Deposit "BD2"
+        CreateBankDeposit(BankDepositHeader2, GLAccount."No.", GenJournalLine."Account Type"::"G/L Account", -1);
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader2);
+
+        // [WHEN] Posting Bank Deposit "BD2"
+        PostedBankDeposit.Trap();
+        Codeunit.Run(Codeunit::"Bank Deposit-Post (Yes/No)", BankDepositHeader2);
+
+        // [THEN] Posted Bank Deposit page shows deposit "BD2"
+        PostedBankDepositHeaderNo := CopyStr(PostedBankDeposit."No.".Value(), 1, MaxStrLen(PostedBankDepositHeaderNo));
+        Assert.AreEqual(BankDepositHeader2."No.", PostedBankDepositHeaderNo, 'Posted Bank Deposit page should show the just-posted deposit');
+        PostedBankDeposit.Close();
+    end;
+
     local procedure Initialize()
     var
         InventorySetup: Record "Inventory Setup";

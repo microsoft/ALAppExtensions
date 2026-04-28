@@ -1,4 +1,4 @@
-codeunit 139912 "APIV2 - Approval UserSetup E2E"
+codeunit 139918 "APIV2 - Approval UserSetup E2E"
 {
 
     Subtype = Test;
@@ -9,7 +9,7 @@ codeunit 139912 "APIV2 - Approval UserSetup E2E"
         Assert: Codeunit Assert;
         LibraryApproval: Codeunit "Library - Document Approvals";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
-        ServiceNameTxt: Label 'approvalUserSetup';
+        ServiceNameTxt: Label 'approvalUserSetups', Locked = true;
 
 
     [Test]

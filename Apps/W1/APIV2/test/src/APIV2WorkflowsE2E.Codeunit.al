@@ -1,4 +1,4 @@
-codeunit 139914 "APIV2 - Workflows E2E"
+codeunit 139921 "APIV2 - Workflows E2E"
 {
 
     Subtype = Test;
@@ -9,14 +9,14 @@ codeunit 139914 "APIV2 - Workflows E2E"
         Assert: Codeunit Assert;
         LibraryWorkflow: Codeunit "Library - Workflow";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
-        ServiceNameTxt: Label 'workflows';
+        ServiceNameTxt: Label 'workflows', Locked = true;
 
 
     [Test]
     procedure TestGetApprovalEntries()
     var
         Workflow: Record Workflow;
-        WorkFlowId: Text;
+        WorkflowId: Text;
         TargetURL: Text;
         ResponseText: Text;
     begin

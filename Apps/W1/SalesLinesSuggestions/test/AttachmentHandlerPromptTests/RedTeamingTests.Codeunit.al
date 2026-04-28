@@ -19,7 +19,7 @@ codeunit 133524 "Red Teaming Tests"
         AITTestContext: Codeunit "AIT Test Context";
     begin
         Initialize();
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText(), UserInputDataTemplate1Tok);
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuery().ValueAsText(), UserInputDataTemplate1Tok);
     end;
 
     [Test]
@@ -28,7 +28,7 @@ codeunit 133524 "Red Teaming Tests"
         AITTestContext: Codeunit "AIT Test Context";
     begin
         Initialize();
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText(), UserInputDataTemplate2Tok);
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuery().ValueAsText(), UserInputDataTemplate2Tok);
     end;
 
     [Test]
@@ -37,7 +37,7 @@ codeunit 133524 "Red Teaming Tests"
         AITTestContext: Codeunit "AIT Test Context";
     begin
         Initialize();
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText(), '%1');
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuery().ValueAsText(), '%1');
     end;
 
     local procedure Initialize()

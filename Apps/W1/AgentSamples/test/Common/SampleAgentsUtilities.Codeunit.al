@@ -91,7 +91,7 @@ codeunit 133744 "Sample Agents Utilities"
     var
         AgentOutputText: Codeunit "Test Output Json";
         TestJsonObject: JsonObject;
-        ContextText, QuestionText, AnswerText : Text;
+        ContextText, QueryText, AnswerText : Text;
     begin
         AgentOutputText.Initialize();
         LibraryAgent.WriteTaskToOutput(AgentTask, AgentOutputText);
@@ -103,8 +103,8 @@ codeunit 133744 "Sample Agents Utilities"
         TestJsonObject.WriteTo(AnswerText);
 
         ContextText := AITTestContext.GetContext().ToText();
-        QuestionText := AITTestContext.GetQuestion().ToText();
-        AITTestContext.SetTestOutput(ContextText, QuestionText, AnswerText);
+        QueryText := AITTestContext.GetQuery().ToText();
+        AITTestContext.SetTestOutput(ContextText, QueryText, AnswerText);
     end;
 
     local procedure GetOrActivateSampleAgent(CustomAgentSample: Enum "Custom Agent Sample") AgentUserSecurityId: Guid

@@ -6,7 +6,7 @@
         },
         {
             "name": "agent tests",
-            "path": "test"
+            "path": "../../../Internal/Apps/PayablesAgent/test"
         },
         {
             "name": "edocuments",

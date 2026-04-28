@@ -17,6 +17,7 @@ using Microsoft.Inventory.Item.Attribute;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Planning;
 using Microsoft.Inventory.Requisition;
+using Microsoft.Inventory.Tracking;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Comment;
 using Microsoft.Sales.Customer;
@@ -74,6 +75,7 @@ permissionset 4405 "SOA - Edit"
                   tabledata "Item Availability Buffer" = IMD,
                   tabledata "Planning Assignment" = im,
                   tabledata "Requisition Line" = IMD,
+                  tabledata "Reservation Entry" = m,
                   tabledata "Sales Comment Line" = IMD,
                   tabledata "Sales Cue" = IMD,
                   tabledata "Sales Invoice Entity Aggregate" = IMD,
