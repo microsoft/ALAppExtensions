@@ -108,7 +108,7 @@ page 30051 "APIV2 - Bank Accounts"
         CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
 
-    trigger OnOpenPage()
+    trigger OnInit()
     begin
         Rec.AddLoadFields("Currency Code");
     end;
