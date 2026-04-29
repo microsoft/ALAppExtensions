@@ -451,14 +451,11 @@ page 20028 "APIV1 - Sales Orders"
     }
 
     trigger OnAfterGetRecord()
-    var
-        IsCompletelyShipped: Boolean;
     begin
         SetCalculatedFields();
         if HasWritePermission then begin
-            IsCompletelyShipped := Rec."Completely Shipped";
             GraphMgtSalesOrderBuffer.RedistributeInvoiceDiscounts(Rec);
-            Rec."Completely Shipped" := IsCompletelyShipped;
+            Rec.Find();
         end;
     end;
 
