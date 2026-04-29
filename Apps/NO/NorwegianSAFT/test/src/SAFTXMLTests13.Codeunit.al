@@ -1922,6 +1922,201 @@ codeunit 148110 "SAF-T XML Tests 1.3"
         SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(PaymentAmount));
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure VendLCYCurrencyCodeNotExportedInCurrencyBlock()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempChildXMLBuffer: Record "XML Buffer" temporary;
+        GLAccount: Record "G/L Account";
+        Vendor: Record Vendor;
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        GLEntry: Record "G/L Entry";
+        DocNo: Code[20];
+        GLEntryNo: Integer;
+        TransactionNo: Integer;
+        AmountLCY: Decimal;
+    begin
+        // [FEATURE] [Currency] [Purchase]
+        // [SCENARIO 26554] No currency information is exported for a vendor ledger entry when currency code equals the company LCY code
+        // and "Export Currency Information" option is enabled in the SAF-T 1.3 export card
+
+        Initialize();
+
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Income Statement", 10);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code, Enum::"SAF-T Version"::"1.30");
+        GeneralLedgerSetup.Get();
+
+        DocNo := LibraryUtility.GenerateGUID();
+        GLAccount.SetRange("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.FindFirst();
+        Vendor.FindFirst();
+        SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
+
+        // [GIVEN] G/L entry for a vendor with "Transaction No." = "Y" and Amount = 100 (Amount LCY)
+        AmountLCY := LibraryRandom.RandDec(100, 2);
+        TransactionNo := GetLastUsedTransactionNo() + 1;
+        GLEntryNo :=
+            SAFTTestHelper.MockGLEntry(
+                SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
+                TransactionNo, 0, GLEntry."Gen. Posting Type"::Purchase, '',
+                '', GLEntry."Source Type"::Vendor, Vendor."No.", '', AmountLCY, 0);
+
+        // [GIVEN] Vendor ledger entry with "Currency Code" equal to the company LCY code
+        SAFTTestHelper.MockVendLedgEntry(
+            GLEntryNo, SAFTExportHeader."Starting Date", Vendor."No.", TransactionNo,
+            GeneralLedgerSetup."LCY Code", AmountLCY, AmountLCY, AmountLCY, 1, "Gen. Journal Document Type"::Invoice);
+
+        // [WHEN] Export G/L entries to the XML file
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTExportLine.SetRange("Master Data", false);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+
+        // [THEN] The DebitAmount node has only "n1:Amount" and no currency information
+        Assert.IsTrue(
+            TempXMLBuffer.FindNodesByXPath(
+                TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries/n1:Journal/n1:Transaction/n1:Line/n1:DebitAmount'),
+            'No G/L entries exported.');
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(AmountLCY));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure CustLCYCurrencyCodeNotExportedInCurrencyBlock()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempChildXMLBuffer: Record "XML Buffer" temporary;
+        Customer: Record Customer;
+        GLAccount: Record "G/L Account";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        GLEntry: Record "G/L Entry";
+        DocNo: Code[20];
+        GLEntryNo: Integer;
+        TransactionNo: Integer;
+        AmountLCY: Decimal;
+    begin
+        // [FEATURE] [Currency] [Sales]
+        // [SCENARIO 26554] No currency information is exported for a customer ledger entry when currency code equals the company LCY code
+        // and "Export Currency Information" option is enabled in the SAF-T 1.3 export card
+
+        Initialize();
+
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Income Statement", 10);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code, Enum::"SAF-T Version"::"1.30");
+        GeneralLedgerSetup.Get();
+
+        DocNo := LibraryUtility.GenerateGUID();
+        GLAccount.SetRange("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.FindFirst();
+        Customer.FindFirst();
+        SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
+
+        // [GIVEN] G/L entry for a customer with "Transaction No." = "Y" and Amount = 100 (Amount LCY)
+        AmountLCY := LibraryRandom.RandDec(100, 2);
+        TransactionNo := GetLastUsedTransactionNo() + 1;
+        GLEntryNo :=
+            SAFTTestHelper.MockGLEntry(
+                SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
+                TransactionNo, 0, GLEntry."Gen. Posting Type"::Sale, '',
+                '', GLEntry."Source Type"::Customer, Customer."No.", '', AmountLCY, 0);
+
+        // [GIVEN] Customer ledger entry with "Currency Code" equal to the company LCY code
+        SAFTTestHelper.MockCustLedgEntry(
+            GLEntryNo, SAFTExportHeader."Starting Date", Customer."No.", TransactionNo,
+            GeneralLedgerSetup."LCY Code", AmountLCY, AmountLCY, AmountLCY, 1, "Gen. Journal Document Type"::Invoice);
+
+        // [WHEN] Export G/L entries to the XML file
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTExportLine.SetRange("Master Data", false);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+
+        // [THEN] The DebitAmount node has only "n1:Amount" and no currency information
+        Assert.IsTrue(
+            TempXMLBuffer.FindNodesByXPath(
+                TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries/n1:Journal/n1:Transaction/n1:Line/n1:DebitAmount'),
+            'No G/L entries exported.');
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(AmountLCY));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure BankLCYCurrencyCodeNotExportedInCurrencyBlock()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempChildXMLBuffer: Record "XML Buffer" temporary;
+        BankAccount: Record "Bank Account";
+        GLAccount: Record "G/L Account";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        GLEntry: Record "G/L Entry";
+        DocNo: Code[20];
+        GLEntryNo: Integer;
+        TransactionNo: Integer;
+        AmountLCY: Decimal;
+    begin
+        // [FEATURE] [Currency] [Bank]
+        // [SCENARIO 26554] No currency information is exported for a bank account ledger entry when currency code equals the company LCY code
+        // and "Export Currency Information" option is enabled in the SAF-T 1.3 export card
+
+        Initialize();
+
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Income Statement", 10);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code, Enum::"SAF-T Version"::"1.30");
+        GeneralLedgerSetup.Get();
+
+        DocNo := LibraryUtility.GenerateGUID();
+        GLAccount.SetRange("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
+        GLAccount.FindFirst();
+        BankAccount.FindFirst();
+        SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
+
+        // [GIVEN] G/L entry for a bank account with "Transaction No." = "Y" and Amount = 100 (Amount LCY)
+        AmountLCY := LibraryRandom.RandDec(100, 2);
+        TransactionNo := GetLastUsedTransactionNo() + 1;
+        GLEntryNo :=
+            SAFTTestHelper.MockGLEntry(
+                SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
+                TransactionNo, 0, GLEntry."Gen. Posting Type"::Sale, '',
+                '', GLEntry."Source Type"::"Bank Account", BankAccount."No.", '', AmountLCY, 0);
+
+        // [GIVEN] Bank account ledger entry with "Currency Code" equal to the company LCY code
+        SAFTTestHelper.MockBankLedgEntry(
+            GLEntryNo, SAFTExportHeader."Starting Date", BankAccount."No.", TransactionNo,
+            GeneralLedgerSetup."LCY Code", AmountLCY, AmountLCY, "Gen. Journal Document Type"::Invoice);
+
+        // [WHEN] Export G/L entries to the XML file
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTExportLine.SetRange("Master Data", false);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+
+        // [THEN] The DebitAmount node has only "n1:Amount" and no currency information
+        Assert.IsTrue(
+            TempXMLBuffer.FindNodesByXPath(
+                TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries/n1:Journal/n1:Transaction/n1:Line/n1:DebitAmount'),
+            'No G/L entries exported.');
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(AmountLCY));
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"SAF-T XML Tests 1.3");
