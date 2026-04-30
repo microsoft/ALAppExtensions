@@ -13,6 +13,8 @@ body:
         📖 [How to structure the requests](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/create-extensibility-request)
         📖 [Types of events by value](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/types-of-events-for-extensibility)
         📖 [Min. requirements for IsHandled events](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-use-ishandled-min-req)
+        
+        ⚠️Note: Requests submitted through this form are analyzed by AI to support faster triage and more consistent routing.
 
   - type: textarea
     id: explaining-the-need

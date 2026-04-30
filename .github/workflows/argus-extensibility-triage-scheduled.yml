@@ -1,0 +1,151 @@
+name: Argus — Extensibility Request Triage (Scheduled)
+
+on:
+  schedule:
+    - cron: '0 1/6 * * *'   # 4× daily: 01:00, 07:00, 13:00, 19:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+  id-token: write
+
+# ── Job 1: discover eligible issues ─────────────────────────────────────────
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      issues: ${{ steps.find-issues.outputs.issues }}
+    steps:
+      - name: Find eligible issues
+        id: find-issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          NOW=$(date -u '+%s')
+
+          # ISO 8601 UTC strings — sort lexicographically == chronologically
+          CUTOFF_5MIN=$(date -u -d "@$((NOW - 300))"   '+%Y-%m-%dT%H:%M:%SZ')  # now − 5 min
+          CUTOFF_7H=$(date -u -d "@$((NOW - 25200))" '+%Y-%m-%dT%H:%M:%SZ')  # now − 7 h
+
+          ELIGIBLE=()
+
+          while IFS= read -r ISSUE; do
+            NUMBER=$(     echo "$ISSUE" | jq -r '.number')
+            TYPE=$(       echo "$ISSUE" | jq -r '.type.name // ""')
+            LABEL_COUNT=$(echo "$ISSUE" | jq    '.labels | length')
+            LABEL_NAME=$( echo "$ISSUE" | jq -r '.labels[0].name // ""')
+            CREATED_AT=$( echo "$ISSUE" | jq -r '.created_at')
+            UPDATED_AT=$( echo "$ISSUE" | jq -r '.updated_at')
+
+            # Must be a Task
+            [ "$TYPE" != "Task" ] && continue
+
+            if [ "$LABEL_COUNT" -eq 0 ]; then
+              # ── No labels: created at least 5 min before this run ─────────
+              [[ "$CREATED_AT" < "$CUTOFF_5MIN" ]] || continue
+
+              # Skip if last comment contains /not-accurate
+              LAST_COMMENT=$(gh api "repos/$REPO/issues/$NUMBER/comments" \
+                --paginate --jq '.[]' 2>/dev/null | tail -1 || true)
+              LAST_BODY=$(echo "$LAST_COMMENT" | jq -r '.body // ""' 2>/dev/null || true)
+              if echo "$LAST_BODY" | grep -qiE '^\s*/not-accurate'; then
+                continue
+              fi
+
+              ELIGIBLE+=("$NUMBER")
+
+            elif [ "$LABEL_COUNT" -eq 1 ] && [ "$LABEL_NAME" = "missing-info" ]; then
+              # ── Only missing-info: updated inside the 6-hour window ───────
+              # Window: (now − 7h) ≤ updated_at < (now − 5min)
+              [[ ! "$UPDATED_AT" < "$CUTOFF_7H" && "$UPDATED_AT" < "$CUTOFF_5MIN" ]] || continue
+
+              # Fetch last comment once — used for both checks below
+              LAST_COMMENT=$(gh api "repos/$REPO/issues/$NUMBER/comments" \
+                --paginate --jq '.[]' 2>/dev/null | tail -1 || true)
+
+              # Skip if last comment contains /not-accurate
+              LAST_BODY=$(echo "$LAST_COMMENT" | jq -r '.body // ""' 2>/dev/null || true)
+              if echo "$LAST_BODY" | grep -qiE '^\s*/not-accurate'; then
+                continue
+              fi
+
+              # Last comment must not be from a bot (no comments = eligible)
+              LAST_AUTHOR=$(echo "$LAST_COMMENT" | jq -r '.user.login // ""' 2>/dev/null || true)
+              if [[ -z "$LAST_AUTHOR" || "$LAST_AUTHOR" != *"[bot]"* ]]; then
+                ELIGIBLE+=("$NUMBER")
+              fi
+            fi
+
+          done < <(gh api "repos/$REPO/issues" \
+            --paginate -X GET -f state=open -f per_page=100 --jq '.[]')
+
+          if [ "${#ELIGIBLE[@]}" -eq 0 ]; then
+            echo "No eligible issues found."
+            echo "issues=[]" >> "$GITHUB_OUTPUT"
+          else
+            ISSUES_JSON=$(printf '%s\n' "${ELIGIBLE[@]}" | jq -R 'tonumber' | jq -sc '.')
+            echo "Found ${#ELIGIBLE[@]} eligible issue(s): ${ELIGIBLE[*]}"
+            echo "issues=$ISSUES_JSON" >> "$GITHUB_OUTPUT"
+          fi
+
+# ── Job 2: process each issue on its own runner ──────────────────────────────
+  process:
+    needs: discover
+    if: needs.discover.outputs.issues != '' && needs.discover.outputs.issues != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        issue: ${{ fromJson(needs.discover.outputs.issues) }}
+      fail-fast: false   # one failing issue must not block the others
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Checkout BCAppsTriage source
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ github.repository_owner }}/BCAppsTriage
+          token: ${{ secrets.EXT_TRIAGE_SOURCE_TOKEN }}
+          path: _triage-src
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: _triage-src/internal/Argus_Triage_Extensibility_Requests
+        run: npm ci
+
+      - name: Install tsx globally
+        run: npm install -g tsx
+
+      - name: Make process-issue script executable
+        run: chmod +x _triage-src/internal/Argus_Triage_Extensibility_Requests/scripts/process-issue.sh
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Process issue #${{ matrix.issue }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COPILOT_GITHUB_TOKEN: ${{ secrets.EXT_TRIAGE_COPILOT_TOKEN }}
+          REPO_READ_TOKEN: ${{ secrets.EXT_TRIAGE_CODEBASE_TOKEN }}
+        run: |
+          bash _triage-src/internal/Argus_Triage_Extensibility_Requests/scripts/process-issue.sh \
+            "${{ matrix.issue }}" \
+            "${{ github.repository }}" \
+            "$(pwd)/_triage-src"
+
+      - name: Upload result artifact
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: argus-result-${{ github.run_id }}-issue-${{ matrix.issue }}
+          path: _triage-src/internal/Argus_Triage_Extensibility_Requests/data/argus_result.json
+          retention-days: 30
+          if-no-files-found: ignore

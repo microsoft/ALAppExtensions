@@ -1,0 +1,156 @@
+name: Argus — Extensibility Request Triage Feedback
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  contents: read
+  id-token: write
+
+jobs:
+  handle-feedback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Checkout BCAppsTriage source
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ github.repository_owner }}/BCAppsTriage
+          token: ${{ secrets.EXT_TRIAGE_SOURCE_TOKEN }}
+          path: _triage-src
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: _triage-src/internal/Argus_Triage_Extensibility_Requests
+        run: npm ci
+
+      # ── Step 1: Detect /not-accurate command ────────────────────────────────
+      - name: Detect /not-accurate command
+        id: detect
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMENT_BODY=$(gh api repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }} --jq '.body')
+
+          if ! echo "$COMMENT_BODY" | grep -qiE '^\s*/not-accurate'; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Skip bots
+          ACTOR="${{ github.actor }}"
+          if [[ "$ACTOR" == "github-actions[bot]" || "$ACTOR" == *"[bot]"* ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "skip=false" >> $GITHUB_OUTPUT
+
+      # ── Step 2: Validate author & collect context ────────────────────────────
+      - name: Validate author and collect context
+        if: steps.detect.outputs.skip == 'false'
+        id: context
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          ACTOR="${{ github.actor }}"
+
+          # Fetch issue metadata
+          ISSUE_DATA=$(gh api repos/${{ github.repository }}/issues/$ISSUE_NUMBER)
+          ISSUE_AUTHOR=$(echo "$ISSUE_DATA" | jq -r '.user.login')
+          ISSUE_URL=$(echo "$ISSUE_DATA" | jq -r '.html_url')
+          ASSIGNEES=$(echo "$ISSUE_DATA" | jq -r '[.assignees[].login] | join(" ")')
+
+          # Validate: only issue author or an assignee may submit /not-accurate
+          AUTHORIZED=false
+          if [[ "$ACTOR" == "$ISSUE_AUTHOR" ]]; then
+            AUTHORIZED=true
+          else
+            for ASSIGNEE in $ASSIGNEES; do
+              if [[ "$ACTOR" == "$ASSIGNEE" ]]; then
+                AUTHORIZED=true
+                break
+              fi
+            done
+          fi
+
+          if [[ "$AUTHORIZED" != "true" ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Skipping: $ACTOR is not the issue author or an assignee."
+            exit 0
+          fi
+
+          # Idempotency: check if feedback was already recorded
+          ALREADY_RECORDED=$(gh api repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments \
+            --paginate --jq '[.[] | select(.body | contains("<!-- argus-feedback-recorded -->"))] | length')
+          if [[ "$ALREADY_RECORDED" -gt 0 ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Skipping: feedback already recorded for this issue."
+            exit 0
+          fi
+
+          # Find latest agent comment (posted by github-actions[bot])
+          AGENT_COMMENT_ID=$(gh api repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments \
+            --paginate --jq '[.[] | select(.user.login == "github-actions[bot]")] | last | .id // 0')
+
+          # Extract optional feedback text: inline text after /not-accurate AND any subsequent lines
+          COMMENT_BODY=$(gh api repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }} --jq '.body')
+          INLINE_TEXT=$(echo "$COMMENT_BODY" | head -n 1 | sed -E 's|^\s*/not-accurate\s*||i')
+          REST_TEXT=$(echo "$COMMENT_BODY" | tail -n +2)
+          FEEDBACK_TEXT=$(printf '%s\n%s' "$INLINE_TEXT" "$REST_TEXT" | sed '/^[[:space:]]*$/d' | head -c 2000)
+
+          echo "skip=false" >> $GITHUB_OUTPUT
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          echo "issue_author=$ISSUE_AUTHOR" >> $GITHUB_OUTPUT
+          echo "issue_url=$ISSUE_URL" >> $GITHUB_OUTPUT
+          echo "feedback_author=$ACTOR" >> $GITHUB_OUTPUT
+          echo "feedback_comment_id=${{ github.event.comment.id }}" >> $GITHUB_OUTPUT
+          echo "agent_comment_id=$AGENT_COMMENT_ID" >> $GITHUB_OUTPUT
+
+          # Write multi-line feedback text to a file to avoid output encoding issues
+          echo "$FEEDBACK_TEXT" > /tmp/feedback_text.txt
+
+      # ── Step 3: Log telemetry ────────────────────────────────────────────────
+      - name: Azure login (OIDC)
+        if: steps.detect.outputs.skip == 'false' && steps.context.outputs.skip == 'false'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log feedback telemetry
+        if: steps.detect.outputs.skip == 'false' && steps.context.outputs.skip == 'false'
+        working-directory: _triage-src/internal/Argus_Triage_Extensibility_Requests
+        env:
+          ISSUE_NUMBER: ${{ steps.context.outputs.issue_number }}
+          REPOSITORY: ${{ github.repository }}
+          ISSUE_URL: ${{ steps.context.outputs.issue_url }}
+          ISSUE_AUTHOR: ${{ steps.context.outputs.issue_author }}
+          FEEDBACK_AUTHOR: ${{ steps.context.outputs.feedback_author }}
+          FEEDBACK_COMMENT_ID: ${{ steps.context.outputs.feedback_comment_id }}
+          AGENT_COMMENT_ID: ${{ steps.context.outputs.agent_comment_id }}
+          FEEDBACK_TEXT_FILE: /tmp/feedback_text.txt
+        run: npm run feedback
+
+      # ── Step 4: Post acknowledgement ────────────────────────────────────────
+      - name: Post acknowledgement comment
+        if: steps.detect.outputs.skip == 'false' && steps.context.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s\n' \
+            '<!-- argus-feedback-recorded -->' \
+            '✅ **Feedback recorded**' \
+            "Thanks — your \`/not-accurate\` feedback has been logged and will be reviewed." \
+            > /tmp/ack_body.txt
+          gh issue comment "${{ steps.context.outputs.issue_number }}" \
+            --repo "${{ github.repository }}" \
+            --body-file /tmp/ack_body.txt
