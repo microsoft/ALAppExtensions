@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Contribute in BCApps
+    url: https://github.com/microsoft/BCApps
+    about: ALAppExtensions no longer accepts new pull requests. Please submit new Business Central application contributions in BCApps.
   - name: Request a feature
     url: https://aka.ms/bcideas
     about: Please go to https://aka.ms/bcideas to log your idea. Creating a feature implementation issue here is no longer available.
