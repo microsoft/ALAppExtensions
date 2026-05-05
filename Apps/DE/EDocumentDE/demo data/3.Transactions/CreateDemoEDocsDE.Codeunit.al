@@ -39,6 +39,24 @@ codeunit 11370 "Create Demo EDocs DE"
 
     local procedure GenerateContosoInboundEDocuments()
     var
+        EDocSamplePurchaseInvoice: Codeunit "E-Doc Sample Purchase Invoice";
+        SavedWorkDate, SampleInvoiceDate: Date;
+        ErrorText: Text;
+    begin
+        SavedWorkDate := WorkDate();
+        SampleInvoiceDate := EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate();
+        WorkDate(SampleInvoiceDate);
+        if not TryCreateInboundEDocuments(SampleInvoiceDate) then begin
+            ErrorText := GetLastErrorText();
+            WorkDate(SavedWorkDate);
+            Error(ErrorText);
+        end;
+        WorkDate(SavedWorkDate);
+    end;
+
+    [TryFunction]
+    local procedure TryCreateInboundEDocuments(SampleInvoiceDate: Date)
+    var
         CreateVendor: Codeunit "Create Vendor";
         CreateGLAccDE: Codeunit "Create DE GL Acc.";
         CreateCommonUnitOfMeasure: Codeunit "Create Common Unit Of Measure";
@@ -46,17 +64,12 @@ codeunit 11370 "Create Demo EDocs DE"
         CreateJobItem: Codeunit "Create Job Item";
         CreateAllocationAccount: Codeunit "Create Allocation Account";
         CreateDeferralTemplate: Codeunit "Create Deferral Template";
-        EDocSamplePurchaseInvoice: Codeunit "E-Doc Sample Purchase Invoice";
         AccountingServicesJanuaryLbl: Label 'Accounting support period: January', MaxLength = 100;
         AccountingServicesFebruaryLbl: Label 'Accounting support period: February', MaxLength = 100;
         AccountingServicesMarchLbl: Label 'Accounting support period: March', MaxLength = 100;
         AccountingServicesDecemberLbl: Label 'Accounting support period: December', MaxLength = 100;
         AccountingServicesMayLbl: Label 'Accounting support period: May', MaxLength = 100;
-        SavedWorkDate, SampleInvoiceDate : Date;
     begin
-        SavedWorkDate := WorkDate();
-        SampleInvoiceDate := EDocSamplePurchaseInvoice.GetSampleInvoicePostingDate();
-        WorkDate(SampleInvoiceDate);
         ContosoInboundEDocument.AddEDocPurchaseHeader(CreateVendor.EUGraphicDesign(), SampleInvoiceDate, '245', 0);
         ContosoInboundEDocument.AddEDocPurchaseLine(
             Enum::"Purchase Line Type"::"Allocation Account", CreateAllocationAccount.Licenses(),
@@ -113,7 +126,6 @@ codeunit 11370 "Create Demo EDocs DE"
             Enum::"Purchase Line Type"::Item, CreateEDocumentMasterData.PrecisionGrindHome(),
             '', 50, 199, '', CreateCommonUnitOfMeasure.Piece());
         ContosoInboundEDocument.Generate();
-        WorkDate(SavedWorkDate);
     end;
 
 }
