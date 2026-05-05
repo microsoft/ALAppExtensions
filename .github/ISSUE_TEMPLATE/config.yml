@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: Request a feature
     url: https://aka.ms/bcideas
-    about: Please go to https://aka.ms/bcideas to log your idea. Creating an issue here is not the right way.
+    about: Please go to https://aka.ms/bcideas to log your idea. Creating a feature implementation issue here is no longer available.
   - name: Report a bug
     url: https://aka.ms/bcsupport?#bugs
-    about: Please follow the steps on https://aka.ms/bcsupport to get support. Creating an issue here is not the right way.
+    about: Please follow the steps on https://aka.ms/bcsupport to get support. Creating a bug-fix contribution issue here is no longer available.

@@ -9,28 +9,11 @@ Have a look at the following articles for detailed walkthroughs:
 * https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-change-a-module
 
 ## Can I contribute by submiting my own app?
-We are accepting code contributions for published apps and modules, as well as new relevant modules for the System Application that adhere to the [Module Architecture](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-blueprint) guide.
+This repository no longer accepts new pull requests for code contributions. For code contributions, use the [BCApps](https://github.com/microsoft/BCApps) repository.
  
 ## Some APIs files aren't available in Extensions V2. What to do?
 Code that relies on temporary files must be rewritten to rely on InStream and OutStream data types instead. Code that relied on permanent files must be rewritten to use another form of permanent storage.
 We are considering a virtualized temporary file system to make it possible to work with temporary files in the cloud at some point in the future.
-
-## DotNet types are not available in Extensions V2. What now?
-SaaS:  
-
-DotNet interop is not available due to safety issues in running arbitrary .NET code on cloud servers. We recommend the following approaches to achieve your business scenario that previously relied on .NET:
-1. With each monthly update we provide new AL types that replace the most typical usages of .NET, such as HTTP, JSON, XML, StringBuilder, Dictionaries and Lists. The new AL types can directly replace many of the .NET usages, which results in much cleaner code. For more information, see [HTTP, JSON, TextBuilder, and XML API Overview](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-restapi-overview).  
-2. For things you can't do in AL code we recommend using Azure Functions to host the DLL or C# code that was previously embedded in NAV and call that service from AL. To get a more in-depth understanding, check out the following blog posts from our MVPs:  
-
-* [State of .NET Affairs](http://vjeko.com/state-net-affairs/)  
-* [AL support for REST Web Services](http://www.kauffmann.nl/2017/06/24/al-support-for-rest-web-services/)  
-* [Invoking Azure Functions from AL](http://vjeko.com/invoking-azure-functions-al/)  
-
-3. You can submit .NET type wrapper pull requests that, if accepted, will be included in the System Application. 
-
-On-Premise:  
-
-We still encourage you to use the resources above to minimize your reliance on DotNet to make your solutions easily portable to the cloud. However, we are working on adding DotNet interop support to the new development environment, so eventually that will be available.
 
 ## Why can't I use the type or method 'XYZ' for 'Extension' development?
 We've blocked a certain set of functions from being directly called from app code. Our approach was based on a conservative static analysis, and the result was that some functions are unnecessarily blocked. If you need to use one or more of these functions please log an issue and provide a full list. We will analyze your request and unblock the functions we deem to be safe.
@@ -50,7 +33,7 @@ We use labels for categorizing issues into types and tracking the issue lifecycl
 The lifecycle for issues is a mix of label + milestone + open/closed state:
 
 * **Ships-in-future-update:** The issue was fixed in our source code repository and ships in the next major release or, for events, the next minor update.
-* **Call-for-contributors:** We're looking for contributors who are willing to address a reported bug or request.
+* **Call-for-contributors:** Historical label used for issues where contributors were invited to address a reported bug or request.
 * **Wontfix:** The issue will not be fixed, probably because it is out of the scope of the current repository.
 
 ## How do I report an issue?

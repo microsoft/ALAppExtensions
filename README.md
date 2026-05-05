@@ -1,29 +1,24 @@
-# Microsoft AL application add-ons for Microsoft Dynamics 365 Business Central
+# Business Central extensibility requests
 Welcome to the ALAppExtension repository!
 
-This repo is a platform for Microsoft and our vibrant partner channel and community to work together to develop add-on apps in the AL language and to enable the general extensibility of Microsoft Dynamics 365 Business Central.
+This repository is now solely for extensibility requests for Microsoft Dynamics 365 Business Central.
 
-We’re working to make the core application thinner, more extensible, and easier to localize extracting business logic into add-on and localization apps. As we go, we’ll publish the source code for the apps in this repo. The apps are open for contributions and can furthermore serve as starting point for verticalizations or just as samples for developing apps.
+It is no longer a place to contribute to Microsoft AL application add-ons. New pull requests are no longer accepted in this repository.
 
-⚠ This repository is no longer a place to develop on the System Application or Developer Tools! The System Application is now fully developed in the [BCApps](https://github.com/microsoft/BCApps) repository. Please use that repository for all contributions to the System Application and Developer Tools. ⚠
-
-Microsoft will ship the contributions in upcoming releases of [Microsoft Dynamics 365 Business Central](https://dynamics.microsoft.com/en-us/business-central), where you’ll get to enjoy the effect of your contributions.
+⚠ This repository is no longer a place to develop the Business Central application platform! The application is now fully developed in the [BCApps](https://github.com/microsoft/BCApps) repository. Please use that repository for all contributions. ⚠
 
 ## Contributing
 
-In this repository, we welcome contributions to **Microsoft's application add-ons**.
+This repository no longer accepts new pull requests for Microsoft's application add-ons. Please only create issues for extensibility requests, such as event requests, requests to make functions external, enum requests, or other extensibility enhancements.
 
-* If you are looking to contribute to the **System Application** or **Developer Tools** you can do so in the [BCApps](https://github.com/microsoft/BCApps) repository. 
-* If you are looking to contribute to the **Base Application** you can do so in the [BusinessCentralApps](https://github.com/microsoft/BusinessCentralApps/) repository. Please note, that this repository is private but you can request access by filling out [this form](https://forms.office.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbR_Qj5hjzNeNOhBcvBoRIOltUOVBVTklZN1hBOTZJUU40OE5CUzNWNk1FQy4u). 
-
+* If you are looking to contribute code to the business application, you can do so in the [BCApps](https://github.com/microsoft/BCApps) repository. 
 
 **⚠IMPORTANT⚠:**  This is not the right place to report product defects with customer impact to Microsoft! Issues created in this repository might not get picked up by the Microsoft engineering team and issues reported in this repository do not fall under SLAs (Service Level Agreements) and hence have no guaranteed time to mitigation, just as provided fixes won't get backported to all supported versions of the product.
 
 ## Types of engagements
-There are a couple of ways to engage with us here:  
-  
-* You can grab the code and contribute to the published apps. For more information, see the [_Contributing_](./CONTRIBUTING.md) guidelines or watch this video: [_The Contribution Process_](https://youtu.be/a1p8fTFPVwI?t=3496).
-* If you’re building your own app and need something specific from us, like an event, you can help improve the general extensibility of the business logic. For more information, see the [_Extensibility requests_](#extensibility-requests) section below.
+There is one way to engage with us here:
+
+* If you’re building your own app and need something specific from us, like an event, a function visibility change, or another extensibility enhancement, you can help improve the general extensibility of the business logic. For more information, see the [_Extensibility requests_](#extensibility-requests) section below.
 
 
 ### Extensibility requests

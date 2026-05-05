@@ -7,6 +7,8 @@ body:
       value: |
         Thanks for submitting an extensibility request.
 
+        This repository no longer accepts new pull requests, but extensibility requests are still accepted here.
+
         ⚠️⚠️ Before you start ⚠️⚠️
         Before you create a new issue, please check the following:
         🔎 Search the existing issues to avoid a duplicate.
