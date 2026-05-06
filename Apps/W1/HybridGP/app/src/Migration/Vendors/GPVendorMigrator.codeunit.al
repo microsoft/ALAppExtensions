@@ -637,7 +637,7 @@ codeunit 4022 "GP Vendor Migrator"
         DimSetID: Integer;
     begin
         if GPAccount."Standard Purchase Code" = '' then begin
-            GPAccount."Standard Purchase Code" := CopyStr(NoSeries.GetNextNo(NoSeriesStandardPurchaseCodeTok), 1, MaxStrLen(GPAccount."Standard Purchase Code"));
+            GPAccount."Standard Purchase Code" := CopyStr(NoSeries.GetNextNo(NoSeriesStandardPurchaseCodeTok, Today()), 1, MaxStrLen(GPAccount."Standard Purchase Code"));
 
             StandardPurchaseCode.Validate("Code", GPAccount."Standard Purchase Code");
             StandardPurchaseCode.Validate(Description, CopyStr(HelperFunctions.GenerateStandardCodeDescriptionFromAccount(GPAccount), 1, MaxStrLen(StandardPurchaseCode.Description)));

@@ -643,7 +643,7 @@ codeunit 4037 "Helper Functions"
 
         NoSeriesLine.Validate("Series Code", NoSeriesCode);
         NoSeriesLine.Validate("Starting No.", StartingNo);
-        NoSeriesLine.Validate("Starting Date", Today());
+        NoSeriesLine.Validate("Starting Date", 0D);
         NoSeriesLine.Validate("Increment-by No.", 1);
         NoSeriesLine.Validate(Implementation, "No. Series Implementation"::Normal);
         NoSeriesLine.Insert(true);

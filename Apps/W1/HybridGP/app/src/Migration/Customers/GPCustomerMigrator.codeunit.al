@@ -501,7 +501,7 @@ codeunit 4018 "GP Customer Migrator"
         DimSetID: Integer;
     begin
         if GPAccount."Standard Sales Code" = '' then begin
-            GPAccount."Standard Sales Code" := CopyStr(NoSeries.GetNextNo(NoSeriesStandardSalesCodeTok), 1, MaxStrLen(GPAccount."Standard Sales Code"));
+            GPAccount."Standard Sales Code" := CopyStr(NoSeries.GetNextNo(NoSeriesStandardSalesCodeTok, Today()), 1, MaxStrLen(GPAccount."Standard Sales Code"));
 
             StandardSalesCode.Validate("Code", GPAccount."Standard Sales Code");
             StandardSalesCode.Validate(Description, CopyStr(HelperFunctions.GenerateStandardCodeDescriptionFromAccount(GPAccount), 1, MaxStrLen(StandardSalesCode.Description)));
