@@ -1,37 +1,48 @@
 name: Block New Pull Requests
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened]
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   block-new-prs:
+    if: github.repository_owner == 'microsoft' && github.event.pull_request.state == 'open'
     runs-on: ubuntu-latest
     steps:
       - name: Check PR creation date
         id: check
+        shell: bash
         run: |
           created_at="${{ github.event.pull_request.created_at }}"
           cutoff="2026-05-05T00:00:00Z"
 
           if [[ "$created_at" > "$cutoff" ]]; then
-            echo "block=true" >> $GITHUB_OUTPUT
+            echo "block=true" >> "$GITHUB_OUTPUT"
           else
-            echo "block=false" >> $GITHUB_OUTPUT
+            echo "block=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Comment and close PR
         if: steps.check.outputs.block == 'true'
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const message = `👋 Thanks for your contribution!
-
-ALAppExtensions no longer accepts new pull requests.
-
-Extensibility requests, such as event requests and requests to make functions external, are still accepted as issues using the extensibility request template.
-
-We appreciate your understanding and look forward to continuing extensibility collaboration here 🙌`;
+            const message = [
+              '👋 Thanks for your contribution!',
+              '',
+              'ALAppExtensions no longer accepts new pull requests.',
+              '',
+              'Extensibility requests, such as event requests and requests to make functions external, are still accepted as issues using the extensibility request template.',
+              '',
+              'We appreciate your understanding and look forward to continuing extensibility collaboration here 🙌'
+            ].join('\n');
 
             await github.rest.issues.createComment({
               ...context.repo,
@@ -42,5 +53,5 @@ We appreciate your understanding and look forward to continuing extensibility co
             await github.rest.pulls.update({
               ...context.repo,
               pull_number: context.issue.number,
-              state: "closed"
+              state: 'closed'
             });
