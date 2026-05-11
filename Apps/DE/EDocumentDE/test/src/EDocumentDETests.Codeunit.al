@@ -9,7 +9,7 @@ using Microsoft.Sales.Document;
 using Microsoft.Service.Document;
 using Microsoft.Service.Test;
 
-codeunit 13923 "E-Document DE Tests"
+codeunit 13926 "E-Document DE Tests"
 {
     Subtype = Test;
     TestType = Uncategorized;

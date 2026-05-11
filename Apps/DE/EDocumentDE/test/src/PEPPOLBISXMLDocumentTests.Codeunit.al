@@ -37,6 +37,7 @@ codeunit 13923 "PEPPOL BIS XML Document Tests"
         LibraryERM: Codeunit "Library - ERM";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryEdocument: Codeunit "Library - E-Document";
+        LibraryEDocDE: Codeunit "Library - E-Doc DE";
         Assert: Codeunit Assert;
         ExportPeppolBISFormat: Codeunit "EDoc PEPPOL BIS 3.0 DE";
         IncorrectValueErr: Label 'Incorrect value for %1', Comment = '%1 = Field or element name';
@@ -129,6 +130,71 @@ codeunit 13923 "PEPPOL BIS XML Document Tests"
         // [THEN] Buyer endpoint (BT-49) retains schemeID attribute
         Assert.AreNotEqual('', GetNodeByPath(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID/@schemeID'), StrSubstNo(IncorrectValueErr, 'BT-49 schemeID'));
     end;
+
+    [Test]
+    procedure ExportSalesInvBuyerReferenceAsCustomerReference()
+    var
+        Customer: Record Customer;
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice in PEPPOL BIS 3.0 DE format with buyer reference (BT-10) from bill-to customer's E-Invoice Routing No.
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with Customer X, E-Invoice Routing No. = XY
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice));
+
+        // [WHEN] Export PEPPOL BIS 3.0 DE Electronic Document
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] Buyer Reference (BT-10) = Customer's E-Invoice Routing No.
+        Customer.Get(SalesInvoiceHeader."Bill-to Customer No.");
+        VerifyBuyerReference(Customer."E-Invoice Routing No.", TempXMLBuffer, '/Invoice');
+    end;
+
+    [Test]
+    procedure ExportSalesInvBuyerReferenceAsYourReference()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice in PEPPOL BIS 3.0 DE format with buyer reference (BT-10) from Your Reference when no routing no.
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice for customer without routing no.
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLineForCustomer("Sales Document Type"::Invoice, CreateCustomerWithoutRoutingNo()));
+
+        SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+
+        // [WHEN] Export PEPPOL BIS 3.0 DE Electronic Document
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] Buyer Reference (BT-10) = document's Your Reference
+        VerifyBuyerReference(SalesHeader."Your Reference", TempXMLBuffer, '/Invoice');
+    end;
+
+    [Test]
+    procedure ExportSalesInvBuyerReferenceMandatoryError()
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // [SCENARIO] Buyer reference mandatory error when releasing sales invoice without routing no. and without Your Reference
+        Initialize();
+
+        // [GIVEN] Buyer Reference Mandatory is enabled
+        SetBuyerReferenceMandatory();
+
+        // [GIVEN] Sales Invoice for customer without routing no.
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLineForCustomer("Sales Document Type"::Invoice, CreateCustomerWithoutRoutingNo()));
+
+        // [WHEN] Remove Your Reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error is raised when checking the sales header
+        asserterror CheckSalesHeader(SalesHeader);
+    end;
     #endregion
 
     #region SalesCreditMemo
@@ -218,6 +284,71 @@ codeunit 13923 "PEPPOL BIS XML Document Tests"
         // [THEN] Buyer endpoint (BT-49) retains schemeID attribute
         Assert.AreNotEqual('', GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID/@schemeID'), StrSubstNo(IncorrectValueErr, 'BT-49 schemeID'));
     end;
+
+    [Test]
+    procedure ExportSalesCrMemoBuyerReferenceAsCustomerReference()
+    var
+        Customer: Record Customer;
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales credit memo in PEPPOL BIS 3.0 DE format with buyer reference (BT-10) from bill-to customer's E-Invoice Routing No.
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Credit Memo with Customer X, E-Invoice Routing No. = XY
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo"));
+
+        // [WHEN] Export PEPPOL BIS 3.0 DE Electronic Document
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] Buyer Reference (BT-10) = Customer's E-Invoice Routing No.
+        Customer.Get(SalesCrMemoHeader."Bill-to Customer No.");
+        VerifyBuyerReference(Customer."E-Invoice Routing No.", TempXMLBuffer, '/CreditNote');
+    end;
+
+    [Test]
+    procedure ExportSalesCrMemoBuyerReferenceAsYourReference()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales credit memo in PEPPOL BIS 3.0 DE format with buyer reference (BT-10) from Your Reference when no routing no.
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Credit Memo for customer without routing no.
+        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLineForCustomer("Sales Document Type"::"Credit Memo", CreateCustomerWithoutRoutingNo()));
+
+        SalesCrMemoHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+
+        // [WHEN] Export PEPPOL BIS 3.0 DE Electronic Document
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] Buyer Reference (BT-10) = document's Your Reference
+        VerifyBuyerReference(SalesHeader."Your Reference", TempXMLBuffer, '/CreditNote');
+    end;
+
+    [Test]
+    procedure ExportSalesCrMemoBuyerReferenceMandatoryError()
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // [SCENARIO] Buyer reference mandatory error when releasing sales credit memo without routing no. and without Your Reference
+        Initialize();
+
+        // [GIVEN] Buyer Reference Mandatory is enabled
+        SetBuyerReferenceMandatory();
+
+        // [GIVEN] Sales Credit Memo for customer without routing no.
+        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLineForCustomer("Sales Document Type"::"Credit Memo", CreateCustomerWithoutRoutingNo()));
+
+        // [WHEN] Remove Your Reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error is raised when checking the sales header
+        asserterror CheckSalesHeader(SalesHeader);
+    end;
     #endregion
 
     local procedure Initialize()
@@ -238,9 +369,6 @@ codeunit 13923 "PEPPOL BIS XML Document Tests"
 
         EDocumentService.DeleteAll();
         EDocumentService.Get(LibraryEdocument.CreateService("E-Document Format"::"PEPPOL BIS 3.0 DE", "Service Integration"::"No Integration"));
-        EDocumentService."Buyer Reference Mandatory" := true;
-        EDocumentService."Buyer Reference" := "E-Document Buyer Reference"::"Your Reference";
-        EDocumentService.Modify();
         Commit();
 
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"PEPPOL BIS XML Document Tests");
@@ -284,13 +412,18 @@ codeunit 13923 "PEPPOL BIS XML Document Tests"
     end;
 
     local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type")
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType, CreateCustomer());
+    end;
+
+    local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type"; CustomerNo: Code[20])
     var
         PostCode: Record "Post Code";
         PaymentTermsCode: Code[10];
     begin
         LibraryERM.FindPostCode(PostCode);
         PaymentTermsCode := LibraryERM.FindPaymentTermsCode();
-        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CreateCustomer());
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
         SalesHeader.Validate("Sell-to Contact", SalesHeader."No.");
         SalesHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
         SalesHeader.Validate("Bill-to City", PostCode.City);
@@ -311,8 +444,18 @@ codeunit 13923 "PEPPOL BIS XML Document Tests"
         LibrarySales.CreateCustomer(Customer);
         Customer.Validate("Country/Region Code", CompanyInformation."Country/Region Code");
         Customer.Validate("VAT Registration No.", CompanyInformation."VAT Registration No.");
-        Customer.Validate("E-Invoice Routing No.", LibraryUtility.GenerateRandomText(20));
+        Customer.Validate("E-Invoice Routing No.", LibraryEDocDE.CreateValidRoutingNo());
         Customer.Validate("E-Mail", LibraryUtility.GenerateRandomEmail());
+        Customer.Modify(true);
+        exit(Customer."No.");
+    end;
+
+    local procedure CreateCustomerWithoutRoutingNo(): Code[20]
+    var
+        Customer: Record Customer;
+    begin
+        Customer.Get(CreateCustomer());
+        Customer."E-Invoice Routing No." := '';
         Customer.Modify(true);
         exit(Customer."No.");
     end;
@@ -407,6 +550,37 @@ codeunit 13923 "PEPPOL BIS XML Document Tests"
         Assert.AreEqual(Salesperson."Phone No.", GetNodeByPath(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := ContactPath + '/cbc:ElectronicMail';
         Assert.AreEqual(Salesperson."E-Mail", GetNodeByPath(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure CreateSalesDocumentWithLineForCustomer(DocumentType: Enum "Sales Document Type"; CustomerNo: Code[20]): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
+        CreateSalesLine(SalesHeader);
+        exit(SalesHeader."No.");
+    end;
+
+    local procedure SetBuyerReferenceMandatory()
+    begin
+        EDocumentService."Buyer Reference Mandatory" := true;
+        EDocumentService.Modify();
+    end;
+
+    local procedure CheckSalesHeader(SalesHeader: Record "Sales Header")
+    var
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(SalesHeader);
+        ExportPeppolBISFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
+    end;
+
+    local procedure VerifyBuyerReference(BuyerReference: Text[50]; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:BuyerReference';
+        Assert.AreEqual(BuyerReference, GetNodeByPath(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure GetNodeByPath(var TempXMLBuffer: Record "XML Buffer" temporary; XPath: Text): Text
