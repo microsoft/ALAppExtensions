@@ -42,6 +42,7 @@ codeunit 13916 "Export XRechnung Document"
         PEPPOLMgt: Codeunit "PEPPOL Management";
         PeppolVATHelper: Codeunit "PEPPOL VAT Helper";
         TypeHelper: Codeunit "Type Helper";
+        EDocumentDEHelper: Codeunit "E-Document DE Helper";
         FeatureNameTok: Label 'E-document XRechnung Format', Locked = true;
         StartEventNameTok: Label 'E-document XRechnung export started', Locked = true;
         EndEventNameTok: Label 'E-document XRechnung export completed', Locked = true;
@@ -404,7 +405,7 @@ codeunit 13916 "Export XRechnung Document"
     var
         BuyerReferenceValue: Text;
     begin
-        BuyerReferenceValue := GetBuyerReferenceValue(SalesInvoiceHeader."Buyer Reference", SalesInvoiceHeader."Bill-to Customer No.", SalesInvoiceHeader."Your Reference");
+        BuyerReferenceValue := EDocumentDEHelper.GetBuyerReferenceValue(SalesInvoiceHeader."Buyer Reference", SalesInvoiceHeader."Bill-to Customer No.", SalesInvoiceHeader."Your Reference");
         if BuyerReferenceValue <> '' then
             RootXMLNode.Add(XmlElement.Create('BuyerReference', XmlNamespaceCBC, BuyerReferenceValue));
     end;
@@ -413,26 +414,9 @@ codeunit 13916 "Export XRechnung Document"
     var
         BuyerReferenceValue: Text;
     begin
-        BuyerReferenceValue := GetBuyerReferenceValue(SalesCrMemoHeader."Buyer Reference", SalesCrMemoHeader."Bill-to Customer No.", SalesCrMemoHeader."Your Reference");
+        BuyerReferenceValue := EDocumentDEHelper.GetBuyerReferenceValue(SalesCrMemoHeader."Buyer Reference", SalesCrMemoHeader."Bill-to Customer No.", SalesCrMemoHeader."Your Reference");
         if BuyerReferenceValue <> '' then
             RootXMLNode.Add(XmlElement.Create('BuyerReference', XmlNamespaceCBC, BuyerReferenceValue));
-    end;
-
-    local procedure GetBuyerReferenceValue(DocumentBuyerReference: Text[100]; BillToCustomerNo: Code[20]; YourReference: Text[35]): Text
-    var
-        Customer: Record Customer;
-    begin
-        // Priority 1: Document Buyer Reference
-        if DocumentBuyerReference <> '' then
-            exit(DocumentBuyerReference);
-
-        // Priority 2: Bill-to Customer E-Invoice Routing No.
-        if Customer.Get(BillToCustomerNo) then
-            if Customer."E-Invoice Routing No." <> '' then
-                exit(Customer."E-Invoice Routing No.");
-
-        // Priority 3: Your Reference
-        exit(YourReference);
     end;
 
     local procedure InsertInvDiscountAllowanceCharge(var LineAmounts: Dictionary of [Text, Decimal]; var SalesInvLine: Record "Sales Invoice Line"; CurrencyCode: Code[10]; var RootXMLNode: XmlElement; LineDiscAmount: Dictionary of [Decimal, Decimal]; LineAmount: Dictionary of [Decimal, Decimal]; RoundingPrecision: Decimal)

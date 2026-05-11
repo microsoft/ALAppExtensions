@@ -9,7 +9,6 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Document;
-using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Service.Document;
@@ -35,7 +34,7 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
         OnBeforeCheck(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         CheckCompanyInfoMandatory(CompanyInformation);
         CheckBankAccountIBANMandatory(SourceDocumentHeader, CompanyInformation);
-        CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        EDocumentDEHelper.CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
         EDocPEPPOLValidationDE.SetSkipVATRegNoCheck(EDocumentDEHelper.HasRoutingNo(SourceDocumentHeader));
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
@@ -186,43 +185,6 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
             BankAccount.TestField(IBAN)
         else
             CompanyInformation.TestField(IBAN);
-    end;
-
-    local procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)
-    var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        Customer: Record Customer;
-        BuyerReferenceFieldRef: FieldRef;
-        CustomerNoFieldRef: FieldRef;
-        YourReferenceFieldRef: FieldRef;
-    begin
-        if EDocumentService."Document Format" <> EDocumentService."Document Format"::ZUGFeRD then
-            exit;
-
-        if not EDocumentService."Buyer Reference Mandatory" then
-            exit;
-
-        if not (SourceDocumentHeader.Number in
-            [Database::"Sales Header",
-            Database::"Sales Invoice Header",
-            Database::"Sales Cr.Memo Header",
-            Database::"Service Header",
-            Database::"Service Invoice Header",
-            Database::"Service Cr.Memo Header"])
-        then
-            exit;
-
-        BuyerReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Buyer Reference"));
-        if Format(BuyerReferenceFieldRef.Value) <> '' then
-            exit;
-
-        CustomerNoFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Bill-to Customer No."));
-        if Customer.Get(Format(CustomerNoFieldRef.Value)) then
-            if Customer."E-Invoice Routing No." <> '' then
-                exit;
-
-        YourReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
-        YourReferenceFieldRef.TestField();
     end;
 
 #if not CLEAN29

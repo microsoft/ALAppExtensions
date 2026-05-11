@@ -17,7 +17,6 @@ using Microsoft.Foundation.Reporting;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Location;
 using Microsoft.Peppol;
-using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Peppol;
 using Microsoft.Service.History;
@@ -1257,78 +1256,32 @@ codeunit 13917 "Export ZUGFeRD Document"
     local procedure GetBuyerReference(RecordVariant: Variant): Text
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        ServiceInvoiceHeader: Record "Service Invoice Header";
-        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
-        Customer: Record Customer;
+        EDocDEHelper: Codeunit "E-Document DE Helper";
         DataTypeManagement: Codeunit "Data Type Management";
         HeaderRecordRef: RecordRef;
+        BuyerReferenceFieldRef: FieldRef;
+        CustomerNoFieldRef: FieldRef;
+        YourReferenceFieldRef: FieldRef;
+        BuyerReference: Text[100];
+        BillToCustomerNo: Code[20];
+        YourReference: Text[35];
     begin
         if not DataTypeManagement.GetRecordRef(RecordVariant, HeaderRecordRef) then
             exit('');
-
-        case HeaderRecordRef.Number of
-            Database::"Sales Invoice Header":
-                begin
-                    HeaderRecordRef.SetTable(SalesInvoiceHeader);
-                    // Priority 1: Document Buyer Reference
-                    if SalesInvoiceHeader."Buyer Reference" <> '' then
-                        exit(SalesInvoiceHeader."Buyer Reference");
-
-                    // Priority 2: Bill-to Customer E-Invoice Routing No.
-                    if Customer.Get(SalesInvoiceHeader."Bill-to Customer No.") then
-                        if Customer."E-Invoice Routing No." <> '' then
-                            exit(Customer."E-Invoice Routing No.");
-
-                    // Priority 3: Your Reference
-                    exit(SalesInvoiceHeader."Your Reference");
-                end;
-            Database::"Sales Cr.Memo Header":
-                begin
-                    HeaderRecordRef.SetTable(SalesCrMemoHeader);
-                    // Priority 1: Document Buyer Reference
-                    if SalesCrMemoHeader."Buyer Reference" <> '' then
-                        exit(SalesCrMemoHeader."Buyer Reference");
-
-                    // Priority 2: Bill-to Customer E-Invoice Routing No.
-                    if Customer.Get(SalesCrMemoHeader."Bill-to Customer No.") then
-                        if Customer."E-Invoice Routing No." <> '' then
-                            exit(Customer."E-Invoice Routing No.");
-
-                    // Priority 3: Your Reference
-                    exit(SalesCrMemoHeader."Your Reference");
-                end;
-            Database::"Service Invoice Header":
-                begin
-                    HeaderRecordRef.SetTable(ServiceInvoiceHeader);
-                    // Priority 1: Document Buyer Reference
-                    if ServiceInvoiceHeader."Buyer Reference" <> '' then
-                        exit(ServiceInvoiceHeader."Buyer Reference");
-
-                    // Priority 2: Bill-to Customer E-Invoice Routing No.
-                    if Customer.Get(ServiceInvoiceHeader."Bill-to Customer No.") then
-                        if Customer."E-Invoice Routing No." <> '' then
-                            exit(Customer."E-Invoice Routing No.");
-
-                    // Priority 3: Your Reference
-                    exit(ServiceInvoiceHeader."Your Reference");
-                end;
-            Database::"Service Cr.Memo Header":
-                begin
-                    HeaderRecordRef.SetTable(ServiceCrMemoHeader);
-                    // Priority 1: Document Buyer Reference
-                    if ServiceCrMemoHeader."Buyer Reference" <> '' then
-                        exit(ServiceCrMemoHeader."Buyer Reference");
-
-                    // Priority 2: Bill-to Customer E-Invoice Routing No.
-                    if Customer.Get(ServiceCrMemoHeader."Bill-to Customer No.") then
-                        if Customer."E-Invoice Routing No." <> '' then
-                            exit(Customer."E-Invoice Routing No.");
-
-                    // Priority 3: Your Reference
-                    exit(ServiceCrMemoHeader."Your Reference");
-                end;
-        end;
+        if not (HeaderRecordRef.Number() in
+            [Database::"Sales Invoice Header",
+            Database::"Sales Cr.Memo Header",
+            Database::"Service Invoice Header",
+            Database::"Service Cr.Memo Header"])
+        then
+            exit('');
+        BuyerReferenceFieldRef := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Buyer Reference"));
+        CustomerNoFieldRef := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Customer No."));
+        YourReferenceFieldRef := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
+        BuyerReference := BuyerReferenceFieldRef.Value();
+        BillToCustomerNo := CustomerNoFieldRef.Value();
+        YourReference := YourReferenceFieldRef.Value();
+        exit(EDocDEHelper.GetBuyerReferenceValue(BuyerReference, BillToCustomerNo, YourReference));
     end;
 
     local procedure GetIBAN(IBAN: Text[50]) IBANFormatted: Text[50]

@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
+using Microsoft.eServices.EDocument;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
@@ -72,7 +73,6 @@ codeunit 11038 "E-Document DE Helper"
     /// <param name="RoutingNo">The routing number to validate. An empty value is accepted without error.</param>
     procedure ValidateRoutingNo(RoutingNo: Text[50])
     var
-        TypeHelper: Codeunit "Type Helper";
         Parts: List of [Text];
         CoarseRouting: Text;
         FineRouting: Text;
@@ -205,13 +205,85 @@ codeunit 11038 "E-Document DE Helper"
 
     local procedure IsSupportedDocumentType(SourceDocumentHeader: RecordRef): Boolean
     begin
-        exit(SourceDocumentHeader.Number in
+        exit(SourceDocumentHeader.Number() in
             [Database::"Sales Header",
             Database::"Sales Invoice Header",
             Database::"Sales Cr.Memo Header",
             Database::"Service Header",
             Database::"Service Invoice Header",
             Database::"Service Cr.Memo Header"]);
+    end;
+
+    /// <summary>
+    /// Resolves the Buyer Reference (BT-10) value using a priority chain.
+    /// Priority 1: Document Buyer Reference field — accepted only if it is a structurally valid Leitweg-ID.
+    /// Priority 2: Bill-to Customer E-Invoice Routing No.
+    /// Priority 3a: Document Buyer Reference if explicitly set but not a valid Leitweg-ID (preserves user intent and migration data).
+    /// Priority 3b: Your Reference.
+    /// </summary>
+    /// <param name="DocumentBuyerReference">The Buyer Reference value stored on the document header.</param>
+    /// <param name="BillToCustomerNo">The Bill-to Customer No. used to look up the customer's E-Invoice Routing No.</param>
+    /// <param name="YourReference">The Your Reference value stored on the document header.</param>
+    /// <returns>The resolved Buyer Reference value, or empty text if none of the sources yield a value.</returns>
+    internal procedure GetBuyerReferenceValue(DocumentBuyerReference: Text[100]; BillToCustomerNo: Code[20]; YourReference: Text[35]): Text
+    var
+        Customer: Record Customer;
+    begin
+        // Priority 1: Document Buyer Reference — only if it is a structurally valid Leitweg-ID
+        if (DocumentBuyerReference <> '') then
+            if (StrLen(DocumentBuyerReference) <= 50) then
+                if IsValidRoutingNo(CopyStr(DocumentBuyerReference, 1, 50)) then
+                    exit(DocumentBuyerReference);
+
+        // Priority 2: Bill-to Customer E-Invoice Routing No.
+        if Customer.Get(BillToCustomerNo) then
+            if Customer."E-Invoice Routing No." <> '' then
+                exit(Customer."E-Invoice Routing No.");
+
+        // Priority 3a: Document Buyer Reference if explicitly set but not a valid Leitweg-ID
+        //   (preserves explicit user intent and old migration data)
+        if DocumentBuyerReference <> '' then
+            exit(DocumentBuyerReference);
+
+        // Priority 3b: Your Reference
+        exit(YourReference);
+    end;
+
+    /// <summary>
+    /// Checks whether a Buyer Reference (BT-10) can be resolved for the given document and raises an error if not.
+    /// Only runs when the E-Document Service has "Buyer Reference Mandatory" enabled and the document is a supported type.
+    /// Uses GetBuyerReferenceValue to resolve the reference via the same priority chain used during export.
+    /// </summary>
+    /// <param name="EDocumentService">The E-Document Service record. Must have "Buyer Reference Mandatory" set to true for the check to run.</param>
+    /// <param name="SourceDocumentHeader">A RecordRef pointing to a supported document header.</param>
+    internal procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        BuyerReferenceFieldRef: FieldRef;
+        CustomerNoFieldRef: FieldRef;
+        YourReferenceFieldRef: FieldRef;
+        DocumentNoFieldRef: FieldRef;
+        BuyerReference: Text[100];
+        BillToCustomerNo: Code[20];
+        YourReference: Text[35];
+        BuyerReferenceValue: Text;
+        MissingBuyerReferenceErr: Label 'Buyer Reference is mandatory for document %1.', Comment = '%1 = Document No.';
+    begin
+        if not EDocumentService."Buyer Reference Mandatory" then
+            exit;
+        if not IsSupportedDocumentType(SourceDocumentHeader) then
+            exit;
+        BuyerReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Buyer Reference"));
+        CustomerNoFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Bill-to Customer No."));
+        YourReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
+        BuyerReference := BuyerReferenceFieldRef.Value();
+        BillToCustomerNo := CustomerNoFieldRef.Value();
+        YourReference := YourReferenceFieldRef.Value();
+        BuyerReferenceValue := GetBuyerReferenceValue(BuyerReference, BillToCustomerNo, YourReference);
+        if BuyerReferenceValue = '' then begin
+            DocumentNoFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("No."));
+            Error(MissingBuyerReferenceErr, DocumentNoFieldRef.Value());
+        end;
     end;
 
     [TryFunction]

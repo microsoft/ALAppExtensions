@@ -4,7 +4,6 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Formats;
 using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Document;
-using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Peppol;
@@ -23,6 +22,7 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
     var
         EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
         EDocPEPPOLValidationDE: Codeunit "EDoc PEPPOL Validation DE";
+        EDocumentDEHelper: Codeunit "E-Document DE Helper";
         UBLInvoiceNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2', Locked = true;
         UBLCrMemoNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2', Locked = true;
         UBLCACNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2', Locked = true;
@@ -30,7 +30,7 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
-        CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        EDocumentDEHelper.CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         UnbindSubscription(EDocPEPPOLValidationDE);
@@ -143,77 +143,6 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
         EDocServiceSupportedType.Insert();
     end;
 
-    local procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)
-    var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        ServiceInvoiceHeader: Record "Service Invoice Header";
-        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
-        Customer: Record Customer;
-        BuyerReferenceValue: Text;
-        MissingBuyerReferenceErr: Label 'Buyer Reference is mandatory for document %1.', Comment = '%1 = Document No.';
-    begin
-        if EDocumentService."Document Format" <> EDocumentService."Document Format"::"PEPPOL BIS 3.0 DE" then
-            exit;
-
-        if not EDocumentService."Buyer Reference Mandatory" then
-            exit;
-
-        if not (SourceDocumentHeader.Number in
-            [Database::"Sales Header",
-            Database::"Sales Invoice Header",
-            Database::"Sales Cr.Memo Header",
-            Database::"Service Header",
-            Database::"Service Invoice Header",
-            Database::"Service Cr.Memo Header"])
-        then
-            exit;
-
-        // Check priority chain: Document Buyer Reference → Bill-to Customer E-Invoice Routing No. → Your Reference
-        case SourceDocumentHeader.Number of
-            Database::"Sales Invoice Header":
-                begin
-                    SourceDocumentHeader.SetTable(SalesInvoiceHeader);
-                    BuyerReferenceValue := GetBuyerReferenceValue(SalesInvoiceHeader."Buyer Reference", SalesInvoiceHeader."Bill-to Customer No.", SalesInvoiceHeader."Your Reference");
-                end;
-            Database::"Sales Cr.Memo Header":
-                begin
-                    SourceDocumentHeader.SetTable(SalesCrMemoHeader);
-                    BuyerReferenceValue := GetBuyerReferenceValue(SalesCrMemoHeader."Buyer Reference", SalesCrMemoHeader."Bill-to Customer No.", SalesCrMemoHeader."Your Reference");
-                end;
-            Database::"Service Invoice Header":
-                begin
-                    SourceDocumentHeader.SetTable(ServiceInvoiceHeader);
-                    BuyerReferenceValue := GetBuyerReferenceValue(ServiceInvoiceHeader."Buyer Reference", ServiceInvoiceHeader."Bill-to Customer No.", ServiceInvoiceHeader."Your Reference");
-                end;
-            Database::"Service Cr.Memo Header":
-                begin
-                    SourceDocumentHeader.SetTable(ServiceCrMemoHeader);
-                    BuyerReferenceValue := GetBuyerReferenceValue(ServiceCrMemoHeader."Buyer Reference", ServiceCrMemoHeader."Bill-to Customer No.", ServiceCrMemoHeader."Your Reference");
-                end;
-        end;
-
-        if BuyerReferenceValue = '' then
-            Error(MissingBuyerReferenceErr, SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("No.")).Value);
-    end;
-
-    local procedure GetBuyerReferenceValue(DocumentBuyerReference: Text[100]; BillToCustomerNo: Code[20]; YourReference: Text[35]): Text
-    var
-        Customer: Record Customer;
-    begin
-        // Priority 1: Document Buyer Reference
-        if DocumentBuyerReference <> '' then
-            exit(DocumentBuyerReference);
-
-        // Priority 2: Bill-to Customer E-Invoice Routing No.
-        if Customer.Get(BillToCustomerNo) then
-            if Customer."E-Invoice Routing No." <> '' then
-                exit(Customer."E-Invoice Routing No.");
-
-        // Priority 3: Your Reference
-        exit(YourReference);
-    end;
-
     local procedure GetBuyerReferenceFromXml(EDocumentType: Enum "E-Document Type"; var TempBlob: Codeunit "Temp Blob") BuyerReference: Text
     var
         XMLDoc: XmlDocument;
@@ -255,25 +184,9 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", 'OnAfterGetBuyerReference', '', false, false)]
     local procedure SetReferenceOnAfterGetBuyerReference(SalesHeader: Record "Sales Header"; var BuyerReference: Text)
-    var
-        Customer: Record Customer;
     begin
         // Apply priority chain for backwards compatibility with documents created before posting logic was added
-        // Priority 1: Document Buyer Reference
-        if SalesHeader."Buyer Reference" <> '' then begin
-            BuyerReference := SalesHeader."Buyer Reference";
-            exit;
-        end;
-
-        // Priority 2: Bill-to Customer E-Invoice Routing No.
-        if Customer.Get(SalesHeader."Bill-to Customer No.") then
-            if Customer."E-Invoice Routing No." <> '' then begin
-                BuyerReference := Customer."E-Invoice Routing No.";
-                exit;
-            end;
-
-        // Priority 3: Your Reference (default PEPPOL behavior)
-        BuyerReference := SalesHeader."Your Reference";
+        BuyerReference := EDocumentDEHelper.GetBuyerReferenceValue(SalesHeader."Buyer Reference", SalesHeader."Bill-to Customer No.", SalesHeader."Your Reference");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", 'OnAfterGetAccountingSupplierPartyContact', '', false, false)]
