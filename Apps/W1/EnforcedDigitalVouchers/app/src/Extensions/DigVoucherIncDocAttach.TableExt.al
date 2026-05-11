@@ -12,5 +12,9 @@ tableextension 5582 "Dig. Voucher Inc. Doc. Attach." extends "Incoming Document 
         {
             DataClassification = SystemMetadata;
         }
+        field(5583; "Is E-Document"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 }
