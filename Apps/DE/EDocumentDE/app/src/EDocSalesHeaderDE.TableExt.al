@@ -14,6 +14,7 @@ tableextension 11036 "E-Doc Sales Header DE" extends "Sales Header"
         {
             Caption = 'Buyer Reference';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the buyer''s reference for routing electronic documents.';
         }
 #pragma warning restore AS0125
     }
