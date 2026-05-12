@@ -182,6 +182,14 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
         EmailAddress := CompanyInformation."E-Mail";
     end;
 
+#if not CLEAN29
+    [Obsolete('Buyer Reference enum has been removed. The buyer reference is now resolved from the document and customer fields.', '29.0')]
+    [IntegrationEvent(false, false)]
+    local procedure OnCheckBuyerReferenceOnElseCase(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service")
+    begin
+    end;
+#endif
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", 'OnAfterGetBuyerReference', '', false, false)]
     local procedure SetReferenceOnAfterGetBuyerReference(SalesHeader: Record "Sales Header"; var BuyerReference: Text)
     begin
