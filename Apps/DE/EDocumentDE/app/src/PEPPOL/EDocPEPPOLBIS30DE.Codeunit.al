@@ -4,7 +4,6 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Formats;
 using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Document;
-using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Peppol;
@@ -23,6 +22,7 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
     var
         EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
         EDocPEPPOLValidationDE: Codeunit "EDoc PEPPOL Validation DE";
+        EDocumentDEHelper: Codeunit "E-Document DE Helper";
         UBLInvoiceNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2', Locked = true;
         UBLCrMemoNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2', Locked = true;
         UBLCACNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2', Locked = true;
@@ -30,7 +30,7 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
-        CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        EDocumentDEHelper.CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
         UnbindSubscription(EDocPEPPOLValidationDE);
@@ -38,9 +38,6 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
     begin
-        // initialize Buyer Reference for sales document - it will be written to XML in OnAfterGetBuyerReference subscriber
-        InitBuyerReference(EDocumentService."Buyer Reference", SourceDocumentHeader);
-
         EDocPEPPOLBIS30.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
 
         RemoveSchemeIDAttributes(EDocument."Document Type", TempBlob);
@@ -146,100 +143,6 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
         EDocServiceSupportedType.Insert();
     end;
 
-    local procedure CheckBuyerReferenceMandatory(EDocumentService: Record "E-Document Service"; SourceDocumentHeader: RecordRef)
-    var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        Customer: Record Customer;
-        CustomerNoFieldRef: FieldRef;
-        YourReferenceFieldRef: FieldRef;
-    begin
-        if EDocumentService."Document Format" <> EDocumentService."Document Format"::"PEPPOL BIS 3.0 DE" then
-            exit;
-
-        if not EDocumentService."Buyer Reference Mandatory" then
-            exit;
-
-        if not (SourceDocumentHeader.Number in
-            [Database::"Sales Header",
-            Database::"Sales Invoice Header",
-            Database::"Sales Cr.Memo Header",
-            Database::"Service Header",
-            Database::"Service Invoice Header",
-            Database::"Service Cr.Memo Header"])
-        then
-            exit;
-
-        case EDocumentService."Buyer Reference" of
-            Enum::"E-Document Buyer Reference"::"Customer Reference":
-                begin
-                    CustomerNoFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Sell-to Customer No."));
-                    Customer.Get(Format(CustomerNoFieldRef.Value));
-                    Customer.TestField("E-Invoice Routing No.");
-                end;
-            Enum::"E-Document Buyer Reference"::"Your Reference":
-                begin
-                    YourReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
-                    YourReferenceFieldRef.TestField();
-                end;
-            else
-                OnCheckBuyerReferenceOnElseCase(SourceDocumentHeader, EDocumentService);
-        end;
-    end;
-
-    local procedure InitBuyerReference(BuyerReferenceType: Enum "E-Document Buyer Reference"; SourceDocumentHeader: RecordRef)
-    var
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        ServiceInvoiceHeader: Record "Service Invoice Header";
-        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
-        Customer: Record Customer;
-        CustomerNoFieldRef: FieldRef;
-        YourReferenceFieldRef: FieldRef;
-        BuyerReference: Text;
-    begin
-        case BuyerReferenceType of
-            Enum::"E-Document Buyer Reference"::"Customer Reference":
-                begin
-                    CustomerNoFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Sell-to Customer No."));
-                    Customer.Get(Format(CustomerNoFieldRef.Value));
-                    BuyerReference := Customer."E-Invoice Routing No.";
-                end;
-            Enum::"E-Document Buyer Reference"::"Your Reference":
-                begin
-                    YourReferenceFieldRef := SourceDocumentHeader.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
-                    BuyerReference := Format(YourReferenceFieldRef.Value);
-                end;
-        end;
-
-        case SourceDocumentHeader.Number() of
-            Database::"Sales Invoice Header":
-                begin
-                    SourceDocumentHeader.SetTable(SalesInvoiceHeader);
-                    SalesInvoiceHeader.Validate("Buyer Reference", BuyerReference);
-                    SalesInvoiceHeader.Modify(true);
-                end;
-            Database::"Sales Cr.Memo Header":
-                begin
-                    SourceDocumentHeader.SetTable(SalesCrMemoHeader);
-                    SalesCrMemoHeader.Validate("Buyer Reference", BuyerReference);
-                    SalesCrMemoHeader.Modify(true);
-                end;
-
-            Database::"Service Invoice Header":
-                begin
-                    SourceDocumentHeader.SetTable(ServiceInvoiceHeader);
-                    ServiceInvoiceHeader.Validate("Buyer Reference", BuyerReference);
-                    ServiceInvoiceHeader.Modify(true);
-                end;
-            Database::"Service Cr.Memo Header":
-                begin
-                    SourceDocumentHeader.SetTable(ServiceCrMemoHeader);
-                    ServiceCrMemoHeader.Validate("Buyer Reference", BuyerReference);
-                    ServiceCrMemoHeader.Modify(true);
-                end;
-        end;
-    end;
-
     local procedure GetBuyerReferenceFromXml(EDocumentType: Enum "E-Document Type"; var TempBlob: Codeunit "Temp Blob") BuyerReference: Text
     var
         XMLDoc: XmlDocument;
@@ -279,15 +182,19 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
         EmailAddress := CompanyInformation."E-Mail";
     end;
 
+#if not CLEAN29
+    [Obsolete('Buyer Reference enum has been removed. The buyer reference is now resolved from the document and customer fields.', '29.0')]
     [IntegrationEvent(false, false)]
     local procedure OnCheckBuyerReferenceOnElseCase(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service")
     begin
     end;
+#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", 'OnAfterGetBuyerReference', '', false, false)]
     local procedure SetReferenceOnAfterGetBuyerReference(SalesHeader: Record "Sales Header"; var BuyerReference: Text)
     begin
-        BuyerReference := SalesHeader."Buyer Reference";
+        // Apply priority chain for backwards compatibility with documents created before posting logic was added
+        BuyerReference := EDocumentDEHelper.GetBuyerReferenceValue(SalesHeader."Buyer Reference", SalesHeader."Bill-to Customer No.", SalesHeader."Your Reference");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", 'OnAfterGetAccountingSupplierPartyContact', '', false, false)]

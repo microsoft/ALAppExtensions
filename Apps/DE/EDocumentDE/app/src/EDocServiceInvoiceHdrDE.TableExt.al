@@ -14,6 +14,7 @@ tableextension 11040 "E-Doc Service Invoice Hdr DE" extends "Service Invoice Hea
         {
             Caption = 'Buyer Reference';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the buyer''s reference for routing electronic documents.';
         }
 #pragma warning restore AS0125
     }

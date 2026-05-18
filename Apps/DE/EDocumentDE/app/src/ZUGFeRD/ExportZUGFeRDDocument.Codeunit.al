@@ -17,7 +17,6 @@ using Microsoft.Foundation.Reporting;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Location;
 using Microsoft.Peppol;
-using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Peppol;
 using Microsoft.Service.History;
@@ -596,7 +595,7 @@ codeunit 13917 "Export ZUGFeRD Document"
 
         GetSellerPostalAddr(RespCentrCode, SellerStreetName, SellerAdditionalStreetName, SellerCityName, SellerPostalZone, SellerCountryCode);
         HeaderTradeAgreementElement := XmlElement.Create('ApplicableHeaderTradeAgreement', XmlNamespaceRAM);
-        HeaderTradeAgreementElement.Add(XmlElement.Create('BuyerReference', XmlNamespaceRAM, GetBuyerReference(YourReference, CustomerNo)));
+        HeaderTradeAgreementElement.Add(XmlElement.Create('BuyerReference', XmlNamespaceRAM, GetBuyerReference(RecordVariant)));
 
         // Seller
         SellerTradePartyElement := XmlElement.Create('SellerTradeParty', XmlNamespaceRAM);
@@ -1254,19 +1253,35 @@ codeunit 13917 "Export ZUGFeRD Document"
             TotalAmounts.Set(VATPercent, TotalAmounts.Get(VATPercent) + NewAmount);
     end;
 
-    local procedure GetBuyerReference(YourReference: Text[35]; SellToCustomerNo: Code[20]): Text
+    local procedure GetBuyerReference(RecordVariant: Variant): Text
     var
-        Customer: Record Customer;
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        EDocDEHelper: Codeunit "E-Document DE Helper";
+        DataTypeManagement: Codeunit "Data Type Management";
+        HeaderRecordRef: RecordRef;
+        BuyerReferenceFieldRef: FieldRef;
+        CustomerNoFieldRef: FieldRef;
+        YourReferenceFieldRef: FieldRef;
+        BuyerReference: Text[100];
+        BillToCustomerNo: Code[20];
+        YourReference: Text[35];
     begin
-        case EDocumentService."Buyer Reference" of
-            EDocumentService."Buyer Reference"::"Customer Reference":
-                begin
-                    Customer.Get(SellToCustomerNo);
-                    exit(Customer."E-Invoice Routing No.");
-                end;
-            EDocumentService."Buyer Reference"::"Your Reference":
-                exit(YourReference);
-        end;
+        if not DataTypeManagement.GetRecordRef(RecordVariant, HeaderRecordRef) then
+            exit('');
+        if not (HeaderRecordRef.Number() in
+            [Database::"Sales Invoice Header",
+            Database::"Sales Cr.Memo Header",
+            Database::"Service Invoice Header",
+            Database::"Service Cr.Memo Header"])
+        then
+            exit('');
+        BuyerReferenceFieldRef := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Buyer Reference"));
+        CustomerNoFieldRef := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Customer No."));
+        YourReferenceFieldRef := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Your Reference"));
+        BuyerReference := BuyerReferenceFieldRef.Value();
+        BillToCustomerNo := CustomerNoFieldRef.Value();
+        YourReference := YourReferenceFieldRef.Value();
+        exit(EDocDEHelper.GetBuyerReferenceValue(BuyerReference, BillToCustomerNo, YourReference));
     end;
 
     local procedure GetIBAN(IBAN: Text[50]) IBANFormatted: Text[50]
