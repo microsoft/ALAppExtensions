@@ -26,10 +26,33 @@ jobs:
           NOW=$(date -u '+%s')
 
           # ISO 8601 UTC strings — sort lexicographically == chronologically
-          CUTOFF_5MIN=$(date -u -d "@$((NOW - 300))"   '+%Y-%m-%dT%H:%M:%SZ')  # now − 5 min
-          CUTOFF_7H=$(date -u -d "@$((NOW - 25200))" '+%Y-%m-%dT%H:%M:%SZ')  # now − 7 h
+          CUTOFF_5MIN=$(date -u -d "@$((NOW - 300))"     '+%Y-%m-%dT%H:%M:%SZ')  # now − 5 min
+          CUTOFF_30D=$(date -u -d "@$((NOW - 2592000))" '+%Y-%m-%dT%H:%M:%SZ')   # now − 30 days
 
-          ELIGIBLE=()
+          NEW_ISSUES=()
+          UPDATED_ISSUES=()
+          STALE_ISSUES=()
+
+          # ── Helper: fetch all comments and extract last comment author/body ──
+          fetch_comments() {
+            local num=$1
+            ALL_COMMENTS=$(gh api "repos/$REPO/issues/$num/comments" \
+              --paginate --jq '.[]' 2>/dev/null || true)
+            LAST_COMMENT=$(echo "$ALL_COMMENTS" | tail -1)
+            LAST_COMMENT_AUTHOR=$(echo "$LAST_COMMENT" | jq -r '.user.login // ""' 2>/dev/null || true)
+            LAST_COMMENT_BODY=$(echo "$LAST_COMMENT" | jq -r '.body // ""' 2>/dev/null || true)
+          }
+
+          # ── Helper: check if ANY comment starts with /not-accurate ─────────
+          has_not_accurate() {
+            echo "$ALL_COMMENTS" | jq -r '.body // ""' 2>/dev/null | grep -qiE '^\s*/not-accurate'
+          }
+
+          # ── Helper: check if author is a bot or AleksandricMarko ───────────
+          is_bot_or_marko() {
+            local author=$1
+            [[ "$author" == *"[bot]"* || "$author" == "AleksandricMarko" ]]
+          }
 
           while IFS= read -r ISSUE; do
             NUMBER=$(     echo "$ISSUE" | jq -r '.number')
@@ -39,54 +62,68 @@ jobs:
             CREATED_AT=$( echo "$ISSUE" | jq -r '.created_at')
             UPDATED_AT=$( echo "$ISSUE" | jq -r '.updated_at')
 
-            # Must be a Task
+            # ── Common gate: must be an open Task with 0 labels or only missing-info ──
             [ "$TYPE" != "Task" ] && continue
+            if [ "$LABEL_COUNT" -gt 1 ]; then
+              continue
+            elif [ "$LABEL_COUNT" -eq 1 ] && [ "$LABEL_NAME" != "missing-info" ]; then
+              continue
+            fi
+
+            # ── Fetch all comments (shared by all categories) ────────────────
+            fetch_comments "$NUMBER"
+
+            # Skip if last comment contains /not-accurate
+            if has_not_accurate; then
+              continue
+            fi
 
             if [ "$LABEL_COUNT" -eq 0 ]; then
-              # ── No labels: created at least 5 min before this run ─────────
+              # ── NEW: no labels, created at least 5 min ago ─────────────────
               [[ "$CREATED_AT" < "$CUTOFF_5MIN" ]] || continue
-
-              # Skip if last comment contains /not-accurate
-              LAST_COMMENT=$(gh api "repos/$REPO/issues/$NUMBER/comments" \
-                --paginate --jq '.[]' 2>/dev/null | tail -1 || true)
-              LAST_BODY=$(echo "$LAST_COMMENT" | jq -r '.body // ""' 2>/dev/null || true)
-              if echo "$LAST_BODY" | grep -qiE '^\s*/not-accurate'; then
-                continue
-              fi
-
-              ELIGIBLE+=("$NUMBER")
+              NEW_ISSUES+=("$NUMBER")
 
             elif [ "$LABEL_COUNT" -eq 1 ] && [ "$LABEL_NAME" = "missing-info" ]; then
-              # ── Only missing-info: updated inside the 6-hour window ───────
-              # Window: (now − 7h) ≤ updated_at < (now − 5min)
-              [[ ! "$UPDATED_AT" < "$CUTOFF_7H" && "$UPDATED_AT" < "$CUTOFF_5MIN" ]] || continue
 
-              # Fetch last comment once — used for both checks below
-              LAST_COMMENT=$(gh api "repos/$REPO/issues/$NUMBER/comments" \
-                --paginate --jq '.[]' 2>/dev/null | tail -1 || true)
+              if [[ "$UPDATED_AT" < "$CUTOFF_30D" ]]; then
+                # ── STALE: 30+ days without activity, last comment from bot or AleksandricMarko ──
+                if is_bot_or_marko "$LAST_COMMENT_AUTHOR"; then
+                  STALE_ISSUES+=("$NUMBER")
+                fi
 
-              # Skip if last comment contains /not-accurate
-              LAST_BODY=$(echo "$LAST_COMMENT" | jq -r '.body // ""' 2>/dev/null || true)
-              if echo "$LAST_BODY" | grep -qiE '^\s*/not-accurate'; then
-                continue
-              fi
-
-              # Last comment must not be from a bot (no comments = eligible)
-              LAST_AUTHOR=$(echo "$LAST_COMMENT" | jq -r '.user.login // ""' 2>/dev/null || true)
-              if [[ -z "$LAST_AUTHOR" || "$LAST_AUTHOR" != *"[bot]"* ]]; then
-                ELIGIBLE+=("$NUMBER")
+              elif [[ "$UPDATED_AT" < "$CUTOFF_5MIN" ]]; then
+                # ── UPDATED: has missing-info, updated ≥5 min ago, last comment NOT from bot/Marko ──
+                if [[ -z "$LAST_COMMENT_AUTHOR" ]] || ! is_bot_or_marko "$LAST_COMMENT_AUTHOR"; then
+                  UPDATED_ISSUES+=("$NUMBER")
+                fi
               fi
             fi
 
           done < <(gh api "repos/$REPO/issues" \
             --paginate -X GET -f state=open -f per_page=100 --jq '.[]')
 
-          if [ "${#ELIGIBLE[@]}" -eq 0 ]; then
+          # ── Log per-category results ───────────────────────────────────────
+          echo "::group::📋 New issues (${#NEW_ISSUES[@]})"
+          [ "${#NEW_ISSUES[@]}" -gt 0 ] && printf '  #%s\n' "${NEW_ISSUES[@]}" || echo "  (none)"
+          echo "::endgroup::"
+
+          echo "::group::🔄 Updated issues (${#UPDATED_ISSUES[@]})"
+          [ "${#UPDATED_ISSUES[@]}" -gt 0 ] && printf '  #%s\n' "${UPDATED_ISSUES[@]}" || echo "  (none)"
+          echo "::endgroup::"
+
+          echo "::group::⏳ Stale issues (${#STALE_ISSUES[@]})"
+          [ "${#STALE_ISSUES[@]}" -gt 0 ] && printf '  #%s\n' "${STALE_ISSUES[@]}" || echo "  (none)"
+          echo "::endgroup::"
+
+          # ── Combine all categories into a single output for the matrix ─────
+          ALL=("${NEW_ISSUES[@]}" "${UPDATED_ISSUES[@]}" "${STALE_ISSUES[@]}")
+
+          if [ "${#ALL[@]}" -eq 0 ]; then
             echo "No eligible issues found."
             echo "issues=[]" >> "$GITHUB_OUTPUT"
           else
-            ISSUES_JSON=$(printf '%s\n' "${ELIGIBLE[@]}" | jq -R 'tonumber' | jq -sc '.')
-            echo "Found ${#ELIGIBLE[@]} eligible issue(s): ${ELIGIBLE[*]}"
+            ISSUES_JSON=$(printf '%s\n' "${ALL[@]}" | jq -R 'tonumber' | jq -sc '.')
+            echo "Found ${#ALL[@]} eligible issue(s): new=${#NEW_ISSUES[@]} updated=${#UPDATED_ISSUES[@]} stale=${#STALE_ISSUES[@]}"
             echo "issues=$ISSUES_JSON" >> "$GITHUB_OUTPUT"
           fi
 
