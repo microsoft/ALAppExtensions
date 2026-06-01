@@ -11,6 +11,8 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
+        CleanCombineTables();
+
         PopulateGPFiscalPeriods();
 
         if GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
@@ -46,6 +48,39 @@ codeunit 40125 "GP Populate Combined Tables"
         PopulateCodes();
         PopulateGPSegments();
         PopulateGPRMOpen();
+    end;
+
+    local procedure CleanCombineTables()
+    var
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        GPAccount: Record "GP Account";
+        GPPostingAccounts: Record "GP Posting Accounts";
+        GPGLTransactions: Record "GP GLTransactions";
+        GPCustomer: Record "GP Customer";
+        GPCustomerTransactions: Record "GP Customer Transactions";
+        GPVendor: Record "GP Vendor";
+        GPVendorTransactions: Record "GP Vendor Transactions";
+        GPItem: Record "GP Item";
+        GPItemTransactions: Record "GP Item Transactions";
+        GPCodes: Record "GP Codes";
+        GPSegments: Record "GP Segments";
+        GPRMOpen: Record "GPRMOpen";
+    begin
+        GPFiscalPeriods.Truncate();
+        GPAccount.Truncate();
+        GPPostingAccounts.Truncate();
+        GPGLTransactions.Truncate();
+        GPCustomer.Truncate();
+        GPCustomerTransactions.Truncate();
+        GPVendor.Truncate();
+        GPVendorTransactions.Truncate();
+        GPItem.Truncate();
+        GPItemTransactions.Truncate();
+        GPCodes.Truncate();
+        GPSegments.Truncate();
+        GPRMOpen.Truncate();
+
+        Commit(); // Commit to make ensure the tables are empty before proceeding.
     end;
 
     internal procedure PopulateGPAccount()
@@ -471,6 +506,7 @@ codeunit 40125 "GP Populate Combined Tables"
         GPRM20101.SetRange(CURTRXAM, 0);
         if GPRM20101.FindSet() then
             repeat
+                Clear(GPRMOpen);
                 GPRMOpen.CUSTNMBR := GPRM20101.CUSTNMBR;
                 GPRMOpen.CPRCSTNM := GPRM20101.CPRCSTNM;
                 GPRMOpen.DOCNUMBR := GPRM20101.DOCNUMBR;
