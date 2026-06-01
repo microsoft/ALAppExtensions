@@ -91,6 +91,10 @@ codeunit 42800 "SL Hist. Migration Status Mgmt"
         SLHistGLTran: Record "SL Hist. GLTran Archive";
         SLHistINTran: Record "SL Hist. INTran Archive";
         SLHistLotSerT: Record "SL Hist. LotSerT Archive";
+        SLHistPJEmploy: Record "SL Hist. PJEmploy";
+        SLHistPJProj: Record "SL Hist. PJProj";
+        SLHistPJTran: Record "SL Hist. PJTran";
+        SLHistPJTranEx: Record "SL Hist. PJTranEx";
         SLHistPOReceipt: Record "SL Hist. POReceipt";
         SLHistPOTran: Record "SL Hist. POTran";
         SLHistPurchOrd: Record "SL Hist. PurchOrd";
@@ -133,6 +137,18 @@ codeunit 42800 "SL Hist. Migration Status Mgmt"
 
         if not SLHistPOReceipt.IsEmpty() then
             BatchDeleteAll(Database::"SL Hist. POReceipt", SLHistPOReceipt.FieldNo(SLHistPOReceipt.RcptNbr));
+
+        if not SLHistPJTranEx.IsEmpty() then
+            BatchDeleteAll(Database::"SL Hist. PJTranEx", SLHistPJTranEx.FieldNo(SLHistPJTranEx.fiscalno));
+
+        if not SLHistPJTran.IsEmpty() then
+            BatchDeleteAll(Database::"SL Hist. PJTran", SLHistPJTran.FieldNo(SLHistPJTran.fiscalno));
+
+        if not SLHistPJProj.IsEmpty() then
+            BatchDeleteAll(Database::"SL Hist. PJProj", SLHistPJProj.FieldNo(SLHistPJProj.project));
+
+        if not SLHistPJEmploy.IsEmpty() then
+            BatchDeleteAll(Database::"SL Hist. PJEmploy", SLHistPJEmploy.FieldNo(SLHistPJEmploy.employee));
 
         if not SLHistLotSerT.IsEmpty() then
             BatchDeleteAll(Database::"SL Hist. LotSerT Archive", SLHistLotSerT.FieldNo(SLHistLotSerT.LotSerNbr));

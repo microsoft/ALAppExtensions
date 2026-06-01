@@ -15,6 +15,7 @@ enum 42800 "SL Hist. Migration Step Type"
     value(5; "SL Payables Trx.") { Caption = 'SL Payables Trx.'; }
     value(6; "SL Inventory Trx.") { Caption = 'SL Inventory Trx.'; }
     value(7; "SL Purchase Receivables Trx.") { Caption = 'SL Purchase Receivables Trx.'; }
+    value(8; "SL Project Trx.") { Caption = 'SL Project Trx.'; }
     value(98; "Resetting Data") { Caption = 'Resetting Historical Data'; }
     value(99; Finished) { Caption = 'Finished'; }
 }
