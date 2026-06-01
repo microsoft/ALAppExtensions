@@ -64,6 +64,8 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL PJEquip Buffer" = IMD,
                   tabledata "SL PJPent Buffer" = IMD,
                   tabledata "SL PJProj Buffer" = IMD,
+                  tabledata "SL PJTran" = IMD,
+                  tabledata "SL PJTranEx" = IMD,
                   tabledata "SL Post Migration Data Log" = IMD,
                   tabledata "SL POAddress" = IMD,
                   tabledata "SL POReceipt" = IMD,

@@ -753,6 +753,153 @@ codeunit 47025 "SL Populate Hist. Tables"
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
     end;
 
+    internal procedure PopulateHistoricalProjectTransactions()
+    begin
+        if not SLCompanyAdditionalSettings.GetMigrateHistProjectTrans() then
+            exit;
+
+        SLHistMigrationStatusMgmt.UpdateStepStatus("SL Hist. Migration Step Type"::"SL Project Trx.", false);
+        PopulateHistoricalPJTran();
+        PopulateHistoricalPJTranEx();
+        PopulateHistoricalPJProj();
+        PopulateHistoricalPJEmploy();
+        SLHistMigrationStatusMgmt.UpdateStepStatus("SL Hist. Migration Step Type"::"SL Project Trx.", true);
+    end;
+
+    internal procedure PopulateHistoricalPJTran()
+    var
+        SLHistPJTran: Record "SL Hist. PJTran";
+        SLPJTran: Record "SL PJTran";
+        ErrorReference: Text[150];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
+    begin
+        SourceTableId := Database::"SL PJTran";
+        if InitialHistYear > 0 then
+            SLPJTran.SetFilter(fiscalno, '>= %1', Format(InitialHistYear));
+
+        SLPJTran.SetFilter(CpnyID, '= %1', GetCpnyID());
+
+        if not SLPJTran.FindSet() then
+            exit;
+
+        repeat
+            LastSourceRecordId := SLPJTran.SystemRowVersion;
+            Clear(SLHistPJTran);
+            SLHistPJTran.TransferFields(SLPJTran);
+
+            if SLHistPJTran.Insert() then
+                ReportLastSuccess(SourceTableId, LastSourceRecordId)
+            else begin
+                ErrorReference := SLPJTran.fiscalno.Trim() + '-' + SLPJTran.system_cd.Trim() + '-' + SLPJTran.batch_id.Trim() + '-' + Format(SLPJTran.detail_num);
+                ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Project Trx.", ErrorReference);
+            end;
+
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
+        until SLPJTran.Next() = 0;
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
+    end;
+
+    internal procedure PopulateHistoricalPJTranEx()
+    var
+        SLHistPJTranEx: Record "SL Hist. PJTranEx";
+        SLPJTranEx: Record "SL PJTranEx";
+        ErrorReference: Text[150];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
+    begin
+        SourceTableId := Database::"SL PJTranEx";
+        if InitialHistYear > 0 then
+            SLPJTranEx.SetFilter(fiscalno, '>= %1', Format(InitialHistYear));
+
+        if not SLPJTranEx.FindSet() then
+            exit;
+
+        repeat
+            LastSourceRecordId := SLPJTranEx.SystemRowVersion;
+            Clear(SLHistPJTranEx);
+            SLHistPJTranEx.TransferFields(SLPJTranEx);
+
+            if SLHistPJTranEx.Insert() then
+                ReportLastSuccess(SourceTableId, LastSourceRecordId)
+            else begin
+                ErrorReference := SLPJTranEx.fiscalno.Trim() + '-' + SLPJTranEx.system_cd.Trim() + '-' + SLPJTranEx.batch_id.Trim() + '-' + Format(SLPJTranEx.detail_num);
+                ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Project Trx.", ErrorReference);
+            end;
+
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
+        until SLPJTranEx.Next() = 0;
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
+    end;
+
+    internal procedure PopulateHistoricalPJProj()
+    var
+        SLHistPJProj: Record "SL Hist. PJProj";
+        SLPJProj: Record "SL PJProj Buffer";
+        ErrorReference: Text[150];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
+    begin
+        SourceTableId := Database::"SL PJProj Buffer";
+        if InitialHistYear > 0 then
+            SLPJProj.SetFilter(start_date, '>= %1', InitialYearDate);
+
+        SLPJProj.SetFilter(CpnyId, '= %1', GetCpnyID());
+
+        if not SLPJProj.FindSet() then
+            exit;
+
+        repeat
+            LastSourceRecordId := SLPJProj.SystemRowVersion;
+            Clear(SLHistPJProj);
+            SLHistPJProj.TransferFields(SLPJProj);
+
+            if SLHistPJProj.Insert() then
+                ReportLastSuccess(SourceTableId, LastSourceRecordId)
+            else begin
+                ErrorReference := CopyStr(SLPJProj.project.Trim(), 1, MaxStrLen(ErrorReference));
+                ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Project Trx.", ErrorReference);
+            end;
+
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
+        until SLPJProj.Next() = 0;
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
+    end;
+
+    internal procedure PopulateHistoricalPJEmploy()
+    var
+        SLHistPJEmploy: Record "SL Hist. PJEmploy";
+        SLPJEmploy: Record "SL PJEmploy Buffer";
+        ErrorReference: Text[150];
+        SourceTableId: Integer;
+        LastSourceRecordId: Integer;
+    begin
+        SourceTableId := Database::"SL PJEmploy Buffer";
+        if InitialHistYear > 0 then
+            SLPJEmploy.SetFilter(date_hired, '>= %1', InitialYearDate);
+
+        SLPJEmploy.SetFilter(CpnyId, '= %1', GetCpnyID());
+
+        if not SLPJEmploy.FindSet() then
+            exit;
+
+        repeat
+            LastSourceRecordId := SLPJEmploy.SystemRowVersion;
+            Clear(SLHistPJEmploy);
+            SLHistPJEmploy.TransferFields(SLPJEmploy);
+
+            if SLHistPJEmploy.Insert() then
+                ReportLastSuccess(SourceTableId, LastSourceRecordId)
+            else begin
+                ErrorReference := CopyStr(SLPJEmploy.employee.Trim(), 1, MaxStrLen(ErrorReference));
+                ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Project Trx.", ErrorReference);
+            end;
+
+            AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
+        until SLPJEmploy.Next() = 0;
+        AfterProcessedSection(SourceTableId, LastSourceRecordId);
+    end;
+
     local procedure AfterProcessedNextRecord(TableId: Integer; RecId: Integer)
     var
         SLHistSourceProgress: Record "SL Hist. Source Progress";

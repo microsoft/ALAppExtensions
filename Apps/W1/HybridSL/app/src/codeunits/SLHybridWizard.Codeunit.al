@@ -287,6 +287,8 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL PJEQRate Buffer", 'PJEQRate');
         UpdateOrInsertRecord(Database::"SL PJPent Buffer", 'PJPent');
         UpdateOrInsertRecord(Database::"SL PJProj Buffer", 'PJProj');
+        UpdateOrInsertRecord(Database::"SL PJTran", 'PJTran');
+        UpdateOrInsertRecord(Database::"SL PJTranEx", 'PJTranEx');
         // Cash Manager
         UpdateOrInsertRecord(Database::"SL Address", 'Address');
         UpdateOrInsertRecord(Database::"SL CASetup", 'CASetup');

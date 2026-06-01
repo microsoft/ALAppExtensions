@@ -65,6 +65,8 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL PJEquip Buffer" = X,
                   table "SL PJPent Buffer" = X,
                   table "SL PJProj Buffer" = X,
+                  table "SL PJTran" = X,
+                  table "SL PJTranEx" = X,
                   table "SL Post Migration Data Log" = X,
                   table "SL POAddress" = X,
                   table "SL POReceipt" = X,

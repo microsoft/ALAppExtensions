@@ -62,6 +62,8 @@ permissionsetextension 47002 "SLD365 BASIC ISV - MSL" extends "D365 BASIC ISV"
                   tabledata "SL PJEquip Buffer" = RIMD,
                   tabledata "SL PJPent Buffer" = RIMD,
                   tabledata "SL PJProj Buffer" = RIMD,
+                  tabledata "SL PJTran" = RIMD,
+                  tabledata "SL PJTranEx" = RIMD,
                   tabledata "SL Post Migration Data Log" = RIMD,
                   tabledata "SL POAddress" = RIMD,
                   tabledata "SL POReceipt" = RIMD,

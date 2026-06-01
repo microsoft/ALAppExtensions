@@ -62,6 +62,8 @@ permissionsetextension 47000 "SLINTELLIGENT CLOUD - MSL" extends "INTELLIGENT CL
                   tabledata "SL PJEquip Buffer" = RIMD,
                   tabledata "SL PJPent Buffer" = RIMD,
                   tabledata "SL PJProj Buffer" = RIMD,
+                  tabledata "SL PJTran" = RIMD,
+                  tabledata "SL PJTranEx" = RIMD,
                   tabledata "SL Post Migration Data Log" = RIMD,
                   tabledata "SL POAddress" = RIMD,
                   tabledata "SL POReceipt" = RIMD,

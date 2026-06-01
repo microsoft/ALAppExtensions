@@ -65,6 +65,8 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL PJEquip Buffer" = R,
                   tabledata "SL PJPent Buffer" = R,
                   tabledata "SL PJProj Buffer" = R,
+                  tabledata "SL PJTran" = R,
+                  tabledata "SL PJTranEx" = R,
                   tabledata "SL Post Migration Data Log" = R,
                   tabledata "SL POAddress" = R,
                   tabledata "SL POReceipt" = R,
