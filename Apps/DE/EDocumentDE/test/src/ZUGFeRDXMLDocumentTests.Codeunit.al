@@ -33,6 +33,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 {
     Subtype = Test;
     TestType = Uncategorized;
+    EventSubscriberInstance = Manual;
 
     trigger OnRun();
     begin
@@ -488,6 +489,57 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyCardPaymentMeans();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        ZUGFeRDXMLDocumentTests: Codeunit "ZUGFeRD XML Document Tests";
+        PaymentMethodCode: Code[10];
+        Path: Text;
+    begin
+        // [SCENARIO] Export posted sales invoice with card payment method creates ApplicableTradeSettlementFinancialCard element
+        Initialize();
+
+        // [GIVEN] Payment method with payment means code 48 (card)
+        PaymentMethodCode := CreatePaymentMethodWithMeansCode('48');
+
+        // [GIVEN] Create and Post Sales Invoice with the card payment method
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithPaymentMethod("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, PaymentMethodCode));
+
+        // [WHEN] Export ZUGFeRD Electronic Document (with card info subscriber bound)
+        BindSubscription(ZUGFeRDXMLDocumentTests);
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+        UnbindSubscription(ZUGFeRDXMLDocumentTests);
+
+        // [THEN] ZUGFeRD Electronic Document contains card payment means TypeCode
+        Path := '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:TypeCode';
+        Assert.AreEqual('48', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
+        // [THEN] ApplicableTradeSettlementFinancialCard element is present
+        Path := '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:ApplicableTradeSettlementFinancialCard/ram:ID';
+        Assert.AreNotEqual('', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    [Test]
+    procedure CheckSalesInvoiceInZUGFeRDFormatVerifyCardPaymentCheckError();
+    var
+        SalesHeader: Record "Sales Header";
+        PaymentMethodCode: Code[10];
+    begin
+        // [SCENARIO] Check raises error when card payment method is set but no card data subscriber is bound
+        Initialize();
+
+        // [GIVEN] Payment method with payment means code 48 (card)
+        PaymentMethodCode := CreatePaymentMethodWithMeansCode('48');
+
+        // [GIVEN] Create Sales Invoice with the card payment method
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithPaymentMethodCode("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, PaymentMethodCode));
+
+        // [WHEN/THEN] Check raises an error because no subscriber provides card data
+        asserterror CheckSalesHeader(SalesHeader);
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatWithCustomReportLayout();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -900,6 +952,39 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [THEN] ZUGFeRD Electronic Document is created with 2 cr.memo lines
         VerifyCrMemoLine(SalesCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatVerifyCustomerIBANInPaymentMeans();
+    var
+        Customer: Record Customer;
+        CustomerBankAccount: Record "Customer Bank Account";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        CustomerIBAN: Text[50];
+        Path: Text;
+    begin
+        // [SCENARIO] Export posted sales cr. memo uses customer IBAN (not company IBAN) in PayeePartyCreditorFinancialAccount
+        Initialize();
+
+        // [GIVEN] Create customer with a bank account that has a specific IBAN
+        CustomerIBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        Customer.Get(CreateCustomer());
+        LibrarySales.CreateCustomerBankAccount(CustomerBankAccount, Customer."No.");
+        CustomerBankAccount.IBAN := CustomerIBAN;
+        CustomerBankAccount.Modify(true);
+        Customer.Validate("Preferred Bank Account Code", CustomerBankAccount.Code);
+        Customer.Modify(true);
+
+        // [GIVEN] Create and Post sales cr. memo for that customer
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentForCustomer("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, Customer."No."));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] Payment means contains customer IBAN (not company IBAN)
+        Path := '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount/ram:IBANID';
+        Assert.AreEqual(GetIBAN(CustomerIBAN), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     [Test]
@@ -1643,6 +1728,33 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostSalesDocumentForCustomer(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; CustomerNo: Code[20]): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
+        CreateSalesLine(SalesHeader, LineType, false);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreateAndPostSalesDocumentWithPaymentMethod(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; PaymentMethodCode: Code[10]): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithPaymentMethodCode(DocumentType, LineType, PaymentMethodCode));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreatePaymentMethodWithMeansCode(MeansCode: Code[3]): Code[10]
+    var
+        PaymentMethod: Record "Payment Method";
+    begin
+        LibraryERM.CreatePaymentMethod(PaymentMethod);
+        PaymentMethod."PEPPOL Payment Means Code" := MeansCode;
+        PaymentMethod.Modify(true);
+        exit(PaymentMethod.Code);
+    end;
+
     local procedure CreateAndPostServiceDocument(): Code[20]
     var
         ServiceHeader: Record "Service Header";
@@ -1776,6 +1888,17 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         if InvoiceDiscount then
             ApplyInvoiceDiscount(SalesHeader);
+        exit(SalesHeader."No.");
+    end;
+
+    local procedure CreateSalesDocumentWithPaymentMethodCode(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; PaymentMethodCode: Code[10]): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType);
+        SalesHeader.Validate("Payment Method Code", PaymentMethodCode);
+        SalesHeader.Modify(true);
+        CreateSalesLine(SalesHeader, LineType, false);
         exit(SalesHeader."No.");
     end;
 
@@ -2017,6 +2140,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         TempBlob: Codeunit "Temp Blob";
         TempBlob2: Codeunit "Temp Blob";
         PDFDocument: Codeunit "PDF Document";
+        DEXMLDocumentValidator: Codeunit "DE XML Document Validator";
         SourceDocumentHeader: RecordRef;
         SourceDocumentLines: RecordRef;
         PDFInStream: InStream;
@@ -2029,6 +2153,8 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         TempBlob.CreateInStream(PdfInStream);
         PDFDocument.GetDocumentAttachmentStream(PdfInStream, TempBlob2);
         TempBlob2.CreateInStream(PdfAttachmentStream);
+        DEXMLDocumentValidator.ValidateZUGFeRDXML(PdfAttachmentStream);
+        PdfAttachmentStream.ResetPosition();
         TempXMLBuffer.LoadFromStream(PdfAttachmentStream);
     end;
 
@@ -2039,6 +2165,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         TempBlob: Codeunit "Temp Blob";
         TempBlob2: Codeunit "Temp Blob";
         PDFDocument: Codeunit "PDF Document";
+        DEXMLDocumentValidator: Codeunit "DE XML Document Validator";
         SourceDocumentHeader: RecordRef;
         SourceDocumentLines: RecordRef;
         PDFInStream: InStream;
@@ -2051,6 +2178,8 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         TempBlob.CreateInStream(PdfInStream);
         PDFDocument.GetDocumentAttachmentStream(PdfInStream, TempBlob2);
         TempBlob2.CreateInStream(PdfAttachmentStream);
+        DEXMLDocumentValidator.ValidateZUGFeRDXML(PdfAttachmentStream);
+        PdfAttachmentStream.ResetPosition();
         TempXMLBuffer.LoadFromStream(PdfAttachmentStream);
     end;
 
@@ -2061,6 +2190,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         TempBlob: Codeunit "Temp Blob";
         TempBlob2: Codeunit "Temp Blob";
         PDFDocument: Codeunit "PDF Document";
+        DEXMLDocumentValidator: Codeunit "DE XML Document Validator";
         SourceDocumentHeader: RecordRef;
         SourceDocumentLines: RecordRef;
         PDFInStream: InStream;
@@ -2073,6 +2203,8 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         TempBlob.CreateInStream(PdfInStream);
         PDFDocument.GetDocumentAttachmentStream(PdfInStream, TempBlob2);
         TempBlob2.CreateInStream(PdfAttachmentStream);
+        DEXMLDocumentValidator.ValidateZUGFeRDXML(PdfAttachmentStream);
+        PdfAttachmentStream.ResetPosition();
         TempXMLBuffer.LoadFromStream(PdfAttachmentStream);
     end;
 
@@ -2083,6 +2215,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         TempBlob: Codeunit "Temp Blob";
         TempBlob2: Codeunit "Temp Blob";
         PDFDocument: Codeunit "PDF Document";
+        DEXMLDocumentValidator: Codeunit "DE XML Document Validator";
         SourceDocumentHeader: RecordRef;
         SourceDocumentLines: RecordRef;
         PDFInStream: InStream;
@@ -2095,6 +2228,8 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         TempBlob.CreateInStream(PdfInStream);
         PDFDocument.GetDocumentAttachmentStream(PdfInStream, TempBlob2);
         TempBlob2.CreateInStream(PdfAttachmentStream);
+        DEXMLDocumentValidator.ValidateZUGFeRDXML(PdfAttachmentStream);
+        PdfAttachmentStream.ResetPosition();
         TempXMLBuffer.LoadFromStream(PdfAttachmentStream);
     end;
 
@@ -2981,6 +3116,14 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Commit();
 
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"ZUGFeRD XML Document Tests");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"DE Payment Means Helper", 'OnGetPaymentCardInfo', '', false, false)]
+    local procedure OnGetPaymentCardInfo(DocumentHeader: Variant; PaymentMeansCode: Code[3]; var PrimaryAccountNumberID: Text; var HolderName: Text; var Handled: Boolean)
+    begin
+        PrimaryAccountNumberID := '4111111111111111';
+        HolderName := 'Test Cardholder';
+        Handled := true;
     end;
 
     [ConfirmHandler]

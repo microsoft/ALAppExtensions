@@ -8,6 +8,7 @@ using Microsoft.Bank.BankAccount;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.Foundation.Company;
+using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Purchases.Document;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
@@ -26,6 +27,7 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
         EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
         EDocPEPPOLValidationDE: Codeunit "EDoc PEPPOL Validation DE";
         EDocImportXRechnung: Codeunit "Import XRechnung Document";
+        DEPaymentMeansHelper: Codeunit "DE Payment Means Helper";
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     var
@@ -35,6 +37,7 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
         CheckCompanyInfoMandatory(CompanyInformation);
         CheckBankAccountIBANMandatory(SourceDocumentHeader, CompanyInformation);
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        DEPaymentMeansHelper.CheckPaymentDataAvailable(SourceDocumentHeader);
         EDocPEPPOLValidationDE.SetBuyerReference(EDocumentService."Buyer Reference");
         BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);

@@ -34,6 +34,7 @@ codeunit 13918 "XRechnung XML Document Tests"
 {
     Subtype = Test;
     TestType = Uncategorized;
+    EventSubscriberInstance = Manual;
 
     trigger OnRun();
     begin
@@ -390,6 +391,57 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         // [THEN] XRechnung Electronic Document is created with company data as accounting supplier party
         VerifyAccountingSupplierParty(TempXMLBuffer, '/ubl:Invoice/cac:AccountingSupplierParty/cac:Party', ResponsibilityCenter);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyCardPaymentMeans();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        XRechnungXMLDocumentTests: Codeunit "XRechnung XML Document Tests";
+        PaymentMethodCode: Code[10];
+        Path: Text;
+    begin
+        // [SCENARIO] Export posted sales invoice with card payment method creates CardAccount element in payment means
+        Initialize();
+
+        // [GIVEN] Payment method with payment means code 48 (card)
+        PaymentMethodCode := CreatePaymentMethodWithMeansCode('48');
+
+        // [GIVEN] Create and Post Sales Invoice with the card payment method
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithPaymentMethod("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, PaymentMethodCode));
+
+        // [WHEN] Export XRechnung Electronic Document (with card info subscriber bound)
+        BindSubscription(XRechnungXMLDocumentTests);
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+        UnbindSubscription(XRechnungXMLDocumentTests);
+
+        // [THEN] XRechnung Electronic Document contains card payment means code
+        Path := '/ubl:Invoice/cac:PaymentMeans/cbc:PaymentMeansCode';
+        Assert.AreEqual('48', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
+        // [THEN] CardAccount element is present with PrimaryAccountNumberID
+        Path := '/ubl:Invoice/cac:PaymentMeans/cac:CardAccount/cbc:PrimaryAccountNumberID';
+        Assert.AreNotEqual('', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    [Test]
+    procedure CheckSalesInvoiceInXRechnungFormatVerifyCardPaymentCheckError();
+    var
+        SalesHeader: Record "Sales Header";
+        PaymentMethodCode: Code[10];
+    begin
+        // [SCENARIO] Check raises error when card payment method is set but no card data subscriber is bound
+        Initialize();
+
+        // [GIVEN] Payment method with payment means code 48 (card)
+        PaymentMethodCode := CreatePaymentMethodWithMeansCode('48');
+
+        // [GIVEN] Create Sales Invoice with the card payment method
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithPaymentMethodCode("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, PaymentMethodCode));
+
+        // [WHEN/THEN] Check raises an error because no subscriber provides card data
+        asserterror CheckSalesHeader(SalesHeader);
     end;
 
     [Test]
@@ -1027,6 +1079,39 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyCustomerIBANInPaymentMeans();
+    var
+        Customer: Record Customer;
+        CustomerBankAccount: Record "Customer Bank Account";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        CustomerIBAN: Text[50];
+        Path: Text;
+    begin
+        // [SCENARIO] Export posted sales cr. memo uses customer IBAN (not company IBAN) in PayeeFinancialAccount
+        Initialize();
+
+        // [GIVEN] Create customer with a bank account that has a specific IBAN
+        CustomerIBAN := LibraryUtility.GenerateMOD97CompliantCode();
+        Customer.Get(CreateCustomer());
+        LibrarySales.CreateCustomerBankAccount(CustomerBankAccount, Customer."No.");
+        CustomerBankAccount.IBAN := CustomerIBAN;
+        CustomerBankAccount.Modify(true);
+        Customer.Validate("Preferred Bank Account Code", CustomerBankAccount.Code);
+        Customer.Modify(true);
+
+        // [GIVEN] Create and Post sales cr. memo for that customer
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentForCustomer("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, Customer."No."));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] Payment means contains customer IBAN (not company IBAN)
+        Path := '/ns0:CreditNote/cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:ID';
+        Assert.AreEqual(CustomerIBAN, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    [Test]
     procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyVATEXCodeAndExemptionReason();
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
@@ -1659,6 +1744,33 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
+    local procedure CreateAndPostSalesDocumentForCustomer(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; CustomerNo: Code[20]): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
+        CreateSalesLine(SalesHeader, LineType, false);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreateAndPostSalesDocumentWithPaymentMethod(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; PaymentMethodCode: Code[10]): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithPaymentMethodCode(DocumentType, LineType, PaymentMethodCode));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreatePaymentMethodWithMeansCode(MeansCode: Code[3]): Code[10]
+    var
+        PaymentMethod: Record "Payment Method";
+    begin
+        LibraryERM.CreatePaymentMethod(PaymentMethod);
+        PaymentMethod."PEPPOL Payment Means Code" := MeansCode;
+        PaymentMethod.Modify(true);
+        exit(PaymentMethod.Code);
+    end;
+
     local procedure CreatePurchDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
     var
         PurchaseLine: Record "Purchase Line";
@@ -1698,6 +1810,17 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         if InvoiceDiscount then
             ApplyInvoiceDiscount(SalesHeader);
+        exit(SalesHeader."No.");
+    end;
+
+    local procedure CreateSalesDocumentWithPaymentMethodCode(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; PaymentMethodCode: Code[10]): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType);
+        SalesHeader.Validate("Payment Method Code", PaymentMethodCode);
+        SalesHeader.Modify(true);
+        CreateSalesLine(SalesHeader, LineType, false);
         exit(SalesHeader."No.");
     end;
 
@@ -1932,6 +2055,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesInvoiceLine: Record "Sales Invoice Line";
         EDocument: Record "E-Document";
         TempBlob: Codeunit "Temp Blob";
+        DEXMLDocumentValidator: Codeunit "DE XML Document Validator";
         SourceDocumentHeader: RecordRef;
         SourceDocumentLines: RecordRef;
         FileInStream: InStream;
@@ -1940,6 +2064,8 @@ codeunit 13918 "XRechnung XML Document Tests"
         SourceDocumentLines.GetTable(SalesInvoiceLine);
         ExportXRechnungFormat.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         TempBlob.CreateInStream(FileInStream);
+        DEXMLDocumentValidator.ValidateXRechnungInvoiceXML(FileInStream);
+        FileInStream.ResetPosition();
         TempXMLBuffer.LoadFromStream(FileInStream);
     end;
 
@@ -1948,6 +2074,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         ServiceInvoiceLine: Record "Service Invoice Line";
         EDocument: Record "E-Document";
         TempBlob: Codeunit "Temp Blob";
+        DEXMLDocumentValidator: Codeunit "DE XML Document Validator";
         SourceDocumentHeader: RecordRef;
         SourceDocumentLines: RecordRef;
         FileInStream: InStream;
@@ -1956,6 +2083,8 @@ codeunit 13918 "XRechnung XML Document Tests"
         SourceDocumentLines.GetTable(ServiceInvoiceLine);
         ExportXRechnungFormat.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         TempBlob.CreateInStream(FileInStream);
+        DEXMLDocumentValidator.ValidateXRechnungInvoiceXML(FileInStream);
+        FileInStream.ResetPosition();
         TempXMLBuffer.LoadFromStream(FileInStream);
     end;
 
@@ -1964,6 +2093,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
         EDocument: Record "E-Document";
         TempBlob: Codeunit "Temp Blob";
+        DEXMLDocumentValidator: Codeunit "DE XML Document Validator";
         SourceDocumentHeader: RecordRef;
         SourceDocumentLines: RecordRef;
         FileInStream: InStream;
@@ -1972,6 +2102,8 @@ codeunit 13918 "XRechnung XML Document Tests"
         SourceDocumentLines.GetTable(SalesCrMemoLine);
         ExportXRechnungFormat.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         TempBlob.CreateInStream(FileInStream);
+        DEXMLDocumentValidator.ValidateXRechnungCreditNoteXML(FileInStream);
+        FileInStream.ResetPosition();
         TempXMLBuffer.LoadFromStream(FileInStream);
     end;
 
@@ -1980,6 +2112,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
         EDocument: Record "E-Document";
         TempBlob: Codeunit "Temp Blob";
+        DEXMLDocumentValidator: Codeunit "DE XML Document Validator";
         SourceDocumentHeader: RecordRef;
         SourceDocumentLines: RecordRef;
         FileInStream: InStream;
@@ -1988,6 +2121,8 @@ codeunit 13918 "XRechnung XML Document Tests"
         SourceDocumentLines.GetTable(ServiceCrMemoLine);
         ExportXRechnungFormat.Create(EDocumentService, EDocument, SourceDocumentHeader, SourceDocumentLines, TempBlob);
         TempBlob.CreateInStream(FileInStream);
+        DEXMLDocumentValidator.ValidateXRechnungCreditNoteXML(FileInStream);
+        FileInStream.ResetPosition();
         TempXMLBuffer.LoadFromStream(FileInStream);
     end;
 
@@ -2994,6 +3129,14 @@ codeunit 13918 "XRechnung XML Document Tests"
         Commit();
 
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"XRechnung XML Document Tests");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"DE Payment Means Helper", OnGetPaymentCardInfo, '', false, false)]
+    local procedure OnGetPaymentCardInfo(DocumentHeader: Variant; PaymentMeansCode: Code[3]; var PrimaryAccountNumberID: Text; var HolderName: Text; var Handled: Boolean)
+    begin
+        PrimaryAccountNumberID := '4111111111111111';
+        HolderName := 'Test Cardholder';
+        Handled := true;
     end;
 
     [ConfirmHandler]
