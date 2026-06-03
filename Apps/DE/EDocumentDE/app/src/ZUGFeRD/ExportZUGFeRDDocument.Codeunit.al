@@ -1117,47 +1117,31 @@ codeunit 13917 "Export ZUGFeRD Document"
         PaymentMethodElement := XmlElement.Create('SpecifiedTradeSettlementPaymentMeans', XmlNamespaceRAM);
         PaymentMethodElement.Add(XmlElement.Create('TypeCode', XmlNamespaceRAM, PaymentMeansCode));
 
-        if PaymentMeansCode in ['48', '54', '55', '70'] then
-            InsertPaymentCard(PaymentMethodElement, PaymentMeansCode, DocumentHeader)
-        else if PaymentMeansCode in ['49', '59'] then
-            InsertPaymentMandate(PaymentMethodElement, DirectDebitMandateID)
-        else begin
-            if IsInvoice then
-                GetBankAccountPaymentDetails(CompanyBankAccountCode, IBAN, SWIFTCode)
-            else begin
-                IBAN := DEPaymentMeansHelper.GetCustomerIBAN(CustomerNo);
-                SWIFTCode := '';
-            end;
-            if IBAN <> '' then begin
-                PayeeAccountElement := XmlElement.Create('PayeePartyCreditorFinancialAccount', XmlNamespaceRAM);
-                PayeeAccountElement.Add(XmlElement.Create('IBANID', XmlNamespaceRAM, GetIBAN(IBAN)));
-                PaymentMethodElement.Add(PayeeAccountElement);
-            end;
-            if SWIFTCode <> '' then begin
-                CreditorFinancialInstitutionElement := XmlElement.Create('PayeeSpecifiedCreditorFinancialInstitution', XmlNamespaceRAM);
-                CreditorFinancialInstitutionElement.Add(XmlElement.Create('BICID', XmlNamespaceRAM, GetIBAN(SWIFTCode)));
-                PaymentMethodElement.Add(CreditorFinancialInstitutionElement);
-            end;
+        case PaymentMeansCode of
+            '30', '58':
+                begin
+                    if IsInvoice then
+                        GetBankAccountPaymentDetails(CompanyBankAccountCode, IBAN, SWIFTCode)
+                    else begin
+                        IBAN := DEPaymentMeansHelper.GetCustomerIBAN(CustomerNo);
+                        SWIFTCode := '';
+                    end;
+                    if IBAN <> '' then begin
+                        PayeeAccountElement := XmlElement.Create('PayeePartyCreditorFinancialAccount', XmlNamespaceRAM);
+                        PayeeAccountElement.Add(XmlElement.Create('IBANID', XmlNamespaceRAM, GetIBAN(IBAN)));
+                        PaymentMethodElement.Add(PayeeAccountElement);
+                    end;
+                    if SWIFTCode <> '' then begin
+                        CreditorFinancialInstitutionElement := XmlElement.Create('PayeeSpecifiedCreditorFinancialInstitution', XmlNamespaceRAM);
+                        CreditorFinancialInstitutionElement.Add(XmlElement.Create('BICID', XmlNamespaceRAM, GetIBAN(SWIFTCode)));
+                        PaymentMethodElement.Add(CreditorFinancialInstitutionElement);
+                    end;
+                end;
+            '49', '59':
+                InsertPaymentMandate(PaymentMethodElement, DirectDebitMandateID);
         end;
-        OnAfterInsertPaymentMeans(PaymentMethodElement, PaymentMeansCode);
+        OnAfterInsertPaymentMeans(PaymentMethodElement, PaymentMeansCode, DocumentHeader);
         RootXMLNode.Add(PaymentMethodElement);
-    end;
-
-    local procedure InsertPaymentCard(var PaymentMeansElement: XmlElement; PaymentMeansCode: Code[3]; DocumentHeader: Variant)
-    var
-        CardElement: XmlElement;
-        PrimaryAccountNumberID: Text;
-        HolderName: Text;
-        Handled: Boolean;
-        CardDataMissingErr: Label 'No card payment data is available for payment means code %1. Subscribe to the OnGetPaymentCardInfo event in codeunit "DE Payment Means Helper" to provide the card details.', Comment = '%1 = UNCL4461 payment means code';
-    begin
-        DEPaymentMeansHelper.OnGetPaymentCardInfo(DocumentHeader, PaymentMeansCode, PrimaryAccountNumberID, HolderName, Handled);
-        if not Handled then
-            Error(CardDataMissingErr, PaymentMeansCode);
-        CardElement := XmlElement.Create('ApplicableTradeSettlementFinancialCard', XmlNamespaceRAM);
-        CardElement.Add(XmlElement.Create('ID', XmlNamespaceRAM, PrimaryAccountNumberID));
-        CardElement.Add(XmlElement.Create('CardholderName', XmlNamespaceRAM, HolderName));
-        PaymentMeansElement.Add(CardElement);
     end;
 
     local procedure InsertPaymentMandate(var PaymentMeansElement: XmlElement; DirectDebitMandateID: Code[35])
@@ -1625,7 +1609,7 @@ codeunit 13917 "Export ZUGFeRD Document"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterInsertPaymentMeans(var PaymentMeansElement: XmlElement; PaymentMeansCode: Code[3])
+    local procedure OnAfterInsertPaymentMeans(var PaymentMeansElement: XmlElement; PaymentMeansCode: Code[3]; DocumentHeader: Variant)
     begin
     end;
 }

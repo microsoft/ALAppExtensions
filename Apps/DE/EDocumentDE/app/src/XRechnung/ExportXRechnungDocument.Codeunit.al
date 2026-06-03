@@ -560,16 +560,14 @@ codeunit 13916 "Export XRechnung Document"
         PaymentMeansCode := DEPaymentMeansHelper.GetPaymentMeansCode(PaymentMethodCode);
         PaymentMeansElement := XmlElement.Create('PaymentMeans', XmlNamespaceCAC);
         PaymentMeansElement.Add(XmlElement.Create('PaymentMeansCode', XmlNamespaceCBC, PaymentMeansCode));
-        case true of
-            PaymentMeansCode in ['48', '54', '55', '70']:
-                InsertPaymentCard(PaymentMeansElement, PaymentMeansCode, DocumentHeader);
-            PaymentMeansCode in ['49', '59']:
-                InsertPaymentMandate(PaymentMeansElement, DirectDebitMandateID);
-            else
+        case PaymentMeansCode of
+            '30', '58':
                 InsertPayeeFinancialAccount(PaymentMeansElement, CompanyBankAccountCode, CustomerNo, IsInvoice);
+            '49', '59':
+                InsertPaymentMandate(PaymentMeansElement, DirectDebitMandateID);
         end;
         RootXMLNode.Add(PaymentMeansElement);
-        OnAfterInsertPaymentMeans(PaymentMeansElement, PaymentMeansCode);
+        OnAfterInsertPaymentMeans(PaymentMeansElement, PaymentMeansCode, DocumentHeader);
     end;
 
     local procedure InsertPayeeFinancialAccount(var PaymentMeansElement: XmlElement; CompanyBankAccountCode: Code[20]; CustomerNo: Code[20]; IsInvoice: Boolean);
@@ -596,25 +594,6 @@ codeunit 13916 "Export XRechnung Document"
         FinancialInstitutionBranchElement := XmlElement.Create('FinancialInstitutionBranch', XmlNamespaceCAC);
         FinancialInstitutionBranchElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, GetIBAN(SWIFTCode)));
         RootElement.Add(FinancialInstitutionBranchElement);
-    end;
-
-    local procedure InsertPaymentCard(var PaymentMeansElement: XmlElement; PaymentMeansCode: Code[3]; DocumentHeader: Variant);
-    var
-        CardAccountElement: XmlElement;
-        PrimaryAccountNumberID: Text;
-        HolderName: Text;
-        Handled: Boolean;
-        NoCardDataErr: Label 'No card payment data is available for payment means code %1. Subscribe to the OnGetPaymentCardInfo event in codeunit "DE Payment Means Helper" to provide the card details.', Comment = '%1 = UNCL4461 payment means code';
-    begin
-        DEPaymentMeansHelper.OnGetPaymentCardInfo(DocumentHeader, PaymentMeansCode, PrimaryAccountNumberID, HolderName, Handled);
-        if not Handled then
-            Error(NoCardDataErr, PaymentMeansCode);
-        CardAccountElement := XmlElement.Create('CardAccount', XmlNamespaceCAC);
-        if PrimaryAccountNumberID <> '' then
-            CardAccountElement.Add(XmlElement.Create('PrimaryAccountNumberID', XmlNamespaceCBC, PrimaryAccountNumberID));
-        if HolderName <> '' then
-            CardAccountElement.Add(XmlElement.Create('HolderName', XmlNamespaceCBC, HolderName));
-        PaymentMeansElement.Add(CardAccountElement);
     end;
 
     local procedure InsertPaymentMandate(var PaymentMeansElement: XmlElement; DirectDebitMandateID: Code[35]);
@@ -1813,7 +1792,7 @@ codeunit 13916 "Export XRechnung Document"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterInsertPaymentMeans(var PaymentMeansElement: XmlElement; PaymentMeansCode: Code[3])
+    local procedure OnAfterInsertPaymentMeans(var PaymentMeansElement: XmlElement; PaymentMeansCode: Code[3]; DocumentHeader: Variant)
     begin
     end;
 }

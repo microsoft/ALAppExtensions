@@ -85,14 +85,9 @@ codeunit 11037 "DE Payment Means Helper"
         PaymentMethodCodeFieldRef: FieldRef;
         DirectDebitMandateIDFieldRef: FieldRef;
         PaymentMethod: Record "Payment Method";
-        EmptyDocVariant: Variant;
         PaymentMethodCode: Code[10];
         PaymentMeansCode: Code[3];
         DirectDebitMandateID: Code[35];
-        Handled: Boolean;
-        PrimaryAccountNumberID: Text;
-        HolderName: Text;
-        CardDataMissingErr: Label 'No card payment data is available for payment means code %1. Subscribe to the OnGetPaymentCardInfo event in codeunit "DE Payment Means Helper" to provide the card details.', Comment = '%1 = UNCL4461 payment means code';
         SEPADDOnCrMemoErr: Label 'Payment means code %1 (SEPA direct debit) cannot be used on a credit memo. Use a credit transfer code (30 or 58) instead.', Comment = '%1 = UNCL4461 payment means code';
         MandateIDMissingErr: Label 'Direct debit mandate ID is missing on the document. Set it in the Payment tab before releasing.';
     begin
@@ -113,13 +108,6 @@ codeunit 11037 "DE Payment Means Helper"
                 PaymentMeansCode := PaymentMethod."PEPPOL Payment Means Code";
 
         case true of
-            PaymentMeansCode in ['48', '54', '55', '70']:
-                begin
-                    // Pass empty variant during check — subscriber should set Handled:=true if they can provide card data
-                    OnGetPaymentCardInfo(EmptyDocVariant, PaymentMeansCode, PrimaryAccountNumberID, HolderName, Handled);
-                    if not Handled then
-                        Error(CardDataMissingErr, PaymentMeansCode);
-                end;
             PaymentMeansCode in ['49', '59']:
                 begin
                     if SourceDocumentHeader.Number() in [Database::"Sales Cr.Memo Header", Database::"Service Cr.Memo Header"] then
@@ -150,17 +138,6 @@ codeunit 11037 "DE Payment Means Helper"
             Error(BankAccountNotFoundErr, SEPADirectDebitMandate."Customer Bank Account Code", DirectDebitMandateID);
         if CustomerBankAccount.IBAN = '' then
             Error(IBANMissingErr, SEPADirectDebitMandate."Customer Bank Account Code", DirectDebitMandateID);
-    end;
-
-    /// <summary>
-    /// Fires when card payment data is needed for export or pre-export check.
-    /// DocumentHeader contains the source document (Sales Invoice Header, Sales Cr.Memo Header, etc.) as a Variant.
-    /// It may be empty during the Check() pre-validation — subscribers should set Handled := true if they can provide card data.
-    /// Subscribe to provide PrimaryAccountNumberID and HolderName. Set Handled := true to confirm data was provided.
-    /// </summary>
-    [IntegrationEvent(false, false)]
-    procedure OnGetPaymentCardInfo(DocumentHeader: Variant; PaymentMeansCode: Code[3]; var PrimaryAccountNumberID: Text; var HolderName: Text; var Handled: Boolean)
-    begin
     end;
 
     /// <summary>
