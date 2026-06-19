@@ -73,6 +73,11 @@ page 9400 "IPC Config"
                         HyperLink(APIKeyUrlTok);
                     end;
                 }
+                field("Remove Organisation Name"; Rec."Remove Organisation Name")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'When enabled, the organisation name is removed from the first address line.';
+                }
             }
         }
     }

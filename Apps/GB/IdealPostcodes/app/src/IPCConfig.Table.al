@@ -25,6 +25,11 @@ table 9402 "IPC Config"
             Caption = 'Enabled';
             DataClassification = CustomerContent;
         }
+        field(5; "Remove Organisation Name"; Boolean)
+        {
+            Caption = 'Remove the organisation name from address';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

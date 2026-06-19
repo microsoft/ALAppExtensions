@@ -151,12 +151,24 @@ codeunit 9400 "IPC Management"
     end;
 
     local procedure AddAddressToBuffer(AddressJson: JsonObject; var TempIPCAddressLookup: Record "IPC Address Lookup" temporary; EntryNo: Integer)
+    var
+        Config: Record "IPC Config";
+        Line1, Line2 : Text;
     begin
+        Line1 := GetJsonValue(AddressJson, 'line_1');
+        Line2 := GetJsonValue(AddressJson, 'line_2');
+
+        if GetConfiguration(Config) and Config."Remove Organisation Name" then
+            if (Line1 <> '') and (Line1 = GetJsonValue(AddressJson, 'organisation_name')) then begin
+                Line1 := Line2;
+                Line2 := '';
+            end;
+
         TempIPCAddressLookup.Init();
         TempIPCAddressLookup."Entry No." := EntryNo;
         TempIPCAddressLookup."Address ID" := CopyStr(GetJsonValue(AddressJson, 'id'), 1, MaxStrLen(TempIPCAddressLookup."Address ID"));
-        TempIPCAddressLookup.Address := CopyStr(GetJsonValue(AddressJson, 'line_1'), 1, MaxStrLen(TempIPCAddressLookup.Address));
-        TempIPCAddressLookup."Address 2" := CopyStr(GetJsonValue(AddressJson, 'line_2'), 1, MaxStrLen(TempIPCAddressLookup."Address 2"));
+        TempIPCAddressLookup.Address := CopyStr(Line1, 1, MaxStrLen(TempIPCAddressLookup.Address));
+        TempIPCAddressLookup."Address 2" := CopyStr(Line2, 1, MaxStrLen(TempIPCAddressLookup."Address 2"));
         TempIPCAddressLookup.City := CopyStr(GetJsonValue(AddressJson, 'post_town'), 1, MaxStrLen(TempIPCAddressLookup.City));
         TempIPCAddressLookup."Post Code" := CopyStr(GetJsonValue(AddressJson, 'postcode'), 1, MaxStrLen(TempIPCAddressLookup."Post Code"));
         TempIPCAddressLookup.County := CopyStr(GetJsonValue(AddressJson, 'county'), 1, MaxStrLen(TempIPCAddressLookup.County));
