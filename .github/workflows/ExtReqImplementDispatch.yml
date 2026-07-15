@@ -1,0 +1,54 @@
+name: ExtReqImplementDispatch
+
+# Template workflow for the SOURCE issue repository (for example
+# microsoft/ALAppExtensions). When the guard label is added to an open issue,
+# this workflow starts the target fix workflow in microsoft/BCAppsBugFix.
+#
+# Move this file to the source repository and configure:
+# - secrets.EXT_REQ_DISPATCH_TOKEN (PAT with access to target repo)
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-ext-fix-dispatch-${{ github.repository }}-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+env:
+  FIX_LABEL: ext-ready-to-implement
+  TARGET_REPO: microsoft/BCAppsBugFix
+  TARGET_WORKFLOW: ExtReqImplement.yaml
+  TARGET_REF: main
+
+jobs:
+  dispatch:
+    if: >-
+      github.event.issue.state == 'open' &&
+      github.event.label.name == env.FIX_LABEL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PAT secret
+        env:
+          GH_TOKEN: ${{ secrets.EXT_REQ_DISPATCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "EXT_REQ_DISPATCH_TOKEN is required." >&2
+            exit 1
+          fi
+
+      - name: Start the target fix workflow
+        env:
+          GH_TOKEN: ${{ secrets.EXT_REQ_DISPATCH_TOKEN }}
+          SOURCE_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          gh workflow run "$TARGET_WORKFLOW" -R "$TARGET_REPO" --ref "$TARGET_REF" \
+            -f source_repo="$SOURCE_REPO" \
+            -f issue_number="$ISSUE_NUMBER" \
+            -f label="$FIX_LABEL"
