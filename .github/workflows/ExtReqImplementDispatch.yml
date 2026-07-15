@@ -28,7 +28,7 @@ jobs:
   dispatch:
     if: >-
       github.event.issue.state == 'open' &&
-      github.event.label.name == env.FIX_LABEL
+      github.event.label.name == 'ext-ready-to-implement'
     runs-on: ubuntu-latest
     steps:
       - name: Validate PAT secret
