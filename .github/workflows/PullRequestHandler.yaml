@@ -144,7 +144,7 @@ jobs:
           shell: powershell
 
       - name: Upload SARIF file to GitHub
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@d1ba80a13dd99fba24a470575428917156a28b43 # v4.37.5
         if: (success() || failure()) && (hashFiles(format('{0}/ErrorLogs/output.sarif.json',github.workspace)) != '')
         with:
           sarif_file: '${{ github.workspace }}/ErrorLogs/output.sarif.json'

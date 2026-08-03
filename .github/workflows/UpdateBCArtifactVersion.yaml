@@ -17,7 +17,7 @@ jobs:
       UpdateBranches: ${{ steps.GetBranches.outputs.UpdateBranches }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
 
       - name: Get Branches
         id: GetBranches
@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
         with:
           ref: ${{ matrix.branch }}
 
