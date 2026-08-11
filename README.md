@@ -1,5 +1,13 @@
 # Business Central extensibility requests
 
+> [!IMPORTANT]
+> **This repository is being retired.**
+>
+> - **From 1 September 2026** you can no longer create issues here. Extensibility requests, including event requests, move to [BCApps](https://github.com/microsoft/BCApps/issues/new/choose).
+> - **On 19 October 2026** this repository will be archived and become read-only. Nothing is deleted — all issues and links keep working.
+>
+> Requests already open here will be processed before archiving, so there is no need to re-file them in BCApps.
+
 This repository is now solely for extensibility requests for Microsoft Dynamics 365 Business Central.
 
 It is no longer a place to contribute to Microsoft AL application add-ons or other Business Central application code. New pull requests are no longer accepted here and will be closed automatically.
