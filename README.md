@@ -6,7 +6,7 @@
 > - **From 1 September 2026** you can no longer create issues here. Extensibility requests, including event requests, move to [BCApps](https://github.com/microsoft/BCApps/issues/new/choose).
 > - **On 19 October 2026** this repository will be archived and become read-only. Nothing is deleted — all issues and links keep working.
 >
-> Requests already open here will be processed before archiving, so there is no need to re-file them in BCApps.
+> Requests already open here will be processed before archiving, so there is no need to re-file them in BCApps. See [the announcement](https://github.com/microsoft/ALAppExtensions/issues/30411) for details.
 
 This repository is now solely for extensibility requests for Microsoft Dynamics 365 Business Central.
 
