@@ -1,11 +1,14 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Contribute in BCApps
+  - name: Create an extensibility request
+    url: https://github.com/microsoft/BCApps/issues/new/choose
+    about: ALAppExtensions no longer accepts new issues. Create extensibility requests, including event requests, in BCApps.
+  - name: Contribute to Business Central applications
     url: https://github.com/microsoft/BCApps
-    about: ALAppExtensions no longer accepts new pull requests. Please submit new Business Central application contributions in BCApps.
+    about: Submit Business Central application contributions and pull requests in BCApps.
   - name: Request a feature
     url: https://aka.ms/bcideas
     about: Please go to https://aka.ms/bcideas to log your idea. Creating a feature implementation issue here is no longer available.
-  - name: Report a bug
+  - name: Report a bug in the product
     url: https://aka.ms/bcsupport?#bugs
     about: Please follow the steps on https://aka.ms/bcsupport to get support. Creating a bug-fix contribution issue here is no longer available.

@@ -3,20 +3,18 @@
 > [!IMPORTANT]
 > **This repository is being retired.**
 >
-> - **From 1 September 2026** you can no longer create issues here. Extensibility requests, including event requests, move to [BCApps](https://github.com/microsoft/BCApps/issues/new/choose).
+> - **You can no longer create issues here.** Extensibility requests, including event requests, have moved to [BCApps](https://github.com/microsoft/BCApps/issues/new/choose).
 > - **On 19 October 2026** this repository will be archived and become read-only. Nothing is deleted — all issues and links keep working.
 >
 > Requests already open here will be processed before archiving, so there is no need to re-file them in BCApps. See [the announcement](https://github.com/microsoft/ALAppExtensions/issues/30411) for details.
 
-This repository is now solely for extensibility requests for Microsoft Dynamics 365 Business Central.
+This repository no longer accepts new issues or pull requests.
 
-It is no longer a place to contribute to Microsoft AL application add-ons or other Business Central application code. New pull requests are no longer accepted here and will be closed automatically.
+For Business Central application contributions and extensibility requests, use the [BCApps](https://github.com/microsoft/BCApps) repository.
 
-For Business Central application contributions, use the [BCApps](https://github.com/microsoft/BCApps) repository.
+## Create an extensibility request
 
-## What to request here
-
-Create an extensibility request issue when you need Microsoft to make the application easier to extend, for example:
+Create an [extensibility request in BCApps](https://github.com/microsoft/BCApps/issues/new/choose) when you need Microsoft to make the application easier to extend, for example:
 
 - Add a new integration event.
 - Change function visibility, for example by making a function external.
@@ -25,9 +23,10 @@ Create an extensibility request issue when you need Microsoft to make the applic
 
 Before creating a request, search existing issues to avoid duplicates and read the guidance for [creating extensibility requests](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/create-extensibility-request).
 
-## What not to file here
+## Other requests
 
 - **Code contributions and pull requests:** Use [BCApps](https://github.com/microsoft/BCApps).
+- **Extensibility requests:** Use [BCApps](https://github.com/microsoft/BCApps/issues/new/choose).
 - **Product ideas:** Use [BC Ideas](https://aka.ms/bcideas).
 - **Product defects or customer-impacting issues:** Use [Business Central support](https://aka.ms/bcsupport).
 
